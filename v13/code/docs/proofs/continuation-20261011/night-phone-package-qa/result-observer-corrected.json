@@ -1,0 +1,37 @@
+{
+  "schema": "V13_IMMUTABLE_PHONE_QA_RESULT_V1",
+  "finished_at": "2026-10-11T21:18:04.100167+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 117.379,
+  "footer": [
+    "1125",
+    "114.186",
+    "OK"
+  ],
+  "manifest_after": {
+    "manifest_sha256": "f9a8716d3dd4a222de75319abd36a99fce3174449d9c7dd352e21aeca0e39fdb",
+    "files": 495,
+    "mismatches": []
+  },
+  "manifest_unchanged": true,
+  "cgroup_events_after": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "log_sha256": "d8707dba430ee56ac5a23e1ad63cf811065647d27b5376d6577b5ef57d41084e",
+  "all_checks_passed": true,
+  "phone_hardware_measured": false,
+  "native_quality_claim": false,
+  "rss_observation_rejected": {
+    "reported_peak_bytes": 311296,
+    "samples": 234,
+    "reason": "psutil uses shared host /proc while subprocess PID is namespace-local; no NSpid plus exact-argv identity reconciliation. Value is not a valid owned-process RSS measurement."
+  },
+  "peak_owned_python_rss_bytes": null,
+  "resource_measurement_status": "RSS_UNAVAILABLE",
+  "all_checks_passed_scope": "ZIP SHA and CRC, manifest before/after, actual unittest exit and footer only"
+}

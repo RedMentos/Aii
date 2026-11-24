@@ -1,0 +1,24 @@
+{
+  "schema": "v13.run49.c5_c6_draft_shadow_seed431.v1",
+  "seed": 431,
+  "fixtures": [
+    {
+      "id": "Cedar",
+      "prior": "Project Cedar. Budget 90 euros. Deadline 8 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Cedar. Apply the earlier project rules. Option A costs 70 euros, takes 6 days, and is local. Option B costs 40 euros, takes 7 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "A", "remaining": 20}
+    },
+    {
+      "id": "Quartz",
+      "prior": "Project Quartz. Budget 40 euros. Deadline 3 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Quartz. Apply the earlier project rules. Option A costs 39 euros, takes 5 days, and is local. Option B costs 35 euros, takes 2 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "B", "remaining": 5}
+    },
+    {
+      "id": "Moss",
+      "prior": "Project Moss. No budget has been supplied. Deadline 5 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Moss. Apply the earlier project rules. Option A costs 20 euros, takes 2 days, and is local. Option B costs 15 euros, takes 4 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "UNKNOWN", "remaining": null}
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+test_archive_cannot_overwrite_existing_evidence (test_action_jepa_delta_storage.DeltaStorageTests.test_archive_cannot_overwrite_existing_evidence) ... ok
+test_changed_source_corpus_is_rejected (test_action_jepa_delta_storage.DeltaStorageTests.test_changed_source_corpus_is_rejected) ... ok
+test_digest_changed_raw_response_is_rejected (test_action_jepa_delta_storage.DeltaStorageTests.test_digest_changed_raw_response_is_rejected) ... ok
+test_exact_whole_npz_and_raw_bytes_roundtrip (test_action_jepa_delta_storage.DeltaStorageTests.test_exact_whole_npz_and_raw_bytes_roundtrip) ... ok
+test_full_array_digest_is_strict (test_action_jepa_delta_storage.DeltaStorageTests.test_full_array_digest_is_strict) ... ok
+test_malformed_receipt_or_npz_digest_is_rejected (test_action_jepa_delta_storage.DeltaStorageTests.test_malformed_receipt_or_npz_digest_is_rejected) ... ok
+test_missing_raw_batch_is_rejected (test_action_jepa_delta_storage.DeltaStorageTests.test_missing_raw_batch_is_rejected) ... ok
+test_no_approximate_regeneration_allowed (test_action_jepa_delta_storage.DeltaStorageTests.test_no_approximate_regeneration_allowed) ... ok
+test_reordered_raw_records_are_rejected (test_action_jepa_delta_storage.DeltaStorageTests.test_reordered_raw_records_are_rejected) ... ok
+test_wrong_base_boundary_and_duplicate_delta_fail (test_action_jepa_delta_storage.DeltaStorageTests.test_wrong_base_boundary_and_duplicate_delta_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.315s
+
+OK

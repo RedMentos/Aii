@@ -1,0 +1,12 @@
+# Sleep A exact-ID retention proof — closed RED/GREEN and full software checkpoint (2026-10-27)
+
+Review-only independent F9/Sleep A child of verified C1+World+B3 seed `1ab88aa30947e2f3da9905b1d3055f04b98a8bed`, not main. Prereg `d9ee59ef7d189334533f58a9be63229466fa345f`, test-only RED `19c048e1f8fc585082acafa911d41ef0e24123ed`, source fix `9baa1d10db813f45d0a7082aa353e0da2d8f4676`.
+
+**Defect:** `SleepCycle._probe` accepted recall of any other memory with the same value text as evidence of retaining the target memory. Two distinct human corrections can share a value. Source-backed retention now requires the exact memory ID; it no longer treats equal value text or a missing ID as proof. No training/weight path or replay policy changed.
+
+- **RED Actions `40593307317`** expected failure: 40 focused tests, **2 expected failures** (foreign equal-value ID and no-ID recall falsely PASS); source blob `12fc576c531a6da5ecad3c29e97c93ebca36a2eb`; UNIT exit1, other exits0. Original ZIP `12774194922`, SHA256 `99db85149d1daa8ef298ea922bc0804ce348c6a6cbd316236d6fa59adcf98129`, CRC PASS.
+- **GREEN Actions `40593625607` SUCCESS:** 40/40 focused PASS, all raw exits0/privacy CLEAN; new source blob `469101c9979b9cabe0dbd154cffde40912fa8a2c`, test blob `48a692f5d0d47aece40d5c56d6c2f2ae96ba3c6a`. ZIP `12774458400`, SHA256 `5e433b74fa0f792f441d19e8921e9a323d450089f2189677d379c83281049efb`, CRC PASS.
+- **Full Actions `40593650413` SUCCESS:** **2008 software tests OK (1 skipped)**, PREREG/RED_TEST/FROZEN/INSTALL/UNIT/COMPILE/PRIVACY/DIFF all exits0, privacy CLEAN. Tested HEAD `f9879e2570fe8202aa7b66456b6145d2455cb26f`; ZIP `12774648598`, SHA256 `005abdcc02fc0180fc0599655b517dd4671b4fe8476aaf061eaf4c8f1a007430`, CRC PASS.
+- All original ZIPs privately saved and re-materialized byte-identical at `/V13-Checkpoints/2026-10-27/Automation11-Sleep-A-Exact-Recall/`. Rejected public Drive path not used.
+
+No native/Redmi, no claimed long-term semantic retention improvement beyond exact-ID test, no STEP2/B3/LP1/LP2/BJ1/jepa_weight/Age promotion. Original negatives unchanged, whole V13 incomplete. Next: independent review, integrate with C1+World+B3 all-gates and HX SHADOW in separate branch. Exact focused command: `cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_scheduler tests.test_sleep_validation tests.test_sleep_offline`.

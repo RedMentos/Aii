@@ -1,0 +1,96 @@
+name: V13 P2X fourstep independent offline evidence audit
+on:
+  push:
+    branches: [assistant/v13-p2x-fourstep-evidence-review-20261029]
+permissions:
+  contents: read
+jobs:
+  audit-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound original raw test evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-fourstep-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          a60b9a0315ae05920381203d571a484eb8925e08 v13/code/docs/proofs/continuation-20261029/P2X_FOURSTEP_EVIDENCE_AUDIT_PREREG.md
+          10ca0303aa9ffcd6f6871348f490b4b53e366b5a v13/code/scripts/p2x_fourstep_evidence_audit.py
+          59806fd2ff7e076855dbc0798cffc177db0a737b v13/code/tests/test_p2x_fourstep_evidence_audit.py
+          fc434116f2a7b480109b7a8b939db9b4f362062a v13/code/scripts/p2x_c3_receiver_fourstep.py
+          41b61ba3d196fc8d624e586c0f31e740002bd469 v13/code/scripts/p2x_c3_lora_pilot.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          source_red=0
+          : > "$e/SOURCE_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            echo "$want $got $file" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then source_red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-p2x-fourstep-audit-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-p2x-fourstep-audit-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            first="$?"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+            second="$?"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'gguf==0.19.0' 'Jinja2==3.1.6' 'MarkupSafe==3.0.3' >> "$e/DEPS_RAW.log" 2>&1
+            third="$?"
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/DEPS_EXIT.txt"; else echo 1 > "$e/DEPS_EXIT.txt"; fi
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_p2x_fourstep_evidence_audit tests.test_p2x_c3_receiver_fourstep) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"; echo SKIPPED > "$e/FULL_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/p2x_fourstep_evidence_audit.py v13/code/tests/test_p2x_fourstep_evidence_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c4243164f8d100dc826f3e1ee2d7d169228cd649 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c4243164f8d100dc826f3e1ee2d7d169228cd649 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw logs and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-fourstep-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-fourstep-audit/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source, focused, full, privacy and hash-bound stages
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-fourstep-audit"
+          for stage in SOURCE VENV DEPS PIP_CHECK FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'P2X_FOURSTEP_SOURCE_ONLY_ARTIFACT_AUDIT'

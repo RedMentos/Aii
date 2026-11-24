@@ -1,0 +1,711 @@
+{
+  "ActionIntent": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "action_id": "str",
+      "action_type": "str",
+      "permission": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "ActionOutcome": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "action_id": "str",
+      "actual": "dict",
+      "status": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "BrainGenerationManifest": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "config": "dict",
+      "hashes": "dict",
+      "models": "dict",
+      "parent_generation_id": [
+        "str",
+        "NoneType"
+      ],
+      "rule_version": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "CapabilityProfile": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "capability_id": "str",
+      "current_mode": "str",
+      "reason": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "CheckpointManifest": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "checkpoint_id": "str",
+      "hashes": "dict"
+    },
+    "schema_version": "1.0"
+  },
+  "CorollaryCopy": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "action_id": "str",
+      "expected": "dict",
+      "self_caused": "bool"
+    },
+    "schema_version": "1.0"
+  },
+  "EffortDecision": {
+    "schema_version": "1.0",
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "mode": "str",
+      "effort": [
+        "int",
+        "float"
+      ],
+      "wake": "str",
+      "wake_source": "str",
+      "plan": "dict",
+      "signals": "dict",
+      "constraints": "list"
+    }
+  },
+  "EventEnvelope": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "authority": "str",
+      "kind": "str",
+      "source_ref": "dict"
+    },
+    "schema_version": "1.0"
+  },
+  "ExecState": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "constraints": "list",
+      "goal": "str",
+      "last_event_id": "str",
+      "session_id": "str",
+      "state_version": "int"
+    },
+    "schema_version": "1.0"
+  },
+  "ExperienceRecord": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "outcome": "str",
+      "self_candidate_hash": "str",
+      "source_ref": "dict"
+    },
+    "schema_version": "1.0"
+  },
+  "FocalItem": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "fact_hypothesis_status": "str",
+      "item_id": "str",
+      "source_kind": "str",
+      "source_refs": "list"
+    },
+    "schema_version": "1.0"
+  },
+  "HumanDecision": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "kind": "str",
+      "learning_permission": "str",
+      "source_ref": "dict",
+      "value": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "JEFBroadcastPacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "constraints": "list",
+      "goal": "str",
+      "source_refs": "list",
+      "state_version": "int"
+    },
+    "schema_version": "1.0"
+  },
+  "KnobSpec": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "id": "str",
+      "kind": "str",
+      "owner": "str",
+      "value": [
+        "int",
+        "float",
+        "bool"
+      ]
+    },
+    "schema_version": "1.0"
+  },
+  "LearningTrace": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "activity": [
+        "int",
+        "float"
+      ],
+      "authority": "str",
+      "eligibility": [
+        "int",
+        "float"
+      ],
+      "path_id": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "MemoryRecord": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "key": "str",
+      "kind": "str",
+      "memory_id": "str",
+      "scope": "str",
+      "source_ref": "dict"
+    },
+    "schema_version": "1.0"
+  },
+  "MessagePacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "channel": "str",
+      "content": "dict",
+      "receiver": "str",
+      "sender": "str",
+      "source_refs": "list"
+    },
+    "schema_version": "1.0"
+  },
+  "ModelManifest": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "exact_revision": "str",
+      "file_hashes": "dict",
+      "model_id": "str",
+      "role": "str",
+      "runner_id": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "ModulatorPacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "epistemic_evidence": [
+        "int",
+        "float"
+      ],
+      "human_correction": [
+        "int",
+        "float"
+      ],
+      "resource_cost": [
+        "int",
+        "float"
+      ],
+      "safety_veto": "bool",
+      "task_success": [
+        "int",
+        "float"
+      ]
+    },
+    "schema_version": "1.0"
+  },
+  "OfferPacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "based_on_state_version": "int",
+      "confidence": [
+        "int",
+        "float"
+      ],
+      "deadline_monotonic_ns": "int",
+      "evidence_refs": "list",
+      "offer": "dict",
+      "role": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "PathSpec": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "learn_gain": [
+        "int",
+        "float"
+      ],
+      "mode": "str",
+      "path_id": "str",
+      "read_gain": [
+        "int",
+        "float"
+      ]
+    },
+    "schema_version": "1.0"
+  },
+  "PerceptPacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "modality": "str",
+      "segments": "list",
+      "source_ref": "dict"
+    },
+    "schema_version": "1.0"
+  },
+  "QueryPacket": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "goal": "str",
+      "source_refs": "list",
+      "target_role": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "ReceiverCalibration": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "injection_level": "int",
+      "metrics": "dict",
+      "receiver_revision": "str",
+      "sender_revision": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "ReplayItem": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "max_authority": "str",
+      "priority": [
+        "int",
+        "float"
+      ],
+      "replay_type": "str",
+      "source_refs": "list"
+    },
+    "schema_version": "1.0"
+  },
+  "SourceRef": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "char_end": "int",
+      "char_start": "int",
+      "modality": "str",
+      "sha256": "str",
+      "source_id": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "TrainRunnerProof": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "checks": "dict",
+      "device": "dict",
+      "runner_revision": "str",
+      "trainable_parameter_count": "int"
+    },
+    "schema_version": "1.0"
+  },
+  "UpdateManifest": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "artifact_hash": "str",
+      "base_brain_generation_id": "str",
+      "metrics": "dict",
+      "status": "str",
+      "update_id": "str"
+    },
+    "schema_version": "1.0"
+  },
+  "WorkspaceSlot": {
+    "base_fields": {
+      "brain_generation_id": "str",
+      "created_monotonic_ns": "int",
+      "created_wall_time": [
+        "int",
+        "float"
+      ],
+      "event_id": "str",
+      "packet_id": "str",
+      "producer_component": "str",
+      "producer_version": "str",
+      "provenance": "list",
+      "schema_version": "str"
+    },
+    "fields": {
+      "content": "dict",
+      "owner": "str",
+      "source_refs": "list"
+    },
+    "schema_version": "1.0"
+  }
+}

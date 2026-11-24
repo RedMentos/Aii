@@ -1,0 +1,93 @@
+name: V13 original seed83 closed-world posthoc raw audit
+on:
+  push:
+    branches:
+      - 'assistant/v13-de83-closedworld-posthoc-run11b-20261030'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-posthoc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Closed original ZIP and non-promoting posthoc audit
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/de83-posthoc"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts python3 -m unittest -v \
+            tests.test_listarith_de83_closedworld_posthoc_20261030 \
+            tests.test_listarith_de_closedworld_seed101_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          original="$RUNNER_TEMP/original-de83-41013265710.zip"
+          curl --fail --silent --show-error --location --max-time 90 --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12958586993/zip" \
+            -o "$original" > "$e/FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          if [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ]; then
+            sha256sum "$original" > "$e/ORIGINAL_SHA256.txt"
+            (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts python3 \
+              scripts/listarith_de83_closedworld_original_posthoc.py \
+              --zip "$original" --out "$e/POSTHOC_REPORT.json") > "$e/POSTHOC_RAW.log" 2>&1
+            echo "$?" > "$e/POSTHOC_EXIT.txt"
+          else
+            echo FETCH_FAILED > "$e/POSTHOC_RAW.log"
+            echo SKIPPED_RED > "$e/POSTHOC_EXIT.txt"
+          fi
+          rm -f "$original"
+          python3 -m py_compile \
+            v13/code/scripts/listarith_de83_closedworld_original_posthoc.py \
+            v13/code/tests/test_listarith_de83_closedworld_posthoc_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 842f024b0b6a6ab47f0a9deb0d06558fcaf823bb \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 842f024b0b6a6ab47f0a9deb0d06558fcaf823bb HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-de83-posthoc-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/de83-posthoc/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Gate raw and source integrity only, no native claim
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/de83-posthoc"
+          for stage in TEST FETCH POSTHOC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -100 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          python3 - "$e/POSTHOC_REPORT.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r["original_native_status"]=="NATIVE_DE83_SHADOW_PILOT_SIGNAL"
+          assert r["original_supported_exact"]==15
+          assert r["original_native_rows"]==24
+          assert r["candidate_wrong_emitted"]==0
+          assert r["candidate_unsupported_false_positive"]==0
+          assert r["candidate_unsupported_abstain"]==8
+          assert not r["step2_gate_promoted"] and not r["b3_promoted"]
+          assert r["jepa_weight"]==0 and not r["whole_system_complete"]
+          print("POSTHOC_ORIGINAL_RAW_INTEGRITY_ONLY_NO_NEW_NATIVE_OR_UTILITY_GATE")
+          PY

@@ -1,0 +1,5 @@
+# Night recovery
+
+Workspace maintenance removed the unsaved live cache and raw results. GitHub55a9 preserves the first full1875-row capture terminal proof and all11 worker observations; its full NPZ/raw batches were not published when the19MB blob tool payload failed. The original736-row closed archive is byte-restored. Two already uploaded content-addressed metadata blobs were recovered by Git SHA. This does not recover the missing native states. Four earlier handoff rows had completed in the previous session but their unsaved raw evidence was also pruned; they cannot be counted as a recovered cohort.
+
+New small-part storage preserves full bytes without changing numerical capture, model/config bindings, original quality gates or authority. Run `python3 scripts/sealed_storage_parts.py restore --manifest PARTS/manifest.json --out ORIGINAL_ARTIFACT` to reconstruct a closed original, verifying each part and final SHA before installing. A different existing output is never overwritten. Original historical proof remains unchanged.

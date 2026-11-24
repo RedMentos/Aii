@@ -1,0 +1,14 @@
+{
+  "schema": "v13-capture-path-relocation-check-v1",
+  "original_registration_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "new_registration_sha256": "aa6266c61d930aa50c06c1939e367d8140b7d7ab7c659b6198db6fa7a229f7b6",
+  "all_non_path_fields_equal": true,
+  "new_paths_require_separate_cohort": true,
+  "original_raw_prefix_rows": 736,
+  "expected_rows": 1875,
+  "new_inference_started": false,
+  "receiver_authority": 0,
+  "native_parameters_changed": false,
+  "quality_proven": false,
+  "phone_measured": false
+}

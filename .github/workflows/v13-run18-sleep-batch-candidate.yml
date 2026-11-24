@@ -1,0 +1,92 @@
+name: V13 Run18 Sleep batch budget candidate and cross-organ
+on:
+  push:
+    branches: [assistant/v13-run18-sleep-batch-budget-20261030-hourly11]
+    paths: ['.github/workflows/v13-run18-sleep-batch-candidate.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run exact-source SQLite capability, ContextOS, warm, Sleep and neuromod regressions
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run18-candidate"; mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          4a3518a50a6f26a0d77ee04928e02ab4b5c048ba v13/code/docs/SLEEP_BATCH_BUDGET_PREREG_RUN18_20261030.md
+          7c2daeaaac8e4da33561f2b44d1df99fd8ee88bc v13/code/tests/test_sleep_batch_budget_run18.py
+          cff2a44d0111fda6d74789ccc3aceac88e77fbbb v13/code/v13/sleep.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run18-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run18-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 11m env PYTHONPATH=.:tests "$py" -m unittest -v \
+              tests.test_sleep_batch_budget_run18 \
+              tests.test_sleep_replay_ttl_run17 \
+              tests.test_sleep_scheduler \
+              tests.test_sleep_policy_cas_run14x \
+              tests.test_sleep_validation \
+              tests.test_sleep_offline \
+              tests.test_sleep_memory_authority_run274 \
+              tests.test_sleep_ag12_holdout_run14q \
+              tests.test_sleep_a_exact_recall_identity_review \
+              tests.test_context_self_sleep_age0_20261029 \
+              tests.test_neuromod) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PREREQUISITE > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/v13/sleep.py v13/code/tests/test_sleep_batch_budget_run18.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 760f4a4cfa0f26f65c1cbd29202c8c2633eab5a6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 760f4a4cfa0f26f65c1cbd29202c8c2633eab5a6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve candidate raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run18-candidate-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run18-candidate/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require all stages GREEN
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run18-candidate"
+          for stage in PINS VENV DEPS PIP_CHECK TEST COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              tail -90 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'SLEEP_F9_BATCH_SOFTWARE_ONLY; NO_MODEL_OR_AGE_PROMOTION'

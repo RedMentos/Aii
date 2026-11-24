@@ -1,0 +1,55 @@
+{
+ "schema": "V13_B3_L1_V3_PREREGISTRATION_V1",
+ "utc": "2026-10-12T03:11:52.248180+00:00",
+ "package": "WP-J / WP-U9: B3-H3 L1 attempt 3 (tasks without short exact/symbolic form)",
+ "script": "code/scripts/b3_l1_v3_bench.py",
+ "script_sha256": "0c8422fed9575418a22b103690d82bbfab25bec1d8e7b16d0db308d26e19bea5",
+ "bridge": "code/v13/b3bridge.py",
+ "bridge_sha256": "16e159cfa64d0b8aa96cd00e43f682c1bdfddf516b15b4d27b1c4f801f357da1",
+ "h2_helpers": "code/scripts/b3_h2_bench.py",
+ "h2_helpers_sha256": "546c4a3d72d3f7b53213edc1add4ff385878958af0008a92ef1a92d4150bff9a",
+ "gate": "G-CALLOSUM-UTILITY-002 via unchanged b3bridge.l1_gate (BYTES_W .25, BYTES_NORM 4000, paired mean-2se>0, role_drop<=.01, ood<=.05, reload identical)",
+ "data": {
+  "seed": 20261012,
+  "n": 600,
+  "sha256": "5227d1658a9bde3bed0bd86aefdd3cde650551a4b1778698cfe0d7824b32b664",
+  "split": "fit/select/test 60/20/20 per seed, seeds 0..4"
+ },
+ "bridge_config": {
+  "K": 4,
+  "r": 8,
+  "h": 16,
+  "message_bytes": 64,
+  "epochs": "6 blocks x 10, best on select split"
+ },
+ "models": {
+  "body": {
+   "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+   "revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1"
+  },
+  "gist": {
+   "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+   "revision": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+  }
+ },
+ "runner": {
+  "tag": "b10964",
+  "linux_x86_64_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+ },
+ "tasks": {
+  "escalate": "sum(urgency 4x0..4) > {low:6,normal:8,high:10}[receiver-private capacity]",
+  "apologize": "sum(frustration) > {new:9,regular:8,key:6}[receiver-private client]",
+  "action": "call if U>=8 and F>=8, fix_quietly if U>=8, else schedule (sender-computable control task)",
+  "topic": "receiver role retention"
+ },
+ "views": {
+  "private": "TARGET: receiver sees only area + capacity + client status",
+  "shared": "control: receiver also sees the sender text"
+ },
+ "verdict_rule": "Per task/view l1_gate twice: SYMBOLIC=label word and SYMBOLIC=attribute level words; canon L1 PASS only if both PASS. strict_scalar (2 x fp16 sender ridge estimates of U,F) reported separately; a strict FAIL is a claim limit. Target = private view. No re-run with changed settings counts as this attempt; FAIL stays FAIL.",
+ "consequence_if_pass": "L2 prefix SHADOW experiment allowed for passing task(s) only; LATENT authority stays 0; frozen runtime unchanged",
+ "consequence_if_fail": "B3_LATENT stays unavailable, L2 locked; record negative result",
+ "hardware": "Linux x86_64 cloud CPU, 4 threads; not Redmi"
+}

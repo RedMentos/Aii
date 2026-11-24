@@ -1,0 +1,233 @@
+{
+  "arm": "context",
+  "step2_status": "UTILITY_FAIL",
+  "paired": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.6166666666666667,
+      "b2_only": 0.6583333333333333,
+      "both_control": 0.6083333333333333,
+      "both_exact": 0.625,
+      "both_none": 0.6166666666666667,
+      "prompt_only_dual": 0.5833333333333334,
+      "same_policy_dual": 0.6166666666666667
+    },
+    "best_solo": 0.6583333333333333,
+    "gain_over_best_solo": {
+      "both_none": -0.04166666666666663,
+      "both_exact": -0.033333333333333326,
+      "both_control": -0.050000000000000044
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "rule_transport": {
+    "RETAIN_PRIOR_RULES:B2_GIST": {
+      "offers": 30,
+      "full_rule": 23,
+      "partial_rule": 0
+    },
+    "RETAIN_PRIOR_RULES:B1_DETAIL": {
+      "offers": 42,
+      "full_rule": 0,
+      "partial_rule": 0
+    },
+    "CURRENT_EXPLICIT_OVERRIDE:B2_GIST": {
+      "offers": 20,
+      "full_rule": 8,
+      "partial_rule": 0
+    },
+    "CURRENT_EXPLICIT_OVERRIDE:B1_DETAIL": {
+      "offers": 28,
+      "full_rule": 0,
+      "partial_rule": 0
+    }
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "tool_wrong_committed": 0,
+  "tool_retain_b2_exact": 24,
+  "tool_retain_b2_rows": 30,
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 5,
+      "wrong_committed": 0,
+      "unknown": 6,
+      "mean_utility": 0.7083333333333333,
+      "exact_fixtures": [
+        "Cygnus",
+        "Equinox",
+        "Gemini",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 10,
+      "wrong_committed": 0,
+      "unknown": 1,
+      "mean_utility": 0.9166666666666666,
+      "exact_fixtures": [
+        "Aurora",
+        "Borealis",
+        "Cygnus",
+        "Dorado",
+        "Equinox",
+        "Fornax",
+        "Gemini",
+        "Helios",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 10,
+      "wrong_committed": 0,
+      "unknown": 1,
+      "mean_utility": 0.9166666666666666,
+      "exact_fixtures": [
+        "Aurora",
+        "Borealis",
+        "Cygnus",
+        "Dorado",
+        "Equinox",
+        "Fornax",
+        "Gemini",
+        "Helios",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 9,
+      "wrong_committed": 0,
+      "unknown": 2,
+      "mean_utility": 0.8416666666666666,
+      "exact_fixtures": [
+        "Aurora",
+        "Cygnus",
+        "Dorado",
+        "Equinox",
+        "Fornax",
+        "Gemini",
+        "Helios",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 10,
+      "wrong_committed": 0,
+      "unknown": 1,
+      "mean_utility": 0.9166666666666666,
+      "exact_fixtures": [
+        "Aurora",
+        "Borealis",
+        "Cygnus",
+        "Dorado",
+        "Equinox",
+        "Fornax",
+        "Gemini",
+        "Helios",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 5,
+      "wrong_committed": 0,
+      "unknown": 6,
+      "mean_utility": 0.7083333333333333,
+      "exact_fixtures": [
+        "Cygnus",
+        "Equinox",
+        "Gemini",
+        "Indigo",
+        "Juno"
+      ]
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 5,
+      "wrong_committed": 0,
+      "unknown": 6,
+      "mean_utility": 0.7083333333333333,
+      "exact_fixtures": [
+        "Cygnus",
+        "Equinox",
+        "Gemini",
+        "Indigo",
+        "Juno"
+      ]
+    }
+  },
+  "no_tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 4,
+      "unknown": 6,
+      "mean_utility": 0.6166666666666667,
+      "exact_fixtures": []
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 8,
+      "unknown": 1,
+      "mean_utility": 0.6583333333333333,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 9,
+      "unknown": 0,
+      "mean_utility": 0.6083333333333333,
+      "exact_fixtures": []
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 9,
+      "unknown": 0,
+      "mean_utility": 0.625,
+      "exact_fixtures": []
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 8,
+      "unknown": 1,
+      "mean_utility": 0.6166666666666667,
+      "exact_fixtures": []
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 9,
+      "unknown": 0,
+      "mean_utility": 0.5833333333333334,
+      "exact_fixtures": []
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 7,
+      "unknown": 2,
+      "mean_utility": 0.6166666666666667,
+      "exact_fixtures": []
+    }
+  },
+  "hijack": {
+    "b2_offers": 50,
+    "about_own_state": 0
+  }
+}

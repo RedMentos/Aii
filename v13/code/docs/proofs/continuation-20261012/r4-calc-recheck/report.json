@@ -1,0 +1,53 @@
+{
+ "prereg_sha256": "d1db61ecd4dd07fc1b4a5cbc2bc7992b7f279b5369f46c13298e4a1a949e3402",
+ "fresh_sha256": "c2f49e0faff6117b170456bb67dc9743e1853da54c39bfdc12f05ac6d5d351c5",
+ "policies": {
+  "c3_alone": {
+   "pass": 42,
+   "calc_turns": 0,
+   "mean_turn_s": 4.56,
+   "by_kind": {
+    "summary": 8,
+    "long": 15,
+    "notes": 15,
+    "compare": 4
+   }
+  },
+  "calc_always": {
+   "pass": 40,
+   "calc_turns": 25,
+   "mean_turn_s": 7.25,
+   "by_kind": {
+    "summary": 7,
+    "long": 15,
+    "notes": 15,
+    "compare": 3
+   }
+  },
+  "calc_uncertain": {
+   "pass": 45,
+   "calc_turns": 12,
+   "mean_turn_s": 5.77,
+   "by_kind": {
+    "summary": 11,
+    "long": 15,
+    "notes": 15,
+    "compare": 4
+   }
+  }
+ },
+ "primary": "calc_uncertain",
+ "threshold": 0.5816736817359924,
+ "paired_vs_c3": {
+  "wins": 5,
+  "losses": 2,
+  "net": 3,
+  "sign_test_p": 0.4531
+ },
+ "max_kind_drop": 0,
+ "expression_correct": 16,
+ "calc_errors": 35,
+ "verdict": "NOT_SUPPORTED",
+ "phone_measured": false,
+ "runtime_changed": false
+}

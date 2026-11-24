@@ -1,0 +1,902 @@
+"""§94 / §15 / §37 / G8 Replay queue and offline sleep phases.
+
+Sleep A  real replay: spaced rehearsal of recorded human corrections, interleaving
+         new and protected-old items, a real retention probe through Memory.recall,
+         and candidate consolidation staging (human approval stays mandatory).
+Sleep B  counterfactual / dream: route alternatives, skill recombination and world
+         hypotheses. Writes hypotheses only (fact_write_authority = 0); nothing here
+         reaches memories, indexes, feedback or weights.
+Sleep C  homeostasis: trace decay, homeostatic replay-mix gains, plasticity
+         reconciliation, stale cleanup, index rebuild, resource compaction.
+
+Every phase checks cancel, deadline and resource state between items, so a user
+turn (which sets the runtime cancel event) is never blocked. RED (CRITICAL) = no
+sleep at all; YELLOW (PRESSURE) = Sleep C only.
+
+Claim limits: Sleep A's retention probe is retrieval-level (lexical/approved
+recall path), not native model re-evaluation (that stays the explicit :replay
+job). Sleep B produces structured, source-anchored hypotheses, not generated
+text; native C3 dreaming stays the explicit :dream job. No weight consolidation.
+"""
+import itertools
+import json
+import math
+import time
+from pathlib import Path
+from .common import uid,dumps,atomic_write,Cancelled
+from .contracts import packet,validate
+from .memory import entities,relevance
+
+SCHEDULE_KEY='SLEEP_REPLAY_SCHEDULE'
+POLICY_KEY='SLEEP_POLICY'
+LAST_KEY='SLEEP_LAST'
+REVISION='sleep-replay-v1'
+TYPES=('EPISODIC','PROCEDURAL','SEMANTIC','COUNTERFACTUAL','RETENTION_PROBE')
+# §67 Layer 17 Age-0 gains (BOOT values from the blueprint, not measurements).
+BASE_GAIN={'EPISODIC':.70,'RETENTION_PROBE':.75,'PROCEDURAL':.50,'SEMANTIC':.30,'COUNTERFACTUAL':.20}
+DREAM_FACT_WRITE_GAIN=0  # L8.2 DREAM.fact_write_gain [LOCKED=0]: dreams never write facts, memories or weights
+HYP_NEIGHBOR=.5     # WP-T11 BOOT: lexical relevance for a stored memory to count as evidence about a hypothesis
+HYP_RECHECK_S=86400  # WP-T11 BOOT: UNVERIFIED hypotheses are re-checked at most daily
+ROUTES=('simple','detail','gist','both')
+RECALL_KINDS={'fact','style','preference'}
+MAX_ITEMS=2048
+DAY=86400.
+# name: (default, lo, hi). Booleans and the mix are validated separately.
+POLICY={'tick_seconds':(5.,1.,300.),'wake_replay_idle_s':(20.,5.,3600.),'sleep_idle_s':(600.,30.,86400.),
+        'sleep_interval_s':(3600.,60.,7*DAY),'max_minutes':(10.,.1,120.),'batch':(8,1,64),'wake_batch':(2,1,8),
+        'wake_min_priority':(.8,0.,1.),'spacing_s':(600.,10.,DAY),'max_interval_days':(30.,1.,365.),
+        'ttl_days':(365.,1.,3650.),'trace_decay_per_day':(.98,.5,1.),'priority_floor':(.05,0.,.5),
+        'dream_gain':(.05,0.,1.),'dream_max':(4,0,32),'retention_required':(.95,.5,1.),'tmp_max_age_days':(1.,.1,30.)}
+MIX={'recent':.50,'protected_old':.35,'failure':.15}  # §67 replay sampling, Age 0
+LOCKED={'dream_fact_write_gain':0.,'base_merge_authority':0.,'validation_required':True}
+
+def default_policy():
+    return {k:v[0] for k,v in POLICY.items()}|{'revision':REVISION,'enabled':True,'quiet_hours':None,'mix':dict(MIX)}|LOCKED
+def validate_policy(p):
+    for k,(d,lo,hi) in POLICY.items():
+        v=p[k]
+        if isinstance(v,bool) or not isinstance(v,(int,float)) or not lo<=v<=hi:raise ValueError(f'{k}: Bereich {lo}..{hi}')
+        if isinstance(d,int) and not isinstance(v,int):raise ValueError(k+' muss ganzzahlig sein')
+    if not isinstance(p['enabled'],bool):raise ValueError('enabled true|false')
+    q=p['quiet_hours']
+    if q is not None and not (isinstance(q,list) and len(q)==2 and all(type(h) is int and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
+    m=p['mix']
+    try:
+        total=sum(m.values()) if type(m) is dict and set(m)==set(MIX) else None
+        valid=(total is not None
+               and all(type(v) in (int,float) and math.isfinite(v) and v>=0 for v in m.values())
+               and math.isfinite(total) and total>0)
+    except (OverflowError,TypeError,ValueError):
+        valid=False
+    if not valid:raise ValueError('mix recent/protected_old/failure: finite nonnegative weights, total >0')
+    for k,v in LOCKED.items():
+        if p.get(k)!=v:raise ValueError(k+' ist gesperrt')
+    return p
+def empty_schedule():
+    return {'revision':REVISION,'items':{},'gains':dict(BASE_GAIN),'usage':{t:0. for t in TYPES},'last_full':0.,'signatures':[],'cycles':0}
+def in_quiet_hours(policy,wall):
+    q=policy.get('quiet_hours')
+    if not q:return False
+    h=time.localtime(wall).tm_hour;a,b=q
+    return a<=h<b if a<=b else (h>=a or h<b)
+
+class ReplayQueue:
+    """Spaced, prioritised replay schedule over the durable `replay` table (§94.1)."""
+    def __init__(self,store,clock=time.time):self.s=store;self.clock=clock
+    def load(self):
+        st,v=self.s.state(SCHEDULE_KEY,empty_schedule())
+        if st.get('revision')!=REVISION:raise ValueError('Replay schedule revision mismatch')
+        return st,v
+    def save(self,st,v):return self.s.set_state(SCHEDULE_KEY,st,expected=v)
+    def enqueue(self,event_id,replay_type,priority,evidence_class,source_refs,max_authority='HYPOTHESIS_NO_LEARNING',
+                unresolved_errors=(),affected_paths=(),ttl_days=None,extra=None):
+        """New queue item in the shared table. SLEEP_QUEUED keeps it out of the native :replay job."""
+        if replay_type not in TYPES:raise ValueError('replay_type')
+        if not 0<=priority<=1:raise ValueError('priority 0..1')
+        rid=uid('replay');now=self.clock()
+        # Construct and validate before any durable mutation. Both records
+        # represent one logical queue item; a crash/constraint failure must
+        # never leave a replay row without its ReplayItem provenance packet.
+        p=packet('ReplayItem','F9_SLEEP_QUEUE',event_id,self.s.generation_id,source_refs,replay_type=replay_type,source_refs=source_refs,
+                 priority=float(priority),max_authority=max_authority,replay_id=rid,evidence_class=evidence_class,stage='QUEUED',
+                 unresolved_errors=list(unresolved_errors),affected_paths=list(affected_paths),ttl_days=ttl_days,fact_write_authority=0,**(extra or {}))
+        validate('ReplayItem',p)
+        with self.s.tx() as c:
+            c.execute('INSERT INTO replay VALUES (?,?,?,?,?,?)',(rid,event_id,replay_type,float(priority),'SLEEP_QUEUED',now))
+            c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',
+                      (p['packet_id'],'ReplayItem',p['event_id'],p['brain_generation_id'],dumps(p),time.time()))
+        return rid
+    def sync(self,st,policy):
+        """Index rebuild: every replay row gets a schedule entry; vanished rows retire."""
+        rows=self.s.rows('SELECT r.*,e.session_id FROM replay r JOIN events e ON e.id=r.event_id ORDER BY r.created LIMIT ?',(MAX_ITEMS+1,))
+        seen=set();added=0
+        for r in rows[:MAX_ITEMS]:
+            seen.add(r['id'])
+            if r['id'] in st['items']:continue
+            kind=r['kind'] if r['kind'] in TYPES else 'EPISODIC'
+            if r['kind']=='HUMAN_CORRECTION' and self.s.one("SELECT id FROM memories WHERE event_id=? AND kind='route' LIMIT 1",(r['event_id'],)):kind='PROCEDURAL'
+            st['items'][r['id']]={'event_id':r['event_id'],'session_id':r['session_id'],'type':kind,'evidence_class':r['kind'],
+                'priority':min(1.,max(0.,float(r['priority']))),'reps':0,'failures':0,'last':None,'last_outcome':None,
+                'next_due':r['created'],'created':r['created'],'expires':r['created']+policy['ttl_days']*DAY,
+                'retired':None,'unresolved_errors':[],'affected_paths':[]}
+            added+=1
+        for rid,it in st['items'].items():
+            if rid not in seen and not it['retired'] and len(rows)<=MAX_ITEMS:it['retired']='ROW_GONE'
+        if len(st['items'])>MAX_ITEMS:
+            # Bound state: forget retired entries first (their replay rows and packets remain).
+            for rid in sorted((k for k,v in st['items'].items() if v['retired']),key=lambda k:st['items'][k]['created'])[:len(st['items'])-MAX_ITEMS]:del st['items'][rid]
+        return added,len(rows)>MAX_ITEMS
+    @staticmethod
+    def bucket(it):
+        if it['last_outcome']=='FAIL' or it['failures']>it['reps']:return 'failure'
+        return 'recent' if it['reps']==0 else 'protected_old'
+    def due(self,st,now,types=None,min_priority=0.):
+        # Sleep C retires expired entries durably, but wake/A-only cycles do not
+        # run C, and full Sleep A runs before C. TTL must bind selection itself.
+        # Missing/malformed expiry is not permission to rehearse an old source.
+        return [(rid,it) for rid,it in st['items'].items()
+                if not it['retired'] and type(it.get('expires')) in (int,float)
+                and math.isfinite(it['expires']) and it['expires']>now
+                and it['next_due']<=now and it['priority']>=min_priority
+                and it['type']!='COUNTERFACTUAL' and (types is None or it['type'] in types)]
+    def sample(self,st,n,mix,now,min_priority=0.):
+        """Bucketed sampling by `mix` (largest remainder), leftovers by score, then old/new interleave."""
+        score=lambda kv:(kv[1]['priority']*st['gains'].get(kv[1]['type'],.5),-kv[1]['next_due'])
+        buckets={b:sorted([kv for kv in self.due(st,now,min_priority=min_priority) if self.bucket(kv[1])==b],key=score,reverse=True) for b in MIX}
+        total=sum(mix.values());quota={b:n*mix[b]/total for b in MIX};take={b:min(int(quota[b]),len(buckets[b])) for b in MIX}
+        for b in sorted(MIX,key=lambda b:quota[b]-int(quota[b]),reverse=True):
+            if sum(take.values())<n and take[b]<len(buckets[b]):take[b]+=1
+        rest=sorted([kv for b in MIX for kv in buckets[b][take[b]:]],key=score,reverse=True)
+        chosen={b:buckets[b][:take[b]] for b in MIX}
+        extra=rest[:max(0,n-sum(take.values()))]
+        for kv in extra:chosen[self.bucket(kv[1])].append(kv)
+        new=chosen['recent']+chosen['failure'];old=chosen['protected_old']
+        return [kv for pair in itertools.zip_longest(new,old) for kv in pair if kv]
+
+class SleepCycle:
+    def __init__(self,store,cfg,memory,consolidation=None,age=None,home=None,clock=time.time,monotonic=time.monotonic,plasticity=None):
+        self.s=store;self.cfg=cfg;self.memory=memory;self.consolidation=consolidation;self.age=age
+        self.home=Path(home or store.home);self.clock=clock;self.monotonic=monotonic;self.plasticity=plasticity
+        self.neuromod=None
+        if plasticity is not None:  # production wiring (SleepRuntime); direct test cycles stay independent
+            from .neuromod import Neuromod
+            self.neuromod=Neuromod(store,age)
+        self.queue=ReplayQueue(store,clock)
+    # policy -------------------------------------------------------------------------------------------
+    def policy(self):
+        p,_=self.s.state(POLICY_KEY,None)
+        return validate_policy(default_policy()|(p or {}))
+    def set_policy(self,name,value):
+        """Validated operator policy update; reject ambiguous booleans and stale writes."""
+        if name in LOCKED:raise ValueError(name+' ist gesperrt')
+        for _ in range(8):
+            prior,v=self.s.state(POLICY_KEY,None)
+            p=validate_policy(default_policy()|(prior or {}))
+            if name=='quiet_hours':
+                p[name]=None if value in (None,'off') else [int(x) for x in str(value).split('-')]
+            elif name=='enabled':
+                token=str(value).strip().lower()
+                if token in {'1','true','on','ja','yes'}:p[name]=True
+                elif token in {'0','false','off','nein','no'}:p[name]=False
+                else:raise ValueError('enabled: on|off|true|false|1|0|ja|nein|yes|no')
+            elif name.startswith('mix.'):
+                p['mix']=dict(p['mix'])|{name[4:]:float(value)}
+            elif name in POLICY:
+                p[name]=type(POLICY[name][0])(float(value)) if isinstance(POLICY[name][0],float) else int(value)
+            else:raise ValueError('Unbekannter Sleep-Parameter: '+name)
+            p=validate_policy(p)
+            try:
+                self.s.set_state(POLICY_KEY,p,expected=v)
+                return p
+            except ValueError as exc:
+                if str(exc)!='Stale state write':raise
+        raise ValueError('Sleep policy CAS contention')
+    # helpers ------------------------------------------------------------------------------------------
+    def _allowed(self,right,resource_state):
+        if self.age is None:return False
+        try:return self.age.may(right,resource_mode=self._mode(resource_state))
+        except Exception:return False
+    def _mode(self,resource_state):
+        """§97.2 mode: the live guard's finer mode while its state matches (YELLOW is invisible in legacy states)."""
+        from .resource_modes import LEGACY_MODE,RANK,mode_of
+        g=getattr(getattr(self,'runtime',None),'guard',None)
+        if g is not None and getattr(g,'state',None)==resource_state:return mode_of(g)
+        return resource_state if resource_state in RANK else LEGACY_MODE.get(resource_state,'RED')  # unknown: no background work
+    def _checkpoint(self,cancel,deadline,resource,allowed=('NORMAL','RECOVERY')):
+        if cancel is not None and cancel.is_set():raise Cancelled('Sleep unterbrochen (Nutzer-Eingabe/Abbruch)')
+        if deadline is not None and self.monotonic()>deadline:raise TimeoutError('Sleep-Zeitbudget erreicht')
+        state=resource() if resource else 'NORMAL'
+        if state not in allowed:raise ResourceWarning('Ressourcen-Modus '+state)
+        return state
+    # Sleep A ------------------------------------------------------------------------------------------
+    def _probe(self,it):
+        """Real retention test for one recorded episode. Returns (outcome, details)."""
+        ev=self.s.one('SELECT * FROM events WHERE id=?',(it['event_id'],))
+        if not ev:return 'RETIRE','EVENT_GONE',{}
+        # A corrupt live source is not an explicit human revocation. Keep its
+        # replay due for retry, record a typed failed probe, and continue with
+        # other items instead of silently retiring or aborting Sleep A.
+        try:
+            env=json.loads(ev['packet'])
+            ref=env.get('source_ref') if isinstance(env,dict) else None
+            if (not isinstance(ref,dict)
+                    or env.get('event_id')!=it['event_id']
+                    or ref.get('source_id')!=ev['source_id']):
+                raise ValueError('event source lineage')
+        except (ValueError,TypeError,KeyError):
+            return 'FAIL',['EVENT_ENVELOPE_INVALID'],{
+                'checks':[{'probe':'EVENT_ENVELOPE','pass':False}],
+                'source_refs':[],'affected_paths':['source_integrity']}
+        source=self.s.one('SELECT deleted FROM sources WHERE id=?',(ev['source_id'],))
+        if not source or source['deleted']:
+            return 'RETIRE','SOURCE_DELETED',{}
+        try:
+            text=self.s.read_source(ref)
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError):
+            return 'FAIL',['EVENT_SOURCE_UNAVAILABLE'],{
+                'checks':[{'probe':'EVENT_SOURCE','pass':False}],
+                'source_refs':[ref],'affected_paths':['source_integrity']}
+        mems=self.s.rows('SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
+        if not mems:return 'RETIRE','SUPERSEDED_OR_FORGOTTEN',{}
+        # Sleep A must not grant retention credit to a correction whose original
+        # F5 HumanDecision/feedback was revoked, even when its blob still reads.
+        valid={m['id'] for m in self.memory._verified_rows(mems)}
+        invalid=[m['id'] for m in mems if m['id'] not in valid]
+        if invalid:
+            return 'FAIL',['HUMAN_AUTHORITY_LOST:'+mid for mid in invalid],{
+                'checks':[{'memory_id':mid,'probe':'HUMAN_AUTHORITY','pass':False} for mid in invalid],
+                'source_refs':[env['source_ref']],'affected_paths':['memory_provenance']}
+        errors=[];checks=[];refs=[env['source_ref']];paths=set()
+        recallable=[m for m in mems if m['kind'] in RECALL_KINDS]
+        if recallable:
+            found=self.memory.recall(text,ev['session_id'])
+            ids={r.get('id') for r in found}
+            for m in recallable:
+                # Equal text from another memory is not retention of this episode.
+                ok=m['id'] in ids;checks.append({'memory_id':m['id'],'probe':'RECALL','pass':ok})
+                if not ok:errors.append('RECALL_MISS:'+m['id']);paths.add('memory_retrieval')
+        for m in mems:
+            ref={'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'}
+            try:ok=self.s.read_source(ref)==m['value'];refs.append(ref)
+            except ValueError:ok=False
+            if m['kind']=='route' and self.consolidation is not None:
+                try:
+                    r=self.consolidation.route(text,ev['session_id'])
+                    if r is not None and r.get('route') not in (None,m['value']):ok=False;errors.append('PROCEDURE_CONFLICT:'+m['id']);paths.add('procedural_index')
+                except Exception:pass
+            if m['kind'] not in RECALL_KINDS:checks.append({'memory_id':m['id'],'probe':'PROVENANCE','pass':ok})
+            if not ok and not any(m['id'] in e for e in errors):errors.append('PROVENANCE_BROKEN:'+m['id']);paths.add('memory_provenance')
+        return ('FAIL' if errors else 'PASS'),errors,{'checks':checks,'source_refs':refs,'affected_paths':sorted(paths)}
+    def sleep_a(self,st,policy,n,cancel=None,deadline=None,resource=None,min_priority=0.,stage_candidates=True):
+        now=self.clock();picked=self.queue.sample(st,n,policy['mix'],now,min_priority)
+        rep={'phase':'SLEEP_A','selected':len(picked),'passed':0,'failed':0,'retired':0,'items':[],'by_bucket':{},'status':'DONE'}
+        old=[0,0];new=[0,0]
+        try:
+            for rid,it in picked:
+                self._checkpoint(cancel,deadline,resource)
+                bucket=self.queue.bucket(it);outcome,errors,detail=self._probe(it)
+                rep['by_bucket'][bucket]=rep['by_bucket'].get(bucket,0)+1;st['usage'][it['type']]=st['usage'].get(it['type'],0.)+1
+                if outcome=='RETIRE':
+                    it['retired']=errors;rep['retired']+=1;rep['items'].append({'replay_id':rid,'outcome':'RETIRED','reason':errors});continue
+                it['last']=now;it['last_outcome']=outcome
+                if outcome=='PASS':
+                    it['reps']+=1;it['unresolved_errors']=[]
+                    it['next_due']=now+min(policy['spacing_s']*2**it['reps'],policy['max_interval_days']*DAY)
+                    if it['reps']>=3 and it['type']=='EPISODIC':it['type']='RETENTION_PROBE'
+                    rep['passed']+=1
+                else:
+                    it['failures']+=1;it['unresolved_errors']=errors[:16];it['affected_paths']=detail['affected_paths']
+                    it['priority']=min(1.,it['priority']+.1);it['next_due']=now+policy['spacing_s']/2;rep['failed']+=1
+                tally=old if bucket=='protected_old' else new;tally[0]+=outcome=='PASS';tally[1]+=1
+                p=packet('ReplayItem','F9_SLEEP_A',it['event_id'],self.s.generation_id,detail['source_refs'],replay_type=it['type'],
+                         source_refs=detail['source_refs'],priority=it['priority'],max_authority='RETENTION_TEST_NO_LEARNING',replay_id=rid,
+                         stage='SLEEP_A',outcome=outcome,bucket=bucket,checks=detail['checks'],unresolved_errors=errors[:16],
+                         affected_paths=detail['affected_paths'],evidence_class=it['evidence_class'],fact_write_authority=0)
+                self.s.add_packet('ReplayItem',p);rep['items'].append({'replay_id':rid,'outcome':outcome,'bucket':bucket,'packet_id':p['packet_id']})
+        except (Cancelled,TimeoutError,ResourceWarning) as exc:rep['status']='INTERRUPTED';rep['reason']=type(exc).__name__+': '+str(exc)
+        rep['retention_old']=old[0]/old[1] if old[1] else None;rep['retention_new']=new[0]/new[1] if new[1] else None
+        # Regression shield hint (G8): protected-old retention below the BOOT gate is flagged, never auto-fixed.
+        rep['regression_flag']=rep['retention_old'] is not None and rep['retention_old']<policy['retention_required']
+        rep['consolidation']=self._stage(st,picked,cancel,deadline) if stage_candidates and rep['status']=='DONE' else {'status':'SKIPPED'}
+        return rep
+    def _stage(self,st,picked,cancel,deadline):
+        """Candidate consolidation: staging only; approval stays human (§94.2, CONSOLIDATE.base_merge_authority_age0=0)."""
+        if self.consolidation is None:return {'status':'UNAVAILABLE'}
+        if self.cfg['learning_mode']=='RECORD_ONLY':return {'status':'SKIPPED_RECORD_ONLY'}
+        sessions=sorted({it['session_id'] for _,it in picked if it['last_outcome']=='PASS'});out={'status':'DONE','requests':[],'errors':[]}
+        for sid in sessions:
+            for comp in ('semantic','procedural'):
+                try:out['requests']+=self.consolidation.stage(sid,comp,cancel=cancel,deadline=deadline)['requests']
+                except Exception as exc:out['errors'].append(type(exc).__name__+': '+str(exc)[:200])
+        out['automatic_activation']=False;return out
+    # Sleep B ------------------------------------------------------------------------------------------
+    def _hypothesis(self,st,signature,event_id,kind,text,anchors,payload):
+        if signature in st['signatures']:return None
+        ref=self.s.source(text,'DREAM_HYPOTHESIS')
+        conf=(payload.get('counterfactual') or {}).get('confidence')  # WP-T8: replay priority from coverage-based confidence
+        prio=round(BASE_GAIN['COUNTERFACTUAL']*(.25+.75*float(conf)),4) if isinstance(conf,(int,float)) else BASE_GAIN['COUNTERFACTUAL']
+        rid=self.queue.enqueue(event_id,'COUNTERFACTUAL',prio,'DREAM_'+kind,anchors+[ref],max_authority='HYPOTHESIS_NO_LEARNING',
+                               extra={'hypothesis_kind':kind,'hypothesis':payload,'hypothesis_source_ref':ref,'validation_required':True})
+        st['signatures']=(st['signatures']+[signature])[-1024:]
+        try:
+            from .episodes import Episodes
+            Episodes(self.s,self.cfg).hypothesize(event_id,'hyp:'+ref['source_id'],'DREAM')  # WP-N8: HYPOTHESIS edge, never causal
+        except Exception as exc:self.s.log('episodes_unavailable',event_id,{'stage':'dream','error':type(exc).__name__})
+        return {'replay_id':rid,'kind':kind,'hypothesis_source_ref':ref}
+    def sleep_b(self,st,policy,cancel=None,deadline=None,resource=None,limit=None):
+        rep={'phase':'SLEEP_B','hypotheses':[],'status':'DONE','fact_write_authority':DREAM_FACT_WRITE_GAIN}
+        real=sum(1 for it in st['items'].values() if not it['retired'] and it['type']!='COUNTERFACTUAL')
+        budget=limit if limit is not None else min(policy['dream_max'],max(1,math.ceil(policy['dream_gain']*real))) if real else 0
+        rep['budget']=budget
+        if not budget:return rep
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+        # Dream may create hypotheses, never facts; even hypotheses must not
+        # be seeded by a correction without a live F5 human authority chain.
+        rows=self.memory._verified_rows(rows)
+        ref=lambda m:{'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'}
+        def candidates():
+            # 1) route alternatives on real anchored episodes (counterfactual replay, §37)
+            # WP-T8 §7.2.2: alternatives ordered by counterfactual confidence (action coverage), not by table order
+            from .world_model import for_event,load as wm_load
+            wm=wm_load(self.s)
+            for m in (m for m in rows if m['kind']=='route'):
+                cfs=sorted(((alt,for_event(self.s,m['event_id'],alt) if wm else None) for alt in ROUTES if alt!=m['value']),key=lambda x:-(x[1] or {}).get('confidence',0.))
+                for alt,cf in cfs:
+                    yield ('ROUTE_ALTERNATIVE','route:'+m['id']+':'+alt,m['event_id'],[ref(m)],
+                           f'Hypothese (kein Fakt): Ereignis {m["event_id"]} könnte mit Route {alt} statt {m["value"]} gleich gut oder besser beantwortet werden.',
+                           {'observed_route':m['value'],'alternative_route':alt,'memory_id':m['id'],
+                            'counterfactual':cf or {'confidence':None,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','authority':'HYPOTHESIS'}})
+            # 2) skill recombination: distinct cues that share one human route decision
+            by_route={}
+            for m in (m for m in rows if m['kind']=='route'):by_route.setdefault(m['value'],[]).append(m)
+            for route,ms in by_route.items():
+                for a,b in itertools.combinations(ms[:8],2):
+                    if a['key_text'].strip().lower()!=b['key_text'].strip().lower():
+                        yield ('SKILL_RECOMBINATION','skill:'+':'.join(sorted((a['id'],b['id']))),a['event_id'],[ref(a),ref(b)],
+                               f'Hypothese (kein Fakt): Zwei Anfragen mit gleicher Route {route} könnten eine gemeinsame Routine bilden.',
+                               {'route':route,'memory_ids':[a['id'],b['id']]})
+            # 3) world hypotheses: different entities sharing one exact corrected value
+            by_value={}
+            for m in (m for m in rows if m['kind']=='fact'):by_value.setdefault(m['value'].strip().lower(),[]).append(m)
+            for value,ms in by_value.items():
+                for a,b in itertools.combinations(ms[:8],2):
+                    ea,eb=entities(a['key_text']),entities(b['key_text'])
+                    if ea and eb and not ea&eb:
+                        yield ('WORLD_RELATION','world:'+':'.join(sorted((a['id'],b['id']))),a['event_id'],[ref(a),ref(b)],
+                               f'Hypothese (kein Fakt): {sorted(ea)[0]} und {sorted(eb)[0]} teilen denselben korrigierten Wert; mögliche Beziehung, nicht geprüft.',
+                               {'entities':[sorted(ea)[0],sorted(eb)[0]],'memory_ids':[a['id'],b['id']]})
+        try:
+            for kind,sig,eid,anchors,text,payload in candidates():
+                if len(rep['hypotheses'])>=budget:break
+                self._checkpoint(cancel,deadline,resource)
+                h=self._hypothesis(st,sig,eid,kind,text,anchors,payload)
+                if h:rep['hypotheses'].append(h)
+            rep['validation']=self.validate_hypotheses(st,policy,cancel,deadline,resource)
+        except (Cancelled,TimeoutError,ResourceWarning) as exc:rep['status']='INTERRUPTED';rep['reason']=type(exc).__name__+': '+str(exc)
+        return rep
+    # WP-T11 §15.4 / L8.2 DREAM.validation_required: hypotheses are checked against stored sources, never written as facts.
+    def _memory(self,mid):
+        return self.s.one("SELECT m.*,s.hash,s.chars,s.deleted FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.id=?",(mid,))
+    def _neighbors(self,kind,key,exclude):
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind=? ORDER BY m.created DESC LIMIT 512",(kind,))
+        rows=self.memory._verified_rows(rows)
+        return [m for m in rows if m['id'] not in exclude and (m['key_text'].strip().lower()==key.strip().lower() or relevance(key,m['key_text'])>=HYP_NEIGHBOR)]
+    def check_hypothesis(self,item):
+        """SUPPORTED / CONTRADICTED / UNVERIFIED / STALE against the stored memories and sources; evidence = memory ids."""
+        for ref in item['source_refs']:
+            try:self.s.read_source(ref)
+            except Exception:return {'verdict':'STALE','reason':'SOURCE_GONE','evidence':[]}
+        kind=item.get('hypothesis_kind');h=item.get('hypothesis') or {}
+        ids=h.get('memory_ids') or ([h['memory_id']] if h.get('memory_id') else [])
+        ms=[self._memory(i) for i in ids]
+        if not ms or any(m is None or not m['active'] or m['deleted'] for m in ms):return {'verdict':'STALE','reason':'MEMORY_INACTIVE','evidence':[]}
+        # Queued dreams outlive the original correction. Revalidate every anchor
+        # at judgment time, not only when the hypothesis was first proposed.
+        if len(self.memory._verified_rows(ms))!=len(ms):
+            return {'verdict':'STALE','reason':'HUMAN_AUTHORITY_LOST','evidence':[]}
+        if kind=='ROUTE_ALTERNATIVE':
+            m=ms[0];nb=self._neighbors('route',m['key_text'],{m['id']})
+            sup=[x['id'] for x in nb if x['value']==h['alternative_route']];con=[x['id'] for x in nb if x['value']==h['observed_route']]
+        elif kind=='SKILL_RECOMBINATION':
+            if len({m['value'] for m in ms})>1:return {'verdict':'CONTRADICTED','reason':'ROUTES_DIVERGED','evidence':ids}
+            nb={x['id']:x for m in ms for x in self._neighbors('route',m['key_text'],set(ids))}
+            sup=[i for i,x in nb.items() if x['value']==h['route']];con=[i for i,x in nb.items() if x['value']!=h['route']]
+            con=con if len(con)>len(sup) else []
+        elif kind=='WORLD_RELATION':
+            if len({m['value'].strip().lower() for m in ms})>1:return {'verdict':'CONTRADICTED','reason':'VALUES_DIVERGED','evidence':ids}
+            ents=[e.lower() for e in h.get('entities',[])];sup=[];con=[]
+            rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+            for row in self.memory._verified_rows(rows):
+                if row['id'] in ids:continue
+                text=(row['key_text']+' '+row['value']).lower()
+                if ents and all(e in text for e in ents):sup.append(row['id'])
+        else:return {'verdict':'UNVERIFIED','reason':'UNKNOWN_KIND','evidence':[]}
+        if len(sup)>len(con):return {'verdict':'SUPPORTED','reason':'STORED_EVIDENCE','evidence':sup[:8]}
+        if len(con)>len(sup):return {'verdict':'CONTRADICTED','reason':'STORED_COUNTER_EVIDENCE','evidence':con[:8]}
+        return {'verdict':'UNVERIFIED','reason':'NO_STORED_EVIDENCE','evidence':[]}
+    def validate_hypotheses(self,st,policy,cancel=None,deadline=None,resource=None,limit=None):
+        """Checks queued dream hypotheses once (re-checked when new evidence may exist: UNVERIFIED after HYP_RECHECK_S).
+        Verdicts are ReplayItem packets with fact_write_authority 0; CONTRADICTED/STALE hypotheses retire from the queue."""
+        checks=st.setdefault('hypothesis_checks',{});now=self.clock();out={'checked':0,'by_verdict':{}}
+        budget=policy['dream_max'] if limit is None else limit
+        rows=self.s.rows("SELECT payload FROM packets WHERE kind='ReplayItem' AND json_extract(payload,'$.stage')='QUEUED' AND json_extract(payload,'$.replay_type')='COUNTERFACTUAL' ORDER BY created DESC LIMIT 256")
+        items=[json.loads(row['payload']) for row in rows]
+        # Recheck fresh/due hypotheses before cached SUPPORTED ones, so the
+        # bounded validation budget cannot be monopolized by old positives.
+        items.sort(key=lambda item:checks.get(item['replay_id'],{}).get('verdict')=='SUPPORTED')
+        for item in items:
+            if out['checked']>=budget:break
+            rid=item['replay_id'];prev=checks.get(rid)
+            if not item.get('validation_required'):continue
+            if prev and prev['verdict'] in ('STALE','CONTRADICTED'):continue
+            if prev and prev['verdict']=='UNVERIFIED' and now-prev['at']<HYP_RECHECK_S:continue
+            self._checkpoint(cancel,deadline,resource)
+            # SUPPORTED is never a permanent authority cache: live F5 can be
+            # revoked after the first verdict, including across restarts.
+            v=self.check_hypothesis(item)
+            if prev and prev['verdict']=='SUPPORTED' and v['verdict']=='SUPPORTED':
+                # Avoid unbounded duplicate ReplayItem packets for unchanged
+                # evidence, while counting the bounded live revalidation.
+                out['checked']+=1
+                out['by_verdict']['SUPPORTED']=out['by_verdict'].get('SUPPORTED',0)+1
+                continue
+            checks[rid]={'verdict':v['verdict'],'at':now}
+            refs=item['source_refs']
+            self.s.add_packet('ReplayItem',packet('ReplayItem','F9_SLEEP_B',item['event_id'],self.s.generation_id,refs,replay_type='COUNTERFACTUAL',source_refs=refs,
+                priority=item['priority'],max_authority='HYPOTHESIS_NO_LEARNING',replay_id=rid,evidence_class=item['evidence_class'],stage='SLEEP_B_VALIDATION',
+                outcome=v['verdict'],validation=v,hypothesis_kind=item.get('hypothesis_kind'),fact_write_authority=DREAM_FACT_WRITE_GAIN))
+            if v['verdict'] in ('CONTRADICTED','STALE') and rid in st['items']:st['items'][rid]['retired']='HYPOTHESIS_'+v['verdict']
+            out['checked']+=1;out['by_verdict'][v['verdict']]=out['by_verdict'].get(v['verdict'],0)+1
+        if len(checks)>1024:
+            for k in sorted(checks,key=lambda k:checks[k]['at'])[:len(checks)-1024]:del checks[k]
+        return out
+    # Sleep C ------------------------------------------------------------------------------------------
+    def sleep_c(self,st,policy,cancel=None,deadline=None,resource=None):
+        rep={'phase':'SLEEP_C','status':'DONE'};now=self.clock()
+        try:
+            self._checkpoint(cancel,deadline,resource,('NORMAL','RECOVERY','PRESSURE'))
+            added,overflow=self.queue.sync(st,policy);rep['index_rebuild']={'added':added,'overflow':overflow}
+            decayed=expired=0
+            for it in st['items'].values():
+                if it['retired']:continue
+                if it['expires']<now:it['retired']='TTL';expired+=1;continue
+                days=max(0.,(now-(it['last'] or it['created']))/DAY)
+                p=max(policy['priority_floor'],it['priority']*policy['trace_decay_per_day']**days)
+                if p<it['priority']:it['priority']=p;decayed+=1
+            rep['trace_decay']={'decayed':decayed,'expired':expired}
+            self._checkpoint(cancel,deadline,resource,('NORMAL','RECOVERY','PRESSURE'))
+            rep['homeostasis']=self._homeostasis(st,now)
+            if getattr(self,'runtime',None) is not None:  # WP-T11 §16.2: measured parameter drift/saturation with a gate
+                try:
+                    from .homeostasis import run as homeo_run
+                    rep['homeostasis_gate']=homeo_run(self.runtime,st['gains'])['gate']
+                except Exception as exc:rep['homeostasis_gate']={'status':'ERROR','error':type(exc).__name__}
+            try:
+                from .archive import run as archive_run
+                rep['archive']=archive_run(self.s,self.clock)  # WP-U4 §9.5: cold exact sources go to compressed storage
+            except Exception as exc:rep['archive']={'status':'ERROR','error':type(exc).__name__}
+            if self.plasticity is not None:
+                try:self.plasticity.reconcile();rep['plasticity']='RECONCILED'
+                except Exception as exc:rep['plasticity']='ERROR: '+type(exc).__name__
+            if self.neuromod is not None:
+                try:rep['neuromodulation']=self.neuromod.sleep()  # WP-N10 §16.3: fast traces end with sleep, tags re-checked
+                except Exception as exc:rep['neuromodulation']='ERROR: '+type(exc).__name__
+            self._checkpoint(cancel,deadline,resource,('NORMAL','RECOVERY','PRESSURE'))
+            removed=0;tmp=self.home/'tmp'
+            if tmp.is_dir():
+                for f in tmp.iterdir():
+                    try:
+                        if f.is_file() and now-f.stat().st_mtime>policy['tmp_max_age_days']*DAY:f.unlink();removed+=1
+                    except OSError:pass
+            rep['stale_cleanup']={'tmp_files_removed':removed}
+            stale=self.s.one("SELECT COUNT(*) AS n FROM updates WHERE status IN ('ABORTED','EVALUATED_FAIL','REJECTED','ROLLED_BACK')")['n']
+            rep['stale_deltas']={'count':stale,'action':'REPORT_ONLY_ROLLBACK_WINDOW'}
+            pruned=self.s.prune_telemetry()
+            with self.s.mutex:ck=self.s.db.execute('PRAGMA wal_checkpoint(PASSIVE)').fetchone()
+            rep['compaction']={'telemetry_pruned':pruned,'wal_checkpoint':list(ck) if ck else None}
+        except (Cancelled,TimeoutError,ResourceWarning) as exc:rep['status']='INTERRUPTED';rep['reason']=type(exc).__name__+': '+str(exc)
+        return rep
+    def _homeostasis(self,st,now):
+        """§16.2: damp dominant replay types, reopen starved ones; bounded to 0.5..1.5 x base, specialisation allowed."""
+        usage=st['usage'];total=sum(usage.values());changes={}
+        present={it['type'] for it in st['items'].values() if not it['retired'] and it['type']!='COUNTERFACTUAL'}
+        if total<=0 or not present:return {'changes':changes,'usage_total':total}
+        gsum=sum(st['gains'][t] for t in present)
+        for t in present:
+            share=usage.get(t,0.)/total;expected=st['gains'][t]/gsum;g=st['gains'][t]
+            if share>min(.9,1.5*expected):g*=.95
+            elif share==0 and self.queue.due(st,now,types={t}):g*=1.05
+            g=min(1.5*BASE_GAIN[t],max(.5*BASE_GAIN[t],g))
+            if g!=st['gains'][t]:changes[t]=round(g,6);st['gains'][t]=g
+        st['usage']={t:usage.get(t,0.)*.5 for t in TYPES}  # slow EMA of usage
+        return {'changes':changes,'usage_total':total}
+    # orchestration ------------------------------------------------------------------------------------
+    def run(self,mode='full',cancel=None,resource=None,origin='USER',batch=None):
+        """mode: full | wake | a | b | c. Returns a report; persists schedule even when interrupted."""
+        if mode not in {'full','wake','a','b','c'}:raise ValueError('Sleep-Modus full|wake|a|b|c')
+        # A negative/float/bool batch can create negative bucket quotas and
+        # Python negative slices (more replay, not less). Reject before any
+        # cycle/Store side effect, within the mode-specific policy ceiling.
+        max_batch=POLICY['wake_batch'][2] if mode=='wake' else POLICY['batch'][2]
+        if batch is not None and (type(batch) is not int or not 1<=batch<=max_batch):
+            raise ValueError(f'Sleep batch: integer 1..{max_batch}')
+        policy=self.policy();started=self.monotonic();deadline=started+policy['max_minutes']*60
+        state=resource() if resource else 'NORMAL'
+        report={'kind':'V13_SLEEP','revision':REVISION,'mode':mode,'origin':origin,'resource_state':state,'started':self.clock(),'phases':[],
+                'fact_write_authority':DREAM_FACT_WRITE_GAIN,'weight_updates':False,'generation':self.s.generation_id}
+        if state=='CRITICAL':
+            report['status']='SKIPPED_RESOURCE_RED';self._finish(report,None,None,started);return report
+        if mode=='full':
+            try:
+                from .episodes import Episodes
+                report['episodes_closed']=Episodes(self.s,self.cfg).close_all('sleep')  # WP-N8: sleep is an event boundary
+            except Exception as exc:self.s.log('episodes_unavailable',None,{'stage':'sleep','error':type(exc).__name__})
+        st,v=self.queue.load()
+        try:
+            self.queue.sync(st,policy)
+            # Age gates learning phases; replay volume is policy + ResourceGuard, never Age.
+            n=batch if batch is not None else (policy['wake_batch'] if mode=='wake' else policy['batch'])
+            from .resource_modes import scaled
+            report['resource_mode']=self._mode(state);n=scaled(n,report['resource_mode'],'replay_scale') or n  # §97.2 YELLOW halves replay (ORANGE/RED skip Sleep A below)
+            report['replay_budget']=n
+            if mode in {'full','wake','a'} and state!='PRESSURE':
+                report['phases'].append(self.sleep_a(st,policy,n,cancel,deadline,resource,
+                                        min_priority=policy['wake_min_priority'] if mode=='wake' else 0.,stage_candidates=mode!='wake'))
+                if mode in {'full','a'} and report['phases'][-1]['status']!='INTERRUPTED':  # WP-S7 offline compute: day digest, predictor passes, TTT candidates
+                    from . import sleep_offline
+                    report['phases'].append(sleep_offline.run(self,state,cancel,deadline,resource,origin))
+            if mode in {'full','b'} and state!='PRESSURE':
+                from .inputs import paused
+                if paused(self.s,'traum'):report['phases'].append({'phase':'SLEEP_B','status':'SKIPPED_PAUSED_TRAUM'})
+                elif origin=='USER' or self._allowed('short_dream',state):report['phases'].append(self.sleep_b(st,policy,cancel,deadline,resource))
+                else:report['phases'].append({'phase':'SLEEP_B','status':'SKIPPED_AGE_RIGHT','right':'short_dream'})
+            if mode in {'full','c'}:report['phases'].append(self.sleep_c(st,policy,cancel,deadline,resource))
+            if mode=='full':st['last_full']=self.clock()
+            st['cycles']+=1
+            statuses={p['status'] for p in report['phases']}
+            report['status']='INTERRUPTED' if 'INTERRUPTED' in statuses else ('SKIPPED_RESOURCE_YELLOW' if state=='PRESSURE' and mode not in {'full','c'} else 'DONE')
+        except BaseException as exc:
+            report['status']='ERROR';report['error']=type(exc).__name__+': '+str(exc)[:500];raise
+        finally:self._finish(report,st,v,started)
+        return report
+    def _finish(self,report,st,v,started):
+        if st is not None:
+            try:self.queue.save(st,v)
+            except ValueError:
+                # A concurrent explicit edit won; re-run is safe because every step is idempotent per item.
+                report['schedule_saved']=False
+        report['duration_s']=round(self.monotonic()-started,3)
+        path=self.home/'exports/sleep-last.json';atomic_write(path,dumps(report));report['artifact']=str(path)
+        self.s.set_state(LAST_KEY,{k:report[k] for k in ('mode','origin','status','resource_state','started','duration_s')}|{'phases':[{k:p.get(k) for k in ('phase','status','selected','passed','failed','retired','retention_old','regression_flag')} for p in report['phases']]})
+        a=next((p for p in report['phases'] if p['phase']=='SLEEP_A'),{});b=next((p for p in report['phases'] if p['phase']=='SLEEP_B'),{})
+        self.s.log('sleep_cycle',None,{'phase':report['mode'],'status':report['status'],'origin':report['origin'],'resource_state':report['resource_state'],
+                   'items':a.get('selected',0),'passed':a.get('passed',0),'failed':a.get('failed',0),'retired':a.get('retired',0),
+                   'retention_rate':a.get('retention_old'),'hypotheses':len(b.get('hypotheses',[])),'duration_s':report['duration_s']})
+    def status(self):
+        st,v=self.queue.load();now=self.clock();live=[it for it in st['items'].values() if not it['retired']]
+        return {'revision':REVISION,'policy':self.policy(),'last':self.s.state(LAST_KEY,None)[0],'items':len(st['items']),'live':len(live),
+                'due':len(self.queue.due(st,now)),'by_type':{t:sum(it['type']==t for it in live) for t in TYPES},
+                'by_bucket':{b:sum(ReplayQueue.bucket(it)==b for it in live if it['type']!='COUNTERFACTUAL') for b in MIX},
+                'gains':st['gains'],'cycles':st['cycles'],'last_full':st['last_full'],
+                'claim_limit':'Retrieval-level retention probes and structured hypotheses; no native re-evaluation, no weight consolidation'}
+
+class SleepRuntime:
+    """Coordinator glue: idle/timer/resource wakes → background sleep jobs. Never blocks a user turn."""
+    def __init__(self,runtime,clock=time.time,monotonic=time.monotonic):
+        from .scheduler import EventScheduler, ACTIONS
+        # Trusted, fixed G13 extension; not arbitrary user/model commands.
+        ACTIONS.update({'lab_check','jepa_update'})
+        from .plasticity import Plasticity
+        self.r=runtime;self.clock=clock;self.monotonic=monotonic;self.age=None
+        try:
+            from .age import controller
+            self.age=controller(runtime)
+        except Exception:self.age=None  # conservative: no self-initiative, no autonomous dream
+        self.scheduler=EventScheduler(runtime.store,runtime.cfg,clock,self.age)
+        self.lab_active=False
+        self.cycle=SleepCycle(runtime.store,runtime.cfg,runtime.memory,getattr(runtime,'consolidation',None),self.age,runtime.home,clock,monotonic,Plasticity(runtime.store))
+        self.cycle.runtime=runtime  # WP-T11 homeostasis reads the learned heads through their runtime controllers
+        self.scheduler.recover();self.last_tick=-1e18;self.last_resource=None
+        runtime.store.set_meta('sleep_boot_wall',clock())  # idle clock restarts with the process
+    def schedule_world_jepa(self,event_id=None):
+        """Queue an observed T8 event for bounded idle JEPA learning/readout."""
+        from .world_jepa_runtime import permission_state
+        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED'"
+        if event_id is None:
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE outcome IS NOT NULL "
+                "AND status IN ("+observed+") ORDER BY created DESC,id DESC LIMIT 1")
+        else:
+            if type(event_id) is not str or not event_id:
+                raise ValueError('event_id')
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "AND status IN ("+observed+") ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
+        if not row:
+            return None
+        event_id=row['event_id']
+        cursor,_=self.r.store.state('v14.world_jepa.sleep_cursor',{'last_event_id':None})
+        if type(cursor) is not dict:
+            cursor={}
+        legacy=cursor.get('last_event_id')
+        last_learning=cursor.get('last_learning_event_id',legacy)
+        last_planner=cursor.get('last_planner_event_id',legacy)
+        learning_error=cursor.get('last_learning_error_event_id')
+        planner_error=cursor.get('last_planner_error_event_id')
+        gates=permission_state(self.r.store)
+        state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+        active=(type(state) is dict and type(state.get('active')) is dict)
+        learning_allowed=(gates['learning_enabled'] is True
+                          and gates['optimizer_permission'] is True)
+        need_learning=(learning_allowed and last_learning!=event_id
+                       and learning_error!=event_id)
+        need_planner=(active and last_planner!=event_id
+                      and planner_error!=event_id)
+        if not (need_learning or need_planner):
+            return None
+        from .scheduler import ACTIONS
+        ACTIONS.add('jepa_update')
+        return self.scheduler.post(
+            'IDLE',origin='SYSTEM',action='jepa_update',
+            payload={'event_id':event_id},
+            dedup='v14-world-jepa',ttl=86400)
+    def _run_world_jepa(self,event_id,limit=64):
+        """Run one source-verified JEPA page; user turns and resource pressure preempt it."""
+        if type(event_id) is not str or not event_id:
+            raise ValueError('event_id')
+        result={'status':'NO_COMMITTED_OUTCOME','event_id':event_id,
+                'decision_authority':'NONE','dispatch':False,
+                'native_body_consumed':False,'native_body_weights_changed':False,
+                'runtime_hook_wired':True}
+        checks={'count':0}
+        def cancel_check():
+            event=getattr(self.r,'cancel_event',None)
+            if event is not None:
+                try:
+                    if event.is_set():
+                        return True
+                except Exception:
+                    return True
+            checks['count']+=1
+            if checks['count']%16==0:
+                return self.resource_state() in {'PRESSURE','CRITICAL'}
+            return False
+        try:
+            if cancel_check():
+                return result|{'status':'CANCELLED'}
+            action=self.r.store.one(
+                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
+            if not action:
+                return result
+            action_status=action['status']
+            from .world_jepa_runtime import consume_after_commit
+            from .world_jepa_planner import consume_world_planner_shadow
+            learning=consume_after_commit(
+                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
+            if learning.get('status')=='CANCELLED' or cancel_check():
+                result.update(status='CANCELLED',action_status=action_status,learning=learning)
+                self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
+                                 {'action_status':action_status,'decision_authority':'NONE'})
+                return result
+            planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
+            result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
+                          learning=learning,planner=planner)
+            if learning.get('status')=='ERROR':
+                result['status']='ERROR'
+            elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
+                result['status']='PARTIAL'
+            metrics=learning.get('metrics') if type(learning) is dict else None
+            metrics=metrics if type(metrics) is dict else {}
+            learning_status=learning.get('status')
+            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+                telemetry_status='PASS'
+            elif learning_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'}:
+                telemetry_status='REJECTED'
+            elif learning_status in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION'}:
+                telemetry_status='UNAVAILABLE'
+            elif learning_status=='CANCELLED':
+                telemetry_status='CANCELLED'
+            elif learning_status=='ERROR':
+                telemetry_status='ERROR'
+            else:
+                telemetry_status='PENDING'
+            self.r.store.log('v14_world_jepa_postcommit',event_id,{
+                # Store.telemetry_metrics is an explicit allowlist. Use its
+                # established scalar names so these diagnostics survive the
+                # privacy filter instead of being silently discarded.
+                'status':telemetry_status,
+                'component':'world_predictor',
+                'mode':'shadow',
+                'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'optimizer_steps':metrics.get('fit_steps_after',0),
+                'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
+                'loss_before':metrics.get('holdout_loss_before'),
+                'loss_after':metrics.get('holdout_loss_after'),
+                'count':metrics.get('verified_receipts',learning.get('verified_receipts',0)),
+                'decision':'none',
+                'native_body_parameters_modified':False,
+            })
+            if cancel_check():
+                result['status']='CANCELLED'
+                return result
+            cursor_key='v14.world_jepa.sleep_cursor'
+            cursor,version=self.r.store.state(cursor_key,{'last_event_id':None})
+            if type(cursor) is not dict:
+                cursor={}
+            legacy=cursor.get('last_event_id')
+            cursor.setdefault('last_learning_event_id',legacy)
+            cursor.setdefault('last_planner_event_id',legacy)
+            learning_status=learning.get('status')
+            if learning_status=='ERROR':
+                cursor['last_learning_error_event_id']=event_id
+            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+                cursor['last_learning_event_id']=event_id
+                cursor.pop('last_learning_error_event_id',None)
+            planner_status=planner.get('status')
+            if planner_status in {'ERROR','UNAVAILABLE'}:
+                cursor['last_planner_error_event_id']=event_id
+            else:
+                cursor['last_planner_event_id']=event_id
+                cursor.pop('last_planner_error_event_id',None)
+            if (cursor.get('last_learning_event_id')==event_id
+                    or cursor.get('last_planner_event_id')==event_id):
+                cursor['last_event_id']=event_id
+            self.r.store.set_state(cursor_key,cursor,expected=version)
+            return result
+        except Exception as exc:
+            try:self.r.store.log('v14_world_jepa_postcommit_error',event_id,
+                                 {'error':type(exc).__name__,'decision_authority':'NONE'})
+            except Exception:pass
+            return result|{'status':'ERROR','error':type(exc).__name__}
+    def resource_state(self):
+        try:return self.r.guard.update(self.r.resources())
+        except Exception:return 'CRITICAL'  # unknown resources: do not start background work
+    def idle_seconds(self):
+        row=self.r.store.one("SELECT MAX(COALESCE(finished_at,started_at,accepted_at)) AS t FROM accepted_turns")
+        last=max(row['t'] or 0.,self.r.store.meta('sleep_boot_wall',0.) or 0.)
+        return max(0.,self.clock()-last)
+    def tick(self,force=False):
+        policy=self.cycle.policy()
+        if not force and self.monotonic()-self.last_tick<policy['tick_seconds']:return None
+        self.last_tick=self.monotonic()
+        if not self.r.idle():return None
+        state=self.resource_state()
+        try:self.schedule_world_jepa()
+        except Exception as exc:
+            self.r.store.log('v14_world_jepa_schedule_error',None,{'error':type(exc).__name__})
+        if state!=self.last_resource:
+            if self.last_resource is not None:self.scheduler.post('RESOURCE_CHANGE',payload={'from':self.last_resource,'to':state})
+            self.last_resource=state
+        if policy['enabled']:
+            idle=self.idle_seconds();st,_=self.cycle.queue.load();now=self.clock()
+            if idle>=policy['sleep_idle_s'] and now-st['last_full']>=policy['sleep_interval_s']:
+                self.scheduler.post('IDLE',action='sleep_full',dedup='idle-sleep-full')
+            elif idle>=policy['wake_replay_idle_s'] and self.cycle.queue.due(st,now,min_priority=policy['wake_min_priority']):
+                # G13 soak finding: one wake replay per idle period. Back-to-back wake replays (Age-0 budget: one item
+                # each) outranked IDLE and used up the burn-out budget, so the night's full sleep never ran.
+                period=round(now-idle,3)
+                if self.r.store.meta('sleep_wake_replay_period',None)!=period and self.scheduler.post('REPLAY_DUE',action='wake_replay',dedup='wake-replay'):
+                    self.r.store.set_meta('sleep_wake_replay_period',period)
+            if idle>=policy['wake_replay_idle_s']:
+                try:  # WP-T10 §14.3: medium timescale (authority review) on idle, at most every authority.MEDIUM_S
+                    from .authority import medium_due
+                    if medium_due(self.r.store,self.clock()):self.scheduler.post('IDLE',action='learn_medium',dedup='learn-medium')
+                except Exception as exc:self.r.store.log('job_error',None,{'kind':'learn_medium_post','error':type(exc).__name__})
+        # Test and warm the actual native organs via G13 when the phone is
+        # idle, below thermal/RAM limits and allowed by the user's schedule.
+        try:
+            from .lab_native_cycle import maybe_schedule
+            maybe_schedule(self,state)
+        except Exception as exc:
+            self.r.store.log('job_error',None,{'kind':'native_lab_schedule','error':type(exc).__name__})
+        e=self.scheduler.next(idle=True,resource_state=state,quiet=in_quiet_hours(policy,self.clock()))
+        if not e:return None
+        if e['action'] in (None,'notice'):
+            if e['action']=='notice' and e['payload'].get('text'):self.r.notice(str(e['payload']['text'])[:500])
+            self.scheduler.complete(e['id'],'DONE',{'recorded':True});return e
+        with self.r.lock:
+            if self.r.idle() and not self.r.jobs.full():self.r.jobs.put_nowait(('sleep',e,0,time.monotonic()));queued=True
+            else:queued=False
+        if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
+        self.r.wake.set();return e
+    def job(self,e):
+        if e['action']=='jepa_update':
+            payload=e.get('payload') or {}
+            event_id=payload.get('event_id') if type(payload) is dict else None
+            try:
+                out=self._run_world_jepa(event_id,limit=64)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            learning=out.get('learning') if type(out) is dict else None
+            planner=out.get('planner') if type(out) is dict else None
+            result={'status':out.get('status') if type(out) is dict else 'ERROR',
+                    'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'planner_status':planner.get('status') if type(planner) is dict else None}
+            completion=('CANCELLED' if result['status']=='CANCELLED'
+                        else ('FAILED' if result['status']=='ERROR' else 'DONE'))
+            self.scheduler.complete(e['id'],completion,result)
+            if (result['status']!='CANCELLED' and type(learning) is dict
+                    and learning.get('has_more') is True):
+                continuation=bool(self.schedule_world_jepa(event_id))
+                result['continuation_scheduled']=continuation
+                if type(out) is dict:out['continuation_scheduled']=continuation
+            return out
+        if e['action']=='lab_check':
+            from .lab_native_cycle import run
+            try:out=run(self.r)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            # User preemption is a normal one-shot completion. The next idle
+            # window may schedule a new sample; do not replay cancelled speech.
+            self.scheduler.complete(e['id'],'DONE',{'status':out.get('status')})
+            return out
+        if str(e['action']).startswith('growth_'):return self._growth(e)
+        if str(e['action']).startswith('learn_'):return self._learn(e)
+        mode={'sleep_full':'full','wake_replay':'wake','sleep_a':'a','sleep_b':'b','sleep_c':'c'}[e['action']]
+        try:rep=self.cycle.run(mode,self.r.cancel_event,self.resource_state,'USER' if e['origin']=='USER' else 'SYSTEM')
+        except BaseException as exc:
+            self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__});raise
+        self.scheduler.complete(e['id'],'CANCELLED' if rep['status']=='INTERRUPTED' else 'DONE',{'status':rep['status']})
+        if e['origin']=='USER':self.r.notice('Sleep '+mode+': '+rep['status']+' ('+rep['artifact']+')')
+        try:
+            from .agi import after_sleep
+            rep['growth']=after_sleep(self,e,rep)  # WP-AG6/AG12 hooks; never fails the sleep job
+        except Exception as exc:self.r.store.log('job_error',None,{'kind':'growth_after_sleep','error':type(exc).__name__})
+        if mode=='full' and rep['status']=='DONE':
+            try:self.scheduler.post('TIMER',action='learn_slow',dedup='learn-slow')  # WP-T10 §14.4 slow timescale after a full night
+            except Exception as exc:self.r.store.log('job_error',None,{'kind':'learn_slow_post','error':type(exc).__name__})
+        return rep
+    def _learn(self,e):
+        from .authority import job
+        try:out=job(self.r,e['action'],e['origin'])
+        except BaseException as exc:
+            self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__});raise
+        self.scheduler.complete(e['id'],'DONE',{'status':out.get('status')})
+        if e['origin']=='USER':self.r.notice('Learn '+e['action']+': '+str(out.get('status')))
+        return out
+    def _growth(self,e):
+        from .agi import job
+        try:out=job(self,e)
+        except BaseException as exc:
+            self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__});raise
+        self.scheduler.complete(e['id'],'DONE',{'status':(out or {}).get('status')})
+        if e['origin']=='USER':self.r.notice('Growth '+e['action']+': '+str((out or {}).get('status')))
+        return out
+    def request(self,mode='full',delay_s=0.):
+        action={'full':'sleep_full','wake':'wake_replay','a':'sleep_a','b':'sleep_b','c':'sleep_c'}[mode]
+        delay=float(delay_s)
+        # NaN silently became zero under max(0., nan), scheduling an immediate
+        # user timer. Reject invalid or negative intent before posting/ticking.
+        if not math.isfinite(delay) or delay<0:
+            raise ValueError('Sleep delay must be finite and nonnegative')
+        due=self.clock()+delay
+        if not math.isfinite(due):
+            raise ValueError('Sleep due time must be finite')
+        eid=self.scheduler.post('TIMER',origin='USER',due=due,action=action)
+        self.tick(force=True);return eid
+
+def operator_command(r,cmd,args):
+    """:sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler"""
+    sl=r.sleep
+    if cmd=='scheduler':
+        if args and args[0]=='lab':
+            from .lab_native_cycle import operator_command as lab_command
+            return dumps(lab_command(r,args[1:]))
+        if args:raise ValueError(':scheduler [lab status|on|off|now|every N|reset]')
+        return dumps(sl.scheduler.report())
+    if not args or args==['status']:return dumps(sl.cycle.status())
+    if args[0]=='run' and len(args)<=2:
+        mode=args[1] if len(args)==2 else 'full';sl.request(mode);return 'Sleep '+mode+' eingeplant; startet sobald nichts anderes läuft.'
+    if args[0]=='in' and len(args) in (2,3):
+        mode=args[2] if len(args)==3 else 'full';sl.request(mode,float(args[1])*60);return 'Sleep '+mode+' in '+args[1]+' min eingeplant.'
+    if args==['digest']:
+        from .sleep_offline import view
+        return dumps(view(r.store,r.session) or {'session':r.session,'text':'','entries':0})
+    if args[0]=='policy':
+        if len(args)==1:return dumps(sl.cycle.policy())
+        if len(args)==3:return dumps(sl.cycle.set_policy(args[1],args[2]))
+    raise ValueError(':sleep [status|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler')

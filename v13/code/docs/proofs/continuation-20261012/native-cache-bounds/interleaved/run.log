@@ -1,0 +1,6 @@
+C3_LANGUAGE b10964_default {"rss_start_mib": 426.0, "rss_end_mib": 454.9, "hwm_end_mib": 454.9, "hwm_growth_mib": 29.0, "prompt_tokens_total": 632, "cached_tokens_total": 5753, "prompt_ms_total": 2331.7, "wall_ms_total": 16909.8}
+C3_LANGUAGE v13_bounded {"rss_start_mib": 425.9, "rss_end_mib": 454.3, "hwm_end_mib": 454.3, "hwm_growth_mib": 28.5, "prompt_tokens_total": 632, "cached_tokens_total": 5753, "prompt_ms_total": 2428.8, "wall_ms_total": 17653.7}
+B2_BODY b10964_default {"rss_start_mib": 947.7, "rss_end_mib": 2265.1, "hwm_end_mib": 2265.1, "hwm_growth_mib": 1317.4, "prompt_tokens_total": 1716, "cached_tokens_total": 5361, "prompt_ms_total": 14872.2, "wall_ms_total": 88650.9}
+B2_BODY v13_bounded {"rss_start_mib": 947.6, "rss_end_mib": 1140.0, "hwm_end_mib": 1153.2, "hwm_growth_mib": 205.6, "prompt_tokens_total": 7079, "cached_tokens_total": 0, "prompt_ms_total": 49854.2, "wall_ms_total": 106591.5}
+B1_BODY b10964_default {"rss_start_mib": 1275.3, "rss_end_mib": 1315.7, "hwm_end_mib": 1315.7, "hwm_growth_mib": 40.4, "prompt_tokens_total": 637, "cached_tokens_total": 6074, "prompt_ms_total": 7801.3, "wall_ms_total": 51720.3}
+B1_BODY v13_bounded {"rss_start_mib": 1275.3, "rss_end_mib": 1307.7, "hwm_end_mib": 1307.7, "hwm_growth_mib": 32.4, "prompt_tokens_total": 637, "cached_tokens_total": 6074, "prompt_ms_total": 7607.2, "wall_ms_total": 51398.9}

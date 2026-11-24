@@ -1,0 +1,62 @@
+{
+  "schema": "v13.build_state.scoped.run11m.bodyjepa_350m_eval_paired.prenative.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "parent_pr": 1240,
+  "parent_sha": "645c70e8c28fb9e016eaa5d068c2d3977075184d",
+  "prereg": "65f01d6341683f04d06320d86363e3deaaf409a1",
+  "source_blobs": {
+    "experiment": "d75f1a1a779c9bec8b165307f7a8ed77c67d0ac1",
+    "test": "d1010130212f66f5e646b738395c04d712b1244b",
+    "native_workflow": "af836521a21af7e268e2d7218cdeafb6685808ae",
+    "body_jepa": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+    "lora": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "model": {
+    "id": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+  },
+  "cohort": {
+    "fixture_sha256": "be4925666ef6ffc2206dc450f775dee8ac7a6eb21fbc67082a0f49f1e3804e95",
+    "seeds": [
+      73,
+      79,
+      83
+    ],
+    "arms": [
+      "CE",
+      "EMA_TRAIN",
+      "EMA_EVAL",
+      "SHUFFLED"
+    ],
+    "steps": 2,
+    "expected_arms": 12
+  },
+  "software": {
+    "run": 41029568860,
+    "head": "056fcca8fc1cb2adb62e6c8ba25b82a869019bae",
+    "artifact": 12965486188,
+    "sha256": "568e4b6e6df61d40933b5d98cd1331e0963fa654d2a923eefed972a549d921dd",
+    "tests": 12,
+    "failures": 0,
+    "inner_hashes_verified": 15,
+    "stages_exit_zero": 7
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11M-BodyJEPA-350M-EMA-Eval-Paired/",
+  "private_backup_byte_reverified": true,
+  "native_status": "NOT_YET_TRIGGERED",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next": "Create explicit native trigger after no heavy owner; verify pinned master/license and 12 RAM-only arms; preserve original raw even RED",
+  "exact_next_command": "git commit --allow-empty -m 'trigger' # instead create v13/code/docs/BJEPA_350M_EMA_EVAL_NATIVE_TRIGGER_RUN11M.txt via GitHub review branch; workflow explicit path only"
+}

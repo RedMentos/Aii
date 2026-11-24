@@ -1,0 +1,10 @@
+{
+ "status": "CAPTURED",
+ "rows": 2235,
+ "batches": 140,
+ "taps_sha256": "795bd7f07659a67efb55d9c822539aaae99b5b8afff6de3dc0e0c4ca9e9fa52a",
+ "array_sha256": "0a14f61a48b37f6388c2df65279769610f116092d223c5b7442979cd780e38ee",
+ "registration_sha256": "bd2adeced1bad06159dda91671193918e07e5409d8b0e837f84ef44aa929e988",
+ "last_server_exit": 0,
+ "utc": "2026-10-12T07:24:21.575738+00:00"
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "v13.run128.review_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation / review-only; no native owner claimed",
+  "branch": "assistant/v13-step2-native-verify-admission-20261029",
+  "base_parent": "80b2694a466faddb8901b3759c32fe128646f1a5",
+  "pr_number": 1028,
+  "prereg_first_commit": "c182e4678e637a8acac79314582d893cbed959f5",
+  "implementation_commits": [
+    "0291f10d6a92419c0695a6660d89f6f04ec8563f",
+    "2d4c4518d6054afba19fe2c92861bdf4c27cdbf5",
+    "fea11fdcf8976dd10dfa4cd8590f9dcaea1c6349",
+    "a2b2ef22197b242706f19ea0120f01a9d7c9d493",
+    "78a6b8db5e4919e826ab0703ee21139356a300a0"
+  ],
+  "run127": {
+    "pr": 1027,
+    "branch": "assistant/v13-step2-native-raw-verifier-20261029",
+    "head": "80b2694a466faddb8901b3759c32fe128646f1a5",
+    "source_blob": "4c233aaade91e55d00fa152c934de0e03e26d58f",
+    "test_blob": "c6ae8c8f7447cede21caebddda81de1f5beae034",
+    "software_actions": 40812995696,
+    "status": "GREEN_INDEPENDENT_RAW",
+    "software_status": "GREEN_INDEPENDENT_RAW",
+    "original_zip_sha256": "73a6ea834d0d9adef041542b63f5ce4c7e1c5887a949f820e5d0fa4ca25777fb",
+    "crc_clean": true,
+    "inner_hashes": "16/16",
+    "focused_tests": 13,
+    "full_tests": 2758,
+    "full_skipped": 3,
+    "privacy": "CLEAN",
+    "private_backup_byte_identical": true
+  },
+  "run128": {
+    "static_actions_initial": 40813255472,
+    "static_head": "2d4c4518d6054afba19fe2c92861bdf4c27cdbf5",
+    "static_status": "GREEN_INDEPENDENT_RAW",
+    "focused_tests": 13,
+    "focused_exit": 0,
+    "privacy": "CLEAN",
+    "original_zip_sha256": "46c93645d5052e1e3574a642641cb2f1de34589a1d751336c6246a512ebc2e69",
+    "zip_crc_clean": true,
+    "inner_hashes_verified": "11/11",
+    "private_backup_byte_identical": true,
+    "current_exact_head_software": "DOC_ONLY_CHECKPOINT_PUSH_PENDING",
+    "native_workflow_manual_only": true,
+    "native_owner_release_receipt": "ABSENT",
+    "native_calls": 0,
+    "last_verified_head": "7f0cd8d551ec5bda992b91f3e3888356a9297221",
+    "last_verified_actions": 40813525733,
+    "last_verified_status": "GREEN_INDEPENDENT_RAW",
+    "last_verified_zip_sha256": "42c85553ea3115801a6532214d54a626c1bcff4637274b50a0844f00cc8ddd15",
+    "last_verified_crc_clean": true,
+    "last_verified_inner_hashes": "11/11",
+    "last_verified_focused_tests": 13,
+    "last_verified_privacy": "CLEAN",
+    "last_verified_private_backup_byte_identical": true
+  },
+  "parent_run126_software": {
+    "actions": 40812183190,
+    "head": "7f25f3b0d0d8b7167817420240d0475f57f0a538",
+    "status": "GREEN_INDEPENDENT_RAW",
+    "artifact_id": 12870729267,
+    "zip_sha256": "6b1f12aa2e8259e2073887394665f27e3d7728f37332a96b24fb00882d71d87f",
+    "outer_sha256sums": "51/51",
+    "original_run116_sha256sums": "29/29",
+    "source_report_sha256": "c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f",
+    "preflight_pairs": 42,
+    "injected": 30,
+    "native_calls": 0,
+    "focused_tests": 53,
+    "full_tests": 2745,
+    "full_skipped": 3,
+    "privacy": "CLEAN",
+    "private_backup_byte_identical": true,
+    "independent_quote_transport": {
+      "source_ref_span_hashes_verified": "42/42",
+      "injected_exact_B2_only": 30,
+      "unchanged_controls": 12,
+      "oracle_payload_keys_absent": true,
+      "consumer_payload_keys": [
+        "analysts",
+        "current_source"
+      ],
+      "mismatches": 0
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Does source-exact B2 historical-rule transport improve real C3 actions?",
+    "Does Fornax option inversion persist?",
+    "Will any treatment arm produce wrong committed action?",
+    "When can a separate owner verify native resource admission and release?"
+  ],
+  "next_command": "Check new doc-only exact-head Run128 static CI after BUILD_STATE commit; independently audit original ZIP CRC/SHA256SUMS/exit/privacy; verify owner release receipt remains ABSENT; then continue another independent canonical package or, only with verified idle native owner, preregister separate owner release and manually launch guarded 84-call native.",
+  "prerequisites": [
+    "Current doc-only exact-head Run128 static CI GREEN and original raw independently audited",
+    "Run127 2758 full-suite original raw GREEN already audited",
+    "Native owner release receipt currently ABSENT",
+    "Serial Linux resource admission and original pinned models/runner/source/seed unchanged"
+  ],
+  "no_main_merge": true,
+  "no_native_launched": true
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "v13.step2.rule_transport_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation",
+  "branch": "assistant/v13-step2-native-rule-transport-20261029",
+  "base_parent": "7f78fd3cd4eef164ff1f47f14c57537a8ffb081b",
+  "prereg_commit": "d93eb68176b4cdefb433e95e1f0ed27a88075dc8",
+  "original_run116": {
+    "actions": 40805361392,
+    "artifact": 12868842813,
+    "source_sha256": "c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f",
+    "zip_sha256": "2f70064d4c05cf1531239ac5e217e4b93bcc887ef29908a8bc34f43e0f0fa315"
+  },
+  "original_run125_software": {
+    "actions": 40811167484,
+    "status": "GREEN_INDEPENDENT_RAW",
+    "zip_sha256": "63be8a5397d178461c98d1db041c867fa59f7cc9e6b9f1b6a9df98764611ffcb",
+    "pairs": 42,
+    "b2_quote_injections": 30,
+    "native_calls": 0
+  },
+  "earlier_run126_software": {
+    "actions": 40811464936,
+    "status": "GREEN_INDEPENDENT_RAW",
+    "zip_sha256": "11f31abfcfbf423f7277df64ecd66cb4c405b16ccd823c2f9b680ba32734e41a",
+    "focused_tests": 52,
+    "full_tests": 2744
+  },
+  "current_software": {
+    "status": "PENDING_EXACT_NEW_HEAD",
+    "actions": "UNKNOWN_UNTIL_TRIGGER"
+  },
+  "native": {
+    "status": "NOT_LAUNCHED",
+    "workflow": ".github/workflows/v13-step2-exact-rule-native-staged.yml",
+    "trigger": "workflow_dispatch_ONLY",
+    "seed_c3": 13,
+    "body_source_seed": 20,
+    "expected_calls": 84,
+    "model_hashes_pinned": true,
+    "runner_runtime_libraries_pinned_to_original": true
+  },
+  "source_evidence": {
+    "model_seed_and_runner_hashes_unchanged": true,
+    "original_negative_gates_retained": true,
+    "private_raw_backups_verified": true
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Does exact B2 prior rule transport improve C3 action exactness?",
+    "Does Fornax option inversion persist?",
+    "Does treatment introduce wrong committed actions?"
+  ],
+  "next_command": "cd v13/code && V13_RUN116_SOURCE_REPORT=$RUN116_ORIGINAL/STEP2_RAW.json python -m unittest -v tests.test_step2_exact_rule_transport_native tests.test_step2_exact_rule_native_replay_preflight",
+  "prerequisites": [
+    "Exact-head software CI GREEN and independent original raw audit",
+    "No active native owner",
+    "Fresh isolated Linux home and resource gate",
+    "Exact original Run116 source report SHA256",
+    "Pinned model, runner, runtime library and revision hashes",
+    "Native workflow separately enabled only after all gates"
+  ],
+  "no_main_merge": true
+}

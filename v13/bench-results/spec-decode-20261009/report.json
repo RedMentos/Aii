@@ -1,0 +1,134 @@
+{
+ "kind": "SPEC_DECODE_BENCH",
+ "target": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+ "draft": "LFM2.5-230M-QAD-Q4_0.gguf",
+ "threads": 4,
+ "configs": {
+  "baseline": {
+   "runs": [
+    {
+     "text": "Regular backups are crucial for a small business because they protect sensitive data from accidental loss, cyberattacks, or hardware failures. Without backups, a single incident could result in significant financial and operational setbacks. Backups also help ensure business continuity by allowing quick recovery from disruptions. They provide peace of mind, knowing important information is safe and accessible. Ultimately, consistent backups safeguard a company\u2019s reputation and long-term success.",
+     "predicted_n": 88,
+     "predicted_per_second": 35.51974366993257,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "1. Choose a suitable pot with drainage holes.  \n2. Fill the pot with a well-draining potting mix.  \n3. Place the tomato seedling in the center of the pot.  \n4. Water the seedling gently until the soil is moist.  \n5. Add more potting mix around the seedling as needed.  \n6. Cover the pot with a clear plastic bag to retain moisture.  \n7. Place the pot in a location with indirect sunlight.  \n8. Monitor the plant for signs of water stress.  \n9. Transplant the seedling outdoors once it\u2019s ready.  \n10. Provide support",
+     "predicted_n": 128,
+     "predicted_per_second": 40.14700759379068,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "The quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.",
+     "predicted_n": 33,
+     "predicted_per_second": 38.117518692473816,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "Certainly! Here\u2019s a short Python function that calculates the sum of squares of a list:\n\n```python\ndef sum_of_squares(numbers):\n    return sum(x ** 2 for x in numbers)\n```\n\n### Explanation:\n- **`sum_of_squares(numbers)`**: This function takes a list of numbers as input.\n- **`x ** 2`**: For each number `x` in the list, it squares it.\n- **`sum(...)`**: It sums up all the squared values.\n- The function returns the total sum of squares.\n\n",
+     "predicted_n": 128,
+     "predicted_per_second": 36.06999510356917,
+     "draft_n": null,
+     "draft_n_accepted": null
+    }
+   ],
+   "peak_rss_bytes": 1455771648,
+   "mean_tps": 37.46,
+   "identical_to_baseline": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "acceptance": null,
+   "speedup": 1.0
+  },
+  "ngram_simple": {
+   "runs": [
+    {
+     "text": "Regular backups are crucial for a small business because they protect sensitive data from accidental loss, cyberattacks, or hardware failures. Without backups, a single incident could result in significant financial and operational setbacks. Backups also help ensure business continuity by allowing quick recovery from disruptions. They provide peace of mind, knowing important information is safe and accessible. Ultimately, consistent backups safeguard a company\u2019s reputation and long-term success.",
+     "predicted_n": 88,
+     "predicted_per_second": 34.860196587467236,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "1. Choose a suitable pot with drainage holes.  \n2. Fill the pot with a well-draining potting mix.  \n3. Place the tomato seedling in the center of the pot.  \n4. Water the seedling gently until the soil is moist.  \n5. Add more potting mix around the seedling as needed.  \n6. Cover the pot with a clear plastic bag to retain moisture.  \n7. Place the pot in a location with indirect sunlight.  \n8. Monitor the plant for signs of water stress.  \n9. Transplant the seedling outdoors once it\u2019s ready.  \n10. Provide support",
+     "predicted_n": 128,
+     "predicted_per_second": 33.12110615105884,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "The quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.",
+     "predicted_n": 33,
+     "predicted_per_second": 35.159464653201326,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "Certainly! Here\u2019s a short Python function that calculates the sum of squares of a list:\n\n```python\ndef sum_of_squares(numbers):\n    return sum(x ** 2 for x in numbers)\n```\n\n### Explanation:\n- **`sum_of_squares(numbers)`**: This function takes a list of numbers as input.\n- **`x ** 2`**: For each number `x` in the list, it squares it.\n- **`sum(...)`**: It sums up all the squared values.\n- The function returns the total sum of squares.\n\n",
+     "predicted_n": 128,
+     "predicted_per_second": 34.07739217255718,
+     "draft_n": null,
+     "draft_n_accepted": null
+    }
+   ],
+   "peak_rss_bytes": 1455898624,
+   "mean_tps": 34.3,
+   "identical_to_baseline": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "acceptance": null,
+   "speedup": 0.916
+  },
+  "draft_230m": {
+   "runs": [
+    {
+     "text": "Regular backups are crucial for a small business because they protect sensitive data from accidental loss, cyberattacks, or hardware failures. Without backups, a single incident could result in significant financial and operational setbacks. Backups also help ensure business continuity by allowing quick recovery from disruptions. They provide peace of mind, knowing important information is safe and accessible. Ultimately, consistent backups safeguard a company\u2019s reputation and long-term success.",
+     "predicted_n": 88,
+     "predicted_per_second": 34.167397469334766,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "1. Choose a suitable pot with drainage holes.  \n2. Fill the pot with a well-draining potting mix.  \n3. Place the tomato seedling in the center of the pot.  \n4. Water the seedling gently until the soil is moist.  \n5. Add more potting mix around the seedling as needed.  \n6. Cover the pot with a clear plastic bag to retain moisture.  \n7. Place the pot in a location with indirect sunlight.  \n8. Monitor the plant for signs of water stress.  \n9. Transplant the seedling outdoors once it\u2019s ready.  \n10. Provide support",
+     "predicted_n": 128,
+     "predicted_per_second": 37.253266774163365,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "The quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.  \nThe quick brown fox jumps over the lazy dog.",
+     "predicted_n": 33,
+     "predicted_per_second": 37.419854273055016,
+     "draft_n": null,
+     "draft_n_accepted": null
+    },
+    {
+     "text": "Certainly! Here\u2019s a short Python function that calculates the sum of squares of a list:\n\n```python\ndef sum_of_squares(numbers):\n    return sum(x ** 2 for x in numbers)\n```\n\n### Explanation:\n- **`sum_of_squares(numbers)`**: This function takes a list of numbers as input.\n- **`x ** 2`**: For each number `x` in the list, it squares it.\n- **`sum(...)`**: It sums up all the squared values.\n- The function returns the total sum of squares.\n\n",
+     "predicted_n": 128,
+     "predicted_per_second": 38.653706616540624,
+     "draft_n": null,
+     "draft_n_accepted": null
+    }
+   ],
+   "peak_rss_bytes": 1782751232,
+   "mean_tps": 36.87,
+   "identical_to_baseline": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "acceptance": null,
+   "speedup": 0.984
+  }
+ }
+}

@@ -1,0 +1,101 @@
+name: V13 Run117Q original-native attribution read-only audit
+on:
+  push:
+    branches:
+      - assistant/v13-run117q-native-attribution-audit-20261031-hourly11
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-native-attribution:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Independently verify original Run116 native and attribution limits
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117q-attribution"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          set +e
+          test "$(git hash-object v13/code/scripts/run117q_native_attribution_readonly.py)" = fbff7e858b8c98e1bdd8a689221a25abeb99c7b9
+          a=$?
+          test "$(git hash-object v13/code/tests/test_run117q_native_attribution_readonly.py)" = 7a0ceffbce2283da4eb61800ad4d0700735544f4
+          b=$?
+          test "$a" -eq 0 && test "$b" -eq 0
+          source_rc=$?
+          echo "$source_rc" > "$e/SOURCE_EXIT.txt"
+          curl --location --fail --silent --show-error --retry 3 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13051756857/zip" \
+            --output "$e/ORIGINAL_RUN116.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          download_rc=$?
+          if [ "$download_rc" -eq 0 ]; then
+            sha256sum "$e/ORIGINAL_RUN116.zip" > "$e/ORIGINAL_SHA_RAW.log" 2>&1
+            echo "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5  $e/ORIGINAL_RUN116.zip" | sha256sum -c - > "$e/HASH_RAW.log" 2>&1
+            hash_rc=$?
+          else
+            echo DOWNLOAD_RED > "$e/HASH_RAW.log"
+            hash_rc=125
+          fi
+          if [ "$source_rc" -eq 0 ] && [ "$hash_rc" -eq 0 ]; then
+            (cd v13/code && env PYTHONPATH=. python3 -m scripts.run117q_native_attribution_readonly --original-zip "$e/ORIGINAL_RUN116.zip" --out "$e/ATTRIBUTION.json") > "$e/AUDIT_RAW.log" 2>&1
+            audit_rc=$?
+          else
+            echo SOURCE_OR_HASH_RED > "$e/AUDIT_RAW.log"
+            audit_rc=125
+          fi
+          (cd v13/code && env PYTHONPATH=. python3 -m unittest -v tests.test_run117q_native_attribution_readonly) > "$e/TEST_RAW.log" 2>&1
+          test_rc=$?
+          python3 -m compileall -q v13/code/scripts/run117q_native_attribution_readonly.py v13/code/tests/test_run117q_native_attribution_readonly.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 60ab0f7f82173a0f451f893e746741f7a3eac694 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 60ab0f7f82173a0f451f893e746741f7a3eac694 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          for item in "SOURCE:$source_rc" "DOWNLOAD:$download_rc" "HASH:$hash_rc" "AUDIT:$audit_rc" "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${item#*:}" > "$e/${item%%:*}_EXIT.txt"
+          done
+          python3 - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('SOURCE','DOWNLOAD','HASH','AUDIT','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117q.original_native_attribution_evidence.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'original_artifact_id':13051756857,
+             'original_sha256':'71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed_this_run':False,'original_native_audited':True,
+             'step2_promoted':False,'body_jepa_promoted':False,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          rm -f "$e/ORIGINAL_RUN116.zip"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          cat "$e/AUDIT_RAW.log"
+          tail -n 9 "$e/TEST_RAW.log"
+          for rc in "$source_rc" "$download_rc" "$hash_rc" "$audit_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original audit receipt GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117q-attribution-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117q-attribution/
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,9 @@
+# WP-BP2b blinded heldout scorer prereg · 2026-10-27
+
+Owner: automation11 BP2b scorer, isolated review child of PR #706 exact `dcb0697470395ca7b1a171b4cf1bf112b2a31958`. New package implements an **unattested source-only evaluator** that cannot see answer keys during prediction collection; scores only afterward. No native model, no user data, no activation.
+
+Input: immutable seed 41/42/43 `manifest.json`, `model_facing.jsonl` (case_id,prompt only), `scoring_only.json` (case_id,answer_keys only), plus independent predictions JSONL (case_id,text only). All inputs bounded and strict JSON (duplicate/nonfinite rejected), exactly matched IDs, SHA256 hashes revalidated against the code-frozen cohort. Reject missing/extra/duplicate cases, stale/altered source/scoring files, oversized or malformed predictions, non-string responses, or unexpected keys. Return response hashes and hit booleans, not answer keys or raw text; score whole-word/phrase answer leakage without counting substrings embedded in other words. Treat synthetic/unattested responses as **NO_NATIVE_PROOF**, no Age/learning promotion.
+
+Prospective software tests: true key hit, no-key miss, embedded substring false positive, order mismatch, duplicate IDs, scoring tamper, model-facing tamper, malformed/oversized/nonfinite JSON, immutable output restart. Preserve original failures and raw CI artifacts. No automatic download/training.
+
+Native follow-up only after pinning FP32 master (upstream SHA256 `1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a`, LiquidAI LFM2.5-1.2B-Instruct source revision to be pinned), tokenizer, source and runner; check heavy owner and serialize 4 arms. This scorer by itself is NOT a native experiment or evidence of BP2b leakage reduction. All negative gates retained. Exact test: `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_transfer_score`.

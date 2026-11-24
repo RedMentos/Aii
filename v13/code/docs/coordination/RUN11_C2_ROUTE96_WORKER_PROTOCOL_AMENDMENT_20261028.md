@@ -1,0 +1,9 @@
+# C2 route96 prereg amendment — native worker rather than duplicate CLI harness
+
+Recorded **before any route96 native execution**. Original prereg `RUN11_C2_ROUTE96_NATIVE_EVAL_PREREG_20261028.md` is retained as history; its frozen corpus/model/tool hashes, 96 balanced labels, no training/tuning and negative gates remain unchanged.
+
+Source review found existing canonical `scripts/c2_benchmark.py` already implements the exact 96-item corpus, `scaffold` baseline, `needle` via the installed pinned native `NeedleRunner` C2 worker, per-item timing and confidence, confusion, macro-F1, AUROC, and all-row export. Reuse it rather than duplicate another subprocess harness. This **changes only the preregistered execution adapter** from direct `needle` CLI to the actual installed V13 Needle native worker, making the result more relevant to JEF runtime. It does not change the corpus, prompts, model, source revision, route labels, tools, or scoring thresholds.
+
+One software integrity correction before native: if `control_calibration_worker.observation(raw)` rejects a response, set `pred=None` before scoring so an invalid call can never count correct; filter nonfinite confidence from AUROC. Add focused tests. Then `PYTHONPATH=v13/code python3 v13/code/scripts/c2_benchmark.py --home <fresh-pinned-bootstrap> --cache <fresh> --out <fresh-evidence> --only needle scaffold`, serial, no FunctionGemma or paid provisioning. Preserve raw per-row `needle.rows.json` and `scaffold.rows.json`, report JSON, exits, SHA256SUMS, exact source hashes. No external tools executed: `select_processing` is local routing only.
+
+This is an author-labelled Linux-native route accuracy benchmark, not a general truth score, calibrated JEF approval, STEP2 four-arm utility, Redmi, learning or whole-system proof. Original REDs and negative gates remain. Remaining platform budget UNKNOWN.

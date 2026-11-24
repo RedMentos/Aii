@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN12I_SLEEP_REPLAY_PACKET_ATOMIC_SOFTWARE_GREEN_NO_PROMOTION",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12i-sleep-replay-atomicity-20261030",
+  "pr": 1265,
+  "parent_pr": 1264,
+  "parent_head": "c91988be08b418be694257cc12509b177c6bbd29",
+  "source_blobs": {
+    "sleep": "90d5361d1f8ad34c2311e870572a1d40146e4ca0",
+    "tests": "2583ff75b8fa1350129ae144b0ba71139c8d1d55",
+    "store": "0779d986fb8aee8aa01c5df5f656889d4bd56348",
+    "contracts": "a9c9b828448737862fed41597e7471345453caf9",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41050457385,
+    "tested_head": "c8d700cc0c26e7125f1b839e24c1f1ecff1dcca5",
+    "status": "GREEN",
+    "tests": "53/53 PASS (5 new real SQLite + 48 existing Sleep/Context)",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12974776212,
+    "zip_sha256": "8c66d86907b88ee97fbfc87610c695bb9c55b8703428bda4f41bd90a982388f6",
+    "zip_bytes": 60550,
+    "crc": "PASS",
+    "inner_sha256": "21/21",
+    "original_counterexample": "Injected packet insertion failure leaves 1 replay orphan on original; candidate leaves 0",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12I-SleepReplayAtomic/V13_Run12I_Sleep_41050457385.zip",
+    "backup_byte_exact": true
+  },
+  "local": {
+    "source_snapshot_run_id": 41050102442,
+    "source_snapshot_artifact_id": 12974790653,
+    "source_snapshot_sha256": "7f3610c457ec42f168b46c74e0010ac8901adeb18079418722a9b7a2852492b2",
+    "local_real_sqlite_tests": "5/5 PASS"
+  },
+  "native": {
+    "launched": false,
+    "redmi": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Full unfiltered suite not rerun; existing historical source pin failures remain independently recorded",
+    "Review-only source patch must not be used to promote Sleep learning, native retention, or age"
+  ],
+  "next_command": "Review Run12I source diff against original and cross-organ consumers; keep all original RED and negative gates. Next highest priority independent canonical organ: substantive JEF/Body/Context utility work rather than repeated helper hardening. No device action needed for source-only work."
+}

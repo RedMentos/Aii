@@ -1,0 +1,81 @@
+name: V13 Run13G bounded jeflink last unique source
+on:
+  push:
+    branches:
+      - 'assistant/v13-run13g-jeflink-last-20261030-auto11'
+    paths:
+      - '.github/workflows/v13-run13g-jeflink-last-20261030.yml'
+      - 'v13/code/v13/jef_context_link_operator_run13f.py'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_jeflink_last_run13g.py'
+      - 'v13/code/docs/RUN13G_JEFLINK_LAST_PREREG_20261030.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run13g-jeflink-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Unique-only operator and inherited Store/Context OS tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13g-jeflink"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/operator.py v13/code/v13/jef_context_link_operator_run13f.py v13/code/tests/test_jeflink_last_run13g.py v13/code/v13/agi/context_source_link_budget_run13e.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/SOURCE_BLOBS.txt"
+          test "$(tail -1 "$e/SOURCE_BLOBS.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run13g-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run13g-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts timeout 480s "$py" -m unittest -v tests.test_jeflink_last_run13g tests.test_jeflink_operator_run13f tests.test_context_source_link_budget_run13e tests.test_context_os) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo DEPENDENCIES_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/operator.py v13/code/v13/jef_context_link_operator_run13f.py v13/code/tests/test_jeflink_last_run13g.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d1e3e7ad8931c8a2a57ce7c82d728a045349c6c0 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check d1e3e7ad8931c8a2a57ce7c82d728a045349c6c0 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw, exits and hashes on all outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13g-jeflink-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13g-jeflink/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all checks without authority promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run13g-jeflink"
+          for stage in CANON VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -90 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN13G_UNIQUE_OPERATOR_SHADOW_NO_NATIVE_C5_OR_GATE_PROMOTION'

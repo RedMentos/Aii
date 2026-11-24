@@ -1,0 +1,10 @@
+# P2 QAD↔HF parity prereg source-pin addendum 1 — recovered existing LP3 master evidence (2026-10-29)
+
+Original immutable P2 parity prereg committed first `068df8db0101f2483e5605373aa123b1444768d8`, blob `0de7f1dbb51253c635b5737a1958a93b6bd5083a`. This addendum is BEFORE any new P2 parity model call, download or training. It resolves part of the provenance prerequisite from **existing verified repository evidence**, not by changing the original model/seed/cohort.
+
+- Official **instruction** master `LiquidAI/LFM2.5-350M`, HF commit `120bf032c36dd1273de754669da040dba7ad4982`, `model.safetensors` SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`, license **LFM Open License 1.0**. Frozen in existing `v13/code/scripts/lp3_real_master_smoke.py` Git blob `a0a6f4a93e37fb760c4d1b87780a6a4dfdfc7d02`, and `v13/code/docs/proofs/continuation-20261027/lp3-real-master-smoke/REPORT.md`.
+- Existing LP3 compatibility native run `40524404979`, exact executable `4ff92a50c9095a20af357272c1c39cb42c87a174`, verified GREEN with full HF master SHA, one frozen-base predictor/projector optimizer step and own/shift/zero logits; raw artifact `12743676086`, ZIP SHA256 `67b3d44ce55d79aa3ee1da3d02e64a084d12360c32c6740f04b4bf824144c5f6`. This proves **HF master compatibility for LP3 one-step mechanism only**, not QAD GGUF tensor parity, LoRA transfer, utility, JEPA or Redmi. Original failed run `40523353369` remains retained.
+- P2 QAD parity target remains deployed `LFM2.5-350M-QAD-Q4_0.gguf` SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, **not** the HF master SHA. The source/model mismatch is intentional for measurement; do not assume equality.
+- **Still pending before new parity native run:** exact `config.json`, `tokenizer.json`, `tokenizer_config.json` SHA256 for the pinned HF commit and a complete GGUF↔HF tensor mapping/coverage audit. Resolve those in an isolated source-pinning workflow, checkpoint original bytes, then preregister parity probes/tolerances. No new model calls, downloads or training in this addendum.
+
+All original negative gates and AG6 approval remain unchanged.

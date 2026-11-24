@@ -1,0 +1,9 @@
+{
+  "schema": "V13_ISOLATED_NATIVE_FIRING_ROW_MAP_RACE_REVIEW_V1",
+  "native_model_run": false,
+  "live_sources_changed": false,
+  "observed_exception": {
+    "type": "error",
+    "detail": "unpack_from requires a buffer of at least 12 bytes for unpacking 4 bytes at offset 8 (actual buffer size is 8)"
+  }
+}

@@ -1,0 +1,5 @@
+# Run117V audit extension — complete-report Body receipt omission counterexample
+
+Predeclared after initial independent auditor 32/32 GREEN (Actions 41229577388, artifact 13053093585) and before new test/fix. The current `_report_check` validates any Body offers present but does not require **exactly three** recorded pinned Body offers per case when the original native runner claims `NATIVE_COMPLETE_*`. A forged complete report with all 18 C3 outputs and claimed native_body_calls=18 but **zero actual Body offer receipts** can pass if all other fields remain plausible.
+
+Add a synthetic six-case full report fixture with three pinned B2 prior/B1 current/B2 current receipts each. Test that it passes unchanged, then remove one case's Body offers without changing claimed counts and require a RED. Also test fake model/reap and absence of complete arm evidence. Minimal fix only to auditor, never to original native runner/fixture/artifact. Original 32-test preflight GREEN remains intact; new adversarial RED and subsequent GREEN must be independently retained. No native claims or gate promotion.

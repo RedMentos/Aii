@@ -1,0 +1,2786 @@
+{
+ "schema": "V13_BLUEPRINT_KNOBS_V1",
+ "canon": "V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+ "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+ "sections": "49-78",
+ "count": 301,
+ "knobs": [
+  {
+   "id": "SYSTEM.system_stage",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0",
+   "value": 0.0,
+   "tags": [],
+   "line": 10135
+  },
+  {
+   "id": "SYSTEM.user_stage_cap",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0",
+   "value": 0.0,
+   "tags": [],
+   "line": 10136
+  },
+  {
+   "id": "AGE.human_confirmation_need",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10138
+  },
+  {
+   "id": "AGE.teacher_reliance_new_capability",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10139
+  },
+  {
+   "id": "AGE.autonomy_budget",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10140
+  },
+  {
+   "id": "AGE.exploration_budget",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.15",
+   "value": 0.15,
+   "tags": [],
+   "line": 10141
+  },
+  {
+   "id": "AGE.structural_edit_authority",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10142
+  },
+  {
+   "id": "AGE.self_message_authority",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10143
+  },
+  {
+   "id": "AGE.dream_authority",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10144
+  },
+  {
+   "id": "AGE.base_weight_plasticity_ceiling",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.05",
+   "value": 0.05,
+   "tags": [],
+   "line": 10145
+  },
+  {
+   "id": "AGE.adapter_plasticity_ceiling",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10146
+  },
+  {
+   "id": "AGE.head_projector_plasticity_ceiling",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10147
+  },
+  {
+   "id": "AGE.fast_memory_write_authority",
+   "section": "50",
+   "title": "LAYER 0 — GLOBAL AGE-0 ENVELOPE [BOOT]",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10148
+  },
+  {
+   "id": "A0.raw_preservation",
+   "section": "51.1",
+   "title": "A0 Raw/Physical",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10170
+  },
+  {
+   "id": "A0.semantic_processing",
+   "section": "51.1",
+   "title": "A0 Raw/Physical",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10171
+  },
+  {
+   "id": "A0.timestamp_precision",
+   "section": "51.1",
+   "title": "A0 Raw/Physical",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10172
+  },
+  {
+   "id": "A0.source_binding_strength",
+   "section": "51.1",
+   "title": "A0 Raw/Physical",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10173
+  },
+  {
+   "id": "A1.fixed_chunk_prior",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10183
+  },
+  {
+   "id": "A1.semantic_boundary_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10184
+  },
+  {
+   "id": "A1.context_shift_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10185
+  },
+  {
+   "id": "A1.prediction_error_boundary_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10186
+  },
+  {
+   "id": "A1.goal_change_boundary_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10187
+  },
+  {
+   "id": "A1.action_transition_boundary_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10188
+  },
+  {
+   "id": "A1.multi_scale_overlap",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10189
+  },
+  {
+   "id": "A1.learn_gain",
+   "section": "51.2",
+   "title": "A1 Segmentation / Boundaries",
+   "raw": "0.15",
+   "value": 0.15,
+   "tags": [],
+   "line": 10190
+  },
+  {
+   "id": "A2.teacher_presence",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 10206
+  },
+  {
+   "id": "A2.teacher_authority_semantic",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10207
+  },
+  {
+   "id": "A2.teacher_authority_epistemic",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10208
+  },
+  {
+   "id": "A2.teacher_gradient",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10209
+  },
+  {
+   "id": "A2.teacher_dropout",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.15",
+   "value": 0.15,
+   "tags": [],
+   "line": 10210
+  },
+  {
+   "id": "A2.teacher_disagreement_sampling",
+   "section": "51.3",
+   "title": "A2 Frozen Teacher",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10211
+  },
+  {
+   "id": "A3.learn_gain",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10221
+  },
+  {
+   "id": "A3.teacher_alignment_weight",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10222
+  },
+  {
+   "id": "A3.reconstruction_weight",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10223
+  },
+  {
+   "id": "A3.cross_body_utility_weight",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10224
+  },
+  {
+   "id": "A3.real_outcome_weight",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10225
+  },
+  {
+   "id": "A3.plasticity",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10227
+  },
+  {
+   "id": "A3.retention_priority",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10228
+  },
+  {
+   "id": "A3.shadow_ratio",
+   "section": "51.4",
+   "title": "A3 Student Projector",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10229
+  },
+  {
+   "id": "A4.salience_gain",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10247
+  },
+  {
+   "id": "A4.goal_topdown_gain",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10248
+  },
+  {
+   "id": "A4.novelty_gain",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10249
+  },
+  {
+   "id": "A4.teacher_hint_gain",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10250
+  },
+  {
+   "id": "A4.raw_relook_authority",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10251
+  },
+  {
+   "id": "A4.suppression_max",
+   "section": "51.5",
+   "title": "A4 Perceptual Attention",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10252
+  },
+  {
+   "id": "B1.detail_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10274
+  },
+  {
+   "id": "B1.literal_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10275
+  },
+  {
+   "id": "B1.exact_source_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10276
+  },
+  {
+   "id": "B1.local_context_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10277
+  },
+  {
+   "id": "B1.global_context_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10278
+  },
+  {
+   "id": "B1.offer_threshold",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10280
+  },
+  {
+   "id": "B1.offer_budget",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10281
+  },
+  {
+   "id": "B1.reentry_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10282
+  },
+  {
+   "id": "B1.local_jepa_weight",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10284
+  },
+  {
+   "id": "B1.adapter_learn_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10285
+  },
+  {
+   "id": "B1.base_weight_learn_gain",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10286
+  },
+  {
+   "id": "B1.retention_priority",
+   "section": "52",
+   "title": "LAYER 2 — B1 DETAIL BODY",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10287
+  },
+  {
+   "id": "B2.gist_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 10305
+  },
+  {
+   "id": "B2.global_context_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10306
+  },
+  {
+   "id": "B2.literal_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10307
+  },
+  {
+   "id": "B2.event_relation_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 10308
+  },
+  {
+   "id": "B2.plan_structure_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10309
+  },
+  {
+   "id": "B2.gist_span_target",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "8 token-equivalents",
+   "value": 8.0,
+   "tags": [],
+   "line": 10311
+  },
+  {
+   "id": "B2.gist_span_min",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "3",
+   "value": 3.0,
+   "tags": [],
+   "line": 10312
+  },
+  {
+   "id": "B2.gist_span_max_boot",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "24",
+   "value": 24.0,
+   "tags": [],
+   "line": 10313
+  },
+  {
+   "id": "B2.boundary_sensitivity",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10314
+  },
+  {
+   "id": "B2.coarse_to_fine_threshold",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10315
+  },
+  {
+   "id": "B2.offer_threshold",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10317
+  },
+  {
+   "id": "B2.offer_budget",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.50",
+   "value": 0.5,
+   "tags": [],
+   "line": 10318
+  },
+  {
+   "id": "B2.reentry_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10319
+  },
+  {
+   "id": "B2.local_jepa_weight",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.50",
+   "value": 0.5,
+   "tags": [],
+   "line": 10321
+  },
+  {
+   "id": "B2.adapter_learn_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10322
+  },
+  {
+   "id": "B2.base_weight_learn_gain",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10323
+  },
+  {
+   "id": "B2.retention_priority",
+   "section": "53",
+   "title": "LAYER 3 — B2 GIST BODY",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10324
+  },
+  {
+   "id": "B3.channel.latent",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10344,
+   "duplicate_index": 0
+  },
+  {
+   "id": "B3.channel.exact_source",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10345
+  },
+  {
+   "id": "B3.channel.control",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10346
+  },
+  {
+   "id": "B3.channel.symbolic",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10347
+  },
+  {
+   "id": "B3.channel.no_message",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10348
+  },
+  {
+   "id": "B3.channel.latent",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": null,
+   "value": null,
+   "tags": [],
+   "line": 10354,
+   "duplicate_index": 1
+  },
+  {
+   "id": "B3.message_budget",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10363
+  },
+  {
+   "id": "B3.receiver_gate",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10364
+  },
+  {
+   "id": "B3.cross_jepa_weight",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10365
+  },
+  {
+   "id": "B3.alignment_strength",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10366
+  },
+  {
+   "id": "B3.private_state_protection",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10368
+  },
+  {
+   "id": "B3.anti_collapse_weight",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10369
+  },
+  {
+   "id": "B3.ood_reject_threshold",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10370
+  },
+  {
+   "id": "B3.learn_gain",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10372
+  },
+  {
+   "id": "B3.shadow_ratio",
+   "section": "54",
+   "title": "LAYER 4 — B3 CALLOSUM",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10373
+  },
+  {
+   "id": "B4.workspace_dim",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "768",
+   "value": 768.0,
+   "tags": [],
+   "line": 10391
+  },
+  {
+   "id": "B4.active_slot_target",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "12",
+   "value": 12.0,
+   "tags": [],
+   "line": 10392
+  },
+  {
+   "id": "B4.active_slot_soft_max",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "16",
+   "value": 16.0,
+   "tags": [],
+   "line": 10393
+  },
+  {
+   "id": "B4.exact_pointer_slots",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "4",
+   "value": 4.0,
+   "tags": [],
+   "line": 10394
+  },
+  {
+   "id": "B4.goal_slot_priority",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [],
+   "line": 10395
+  },
+  {
+   "id": "B4.conflict_slot_priority",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10396
+  },
+  {
+   "id": "B4.source_binding_strength",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10397
+  },
+  {
+   "id": "B4.write_threshold",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10399
+  },
+  {
+   "id": "B4.refresh_threshold",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10400
+  },
+  {
+   "id": "B4.replacement_aggressiveness",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10401
+  },
+  {
+   "id": "B4.multi_timescale_mix",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10402
+  },
+  {
+   "id": "FOCAL.slot_target",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "6",
+   "value": 6.0,
+   "tags": [],
+   "line": 10408
+  },
+  {
+   "id": "FOCAL.slot_soft_max",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "8",
+   "value": 8.0,
+   "tags": [],
+   "line": 10409
+  },
+  {
+   "id": "FOCAL.global_broadcast_gain",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10410
+  },
+  {
+   "id": "FOCAL.recurrent_gain",
+   "section": "55",
+   "title": "LAYER 5 — B4 WORKSPACE / FOCAL STATE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10411
+  },
+  {
+   "id": "C1.exec_state_dim",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "256",
+   "value": 256.0,
+   "tags": [],
+   "line": 10423
+  },
+  {
+   "id": "C1.broadcast_dim",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "256",
+   "value": 256.0,
+   "tags": [],
+   "line": 10424
+  },
+  {
+   "id": "C1.goal_persistence",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10426
+  },
+  {
+   "id": "C1.constraint_persistence",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [],
+   "line": 10427
+  },
+  {
+   "id": "C1.state_refresh_rate",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10428
+  },
+  {
+   "id": "C1.broadcast_compression",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10429
+  },
+  {
+   "id": "C1.old_state_decay",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10430
+  },
+  {
+   "id": "C1.offer_recency_weight",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10431
+  },
+  {
+   "id": "C1.provenance_binding",
+   "section": "56",
+   "title": "LAYER 6 — C1 EXECUTIVE STATE / BROADCAST",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10432
+  },
+  {
+   "id": "C2.primary_rung",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "4L",
+   "value": 4.0,
+   "tags": [],
+   "line": 10463
+  },
+  {
+   "id": "C2.fallback_rung",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "8L",
+   "value": 8.0,
+   "tags": [],
+   "line": 10464
+  },
+  {
+   "id": "C2.max_rung_lab",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "12L",
+   "value": 12.0,
+   "tags": [],
+   "line": 10465
+  },
+  {
+   "id": "C2.route_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10473
+  },
+  {
+   "id": "C2.intent_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 10474
+  },
+  {
+   "id": "C2.tool_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10475
+  },
+  {
+   "id": "C2.structured_packet_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10476
+  },
+  {
+   "id": "C2.embedding_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10477
+  },
+  {
+   "id": "C2.native_confidence_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10478
+  },
+  {
+   "id": "C2.control_learn_gain",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10480
+  },
+  {
+   "id": "C2.teacher_imitation_weight",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10481
+  },
+  {
+   "id": "C2.human_feedback_weight",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10482
+  },
+  {
+   "id": "C2.real_outcome_weight",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10483
+  },
+  {
+   "id": "C2.shadow_ratio",
+   "section": "57",
+   "title": "LAYER 7 — C2 STRUCTURED CONTROL ORGAN",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10485
+  },
+  {
+   "id": "C3.short_answer_authority",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10508
+  },
+  {
+   "id": "C3.free_language_authority",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10509
+  },
+  {
+   "id": "C3.factual_authority_without_grounding",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10510
+  },
+  {
+   "id": "C3.report_surface_gain",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10511
+  },
+  {
+   "id": "C3.native_token_budget_default",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "64",
+   "value": 64.0,
+   "tags": [],
+   "line": 10513
+  },
+  {
+   "id": "C3.native_token_budget_soft_max",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "128",
+   "value": 128.0,
+   "tags": [],
+   "line": 10514
+  },
+  {
+   "id": "C3.language_learn_gain",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10516
+  },
+  {
+   "id": "C3.teacher_style_weight",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10517
+  },
+  {
+   "id": "C3.human_style_weight",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10518
+  },
+  {
+   "id": "C3.fact_learning_weight",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.05",
+   "value": 0.05,
+   "tags": [],
+   "line": 10519
+  },
+  {
+   "id": "C3.shadow_ratio",
+   "section": "58",
+   "title": "LAYER 8 — C3 TINY BASIC LANGUAGE",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 10520
+  },
+  {
+   "id": "C4.coalition_threshold",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10530
+  },
+  {
+   "id": "C4.reasoning_effort_default",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10531
+  },
+  {
+   "id": "C4.reasoning_effort_conflict_gain",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10532
+  },
+  {
+   "id": "C4.reasoning_effort_uncertainty_gain",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10533
+  },
+  {
+   "id": "C4.reasoning_effort_novelty_gain",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10534
+  },
+  {
+   "id": "C4.max_cycles_age0",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "3",
+   "value": 3.0,
+   "tags": [],
+   "line": 10536
+  },
+  {
+   "id": "C4.body_reentry_budget",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10537
+  },
+  {
+   "id": "C4.inquisition_depth",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10538
+  },
+  {
+   "id": "C4.verify_gain",
+   "section": "59",
+   "title": "LAYER 9 — C4 FOCAL / DELIBERATION",
+   "raw": "0.50",
+   "value": 0.5,
+   "tags": [],
+   "line": 10539
+  },
+  {
+   "id": "GAIN.perceptual",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10560
+  },
+  {
+   "id": "GAIN.callosum",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10561
+  },
+  {
+   "id": "GAIN.workspace",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10562
+  },
+  {
+   "id": "GAIN.focal",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10563
+  },
+  {
+   "id": "GAIN.action",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10564
+  },
+  {
+   "id": "SAL.novelty",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10570
+  },
+  {
+   "id": "SAL.conflict",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10571
+  },
+  {
+   "id": "SAL.prediction_error",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10572
+  },
+  {
+   "id": "SAL.goal_violation",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10573
+  },
+  {
+   "id": "SAL.external_interrupt",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10574
+  },
+  {
+   "id": "CAUT.source_risk",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10580
+  },
+  {
+   "id": "CAUT.B1_B2_disagreement",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10581
+  },
+  {
+   "id": "CAUT.world_surprise",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10582
+  },
+  {
+   "id": "CAUT.router_instability",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10583
+  },
+  {
+   "id": "CAUT.teacher_dependence",
+   "section": "60",
+   "title": "LAYER 10 — ATTENTION / GAIN / SALIENCE",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10584
+  },
+  {
+   "id": "OBS.B1_opportunity_coverage",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10606
+  },
+  {
+   "id": "OBS.B2_opportunity_coverage",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10607
+  },
+  {
+   "id": "OBS.full_B1_pass",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10609
+  },
+  {
+   "id": "OBS.full_B2_pass",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10610
+  },
+  {
+   "id": "OBS.cheap_or_cached_pass",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10611
+  },
+  {
+   "id": "OBS.defer_under_pressure",
+   "section": "61",
+   "title": "LAYER 11 — OBSERVER / WAKE POLICY",
+   "raw": "0.15",
+   "value": 0.15,
+   "tags": [],
+   "line": 10612
+  },
+  {
+   "id": "ELIG.fast_decay_per_event",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10626
+  },
+  {
+   "id": "ELIG.slow_decay_per_event",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "0.93",
+   "value": 0.93,
+   "tags": [],
+   "line": 10627
+  },
+  {
+   "id": "ELIG.slow_mix",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10628
+  },
+  {
+   "id": "ELIG.detailed_trace_rate_normal",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10639
+  },
+  {
+   "id": "ELIG.detailed_trace_rate_error",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10640
+  },
+  {
+   "id": "ELIG.detailed_trace_rate_human_feedback",
+   "section": "62",
+   "title": "LAYER 12 — LOCAL LEARNING / ELIGIBILITY",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10641
+  },
+  {
+   "id": "M.epistemic.real_deterministic_outcome",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10651
+  },
+  {
+   "id": "M.epistemic.primary_source",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10652
+  },
+  {
+   "id": "M.epistemic.human_correction",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10653
+  },
+  {
+   "id": "M.epistemic.verified_teacher",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10654
+  },
+  {
+   "id": "M.epistemic.internal_crosscheck",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10655
+  },
+  {
+   "id": "M.epistemic.dream",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10656
+  },
+  {
+   "id": "M.utility.task_success",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10662
+  },
+  {
+   "id": "M.utility.human_preference",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10663
+  },
+  {
+   "id": "M.utility.latency_cost",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10664
+  },
+  {
+   "id": "M.utility.energy_cost",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10665
+  },
+  {
+   "id": "M.utility.repeated_failure",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10666
+  },
+  {
+   "id": "M.safety.permission_violation",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10672
+  },
+  {
+   "id": "M.safety.irreversible_action",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10673
+  },
+  {
+   "id": "M.safety.rollback_available",
+   "section": "63",
+   "title": "LAYER 13 — MODULATOR BUS",
+   "raw": "-0.20 risk reduction",
+   "value": -0.2,
+   "tags": [],
+   "line": 10674
+  },
+  {
+   "id": "JEPA.B1_detail",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10686
+  },
+  {
+   "id": "JEPA.B2_gist",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.50",
+   "value": 0.5,
+   "tags": [],
+   "line": 10687
+  },
+  {
+   "id": "JEPA.B1_to_B2",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10688
+  },
+  {
+   "id": "JEPA.B2_to_B1",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10689
+  },
+  {
+   "id": "JEPA.JEF_control",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10690
+  },
+  {
+   "id": "JEPA.workspace_state",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10691
+  },
+  {
+   "id": "JEPA.world",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10692
+  },
+  {
+   "id": "JEPA.teacher_student",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10693
+  },
+  {
+   "id": "JEPA.fast_forward",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10694
+  },
+  {
+   "id": "EMA.fast_projector_beta",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.995",
+   "value": 0.995,
+   "tags": [],
+   "line": 10700
+  },
+  {
+   "id": "EMA.slow_adapter_beta",
+   "section": "64",
+   "title": "LAYER 14 — JEPA / PREDICTION LEARNERS",
+   "raw": "0.999",
+   "value": 0.999,
+   "tags": [],
+   "line": 10701
+  },
+  {
+   "id": "MEM.fast_episode_write",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [],
+   "line": 10747
+  },
+  {
+   "id": "MEM.fast_episode_retrieval",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10748
+  },
+  {
+   "id": "MEM.exact_source_priority",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10749
+  },
+  {
+   "id": "MEM.semantic_staging_write",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10750
+  },
+  {
+   "id": "MEM.procedural_staging_write",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10751
+  },
+  {
+   "id": "MEM.parametric_fast_trace",
+   "section": "66",
+   "title": "LAYER 16 — FAST EPISODIC / MEMORY",
+   "raw": "0.00 initially",
+   "value": 0.0,
+   "tags": [],
+   "line": 10752
+  },
+  {
+   "id": "REPLAY.real_episode_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10774
+  },
+  {
+   "id": "REPLAY.old_skill_retention_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10775
+  },
+  {
+   "id": "REPLAY.procedural_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.50",
+   "value": 0.5,
+   "tags": [],
+   "line": 10776
+  },
+  {
+   "id": "REPLAY.semantic_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10777
+  },
+  {
+   "id": "REPLAY.counterfactual_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10778
+  },
+  {
+   "id": "DREAM.gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.05",
+   "value": 0.05,
+   "tags": [],
+   "line": 10780
+  },
+  {
+   "id": "DREAM.policy_learning_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10781
+  },
+  {
+   "id": "DREAM.world_model_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10782
+  },
+  {
+   "id": "DREAM.body_learning_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10783
+  },
+  {
+   "id": "DREAM.fact_write_gain",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10784
+  },
+  {
+   "id": "CONSOLIDATE.min_independent_confirmations",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "3",
+   "value": 3.0,
+   "tags": [
+    "BOOT"
+   ],
+   "line": 10798
+  },
+  {
+   "id": "CONSOLIDATE.shadow_required",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10799
+  },
+  {
+   "id": "CONSOLIDATE.retention_required",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [],
+   "line": 10800
+  },
+  {
+   "id": "CONSOLIDATE.base_merge_authority_age0",
+   "section": "67",
+   "title": "LAYER 17 — REPLAY / DREAM / CONSOLIDATION",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10801
+  },
+  {
+   "id": "META.stability_decay_plasticity",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10809
+  },
+  {
+   "id": "META.novelty_reopen",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 10810
+  },
+  {
+   "id": "META.repeated_failure_reopen",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10811
+  },
+  {
+   "id": "META.conflict_verify_before_learn",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10812
+  },
+  {
+   "id": "META.saturation_suppression",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10813
+  },
+  {
+   "id": "HOME.activation_balance",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10819
+  },
+  {
+   "id": "HOME.dead_path_reopen",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 10820
+  },
+  {
+   "id": "HOME.dominant_path_inhibition",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 10821
+  },
+  {
+   "id": "HOME.shared_representation_drift",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10822
+  },
+  {
+   "id": "HOME.router_collision_monitor",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10823
+  },
+  {
+   "id": "HOME.update_budget_normalization",
+   "section": "68",
+   "title": "LAYER 18 — METAPLASTICITY / HOMEOSTASIS",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10824
+  },
+  {
+   "id": "ANCHOR.pretrained_geometry_weight",
+   "section": "69",
+   "title": "LAYER 19 — REPRESENTATION ANCHOR [NEW RESEARCH KNOB]",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [],
+   "line": 10836
+  },
+  {
+   "id": "ANCHOR.protected_old_skill_weight",
+   "section": "69",
+   "title": "LAYER 19 — REPRESENTATION ANCHOR [NEW RESEARCH KNOB]",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 10837
+  },
+  {
+   "id": "ANCHOR.new_domain_relaxation",
+   "section": "69",
+   "title": "LAYER 19 — REPRESENTATION ANCHOR [NEW RESEARCH KNOB]",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10838
+  },
+  {
+   "id": "ANCHOR.shared_layer_priority",
+   "section": "69",
+   "title": "LAYER 19 — REPRESENTATION ANCHOR [NEW RESEARCH KNOB]",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [],
+   "line": 10839
+  },
+  {
+   "id": "FF.immediate_outcome_weight",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10863
+  },
+  {
+   "id": "FF.latency_prediction",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10864
+  },
+  {
+   "id": "FF.resource_prediction",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10865
+  },
+  {
+   "id": "FF.side_effect_prediction",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10866
+  },
+  {
+   "id": "FF.learn_gain",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10867
+  },
+  {
+   "id": "WORLD.next_state_prediction",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10873
+  },
+  {
+   "id": "WORLD.action_conditioning",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10874
+  },
+  {
+   "id": "WORLD.observation_prediction",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [],
+   "line": 10875
+  },
+  {
+   "id": "WORLD.inverse_action_aux",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10876
+  },
+  {
+   "id": "WORLD.counterfactual_authority",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10877
+  },
+  {
+   "id": "WORLD.real_outcome_grounding",
+   "section": "70",
+   "title": "LAYER 20 — WORLD MODEL / FAST FORWARD",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10878
+  },
+  {
+   "id": "ACTION.internal_mental_auto",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [],
+   "line": 10890
+  },
+  {
+   "id": "ACTION.read_only_tool_auto",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 10891
+  },
+  {
+   "id": "ACTION.reversible_external_auto",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [],
+   "line": 10892
+  },
+  {
+   "id": "ACTION.irreversible_external_auto",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10893
+  },
+  {
+   "id": "ACTION.human_confirm_side_effect",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [],
+   "line": 10895
+  },
+  {
+   "id": "ACTION.human_confirm_rule_change",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10896
+  },
+  {
+   "id": "ACTION.human_confirm_stage_change",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10897
+  },
+  {
+   "id": "COROLLARY.copy_strength",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10899
+  },
+  {
+   "id": "COROLLARY.expected_outcome_binding",
+   "section": "71",
+   "title": "LAYER 21 — ACTION GATE / COROLLARY / HUMAN CONTROL",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10900
+  },
+  {
+   "id": "EVENT.provisional_gain",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [],
+   "line": 10910
+  },
+  {
+   "id": "EVENT.provisional_memory_write",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10911,
+   "duplicate_index": 0
+  },
+  {
+   "id": "EVENT.provisional_weight_learning",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [],
+   "line": 10912
+  },
+  {
+   "id": "EVENT.final_gain",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 10914
+  },
+  {
+   "id": "EVENT.final_memory_write",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [],
+   "line": 10915
+  },
+  {
+   "id": "EVENT.final_learning_eligibility",
+   "section": "72",
+   "title": "LAYER 22 — PROVISIONAL vs AUTHORITATIVE EVENT STATE [NEW]",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 10916
+  },
+  {
+   "id": "EVENT.provisional_memory_write",
+   "section": "72H",
+   "title": "Provisional-State-Persistence-Hardening",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 10942,
+   "duplicate_index": 1
+  },
+  {
+   "id": "CTX.exact_recent_pin",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [],
+   "line": 11025
+  },
+  {
+   "id": "CTX.global_compact_state",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [],
+   "line": 11026
+  },
+  {
+   "id": "CTX.reconstruct_disposable_cache",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [],
+   "line": 11027
+  },
+  {
+   "id": "CTX.long_context_block_index",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.45",
+   "value": 0.45,
+   "tags": [],
+   "line": 11028
+  },
+  {
+   "id": "CTX.prefetch_gain",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [],
+   "line": 11029
+  },
+  {
+   "id": "CTX.cache_compression_aggressiveness",
+   "section": "74",
+   "title": "LAYER 24 — CACHE / CONTEXT OPTIMIZATION",
+   "raw": "0.35",
+   "value": 0.35,
+   "tags": [],
+   "line": 11030
+  },
+  {
+   "id": "SKILL.compile_after_successes",
+   "section": "75",
+   "title": "LAYER 25 — PROCEDURALIZATION / HABIT FORMATION",
+   "raw": "5",
+   "value": 5.0,
+   "tags": [
+    "BOOT"
+   ],
+   "line": 11058
+  },
+  {
+   "id": "SKILL.shadow_cycles",
+   "section": "75",
+   "title": "LAYER 25 — PROCEDURALIZATION / HABIT FORMATION",
+   "raw": "10",
+   "value": 10.0,
+   "tags": [
+    "BOOT"
+   ],
+   "line": 11059
+  },
+  {
+   "id": "SKILL.automatic_authority",
+   "section": "75",
+   "title": "LAYER 25 — PROCEDURALIZATION / HABIT FORMATION",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [],
+   "line": 11060
+  },
+  {
+   "id": "SKILL.reopen_on_surprise",
+   "section": "75",
+   "title": "LAYER 25 — PROCEDURALIZATION / HABIT FORMATION",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [],
+   "line": 11061
+  },
+  {
+   "id": "SKILL.reopen_on_failure",
+   "section": "75",
+   "title": "LAYER 25 — PROCEDURALIZATION / HABIT FORMATION",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [],
+   "line": 11062
+  },
+  {
+   "id": "AGE0.PERCEPTION.raw_integrity",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11125
+  },
+  {
+   "id": "AGE0.PERCEPTION.teacher_presence",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11126
+  },
+  {
+   "id": "AGE0.PERCEPTION.student_projector_learn",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.65",
+   "value": 0.65,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11127
+  },
+  {
+   "id": "AGE0.B1_DETAIL.inference_authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11130
+  },
+  {
+   "id": "AGE0.B1_DETAIL.adapter_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11131
+  },
+  {
+   "id": "AGE0.B1_DETAIL.base_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11132
+  },
+  {
+   "id": "AGE0.B2_GIST.inference_authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.85",
+   "value": 0.85,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11135
+  },
+  {
+   "id": "AGE0.B2_GIST.adapter_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11136
+  },
+  {
+   "id": "AGE0.B2_GIST.base_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11137
+  },
+  {
+   "id": "AGE0.CALLOSUM.communication",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.40",
+   "value": 0.4,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11140
+  },
+  {
+   "id": "AGE0.CALLOSUM.latent_authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11141
+  },
+  {
+   "id": "AGE0.CALLOSUM.learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11142
+  },
+  {
+   "id": "AGE0.CALLOSUM.private_state_protection",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.90",
+   "value": 0.9,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11143
+  },
+  {
+   "id": "AGE0.JEF_C2_CONTROL.authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.80",
+   "value": 0.8,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11146
+  },
+  {
+   "id": "AGE0.JEF_C2_CONTROL.shadow_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11147
+  },
+  {
+   "id": "AGE0.JEF_C3_LANGUAGE.authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.55",
+   "value": 0.55,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11150
+  },
+  {
+   "id": "AGE0.JEF_C3_LANGUAGE.factual_authority",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11151
+  },
+  {
+   "id": "AGE0.JEF_C3_LANGUAGE.language_learning",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.30",
+   "value": 0.3,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11152
+  },
+  {
+   "id": "AGE0.FOCAL_DELIBERATION.default_effort",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.25",
+   "value": 0.25,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11155
+  },
+  {
+   "id": "AGE0.FOCAL_DELIBERATION.conflict_escalation",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.60",
+   "value": 0.6,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11156
+  },
+  {
+   "id": "AGE0.FAST_EPISODIC.write",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11159
+  },
+  {
+   "id": "AGE0.FAST_EPISODIC.retrieval",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.75",
+   "value": 0.75,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11160
+  },
+  {
+   "id": "AGE0.REPLAY.real_replay",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.70",
+   "value": 0.7,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11163
+  },
+  {
+   "id": "AGE0.REPLAY.counterfactual",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.20",
+   "value": 0.2,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11164
+  },
+  {
+   "id": "AGE0.DREAM.overall",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.05",
+   "value": 0.05,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11167
+  },
+  {
+   "id": "AGE0.DREAM.factual_write",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.00",
+   "value": 0.0,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11168
+  },
+  {
+   "id": "AGE0.HUMAN_CONTROL.side_effect_confirm",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.95",
+   "value": 0.95,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11171
+  },
+  {
+   "id": "AGE0.HUMAN_CONTROL.rule_stage_confirm",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "1.00",
+   "value": 1.0,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11172
+  },
+  {
+   "id": "AGE0.AUTONOMY.overall",
+   "section": "78",
+   "title": "AGE-0 DEFAULT PROFILE — EINMAL ALLES ZUSAMMEN",
+   "raw": "0.10",
+   "value": 0.1,
+   "tags": [
+    "AGE0_PROFILE"
+   ],
+   "line": 11175
+  }
+ ]
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "V13_LEARNING_INTEGRITY_ORIGINAL_REPRO_V1",
+  "scope": "synthetic omission reproducer only; no native learning gain",
+  "expected_rows": 21,
+  "observed_rows": 4,
+  "original_analysis": {
+    "worlds": {
+      "calc_counter": {
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 4,
+          "adapted_actions": [
+            "double",
+            "add_15",
+            "quarter",
+            "subtract_7"
+          ]
+        },
+        "calc_shift_test": {
+          "double": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "calc_in_test": {
+          "double": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "shift_actions_improved": 1,
+        "pass": true
+      },
+      "note_edit": {
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 3,
+          "adapted_actions": [
+            "append_done",
+            "prefix_urgent",
+            "uppercase"
+          ]
+        },
+        "note_shift_test": {
+          "append_done": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "note_in_test": {
+          "append_done": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "shift_actions_improved": 1,
+        "pass": true
+      }
+    },
+    "gates": {
+      "shift_gain_max_ratio": 0.9,
+      "in_world_max_ratio": 1.02
+    },
+    "verdict": "CONTINUAL_LEARNING_CONFIRMED"
+  },
+  "original_source_sha256": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+  "native_models_launched": false,
+  "canonical_gate_pass": false
+}

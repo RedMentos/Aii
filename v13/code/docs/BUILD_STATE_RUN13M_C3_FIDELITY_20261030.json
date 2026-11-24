@@ -1,0 +1,63 @@
+{
+  "package": "RUN13M_C3_SOURCE_FIDELITY_SHADOW_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13m-c3-source-fidelity-shadow-20261030-auto11",
+  "parent": "b461c0b935e91cc8c28d489900a49900296df6a1",
+  "preregistered_commit": "3dfa286f372966d1137b52c96953f6200ebcdd4a",
+  "source_head_at_preflight_launch": "e44ee1be9160323ebf6d59847f7b44c824408cc9",
+  "source_module": "v13/code/v13/agi/c3_source_fidelity_shadow_run13m.py",
+  "test_module": "v13/code/tests/test_c3_source_fidelity_shadow_run13m.py",
+  "evidence": {
+    "preflight_actions_run": 41088362023,
+    "status": "SOFTWARE_GREEN",
+    "artifact_id": 12991549218,
+    "zip_sha256": "82a7fb5ad0c9762847fad840f390189cf75b02629dd992a89bda1e53df3f3ab6",
+    "crc": "PASS",
+    "inner_hashes": "16/16",
+    "tests": "20/20",
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13M-C3-Fidelity/run13m-shadow-original-41088362023.zip",
+    "backup_byte_identical": true,
+    "native": "NOT_RUN_THIS_PACKAGE",
+    "original_run13l_zip_sha256": "cb1c2786f663ca49840ff73d26146f60c3bbebd66546ac7b2d155e24fc72f4cb"
+  },
+  "expected_posthoc_fixture": {
+    "accepted": [
+      "Canyon251",
+      "Delta251",
+      "Ember251",
+      "Forest251"
+    ],
+    "rejected": [
+      "Atlas251",
+      "Beacon251"
+    ],
+    "not_new_utility_evidence": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "delivery_authority": 0,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run13M synthetic SHADOW tests 20/20 green; can it reject heldout natural-language paraphrases without false accept? No such claim yet.",
+    "No active C3 delivery; any egress requires fresh Store/ContextOS witness, user approval and new acceptance gate.",
+    "Historical full-suite G14 RED and STEP2 utility failure remain."
+  ],
+  "next_command": "Independently review Run13M fail-closed parser against adversarial counterexamples; then prioritize broader canonical C2/Body-JEPA/ContextOS packages rather than endlessly iterating C3 prompt-only pilots.",
+  "platform_remaining_budget": "UNKNOWN"
+}

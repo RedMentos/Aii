@@ -1,0 +1,67 @@
+{
+  "schema": "v13.run13j.c3_jef_prompt_native.fixture.v1",
+  "seed": 227,
+  "cases": [
+    {
+      "project": "Pioneer227",
+      "budget": 743,
+      "a": "Amber",
+      "a_cost": 281,
+      "a_days": 9,
+      "b": "Indigo",
+      "b_cost": 356,
+      "b_days": 4
+    },
+    {
+      "project": "Orchid227",
+      "budget": 692,
+      "a": "Birch",
+      "a_cost": 457,
+      "a_days": 3,
+      "b": "Sable",
+      "b_cost": 318,
+      "b_days": 8
+    },
+    {
+      "project": "Harbor227",
+      "budget": 856,
+      "a": "Maple",
+      "a_cost": 612,
+      "a_days": 11,
+      "b": "Coral",
+      "b_cost": 475,
+      "b_days": 5
+    },
+    {
+      "project": "Lattice227",
+      "budget": 934,
+      "a": "Falcon",
+      "a_cost": 557,
+      "a_days": 2,
+      "b": "River",
+      "b_cost": 642,
+      "b_days": 7
+    },
+    {
+      "project": "Vertex227",
+      "budget": 517,
+      "a": "Opal",
+      "a_cost": 286,
+      "a_days": 6,
+      "b": "Bronze",
+      "b_cost": 403,
+      "b_days": 4
+    },
+    {
+      "project": "Nimbus227",
+      "budget": 638,
+      "a": "Quartz",
+      "a_cost": 419,
+      "a_days": 8,
+      "b": "Willow",
+      "b_cost": 274,
+      "b_days": 3
+    }
+  ],
+  "cases_sha256": "d43a65572d85a3f3c1b2ef81d2903c19de880e643887c9bae96f0facbc1b6712"
+}

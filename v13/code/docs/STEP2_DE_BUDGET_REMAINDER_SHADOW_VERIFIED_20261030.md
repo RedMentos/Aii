@@ -1,0 +1,17 @@
+# STEP2 German budget remainder SHADOW — verified source-only result (2026-10-30)
+
+Review-only child of #1222 at `905bfeb0eeac1bb77ef29b12432d8279bb2193d4`. New prereg `64f1b66c163ae581e211b49b1d5095975c3dc649` preceded fixture `b8cb3bf94dce110f8e81087417247742ec518c8e`, blob `b0d50ab64b97aa646fd5b3dd02940a8375c0eafc`. No change to original native STEP12 proof, frozen seed79/83 cohorts, C3/C2/Body, eligibility, ToolStep/C5, config, models or age gates.
+
+## New candidate
+`v13/agi/budget_de_shadow.py` is a **separate unwired, deterministic, source-exact** German budget-minus-option-cost reader. It accepts only explicit German `Budget|Kostenrahmen|Obergrenze N Euro`, exactly two `Option NAME kostet N Euro` clauses and an explicit request for budget remainders. Returns source spans and integer remainders; abstains on missing/conflicting rules, missing/duplicate/third option, fractional/negative costs, currency ambiguity, unrelated questions or attempts to bypass checks. Does **not** choose a project, infer eligibility, change policy, call a model or expose a live answer.
+
+## Exact source-only evidence
+- Original Actions **`41013833587` GREEN**, head `d0fa75b88198ed4c1c44cfc6eecfda14b819fc21`, artifact `12958761621`, ZIP SHA256 **`277c67fe6bdbc6745ac4c6476de72f7ac9c2e7e735927cc9bf390b0ffd9c463e`**, CRC clean **12/12 inner SHA256SUMS**, 5/5 stage exits0, 17/17 adversarial tests, privacy CLEAN. Frozen 24 new synthetic prompts: **12/12 supported exact** budget and both remaining values with verified source spans, **0/12 unsupported false-positive outputs**, 0 wrong emitted.
+- New original-native posthoc Actions **`41013926611` GREEN**, exact head `780c034cce01a2136e2e980e9d59c0b1a51eda54`, artifact `12958821611`, ZIP SHA256 **`9ee900d49c61925e86f340939d8a86b37ddef74a967f69779e1c87b5611d9d9a`**, CRC clean **17/17 inner SHA256SUMS**, 7/7 stage exits0 (TEST/EVAL/COMPILE/PRIVACY/DIFF/ORIGINAL_FETCH/POSTHOC), 17/17 tests, privacy CLEAN.
+- Original real Linux-native STEP12 ZIP Actions `40987192595`, SHA256 `ad961abb8eea8d567f58cbc4f1fed67f7a79920e36564bb5527b7ea08fa4f3f7`, HEAD `3c9e961d123e5bed1826802fc3e236c19078f5ee`, CRC clean, 27/27 inner hashes. The original proof still has **0/2 required remainders in native output** and **`SEMANTIC_REQUIREMENT_FAIL`**. New read-only SHADOW parser computes Rot **40 Euro**, Blau **10 Euro** from the *original source query*; this is **posthoc software-only**, not a corrected native output, not a ToolStep/C5 invocation, and not STEP2 acceptance. The original native ZIP was not copied into new CI artifact.
+- Both new source-only ZIPs backed privately at `/V13-Checkpoints/2026-10-30/Run11-STEP2-GermanBudgetShadow/`, upload and byte-identical SHA256 re-materialization confirmed. No private data published.
+
+## Next
+To move toward actual STEP2 utility, independently preregister a **new native paired** no-body/one-body/both comparison on fresh German budget/deadline/locality tasks, with separate source-bound tool-consumer arm and strict C5/ToolStep policy/permission gates. No live German budget tool until user/age rights and proof allow it. Do not rescore or alter the original STEP12 native proof. Another independent canonical organ can proceed in parallel.
+
+Negative gates: Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; Redmi UNMEASURED; whole V13 INCOMPLETE. Platform remaining budget UNKNOWN.

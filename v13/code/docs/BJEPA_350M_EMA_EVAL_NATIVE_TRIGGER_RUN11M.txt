@@ -1,0 +1,11 @@
+V13 RUN11M NATIVE 350M EMA TARGET EVAL PAIRED EXPLICIT TRIGGER
+Date: 2026-10-30; owner GPT-6; review-only PR #1242.
+Software prereg 41029568860 GREEN 12/12; original raw verified and private.
+Full unfiltered run11k terminal (3719 tests, two historical Run34/37 errors).
+No active heavy GitHub Actions owners at trigger preflight.
+Pinned model LiquidAI/LFM2.5-350M @ 120bf032c36dd1273de754669da040dba7ad4982.
+Master SHA256 1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e.
+Body-JEPA Git blob b560d4e88fe457f381e89dfc5d6188a8ec3b306b.
+Fixture SHA256 be4925666ef6ffc2206dc450f775dee8ac7a6eb21fbc67082a0f49f1e3804e95.
+Seeds 73/79/83, arms CE EMA_TRAIN EMA_EVAL SHUFFLED, 2 steps, no adapter export.
+Do not promote Age0/STEP2/B3/Body-JEPA/jepa_weight/Redmi/whole-system gates.

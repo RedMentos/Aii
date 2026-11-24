@@ -1,0 +1,53 @@
+test_opt_in_only_approved_memory_child_and_toggle_reloads (tests.test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads) ... ok
+test_actual_write_map_is_shadow_only_and_zero_is_observed_zero (tests.test_native_firing_runtime_candidate.FiringRowMap.test_actual_write_map_is_shadow_only_and_zero_is_observed_zero) ... ok
+test_bound_model_binary_library_sidecar_native_change_fails_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_bound_model_binary_library_sidecar_native_change_fails_closed) ... ok
+test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing (tests.test_native_firing_runtime_candidate.FiringRowMap.test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing) ... ok
+test_row_dimensions_status_binding_and_authority_fail_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_row_dimensions_status_binding_and_authority_fail_closed) ... ok
+test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed) ... ok
+test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics) ... ok
+test_log_rotate_truncate_and_multi_native_steps_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_log_rotate_truncate_and_multi_native_steps_fail_closed) ... ok
+test_metrics_wrap_actual_request_window_and_clear_on_next_request (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_metrics_wrap_actual_request_window_and_clear_on_next_request) ... ok
+test_only_current_request_window_is_reported (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_only_current_request_window_is_reported) ... ok
+test_candidate_hash_bound_sources_remain_unmodified (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_hash_bound_sources_remain_unmodified) ... ok
+test_candidate_persists_observation_without_removing_exact_sources (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources) ... ERROR
+test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact (tests.test_sparse_delivery.SparseDelivery.test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact) ... ok
+test_approved_content_or_provenance_mismatch_excluded (tests.test_sparse_delivery.SparseDelivery.test_approved_content_or_provenance_mismatch_excluded) ... ok
+test_bound_fact_is_inventory_only_exact_retained (tests.test_sparse_delivery.SparseDelivery.test_bound_fact_is_inventory_only_exact_retained) ... ok
+test_forget_updates_map_binding_and_rollback_cannot_restore_fact (tests.test_sparse_delivery.SparseDelivery.test_forget_updates_map_binding_and_rollback_cannot_restore_fact) ... ok
+test_inactive_or_deleted_source_excluded (tests.test_sparse_delivery.SparseDelivery.test_inactive_or_deleted_source_excluded) ... ok
+test_indexes_style_and_ratings_not_delivery_candidates (tests.test_sparse_delivery.SparseDelivery.test_indexes_style_and_ratings_not_delivery_candidates) ... ok
+test_legacy_or_missing_map_runs_but_cannot_propose (tests.test_sparse_delivery.SparseDelivery.test_legacy_or_missing_map_runs_but_cannot_propose) ... ok
+test_malformed_native_size_or_row_map_excluded (tests.test_sparse_delivery.SparseDelivery.test_malformed_native_size_or_row_map_excluded) ... ok
+test_model_native_and_binary_changes_fail_closed (tests.test_sparse_delivery.SparseDelivery.test_model_native_and_binary_changes_fail_closed) ... ok
+test_shared_library_must_be_bound_and_tamper_cannot_claim_loaded_binding (tests.test_sparse_delivery.SparseDelivery.test_shared_library_must_be_bound_and_tamper_cannot_claim_loaded_binding) ... ok
+test_training_bindings_only_facts (tests.test_sparse_delivery.SparseDelivery.test_training_bindings_only_facts) ... ok
+test_unapproved_sidecar_tamper_invalidates_snapshot (tests.test_sparse_delivery.SparseDelivery.test_unapproved_sidecar_tamper_invalidates_snapshot) ... ok
+test_zero_value_unreachable_threshold_or_empty_guard_excluded (tests.test_sparse_delivery.SparseDelivery.test_zero_value_unreachable_threshold_or_empty_guard_excluded) ... ok
+test_dead_final_runner_never_claims_loaded_snapshot (tests.test_sparse_delivery_runtime.SparseDeliveryRuntime.test_dead_final_runner_never_claims_loaded_snapshot) ... ok
+test_final_healthy_runner_inventories_without_removing_exact_or_lineage (tests.test_sparse_delivery_runtime.SparseDeliveryRuntime.test_final_healthy_runner_inventories_without_removing_exact_or_lineage) ... ok
+test_inventory_exception_cannot_remove_native_output_or_exact_dependencies (tests.test_sparse_delivery_runtime.SparseDeliveryRuntime.test_inventory_exception_cannot_remove_native_output_or_exact_dependencies) ... ok
+test_normal_replacement_uses_final_memory_runner_binding (tests.test_sparse_delivery_runtime.SparseDeliveryRuntime.test_normal_replacement_uses_final_memory_runner_binding) ... ok
+test_same_causal_replacement_cannot_inventory_obsolete_selected_server (tests.test_sparse_delivery_runtime.SparseDeliveryRuntime.test_same_causal_replacement_cannot_inventory_obsolete_selected_server) ... ok
+test_capture_follows_health_and_warm_reuse_never_rehashes (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_capture_follows_health_and_warm_reuse_never_rehashes) ... ok
+test_dead_child_and_failed_load_clear_binding_and_log (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_dead_child_and_failed_load_clear_binding_and_log) ... ok
+test_legacy_native_without_map_still_runs_but_cannot_claim_binding (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_legacy_native_without_map_still_runs_but_cannot_claim_binding) ... ok
+test_native_changed_during_health_handshake_never_publishes_binding (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_changed_during_health_handshake_never_publishes_binding) ... ok
+test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse) ... ok
+test_registry_deactivation_reaps_old_child_before_normal_load (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_registry_deactivation_reaps_old_child_before_normal_load) ... ok
+test_shared_library_change_invalidates_warm_child_even_with_same_launcher (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_shared_library_change_invalidates_warm_child_even_with_same_launcher) ... ok
+test_unapproved_inherited_memory_environment_never_enters_normal_child (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_unapproved_inherited_memory_environment_never_enters_normal_child) ... ok
+test_watched_model_binary_manifest_and_map_changes_force_revalidation (tests.test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_watched_model_binary_manifest_and_map_changes_force_revalidation) ... ok
+
+======================================================================
+ERROR: test_candidate_persists_observation_without_removing_exact_sources (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 212, in test_candidate_persists_observation_without_removing_exact_sources
+    self.assertEqual(payload['observed_memory_ids'],[self.mid])
+                     ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'observed_memory_ids'
+
+----------------------------------------------------------------------
+Ran 39 tests in 5.072s
+
+FAILED (errors=1)

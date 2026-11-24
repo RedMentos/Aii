@@ -1,0 +1,100 @@
+name: V13 Run117P typed JEF C3 postgen shadow software review
+on:
+  push:
+    branches:
+      - assistant/v13-run117-role-postgen-shadow-20261031-hourly11
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgen-source-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Test exact review candidate, source lineage and zero authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117p-postgen"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          set +e
+          test "$(git hash-object v13/code/v13/jef_b1b2_c3_role_postgen_shadow_candidate.py)" = 7a873d99694a566f672989a339d3f1c0c642b693
+          a=$?
+          test "$(git hash-object v13/code/tests/test_run117_b1b2_jef_c3_role_postgen.py)" = 919001e356a692628ffb7f88a9b2c526dcc4ab6c
+          b=$?
+          test "$a" -eq 0 && test "$b" -eq 0
+          source_rc=$?
+          echo "$source_rc" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117p-venv" > "$e/VENV_RAW.log" 2>&1
+          venv_rc=$?
+          py="$RUNNER_TEMP/v13-run117p-venv/bin/python"
+          if [ "$venv_rc" -eq 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            deps_rc=$?
+          else
+            echo VENV_RED > "$e/DEPS_RAW.log"
+            deps_rc=1
+          fi
+          echo "$deps_rc" > "$e/DEPS_EXIT.txt"
+          if [ "$deps_rc" -eq 0 ] && [ "$source_rc" -eq 0 ]; then
+            (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_run117_b1b2_jef_c3_role_postgen \
+              tests.test_run115k_realstore_bridge_review \
+              tests.test_run115k_postassembly_authority_review \
+              tests.test_run116_b1b2_jef_c3_native \
+              tests.test_jef_two_source_role_formatter_candidate \
+              tests.test_two_source_pointer_shadow_candidate \
+              tests.test_b1b2_c3_source_envelope_candidate) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+            test_rc=1
+          fi
+          echo "$test_rc" > "$e/TEST_EXIT.txt"
+          "$py" -m compileall -q v13/code/v13/jef_b1b2_c3_role_postgen_shadow_candidate.py v13/code/tests/test_run117_b1b2_jef_c3_role_postgen.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5cc9852fbadec73bfc0f7f4fdbb7f52340be3d14 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 5cc9852fbadec73bfc0f7f4fdbb7f52340be3d14 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]); names=('SOURCE','DEPS','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117p.role_postgen_software_evidence.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed':False,'synthetic_c3':True,
+             'redmi_measured':False,'step2_promoted':False,
+             'b3_promoted':False,'body_jepa_promoted':False,
+             'output_committed':False,'learning_authority':0,'delivery_authority':0}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/TEST_RAW.log"
+          for rc in "$source_rc" "$deps_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original GREEN or RED evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117p-postgen-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117p-postgen/
+          if-no-files-found: warn
+          retention-days: 90

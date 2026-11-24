@@ -1,0 +1,16 @@
+# Seed79 C3 native raw — independent checkpoint (2026-10-30)
+
+Owner: `assistant/v13-de79-native-review-shadow-pipeline-20261030` (review-only child of PR #1220, base `542c8c426f4ff15dd5b26d94dd89152fe60d9dbc`). No modifications to frozen seed79 fixture, model, C3 source, scorer, runner, preregistration, age/learning or production consumer.
+
+## Verified original, not a fresh model run
+- Original Actions native job `41011375839`, exact tested head `542c8c426f4ff15dd5b26d94dd89152fe60d9dbc`, **success**. Original ZIP artifact `12958290116`, GitHub digest and independently computed SHA256 **`0538160dbd6f59804a0e670e5c34ea75aab5e6b3f031cac0f6ac13203be08d70`**, 27,142 bytes.
+- Downloaded original ZIP, CRC clean, **36/36 inner SHA256SUMS exact**, all **10/10 stage exits 0** (PINS/VENV/DEPS/TEST/BOOTSTRAP/NATIVE/REPORT_CHECK/COMPILE/PRIVACY/DIFF), privacy scan and diff check clean. Report `HEAD.txt` matches tested head.
+- 12/12 real Linux-native C3 source-bound raw rows and native PIDs; 12/12 `postclose_process_reaped=true`; exact named-value sets **11/12**, invented nonaggregate **0**, aggregate-read **0**. **C79-05 is wrong**: source expects `Morgen=-3`, native read labels `temperaturen=-3`; remaining values `Mittag=9`, `Abend=2` match. Original frozen decision `NATIVE_C3_DE_READ_SUPPORTED` is a **narrow preregistered seed79 result only**, not full German arithmetic or live tool utility.
+- Independent replay of original report/row JSON, not just Actions green; original `POSTHOC_AUDIT.json` agrees (11 exact, 0 invented). Native model pin `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, revision `657e078c94084481950a2d555a941481f715536b`; binary SHA256 reported `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`.
+- Original earlier Actions `41011141179` remains **RED** at `1855bd2da0b0fea6ce98a3a32d3453b9f64d52ef`: `KeyError: 'jepa_weight'` in harness before any model inference, artifact `12957452816` ZIP SHA256 `afc4816d27b0a5d00aec9057020407354f8ded31c7b644658526e7e4018627a3`; not overwritten or recast as native evidence.
+- Original successful ZIP backed privately at `/V13-Checkpoints/2026-10-30/Run11-Seed79-Independent-Review/seed79-native-41011375839.zip`, Library upload confirmed, re-materialized SHA256 byte-identical. Public git stores **no original raw transcript**.
+
+## Remaining scope and next exact work
+Build a **separate unwired German SHADOW pipeline** consuming original frozen C3 typed JSON and the separate seed73 v2 question classifier; enforce fail-closed name-to-number source binding, duplicate-key JSON rejection and deterministic arithmetic with no ToolStep/C5 invocation. Unit-test adversarial negatives and replay the exact 12 original native rows as a *posthoc diagnostic*, not a new preregistered score. Freeze fresh disjoint holdout before any generalization claim. Next command: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_c3_de_seed79_shadow_pipeline_20261030`; run an exact-source GitHub Actions source-only test and verify original raw artifact. Never run another native heavy job concurrently.
+
+Negative gates: Age0 `RECORD_ONLY`; STEP2 `UTILITY_FAIL`; B3 `NO_PROMOTION`; Body-JEPA `UNAVAILABLE`; `jepa_weight=0`; Redmi `UNMEASURED`; whole-system `INCOMPLETE`. Platform remaining budget UNKNOWN.

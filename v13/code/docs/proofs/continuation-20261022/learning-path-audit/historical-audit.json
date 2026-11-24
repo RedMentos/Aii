@@ -1,0 +1,615 @@
+{
+  "reports": [
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "43469456851404c82b96632e",
+          "manifest_sha256": "4c3458cc919d80ed56e3980a5b6b5ce3a762c3075847c594045b002976ae7753",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.06565,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 21
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-a8.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "5acdb710a4de89fd110ba47e",
+          "manifest_sha256": "d6f49df9058da4b9906a59c32b6a3594499150bf23c5838e3b01e11ab6fc151a",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.06028,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-drift.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "1f447542d6875461e2fecdbb",
+          "manifest_sha256": "ccbb4dd657c6789b3c9c15a083cf9485fad8a4068f3faea1b7f36da275f5dbe6",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.06559,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 21
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-ffn.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "f20ac27dfd36955ea734fbbc",
+          "manifest_sha256": "fbc5ba3744e3a25dba9971454ad26372d0f981fa00622addda06c5659c950a86",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.06538,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-ffn2.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "e3f2e39ea9ec55ec4e39f5c4",
+          "manifest_sha256": "94fba5ea9a5bac9e9326ac21984a464eff3f16a97d696f2b4a5a783bd5050b7f",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.06028,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-ffn2a8.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "f0f3da8c84fd08d40c6d65e1",
+          "manifest_sha256": "fe67f47cb7458e79df13b8ebbe26d159e9c6455b364c3d3808b29672a00ed1dc",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.05776,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-ffn2a8s7.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "bb2d430ad2493ba84a9870c3",
+          "manifest_sha256": "fc6635aa61410c915fbe2589d337fa1700a5ee2a98c315e9704ba4986035deaa",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.05771,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-ffn2s7.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "ccdaba78be1b88b727ef0faa",
+          "manifest_sha256": "18c30d5276857fa794606f929613858e352a025a1b7257bcc62a94c56e8a645b",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.07393,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 21
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-live.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "b4e393c2eb2f856be1f601e4",
+          "manifest_sha256": "cb7d1ceee6cf8d20fcad5791dcb66a8f2612dab0917f3bb7af639b67fc16f30b",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.04623,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-sdft.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "b4e393c2eb2f856be1f601e4",
+          "manifest_sha256": "488476a1e9a3b46b2ec69a045e134d648e313c6c86dfdc6e705ca6226bb7fbf1",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.04582,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 21
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-sdft2.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "41a694220f9fffe372e04c86",
+          "manifest_sha256": "69f7cb4bdc87e30d17838f140fd59bbae3a326d7c88b2504a285ac037d87462c",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.051,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 25
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-sdfta12.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "fc07e1cfbd02600a99110815",
+          "manifest_sha256": "764dfc67de6b336cc6b7f7aecdd139c094decb01ff50efefcd584c45d65a5401",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.0602,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 24
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-sdfta12s7.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "b6a651d34856f96ca6fd05a2",
+          "manifest_sha256": "7ba88d7c42d25dd72e9bc525e34ae090cce380580a5eefe301eee22000cfe9d3",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.05053,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 20
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora-sdftlr2.json"
+    },
+    {
+      "audit": {
+        "activation_or_gate_changes": false,
+        "binding_status": "UNBOUND_HISTORICAL_RUN",
+        "body_world_jepa_established": false,
+        "claim_limit": "Inspects reported configuration and known source semantics; no historical source attestation, model execution, gradient measurement or utility gate.",
+        "dataset_bytes_verified": false,
+        "deployed_utility_attributable_to_jepa": "UNMEASURED",
+        "errors": [],
+        "historical_run_source_verified": false,
+        "input_binding_matches": null,
+        "inputs": {
+          "binding_sha256": null,
+          "dataset_hash_label": "904a7f15b1c67ce0262936cf",
+          "manifest_sha256": "fe6373ca13790904ab268ac9f6c341a591f5f9a05ef0ad6c4cce969bdac7c4dc",
+          "trainer_sha256": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+        },
+        "jepa_component_gradient_contribution": "UNMEASURED",
+        "notes": [
+          "NO_COMPONENT_LOSS_HISTORY",
+          "COSINE_CHANGE_CANNOT_ESTABLISH_JEPA_TRAINING"
+        ],
+        "reported_run": {
+          "component_history": "NOT_RECORDED",
+          "cosine_delta": 0.15317,
+          "jepa_configuration": "DISABLED",
+          "jepa_weight": 0.0,
+          "steps": 21
+        },
+        "schema": "V13_LEARNING_PATH_AUDIT_V1",
+        "source_mechanism": {
+          "cosine_also_measured_when_jepa_disabled": true,
+          "objective": "PROMPT_TO_FIXED_BASE_ANSWER_COSINE",
+          "separate_predictor": false,
+          "target": "PRE_ADAPTER_BASE_ANSWER_TOKEN_MEAN",
+          "target_ema_update": false,
+          "target_stop_gradient": true,
+          "trainable_parts": "PEFT_LORA_PARAMETERS"
+        },
+        "status": "AUDIT_REVIEW_ONLY"
+      },
+      "manifest": "bench-results/ag6-live-20261010/ag6-live-lora.json"
+    }
+  ],
+  "schema": "V13_HISTORICAL_LATENT_ALIGNMENT_AUDIT_V1",
+  "scope": "Retrospective audit of existing artifacts. No training, gradient measurement, historical-source attestation, gate promotion or Redmi run.",
+  "source_commit": "9436eb7770cbe65c0c9cd1d5f3083abf359b49fb",
+  "summary": {
+    "jepa_disabled": 14,
+    "positive_cosine_delta": 14,
+    "rejected_inputs": 0,
+    "runs": 14
+  }
+}

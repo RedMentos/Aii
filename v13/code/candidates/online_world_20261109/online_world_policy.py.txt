@@ -1,0 +1,53 @@
+"""Explicit opt-in and runtime gates for the local online world learner."""
+KEY='ONLINE_WORLD_POLICY_V1'
+REVISION='online-world-policy-v1'
+HUMAN='EXPLICIT_HUMAN'
+
+
+def enabled(store):
+    state,_=store.state(KEY,None)
+    if state is None:return False
+    if (not isinstance(state,dict) or set(state)!={'revision','enabled'}
+            or state['revision']!=REVISION or type(state['enabled']) is not bool):
+        raise ValueError('Invalid online world policy')
+    return state['enabled']
+
+
+def set_enabled(store,value,authority='SYSTEM'):
+    if type(value) is not bool:raise ValueError('enabled must be boolean')
+    if value and authority!=HUMAN:raise PermissionError('Explicit human activation required')
+    for attempt in (0,1):
+        state,version=store.state(KEY,None)
+        try:current=enabled(store)
+        except ValueError:
+            if value:raise
+            current=None
+        if current==value:return value
+        try:
+            store.set_state(KEY,{'revision':REVISION,'enabled':value},expected=version)
+            return value
+        except ValueError:
+            if attempt:raise
+
+
+def blocked(runtime,authority='SYSTEM'):
+    if authority not in {'SYSTEM',HUMAN}:raise ValueError('Invalid online world authority')
+    if runtime.cfg.get('learning_mode') not in {'SHADOW_UPDATE','APPROVED_COMMIT'}:
+        return 'RECORD_ONLY'
+    if authority=='SYSTEM' and not enabled(runtime.store):return 'OFF'
+    from .inputs import paused
+    if paused(runtime.store,'training'):return 'PAUSED_TRAINING'
+    if runtime.paused or runtime.stop.is_set() or runtime.cancel_event.is_set():return 'PAUSED_OR_CANCELLED'
+    if runtime.store.queue_stats()['count'] or not runtime.jobs.empty():return 'USER_OR_JOB_WAITING'
+    if runtime.guard.state!='NORMAL':return 'RESOURCES'
+    from . import age
+    if not age.controller(runtime).may('small_shadow_update',resource_mode=runtime.guard.mode):return 'AGE_RIGHT'
+    return None
+
+
+def status(runtime):
+    on=enabled(runtime.store)
+    reason=blocked(runtime,'SYSTEM')
+    return {'enabled':on,'learning_mode':runtime.cfg.get('learning_mode'),
+            'automatic_ready':reason is None,'blocked_reason':reason,
+            'claim_limit':'Local numeric predictor only; no GGUF weight or model promotion'}

@@ -1,0 +1,4943 @@
+{
+ "suite_hash": "218bd5bd89de161fb75e0fdc24dfb63919f7ee0d5abcd58b5a0c638c6cde5375",
+ "items": 88,
+ "models": {
+  "lfm25_230m_c3": {
+   "summary": {
+    "overall": 0.1818,
+    "seen": 0.2222,
+    "unseen": 0.1538,
+    "generalization_gap": 0.0684,
+    "families": {
+     "arith_add": 0.6667,
+     "arith_mul": 0.6667,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.0,
+     "sort_letters": 0.0
+    },
+    "transfer": {
+     "arith_add->arith_mul": {
+      "source": 0.6667,
+      "target": 0.6667,
+      "ratio": 1.0
+     },
+     "reverse_word->sort_letters": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     },
+     "seq_next->rule_map": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     }
+    },
+    "planning_depth": 0,
+    "forgetting": null,
+    "calibration": {
+     "ece": 0.4629,
+     "brier": 0.2966,
+     "bins": [
+      {
+       "lo": 0.2,
+       "hi": 0.3,
+       "n": 4,
+       "confidence": 0.2621,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.3,
+       "hi": 0.4,
+       "n": 7,
+       "confidence": 0.3662,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.4,
+       "hi": 0.5,
+       "n": 8,
+       "confidence": 0.4492,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.5,
+       "hi": 0.6,
+       "n": 13,
+       "confidence": 0.5601,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.6,
+       "hi": 0.7,
+       "n": 27,
+       "confidence": 0.651,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.7,
+       "hi": 0.8,
+       "n": 16,
+       "confidence": 0.751,
+       "accuracy": 0.25
+      },
+      {
+       "lo": 0.8,
+       "hi": 0.9,
+       "n": 8,
+       "confidence": 0.833,
+       "accuracy": 0.875
+      },
+      {
+       "lo": 0.9,
+       "hi": 1.0,
+       "n": 5,
+       "confidence": 0.9355,
+       "accuracy": 1.0
+      }
+     ]
+    }
+   },
+   "mean_seconds": 0.183,
+   "rows": [
+    {
+     "id": "e645c56ff7f85992",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9113,
+     "seconds": 0.117
+    },
+    {
+     "id": "14d343dc66d65a1a",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9292,
+     "seconds": 0.113
+    },
+    {
+     "id": "41ee3520e1427e52",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9618,
+     "seconds": 0.119
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "7",
+     "gold": "7",
+     "correct": 1,
+     "confidence": 0.8064,
+     "seconds": 0.164
+    },
+    {
+     "id": "a634e3dff2d624fa",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "26",
+     "gold": "26",
+     "correct": 1,
+     "confidence": 0.9469,
+     "seconds": 0.128
+    },
+    {
+     "id": "4e6565009d5feaa7",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "100",
+     "gold": "100",
+     "correct": 1,
+     "confidence": 0.8118,
+     "seconds": 0.173
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "108",
+     "gold": "108",
+     "correct": 1,
+     "confidence": 0.7947,
+     "seconds": 0.174
+    },
+    {
+     "id": "f2c6e2e0ea2f09d2",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "47",
+     "gold": "47",
+     "correct": 1,
+     "confidence": 0.8878,
+     "seconds": 0.102
+    },
+    {
+     "id": "a36f320f075e1e8b",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1099",
+     "gold": "1009",
+     "correct": 0,
+     "confidence": 0.565,
+     "seconds": 0.121
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1302",
+     "gold": "1298",
+     "correct": 0,
+     "confidence": 0.7532,
+     "seconds": 0.193
+    },
+    {
+     "id": "805d6df4369ca070",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "The sum of 622 and 344 is 966",
+     "gold": "966",
+     "correct": 0,
+     "confidence": 0.7851,
+     "seconds": 0.204
+    },
+    {
+     "id": "39a5da682482507a",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "To compute 72 + 791, we add the numbers step by step:",
+     "gold": "863",
+     "correct": 0,
+     "confidence": 0.7197,
+     "seconds": 0.202
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.8241,
+     "seconds": 0.171
+    },
+    {
+     "id": "483c21d85def6c0b",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "18",
+     "gold": "18",
+     "correct": 1,
+     "confidence": 0.7667,
+     "seconds": 0.162
+    },
+    {
+     "id": "348aa070742b3854",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9281,
+     "seconds": 0.104
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "To compute 4 * 4, we multiply 4 by 4:",
+     "gold": "16",
+     "correct": 0,
+     "confidence": 0.8107,
+     "seconds": 0.239
+    },
+    {
+     "id": "e81c349b61931795",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "696",
+     "gold": "696",
+     "correct": 1,
+     "confidence": 0.8205,
+     "seconds": 0.178
+    },
+    {
+     "id": "ed49cc85a50dc794",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "32",
+     "gold": "32",
+     "correct": 1,
+     "confidence": 0.7519,
+     "seconds": 0.182
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "48",
+     "gold": "48",
+     "correct": 1,
+     "confidence": 0.8299,
+     "seconds": 0.169
+    },
+    {
+     "id": "8af1d3772e325194",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "28",
+     "gold": "28",
+     "correct": 1,
+     "confidence": 0.7916,
+     "seconds": 0.103
+    },
+    {
+     "id": "87d1ffc97ee0e2e8",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "I'll compute the product step by step:",
+     "gold": "2023",
+     "correct": 0,
+     "confidence": 0.7926,
+     "seconds": 0.232
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "1834",
+     "gold": "1834",
+     "correct": 1,
+     "confidence": 0.8725,
+     "seconds": 0.19
+    },
+    {
+     "id": "0b724d4bb6b5558c",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "6355",
+     "gold": "6335",
+     "correct": 0,
+     "confidence": 0.7741,
+     "seconds": 0.163
+    },
+    {
+     "id": "002ba5589db7b239",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "To compute 756 * 6, we can use the distributive property of multiplication over addition:",
+     "gold": "4536",
+     "correct": 0,
+     "confidence": 0.7555,
+     "seconds": 0.243
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "I'll provide the shortest path using Breadth-First Search (BFS) algorithm",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.6719,
+     "seconds": 0.23
+    },
+    {
+     "id": "d338cfcd06546857",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "The shortest path from S to Z is S -> # -> Z",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.7025,
+     "seconds": 0.165
+    },
+    {
+     "id": "e9f75c6ff147799b",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "I'll provide the shortest path using Breadth-First Search (BFS)",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.6758,
+     "seconds": 0.277
+    },
+    {
+     "id": "e01e6c594e6d1067",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "I'll provide the shortest path using Breadth-First Search (BFS)",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.6689,
+     "seconds": 0.251
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "The shortest path from S to Z is S -> #...#",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.6004,
+     "seconds": 0.154
+    },
+    {
+     "id": "ea17a59734f577c8",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "I'll solve this step by step:",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.5935,
+     "seconds": 0.224
+    },
+    {
+     "id": "ccfcfd33ce918629",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "I'll solve this step by step:",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.6547,
+     "seconds": 0.242
+    },
+    {
+     "id": "4e9700952137f632",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "I'll solve this step by step:",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.6005,
+     "seconds": 0.244
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "I'll solve this step by step:",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.5783,
+     "seconds": 0.241
+    },
+    {
+     "id": "6b76cdb1b1a0b19a",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "The shortest path from S to Z is S..........Z",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.5762,
+     "seconds": 0.198
+    },
+    {
+     "id": "393c0deee695c585",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "I'll solve this step by step:",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.6349,
+     "seconds": 0.316
+    },
+    {
+     "id": "00f5ee190c1cf2e6",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "I'll solve this step by step:",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.643,
+     "seconds": 0.303
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "The shortest path from S to Z is S → C → Z",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.6187,
+     "seconds": 0.242
+    },
+    {
+     "id": "20c166a8d93c4fd6",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "The shortest path from S to Z is S#......#..#..#...#...Z",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.5037,
+     "seconds": 0.258
+    },
+    {
+     "id": "9ec23e2ee3936a88",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "The shortest path from S to Z is S....#......#.Z",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.6257,
+     "seconds": 0.249
+    },
+    {
+     "id": "b1c0c996fed04270",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "I'll solve this step by step",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.5641,
+     "seconds": 0.377
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "Island is a word that means a small island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.3876,
+     "seconds": 0.175
+    },
+    {
+     "id": "f26cc73fde7d5928",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "Island is a word that means a small island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.3876,
+     "seconds": 0.113
+    },
+    {
+     "id": "5f15d2bb06c36a48",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "To reverse the word \"moon\", we need to swap the letters in the word. The correct reverse of \"m",
+     "gold": "noom",
+     "correct": 0,
+     "confidence": 0.572,
+     "seconds": 0.222
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "Rain is a type of precipitation that falls on the ground",
+     "gold": "niar",
+     "correct": 0,
+     "confidence": 0.4904,
+     "seconds": 0.154
+    },
+    {
+     "id": "700b2356265f0d90",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "Island garden",
+     "gold": "nedragdnalsi",
+     "correct": 0,
+     "confidence": 0.606,
+     "seconds": 0.082
+    },
+    {
+     "id": "ebcf50d36779228b",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "sunlamp is backwards: lamp",
+     "gold": "pmalnus",
+     "correct": 0,
+     "confidence": 0.4137,
+     "seconds": 0.103
+    },
+    {
+     "id": "78959ae944989100",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "Candle window is backwards",
+     "gold": "wodniweldnac",
+     "correct": 0,
+     "confidence": 0.5665,
+     "seconds": 0.09
+    },
+    {
+     "id": "4b40fd8a57654d0e",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "Ovenoven",
+     "gold": "nevonevo",
+     "correct": 0,
+     "confidence": 0.5934,
+     "seconds": 0.062
+    },
+    {
+     "id": "2d596beec584f746",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "Sundoglamp is a type of plant that grows in the desert and is known for its unique appearance. It is often",
+     "gold": "pmalgodnus",
+     "correct": 0,
+     "confidence": 0.3283,
+     "seconds": 0.219
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "Fogmoonmoon is backwards",
+     "gold": "noomnoomgof",
+     "correct": 0,
+     "confidence": 0.7188,
+     "seconds": 0.12
+    },
+    {
+     "id": "9cfd784e95f36b8e",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "cloudlamprain",
+     "gold": "niarpmalduolc",
+     "correct": 0,
+     "confidence": 0.6719,
+     "seconds": 0.076
+    },
+    {
+     "id": "4e102d544263b522",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "Raindarden window",
+     "gold": "wodniwnedragniar",
+     "correct": 0,
+     "confidence": 0.3559,
+     "seconds": 0.088
+    },
+    {
+     "id": "a95d04e64771c992",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "The rule is to replace the bird with a placeholder. Therefore, the answer is \"placeholder\"",
+     "gold": "elug",
+     "correct": 0,
+     "confidence": 0.3822,
+     "seconds": 0.208
+    },
+    {
+     "id": "446d6a6149fc3dde",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "island->euhdg",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.6135,
+     "seconds": 0.106
+    },
+    {
+     "id": "a3d7dce8b13038da",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "The rule is to apply the same rule to all instances of the window object. Therefore, the answer is \"window\"",
+     "gold": "zlqgrz",
+     "correct": 0,
+     "confidence": 0.4522,
+     "seconds": 0.229
+    },
+    {
+     "id": "8f9328b591054309",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "Window->?",
+     "gold": "amrhsa",
+     "correct": 0,
+     "confidence": 0.4716,
+     "seconds": 0.075
+    },
+    {
+     "id": "cd0f7e82b887dc74",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "The sun->? is applied to the sun",
+     "gold": "wyr",
+     "correct": 0,
+     "confidence": 0.4019,
+     "seconds": 0.137
+    },
+    {
+     "id": "e0ddcebc21208377",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "The oven -> ? is a common rule in cooking",
+     "gold": "ryhq",
+     "correct": 0,
+     "confidence": 0.2735,
+     "seconds": 0.127
+    },
+    {
+     "id": "fdcc11841986338c",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "The rule is to replace the garden symbol with the corresponding garden symbol. Therefore, garden->hbsefo",
+     "gold": "hbsefo",
+     "correct": 0,
+     "confidence": 0.4455,
+     "seconds": 0.243
+    },
+    {
+     "id": "9ca2b6402d650bcb",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "The rule is to apply the same rule to rain. Therefore, the answer is rain",
+     "gold": "tckp",
+     "correct": 0,
+     "confidence": 0.4643,
+     "seconds": 0.208
+    },
+    {
+     "id": "da3d531936a0ea6a",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "Fog->?",
+     "gold": "ktl",
+     "correct": 0,
+     "confidence": 0.3971,
+     "seconds": 0.107
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "The island is applied to the first example",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.273,
+     "seconds": 0.144
+    },
+    {
+     "id": "bcb3caeff538a030",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "The dog is applied to the dog",
+     "gold": "fqi",
+     "correct": 0,
+     "confidence": 0.2935,
+     "seconds": 0.176
+    },
+    {
+     "id": "a777edebc2d7a71b",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "The rain->? is applied to the sun",
+     "gold": "sbjo",
+     "correct": 0,
+     "confidence": 0.3246,
+     "seconds": 0.175
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "I will continue the sequence of numbers: 16, 18, 20, 22, ?",
+     "gold": "24",
+     "correct": 0,
+     "confidence": 0.6197,
+     "seconds": 0.245
+    },
+    {
+     "id": "b39949e604255011",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "I will continue the sequence of numbers: 9, 14, 19, 24, ?",
+     "gold": "29",
+     "correct": 0,
+     "confidence": 0.6392,
+     "seconds": 0.194
+    },
+    {
+     "id": "7f8415097447d46f",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "I will continue the sequence of numbers: 19, 21, 23, 25",
+     "gold": "27",
+     "correct": 0,
+     "confidence": 0.6361,
+     "seconds": 0.168
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "I will continue with the next step",
+     "gold": "5",
+     "correct": 0,
+     "confidence": 0.5818,
+     "seconds": 0.204
+    },
+    {
+     "id": "bf3091bbc52a6168",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "I will continue the sequence of numbers: 13, 16, 19, 22, 25",
+     "gold": "28",
+     "correct": 0,
+     "confidence": 0.6917,
+     "seconds": 0.243
+    },
+    {
+     "id": "afeba19375e9ddc0",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "I will continue the sequence of numbers: 13, 18, 23, 28, 33",
+     "gold": "38",
+     "correct": 0,
+     "confidence": 0.6928,
+     "seconds": 0.202
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "I will continue the sequence of numbers: 9, 16, 23, 30, 37, ?",
+     "gold": "44",
+     "correct": 0,
+     "confidence": 0.6842,
+     "seconds": 0.251
+    },
+    {
+     "id": "61b0223be7fc4e61",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "I will continue the sequence step by step",
+     "gold": "52",
+     "correct": 0,
+     "confidence": 0.6722,
+     "seconds": 0.229
+    },
+    {
+     "id": "b0b2fa4b7e016ae6",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "I will continue the sequence of numbers: 1, 12, 23, 34, 45,",
+     "gold": "67",
+     "correct": 0,
+     "confidence": 0.669,
+     "seconds": 0.235
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "I will continue the sequence step by step",
+     "gold": "13",
+     "correct": 0,
+     "confidence": 0.718,
+     "seconds": 0.246
+    },
+    {
+     "id": "890681bf3b675c03",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "I will continue the sequence of numbers: 2, 12, 22, 32, 42,",
+     "gold": "62",
+     "correct": 0,
+     "confidence": 0.7242,
+     "seconds": 0.316
+    },
+    {
+     "id": "1a63f74d800710b1",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "I will continue the sequence of numbers: 3, 5, 7, 9, 11,",
+     "gold": "15",
+     "correct": 0,
+     "confidence": 0.7046,
+     "seconds": 0.253
+    },
+    {
+     "id": "959517696d129cb7",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "Fog is a white, gray, or blue-colored haze that can be found in various environments",
+     "gold": "fgo",
+     "correct": 0,
+     "confidence": 0.4538,
+     "seconds": 0.224
+    },
+    {
+     "id": "7146e2c616a2780d",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "The alphabetically sorted letters are: i, j, l, o, n, p, q, r, s",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.6725,
+     "seconds": 0.211
+    },
+    {
+     "id": "4713a4236268e0b6",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "cloud",
+     "gold": "cdlou",
+     "correct": 0,
+     "confidence": 0.2086,
+     "seconds": 0.062
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "The alphabetically sorted letters are: i, j, l, o, n, p, q, r, s",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.6725,
+     "seconds": 0.219
+    },
+    {
+     "id": "5e32a11a004b2759",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "Lampcandle is sorted alphabetically",
+     "gold": "aacdellmnp",
+     "correct": 0,
+     "confidence": 0.7634,
+     "seconds": 0.138
+    },
+    {
+     "id": "a844013b632d2abe",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "The alphabetically sorted letters are: islanddog",
+     "gold": "addgilnos",
+     "correct": 0,
+     "confidence": 0.5206,
+     "seconds": 0.131
+    },
+    {
+     "id": "d468feee03339576",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "Fograin is a type of fog that forms in the upper atmosphere",
+     "gold": "afginor",
+     "correct": 0,
+     "confidence": 0.5056,
+     "seconds": 0.163
+    },
+    {
+     "id": "cdef0b2d9b0e838c",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "The letters in alphabetical order are: m, n, o, w, y, n, m, w,",
+     "gold": "dimnnoooww",
+     "correct": 0,
+     "confidence": 0.5602,
+     "seconds": 0.222
+    },
+    {
+     "id": "9f6beaa8fba6d852",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "The sorted letters alphabetically are doggardendog",
+     "gold": "adddegggnoor",
+     "correct": 0,
+     "confidence": 0.6993,
+     "seconds": 0.149
+    },
+    {
+     "id": "28e5a89092610291",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "The sorted letters alphabetically are: apple,oven,apple,ovenapple",
+     "gold": "aaeeellnoppppv",
+     "correct": 0,
+     "confidence": 0.6219,
+     "seconds": 0.182
+    },
+    {
+     "id": "c5cdc001bf838f59",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "The sorted letters alphabetically are: oventable, fog",
+     "gold": "abeefglnootv",
+     "correct": 0,
+     "confidence": 0.6212,
+     "seconds": 0.156
+    },
+    {
+     "id": "4c524f68d3d4b70f",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "The sorted letters alphabetically are islandrainmoon",
+     "gold": "aadiilmnnnoors",
+     "correct": 0,
+     "confidence": 0.6983,
+     "seconds": 0.139
+    }
+   ]
+  },
+  "lfm25_350m": {
+   "summary": {
+    "overall": 0.2386,
+    "seen": 0.3056,
+    "unseen": 0.1923,
+    "generalization_gap": 0.1133,
+    "families": {
+     "arith_add": 0.9167,
+     "arith_mul": 0.8333,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.0,
+     "sort_letters": 0.0
+    },
+    "transfer": {
+     "arith_add->arith_mul": {
+      "source": 0.9167,
+      "target": 0.8333,
+      "ratio": 0.909
+     },
+     "reverse_word->sort_letters": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     },
+     "seq_next->rule_map": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     }
+    },
+    "planning_depth": 0,
+    "forgetting": null,
+    "calibration": {
+     "ece": 0.5288,
+     "brier": 0.46,
+     "bins": [
+      {
+       "lo": 0.1,
+       "hi": 0.2,
+       "n": 3,
+       "confidence": 0.1163,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.2,
+       "hi": 0.3,
+       "n": 2,
+       "confidence": 0.2575,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.3,
+       "hi": 0.4,
+       "n": 3,
+       "confidence": 0.337,
+       "accuracy": 0.3333
+      },
+      {
+       "lo": 0.4,
+       "hi": 0.5,
+       "n": 4,
+       "confidence": 0.4643,
+       "accuracy": 0.25
+      },
+      {
+       "lo": 0.5,
+       "hi": 0.6,
+       "n": 5,
+       "confidence": 0.54,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.6,
+       "hi": 0.7,
+       "n": 8,
+       "confidence": 0.6564,
+       "accuracy": 0.125
+      },
+      {
+       "lo": 0.7,
+       "hi": 0.8,
+       "n": 14,
+       "confidence": 0.7544,
+       "accuracy": 0.0714
+      },
+      {
+       "lo": 0.8,
+       "hi": 0.9,
+       "n": 19,
+       "confidence": 0.8611,
+       "accuracy": 0.1579
+      },
+      {
+       "lo": 0.9,
+       "hi": 1.0,
+       "n": 30,
+       "confidence": 0.9644,
+       "accuracy": 0.4667
+      }
+     ]
+    }
+   },
+   "mean_seconds": 0.134,
+   "rows": [
+    {
+     "id": "e645c56ff7f85992",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9976,
+     "seconds": 0.319
+    },
+    {
+     "id": "14d343dc66d65a1a",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9993,
+     "seconds": 0.173
+    },
+    {
+     "id": "41ee3520e1427e52",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.998,
+     "seconds": 0.168
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "7",
+     "gold": "7",
+     "correct": 1,
+     "confidence": 0.9994,
+     "seconds": 0.142
+    },
+    {
+     "id": "a634e3dff2d624fa",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "26",
+     "gold": "26",
+     "correct": 1,
+     "confidence": 0.9983,
+     "seconds": 0.146
+    },
+    {
+     "id": "4e6565009d5feaa7",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "100",
+     "gold": "100",
+     "correct": 1,
+     "confidence": 0.9998,
+     "seconds": 0.167
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "108",
+     "gold": "108",
+     "correct": 1,
+     "confidence": 0.9992,
+     "seconds": 0.152
+    },
+    {
+     "id": "f2c6e2e0ea2f09d2",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "47",
+     "gold": "47",
+     "correct": 1,
+     "confidence": 0.9992,
+     "seconds": 0.16
+    },
+    {
+     "id": "a36f320f075e1e8b",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1009",
+     "gold": "1009",
+     "correct": 1,
+     "confidence": 0.8312,
+     "seconds": 0.196
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1098",
+     "gold": "1298",
+     "correct": 0,
+     "confidence": 0.8763,
+     "seconds": 0.161
+    },
+    {
+     "id": "805d6df4369ca070",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "966",
+     "gold": "966",
+     "correct": 1,
+     "confidence": 0.9107,
+     "seconds": 0.145
+    },
+    {
+     "id": "39a5da682482507a",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "863",
+     "gold": "863",
+     "correct": 1,
+     "confidence": 0.8257,
+     "seconds": 0.158
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9801,
+     "seconds": 0.151
+    },
+    {
+     "id": "483c21d85def6c0b",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "18",
+     "gold": "18",
+     "correct": 1,
+     "confidence": 0.3253,
+     "seconds": 0.084
+    },
+    {
+     "id": "348aa070742b3854",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.8401,
+     "seconds": 0.08
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "16",
+     "gold": "16",
+     "correct": 1,
+     "confidence": 0.9707,
+     "seconds": 0.094
+    },
+    {
+     "id": "e81c349b61931795",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "696",
+     "gold": "696",
+     "correct": 1,
+     "confidence": 0.905,
+     "seconds": 0.161
+    },
+    {
+     "id": "ed49cc85a50dc794",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "32",
+     "gold": "32",
+     "correct": 1,
+     "confidence": 0.4721,
+     "seconds": 0.092
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "48",
+     "gold": "48",
+     "correct": 1,
+     "confidence": 0.9809,
+     "seconds": 0.092
+    },
+    {
+     "id": "8af1d3772e325194",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "28",
+     "gold": "28",
+     "correct": 1,
+     "confidence": 0.6514,
+     "seconds": 0.088
+    },
+    {
+     "id": "87d1ffc97ee0e2e8",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "2003",
+     "gold": "2023",
+     "correct": 0,
+     "confidence": 0.8912,
+     "seconds": 0.157
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "1834",
+     "gold": "1834",
+     "correct": 1,
+     "confidence": 0.7806,
+     "seconds": 0.166
+    },
+    {
+     "id": "0b724d4bb6b5558c",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "6095",
+     "gold": "6335",
+     "correct": 0,
+     "confidence": 0.7151,
+     "seconds": 0.175
+    },
+    {
+     "id": "002ba5589db7b239",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "4536",
+     "gold": "4536",
+     "correct": 1,
+     "confidence": 0.9495,
+     "seconds": 0.244
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "##.##",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.484,
+     "seconds": 0.143
+    },
+    {
+     "id": "d338cfcd06546857",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "##.Z",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.8192,
+     "seconds": 0.118
+    },
+    {
+     "id": "e9f75c6ff147799b",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "S#",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.968,
+     "seconds": 0.108
+    },
+    {
+     "id": "e01e6c594e6d1067",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "S",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.6632,
+     "seconds": 0.109
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "##",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.8685,
+     "seconds": 0.096
+    },
+    {
+     "id": "ea17a59734f577c8",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "S...#",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.7229,
+     "seconds": 0.127
+    },
+    {
+     "id": "ccfcfd33ce918629",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "#..#",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.5384,
+     "seconds": 0.12
+    },
+    {
+     "id": "4e9700952137f632",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "S",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.5237,
+     "seconds": 0.132
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "#",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.8015,
+     "seconds": 0.119
+    },
+    {
+     "id": "6b76cdb1b1a0b19a",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "##..#",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.7617,
+     "seconds": 0.119
+    },
+    {
+     "id": "393c0deee695c585",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "####",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.3528,
+     "seconds": 0.11
+    },
+    {
+     "id": "00f5ee190c1cf2e6",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "#..#..#",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.5409,
+     "seconds": 0.159
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "Z",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.2856,
+     "seconds": 0.109
+    },
+    {
+     "id": "20c166a8d93c4fd6",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "The shortest path from S to Z is S#",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.6824,
+     "seconds": 0.249
+    },
+    {
+     "id": "9ec23e2ee3936a88",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "#",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.6903,
+     "seconds": 0.15
+    },
+    {
+     "id": "b1c0c996fed04270",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "The shortest path from S to Z is S...##",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.646,
+     "seconds": 0.224
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.9079,
+     "seconds": 0.1
+    },
+    {
+     "id": "f26cc73fde7d5928",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.9079,
+     "seconds": 0.039
+    },
+    {
+     "id": "5f15d2bb06c36a48",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "moonback",
+     "gold": "noom",
+     "correct": 0,
+     "confidence": 0.6365,
+     "seconds": 0.082
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "rainback",
+     "gold": "niar",
+     "correct": 0,
+     "confidence": 0.5158,
+     "seconds": 0.074
+    },
+    {
+     "id": "700b2356265f0d90",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "islandgarden",
+     "gold": "nedragdnalsi",
+     "correct": 0,
+     "confidence": 0.987,
+     "seconds": 0.116
+    },
+    {
+     "id": "ebcf50d36779228b",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "sunlampback",
+     "gold": "pmalnus",
+     "correct": 0,
+     "confidence": 0.4123,
+     "seconds": 0.112
+    },
+    {
+     "id": "78959ae944989100",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "candlewindowback",
+     "gold": "wodniweldnac",
+     "correct": 0,
+     "confidence": 0.7144,
+     "seconds": 0.107
+    },
+    {
+     "id": "4b40fd8a57654d0e",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "ovenback",
+     "gold": "nevonevo",
+     "correct": 0,
+     "confidence": 0.8537,
+     "seconds": 0.103
+    },
+    {
+     "id": "2d596beec584f746",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "sundoglamp",
+     "gold": "pmalgodnus",
+     "correct": 0,
+     "confidence": 0.7521,
+     "seconds": 0.166
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "fogmoon",
+     "gold": "noomnoomgof",
+     "correct": 0,
+     "confidence": 0.9313,
+     "seconds": 0.115
+    },
+    {
+     "id": "9cfd784e95f36b8e",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "cloudrainlamp",
+     "gold": "niarpmalduolc",
+     "correct": 0,
+     "confidence": 0.7772,
+     "seconds": 0.114
+    },
+    {
+     "id": "4e102d544263b522",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "raingardenwindow",
+     "gold": "wodniwnedragniar",
+     "correct": 0,
+     "confidence": 0.4887,
+     "seconds": 0.118
+    },
+    {
+     "id": "a95d04e64771c992",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "bird",
+     "gold": "elug",
+     "correct": 0,
+     "confidence": 0.9764,
+     "seconds": 0.1
+    },
+    {
+     "id": "446d6a6149fc3dde",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "island",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.9624,
+     "seconds": 0.114
+    },
+    {
+     "id": "a3d7dce8b13038da",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "window",
+     "gold": "zlqgrz",
+     "correct": 0,
+     "confidence": 0.9613,
+     "seconds": 0.102
+    },
+    {
+     "id": "8f9328b591054309",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "window",
+     "gold": "amrhsa",
+     "correct": 0,
+     "confidence": 0.9916,
+     "seconds": 0.103
+    },
+    {
+     "id": "cd0f7e82b887dc74",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "sun",
+     "gold": "wyr",
+     "correct": 0,
+     "confidence": 0.973,
+     "seconds": 0.094
+    },
+    {
+     "id": "e0ddcebc21208377",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "oven",
+     "gold": "ryhq",
+     "correct": 0,
+     "confidence": 0.967,
+     "seconds": 0.094
+    },
+    {
+     "id": "fdcc11841986338c",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "garden",
+     "gold": "hbsefo",
+     "correct": 0,
+     "confidence": 0.9815,
+     "seconds": 0.116
+    },
+    {
+     "id": "9ca2b6402d650bcb",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "table",
+     "gold": "tckp",
+     "correct": 0,
+     "confidence": 0.875,
+     "seconds": 0.091
+    },
+    {
+     "id": "da3d531936a0ea6a",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "fog",
+     "gold": "ktl",
+     "correct": 0,
+     "confidence": 0.8783,
+     "seconds": 0.129
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "island",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.7352,
+     "seconds": 0.133
+    },
+    {
+     "id": "bcb3caeff538a030",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "dog",
+     "gold": "fqi",
+     "correct": 0,
+     "confidence": 0.9277,
+     "seconds": 0.108
+    },
+    {
+     "id": "a777edebc2d7a71b",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "rain",
+     "gold": "sbjo",
+     "correct": 0,
+     "confidence": 0.8968,
+     "seconds": 0.119
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "34",
+     "gold": "24",
+     "correct": 0,
+     "confidence": 0.8991,
+     "seconds": 0.31
+    },
+    {
+     "id": "b39949e604255011",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "19",
+     "gold": "29",
+     "correct": 0,
+     "confidence": 0.2293,
+     "seconds": 0.128
+    },
+    {
+     "id": "7f8415097447d46f",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "92",
+     "gold": "27",
+     "correct": 0,
+     "confidence": 0.7447,
+     "seconds": 0.22
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "1, 2, 3, 4, ?",
+     "gold": "5",
+     "correct": 0,
+     "confidence": 0.788,
+     "seconds": 0.198
+    },
+    {
+     "id": "bf3091bbc52a6168",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "20",
+     "gold": "28",
+     "correct": 0,
+     "confidence": 0.832,
+     "seconds": 0.302
+    },
+    {
+     "id": "afeba19375e9ddc0",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "120",
+     "gold": "38",
+     "correct": 0,
+     "confidence": 0.6363,
+     "seconds": 0.247
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "16",
+     "gold": "44",
+     "correct": 0,
+     "confidence": 0.107,
+     "seconds": 0.101
+    },
+    {
+     "id": "61b0223be7fc4e61",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "43",
+     "gold": "52",
+     "correct": 0,
+     "confidence": 0.1201,
+     "seconds": 0.098
+    },
+    {
+     "id": "b0b2fa4b7e016ae6",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "177",
+     "gold": "67",
+     "correct": 0,
+     "confidence": 0.7866,
+     "seconds": 0.317
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "12",
+     "gold": "13",
+     "correct": 0,
+     "confidence": 0.6452,
+     "seconds": 0.096
+    },
+    {
+     "id": "890681bf3b675c03",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "32",
+     "gold": "62",
+     "correct": 0,
+     "confidence": 0.1217,
+     "seconds": 0.102
+    },
+    {
+     "id": "1a63f74d800710b1",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "11",
+     "gold": "15",
+     "correct": 0,
+     "confidence": 0.3329,
+     "seconds": 0.088
+    },
+    {
+     "id": "959517696d129cb7",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "fog",
+     "gold": "fgo",
+     "correct": 0,
+     "confidence": 0.8816,
+     "seconds": 0.093
+    },
+    {
+     "id": "7146e2c616a2780d",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "island",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.9372,
+     "seconds": 0.097
+    },
+    {
+     "id": "4713a4236268e0b6",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "cloud",
+     "gold": "cdlou",
+     "correct": 0,
+     "confidence": 0.5813,
+     "seconds": 0.077
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "island",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.9372,
+     "seconds": 0.088
+    },
+    {
+     "id": "5e32a11a004b2759",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "lampcandle",
+     "gold": "aacdellmnp",
+     "correct": 0,
+     "confidence": 0.8728,
+     "seconds": 0.118
+    },
+    {
+     "id": "a844013b632d2abe",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "islanddog",
+     "gold": "addgilnos",
+     "correct": 0,
+     "confidence": 0.8935,
+     "seconds": 0.115
+    },
+    {
+     "id": "d468feee03339576",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "fograin",
+     "gold": "afginor",
+     "correct": 0,
+     "confidence": 0.9279,
+     "seconds": 0.097
+    },
+    {
+     "id": "cdef0b2d9b0e838c",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "moonwindow",
+     "gold": "dimnnoooww",
+     "correct": 0,
+     "confidence": 0.7578,
+     "seconds": 0.1
+    },
+    {
+     "id": "9f6beaa8fba6d852",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "dogg",
+     "gold": "adddegggnoor",
+     "correct": 0,
+     "confidence": 0.7602,
+     "seconds": 0.097
+    },
+    {
+     "id": "28e5a89092610291",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "appleoven",
+     "gold": "aaeeellnoppppv",
+     "correct": 0,
+     "confidence": 0.7651,
+     "seconds": 0.091
+    },
+    {
+     "id": "c5cdc001bf838f59",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "oventablef",
+     "gold": "abeefglnootv",
+     "correct": 0,
+     "confidence": 0.8999,
+     "seconds": 0.125
+    },
+    {
+     "id": "4c524f68d3d4b70f",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "islandmoon",
+     "gold": "aadiilmnnnoors",
+     "correct": 0,
+     "confidence": 0.8241,
+     "seconds": 0.117
+    }
+   ]
+  },
+  "gemma3_270m_it": {
+   "summary": {
+    "overall": 0.125,
+    "seen": 0.2222,
+    "unseen": 0.0577,
+    "generalization_gap": 0.1645,
+    "families": {
+     "arith_add": 0.5833,
+     "arith_mul": 0.25,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.0833,
+     "sort_letters": 0.0
+    },
+    "transfer": {
+     "arith_add->arith_mul": {
+      "source": 0.5833,
+      "target": 0.25,
+      "ratio": 0.4286
+     },
+     "reverse_word->sort_letters": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     },
+     "seq_next->rule_map": {
+      "source": 0.0833,
+      "target": 0.0,
+      "ratio": 0.0
+     }
+    },
+    "planning_depth": 0,
+    "forgetting": null,
+    "calibration": {
+     "ece": 0.5739,
+     "brier": 0.4734,
+     "bins": [
+      {
+       "lo": 0.0,
+       "hi": 0.1,
+       "n": 12,
+       "confidence": 0.0,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.2,
+       "hi": 0.3,
+       "n": 1,
+       "confidence": 0.2425,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.4,
+       "hi": 0.5,
+       "n": 3,
+       "confidence": 0.455,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.5,
+       "hi": 0.6,
+       "n": 5,
+       "confidence": 0.5599,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.6,
+       "hi": 0.7,
+       "n": 11,
+       "confidence": 0.6497,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.7,
+       "hi": 0.8,
+       "n": 10,
+       "confidence": 0.7412,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.8,
+       "hi": 0.9,
+       "n": 16,
+       "confidence": 0.8459,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.9,
+       "hi": 1.0,
+       "n": 30,
+       "confidence": 0.9668,
+       "accuracy": 0.3667
+      }
+     ]
+    }
+   },
+   "mean_seconds": 0.113,
+   "rows": [
+    {
+     "id": "e645c56ff7f85992",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9864,
+     "seconds": 0.175
+    },
+    {
+     "id": "14d343dc66d65a1a",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9484,
+     "seconds": 0.128
+    },
+    {
+     "id": "41ee3520e1427e52",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "8",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.9997,
+     "seconds": 0.048
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "7",
+     "gold": "7",
+     "correct": 1,
+     "confidence": 0.9739,
+     "seconds": 0.124
+    },
+    {
+     "id": "a634e3dff2d624fa",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "26",
+     "gold": "26",
+     "correct": 1,
+     "confidence": 0.9796,
+     "seconds": 0.129
+    },
+    {
+     "id": "4e6565009d5feaa7",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "90",
+     "gold": "100",
+     "correct": 0,
+     "confidence": 0.9228,
+     "seconds": 0.168
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "108",
+     "gold": "108",
+     "correct": 1,
+     "confidence": 0.9976,
+     "seconds": 0.173
+    },
+    {
+     "id": "f2c6e2e0ea2f09d2",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "47",
+     "gold": "47",
+     "correct": 1,
+     "confidence": 0.9698,
+     "seconds": 0.161
+    },
+    {
+     "id": "a36f320f075e1e8b",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "999",
+     "gold": "1009",
+     "correct": 0,
+     "confidence": 0.9954,
+     "seconds": 0.19
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1398",
+     "gold": "1298",
+     "correct": 0,
+     "confidence": 0.9848,
+     "seconds": 0.204
+    },
+    {
+     "id": "805d6df4369ca070",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "966",
+     "gold": "966",
+     "correct": 1,
+     "confidence": 0.996,
+     "seconds": 0.2
+    },
+    {
+     "id": "39a5da682482507a",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "791",
+     "gold": "863",
+     "correct": 0,
+     "confidence": 0.88,
+     "seconds": 0.091
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "5",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.7304,
+     "seconds": 0.055
+    },
+    {
+     "id": "483c21d85def6c0b",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "2",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.9116,
+     "seconds": 0.072
+    },
+    {
+     "id": "348aa070742b3854",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "",
+     "gold": "12",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.047
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "4",
+     "gold": "16",
+     "correct": 0,
+     "confidence": 0.9183,
+     "seconds": 0.065
+    },
+    {
+     "id": "e81c349b61931795",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "87",
+     "gold": "696",
+     "correct": 0,
+     "confidence": 0.999,
+     "seconds": 0.109
+    },
+    {
+     "id": "ed49cc85a50dc794",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "32",
+     "gold": "32",
+     "correct": 1,
+     "confidence": 0.929,
+     "seconds": 0.149
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "24",
+     "gold": "48",
+     "correct": 0,
+     "confidence": 0.9963,
+     "seconds": 0.07
+    },
+    {
+     "id": "8af1d3772e325194",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "28",
+     "gold": "28",
+     "correct": 1,
+     "confidence": 0.9619,
+     "seconds": 0.109
+    },
+    {
+     "id": "87d1ffc97ee0e2e8",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "289",
+     "gold": "2023",
+     "correct": 0,
+     "confidence": 0.9999,
+     "seconds": 0.084
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "917",
+     "gold": "1834",
+     "correct": 0,
+     "confidence": 0.9991,
+     "seconds": 0.087
+    },
+    {
+     "id": "0b724d4bb6b5558c",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "905",
+     "gold": "6335",
+     "correct": 0,
+     "confidence": 0.9994,
+     "seconds": 0.087
+    },
+    {
+     "id": "002ba5589db7b239",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "4536",
+     "gold": "4536",
+     "correct": 1,
+     "confidence": 0.9427,
+     "seconds": 0.175
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "Okay, I understand",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.679,
+     "seconds": 0.162
+    },
+    {
+     "id": "d338cfcd06546857",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "Okay, I understand",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.8068,
+     "seconds": 0.116
+    },
+    {
+     "id": "e9f75c6ff147799b",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "...#",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.4742,
+     "seconds": 0.1
+    },
+    {
+     "id": "e01e6c594e6d1067",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "Okay, I understand",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.7972,
+     "seconds": 0.106
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "##...Z",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.5554,
+     "seconds": 0.11
+    },
+    {
+     "id": "ea17a59734f577c8",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "...#",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.6277,
+     "seconds": 0.107
+    },
+    {
+     "id": "ccfcfd33ce918629",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "#",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.8291,
+     "seconds": 0.09
+    },
+    {
+     "id": "4e9700952137f632",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "...##",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.5625,
+     "seconds": 0.127
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.8588,
+     "seconds": 0.316
+    },
+    {
+     "id": "6b76cdb1b1a0b19a",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "##",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.8724,
+     "seconds": 0.339
+    },
+    {
+     "id": "393c0deee695c585",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.6035,
+     "seconds": 0.28
+    },
+    {
+     "id": "00f5ee190c1cf2e6",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.8826,
+     "seconds": 0.331
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.4047,
+     "seconds": 0.171
+    },
+    {
+     "id": "20c166a8d93c4fd6",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "Okay, I understand. I will only answer with the final answer",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.774,
+     "seconds": 0.238
+    },
+    {
+     "id": "9ec23e2ee3936a88",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.8374,
+     "seconds": 0.361
+    },
+    {
+     "id": "b1c0c996fed04270",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "...#",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.4861,
+     "seconds": 0.138
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.059
+    },
+    {
+     "id": "f26cc73fde7d5928",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.034
+    },
+    {
+     "id": "5f15d2bb06c36a48",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "",
+     "gold": "noom",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.027
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "",
+     "gold": "niar",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.024
+    },
+    {
+     "id": "700b2356265f0d90",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "",
+     "gold": "nedragdnalsi",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.021
+    },
+    {
+     "id": "ebcf50d36779228b",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "",
+     "gold": "pmalnus",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.024
+    },
+    {
+     "id": "78959ae944989100",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "candlewindow",
+     "gold": "wodniweldnac",
+     "correct": 0,
+     "confidence": 0.5807,
+     "seconds": 0.063
+    },
+    {
+     "id": "4b40fd8a57654d0e",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "ovenoven",
+     "gold": "nevonevo",
+     "correct": 0,
+     "confidence": 0.7278,
+     "seconds": 0.05
+    },
+    {
+     "id": "2d596beec584f746",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "",
+     "gold": "pmalgodnus",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.026
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "fogmoonmoon",
+     "gold": "noomnoomgof",
+     "correct": 0,
+     "confidence": 0.5476,
+     "seconds": 0.061
+    },
+    {
+     "id": "9cfd784e95f36b8e",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "cloudlamprain",
+     "gold": "niarpmalduolc",
+     "correct": 0,
+     "confidence": 0.6641,
+     "seconds": 0.059
+    },
+    {
+     "id": "4e102d544263b522",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "The Whispering Garden",
+     "gold": "wodniwnedragniar",
+     "correct": 0,
+     "confidence": 0.2425,
+     "seconds": 0.09
+    },
+    {
+     "id": "a95d04e64771c992",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "bird->?",
+     "gold": "elug",
+     "correct": 0,
+     "confidence": 0.6903,
+     "seconds": 0.083
+    },
+    {
+     "id": "446d6a6149fc3dde",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "island->?",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.6886,
+     "seconds": 0.092
+    },
+    {
+     "id": "a3d7dce8b13038da",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "cloud->forxg; table->wdeoh; bread->euhdg",
+     "gold": "zlqgrz",
+     "correct": 0,
+     "confidence": 0.9284,
+     "seconds": 0.213
+    },
+    {
+     "id": "8f9328b591054309",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "candle->gerhpi",
+     "gold": "amrhsa",
+     "correct": 0,
+     "confidence": 0.8121,
+     "seconds": 0.11
+    },
+    {
+     "id": "cd0f7e82b887dc74",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "sun->?",
+     "gold": "wyr",
+     "correct": 0,
+     "confidence": 0.809,
+     "seconds": 0.112
+    },
+    {
+     "id": "e0ddcebc21208377",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "fog->irj",
+     "gold": "ryhq",
+     "correct": 0,
+     "confidence": 0.8281,
+     "seconds": 0.22
+    },
+    {
+     "id": "fdcc11841986338c",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "garden->?",
+     "gold": "hbsefo",
+     "correct": 0,
+     "confidence": 0.9563,
+     "seconds": 0.172
+    },
+    {
+     "id": "9ca2b6402d650bcb",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "rain->?",
+     "gold": "tckp",
+     "correct": 0,
+     "confidence": 0.6278,
+     "seconds": 0.127
+    },
+    {
+     "id": "da3d531936a0ea6a",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "fog->?",
+     "gold": "ktl",
+     "correct": 0,
+     "confidence": 0.7583,
+     "seconds": 0.101
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "moon->prrq",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.8512,
+     "seconds": 0.118
+    },
+    {
+     "id": "bcb3caeff538a030",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "dog->?",
+     "gold": "fqi",
+     "correct": 0,
+     "confidence": 0.7403,
+     "seconds": 0.099
+    },
+    {
+     "id": "a777edebc2d7a71b",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "rain->?",
+     "gold": "sbjo",
+     "correct": 0,
+     "confidence": 0.749,
+     "seconds": 0.112
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "22",
+     "gold": "24",
+     "correct": 0,
+     "confidence": 0.8592,
+     "seconds": 0.125
+    },
+    {
+     "id": "b39949e604255011",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "9",
+     "gold": "29",
+     "correct": 0,
+     "confidence": 0.9184,
+     "seconds": 0.08
+    },
+    {
+     "id": "7f8415097447d46f",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "21",
+     "gold": "27",
+     "correct": 0,
+     "confidence": 0.5532,
+     "seconds": 0.082
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "4",
+     "gold": "5",
+     "correct": 0,
+     "confidence": 0.6147,
+     "seconds": 0.078
+    },
+    {
+     "id": "bf3091bbc52a6168",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "25",
+     "gold": "28",
+     "correct": 0,
+     "confidence": 0.6571,
+     "seconds": 0.072
+    },
+    {
+     "id": "afeba19375e9ddc0",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "33",
+     "gold": "38",
+     "correct": 0,
+     "confidence": 0.6536,
+     "seconds": 0.084
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "9",
+     "gold": "44",
+     "correct": 0,
+     "confidence": 0.9907,
+     "seconds": 0.066
+    },
+    {
+     "id": "61b0223be7fc4e61",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "7",
+     "gold": "52",
+     "correct": 0,
+     "confidence": 0.7,
+     "seconds": 0.067
+    },
+    {
+     "id": "b0b2fa4b7e016ae6",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "1",
+     "gold": "67",
+     "correct": 0,
+     "confidence": 0.705,
+     "seconds": 0.073
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "13",
+     "gold": "13",
+     "correct": 1,
+     "confidence": 0.9511,
+     "seconds": 0.081
+    },
+    {
+     "id": "890681bf3b675c03",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "2",
+     "gold": "62",
+     "correct": 0,
+     "confidence": 0.6408,
+     "seconds": 0.066
+    },
+    {
+     "id": "1a63f74d800710b1",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "3",
+     "gold": "15",
+     "correct": 0,
+     "confidence": 0.7297,
+     "seconds": 0.084
+    },
+    {
+     "id": "959517696d129cb7",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "fog",
+     "gold": "fgo",
+     "correct": 0,
+     "confidence": 0.972,
+     "seconds": 0.077
+    },
+    {
+     "id": "7146e2c616a2780d",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.042
+    },
+    {
+     "id": "4713a4236268e0b6",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "cloud",
+     "gold": "cdlou",
+     "correct": 0,
+     "confidence": 0.8526,
+     "seconds": 0.054
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.049
+    },
+    {
+     "id": "5e32a11a004b2759",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "lampcandle",
+     "gold": "aacdellmnp",
+     "correct": 0,
+     "confidence": 0.8703,
+     "seconds": 0.087
+    },
+    {
+     "id": "a844013b632d2abe",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "",
+     "gold": "addgilnos",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.041
+    },
+    {
+     "id": "d468feee03339576",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "fograin",
+     "gold": "afginor",
+     "correct": 0,
+     "confidence": 0.9905,
+     "seconds": 0.089
+    },
+    {
+     "id": "cdef0b2d9b0e838c",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "moonwindow",
+     "gold": "dimnnoooww",
+     "correct": 0,
+     "confidence": 0.937,
+     "seconds": 0.085
+    },
+    {
+     "id": "9f6beaa8fba6d852",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "doggardendog",
+     "gold": "adddegggnoor",
+     "correct": 0,
+     "confidence": 0.8366,
+     "seconds": 0.104
+    },
+    {
+     "id": "28e5a89092610291",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "apple",
+     "gold": "aaeeellnoppppv",
+     "correct": 0,
+     "confidence": 0.9489,
+     "seconds": 0.071
+    },
+    {
+     "id": "c5cdc001bf838f59",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "Oventablefog",
+     "gold": "abeefglnootv",
+     "correct": 0,
+     "confidence": 0.8484,
+     "seconds": 0.107
+    },
+    {
+     "id": "4c524f68d3d4b70f",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "",
+     "gold": "aadiilmnnnoors",
+     "correct": 0,
+     "confidence": 0.0,
+     "seconds": 0.047
+    }
+   ]
+  },
+  "qwen35_0p8b": {
+   "summary": {
+    "overall": 0.2955,
+    "seen": 0.3889,
+    "unseen": 0.2308,
+    "generalization_gap": 0.1581,
+    "families": {
+     "arith_add": 0.8333,
+     "arith_mul": 0.9167,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0833,
+     "seq_next": 0.3333,
+     "sort_letters": 0.0
+    },
+    "transfer": {
+     "arith_add->arith_mul": {
+      "source": 0.8333,
+      "target": 0.9167,
+      "ratio": 1.1001
+     },
+     "reverse_word->sort_letters": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     },
+     "seq_next->rule_map": {
+      "source": 0.3333,
+      "target": 0.0833,
+      "ratio": 0.2499
+     }
+    },
+    "planning_depth": 0,
+    "forgetting": null,
+    "calibration": {
+     "ece": 0.2346,
+     "brier": 0.1721,
+     "bins": [
+      {
+       "lo": 0.0,
+       "hi": 0.1,
+       "n": 1,
+       "confidence": 0.0789,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.1,
+       "hi": 0.2,
+       "n": 13,
+       "confidence": 0.1768,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.2,
+       "hi": 0.3,
+       "n": 13,
+       "confidence": 0.239,
+       "accuracy": 0.0769
+      },
+      {
+       "lo": 0.3,
+       "hi": 0.4,
+       "n": 6,
+       "confidence": 0.3435,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.4,
+       "hi": 0.5,
+       "n": 8,
+       "confidence": 0.4478,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.5,
+       "hi": 0.6,
+       "n": 9,
+       "confidence": 0.5533,
+       "accuracy": 0.3333
+      },
+      {
+       "lo": 0.6,
+       "hi": 0.7,
+       "n": 12,
+       "confidence": 0.6499,
+       "accuracy": 0.1667
+      },
+      {
+       "lo": 0.7,
+       "hi": 0.8,
+       "n": 3,
+       "confidence": 0.7616,
+       "accuracy": 0.3333
+      },
+      {
+       "lo": 0.8,
+       "hi": 0.9,
+       "n": 15,
+       "confidence": 0.8717,
+       "accuracy": 0.8
+      },
+      {
+       "lo": 0.9,
+       "hi": 1.0,
+       "n": 8,
+       "confidence": 0.9227,
+       "accuracy": 0.875
+      }
+     ]
+    }
+   },
+   "mean_seconds": 0.37,
+   "rows": [
+    {
+     "id": "e645c56ff7f85992",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.886,
+     "seconds": 0.728
+    },
+    {
+     "id": "14d343dc66d65a1a",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9227,
+     "seconds": 0.413
+    },
+    {
+     "id": "41ee3520e1427e52",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9165,
+     "seconds": 0.344
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "7",
+     "gold": "7",
+     "correct": 1,
+     "confidence": 0.84,
+     "seconds": 0.341
+    },
+    {
+     "id": "a634e3dff2d624fa",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "26",
+     "gold": "26",
+     "correct": 1,
+     "confidence": 0.5595,
+     "seconds": 0.198
+    },
+    {
+     "id": "4e6565009d5feaa7",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "100",
+     "gold": "100",
+     "correct": 1,
+     "confidence": 0.8989,
+     "seconds": 0.419
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "108",
+     "gold": "108",
+     "correct": 1,
+     "confidence": 0.8908,
+     "seconds": 0.477
+    },
+    {
+     "id": "f2c6e2e0ea2f09d2",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "47",
+     "gold": "47",
+     "correct": 1,
+     "confidence": 0.8493,
+     "seconds": 0.62
+    },
+    {
+     "id": "a36f320f075e1e8b",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1009",
+     "gold": "1009",
+     "correct": 1,
+     "confidence": 0.8805,
+     "seconds": 0.504
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1398",
+     "gold": "1298",
+     "correct": 0,
+     "confidence": 0.6615,
+     "seconds": 0.638
+    },
+    {
+     "id": "805d6df4369ca070",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1966",
+     "gold": "966",
+     "correct": 0,
+     "confidence": 0.6302,
+     "seconds": 0.225
+    },
+    {
+     "id": "39a5da682482507a",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "863",
+     "gold": "863",
+     "correct": 1,
+     "confidence": 0.7987,
+     "seconds": 0.407
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9532,
+     "seconds": 0.672
+    },
+    {
+     "id": "483c21d85def6c0b",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "18",
+     "gold": "18",
+     "correct": 1,
+     "confidence": 0.891,
+     "seconds": 0.356
+    },
+    {
+     "id": "348aa070742b3854",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9288,
+     "seconds": 0.345
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "16",
+     "gold": "16",
+     "correct": 1,
+     "confidence": 0.9337,
+     "seconds": 0.365
+    },
+    {
+     "id": "e81c349b61931795",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "696",
+     "gold": "696",
+     "correct": 1,
+     "confidence": 0.9024,
+     "seconds": 0.44
+    },
+    {
+     "id": "ed49cc85a50dc794",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "32",
+     "gold": "32",
+     "correct": 1,
+     "confidence": 0.9016,
+     "seconds": 0.349
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "4",
+     "gold": "48",
+     "correct": 0,
+     "confidence": 0.4901,
+     "seconds": 0.185
+    },
+    {
+     "id": "8af1d3772e325194",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "28",
+     "gold": "28",
+     "correct": 1,
+     "confidence": 0.8896,
+     "seconds": 0.446
+    },
+    {
+     "id": "87d1ffc97ee0e2e8",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "2023",
+     "gold": "2023",
+     "correct": 1,
+     "confidence": 0.8698,
+     "seconds": 0.406
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "1834",
+     "gold": "1834",
+     "correct": 1,
+     "confidence": 0.8432,
+     "seconds": 0.853
+    },
+    {
+     "id": "0b724d4bb6b5558c",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "6335",
+     "gold": "6335",
+     "correct": 1,
+     "confidence": 0.8881,
+     "seconds": 0.432
+    },
+    {
+     "id": "002ba5589db7b239",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "4536",
+     "gold": "4536",
+     "correct": 1,
+     "confidence": 0.8882,
+     "seconds": 0.707
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "1",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.16,
+     "seconds": 0.277
+    },
+    {
+     "id": "d338cfcd06546857",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "S",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.3178,
+     "seconds": 0.43
+    },
+    {
+     "id": "e9f75c6ff147799b",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "1",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.1558,
+     "seconds": 0.201
+    },
+    {
+     "id": "e01e6c594e6d1067",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "S",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.5796,
+     "seconds": 0.702
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "1",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1574,
+     "seconds": 0.245
+    },
+    {
+     "id": "ea17a59734f577c8",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "1",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1714,
+     "seconds": 0.254
+    },
+    {
+     "id": "ccfcfd33ce918629",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "1",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1678,
+     "seconds": 0.327
+    },
+    {
+     "id": "4e9700952137f632",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "1",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1864,
+     "seconds": 0.337
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "1",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1909,
+     "seconds": 0.271
+    },
+    {
+     "id": "6b76cdb1b1a0b19a",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "1",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1968,
+     "seconds": 0.264
+    },
+    {
+     "id": "393c0deee695c585",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "1",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1759,
+     "seconds": 0.3
+    },
+    {
+     "id": "00f5ee190c1cf2e6",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "1",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1948,
+     "seconds": 0.242
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "1",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.208,
+     "seconds": 0.282
+    },
+    {
+     "id": "20c166a8d93c4fd6",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "1",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.2014,
+     "seconds": 0.293
+    },
+    {
+     "id": "9ec23e2ee3936a88",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "1",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.2166,
+     "seconds": 0.259
+    },
+    {
+     "id": "b1c0c996fed04270",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "1",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.2143,
+     "seconds": 0.256
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.2554,
+     "seconds": 0.555
+    },
+    {
+     "id": "f26cc73fde7d5928",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "island",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.2554,
+     "seconds": 0.077
+    },
+    {
+     "id": "5f15d2bb06c36a48",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "moon",
+     "gold": "noom",
+     "correct": 0,
+     "confidence": 0.3262,
+     "seconds": 0.138
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "rain",
+     "gold": "niar",
+     "correct": 0,
+     "confidence": 0.0789,
+     "seconds": 0.123
+    },
+    {
+     "id": "700b2356265f0d90",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "islandgarden",
+     "gold": "nedragdnalsi",
+     "correct": 0,
+     "confidence": 0.6584,
+     "seconds": 0.174
+    },
+    {
+     "id": "ebcf50d36779228b",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "sunlamp",
+     "gold": "pmalnus",
+     "correct": 0,
+     "confidence": 0.5641,
+     "seconds": 0.143
+    },
+    {
+     "id": "78959ae944989100",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "candlewindow",
+     "gold": "wodniweldnac",
+     "correct": 0,
+     "confidence": 0.5037,
+     "seconds": 0.171
+    },
+    {
+     "id": "4b40fd8a57654d0e",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "ovenoven",
+     "gold": "nevonevo",
+     "correct": 0,
+     "confidence": 0.5748,
+     "seconds": 0.16
+    },
+    {
+     "id": "2d596beec584f746",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "sunlampdog",
+     "gold": "pmalgodnus",
+     "correct": 0,
+     "confidence": 0.1585,
+     "seconds": 0.167
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "fogmoonmoon",
+     "gold": "noomnoomgof",
+     "correct": 0,
+     "confidence": 0.4735,
+     "seconds": 0.16
+    },
+    {
+     "id": "9cfd784e95f36b8e",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "raincloud",
+     "gold": "niarpmalduolc",
+     "correct": 0,
+     "confidence": 0.2417,
+     "seconds": 0.146
+    },
+    {
+     "id": "4e102d544263b522",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "windowgardener",
+     "gold": "wodniwnedragniar",
+     "correct": 0,
+     "confidence": 0.2198,
+     "seconds": 0.169
+    },
+    {
+     "id": "a95d04e64771c992",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "grj",
+     "gold": "elug",
+     "correct": 0,
+     "confidence": 0.2166,
+     "seconds": 0.252
+    },
+    {
+     "id": "446d6a6149fc3dde",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "prrq",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.4393,
+     "seconds": 0.268
+    },
+    {
+     "id": "a3d7dce8b13038da",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "window->xwng",
+     "gold": "zlqgrz",
+     "correct": 0,
+     "confidence": 0.1974,
+     "seconds": 0.58
+    },
+    {
+     "id": "8f9328b591054309",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "gerhpi",
+     "gold": "amrhsa",
+     "correct": 0,
+     "confidence": 0.6001,
+     "seconds": 0.633
+    },
+    {
+     "id": "cd0f7e82b887dc74",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "qssr",
+     "gold": "wyr",
+     "correct": 0,
+     "confidence": 0.4254,
+     "seconds": 0.715
+    },
+    {
+     "id": "e0ddcebc21208377",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "odps",
+     "gold": "ryhq",
+     "correct": 0,
+     "confidence": 0.263,
+     "seconds": 0.616
+    },
+    {
+     "id": "fdcc11841986338c",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "hbsefo",
+     "gold": "hbsefo",
+     "correct": 1,
+     "confidence": 0.6644,
+     "seconds": 0.663
+    },
+    {
+     "id": "9ca2b6402d650bcb",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "hqi",
+     "gold": "tckp",
+     "correct": 0,
+     "confidence": 0.31,
+     "seconds": 0.629
+    },
+    {
+     "id": "da3d531936a0ea6a",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "hfsiqj",
+     "gold": "ktl",
+     "correct": 0,
+     "confidence": 0.431,
+     "seconds": 0.335
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "fdqgoh",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.5351,
+     "seconds": 0.745
+    },
+    {
+     "id": "bcb3caeff538a030",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "qxgp",
+     "gold": "fqi",
+     "correct": 0,
+     "confidence": 0.1859,
+     "seconds": 0.676
+    },
+    {
+     "id": "a777edebc2d7a71b",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "cjse",
+     "gold": "sbjo",
+     "correct": 0,
+     "confidence": 0.3694,
+     "seconds": 0.635
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "18",
+     "gold": "24",
+     "correct": 0,
+     "confidence": 0.3927,
+     "seconds": 0.676
+    },
+    {
+     "id": "b39949e604255011",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "29",
+     "gold": "29",
+     "correct": 1,
+     "confidence": 0.2979,
+     "seconds": 0.237
+    },
+    {
+     "id": "7f8415097447d46f",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "27",
+     "gold": "27",
+     "correct": 1,
+     "confidence": 0.5763,
+     "seconds": 0.195
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "1, 2, 3, 4, 5",
+     "gold": "5",
+     "correct": 0,
+     "confidence": 0.662,
+     "seconds": 0.463
+    },
+    {
+     "id": "bf3091bbc52a6168",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "19",
+     "gold": "28",
+     "correct": 0,
+     "confidence": 0.4177,
+     "seconds": 0.558
+    },
+    {
+     "id": "afeba19375e9ddc0",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "13",
+     "gold": "38",
+     "correct": 0,
+     "confidence": 0.2768,
+     "seconds": 0.181
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "30",
+     "gold": "44",
+     "correct": 0,
+     "confidence": 0.4138,
+     "seconds": 0.61
+    },
+    {
+     "id": "61b0223be7fc4e61",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "38",
+     "gold": "52",
+     "correct": 0,
+     "confidence": 0.2399,
+     "seconds": 0.606
+    },
+    {
+     "id": "b0b2fa4b7e016ae6",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "57",
+     "gold": "67",
+     "correct": 0,
+     "confidence": 0.3451,
+     "seconds": 0.589
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "13",
+     "gold": "13",
+     "correct": 1,
+     "confidence": 0.6364,
+     "seconds": 0.206
+    },
+    {
+     "id": "890681bf3b675c03",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "52",
+     "gold": "62",
+     "correct": 0,
+     "confidence": 0.4919,
+     "seconds": 0.327
+    },
+    {
+     "id": "1a63f74d800710b1",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "15",
+     "gold": "15",
+     "correct": 1,
+     "confidence": 0.5633,
+     "seconds": 0.495
+    },
+    {
+     "id": "959517696d129cb7",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "fog",
+     "gold": "fgo",
+     "correct": 0,
+     "confidence": 0.8267,
+     "seconds": 0.497
+    },
+    {
+     "id": "7146e2c616a2780d",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "island",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.6541,
+     "seconds": 0.171
+    },
+    {
+     "id": "4713a4236268e0b6",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "cloud",
+     "gold": "cdlou",
+     "correct": 0,
+     "confidence": 0.5235,
+     "seconds": 0.148
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "island",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.6541,
+     "seconds": 0.161
+    },
+    {
+     "id": "5e32a11a004b2759",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "lampcandle",
+     "gold": "aacdellmnp",
+     "correct": 0,
+     "confidence": 0.6675,
+     "seconds": 0.245
+    },
+    {
+     "id": "a844013b632d2abe",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "islanddog",
+     "gold": "addgilnos",
+     "correct": 0,
+     "confidence": 0.6682,
+     "seconds": 0.198
+    },
+    {
+     "id": "d468feee03339576",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "fograin",
+     "gold": "afginor",
+     "correct": 0,
+     "confidence": 0.7683,
+     "seconds": 0.165
+    },
+    {
+     "id": "cdef0b2d9b0e838c",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "moonwindow",
+     "gold": "dimnnoooww",
+     "correct": 0,
+     "confidence": 0.6416,
+     "seconds": 0.148
+    },
+    {
+     "id": "9f6beaa8fba6d852",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "doggardendog",
+     "gold": "adddegggnoor",
+     "correct": 0,
+     "confidence": 0.9226,
+     "seconds": 0.227
+    },
+    {
+     "id": "28e5a89092610291",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "correct": 0,
+     "confidence": 0.8996,
+     "seconds": 0.197
+    },
+    {
+     "id": "c5cdc001bf838f59",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "oventablefog",
+     "gold": "abeefglnootv",
+     "correct": 0,
+     "confidence": 0.8331,
+     "seconds": 0.221
+    },
+    {
+     "id": "4c524f68d3d4b70f",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "islandrainmoon",
+     "gold": "aadiilmnnnoors",
+     "correct": 0,
+     "confidence": 0.7177,
+     "seconds": 0.261
+    }
+   ]
+  },
+  "lfm25_1p2b_body": {
+   "summary": {
+    "overall": 0.2159,
+    "seen": 0.25,
+    "unseen": 0.1923,
+    "generalization_gap": 0.0577,
+    "families": {
+     "arith_add": 0.75,
+     "arith_mul": 0.8333,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.0,
+     "sort_letters": 0.0
+    },
+    "transfer": {
+     "arith_add->arith_mul": {
+      "source": 0.75,
+      "target": 0.8333,
+      "ratio": 1.1111
+     },
+     "reverse_word->sort_letters": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     },
+     "seq_next->rule_map": {
+      "source": 0.0,
+      "target": 0.0,
+      "ratio": null
+     }
+    },
+    "planning_depth": 0,
+    "forgetting": null,
+    "calibration": {
+     "ece": 0.4039,
+     "brier": 0.3064,
+     "bins": [
+      {
+       "lo": 0.1,
+       "hi": 0.2,
+       "n": 13,
+       "confidence": 0.1596,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.2,
+       "hi": 0.3,
+       "n": 7,
+       "confidence": 0.2325,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.3,
+       "hi": 0.4,
+       "n": 8,
+       "confidence": 0.3634,
+       "accuracy": 0.125
+      },
+      {
+       "lo": 0.4,
+       "hi": 0.5,
+       "n": 5,
+       "confidence": 0.4557,
+       "accuracy": 0.2
+      },
+      {
+       "lo": 0.5,
+       "hi": 0.6,
+       "n": 8,
+       "confidence": 0.5486,
+       "accuracy": 0.125
+      },
+      {
+       "lo": 0.6,
+       "hi": 0.7,
+       "n": 4,
+       "confidence": 0.6515,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.7,
+       "hi": 0.8,
+       "n": 10,
+       "confidence": 0.7432,
+       "accuracy": 0.0
+      },
+      {
+       "lo": 0.8,
+       "hi": 0.9,
+       "n": 9,
+       "confidence": 0.8493,
+       "accuracy": 0.1111
+      },
+      {
+       "lo": 0.9,
+       "hi": 1.0,
+       "n": 24,
+       "confidence": 0.9828,
+       "accuracy": 0.625
+      }
+     ]
+    }
+   },
+   "mean_seconds": 0.369,
+   "rows": [
+    {
+     "id": "e645c56ff7f85992",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9995,
+     "seconds": 0.395
+    },
+    {
+     "id": "14d343dc66d65a1a",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9893,
+     "seconds": 0.321
+    },
+    {
+     "id": "41ee3520e1427e52",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9855,
+     "seconds": 0.329
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "family": "arith_add",
+     "level": 1,
+     "answer": "7",
+     "gold": "7",
+     "correct": 1,
+     "confidence": 0.9997,
+     "seconds": 0.307
+    },
+    {
+     "id": "a634e3dff2d624fa",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "26",
+     "gold": "26",
+     "correct": 1,
+     "confidence": 0.9957,
+     "seconds": 0.282
+    },
+    {
+     "id": "4e6565009d5feaa7",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "100",
+     "gold": "100",
+     "correct": 1,
+     "confidence": 0.9547,
+     "seconds": 0.349
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "106",
+     "gold": "108",
+     "correct": 0,
+     "confidence": 0.3997,
+     "seconds": 0.262
+    },
+    {
+     "id": "f2c6e2e0ea2f09d2",
+     "family": "arith_add",
+     "level": 2,
+     "answer": "57",
+     "gold": "47",
+     "correct": 0,
+     "confidence": 0.9357,
+     "seconds": 0.305
+    },
+    {
+     "id": "a36f320f075e1e8b",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1009",
+     "gold": "1009",
+     "correct": 1,
+     "confidence": 0.5885,
+     "seconds": 0.319
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "1298",
+     "gold": "1298",
+     "correct": 1,
+     "confidence": 0.4701,
+     "seconds": 0.256
+    },
+    {
+     "id": "805d6df4369ca070",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "966",
+     "gold": "966",
+     "correct": 1,
+     "confidence": 0.3969,
+     "seconds": 0.276
+    },
+    {
+     "id": "39a5da682482507a",
+     "family": "arith_add",
+     "level": 3,
+     "answer": "923",
+     "gold": "863",
+     "correct": 0,
+     "confidence": 0.1544,
+     "seconds": 0.27
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "10",
+     "gold": "10",
+     "correct": 1,
+     "confidence": 0.9991,
+     "seconds": 0.275
+    },
+    {
+     "id": "483c21d85def6c0b",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "18",
+     "gold": "18",
+     "correct": 1,
+     "confidence": 0.9633,
+     "seconds": 0.285
+    },
+    {
+     "id": "348aa070742b3854",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "12",
+     "gold": "12",
+     "correct": 1,
+     "confidence": 0.9992,
+     "seconds": 0.252
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "family": "arith_mul",
+     "level": 1,
+     "answer": "16",
+     "gold": "16",
+     "correct": 1,
+     "confidence": 0.9946,
+     "seconds": 0.239
+    },
+    {
+     "id": "e81c349b61931795",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "8700",
+     "gold": "696",
+     "correct": 0,
+     "confidence": 0.6649,
+     "seconds": 0.373
+    },
+    {
+     "id": "ed49cc85a50dc794",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "32",
+     "gold": "32",
+     "correct": 1,
+     "confidence": 0.9954,
+     "seconds": 0.295
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "48",
+     "gold": "48",
+     "correct": 1,
+     "confidence": 0.9942,
+     "seconds": 0.242
+    },
+    {
+     "id": "8af1d3772e325194",
+     "family": "arith_mul",
+     "level": 2,
+     "answer": "28",
+     "gold": "28",
+     "correct": 1,
+     "confidence": 0.9837,
+     "seconds": 0.278
+    },
+    {
+     "id": "87d1ffc97ee0e2e8",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "2023",
+     "gold": "2023",
+     "correct": 1,
+     "confidence": 0.9755,
+     "seconds": 0.454
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "1834",
+     "gold": "1834",
+     "correct": 1,
+     "confidence": 0.9818,
+     "seconds": 0.463
+    },
+    {
+     "id": "0b724d4bb6b5558c",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "6315",
+     "gold": "6335",
+     "correct": 0,
+     "confidence": 0.8234,
+     "seconds": 0.463
+    },
+    {
+     "id": "002ba5589db7b239",
+     "family": "arith_mul",
+     "level": 3,
+     "answer": "4536",
+     "gold": "4536",
+     "correct": 1,
+     "confidence": 0.8312,
+     "seconds": 0.434
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "3",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.2674,
+     "seconds": 0.247
+    },
+    {
+     "id": "d338cfcd06546857",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "3",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.3588,
+     "seconds": 0.289
+    },
+    {
+     "id": "e9f75c6ff147799b",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "3",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.1886,
+     "seconds": 0.251
+    },
+    {
+     "id": "e01e6c594e6d1067",
+     "family": "grid_path",
+     "level": 2,
+     "answer": "3",
+     "gold": "6",
+     "correct": 0,
+     "confidence": 0.3347,
+     "seconds": 0.251
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "5",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.178,
+     "seconds": 0.538
+    },
+    {
+     "id": "ea17a59734f577c8",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "5",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1824,
+     "seconds": 0.363
+    },
+    {
+     "id": "ccfcfd33ce918629",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "5",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.1728,
+     "seconds": 0.337
+    },
+    {
+     "id": "4e9700952137f632",
+     "family": "grid_path",
+     "level": 4,
+     "answer": "5",
+     "gold": "10",
+     "correct": 0,
+     "confidence": 0.2016,
+     "seconds": 0.378
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "5",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1801,
+     "seconds": 0.412
+    },
+    {
+     "id": "6b76cdb1b1a0b19a",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "8",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1484,
+     "seconds": 0.358
+    },
+    {
+     "id": "393c0deee695c585",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "8",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.1532,
+     "seconds": 0.356
+    },
+    {
+     "id": "00f5ee190c1cf2e6",
+     "family": "grid_path",
+     "level": 6,
+     "answer": "5",
+     "gold": "14",
+     "correct": 0,
+     "confidence": 0.145,
+     "seconds": 0.354
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "8",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.1517,
+     "seconds": 0.378
+    },
+    {
+     "id": "20c166a8d93c4fd6",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "5",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.1479,
+     "seconds": 0.375
+    },
+    {
+     "id": "9ec23e2ee3936a88",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "8",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.1501,
+     "seconds": 0.423
+    },
+    {
+     "id": "b1c0c996fed04270",
+     "family": "grid_path",
+     "level": 8,
+     "answer": "8",
+     "gold": "18",
+     "correct": 0,
+     "confidence": 0.1222,
+     "seconds": 0.41
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "tniro si",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.5229,
+     "seconds": 0.309
+    },
+    {
+     "id": "f26cc73fde7d5928",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "tniro si",
+     "gold": "dnalsi",
+     "correct": 0,
+     "confidence": 0.5229,
+     "seconds": 0.153
+    },
+    {
+     "id": "5f15d2bb06c36a48",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "noit edum",
+     "gold": "noom",
+     "correct": 0,
+     "confidence": 0.5148,
+     "seconds": 0.299
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "family": "reverse_word",
+     "level": 1,
+     "answer": "noitac",
+     "gold": "niar",
+     "correct": 0,
+     "confidence": 0.4382,
+     "seconds": 0.279
+    },
+    {
+     "id": "700b2356265f0d90",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "tadigreciidniy",
+     "gold": "nedragdnalsi",
+     "correct": 0,
+     "confidence": 0.202,
+     "seconds": 0.448
+    },
+    {
+     "id": "ebcf50d36779228b",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "mappulnys",
+     "gold": "pmalnus",
+     "correct": 0,
+     "confidence": 0.3358,
+     "seconds": 0.411
+    },
+    {
+     "id": "78959ae944989100",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "ewlruocewdlucadw",
+     "gold": "wodniweldnac",
+     "correct": 0,
+     "confidence": 0.3496,
+     "seconds": 0.396
+    },
+    {
+     "id": "4b40fd8a57654d0e",
+     "family": "reverse_word",
+     "level": 2,
+     "answer": "venenoorve",
+     "gold": "nevonevo",
+     "correct": 0,
+     "confidence": 0.2127,
+     "seconds": 0.261
+    },
+    {
+     "id": "2d596beec584f746",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "dlrow",
+     "gold": "pmalgodnus",
+     "correct": 0,
+     "confidence": 0.2767,
+     "seconds": 0.314
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "omnemmuomrfg",
+     "gold": "noomnoomgof",
+     "correct": 0,
+     "confidence": 0.2415,
+     "seconds": 0.4
+    },
+    {
+     "id": "9cfd784e95f36b8e",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "lanupolracelc",
+     "gold": "niarpmalduolc",
+     "correct": 0,
+     "confidence": 0.3388,
+     "seconds": 0.458
+    },
+    {
+     "id": "4e102d544263b522",
+     "family": "reverse_word",
+     "level": 3,
+     "answer": "gnitadwergerar",
+     "gold": "wodniwnedragniar",
+     "correct": 0,
+     "confidence": 0.2255,
+     "seconds": 0.437
+    },
+    {
+     "id": "a95d04e64771c992",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "bird->grn",
+     "gold": "elug",
+     "correct": 0,
+     "confidence": 0.5972,
+     "seconds": 0.353
+    },
+    {
+     "id": "446d6a6149fc3dde",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "island->tion",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.3926,
+     "seconds": 0.384
+    },
+    {
+     "id": "a3d7dce8b13038da",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "window",
+     "gold": "zlqgrz",
+     "correct": 0,
+     "confidence": 0.999,
+     "seconds": 0.297
+    },
+    {
+     "id": "8f9328b591054309",
+     "family": "rule_map",
+     "level": 1,
+     "answer": "window",
+     "gold": "amrhsa",
+     "correct": 0,
+     "confidence": 0.9995,
+     "seconds": 0.284
+    },
+    {
+     "id": "cd0f7e82b887dc74",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "sun",
+     "gold": "wyr",
+     "correct": 0,
+     "confidence": 0.9974,
+     "seconds": 0.31
+    },
+    {
+     "id": "e0ddcebc21208377",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "oven",
+     "gold": "ryhq",
+     "correct": 0,
+     "confidence": 0.9416,
+     "seconds": 0.29
+    },
+    {
+     "id": "fdcc11841986338c",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "garden->hbsefo",
+     "gold": "hbsefo",
+     "correct": 0,
+     "confidence": 0.9674,
+     "seconds": 0.462
+    },
+    {
+     "id": "9ca2b6402d650bcb",
+     "family": "rule_map",
+     "level": 2,
+     "answer": "rain->?",
+     "gold": "tckp",
+     "correct": 0,
+     "confidence": 0.7617,
+     "seconds": 0.359
+    },
+    {
+     "id": "da3d531936a0ea6a",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "fog->?",
+     "gold": "ktl",
+     "correct": 0,
+     "confidence": 0.7706,
+     "seconds": 0.407
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "island->prrq",
+     "gold": "lvodqg",
+     "correct": 0,
+     "confidence": 0.8226,
+     "seconds": 0.466
+    },
+    {
+     "id": "bcb3caeff538a030",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "dog->?",
+     "gold": "fqi",
+     "correct": 0,
+     "confidence": 0.7463,
+     "seconds": 0.406
+    },
+    {
+     "id": "a777edebc2d7a71b",
+     "family": "rule_map",
+     "level": 3,
+     "answer": "rain",
+     "gold": "sbjo",
+     "correct": 0,
+     "confidence": 0.9925,
+     "seconds": 0.342
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "22",
+     "gold": "24",
+     "correct": 0,
+     "confidence": 0.8946,
+     "seconds": 0.258
+    },
+    {
+     "id": "b39949e604255011",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "9, 14, 19, 24, 33",
+     "gold": "29",
+     "correct": 0,
+     "confidence": 0.8959,
+     "seconds": 0.512
+    },
+    {
+     "id": "7f8415097447d46f",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "23",
+     "gold": "27",
+     "correct": 0,
+     "confidence": 0.7265,
+     "seconds": 0.233
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "family": "seq_next",
+     "level": 1,
+     "answer": "4",
+     "gold": "5",
+     "correct": 0,
+     "confidence": 0.9806,
+     "seconds": 0.273
+    },
+    {
+     "id": "bf3091bbc52a6168",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "13, 16, 19, 22, 25, 29",
+     "gold": "28",
+     "correct": 0,
+     "confidence": 0.8624,
+     "seconds": 0.663
+    },
+    {
+     "id": "afeba19375e9ddc0",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "33",
+     "gold": "38",
+     "correct": 0,
+     "confidence": 0.8004,
+     "seconds": 0.265
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "37",
+     "gold": "44",
+     "correct": 0,
+     "confidence": 0.6927,
+     "seconds": 0.26
+    },
+    {
+     "id": "61b0223be7fc4e61",
+     "family": "seq_next",
+     "level": 2,
+     "answer": "43",
+     "gold": "52",
+     "correct": 0,
+     "confidence": 0.9634,
+     "seconds": 0.252
+    },
+    {
+     "id": "b0b2fa4b7e016ae6",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "45",
+     "gold": "67",
+     "correct": 0,
+     "confidence": 0.4273,
+     "seconds": 0.264
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "12",
+     "gold": "13",
+     "correct": 0,
+     "confidence": 0.7226,
+     "seconds": 0.28
+    },
+    {
+     "id": "890681bf3b675c03",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "52",
+     "gold": "62",
+     "correct": 0,
+     "confidence": 0.6133,
+     "seconds": 0.3
+    },
+    {
+     "id": "1a63f74d800710b1",
+     "family": "seq_next",
+     "level": 3,
+     "answer": "13",
+     "gold": "15",
+     "correct": 0,
+     "confidence": 0.7909,
+     "seconds": 0.251
+    },
+    {
+     "id": "959517696d129cb7",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "fog",
+     "gold": "fgo",
+     "correct": 0,
+     "confidence": 0.6352,
+     "seconds": 0.906
+    },
+    {
+     "id": "7146e2c616a2780d",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "Isole",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.4714,
+     "seconds": 0.408
+    },
+    {
+     "id": "4713a4236268e0b6",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "C, A, L, O, U, D",
+     "gold": "cdlou",
+     "correct": 0,
+     "confidence": 0.7461,
+     "seconds": 0.972
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "family": "sort_letters",
+     "level": 1,
+     "answer": "Isole",
+     "gold": "adilns",
+     "correct": 0,
+     "confidence": 0.4714,
+     "seconds": 0.299
+    },
+    {
+     "id": "5e32a11a004b2759",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "acandlelamp",
+     "gold": "aacdellmnp",
+     "correct": 0,
+     "confidence": 0.5354,
+     "seconds": 0.345
+    },
+    {
+     "id": "a844013b632d2abe",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "Islanddog",
+     "gold": "addgilnos",
+     "correct": 0,
+     "confidence": 0.7331,
+     "seconds": 0.784
+    },
+    {
+     "id": "d468feee03339576",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "Fograin",
+     "gold": "afginor",
+     "correct": 0,
+     "confidence": 0.7001,
+     "seconds": 0.87
+    },
+    {
+     "id": "cdef0b2d9b0e838c",
+     "family": "sort_letters",
+     "level": 2,
+     "answer": "Moonwindow",
+     "gold": "dimnnoooww",
+     "correct": 0,
+     "confidence": 0.7338,
+     "seconds": 0.333
+    },
+    {
+     "id": "9f6beaa8fba6d852",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "doggargendog",
+     "gold": "adddegggnoor",
+     "correct": 0,
+     "confidence": 0.5494,
+     "seconds": 0.358
+    },
+    {
+     "id": "28e5a89092610291",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "correct": 0,
+     "confidence": 0.8927,
+     "seconds": 0.294
+    },
+    {
+     "id": "c5cdc001bf838f59",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "o f o n t a b l e f o g",
+     "gold": "abeefglnootv",
+     "correct": 0,
+     "confidence": 0.5576,
+     "seconds": 0.786
+    },
+    {
+     "id": "4c524f68d3d4b70f",
+     "family": "sort_letters",
+     "level": 3,
+     "answer": "Islandrainmoon",
+     "gold": "aadiilmnnnoors",
+     "correct": 0,
+     "confidence": 0.8203,
+     "seconds": 0.363
+    }
+   ]
+  }
+ },
+ "experiment": "ag12",
+ "seconds": 155.9,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}

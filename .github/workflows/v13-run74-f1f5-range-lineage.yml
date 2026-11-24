@@ -1,0 +1,87 @@
+name: V13 Run74 authenticated F1F5 mixed-range JEF software
+on:
+  push:
+    branches: [assistant/v13-run74-f1f5-range-source-lineage-20261031-auto11]
+    paths:
+      - '.github/workflows/v13-run74-f1f5-range-lineage.yml'
+      - 'v13/code/v13/jef_f1f5_range_admission_shadow.py'
+      - 'v13/code/tests/test_jef_f1f5_range_admission_shadow.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run74-f1f5-range-software
+  cancel-in-progress: false
+jobs:
+  f1f5-range:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-authenticated mixed-range and legacy regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run74-f1f5-range"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          91c9a1d6b1834964ac5d36b1dffe064e29bee6b6 v13/code/docs/RUN74_F1F5_RANGE_LINEAGE_PREREG_20261031.md
+          5449e4f4481174b17433ae3e5af035e90a90dce0 v13/code/v13/jef_f1f5_range_admission_shadow.py
+          89c6893f0d9d9252b2b776d172610d17e47db9e7 v13/code/tests/test_jef_f1f5_range_admission_shadow.py
+          d57c9eb561e115541883e2f6ed37da451ff528f7 v13/code/v13/jef_range_policy_shadow.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run74-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run74-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          for t in test_jef_f1f5_range_admission_shadow.py test_jef_range_policy_shadow.py test_jef_f1f5_source_admission.py test_jef_c3_schema_source_recheck_shadow.py; do
+            key="${t%.py}"
+            if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+              timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest discover -s v13/code/tests -p "$t" -v > "$e/${key}_RAW.log" 2>&1
+              echo "$?" > "$e/${key}_EXIT.txt"
+            else echo DEPS_RED > "$e/${key}_RAW.log"; echo 99 > "$e/${key}_EXIT.txt"; fi
+          done
+          python3 -m compileall -q v13/code/v13/jef_f1f5_range_admission_shadow.py v13/code/tests/test_jef_f1f5_range_admission_shadow.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c40eef97b3da14c1165e485b91bdafd0d036d031 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c40eef97b3da14c1165e485b91bdafd0d036d031 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run74-f1f5-range-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run74-f1f5-range/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all checks
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run74-f1f5-range"
+          for s in PINS VENV DEPS test_jef_f1f5_range_admission_shadow test_jef_range_policy_shadow test_jef_f1f5_source_admission test_jef_c3_schema_source_recheck_shadow COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN74_HUMAN_SOURCE_SHADOW_ONLY_NO_TTY_OUTPUT_OR_AGE_PROMOTION

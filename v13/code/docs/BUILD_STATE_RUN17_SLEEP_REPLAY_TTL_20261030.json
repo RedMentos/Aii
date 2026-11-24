@@ -1,0 +1,70 @@
+{
+  "schema": "v13.run17.sleep_replay_ttl.software_focused_green.fullsuite_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; F9 Sleep replay TTL admission",
+  "parent": {
+    "pr": 1343,
+    "branch": "assistant/v13-run16-contextos-capability-proof-20261030-hourly11",
+    "head_sha": "6a5093a604b14e9d1bd288af504064ea29d72830",
+    "review_only": true
+  },
+  "branch": "assistant/v13-run17-sleep-replay-ttl-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "e052a36d919c4141e20c1303ec74426313e83b35",
+    "test_first": "04e4b8dd7d0f51da1fefba02f70b635918331ae8",
+    "sleep_original": "097527ab8d58caf389419f4dcaae329cc4971e83",
+    "sleep_candidate": "5cca0688e40ba35fa4b25e51460fa2900b9dfbca"
+  },
+  "change": "ReplayQueue.due now rejects items at or after expires and missing/nonfinite expiration before sampling, preventing wake and Sleep A from rehearsing expired human corrections. Sleep C still performs durable TTL retirement; replay raw and source history unchanged.",
+  "evidence": {
+    "original_red": {
+      "run": 41131197132,
+      "head": "519d37de73ee3b9f008365251a2e2d9ff3a5374d",
+      "artifact": 13013242528,
+      "sha256": "c32fb73d54f5b98f4a9009ac41493e99b61eb1f7b736ca1d6859bd7c6d2daf9c",
+      "tests": 3,
+      "failures": 4,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; TEST 1 expected",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run17-SleepTTL/Run17_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41131260883,
+      "head": "9b0490f38257e7dcbc03e63319117dd6984684a6",
+      "artifact": 13012438923,
+      "sha256": "a74e45e55abcde8e37c5c37e9f6f9fc55d82461107a42af8df61a2bc285a82b6",
+      "tests": 76,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run17-SleepTTL/Run17_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "parent_run16_unfiltered": {
+      "run": 41131035846,
+      "status": "IN_PROGRESS_AT_CHECKPOINT"
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Linux software/SQLite only; no model/native/Redmi evidence.",
+    "No independent external agent available; direct source review and test-first adversarial expiry injection performed.",
+    "No production merge; inherited historical unfiltered failures remain unwaived."
+  ],
+  "next_command": "Wait for Run16 unfiltered Actions 41131035846 original artifact; verify SHA/CRC/all inner hashes/stage exits and compare exact failures against Run15 4164/4/66/16. Run Run17 unfiltered exact-head if no conflicting active heavy owner; verify/preserve raw and compare failures. Continue next independent canonical organ package."
+}

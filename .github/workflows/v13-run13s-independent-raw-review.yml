@@ -1,0 +1,66 @@
+name: V13 Run13S independent original Run13R raw review
+on:
+  push:
+    branches:
+      - assistant/v13-run13s-independent-raw-review-20261030-auto11
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run13s-readonly-artifact-review
+  cancel-in-progress: false
+jobs:
+  verify-original-raw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 20
+      - name: Download exact original Run13R ZIP (no model, no native)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --retry-delay 2 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12996160234/zip' \
+            -o "$RUNNER_TEMP/run13r-native-original.zip"
+          echo "RUN13R_ORIGINAL_ZIP=$RUNNER_TEMP/run13r-native-original.zip" >> "$GITHUB_ENV"
+          printf '%s  %s\n' \
+            d3d4ba03e2740e1dbe44a6b1c0b756c947a57cbfbc30a91293da6f0f3d76ee49 \
+            "$RUNNER_TEMP/run13r-native-original.zip" | sha256sum -c -
+      - name: Independent raw replay and tamper counterexamples
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run13s-evidence"
+          python3 v13/code/scripts/run13s_independent_raw_review.py \
+            "$RUN13R_ORIGINAL_ZIP" > "$RUNNER_TEMP/run13s-evidence/REVIEW.json" \
+            2> "$RUNNER_TEMP/run13s-evidence/REVIEW_ERR.log"
+          PYTHONPATH=v13/code/scripts python3 -m unittest -v \
+            v13/code/tests/test_run13s_independent_raw_review.py \
+            > "$RUNNER_TEMP/run13s-evidence/TEST_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/run13s_independent_raw_review.py \
+            v13/code/tests/test_run13s_independent_raw_review.py
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base d1f728b8373bf4331f1c763e2b76c80379ae98cc --head HEAD --no-worktree \
+            > "$RUNNER_TEMP/run13s-evidence/PRIVACY_RAW.log" 2>&1
+          git diff --check d1f728b8373bf4331f1c763e2b76c80379ae98cc HEAD \
+            > "$RUNNER_TEMP/run13s-evidence/DIFF_RAW.log" 2>&1
+          (cd "$RUNNER_TEMP/run13s-evidence" && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$RUNNER_TEMP/run13s-evidence/REVIEW.json"
+          tail -15 "$RUNNER_TEMP/run13s-evidence/TEST_RAW.log"
+      - name: Preserve source-only review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13s-independent-raw-review-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/run13s-evidence/
+          retention-days: 30
+          if-no-files-found: warn

@@ -1,0 +1,43 @@
+{
+  "schema": "v13.build_state.scoped.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation review",
+  "branch": "codex/v13-c3-operator-native-receipt-boundary-20261030-auto11",
+  "source_parent": "ef6aa8bd32c84c58ee32b2f1908994d28b3d59be",
+  "candidate_source_sha": "a7bade39b3e9b8b9bc4db3e49f3d8068557a69b1",
+  "verified_test_head": "98522ef4fbbccfc9cdcfac21540341478d4d808f",
+  "test_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_c3_operator_receipt_boundary_auto11 tests.test_c3_de_operator_shadow_run11g_20261030 tests.test_listarith_de_closedworld_seed101_20261030",
+  "focused_software": {
+    "red": {
+      "run": 41020824871,
+      "artifact": 12961267461,
+      "zip_sha256": "54713d6a6e538963303363e757b7bd59b10335c3d7aa2a9b3536544bd248fe2e",
+      "failures": 6,
+      "errors": 1,
+      "total": 26
+    },
+    "green": {
+      "run": 41020951664,
+      "artifact": 12960779183,
+      "zip_sha256": "ecbd1ee648c9a70a6ebce00297e0eb0af7fb8826e9f832c4548ffeff8be6a94e",
+      "passed": 26,
+      "total": 26,
+      "inner_hashes": "13/13",
+      "stage_exits": "6/6 zero",
+      "privacy": "CLEAN"
+    }
+  },
+  "evidence_grade": "SOFTWARE_STUB_ONLY",
+  "native_run": false,
+  "redmi_run": false,
+  "learning_mode": "RECORD_ONLY",
+  "step2_gate": "UTILITY_FAIL",
+  "b3_gate": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C3-Operator-Receipt/",
+  "next": "Preserve original native error type in quarantine and bound regular-file reads, prereg before code; CI, verify raw, backup.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}

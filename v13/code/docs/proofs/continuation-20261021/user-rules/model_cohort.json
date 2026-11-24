@@ -1,0 +1,888 @@
+{
+ "schema": "USER_RULES_MODEL_COHORT_V1",
+ "items": [
+  {
+   "text": "Bitte löschen Sie keine meiner Notizen nie.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Please never delete any of my notes."
+  },
+  {
+   "text": "Bitte löschen Sie nie meine Notizen.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Lösch bitte niemals meine Notizen."
+  },
+  {
+   "text": "Bitte senden Sie keine E-Mails, ohne dass ich vorher gefragt habe.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Don't send emails without asking me first."
+  },
+  {
+   "text": "Please refrain from sending messages without first consulting me regarding the matter.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B2_GIST",
+   "original": "Don't send emails without asking me first."
+  },
+  {
+   "text": "Vermeide es, ohne vorher zu fragen, ins Internet zu schicken.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen."
+  },
+  {
+   "text": "Never install new modules without explicit permission from me.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B2_GIST",
+   "original": "Never install new modules unless I explicitly allow it."
+  },
+  {
+   "text": "Halt die Verwendung des Taschenrechners.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Stop using the calculator."
+  },
+  {
+   "text": "Stop employing the calculator.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "calc"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Stop using the calculator."
+  },
+  {
+   "text": "Man sollte nicht online gehen.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "You must not go online."
+  },
+  {
+   "text": "You are strictly prohibited from engaging with any digital platforms.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module",
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "You must not go online."
+  },
+  {
+   "text": "Ich möchte nicht, dass du etwas an meinen Dateien veränderst.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst."
+  },
+  {
+   "text": "Ich werde nicht, dass du etwas ändern in meinen Dateien.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst."
+  },
+  {
+   "text": "Vergiss nicht, meine Notizen zu speichern.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Don't forget to save my notes."
+  },
+  {
+   "text": "Don't forget to save your notes.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Don't forget to save my notes."
+  },
+  {
+   "text": "Zögern Sie nicht, mich zu fragen, wenn etwas unklar ist.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Don't hesitate to ask me if something is unclear."
+  },
+  {
+   "text": "Please do not hesitate to inquire if the matter remains ambiguous.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Don't hesitate to ask me if something is unclear."
+  },
+  {
+   "text": "Können Sie die alte Notiz löschen?",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Can you delete the old note?"
+  },
+  {
+   "text": "Can you remove the old note from your file system?",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Can you delete the old note?"
+  },
+  {
+   "text": "Kannst du mir bitte eine E-Mail schreiben?",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Kannst du mir eine Mail schreiben?"
+  },
+  {
+   "text": "Kannst du mir eine E-Mail schreiben?",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Kannst du mir eine Mail schreiben?"
+  },
+  {
+   "text": "Ich habe gestern nichts gelöscht.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "I didn't delete anything yesterday."
+  },
+  {
+   "text": "Wie viel ergibt das Produkt von 17 und 23?",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "What is 17 times 23?"
+  },
+  {
+   "text": "What is 17 multiplied by 23?",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "What is 17 times 23?"
+  },
+  {
+   "text": "Vermeide es, meine Notizen zu löschen oder zu verändern, und sende sie auch nicht irgendwo.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either."
+  },
+  {
+   "text": "Entferne und sende nie meine Fotos oder Nachrichten.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo",
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten."
+  },
+  {
+   "text": "Please inform me prior to any actions being taken regarding my files.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace"
+   ],
+   "source": "B2_GIST",
+   "original": "Always ask me before you write anything to my files."
+  },
+  {
+   "text": "Stell mir immer die erste Frage, bevor du etwas installierst.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst."
+  },
+  {
+   "text": "Bevor du etwas installierst, frag mich zuerst vor.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B2_GIST",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst."
+  },
+  {
+   "text": "Erzähl mir, bevor du etwas tust.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Tell me before you do anything."
+  },
+  {
+   "text": "Before you proceed with any action, I advise you to speak first.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "source": "B2_GIST",
+   "original": "Tell me before you do anything."
+  },
+  {
+   "text": "Bitte gib mir immer im Voraus mitteilst, was du machen möchtest.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Sag mir immer vorher, was du tun willst."
+  },
+  {
+   "text": "Sag mir immer vor, was du tun willst.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "source": "B2_GIST",
+   "original": "Sag mir immer vorher, was du tun willst."
+  },
+  {
+   "text": "Halt dich fern von meinen Notizen!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_new",
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Finger weg von meinen Notizen!"
+  },
+  {
+   "text": "Bewahren Sie Ihre Hände von meinen Fotos fern.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Keep your hands off my photos."
+  },
+  {
+   "text": "Keep your hands away from my pictures.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Keep your hands off my photos."
+  },
+  {
+   "text": "Vermeide es, Dateien zu löschen, außer den Entwürfen.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Never delete files, except the drafts."
+  },
+  {
+   "text": "Never delete files, except for those that are in draft status.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "source": "B2_GIST",
+   "original": "Never delete files, except the drafts."
+  },
+  {
+   "text": "Keine Dateien außer den Entwurfs sollten gelöscht werden.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "source": "B2_GIST",
+   "original": "Lösche keine Dateien außer den Entwürfen."
+  },
+  {
+   "text": "Vermeide es, meine Rezepte zu löschen.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Never delete my recipes."
+  },
+  {
+   "text": "Never remove my recipes from storage.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [
+    "note_replace"
+   ],
+   "source": "B2_GIST",
+   "original": "Never delete my recipes."
+  },
+  {
+   "text": "Es könnte besser sein, diese Nachricht noch nicht zu senden.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B2_GIST",
+   "original": "Maybe don't send that email yet."
+  },
+  {
+   "text": "Es wäre vielleicht besser, lieber nichts zu löschen.",
+   "lang": "de",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "note_replace",
+    "delete_photo"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Vielleicht solltest du lieber nichts löschen."
+  },
+  {
+   "text": "Mein Bruder sagt, du solltest die Zeit nicht mit dem Internet verbringen.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "web"
+   ],
+   "source": "B1_DETAIL",
+   "original": "My brother says you should never use the internet."
+  },
+  {
+   "text": "Mein Chef sagt, du darfst keine E-Mails senden.",
+   "lang": "de",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken."
+  },
+  {
+   "text": "Sie können die Notizen jetzt erneut löschen.",
+   "lang": "en",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "You can delete notes again now."
+  },
+  {
+   "text": "Du kannst die Notizen jetzt noch löschen.",
+   "lang": "en",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "You can delete notes again now."
+  },
+  {
+   "text": "Du hast jetzt erneut Zugang zum Internet.",
+   "lang": "de",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Du darfst jetzt wieder ins Internet."
+  },
+  {
+   "text": "Du kannst alles, was du brauchst, installieren.",
+   "lang": "en",
+   "kind": "LOOSEN",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Feel free to install whatever you need."
+  },
+  {
+   "text": "Bitte keine Downloads.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "No downloads, please."
+  },
+  {
+   "text": "No downloads are permitted.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "No downloads, please."
+  },
+  {
+   "text": "No uploads allowed!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Keine Uploads!"
+  },
+  {
+   "text": "Du darfst nicht von meinen privaten Nachrichten lernen.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "You are not allowed to learn from my private messages."
+  },
+  {
+   "text": "Bitte berühren Sie nichts an meinem Handy, es sei denn, ich gebe Ihnen die Erlaubnis.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Don't touch anything on my phone without my permission."
+  },
+  {
+   "text": "Du darfst nur mit meiner Zustimmung Nachrichten senden.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken."
+  },
+  {
+   "text": "Don't cease to preserve your notes.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Don't stop saving my notes."
+  },
+  {
+   "text": "Ignoriere bitte das Budget.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Don't worry about the budget."
+  },
+  {
+   "text": "Don't fret about the financial plan.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Don't worry about the budget."
+  },
+  {
+   "text": "Vermeide es, sich um die Frist zu sorgen.",
+   "lang": "de",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Mach dir keine Sorgen wegen der Frist."
+  },
+  {
+   "text": "Du solltest meine Kontakte niemals weitergeben.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Under no circumstances should you share my contacts."
+  },
+  {
+   "text": "Du darfst nicht Geld ausgeben.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Auf keinen Fall darfst du Geld ausgeben."
+  },
+  {
+   "text": "Ich verbiete dir, Programme auszuführen.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "I forbid you to run any programs."
+  },
+  {
+   "text": "I prohibit you from executing any applications.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "I forbid you to run any programs."
+  },
+  {
+   "text": "Bitte nichts laden.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "web",
+    "install_module"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Bitte nichts herunterladen."
+  },
+  {
+   "text": "Bitte, unter keiner Umstände, meine Notizen ändern.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Do not, under any circumstances, overwrite my notes."
+  },
+  {
+   "text": "Never attempt to alter or delete the contents of my notes, regardless of the situation.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Do not, under any circumstances, overwrite my notes."
+  },
+  {
+   "text": "Das Schild warnte vor dem Betreten.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "The sign said do not enter."
+  },
+  {
+   "text": "The sign instructed people to stay away from the entrance.",
+   "lang": "en",
+   "kind": "UNCLEAR",
+   "deny": [],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "The sign said do not enter."
+  },
+  {
+   "text": "Ignoriere das, es war nichts.",
+   "lang": "en",
+   "kind": "NONE",
+   "deny": [],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Never mind, it was nothing."
+  },
+  {
+   "text": "Schreibe die Notiz, aber lösche niemals die alte.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "note_replace"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Schreib die Notiz, aber lösch niemals die alte."
+  },
+  {
+   "text": "Bevor du etwas schickst, zeige es mir.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Before you send anything, show it to me."
+  },
+  {
+   "text": "Before you send anything, please show it to me.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "send_email"
+   ],
+   "source": "B2_GIST",
+   "original": "Before you send anything, show it to me."
+  },
+  {
+   "text": "Gib nicht etwas weg!",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "send_email"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Nichts verschicken!"
+  },
+  {
+   "text": "Bitte nutze heute keine Hilfsmittel.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Please don't use any tools today."
+  },
+  {
+   "text": "Please refrain from employing any instruments today.",
+   "lang": "en",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Please don't use any tools today."
+  },
+  {
+   "text": "Verwende keine Werkzeuge.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B1_DETAIL",
+   "original": "Benutze keine Werkzeuge."
+  },
+  {
+   "text": "Benutz keine Werkzeuge.",
+   "lang": "de",
+   "kind": "FORBID",
+   "deny": [
+    "calc",
+    "note_new",
+    "note_replace",
+    "send_email",
+    "web",
+    "install_module",
+    "delete_photo"
+   ],
+   "ask": [],
+   "source": "B2_GIST",
+   "original": "Benutze keine Werkzeuge."
+  },
+  {
+   "text": "Du darfst Module nicht von überall ohne meine ausdrückliche Zustimmung holen.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B1_DETAIL",
+   "original": "Never fetch modules from anywhere without my conscious permission."
+  },
+  {
+   "text": "Never retrieve modules from any source without my explicit consent.",
+   "lang": "en",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B2_GIST",
+   "original": "Never fetch modules from anywhere without my conscious permission."
+  },
+  {
+   "text": "Du solltest niemals Module abrufen, ohne dass ich mich bewusst einverstanden bin.",
+   "lang": "de",
+   "kind": "ASK_FIRST",
+   "deny": [],
+   "ask": [
+    "install_module"
+   ],
+   "source": "B2_GIST",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme."
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+# Cross-organ Sleep/Context and F1/F5 memory-route integration preregistration
+
+Date UTC: 2026-10-27. Review-only child of PR #792, base exact commit `38fe26793c8b7a3a82a28f1589a3eecbb4e6d7ff`, which preserves PR #791 C1/World/B3/Sleep A/HX source and verified Sleep lineage source. PR #792 exact-source Actions `40599024941` passed 24 focused / 2048 full (1 skipped) at `b26ee564584c330d1e9911ea5d547c9d15ccc92b`, raw artifact `f223062eac8efa95486b37807704104ca7a07f7a53e0bf0b62547b6b019e73ab`; later PR #792 commits were documentation only.
+
+Proposed second parent PR #793, independently preregistered at `e122aa58056b40de169e22dd648b7d775bcb773b`, source/test commit `d3c9a042ea097ab981622b391e987f52adbd176e`, head `893ae11f0b16ea3e39b56dc2c4a173ad794715b1`. **Its exact-head Linux software proof is pending as of this preregistration.** Do not import if it fails without preserving and fixing failure. Four candidate Git blobs to import only after green: memory `501c8f43c92f031e034e4b93f4adbd4c67b7edfe`, episodic route `04161234548a26284a682a40da09d28242b89e71`, tests Run270 `1871fed7bbb7fb279dcf86cec4f1ae44e52c1077`, Run279 `a29b60c9775a72dd866e146a86f438b1d90c281e`.
+
+Integration owner only: exact four F1/F5 source/test paths, this evidence directory, a new dedicated integrated CI workflow, additive BUILD_STATE delta. Freeze C1/B3/World/HX/AG8/Sleep A source, original Sleep lineage source, model/source/seed hashes and all negative gates. No auto-merge. This does not integrate concurrent AG8 strict shield branch; independent AG8 owner remains active.
+
+Plan: compare exact blobs, import only after source branch passes; run all Run205/207/208/278/270/279 focused tests together with current C1, B3, World, HX tests and full `unittest discover`; preserve closed raw exits, artifact SHA/CRC, privacy, private byte-exact backup; independently review combined behavior. On RED, preserve raw and repair only in new review branch. On GREEN, save RESULT/BUILD_STATE without promotion and continue other roadmap work.
+
+No new model, native/Redmi proof, human approval, autonomous tool authority, Age promotion, B3 receiver authority or JEPA weight. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA unavailable, jepa_weight=0, canonical and user full-scope completion false.

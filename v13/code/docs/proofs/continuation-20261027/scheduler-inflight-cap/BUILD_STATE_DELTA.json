@@ -1,0 +1,52 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation continuation",
+  "base_pr": 737,
+  "base_commit": "3b6ce3fb75f99fb8b44ad555e34f30a29c9307e3",
+  "branch": "codex/automation11g-scheduler-inflight-cap-20261027",
+  "prereg_commit": "32febc7abab7d3c6b4f7ccdac3a41e44700b8b0f",
+  "red": {
+    "commit": "9bb514de1c666f5cf992bd1813678b29c1ca6588",
+    "actions": 40532009512,
+    "tests": "10 tests; 2 expected FAIL",
+    "artifact": 12744999500,
+    "zip_sha256": "fb70c59d184a8f4e140bbe09163d5cb9da844fbd69e3fb66c32468b1b77147ab",
+    "private_backup_verified": true
+  },
+  "green": {
+    "commit": "099c6bad7ecfb7672ed5844182ab7f01e930b660",
+    "scheduler_blob": "e1704de76e77947849c5b0a9b2f174ce47f1a29e",
+    "actions": 40532090041,
+    "tests": "10/10 PASS",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12747146178,
+    "zip_sha256": "5fd2a0e45c7139ac5ae7650e9b4397ae46bbd9f9d5059deedb5c73fb84b1d895",
+    "private_backup_verified": true
+  },
+  "full_suite": {
+    "source_commit": "6c1085039daf5aec7bb24c799984e3264dc8a804",
+    "actions": 40532176820,
+    "status": "PENDING_AT_CHECKPOINT"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect GitHub Actions run 40532176820, download raw artifact and verify all exits; then independent review of foreground-kind action spoofing with separate prereg.",
+  "note": "Additive review-branch delta; do not overwrite concurrent owners' shared BUILD_STATE.json; no production merge."
+}

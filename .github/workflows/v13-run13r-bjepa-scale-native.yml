@@ -1,0 +1,128 @@
+name: V13 Run13R pinned 350M eight-arm JEPA dose/heldout native
+on:
+  push:
+    branches: [assistant/v13-run13r-bjepa-scale-heldout-20261030-auto11]
+    paths:
+      - 'v13/code/docs/RUN13R_NATIVE_TRIGGER_20261030.txt'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bodyjepa-350m-eval-paired-native-serial-20261030
+  cancel-in-progress: false
+jobs:
+  native-heldout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 58
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify frozen pins and run isolated native eight-arm cohort
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13r-native"
+          w="$RUNNER_TEMP/v13-run13r-work"
+          mkdir -p "$e" "$w"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$e/BJEPA_BLOB.txt"
+          git hash-object v13/code/v13/lora_trainer.py > "$e/LORA_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa_contrastive_shadow.py > "$e/LOSS_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa_contrastive_trainer_shadow.py > "$e/TRAINER_BLOB.txt"
+          git hash-object v13/code/scripts/bodyjepa_350m_contrastive_disjoint_run12c.py > "$e/ORIGINAL_RUN12C_BLOB.txt"
+          git hash-object v13/code/scripts/bodyjepa_350m_scale_heldout_run13r.py > "$e/PROBE_BLOB.txt"
+          git hash-object v13/code/tests/test_bodyjepa_350m_scale_heldout_run13r.py > "$e/TEST_BLOB.txt"
+          git hash-object v13/code/docs/RUN13R_BJEPA_SCALE_HELDOUT_PREREG_20261030.md > "$e/PREREG_BLOB.txt"
+          test "$(cat "$e/CANON_BLOB.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7 &&
+          test "$(cat "$e/BJEPA_BLOB.txt")" = b560d4e88fe457f381e89dfc5d6188a8ec3b306b &&
+          test "$(cat "$e/LORA_BLOB.txt")" = 49a752879ae5d19391963742a0f042e740edb2cc &&
+          test "$(cat "$e/LOSS_BLOB.txt")" = acd40aeac9e286e93b40bda72c655c17725a522e &&
+          test "$(cat "$e/TRAINER_BLOB.txt")" = a31a18d9be0b1137a10304f24d3a241d720bd247 &&
+          test "$(cat "$e/ORIGINAL_RUN12C_BLOB.txt")" = 15597550100de6ca546b1b024fbc6597fc600839 &&
+          test "$(cat "$e/PROBE_BLOB.txt")" = 5d665c09909ae77eeb12bf038a053232371abcb8 &&
+          test "$(cat "$e/TEST_BLOB.txt")" = ac3a38192de0c5dd6cde632746da4e191d196adf &&
+          test "$(cat "$e/PREREG_BLOB.txt")" = c979514672c01d74999868c307a46d3be8ba455d
+          echo "$?" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$w/venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/TORCH_RAW.log" 2>&1
+          echo "$?" > "$e/TORCH_EXIT.txt"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'numpy==2.2.6' 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_bodyjepa_350m_scale_heldout_run13r tests.test_bodyjepa_350m_contrastive_disjoint_run12c tests.test_body_jepa_contrastive_shadow_run12a) > "$e/SOFTWARE_RAW.log" 2>&1
+          echo "$?" > "$e/SOFTWARE_EXIT.txt"
+          "$py" -m py_compile v13/code/scripts/bodyjepa_350m_scale_heldout_run13r.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/SOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/SOFTWARE_EXIT.txt")" = 0 ]; then
+            MASTER="$w/master" "$py" - <<'PY' > "$e/DOWNLOAD_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+            echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          else echo SKIPPED > "$e/DOWNLOAD_EXIT.txt"; fi
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (cd v13/code && HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:scripts timeout --signal=TERM --kill-after=15s 2800s "$py" scripts/bodyjepa_350m_scale_heldout_run13r.py --master "$w/master" --out "$w/cohort" --execute-native) > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+            if [ -f "$w/cohort/report.json" ]; then cp "$w/cohort/report.json" "$e/REPORT.json"; fi
+          else echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 82cd958abb0c0874f1451dfc094f4bd3b2eb615a --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 82cd958abb0c0874f1451dfc094f4bd3b2eb615a HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original raw even if partial or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13r-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13r-native/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce structural completeness only, not utility promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run13r-native"
+          for stage in SOURCE VENV TORCH DEPS PIP_CHECK SOFTWARE COMPILE DOWNLOAD NATIVE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained; no gate promotion"
+              tail -90 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          "$RUNNER_TEMP/v13-run13r-work/venv/bin/python" - "$e/REPORT.json" <<'PY'
+          import json,sys,math
+          d=json.load(open(sys.argv[1]))
+          assert d["schema"]=="v13.bodyjepa.350m_scale_heldout_run13r.v1"
+          assert d["model_revision"]=="120bf032c36dd1273de754669da040dba7ad4982"
+          assert d["master_sha256"]=="1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+          assert d["fixture_sha256"]=="a93322a5a30f9a9da5c391d172f8f6048cc6b9e2d617ab0349f4d148d278b77e"
+          assert d["seeds"]==[271,277] and d["arms"]==["CE_0","CONTRAST_2_5","CONTRAST_12","SHUFFLED_12"]
+          assert d["completed_arms"]==8 and d["failures"]==[]
+          assert all(set(arms)==set(d["arms"]) for arms in d["results"].values())
+          assert all(arms[a]["metrics"]["steps"]==8 and not arms[a]["exported_adapter"] for arms in d["results"].values() for a in arms)
+          assert d["status"] in ("BOUNDED_SYNTHETIC_SCALE_SIGNAL_NOT_UTILITY_GATE","DIAGNOSTIC_HURT","DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN")
+          assert d["runtime_jepa_weight"]==0 and d["age_authority"]==0
+          assert d["utility_gate_pass"] is False and d["production_activation"] is False
+          assert d["body_jepa_available"] is False and d["redmi_measured"] is False and d["whole_system_complete"] is False
+          print("RUN13R_NATIVE_SYNTHETIC_DIAGNOSTIC_ONLY",d["status"],d["mean_deltas"])
+          PY

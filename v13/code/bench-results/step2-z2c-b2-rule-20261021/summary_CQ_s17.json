@@ -1,0 +1,502 @@
+{
+  "run": "CQ_s17",
+  "arm": "CQ",
+  "seed": 17,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 17
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5916666666666667,
+      "b2_only": 0.275,
+      "both_control": 0.5833333333333334,
+      "both_exact": 0.6083333333333333,
+      "both_none": 0.6083333333333333,
+      "prompt_only_dual": 0.5916666666666667,
+      "same_policy_dual": 0.625
+    },
+    "best_solo": 0.5916666666666667,
+    "gain_over_best_solo": {
+      "both_none": 0.016666666666666607,
+      "both_exact": 0.016666666666666607,
+      "both_control": -0.008333333333333304
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5916666666666667,
+      "b2_only": 0.175,
+      "both_control": 0.6666666666666666,
+      "both_exact": 0.5833333333333333,
+      "both_none": 0.6333333333333333,
+      "prompt_only_dual": 0.5166666666666667,
+      "same_policy_dual": 0.5916666666666667
+    },
+    "best_solo": 0.5916666666666667,
+    "gain_over_best_solo": {
+      "both_none": 0.04166666666666663,
+      "both_exact": -0.008333333333333415,
+      "both_control": 0.07499999999999996
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.175,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 4,
+      "wrong_committed": 0,
+      "unknown": 6,
+      "mean_utility": 0.6666666666666666,
+      "exact_fixtures": [
+        "Meridian",
+        "Quasar",
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5833333333333333,
+      "exact_fixtures": [
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 3,
+      "wrong_committed": 0,
+      "unknown": 7,
+      "mean_utility": 0.6333333333333333,
+      "exact_fixtures": [
+        "Quasar",
+        "Sirius",
+        "Tycho"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.5166666666666667,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Sirius",
+        "Tycho"
+      ]
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.3333333333333333
+    },
+    "both_control": {
+      "rule_fields_correct": 0.4,
+      "option_fields_correct": 1.0
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    },
+    "both_none": {
+      "rule_fields_correct": 0.3,
+      "option_fields_correct": 1.0
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.9333333333333333
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10
+    },
+    "b2_only": {
+      "B2_GIST:rules": 2,
+      "B2_GIST:options": 1
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 1,
+      "B2_GIST:options": 1
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 1
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 1,
+      "B2_GIST:options": 1
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 3,
+    "both_exact": 1,
+    "both_control": 4,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 1
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Kestrel:b1_only": 0.5,
+    "Kestrel:b2_only": 0.25,
+    "Kestrel:both_none": 0.5,
+    "Kestrel:both_exact": 0.5,
+    "Kestrel:both_control": 0.5,
+    "Kestrel:same_policy_dual": 0.5,
+    "Kestrel:prompt_only_dual": 0.5,
+    "Lumen:b1_only": 0.5,
+    "Lumen:b2_only": 0.08333333333333333,
+    "Lumen:both_none": 0.5,
+    "Lumen:both_exact": 0.5,
+    "Lumen:both_control": 0.5,
+    "Lumen:same_policy_dual": 0.5,
+    "Lumen:prompt_only_dual": 0.16666666666666666,
+    "Meridian:b1_only": 0.5,
+    "Meridian:b2_only": 0.0,
+    "Meridian:both_none": 0.5,
+    "Meridian:both_exact": 0.5,
+    "Meridian:both_control": 0.9166666666666666,
+    "Meridian:same_policy_dual": 0.5,
+    "Meridian:prompt_only_dual": 0.5,
+    "Nimbus:b1_only": 0.5833333333333334,
+    "Nimbus:b2_only": 0.08333333333333333,
+    "Nimbus:both_none": 0.5833333333333334,
+    "Nimbus:both_exact": 0.5,
+    "Nimbus:both_control": 0.5,
+    "Nimbus:same_policy_dual": 0.5833333333333334,
+    "Nimbus:prompt_only_dual": 0.5833333333333334,
+    "Orion:b1_only": 0.5,
+    "Orion:b2_only": 0.16666666666666666,
+    "Orion:both_none": 0.5,
+    "Orion:both_exact": 0.5,
+    "Orion:both_control": 0.5,
+    "Orion:same_policy_dual": 0.5,
+    "Orion:prompt_only_dual": 0.5,
+    "Perseus:b1_only": 0.5,
+    "Perseus:b2_only": 0.0,
+    "Perseus:both_none": 0.5,
+    "Perseus:both_exact": 0.5,
+    "Perseus:both_control": 0.5,
+    "Perseus:same_policy_dual": 0.5,
+    "Perseus:prompt_only_dual": 0.5,
+    "Quasar:b1_only": 0.5,
+    "Quasar:b2_only": 0.5,
+    "Quasar:both_none": 0.9166666666666666,
+    "Quasar:both_exact": 0.5,
+    "Quasar:both_control": 0.9166666666666666,
+    "Quasar:same_policy_dual": 0.5,
+    "Quasar:prompt_only_dual": 0.5,
+    "Rigel:b1_only": 0.5,
+    "Rigel:b2_only": 0.5,
+    "Rigel:both_none": 0.5,
+    "Rigel:both_exact": 0.5,
+    "Rigel:both_control": 0.5,
+    "Rigel:same_policy_dual": 0.5,
+    "Rigel:prompt_only_dual": 0.5,
+    "Sirius:b1_only": 0.9166666666666666,
+    "Sirius:b2_only": 0.08333333333333333,
+    "Sirius:both_none": 0.9166666666666666,
+    "Sirius:both_exact": 0.9166666666666666,
+    "Sirius:both_control": 0.9166666666666666,
+    "Sirius:same_policy_dual": 0.9166666666666666,
+    "Sirius:prompt_only_dual": 0.9166666666666666,
+    "Tycho:b1_only": 0.9166666666666666,
+    "Tycho:b2_only": 0.08333333333333333,
+    "Tycho:both_none": 0.9166666666666666,
+    "Tycho:both_exact": 0.9166666666666666,
+    "Tycho:both_control": 0.9166666666666666,
+    "Tycho:same_policy_dual": 0.9166666666666666,
+    "Tycho:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [
+      "Meridian"
+    ],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2c": {
+    "b2_quote_select": "off",
+    "b2_rule_rows": {
+      "Kestrel:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Kestrel:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Lumen:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Meridian:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Meridian:both_control": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Meridian:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Meridian:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Nimbus:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Orion:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Perseus:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Quasar:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Quasar:both_control": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Quasar:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Quasar:both_none": {
+        "rules": true,
+        "wrong_rule": false
+      },
+      "Rigel:b2_only": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Rigel:both_control": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Rigel:both_exact": {
+        "rules": false,
+        "wrong_rule": false
+      },
+      "Rigel:both_none": {
+        "rules": false,
+        "wrong_rule": false
+      }
+    },
+    "b2_rule_rate": 0.09375,
+    "b2_wrong_rule_rows": 0,
+    "b2_offers": {
+      "offers": 32,
+      "rejected_quotes": 34,
+      "anchored_quotes": 0,
+      "picked_ids": 0
+    },
+    "b2_prompt_tokens": [
+      602,
+      604,
+      608,
+      613,
+      457,
+      603,
+      600,
+      646,
+      609,
+      457,
+      592,
+      595,
+      640,
+      603,
+      457,
+      597,
+      595,
+      640,
+      600,
+      453,
+      592,
+      592,
+      637,
+      604,
+      454,
+      596,
+      594,
+      642,
+      604,
+      445,
+      598,
+      596,
+      691,
+      610,
+      476,
+      595,
+      596,
+      643,
+      607,
+      475,
+      590,
+      593,
+      638,
+      602,
+      469,
+      602,
+      605,
+      653,
+      613,
+      471
+    ],
+    "wrong_committed_tool": 0,
+    "source_sha256": {
+      "scripts/step2_z2c_b2_rule.py": "d7aac6406ca83ea26cb0429afe41e0bcd6cb9b4b80f54b12cc244c014297c6fe",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "v13/cognition.py": "1caac09262002a1d4c4592ae714761e1fda8481a7a390028dd63ef30afbec7a1",
+      "v13/config.py": "3c5142412b19be9eb15380c1d912d703a0dc3d13f068558a1538935956805d37"
+    }
+  }
+}

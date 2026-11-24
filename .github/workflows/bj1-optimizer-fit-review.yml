@@ -1,0 +1,43 @@
+name: V13 BJ1 optimizer exact fit-resume regression
+on:
+  push:
+    branches: [codex/automation11-bj1-optimizer-state-integrity-20261027]
+    paths:
+      - '.github/workflows/bj1-optimizer-fit-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bj1-optimizer-fit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  synthetic-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Actual tiny synthetic HF PEFT fit and exact resume
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bj1-venv"
+          py="$RUNNER_TEMP/bj1-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'peft==0.21.2'
+          "$py" -m pip check
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit
+          "$py" -m py_compile v13/body_jepa_checkpoint.py v13/body_jepa.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base cf136b516f55b70212dbd5aeebe0441f6426d819 --head HEAD
+          git diff --check cf136b516f55b70212dbd5aeebe0441f6426d819 HEAD
+          echo 'BJ1_OPTIMIZER_EXACT_FIT_SYNTHETIC_ONLY_NO_NATIVE_OR_AGE_PROMOTION'

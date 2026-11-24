@@ -1,0 +1,114 @@
+{
+  "backend_dir": "/workspace/scratch/f24630d7727d/native16-home/bin/b10964/llama-b10964",
+  "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+  "layer": 11,
+  "model_path": "/workspace/scratch/f24630d7727d/native16-home/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "parity": {
+    "gate": 0.98,
+    "status": "PASS",
+    "worlds": {
+      "calc_counter": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998691837016781,
+          "rel_rms_max": 0.016175061242649235
+        },
+        "pass": true,
+        "per_action": {
+          "add_15": {
+            "copy": 0.41286468440736357,
+            "forecast": 0.005533352116963193,
+            "mean_delta": 0.05842007805707283,
+            "rows": 80
+          },
+          "double": {
+            "copy": 0.1771252590158075,
+            "forecast": 0.0078067027032059965,
+            "mean_delta": 0.05808980624923067,
+            "rows": 80
+          },
+          "quarter": {
+            "copy": 0.45917634557805737,
+            "forecast": 0.02201900877821336,
+            "mean_delta": 0.11706815789471756,
+            "rows": 80
+          },
+          "subtract_7": {
+            "copy": 0.6073222779959705,
+            "forecast": 0.005194715384603888,
+            "mean_delta": 0.05692746830279734,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "add_15": 0.0947,
+          "double": 0.1344,
+          "quarter": 0.1881,
+          "subtract_7": 0.0913
+        },
+        "texts": 400
+      },
+      "note_edit": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998379156542899,
+          "rel_rms_max": 0.01800468663496196
+        },
+        "pass": true,
+        "per_action": {
+          "append_done": {
+            "copy": 0.4800054566355164,
+            "forecast": 0.0037779772539589113,
+            "mean_delta": 0.0641697412181094,
+            "rows": 80
+          },
+          "prefix_urgent": {
+            "copy": 0.18916024406624402,
+            "forecast": 0.0031838749154063156,
+            "mean_delta": 0.03278961569381163,
+            "rows": 80
+          },
+          "undo": {
+            "copy": 0.2386768914657666,
+            "forecast": 0.0029039892444568697,
+            "mean_delta": 0.026015840357057875,
+            "rows": 80
+          },
+          "uppercase": {
+            "copy": 0.5219591118668696,
+            "forecast": 0.005810759515399328,
+            "mean_delta": 0.06715919527136933,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "append_done": 0.0589,
+          "prefix_urgent": 0.0971,
+          "undo": 0.1116,
+          "uppercase": 0.0865
+        },
+        "texts": 400
+      }
+    }
+  },
+  "pooling": "last",
+  "retention": {
+    "calc_counter": {
+      "partition": "test (the candidate's own held-out episodes, this device's encoder)",
+      "path": "/workspace/scratch/f24630d7727d/native16-home/data/tool_forecast/retention-calc_counter-ret_cd2ad2ac508946b2acbcaad493e69296.npz",
+      "sha256": "b439d2d8e619d758c97ff1ae7468c186a8a6c704d5ffae22c4bf5ae8223c960d",
+      "texts": 400
+    },
+    "note_edit": {
+      "partition": "test (the candidate's own held-out episodes, this device's encoder)",
+      "path": "/workspace/scratch/f24630d7727d/native16-home/data/tool_forecast/retention-note_edit-ret_cd2ad2ac508946b2acbcaad493e69296.npz",
+      "sha256": "7e4ac7526924ee69a15f83e2b6d37d93307249afc722ea4d09c18dd2b1c5169d",
+      "texts": 400
+    }
+  },
+  "schema": "v13-tool-forecast-v1-encoder",
+  "tool_path": "/workspace/scratch/f24630d7727d/native16-home/bin/native-layer-taps",
+  "tool_sha256": "0107b02d1c566081eb06092eaf1f50e792a20b3cb1d3365d0f5290f9f134ee8c",
+  "tool_source_sha256": "c19903f7f0ebcac7fac90809b15f4349ec9afbb71c9873e51d7c10dd14ed34a5"
+}

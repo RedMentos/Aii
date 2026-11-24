@@ -1,0 +1,95 @@
+name: V13 Run117AH seed1069 Body source-ID SHADOW real Store preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run117ah-body-source-id-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117ah-body-source-id-preflight.yml
+      - v13/code/v13/b1b2_source_id_quote_candidate.py
+      - v13/code/v13/contracts.py
+      - v13/code/tests/test_run117ah_body_source_id_candidate.py
+      - v13/code/tests/test_run117ah_body_source_id_native_runner.py
+      - v13/code/scripts/run117ah_body_source_id_native.py
+      - v13/code/docs/RUN117AH_*
+      - v13/code/docs/fixtures/RUN117AH_*
+permissions:
+  contents: read
+jobs:
+  persisted-source-id-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify frozen seed1069 real Store Body source-ID guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117ah-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ah-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117ah-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          echo 'cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a  v13/code/docs/fixtures/RUN117AH_BODY_SOURCE_ID_SEED1069.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          test "$(git hash-object v13/code/docs/fixtures/RUN117AH_BODY_SOURCE_ID_SEED1069.json)" = c0cd2764a3b6ad7470e7be5d46e1273be50aa264
+          blob_rc=$?
+          if test "$deps_rc" -eq 0 && test "$fixture_rc" -eq 0 && test "$blob_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_run117ah_body_source_id_candidate \
+              tests.test_run117ah_body_source_id_native_runner) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          "$py" -m compileall -q v13/code/v13/b1b2_source_id_quote_candidate.py \
+            v13/code/tests/test_run117ah_body_source_id_candidate.py \
+            v13/code/v13/contracts.py \
+            v13/code/scripts/run117ah_body_source_id_native.py \
+            v13/code/tests/test_run117ah_body_source_id_native_runner.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DEPS:$deps_rc" "FIXTURE:$fixture_rc" "BLOB:$blob_rc" \
+                   "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DEPS','FIXTURE','BLOB','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117ah.body_source_id_model_free_preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'fixture_sha256':'cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'body_observers_synthetic':True,'native_model_calls':0,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/TEST_RAW.log"
+          for rc in "$deps_rc" "$fixture_rc" "$blob_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve model-free GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ah-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ah-preflight/
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,268 @@
+{
+ "schema": "v13-ag6-probes-v1",
+ "purpose": "AG6 live gate: KL anchors (general + locality) and retention probes with expected keywords. Same sets as scripts/lora_bench.py, disjoint from AG12 holdout. Never trained on as targets.",
+ "anchors": [
+  "Write one sentence about the weather.",
+  "What is a good breakfast?",
+  "Explain what a computer is in one sentence.",
+  "Say hello politely.",
+  "Give me a tip for learning a language.",
+  "What does a doctor do?",
+  "What is the capital of Italy?",
+  "How many days are in a week?",
+  "Name an animal that lives in the sea.",
+  "What is 3 times 4?",
+  "What colour is grass?",
+  "Translate \"good morning\" into Spanish.",
+  "List two vegetables.",
+  "What day comes before Friday?",
+  "Who wrote Romeo and Juliet?",
+  "What is water made of?",
+  "How do I boil an egg?",
+  "What is the name of my mother?",
+  "What car do I drive?",
+  "What is my favourite food?",
+  "Where do I live?",
+  "What is the name of my teacher?",
+  "Which sport do I like?",
+  "What is my best friend called?",
+  "How old am I?",
+  "What is the name of my neighbour?",
+  "What language do I speak?",
+  "Do I have any pets?",
+  "What is my job?",
+  "What did I eat yesterday?",
+  "What is my favourite song?",
+  "Where was I born?",
+  "Which month comes after February?",
+  "Which planet is closest to the Sun?",
+  "What is the name of our galaxy?",
+  "Where does the sun rise?",
+  "When is New Year's Day?",
+  "Which month has the fewest days?",
+  "What do we call a baby cat?",
+  "Which instrument has 88 keys?",
+  "Where do penguins live?",
+  "What do we breathe in?",
+  "Which continent is Egypt in?",
+  "What is the name of the moon of Earth?",
+  "When does summer start?",
+  "Where do fish live?",
+  "Which bird cannot fly?",
+  "What do we call a group of wolves?"
+ ],
+ "probes": [
+  {
+   "prompt": "What is the capital of France?",
+   "expect": [
+    "paris"
+   ]
+  },
+  {
+   "prompt": "What is the capital of Japan?",
+   "expect": [
+    "tokyo"
+   ]
+  },
+  {
+   "prompt": "How many legs does a spider have?",
+   "expect": [
+    "eight",
+    "8"
+   ]
+  },
+  {
+   "prompt": "What colour is the sky on a clear day?",
+   "expect": [
+    "blue"
+   ]
+  },
+  {
+   "prompt": "Which planet do we live on?",
+   "expect": [
+    "earth"
+   ]
+  },
+  {
+   "prompt": "What is the opposite of hot?",
+   "expect": [
+    "cold"
+   ]
+  },
+  {
+   "prompt": "What do bees make?",
+   "expect": [
+    "honey"
+   ]
+  },
+  {
+   "prompt": "What is the largest ocean on Earth?",
+   "expect": [
+    "pacific"
+   ]
+  },
+  {
+   "prompt": "What is 7 plus 5?",
+   "expect": [
+    "12",
+    "twelve"
+   ],
+   "unseen": true
+  },
+  {
+   "prompt": "List three fruits.",
+   "expect": [
+    "apple",
+    "banana",
+    "orange",
+    "grape",
+    "mango",
+    "strawberr",
+    "pear"
+   ],
+   "unseen": true
+  },
+  {
+   "prompt": "Translate \"thank you\" into German.",
+   "expect": [
+    "danke"
+   ],
+   "unseen": true
+  },
+  {
+   "prompt": "What day comes after Monday?",
+   "expect": [
+    "tuesday"
+   ],
+   "unseen": true
+  },
+  {
+   "prompt": "What is the capital of Germany?",
+   "expect": [
+    "berlin"
+   ]
+  },
+  {
+   "prompt": "What is the capital of Spain?",
+   "expect": [
+    "madrid"
+   ]
+  },
+  {
+   "prompt": "How many months are in a year?",
+   "expect": [
+    "12",
+    "twelve"
+   ]
+  },
+  {
+   "prompt": "What color is snow?",
+   "expect": [
+    "white"
+   ]
+  },
+  {
+   "prompt": "Which planet is known as the Red Planet?",
+   "expect": [
+    "mars"
+   ]
+  },
+  {
+   "prompt": "What gas do plants absorb from the air?",
+   "expect": [
+    "carbon dioxide",
+    "co2"
+   ]
+  },
+  {
+   "prompt": "What is frozen water called?",
+   "expect": [
+    "ice"
+   ]
+  },
+  {
+   "prompt": "How many hours are in a day?",
+   "expect": [
+    "24",
+    "twenty-four",
+    "twenty four"
+   ]
+  },
+  {
+   "prompt": "What is the opposite of up?",
+   "expect": [
+    "down"
+   ]
+  },
+  {
+   "prompt": "What animal says meow?",
+   "expect": [
+    "cat"
+   ]
+  },
+  {
+   "prompt": "Which is the closest star to Earth?",
+   "expect": [
+    "sun"
+   ]
+  },
+  {
+   "prompt": "What is 2 plus 2?",
+   "expect": [
+    "4",
+    "four"
+   ]
+  },
+  {
+   "prompt": "What is 5 times 2?",
+   "expect": [
+    "10",
+    "ten"
+   ]
+  },
+  {
+   "prompt": "How many sides does a triangle have?",
+   "expect": [
+    "3",
+    "three"
+   ]
+  },
+  {
+   "prompt": "What language is spoken in Brazil?",
+   "expect": [
+    "portuguese"
+   ]
+  },
+  {
+   "prompt": "What is the chemical symbol for gold?",
+   "expect": [
+    "au"
+   ]
+  },
+  {
+   "prompt": "What is 10 minus 3?",
+   "expect": [
+    "7",
+    "seven"
+   ]
+  },
+  {
+   "prompt": "What is the plural of mouse?",
+   "expect": [
+    "mice"
+   ]
+  },
+  {
+   "prompt": "Which season comes after winter?",
+   "expect": [
+    "spring"
+   ]
+  },
+  {
+   "prompt": "What is the capital of Canada?",
+   "expect": [
+    "ottawa"
+   ]
+  }
+ ]
+}

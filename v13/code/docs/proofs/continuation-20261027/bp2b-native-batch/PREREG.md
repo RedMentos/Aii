@@ -1,0 +1,13 @@
+# BP2b registered 12-arm serial native batch orchestrator prereg · 2026-10-27
+
+Owner GPT-6, isolated review branch `assistant/v13-bp2b-native-batch-20261027`, exact parent `d89f9311f39c6d1c2aa9c7250eb68bb3b1a593e6` (PR #712, one native arm still running separately). Own only a new `scripts/bp2b_native_batch.py`, new `tests/test_bp2b_native_batch.py`, a new software-only CI workflow and this proof folder. Do not touch the active native job or source/model/seed hashes.
+
+Problem: after the first real native arm, all **12 frozen combinations** (seeds 41/42/43 × legacy/bp2b/bp2b_minor/manual_ref (exact frozen `ARMS` order)) must run **serially**, with durable per-arm checkpoint and restart behavior, without silently overwriting failed attempts or counting partial evidence as complete. Existing `bp2b_native_runner.py` runs one arm, so a small batch operator is needed to prevent accidental parallel CPU jobs, lost partial receipts or unregistered arms.
+
+Plan: fixed 12-job order and hashes via `bp2b_native_runner.plan`; dry-run prints all 12 without disk writes; explicit `--execute-native` + unique safe attempt prefix required. Before execution, verify pinned full master, acquire nonblocking owner lock under output root, run each arm in a **fresh subprocess** to free model memory between arms, write atomic state after each arm, hash raw logs and results, skip only byte-verified existing completed results with identical plan, and refuse existing failed/incomplete/tampered attempts. Limit `--max-jobs` only controls partial execution, never changes registered cohort or thresholds. On subprocess failure or timeout, preserve raw log, failed receipt and exact next command; no auto-retry or destructive cleanup.
+
+Verification: software-only fake subprocess tests for 12 immutable jobs, dry-run no writes, successful sequential checkpoint, restart skip, tampered result fail-closed, failure retention and invalid arguments. GitHub Actions tests/compile/privacy, closed raw ZIP hash and private backup. **Do not launch any additional native model jobs in this package** while the seed41 legacy owner is running. Negative STEP2/B3/BJ1/jepa/Q4/Redmi/full-scope gates unchanged.
+
+## Recorded prereg clarification (no cohort mutation)
+
+The first software test run `40506726172` exposed an incorrect human-readable alias in this prereg and a test assertion: the frozen source's actual arms are `legacy`, `bp2b`, `bp2b_minor`, `manual_ref`, **not** locality/minor/both. The batch code always used the canonical `ARMS` constant, so no cohort or model execution changed. The raw failing attempt is preserved; tests were corrected to assert the canonical constant. This clarification does not authorize changing the cohort.

@@ -1,0 +1,202 @@
+name: V13 Run117W pinned native C3 seed1063 arithmetic diagnostic
+on:
+  push:
+    branches:
+      - assistant/v13-run117w-c3-arithmetic-native-diagnostic-20261031-1938
+    paths:
+      - .github/workflows/v13-run117w-seed1063-native.yml
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native-c3-arithmetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify frozen source, install pinned C3 and run serial 18-call diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117w-native"
+          extracted="$RUNNER_TEMP/v13-run117w-extracted"
+          source_root="$extracted/V13-Phone"
+          installed="$RUNNER_TEMP/v13-run117w-installed"
+          fixture="$GITHUB_WORKSPACE/v13/code/docs/fixtures/RUN117W_C3_ARITHMETIC_SEED1063.json"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117w-native-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117w-native-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          test "$(git hash-object v13/code/scripts/run117w_c3_arithmetic_native.py)" = b5e23fa34a8c2946455e0b232ae9874c29c0604f
+          source_a=$?
+          test "$(git hash-object "$fixture")" = 567a0b2b13534e34aeab3b2a1b3e9372dd9b4ae1
+          source_b=$?
+          echo '2b62fd13c81201c23574fa42ad87176f5d25f755b534a76f4386c9ec9c608ed9  v13/code/docs/fixtures/RUN117W_C3_ARITHMETIC_SEED1063.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          test "$source_a" -eq 0 && test "$source_b" -eq 0 && test "$fixture_rc" -eq 0
+          source_rc=$?
+          echo "$source_rc" > "$e/SOURCE_EXIT.txt"
+          echo "$deps_rc" > "$e/DEPS_EXIT.txt"
+          if test "$source_rc" -eq 0 && test "$deps_rc" -eq 0; then
+            "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run117W.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+            pack_rc=$?
+          else
+            pack_rc=125;echo SOURCE_OR_DEPS_RED > "$e/PACK_RAW.log"
+          fi
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            "$py" - "$e" "$extracted" "$fixture" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);fixture=Path(sys.argv[3])
+          p=e/'V13-Phone-Run117W.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              assert set(z.namelist())=={'V13-Phone/'+x for x in manifest['files']}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for name,digest in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest,name
+              for name in ('scripts/run117w_c3_arithmetic_native.py',
+                           'docs/fixtures/RUN117W_C3_ARITHMETIC_SEED1063.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'fixture_sha256':hashlib.sha256(fixture.read_bytes()).hexdigest(),
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+          else
+            zip_rc=125;echo PACK_RED > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          if test "$zip_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" -m unittest -v \
+              tests.test_run117w_c3_arithmetic_native \
+              tests.test_run117v_original_native_readonly_audit \
+              tests.test_run117u_seed1061_native_three_arm \
+              tests.test_run117s_r_prior_source_binding_review \
+              tests.test_run117s_b2_salient_source_shadow \
+              tests.test_run117s_body_complementarity_preflight) > "$e/PREFLIGHT_RAW.log" 2>&1
+            preflight_rc=$?
+          else
+            preflight_rc=125;echo ZIP_RED > "$e/PREFLIGHT_RAW.log"
+          fi
+          echo "$preflight_rc" > "$e/PREFLIGHT_EXIT.txt"
+          if test "$preflight_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_C3_RAW.log" 2>&1
+            install_rc=$?
+          else
+            install_rc=125;echo PREFLIGHT_RED > "$e/INSTALL_C3_RAW.log"
+          fi
+          echo "$install_rc" > "$e/INSTALL_C3_EXIT.txt"
+          if test "$install_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" scripts/run117w_c3_arithmetic_native.py \
+              --fixture "$fixture" --installed "$installed" \
+              --work "$RUNNER_TEMP/v13-run117w-native-work" \
+              --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            native_rc=$?
+          else
+            native_rc=125;echo C3_INSTALL_RED > "$e/NATIVE_RAW.log"
+          fi
+          echo "$native_rc" > "$e/NATIVE_EXIT.txt"
+          if test -f "$e/NATIVE_CASE/report.json"; then
+            "$py" - "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);r=json.loads((e/'NATIVE_CASE/report.json').read_text())
+          arms=('BASE_SOURCE_SYSTEM','EXPLICIT_ARITHMETIC_SYSTEM','TYPED_JEF_FORMATTER')
+          assert r['schema']=='v13.run117w.c3_arithmetic_native.v1'
+          assert r['seed']==1063 and r['fixture_sha256']=='2b62fd13c81201c23574fa42ad87176f5d25f755b534a76f4386c9ec9c608ed9'
+          assert r['native_c3'] is True and r['typed_candidate_precomputed'] is True
+          assert r['native_body_calls']==0 and r['native_jef_calls']==0 and r['native_c2_calls']==0
+          assert r['output_committed'] is False and r['tool_dispatches']==0
+          assert r['learning_authority']==0 and r['delivery_authority']==0
+          assert r['age0']=='RECORD_ONLY' and r['step2_exit']=='EVIDENCE_NOT_PASSING'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['redmi_measured'] is False
+          assert r['whole_system_complete'] is False
+          assert r['status'] in ('STRUCTURAL_RED','NATIVE_COMPLETE_EXPLORATORY_ARITHMETIC_SIGNAL',
+                                'NATIVE_COMPLETE_NO_ARITHMETIC_GAIN')
+          assert len(r['rows'])<=6 and 0<=r['native_c3_calls']<=18
+          for row in r['rows']:
+              assert row['id'] in ('Arbor','Brisa','Cyra','Doran','Elyra','Fenix')
+              assert len(row['arms'])<=3
+              assert row['no_live_output'] is True and row['closed_store_ok'] is True
+              for a in row['arms']:
+                  assert a['arm'] in arms
+                  if a['status']=='RECORDED':
+                      assert a['native_final'] is True and a['process_reaped'] is True
+                      assert a['native_metrics']['status']=='FINAL'
+                      assert a['native_metrics']['actual_model']=='LFM2.5-350M-QAD-Q4_0.gguf'
+                      assert [m['role'] for m in a['messages']]==['system','user']
+                      assert '"oracle"' not in a['messages'][1]['content']
+                      if a['arm']!='TYPED_JEF_FORMATTER':
+                          assert 'typed_jef_candidate' not in a['messages'][1]['content']
+          print(json.dumps({'verified_original_native_report':True,
+                            'status':r['status'],'rows':len(r['rows']),
+                            'native_c3_calls':r['native_c3_calls'],
+                            'scores':r['scores']},sort_keys=True))
+          PY
+            verify_rc=$?
+          else
+            verify_rc=125;echo NATIVE_REPORT_MISSING > "$e/VERIFY_RAW.log"
+          fi
+          echo "$verify_rc" > "$e/VERIFY_EXIT.txt"
+          "$py" -m compileall -q "$source_root/scripts/run117w_c3_arithmetic_native.py" > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 795c84ae91920809e8512c231a1025d15aaceafb --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 795c84ae91920809e8512c231a1025d15aaceafb HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('SOURCE','DEPS','PACK','ZIP','PREFLIGHT','INSTALL_C3',
+                                    'NATIVE','VERIFY','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117w.original_native_workflow_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'seed':1063,
+             'fixture_sha256':'2b62fd13c81201c23574fa42ad87176f5d25f755b534a76f4386c9ec9c608ed9',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'typed_jef_is_precomputed_not_native':True,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/NATIVE_RAW.log"
+          cat "$e/VERIFY_RAW.log"
+          for rc in "$source_rc" "$deps_rc" "$pack_rc" "$zip_rc" "$preflight_rc" "$install_rc" "$native_rc" "$verify_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original pinned native C3 RED or GREEN and source ZIP
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117w-native-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117w-native/
+          if-no-files-found: warn
+          retention-days: 90

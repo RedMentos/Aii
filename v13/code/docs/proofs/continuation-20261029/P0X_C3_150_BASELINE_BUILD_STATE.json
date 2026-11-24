@@ -1,0 +1,46 @@
+{
+  "schema": "v13.p0x.c3_150_baseline_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated baseline",
+  "branch": "codex/v13-p0x-c3-150baseline-20261029",
+  "parent_pr": 1058,
+  "parent_head_sha": "cd2d1d76c08a8b4f09f83b99d33e8effab140d26",
+  "prereg_first_commit": "0c29060578fb0d4a1f4e5732fb159a9ae28613df",
+  "prereg_blob": "0a3ab620497299f9580357e858a04db5b20d1b5f",
+  "fixture_registration_blob": "e85b0d636c75d6c6cf0cdd7f45a18609c2c4b04b",
+  "fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "generator_blob": "7ec4e877ad5ea3eed1c60102dac3baa15391dd2b",
+  "source_ci": {
+    "run_id": 40839417533,
+    "head": "9cd2a432193232d9ee807f26604bda1efd323d45",
+    "artifact_id": 12881818398,
+    "zip_sha256": "4a6d00bb7a5adc849a5cf9d795805b1f4ca210745585ed932769f13b793a56dc",
+    "tests": 20
+  },
+  "status": "PRE_NATIVE_BASELINE_NO_MODEL_CALLS",
+  "native_started": false,
+  "planned_c3_calls": 150,
+  "seed": 13,
+  "c3_sampling": "off",
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "exact_next_command": "Implement source-only plan/scorer, native C3-only runner and independent verifier with mocks; verify software CI before any 150-call native run",
+  "open_questions": [
+    "Native baseline exact/unknown distribution unmeasured",
+    "Oracle headroom vs C3-only unmeasured",
+    "Both-source/native complementarity unmeasured"
+  ],
+  "private_backup": "Permitted private /V13/RawEvidence, not rejected Drive",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

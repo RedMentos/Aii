@@ -1,0 +1,13 @@
+# WP-Z12b research note — ensemble centre is not calibrated utility
+
+Access date: 2026-10-27 UTC. Source (historical primary publication): Lakshminarayanan, Pritzel, Blundell, **Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles**, NeurIPS 2017, official proceedings https://papers.nips.cc/paper_files/paper/2017/hash/9ef2ed4b7fd2c810847ffa5fa85bce38-Abstract.html ; arXiv:1612.01474v3 https://arxiv.org/abs/1612.01474. Publication establishes deep ensembles as an uncertainty-estimation approach, **not** that V13's current World-JEPA latent bootstrap ensemble is calibrated or useful.
+
+## Scope, support and challenge
+
+- **Code contract:** `WorldJEPA.predict` explicitly described its first output as a mean prediction. The old implementation returned `ps[0]` while computing spread from every member. Mean and spread now refer to the same ensemble; the deterministic 0/2/4 RED test and learned-action control GREEN tests support that narrow correctness claim.
+- **Not established:** The paper's independently trained networks, scoring rules and calibrated predictive distributions do not transfer automatically to V13's bootstrap latent predictors. Mean aggregation can be **worse** than predictor 0 when auxiliary predictors are undertrained or correlated. Latent disagreement is not action-coverage or causal confidence; keep World-JEPA SHADOW.
+- **Redmi-testable baseline:** Given a pinned trained model and fixed held-out transitions, compute **both** old first-member and new unweighted-mean predictions without retraining; compare action-retrieval accuracy, latent MSE, OOD/coverage-stratified error, and spread-vs-error calibration under identical source/model/seed hashes. This inference-only comparison adds no model memory because the old code already materialised `ps` for spread. Run a no-ensemble (one-member) control.
+- **Failure modes:** biased bootstrap members, insufficient diversity, train/heldout leakage, wrong action mapping, nonfinite latents, ensemble spread unrelated to error, shifted deployment distribution, mobile thermal budget.
+- **Ablation and decision:** Preregister first-member vs mean vs a separately trained weighting baseline. If mean underperforms on the registered heldout criterion, do **not** silently switch back or promote confidence; preserve the failure and explicitly revise the readout contract under a new cohort. Only later native/Redmi and connected goal-action outcomes could support stronger utility claims.
+
+Mapping: Canon §7.2 World-JEPA action-grounding/coverage and §24.16 counterfactual reliability; no fourth foundation body, no promotion of synthetic prediction to WELT/REAL.

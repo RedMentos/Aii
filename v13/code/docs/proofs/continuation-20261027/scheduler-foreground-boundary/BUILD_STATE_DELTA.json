@@ -1,0 +1,58 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 738,
+  "parent_sha": "a76badb3b19ed9ae332174acd2089fdd5e153c26",
+  "branch": "codex/automation11h-scheduler-foreground-boundary-20261027",
+  "prereg_commit": "34d817510b5fd41aa79e2d0d2229a765390fc261",
+  "red_cancelled": {
+    "source_commit": "32f679b9c1cae6473b198cf20c213f28dac67353",
+    "actions": 40532662414,
+    "status": "CANCELLED_PENDING_CONCURRENCY_NO_JOBS"
+  },
+  "red": {
+    "branch": "codex/automation11h-red-evidence-20261027",
+    "source_commit": "ce307f1f8790f6425f59e00e570076a8922c3544",
+    "scheduler_blob": "e1704de76e77947849c5b0a9b2f174ce47f1a29e",
+    "actions": 40532785137,
+    "tests": "12 tests 2 expected FAIL",
+    "artifact": 12745224872,
+    "zip_sha256": "161b5dd317dd4fc92c74281e3ad0be2c1d06e9ed71a30a420bcae7b9e4485daf",
+    "private_backup_verified": true
+  },
+  "green": {
+    "source_commit": "0fa5b73a18e4851bf1d7cdeb5c1ee2dc0a2d2942",
+    "scheduler_blob": "4054f2a5dbc2e441a3acc87eea423b70dd9cc760",
+    "actions": 40532699100,
+    "tests": "12/12 PASS",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12746867808,
+    "zip_sha256": "86bb1bf9da16f2e6baf7a919512588f8c3e475ed4e968bf254308b7b361ee68e",
+    "private_backup_verified": true
+  },
+  "full_suite": {
+    "source_commit": "f9731f7cdf79bb59ae01093a3c6c682b63757231",
+    "status": "PENDING_AT_CHECKPOINT"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect exact Actions full-suite for f9731f7, verify raw ZIP exits and private byte-exact backup; independently review before merge; pursue World/Self or learning package.",
+  "note": "Additive branch delta; no shared BUILD_STATE overwrite; no main merge."
+}

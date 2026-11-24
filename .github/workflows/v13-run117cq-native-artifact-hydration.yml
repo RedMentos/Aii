@@ -1,0 +1,114 @@
+name: V13 Run117CQ immutable original-native artifact replay
+on:
+  push:
+    branches:
+      - assistant/v13-run117cq-native-artifact-hydration-20261101-gpt6
+  pull_request:
+    branches:
+      - assistant/v13-run117cp-bjepa-eventspan-test-repair-20261101-gpt6
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  hydrate-and-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact original ZIP hydration and immutable offline replay
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117cq"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          13f5c5b1bcc988e686aa06d3d28aeeeaa109ad09 v13/code/scripts/run117aa_original_real_jef_native_audit.py
+          9942b28bfe2616369e8087c5314298dff35e3ba2 v13/code/scripts/run117ag_independent_native_audit.py
+          8fa0ab0fc022d258cefa3f11ccedae15ff017741 v13/code/tests/test_run117aa_original_real_jef_native_audit.py
+          05c0a4659abdd0026c9dd8678372fb95afee47b0 v13/code/tests/test_run117ae_combined_original_native_replay.py
+          fc801585da586175baf30852dae1485b3308ffa8 v13/code/tests/test_run117ag_original_native_mutations.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117cq-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117cq-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else
+            for stage in DEPS PIP_CHECK; do echo SKIPPED > "$e/${stage}_RAW.log"; echo 99 > "$e/${stage}_EXIT.txt"; done
+          fi
+          export V13_RUN117Z_ORIGINAL_ZIP="$RUNNER_TEMP/run117z-original-native.zip"
+          export V13_RUN117AF_ORIGINAL_ZIP="$RUNNER_TEMP/run117af-original-native.zip"
+          if [ "$bad" = 0 ]; then
+            curl --fail --location --silent --show-error --retry 2 --max-time 240 -H "Authorization: Bearer ${GITHUB_TOKEN}" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13054946077/zip' -o "$V13_RUN117Z_ORIGINAL_ZIP" > "$e/HYDRATE_Z_RAW.log" 2>&1
+            z=$?
+            curl --fail --location --silent --show-error --retry 2 --max-time 240 -H "Authorization: Bearer ${GITHUB_TOKEN}" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13055310481/zip' -o "$V13_RUN117AF_ORIGINAL_ZIP" > "$e/HYDRATE_AF_RAW.log" 2>&1
+            a=$?
+            if [ "$z" = 0 ] && [ "$a" = 0 ]; then echo 0 > "$e/HYDRATE_EXIT.txt"; else echo 1 > "$e/HYDRATE_EXIT.txt"; fi
+          else
+            echo SKIPPED > "$e/HYDRATE_Z_RAW.log"; echo SKIPPED > "$e/HYDRATE_AF_RAW.log"; echo 99 > "$e/HYDRATE_EXIT.txt"
+          fi
+          if [ "$(cat "$e/HYDRATE_EXIT.txt")" = 0 ]; then
+            (echo '65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a  '"$V13_RUN117Z_ORIGINAL_ZIP"; echo '1082b64fe8d5a8ed3f8026c5913e9712f51217f75d5544b762924016f9bfc888  '"$V13_RUN117AF_ORIGINAL_ZIP") | sha256sum -c - > "$e/ARTIFACT_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/ARTIFACT_SHA_EXIT.txt"
+            (unzip -tq "$V13_RUN117Z_ORIGINAL_ZIP" && unzip -tq "$V13_RUN117AF_ORIGINAL_ZIP") > "$e/ZIP_RAW.log" 2>&1
+            echo "$?" > "$e/ZIP_EXIT.txt"
+            sha256sum "$V13_RUN117Z_ORIGINAL_ZIP" "$V13_RUN117AF_ORIGINAL_ZIP" > "$e/ORIGINAL_HASH_RECEIPTS.txt"
+          else
+            for stage in ARTIFACT_SHA ZIP; do echo SKIPPED > "$e/${stage}_RAW.log"; echo 99 > "$e/${stage}_EXIT.txt"; done
+            echo NOT_DOWNLOADED > "$e/ORIGINAL_HASH_RECEIPTS.txt"
+          fi
+          python3 -m py_compile v13/code/scripts/run117aa_original_real_jef_native_audit.py v13/code/scripts/run117ag_independent_native_audit.py v13/code/tests/test_run117aa_original_real_jef_native_audit.py v13/code/tests/test_run117ae_combined_original_native_replay.py v13/code/tests/test_run117ag_original_native_mutations.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/ARTIFACT_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/ZIP_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 480s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117aa_original_real_jef_native_audit tests.test_run117ae_combined_original_native_replay tests.test_run117ag_original_native_mutations) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d03897663dca43287d734119f7663b2d676842bd --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check d03897663dca43287d734119f7663b2d676842bd HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve small raw receipts, never reupload original large native ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117cq-artifact-replay-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117cq/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce immutable artifact replay only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117cq"
+          for stage in PINS VENV DEPS PIP_CHECK HYDRATE ARTIFACT_SHA ZIP COMPILE TEST PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained, no native or full-suite claim"
+              tail -65 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117CQ_IMMUTABLE_NATIVE_RECORD_REPLAY_NO_NEW_NATIVE_INFERENCE

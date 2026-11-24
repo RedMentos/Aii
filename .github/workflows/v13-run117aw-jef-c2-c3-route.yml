@@ -1,0 +1,87 @@
+name: V13 Run117AW source-bound JEF C2 advisory C3 formatter software
+on:
+  push:
+    branches:
+      - assistant/v13-run117aw-jef-c2-c3-shadow-route-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117aw-jef-c2-c3-route.yml
+      - v13/code/v13/jef_c2_c3_formatter_route_shadow_candidate.py
+      - v13/code/tests/test_run117aw_jef_c2_c3_formatter_route_shadow.py
+permissions:
+  contents: read
+jobs:
+  jef-c2-c3-shadow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Test source-bound JEF C2 advisory and unchanged C3 operator guards
+        shell: bash
+        run: |
+          set +e
+          set -uo pipefail
+          e="$RUNNER_TEMP/v13-run117aw"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117aw-venv" > "$e/VENV_RAW.log" 2>&1
+          venv_rc=$?
+          py="$RUNNER_TEMP/v13-run117aw-venv/bin/python"
+          if test "$venv_rc" -eq 0; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q \
+              'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            deps_rc=$?
+          else
+            deps_rc=125;echo VENV_RED > "$e/DEPS_RAW.log"
+          fi
+          if test "$deps_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_run117aw_jef_c2_c3_formatter_route_shadow \
+              tests.test_c2_monotone_route_shadow \
+              tests.test_jef_c3_c5_c6_operator_cli) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          python3 -m compileall -q \
+            v13/code/v13/jef_c2_c3_formatter_route_shadow_candidate.py \
+            v13/code/tests/test_run117aw_jef_c2_c3_formatter_route_shadow.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 218f4d472ad598343089d4e8c563600093faa587 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 218f4d472ad598343089d4e8c563600093faa587 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "VENV:$venv_rc" "DEPS:$deps_rc" "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('VENV','DEPS','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117aw.jef_c2_c3_shadow_software_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_c2_calls':0,'native_c3_calls':0,'native_body_calls':0,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 35 "$e/TEST_RAW.log"
+          for rc in "$venv_rc" "$deps_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0 || exit 2; done
+      - name: Preserve original software RED or GREEN
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117aw-jef-c2-c3-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117aw/
+          if-no-files-found: warn
+          retention-days: 90

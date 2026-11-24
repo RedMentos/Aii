@@ -1,0 +1,108 @@
+{
+ "models": {
+  "lfm25_230m_c3": {
+   "legacy": {
+    "n": 24,
+    "query_echo": 0.0389,
+    "repetition_rate": 0.0005,
+    "type_token_ratio": 0.8029,
+    "below_min_new": 0,
+    "mean_chars": 544.1667
+   },
+   "anti_echo_boot": {
+    "n": 24,
+    "query_echo": 0.0311,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.8112,
+    "below_min_new": 0,
+    "mean_chars": 535.5417
+   },
+   "anti_echo_no_dry": {
+    "n": 24,
+    "query_echo": 0.0347,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.7964,
+    "below_min_new": 0,
+    "mean_chars": 550.7083
+   },
+   "anti_echo_rp115": {
+    "n": 24,
+    "query_echo": 0.0228,
+    "repetition_rate": 0.001,
+    "type_token_ratio": 0.844,
+    "below_min_new": 0,
+    "mean_chars": 540.0833
+   },
+   "anti_echo_t07": {
+    "n": 24,
+    "query_echo": 0.0331,
+    "repetition_rate": 0.0004,
+    "type_token_ratio": 0.8185,
+    "below_min_new": 0,
+    "mean_chars": 545.125
+   },
+   "anti_echo_t05_dry12": {
+    "n": 24,
+    "query_echo": 0.0277,
+    "repetition_rate": 0.0005,
+    "type_token_ratio": 0.7986,
+    "below_min_new": 0,
+    "mean_chars": 545.625
+   }
+  },
+  "lfm25_350m": {
+   "legacy": {
+    "n": 24,
+    "query_echo": 0.0337,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.8144,
+    "below_min_new": 0,
+    "mean_chars": 520.25
+   },
+   "anti_echo_boot": {
+    "n": 24,
+    "query_echo": 0.0257,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.8337,
+    "below_min_new": 0,
+    "mean_chars": 526.4583
+   },
+   "anti_echo_no_dry": {
+    "n": 24,
+    "query_echo": 0.0308,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.8245,
+    "below_min_new": 0,
+    "mean_chars": 533.7083
+   },
+   "anti_echo_rp115": {
+    "n": 24,
+    "query_echo": 0.0133,
+    "repetition_rate": 0.0,
+    "type_token_ratio": 0.8601,
+    "below_min_new": 0,
+    "mean_chars": 530.2917
+   },
+   "anti_echo_t07": {
+    "n": 24,
+    "query_echo": 0.0228,
+    "repetition_rate": 0.0021,
+    "type_token_ratio": 0.8352,
+    "below_min_new": 0,
+    "mean_chars": 538.3333
+   },
+   "anti_echo_t05_dry12": {
+    "n": 24,
+    "query_echo": 0.0306,
+    "repetition_rate": 0.0005,
+    "type_token_ratio": 0.8351,
+    "below_min_new": 0,
+    "mean_chars": 503.5
+   }
+  }
+ },
+ "experiment": "echo",
+ "seconds": 203.0,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "V13_RUN11W_ROUTE_REGRET_SOFTWARE_VERIFIED",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 review-only",
+  "branch": "assistant/v13-run11w-c2-route-regret-audit-20261030",
+  "parent_pr": 1251,
+  "parent_head": "b8c225d122b970ae199ea36c6d712e9fa8d039f5",
+  "prereg_commit": "3a05994d12e988cf139ce7332adb540a84ad578e",
+  "original_native": {
+    "run_id": 41035932580,
+    "status": "RED",
+    "head": "3d76c8e28735cfef4d40c290baad4556b61e04a7",
+    "artifact_id": 12967698710,
+    "zip_sha256": "47493d719ac1d6dedcb0142106b29b96817c0d4a211a6a2219879dec93cc8c5e",
+    "score_slot": "secondary_score",
+    "rows": 24,
+    "original_primary_out_of_48": 0,
+    "secondary_out_of_48": 12
+  },
+  "software_green": {
+    "run_id": 41039913409,
+    "head": "9a25b7f52ef8334fda6ffbe36b9e36520cf94309",
+    "artifact_id": 12969118553,
+    "zip_sha256": "011dadbf3baf3540d15566ae9ccc33f682506a64b4f9bdeead1f7a197c0975ad",
+    "zip_bytes": 7100,
+    "inner_hashes": "22/22",
+    "tests": "65/65 PASS",
+    "stages": "9/9 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11W-C2-Route-Regret/SOFTWARE_GREEN_41039913409_sha011DAD.zip",
+    "private_byte_exact": true
+  },
+  "seed163": {
+    "totals": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 2,
+      "C_B2_ONLY": 7,
+      "D_DISTINCT_BOTH": 1,
+      "E_SHARED_DUAL_COLD": 0,
+      "F_NATIVE_AUTO": 2
+    },
+    "per_fixture": [
+      {
+        "fixture": "Mistral163",
+        "best_single": 1,
+        "distinct_minus_best": -1,
+        "auto_minus_best": -1,
+        "auto_route": "both",
+        "auto_runner_role": "B1_DETAIL"
+      },
+      {
+        "fixture": "Lyra163",
+        "best_single": 2,
+        "distinct_minus_best": -2,
+        "auto_minus_best": -2,
+        "auto_route": "both",
+        "auto_runner_role": "B1_DETAIL"
+      },
+      {
+        "fixture": "Orion163",
+        "best_single": 2,
+        "distinct_minus_best": -1,
+        "auto_minus_best": -2,
+        "auto_route": "both",
+        "auto_runner_role": "B1_DETAIL"
+      },
+      {
+        "fixture": "Nova163",
+        "best_single": 2,
+        "distinct_minus_best": -2,
+        "auto_minus_best": 0,
+        "auto_route": "gist",
+        "auto_runner_role": "B2_GIST"
+      }
+    ],
+    "native_c2_invocations": 4,
+    "native_c2_selected": 4,
+    "causal_claim": false
+  },
+  "seed181": {
+    "native_run_id": 41039528340,
+    "head": "6ba8986202febfe0faa813e8c1589ca85acac939",
+    "zip_sha256": "UNKNOWN",
+    "status": "PENDING",
+    "scorer_slot": "score"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect Run11V native Actions 41039528340; verify original ZIP and independent raw replay; only then invoke Run11W audit for seed181 with exact ZIP SHA and score slot score; preserve native RED if any."
+}

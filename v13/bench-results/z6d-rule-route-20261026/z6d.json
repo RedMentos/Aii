@@ -1,0 +1,1532 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 79,
+ "scores": {
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 48,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.5
+   },
+   "rollback": {
+    "update_id": "upd_bbb02596a3ba4ae6a57dd680e31d236c",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    }
+   }
+  },
+  "fixed+now": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 48,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.5
+   },
+   "rollback": {
+    "update_id": "upd_a5fd18366f9c4acb8ab676fac8f3ee27",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.825,
+     "half_items": 1.0,
+     "unchanged": 0.7812
+    },
+    "before_rule": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    }
+   }
+  },
+  "adaptive+now": {
+   "shadow_jobs": 8,
+   "unnecessary_updates": 4,
+   "promotions": 2,
+   "approval_requests": 2,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 48,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.5
+   },
+   "rollback": {
+    "update_id": "upd_2f69d50070c54382980658fad59f2a01",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 1.0,
+     "unchanged": 0.75
+    },
+    "before_rule": {
+     "all": 0.6,
+     "half_items": 0.0,
+     "unchanged": 0.75
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.6,
+     "half_items": 0.0,
+     "unchanged": 0.75
+    }
+   }
+  }
+ },
+ "arms": {
+  "fixed": {
+   "policy": "fixed",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_22e93b249d0f46298b21616a6afa786f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_22e93b249d0f46298b21616a6afa786f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.6875
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_ee4bf9c6ef36460394256455061deb93 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ee4bf9c6ef36460394256455061deb93",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_23946b55621a42d4b9c44df70869a958 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_23946b55621a42d4b9c44df70869a958",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "shadow_result": "upd_e6f03b5cfca34c3bb12a5fb5e4f645e3 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_e6f03b5cfca34c3bb12a5fb5e4f645e3",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "shadow_result": "upd_7e0a46b812c44b5292ecb3fd65621c41 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_7e0a46b812c44b5292ecb3fd65621c41",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     },
+     "shadow_result": "upd_bbb02596a3ba4ae6a57dd680e31d236c PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_bbb02596a3ba4ae6a57dd680e31d236c",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_a3149ce988974531b434dbdcf359670f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a3149ce988974531b434dbdcf359670f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.8438
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_e054b2911acc4915bf0556f977e89ef1 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e054b2911acc4915bf0556f977e89ef1",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.575,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7188
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_eff9b4c7dc1d4fcea1d1087886a5033f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_eff9b4c7dc1d4fcea1d1087886a5033f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.65,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.125
+      },
+      "half_items": 0.625,
+      "unchanged": 0.6562
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_ba1691d724074441b1630927a0769aa7 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ba1691d724074441b1630927a0769aa7",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.475,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.375,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.375
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_bbb02596a3ba4ae6a57dd680e31d236c",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    }
+   }
+  },
+  "fixed+now": {
+   "policy": "fixed+now",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_a0edebbb08bf47c79322a727e8777edc EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a0edebbb08bf47c79322a727e8777edc",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.6875
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_eea0d189511c44f88819b27074e9db13 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_eea0d189511c44f88819b27074e9db13",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_450099a282fc4d04bde965cb71117c3e PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_450099a282fc4d04bde965cb71117c3e",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "shadow_result": "upd_69a5da83f3c14bfca1349cfc9f07d097 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_69a5da83f3c14bfca1349cfc9f07d097",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "shadow_result": "upd_068e4062b3584b40aace8268dad5dddc PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_068e4062b3584b40aace8268dad5dddc",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438
+     },
+     "shadow_result": "upd_a5fd18366f9c4acb8ab676fac8f3ee27 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_a5fd18366f9c4acb8ab676fac8f3ee27",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_71be52d58e32424b91338d06a25c67e9 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_71be52d58e32424b91338d06a25c67e9",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.525,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.375,
+       "gist": 0.875,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.6562
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_d08bdc0a58ec4c3e99962caea2f71754 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d08bdc0a58ec4c3e99962caea2f71754",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.575,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.25,
+       "gist": 0.75,
+       "both": 0.125
+      },
+      "half_items": 0.75,
+      "unchanged": 0.5312
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_ec984d6aefa949fcb77e4cf892b938b8 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ec984d6aefa949fcb77e4cf892b938b8",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.575,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.75,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.4688
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_21c3e0e8c39840a9afc5e8f12660f906 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_21c3e0e8c39840a9afc5e8f12660f906",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.45,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.3125
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_a5fd18366f9c4acb8ab676fac8f3ee27",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.825,
+     "half_items": 1.0,
+     "unchanged": 0.7812
+    },
+    "before_rule": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.625,
+     "half_items": 0.0,
+     "unchanged": 0.7812
+    }
+   }
+  },
+  "adaptive+now": {
+   "policy": "adaptive+now",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_05e65b62328147dcb792ac4c56095a15 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_05e65b62328147dcb792ac4c56095a15",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.6875
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_3a1d36f718d74ed6a56cc5ca97ec6b2e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3a1d36f718d74ed6a56cc5ca97ec6b2e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_fa44ca83cf34425b8718b0c1c529292a PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_fa44ca83cf34425b8718b0c1c529292a",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125
+     },
+     "shadow_result": "upd_2f69d50070c54382980658fad59f2a01 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_2f69d50070c54382980658fad59f2a01",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_f395885db56b427db52566d178a5bd86 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_f395885db56b427db52566d178a5bd86",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.475,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.875,
+       "both": 0.125
+      },
+      "half_items": 0.375,
+      "unchanged": 0.5
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_09cf9253cf7c48dba8f9ce227373a2f5 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_09cf9253cf7c48dba8f9ce227373a2f5",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.575,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.75,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.4688
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_b58d5886f6654d5789acf5d6df7314c9 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b58d5886f6654d5789acf5d6df7314c9",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.425,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.2812
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_6cd50e50a7de471e8f483c0cbf653d54 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_6cd50e50a7de471e8f483c0cbf653d54",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.25
+     },
+     "superseded": 8,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_2f69d50070c54382980658fad59f2a01",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 1.0,
+     "unchanged": 0.75
+    },
+    "before_rule": {
+     "all": 0.6,
+     "half_items": 0.0,
+     "unchanged": 0.75
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.6,
+     "half_items": 0.0,
+     "unchanged": 0.75
+    }
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6d": {
+  "D1_runtime_half_items_ge_90pct": true,
+  "D2_rule_touches_no_other_item": true,
+  "D3_undo_removes_rule_completely": true,
+  "D4_control_without_rule_fails": true
+ },
+ "verdict_z6d": "Z6D_RULE_ROUTE_PASS"
+}

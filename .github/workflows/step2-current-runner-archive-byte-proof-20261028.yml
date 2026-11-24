@@ -1,0 +1,81 @@
+name: V13 STEP2 current llama.cpp runner archive byte proof Linux only
+on:
+  workflow_dispatch:
+  push:
+    branches: [assistant/v13-fourarm-collector-scorer-crossorgan-automation11-20261028]
+    paths:
+      - '.github/workflows/step2-current-runner-archive-byte-proof-20261028.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-current-runner-archive-byte-proof-20261028
+  cancel-in-progress: false
+jobs:
+  runner-archives:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Retrieve immutable source and runner tarballs, upload metadata only
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-step2-runner-archive-proof"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_GIT_BLOB.txt"
+          git hash-object v13/code/v13/models.py > "$e/MODEL_MANAGER_GIT_BLOB.txt"
+          if [ "$(cat "$e/CATALOG_GIT_BLOB.txt")" != "7af05962af41d0bc3f7dd18ef01d4eba55eabf99" ] ||
+             [ "$(cat "$e/MODEL_MANAGER_GIT_BLOB.txt")" != "bd035cf8029850cce00b179edf533e53bf24358a" ]; then
+            echo 'SOURCE_PIN_DRIFT: refuse runner download' > "$e/PROBE_RAW.log"
+            echo 90 > "$e/PROBE_EXIT.txt"
+          else
+            timeout --signal=TERM --kill-after=10s 14m env PYTHONPATH=v13/code python3 v13/code/scripts/step2_current_runner_archive_probe.py \
+              --scratch-home "$RUNNER_TEMP/v13-step2-runner-archive-scratch" \
+              --report "$e/ARTIFACT_REPORT.json" \
+              --expected-catalog-blob 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+          fi
+          python3 - "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path(sys.argv[1])/'ARTIFACT_REPORT.json'
+          if not p.exists():
+              raise SystemExit('NO_CLOSED_REPORT')
+          j=json.loads(p.read_text())
+          assert j['evidence_kind']=='LINUX_RUNNER_ARCHIVE_BYTES_ONLY'
+          assert len(j['archives'])==2
+          assert all(x['sha256_verified'] and x['tar_structure_verified'] for x in j['archives'])
+          assert not j['executable_hash_verified']
+          assert not j['native_inference_performed'] and not j['redmi_proof']
+          assert not j['step2_gate_promoted'] and j['jepa_weight']==0
+          print('SOURCE_AND_BINARY_ARCHIVES_VERIFIED_NO_NATIVE_EXECUTION')
+          PY
+          echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          (cd "$e" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-step2-runner-archive-byte-proof-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-runner-archive-proof/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce archive-only proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-step2-runner-archive-proof"
+          for k in PROBE REPORT_CHECK; do
+            if [ "$(cat "$e/${k}_EXIT.txt")" != 0 ]; then
+              echo "$k RED; raw evidence retained, no native inference claim"
+              tail -40 "$e/${k}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'RUNNER_ARCHIVE_BYTES_ONLY_NO_EXECUTABLE_PROOF_NO_GATE_PROMOTION'

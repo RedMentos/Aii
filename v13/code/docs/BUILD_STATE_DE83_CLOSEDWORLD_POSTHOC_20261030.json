@@ -1,0 +1,49 @@
+{
+  "schema": "v13.build_state.scoped.de83_closedworld_posthoc.v1",
+  "owner": "assistant/v13-de83-closedworld-posthoc-run11b-20261030",
+  "parent_pr": 1224,
+  "parent_head": "842f024b0b6a6ab47f0a9deb0d06558fcaf823bb",
+  "plan_commit": "0b012b8a77509dbbc6d093fb91a595592e7e8fba",
+  "original_native": {
+    "run_id": 41013265710,
+    "artifact_id": 12958586993,
+    "zip_sha256": "e92fda4b20a0ba01e533d1b2a343091fb4f46bebe7c9e8a60efdf3f2ca667f57",
+    "original_supported_exact": 15,
+    "original_supported_total": 16,
+    "original_unsupported_abstain": 8,
+    "original_status": "NATIVE_DE83_SHADOW_PILOT_SIGNAL"
+  },
+  "posthoc": {
+    "run_id": 41018547378,
+    "tested_head": "a02f10c3850c27549f22e49eef6c8c27579991b9",
+    "artifact_id": 12960373072,
+    "zip_sha256": "83dae290045e9e934753e6b107b309d224cad0cec46302c6be8a15eb49b624da",
+    "inner_hashes": "15/15",
+    "tests": "17/17 PASS",
+    "stage_exits": "6/6 ZERO",
+    "privacy": "CLEAN",
+    "supported_exact": 12,
+    "supported_abstain": 4,
+    "unsupported_abstain": 8,
+    "wrong_emitted": 0,
+    "false_positive": 0,
+    "original_native_raw_verified": true
+  },
+  "evidence_level": "POSTHOC_SOFTWARE_ON_VERIFIED_HISTORICAL_LINUX_NATIVE_RAW",
+  "new_native_calls": 0,
+  "production_integration": false,
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ClosedWorld-Posthoc/",
+  "private_byte_verified": true,
+  "next_package": "full unfiltered current-chain regression and independent organ review; separate fresh cohort required before closedworld utility claims",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_listarith_de83_closedworld_posthoc_20261030 tests.test_listarith_de_closedworld_seed101_20261030",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}

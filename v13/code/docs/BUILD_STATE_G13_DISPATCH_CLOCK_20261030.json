@@ -1,0 +1,43 @@
+{
+  "package": "G13_DISPATCH_CLOCK",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "base_sha": "5ba394d08ab9494d77f0b406b74ea931532b0388",
+  "tested_head": "b38cc4f6a891b19c97e951acd008470c7ed00a9c",
+  "pr": 1284,
+  "mode": "REVIEW_ONLY_NOT_MERGED",
+  "changes": [
+    "v13/code/v13/scheduler.py",
+    "v13/code/tests/test_scheduler_dispatch_clock_20261030.py"
+  ],
+  "workflow_run": 41068892664,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12983307480,
+  "artifact_status": "UPLOADED_NOT_DOWNLOADED_IN_THIS_SESSION",
+  "checks": [
+    "CANON",
+    "VENV",
+    "DEPS",
+    "TEST",
+    "COMPILE",
+    "PRIVACY",
+    "DIFF"
+  ],
+  "checks_result": "ALL_ENFORCED_ZERO_EXIT_PER_GITHUB_ACTIONS_SUCCESS",
+  "evidence_level": "SOFTWARE_GITHUB_ACTIONS_NOT_NATIVE_OR_REDMi",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Independent artifact ZIP byte download and SHA256SUMS replay not possible in this connector session",
+    "Clock rollback relative to accepted user-turn timestamp can bypass burnout budget; next isolated G13 candidate"
+  ],
+  "exact_next_command": "Preregister separate G13 background budget clock rollback candidate; add fail-closed check before dispatch budget; focused tests and GitHub Actions review.",
+  "remaining_platform_budget": "UNKNOWN"
+}

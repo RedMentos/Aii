@@ -1,0 +1,23 @@
+test_decimal_integer_parts_remain_rejected (__main__.SignedNumberGuard.test_decimal_integer_parts_remain_rejected) ... ok
+test_difference_recipe_sign_guard_and_calculation (__main__.SignedNumberGuard.test_difference_recipe_sign_guard_and_calculation) ... ok
+test_existing_leading_zero_and_sentence_period_behavior_is_preserved (__main__.SignedNumberGuard.test_existing_leading_zero_and_sentence_period_behavior_is_preserved) ... ok
+test_explicit_plus_and_surrounding_punctuation (__main__.SignedNumberGuard.test_explicit_plus_and_surrounding_punctuation) ... ok
+test_multi_digit_negative_does_not_expose_suffix (__main__.SignedNumberGuard.test_multi_digit_negative_does_not_expose_suffix) ... ok
+test_no_partial_match_after_other_signs (__main__.SignedNumberGuard.test_no_partial_match_after_other_signs) ... ok
+test_original_accepted_sign_changed_positive_while_rejecting_correct_negative (__main__.SignedNumberGuard.test_original_accepted_sign_changed_positive_while_rejecting_correct_negative) ... ok
+test_positive_k_arithmetic_fixtures_unchanged (__main__.SignedNumberGuard.test_positive_k_arithmetic_fixtures_unchanged) ... ok
+test_real_toolstep_rejects_sign_flip_before_proposal_with_only_reader_stub (__main__.SignedNumberGuard.test_real_toolstep_rejects_sign_flip_before_proposal_with_only_reader_stub) ... ok
+test_tool_and_label_fail_closed_on_sign_changed_value (__main__.SignedNumberGuard.test_tool_and_label_fail_closed_on_sign_changed_value) ... ok
+test_unicode_mathematical_minus_preserves_sign_too (__main__.SignedNumberGuard.test_unicode_mathematical_minus_preserves_sign_too) ... ok
+test_disabled_tool_costs_no_model_call (tests.test_listarith.Live.test_disabled_tool_costs_no_model_call) ... ok
+test_enabled_tool_proposes_shadows_and_layers_recipe (tests.test_listarith.Live.test_enabled_tool_proposes_shadows_and_layers_recipe) ... ok
+test_guard_refuses_invented_value_before_proposing (tests.test_listarith.Live.test_guard_refuses_invented_value_before_proposing) ... ok
+test_broker_correction_shows_recipe_not_user_text (tests.test_listarith.Recipe.test_broker_correction_shows_recipe_not_user_text) ... ok
+test_rule_r3_question_only_and_r4_tasks_unchanged (tests.test_listarith.Recipe.test_rule_r3_question_only_and_r4_tasks_unchanged) ... ok
+test_rule_recipe_guard_and_codec (tests.test_listarith.Recipe.test_rule_recipe_guard_and_codec) ... ok
+test_stated_total_line_is_not_an_item (tests.test_listarith.Recipe.test_stated_total_line_is_not_an_item) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.226s
+
+OK

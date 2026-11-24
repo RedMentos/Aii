@@ -1,0 +1,9 @@
+# F1/F5 C5/C6 DRAFT semantic-key transaction isolation prereg — 2026-10-31
+
+Owner GPT-6, next independent hardening package on PR #1382 after its verified 80-test software checkpoint `f4a60e5cd8ec51aaeae48d3776cc0190991509a7`. Preserve original 80-test raw and all source/model/fixture pins; no retroactive rewriting.
+
+Hypothesis: the new atomic DRAFT candidate's final `_verified(memory,...)` runs inside `Store.tx() BEGIN IMMEDIATE`. If the supplied Memory has a live semantic-key channel, `Memory.recall` may log embedding telemetry via `Store.log`, attempting a nested SQLite transaction; native embedding may also block while the write lock is held. Current code fails closed but loses utility and violates the goal of a bounded final check.
+
+Precommitted fix: do not invoke semantic embeddings under SQLite write lock. For transaction-time and read-only post-stage checks, use a new **lexical-only Memory view** over the same Store and exact F1/F5 source lineage; compare its fresh verified admission byte-for-byte to the already source-verified predispatch admission. If a semantically admitted but lexically unsupported case differs, abstain rather than relax a source or permission gate. No change to the original Memory object, registered source_consumer, memory.py, Run49, Run51, Run52 or the canonical blueprint.
+
+Adversarial test: attach a synthetic semantic-key object whose `similarities` returns bounded scores and whose real `Memory.recall` emits SQLite telemetry; confirm the initial out-of-transaction recall still uses it, while staging and post-stage verification succeed without a nested transaction, no native model and no unexpected output. Existing rollback/revocation/foreign session tests must remain GREEN. Preserve raw CI and private backup. This does not prove native embedding correctness, atomic delivery or actual operator consent.

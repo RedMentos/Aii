@@ -1,0 +1,163 @@
+name: V13 Run12L pinned Needle3 15-case route proxy native
+on:
+  push:
+    branches: [assistant/v13-run12l-c2-route-proxy-native-20261030]
+    paths:
+      - '.github/workflows/v13-run12l-c2-proxy-native.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  c2-proxy-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen source, verified software tests, serialized native C2 and raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run12l-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          999561f79efccd334c8cc6e5a602d5169a969142 v13/code/docs/fixtures/c2_route_proxy_run12l_20261030.json
+          6229b34739a5f4fd8d9e2201309a4e3c8193e2a1 v13/code/docs/C2_ROUTE_PROXY_RUN12L_PREREG_20261030.md
+          1130e34aca7208859204117b5e074ee0597b222d v13/code/scripts/c2_route_proxy_score_run12l.py
+          f31947da2bce92a96d580d1f9cea1c0fda5a1974 v13/code/scripts/c2_route_proxy_native_run12l.py
+          dd162105fb97d1344c14325359330b6ce5fbea28 v13/code/tests/test_c2_route_proxy_run12l.py
+          22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
+          fb34dba97ae3700ba5accdcb928bfb72afcf4fcb v13/code/scripts/c2_native_route_provenance_20261030.py
+          cee1980787f1217e9a7aa2a1f180686b4add67fb v13/code/scripts/c2_strict_native_compat_run12k.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run12l-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run12l-native-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts timeout 180s "$py" -m unittest -v tests.test_c2_route_proxy_run12l tests.test_c2_strict_native_compat_run12k tests.test_c2_route_runtime_strict_run12j) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else
+            echo SKIPPED_PINS_OR_DEPS_RED > "$e/TEST_RAW.log"
+            echo 99 > "$e/TEST_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-run12l-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=v13/code "$py" - <<'PY' > "$e/INSTALL_RAW.log" 2>&1
+          import os
+          from pathlib import Path
+          from v13.config import initialize
+          from v13.models import ModelManager
+          from v13.bootstrap import install_native
+          home=Path(os.environ['V13_HOME'])
+          initialize(home)
+          ModelManager(home).install('needle')
+          install_native(home)
+          print('PINNED_NEEDLE_ONLY_NATIVE_WORKER_INSTALLED')
+          PY
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo SKIPPED_TEST_RED > "$e/INSTALL_RAW.log"
+            echo 99 > "$e/INSTALL_EXIT.txt"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 16m env PYTHONPATH=v13/code "$py" v13/code/scripts/c2_route_proxy_native_run12l.py --home "$V13_HOME" --out "$e/pilot" --fixture v13/code/docs/fixtures/c2_route_proxy_run12l_20261030.json > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/NATIVE_RAW.log"
+            echo 99 > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/pilot/report.json" ]; then
+            PYTHONPATH=v13/code "$py" - "$e/pilot" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          from pathlib import Path
+          from scripts.c2_route_proxy_score_run12l import load_fixture,score,FIXTURE_SHA256,PROMPTS_SHA256
+          from scripts.c2_strict_native_compat_run12k import classify
+          p=Path(sys.argv[1])
+          f=load_fixture('v13/code/docs/fixtures/c2_route_proxy_run12l_20261030.json')
+          j=json.loads((p/'report.json').read_text())
+          assert j['fixture_sha256']==FIXTURE_SHA256 and j['prompts_sha256']==PROMPTS_SHA256
+          assert j['seed']==43 and j['needle_model_sha256']=='c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38'
+          assert len(j['rows'])==15
+          for i,row in enumerate(j['rows']):
+              assert row['index']==i and row['prompt']==f['cases'][i]['prompt']
+              raw=json.loads((p/'raw'/f'{i:02d}_C2_ROUTE.json').read_text())
+              strict=json.loads((p/'raw'/f'{i:02d}_STRICT_ADMISSION.json').read_text())
+              assert row['strict_admission']==strict==classify(raw)
+              assert row['source_exact'] is True
+              assert row['no_live_answer'] is True and row['c3_called'] is False and row['body_called'] is False
+              assert row['jepa_weight']==0
+              assert row['context_packet']['event_id']==row['event_id']
+              assert row['context_packet']['session_id']==row['session_id']
+              assert row['context_packet']['query_ref']==row['source_ref']
+          result=score(f,j['rows'])
+          for key,value in result.items():
+              assert j[key]==value,key
+          assert result['native_c2_proven'] and result['strict_compatibility']
+          assert result['non_simple_scaffold_preserved']
+          for key in ('route_semantic_utility_proven','step2_gate_promoted','b3_promoted','body_jepa_available','redmi_measured','whole_system_complete'):
+              assert j[key] is False,key
+          assert j['learning_mode']=='RECORD_ONLY' and j['jepa_weight']==0
+          print('NATIVE_15_OF_15_PROVEN; PROXY_THRESHOLD',j['proxy_threshold_met'])
+          print('SCAFFOLD_CORRECT',j['scaffold_correct_first12'],'FINAL_CORRECT',j['final_correct_first12'])
+          print('ADMISSIONS',j['native_admissions_first12'],'GREETING_REGRESSIONS',j['greeting_regressions'])
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo NO_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
+            echo 99 > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          "$py" -m py_compile v13/code/scripts/c2_route_proxy_score_run12l.py v13/code/scripts/c2_route_proxy_native_run12l.py v13/code/tests/test_c2_route_proxy_run12l.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0470e5c06f7382d0fea1263691bbbdca636d692e --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 0470e5c06f7382d0fea1263691bbbdca636d692e HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native raw on RED or GREEN
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run12l-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run12l-native/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce structural native completion, never proxy/STEP2 promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run12l-native"
+          for stage in PINS VENV DEPS TEST INSTALL NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw retained; no native structural completion"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN12L_NATIVE_STRUCTURAL_GREEN_PROXY_RESULT_SEPARATE_NO_STEP2_B3_JEPA_REDMI_OR_AGE_PROMOTION

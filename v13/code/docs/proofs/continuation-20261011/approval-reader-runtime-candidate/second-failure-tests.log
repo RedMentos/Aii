@@ -1,0 +1,24 @@
+test_failed_mirror_recovery_mismatch_fails_closed_before_any_child (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_failed_mirror_recovery_mismatch_fails_closed_before_any_child) ... ok
+test_private_snapshot_survives_original_path_replacement_before_child_opens (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_private_snapshot_survives_original_path_replacement_before_child_opens) ... ok
+test_real_commit_failure_reader_waits_and_never_launches_attempted_adapter (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_real_commit_failure_reader_waits_and_never_launches_attempted_adapter) ... ok
+test_runtime_injects_shared_store_and_pool_causal_template_inherits_it (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_runtime_injects_shared_store_and_pool_causal_template_inherits_it) ... ok
+test_store_lock_is_free_during_popen_and_health_polling (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_store_lock_is_free_during_popen_and_health_polling) ... ok
+test_success_reader_waits_then_launches_committed_snapshot_and_restart_matches (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_success_reader_waits_then_launches_committed_snapshot_and_restart_matches) ... ok
+test_memory_snapshot_keeps_approved_original_binding_and_cleans_all_files (tests.test_approval_reader_runtime_candidate.SparseSnapshot.test_memory_snapshot_keeps_approved_original_binding_and_cleans_all_files) ... ERROR
+
+======================================================================
+ERROR: test_memory_snapshot_keeps_approved_original_binding_and_cleans_all_files (tests.test_approval_reader_runtime_candidate.SparseSnapshot.test_memory_snapshot_keeps_approved_original_binding_and_cleans_all_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_approval_reader_runtime_candidate.py", line 152, in test_memory_snapshot_keeps_approved_original_binding_and_cleans_all_files
+    store=Store(self.home)
+          ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/v13/store.py", line 246, in __init__
+    self.lock=open(home/"data/coordinator.lock","a+")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmp0nd5_8d4/data/coordinator.lock'
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.596s
+
+FAILED (errors=1)

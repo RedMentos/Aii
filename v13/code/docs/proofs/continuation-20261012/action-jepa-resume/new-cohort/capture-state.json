@@ -1,0 +1,13 @@
+{
+  "schema": "v13-action-native-tap-progress-v1",
+  "status": "REGISTERED",
+  "updated_utc": "2026-10-11T22:09:33.451139+00:00",
+  "registry_sha256": "aa6266c61d930aa50c06c1939e367d8140b7d7ab7c659b6198db6fa7a229f7b6",
+  "completed_rows": 0,
+  "completed_batches": 0,
+  "taps_sha256": null,
+  "native_extraction_observed": false,
+  "receiver_authority": 0,
+  "canonical_architecture_complete": false,
+  "expected_rows": 1875
+}

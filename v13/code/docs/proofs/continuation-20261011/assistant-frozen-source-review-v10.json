@@ -1,0 +1,33 @@
+{
+  "schema": "V13_ASSISTANT_INDEPENDENT_FROZEN_SOURCE_SAFETY_V1",
+  "scope": "REMOTE_GITHUB_PATH_AND_SHA_INVENTORY_NO_MODEL_INFERENCE",
+  "authority_current": "c1663f87f5e38aef6b456825410662164617e79c",
+  "review_current": "2b6611231074eb47e89d22980594a7b05a02c262",
+  "registered_source_count": 121,
+  "review_changed_paths": [
+    "v13/code/docs/continuation-20261012-native-resume-v6.md",
+    "v13/code/docs/continuation-20261012-packager-v10.md",
+    "v13/code/docs/continuation-20261012-readonly-audit.md",
+    "v13/code/docs/continuation-20261012-resume-guard.md",
+    "v13/code/docs/continuation-20261012-sealed-evidence-streaming.md",
+    "v13/code/docs/proofs/continuation-20261011/assistant-static-review-source-handoff-rebind-20261012.json",
+    "v13/code/scripts/package_source_streaming_candidate.py",
+    "v13/code/scripts/sealed_storage_integrity_audit.py",
+    "v13/code/scripts/sealed_storage_streaming_candidate.py",
+    "v13/code/scripts/source_handoff_binding_audit_candidate.py",
+    "v13/code/scripts/source_handoff_resume_guard_candidate.py",
+    "v13/code/tests/test_package_source_streaming_candidate.py",
+    "v13/code/tests/test_sealed_storage_integrity_audit.py",
+    "v13/code/tests/test_sealed_storage_streaming_candidate.py",
+    "v13/code/tests/test_source_handoff_binding_audit_candidate.py",
+    "v13/code/tests/test_source_handoff_resume_guard_candidate.py"
+  ],
+  "registered_sources_changed": [],
+  "any_runtime_python_changed": [],
+  "working_branch_derived_from_authority_sha": "c1663f87f5e38aef6b456825410662164617e79c",
+  "branch_ahead": 22,
+  "branch_behind": 0,
+  "frozen_source_safety_pass": true,
+  "canonical_gate_pass": false,
+  "native_models_launched": false
+}

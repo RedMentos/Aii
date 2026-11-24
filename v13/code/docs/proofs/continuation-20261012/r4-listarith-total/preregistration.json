@@ -1,0 +1,30 @@
+{
+ "schema": "v13-r4-listarith-total-prereg-v1",
+ "created_utc": "2026-10-13T09:54:37Z",
+ "counterfactual": {
+  "seed7": {
+   "proposals": 60,
+   "value_correct_part6": 58,
+   "value_correct_fixed": 60,
+   "sha256": "01c77dc7d627f6a5bffbe90bc65e1b7cd08c56aebb0c54c8a1cdad32b8f6728d"
+  },
+  "seed19": {
+   "proposals": 60,
+   "value_correct_part6": 58,
+   "value_correct_fixed": 60,
+   "sha256": "ebd5237f9dff5440bec26a0570cc834e69db5da0e859f6eff4378ef9bb171f3d"
+  }
+ },
+ "fresh_task_seed": 23,
+ "decision_rule": "Fresh seed 23, set 'orig', 60 tasks, part-6 capture: FIX_SUPPORTED iff every executed list_arith value is correct (value_correct == proposals) AND tool_active vs c3_alone net wins >= +5 AND sign test p < .05 AND no task kind loses more than 2. Sets 'match'/'nomatch' reported as in part 6.",
+ "script_sha256": "c314a018b7ee48222a9edd51e767f985a8514c5318b66ddb3011f72808d69f20",
+ "capture_script_sha256": "44a816319062bcc81a2be5abe1882297b476dfde223f77ba63b318b869c2c96c",
+ "code_sha256": {
+  "toolstep.py": "3fad7df7693a13cfed5bd0d487db089219c5650d7679b7c02a70c4ee4d1ca657",
+  "agi/listarith.py": "39c1aed90373965cb86eb845409555d36da49232e565974209081a1ede628be6",
+  "agi/tools.py": "2e93d442a0e282912e2f7d4a14bc2bc30976dfc4e2330ce49082e280bb2f8337",
+  "transaction.py": "d3d0f8a9011fa40a4c662ce7e85fbc7ff341644ee9e592bee8f8b80128324e43",
+  "runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+  "broker.py": "aade4b74cafae5c475907aef3933cc1fdba8d4191106f484d545e63ca7b586ad"
+ }
+}

@@ -1,0 +1,879 @@
+{
+ "schema": "v13-dream-ablation-v1",
+ "experiment": "blueprint \u00a799 Dream helps",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "facts": {
+  "A": [
+   "What is the name of my cat?",
+   "Where do I work?",
+   "What is my favourite colour?",
+   "What is the name of my brother?"
+  ],
+  "B": [
+   "Which instrument do I play?",
+   "What is my phone model?",
+   "What is the name of my project?",
+   "When is my birthday?"
+  ]
+ },
+ "dreams": {
+  "validated": {
+   "What is the name of my cat?": [
+    "What's your cat's name?",
+    "What name is your cat's official designation?",
+    "What's the cat's name?",
+    "What kind of cat is your cat?",
+    "What kind of cat did you adopt?",
+    "What kind of cat are you looking for?",
+    "What's the cat's full name?",
+    "Why is your cat named something fun?",
+    "Who is the name of your cat?",
+    "What\u2019s your cat\u2019s favorite nickname?",
+    "What\u2019s your cat\u2019s name?"
+   ],
+   "Where do I work?": [
+    "What location should I consider when searching for work opportunities?",
+    "What are the job opportunities available in your field?",
+    "What area of the world do you study or work in?",
+    "What area do you choose to work in?",
+    "What's the job description?",
+    "What are the best places for a job?",
+    "Where can I find a job?",
+    "Where can I find a job that suits my skills and interests?",
+    "Where do you study or work in the future?",
+    "What kind of job do you have?"
+   ],
+   "What is my favourite colour?": [
+    "What inspires your favorite color?",
+    "What is a color that you feel most drawn to?",
+    "What\u2019s your favorite color?",
+    "What inspires your sense of color?",
+    "What colors make your heart smile most?",
+    "What inspires you to choose a favorite color?",
+    "What color are you most drawn to?"
+   ],
+   "What is the name of my brother?": [
+    "What name is your brother's?",
+    "What\u2019s the brother\u2019s full name?",
+    "What\u2019s the brother\u2019s real name?",
+    "Who is your brother's name?",
+    "What\u2019s the brother\u2019s name?",
+    "Who is my older brother's name?"
+   ]
+  },
+  "unanchored": {
+   "Where do I work?": [
+    "What are the best opportunities for career growth in your field?",
+    "What are the best opportunities for myself?"
+   ],
+   "What is my favourite colour?": [
+    "What makes you tick?",
+    "What makes you most happy?"
+   ],
+   "What is the name of my brother?": [
+    "What\u2019s his full name?",
+    "What's his name?",
+    "What's his full name?",
+    "What's the name of your sister?",
+    "What is his full name?"
+   ]
+  },
+  "dropped_eval_or_duplicate": 0
+ },
+ "per_fact": 3,
+ "runs": [
+  {
+   "seed": 13,
+   "arm": "none",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 10,
+    "final_ce": 0.01329,
+    "items": 4
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.5
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 1.0
+    },
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.6666666666666666,
+    "kl_to_base": 1.4335669130086899,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?"
+    ]
+   },
+   "rehearsal": []
+  },
+  {
+   "seed": 13,
+   "arm": "replay_exact",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 8,
+    "final_ce": 0.04319,
+    "items": 8
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 1.0
+    },
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.3725948731104534,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What is the name of my cat?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "Where do I work?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What is my favourite colour?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What is the name of my brother?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 13,
+   "arm": "dream_validated",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 9,
+    "final_ce": 0.03746,
+    "items": 16
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.25
+    },
+    "B": {
+     "recall": 0.75,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.5,
+    "kl_to_base": 1.6578105613589287,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the opposite of hot?",
+     "What is the largest ocean on Earth?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What's your cat's name?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What name is your cat's official designation?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What's the cat's name?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What location should I consider when searching for work opportunities?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What are the job opportunities available in your field?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What area of the world do you study or work in?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What inspires your favorite color?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What is a color that you feel most drawn to?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What\u2019s your favorite color?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What name is your brother's?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s full name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s real name?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 13,
+   "arm": "dream_self",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 8,
+    "final_ce": 0.03432,
+    "items": 16
+   },
+   "after_b": {
+    "A": {
+     "recall": 0.75,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 1.6359848504265149,
+    "forgotten": [
+     "What colour is the sky on a clear day?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What's your cat's name?",
+     "Your cat's name is Mitzi."
+    ],
+    [
+     "What name is your cat's official designation?",
+     "Your cat's official designation is called Mitzi."
+    ],
+    [
+     "What's the cat's name?",
+     "The cat's name is Mitzi."
+    ],
+    [
+     "What location should I consider when searching for work opportunities?",
+     "You should consider your current job, your skills, and the local job market when searching for work opportunities."
+    ],
+    [
+     "What are the job opportunities available in your field?",
+     "You can work as a sales associate, customer service representative, or help desk technician."
+    ],
+    [
+     "What area of the world do you study or work in?",
+     "You study and work in the field of geography."
+    ],
+    [
+     "What inspires your favorite color?",
+     "Your favorite color is teal."
+    ],
+    [
+     "What is a color that you feel most drawn to?",
+     "A color that you feel most drawn to is teal."
+    ],
+    [
+     "What\u2019s your favorite color?",
+     "My favorite color is teal."
+    ],
+    [
+     "What name is your brother's?",
+     "Your brother\u2019s name is Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s full name?",
+     "The brother\u2019s full name is Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s real name?",
+     "Your brother\u2019s real name is Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 13,
+   "arm": "dream_unanchored",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 10,
+    "final_ce": 0.04613,
+    "items": 11
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.75,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.25,
+    "kl_to_base": 1.4138128906488419,
+    "forgotten": [
+     "What is the capital of France?",
+     "What is the capital of Japan?",
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the opposite of hot?",
+     "List three fruits.",
+     "Translate \"thank you\" into German."
+    ]
+   },
+   "rehearsal": [
+    [
+     "What are the best opportunities for career growth in your field?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What are the best opportunities for myself?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What makes you tick?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What makes you most happy?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What\u2019s his full name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What's his name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What's his full name?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 21,
+   "arm": "none",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01755,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.25,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.0935015430053074,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 10,
+    "final_ce": 0.02454,
+    "items": 4
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 1.0
+    },
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 1.418212205171585,
+    "forgotten": [
+     "What colour is the sky on a clear day?"
+    ]
+   },
+   "rehearsal": []
+  },
+  {
+   "seed": 21,
+   "arm": "replay_exact",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01755,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.25,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.0935015430053074,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 8,
+    "final_ce": 0.04961,
+    "items": 8
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.3358795568346977,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What is the name of my cat?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "Where do I work?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What is my favourite colour?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What is the name of my brother?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 21,
+   "arm": "dream_validated",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01755,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.25,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.0935015430053074,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 9,
+    "final_ce": 0.03684,
+    "items": 16
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.5
+    },
+    "B": {
+     "recall": 0.75,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.4166666666666667,
+    "kl_to_base": 1.6651782542467117,
+    "forgotten": [
+     "How many legs does a spider have?",
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the opposite of hot?",
+     "What is the largest ocean on Earth?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What's your cat's name?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What name is your cat's official designation?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What's the cat's name?",
+     "Your cat is called Mitzi."
+    ],
+    [
+     "What location should I consider when searching for work opportunities?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What are the job opportunities available in your field?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What area of the world do you study or work in?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What inspires your favorite color?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What is a color that you feel most drawn to?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What\u2019s your favorite color?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What name is your brother's?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s full name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s real name?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 21,
+   "arm": "dream_self",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01755,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.25,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.0935015430053074,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 8,
+    "final_ce": 0.02842,
+    "items": 16
+   },
+   "after_b": {
+    "A": {
+     "recall": 0.75,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 1.6907725582520168,
+    "forgotten": [
+     "What colour is the sky on a clear day?"
+    ]
+   },
+   "rehearsal": [
+    [
+     "What's your cat's name?",
+     "Your cat's name is Mitzi."
+    ],
+    [
+     "What name is your cat's official designation?",
+     "Your cat's official designation is called Mitzi."
+    ],
+    [
+     "What's the cat's name?",
+     "The cat's name is Mitzi."
+    ],
+    [
+     "What location should I consider when searching for work opportunities?",
+     "You should consider your current job, your skills, and the local job market when searching for work opportunities."
+    ],
+    [
+     "What are the job opportunities available in your field?",
+     "You can work as a sales associate, customer service representative, or help desk technician."
+    ],
+    [
+     "What area of the world do you study or work in?",
+     "You study and work in the field of geography."
+    ],
+    [
+     "What inspires your favorite color?",
+     "Your favorite color is teal."
+    ],
+    [
+     "What is a color that you feel most drawn to?",
+     "A color that you feel most drawn to is teal."
+    ],
+    [
+     "What\u2019s your favorite color?",
+     "My favorite color is teal."
+    ],
+    [
+     "What name is your brother's?",
+     "Your brother\u2019s name is Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s full name?",
+     "Your brother\u2019s full name is Jonte."
+    ],
+    [
+     "What\u2019s the brother\u2019s real name?",
+     "Your brother\u2019s real name is Jonte."
+    ]
+   ]
+  },
+  {
+   "seed": 21,
+   "arm": "dream_unanchored",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01755,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.25,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.0935015430053074,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 10,
+    "final_ce": 0.04521,
+    "items": 11
+   },
+   "after_b": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 1.0
+    },
+    "B": {
+     "recall": 0.75,
+     "paraphrase": 0.5
+    },
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.3333333333333333,
+    "kl_to_base": 1.4511083364486694,
+    "forgotten": [
+     "How many legs does a spider have?",
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the opposite of hot?",
+     "List three fruits.",
+     "Translate \"thank you\" into German."
+    ]
+   },
+   "rehearsal": [
+    [
+     "What are the best opportunities for career growth in your field?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What are the best opportunities for myself?",
+     "You work at the Kranich bakery in Leipzig."
+    ],
+    [
+     "What makes you tick?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What makes you most happy?",
+     "Your favourite colour is teal."
+    ],
+    [
+     "What\u2019s his full name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What's his name?",
+     "Your brother is called Jonte."
+    ],
+    [
+     "What's his full name?",
+     "Your brother is called Jonte."
+    ]
+   ]
+  }
+ ],
+ "claim_limit": "230M master, LoRA r8, 4+4 invented facts, dreams = reworded questions only",
+ "seconds": 1302.3
+}

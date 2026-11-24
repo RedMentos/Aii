@@ -1,0 +1,9 @@
+{
+  "schema": "v13-action-jepa-round5-v1-outcome",
+  "status": "PROTOCOL_INFEASIBLE_BEFORE_TRAINING",
+  "utc": "2026-10-12T04:05:19.592249+00:00",
+  "what_happened": "World (400 states, 1600 real calc transactions) and taps were produced. The preregistered cross-partition exclusion kept only 32/400 episodes (train 27, calibration 2, retention 3, test 0), because outcome texts used the same template as start texts. load_dataset rejected the export (each action needs two pairs in every partition). No model was trained, no score exists.",
+  "world_sha256": "9901a0cf25027af2cee150d6e6bc591e086b5607b335a8c191151389a8185b2e",
+  "capture_report_sha256": "9d9f1fd1999877c2fe49cddd9527267c6332c83a62b83440c58a4d8a9bb52c1b",
+  "raw_preserved": "v1-failed-parts/ (world, transactions, capture report; taps omitted)"
+}

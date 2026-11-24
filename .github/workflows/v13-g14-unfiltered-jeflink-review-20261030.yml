@@ -1,0 +1,102 @@
+name: V13 G14 unfiltered JEF source-link operator regression review
+on:
+  push:
+    branches: [assistant/v13-g14-unfiltered-jeflink-review-20261030-auto11]
+    paths:
+      - '.github/workflows/v13-g14-unfiltered-jeflink-review-20261030.yml'
+      - 'v13/code/docs/G14_UNFILTERED_JEFLINK_REVIEW_PREREG_20261030.md'
+permissions:
+  contents: read
+jobs:
+  full-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Unfiltered G14 source-link operator regression and frozen G13 identity comparison
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-g14-unfiltered-jeflink"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/operator.py v13/code/v13/jef_context_link_operator_run13f.py v13/code/v13/agi/context_source_link_budget_run13e.py v13/code/tests/test_jeflink_last_run13g.py v13/code/docs/G14_UNFILTERED_JEFLINK_REVIEW_PREREG_20261030.md v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/SOURCE_BLOBS.txt"
+          test "$(tail -1 "$e/SOURCE_BLOBS.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-g14-unfiltered-jeflink-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-g14-unfiltered-jeflink-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==4.44.2' > "$e/TRANSFORMERS_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'peft==0.13.2' > "$e/PEFT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -c 'import torch; assert torch.__version__=="2.5.1+cpu"; print(torch.__version__, torch.cuda.is_available())' > "$e/TORCH_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_IMPORT_EXIT.txt"
+            "$py" -c 'import transformers; from transformers import GPT2Config,GPT2LMHeadModel; assert transformers.__version__=="4.44.2"; print(transformers.__version__)' > "$e/TRANSFORMERS_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_IMPORT_EXIT.txt"
+            "$py" -c 'import peft; from peft import LoraConfig,get_peft_model; assert peft.__version__=="0.13.2"; print(peft.__version__)' > "$e/PEFT_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_IMPORT_EXIT.txt"
+          else
+            for stage in DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT; do echo SKIPPED > "$e/${stage}_EXIT.txt"; echo SKIPPED > "$e/${stage}_RAW.log"; done
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_IMPORT_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_IMPORT_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_IMPORT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else echo SKIPPED > "$e/FULL_EXIT.txt"; echo SKIPPED > "$e/FULL_RAW.log"; fi
+          python3 - "$e/FULL_RAW.log" "$e/IDENTITY_RAW.json" <<'PY'
+          import hashlib,json,re,sys
+          raw=open(sys.argv[1],encoding='utf-8',errors='replace').read()
+          entries=re.findall(r'^(ERROR|FAIL): (.+)$',raw,re.M)
+          digest=hashlib.sha256(json.dumps(sorted(entries),separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+          expected='e85743aad6bb69a8c319daa93228d7fb0cc8d24a43e5f1a1c41526a1a2b8a3e7'
+          result={'baseline_sha256':expected,'actual_sha256':digest,'identity_entries':len(entries),'fail_entries':sum(x[0]=='FAIL' for x in entries),'error_entries':sum(x[0]=='ERROR' for x in entries),'same_multiset':digest==expected,'claim':'DIAGNOSTIC_ONLY_FULLSUITE_RED_NOT_WAIVED'}
+          open(sys.argv[2],'w').write(json.dumps(result,sort_keys=True)+chr(10))
+          sys.exit(0 if digest==expected else 1)
+          PY
+          echo "$?" > "$e/IDENTITY_EXIT.txt"
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 2b947a0fe97be5aa3bea6b9387bdda953fe6c45c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 2b947a0fe97be5aa3bea6b9387bdda953fe6c45c HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve complete original raw even when suite is RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-g14-unfiltered-jeflink-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-g14-unfiltered-jeflink/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all checks and frozen negative gates without waivers
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-g14-unfiltered-jeflink"
+          for stage in CANON VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT FULL IDENTITY COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained; no gate promotion"
+              tail -75 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'G14_FULL_SOFTWARE_PASS_ONLY_NOT_NATIVE_OR_REDMI'

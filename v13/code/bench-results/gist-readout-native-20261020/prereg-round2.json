@@ -1,0 +1,18 @@
+{
+ "schema": "GIST_READOUT_NATIVE_ROUND2_PREREG_V1",
+ "round1": "bench-results/gist-readout-native-20261020/result.json",
+ "docs": 160,
+ "data_seed": 20261021,
+ "queries_per_doc": 4,
+ "size": 8,
+ "slots": 12,
+ "bootstrap": 2000,
+ "hybrid_weight": 1.0,
+ "control": "fixed_matched_m: equal-length native-token runs, same group count as mode m per document",
+ "primary": "recall@1 raw groups, centered cosine",
+ "H1": "hybrid - fixed_matched_hybrid >= .03 and CI low > 0",
+ "verdict": "SUPPORTED if H1 else FAIL",
+ "default_rule": "hybrid if SUPPORTED; else best of text/native with matched CI low > 0; else fixed",
+ "script_sha256": "288130a7fb14f2bf5771502491327e96beddbf1c96b17e34e447067ff10148a2",
+ "module_sha256": "030ba6d7b3c125f702e05dce2c9bbb5d9d1144993269633be07a83f530170ae9"
+}

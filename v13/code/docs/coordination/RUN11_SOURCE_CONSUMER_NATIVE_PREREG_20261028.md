@@ -1,0 +1,9 @@
+# SourceConsumer guarded C3 heldout native proof — prereg 2026-10-28
+
+**Owner:** GPT-6 child of #878 source `2876fab470e4e57adff227312e6511dda4097762`; source-consumer unit/full software workflow 40656612124 pending at prereg. Parent original #876 prompt-only native test RED and #871 stage11 RED unchanged.
+
+**Fresh holdout:** 8 new synthetic project names/amounts seeded with `2801029`, 4 English + 4 German, not earlier 2801028 fixtures. Each fact is stored via real Memory.feedback and rechecked against active F1/F5 human decision and SourceRef before the C3 prompt. Only `ADMITTED` requests may invoke exact pinned native C3 350M GGUF (seed 13, 64 tokens); the other 16 requests (8 missing source + 8 wrong project) must return deterministic CLARIFY with **zero** C3 calls, no unrelated amount in response, no fabricated number. Add 8 conflicting-source controls (also no C3). No fake native calls. All prompts and native metrics archived.
+
+**Fixed thresholds:** ≥7/8 exact positive answers under strict parser rejecting thousands suffixes, all 24 negatives zero model calls and zero unrelated/unsupported amounts, 8/8 source/provenance checks, source/model hashes unchanged, Age0 RECORD_ONLY, integrity clean. Native C3 may fail positive and must remain RED; no output rewriting. If focused software tests fail, do not bootstrap/download native model. Full software review must also pass separately before accepting candidate. All original negative gates unchanged. Native job uses shared serialized group.
+
+**Scope:** Synthetic named project-budget source consumer only. This does NOT prove general hallucination prevention, semantic learned retrieval, STEP2, B3, Body-JEPA, Redmi, or full V13. New source branch, original run raw immutable. Next command: implement native collector + independent scorer checks and closed raw workflow.

@@ -1,0 +1,19 @@
+{
+ "schema": "V13_NATIVE_EVIDENCE_SNAPSHOT_V1",
+ "rows": 103,
+ "observed_status": "EXPERIENCE",
+ "preregistration_sha256": "c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6",
+ "observed_experience_rows": {
+  "calc_counter": 103
+ },
+ "phase_a_closed": false,
+ "terminal_observed": false,
+ "scope": "Read-only byte snapshots; files may span adjacent progress instants. Not a resumable SQLite/Runtime image; no verdict from incomplete rows.",
+ "archive": "/workspace/scratch/f24630d7727d/V13-Native-Evening-0103.zip",
+ "sha256": "d7a2117999cb65a1c08a52cb523ad996a9d428533d1383d5119df9c21a898e95",
+ "bytes": 6774228,
+ "drive_file_id": "14iPkCDVaKP8v0_dHTSjsNZf2BzaZOwJR",
+ "drive_url": "https://drive.google.com/file/d/14iPkCDVaKP8v0_dHTSjsNZf2BzaZOwJR/view?usp=drivesdk",
+ "drive_download_verified": true,
+ "source_checkpoint": "50af1c9455693a0a2cf708a0c42bbbe7f860399a"
+}

@@ -1,0 +1,82 @@
+{
+  "package": "RUN13J_NATIVE_ORIGINAL_RAW_INDEPENDENT_REVIEW_20261030",
+  "owner": "GPT-6",
+  "source_parent": "e79ca481df1258b65a2abc9b9292775f81f09d46",
+  "review_branch": "assistant/v13-run13j-native-raw-independent-review-20261030-auto11",
+  "native": {
+    "actions_run": 41084466744,
+    "artifact_id": 12990857199,
+    "zip_sha256": "ceb154c61440ac73f911b58317704f030b551aaae0784a96ad73c6d69dc3e906",
+    "zip_bytes": 28163,
+    "crc": "PASS",
+    "manifest": "35/35",
+    "rows": "12/12",
+    "native_final": "12/12",
+    "reaped": "12/12",
+    "distinct_pid_count": 12,
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "BOOTSTRAP": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "tests": "11/11",
+    "privacy": "CLEAN",
+    "verifier": "RAW_REPLAY_VALID"
+  },
+  "cohort": {
+    "seed": 227,
+    "cases_sha256": "d43a65572d85a3f3c1b2ef81d2903c19de880e643887c9bae96f0facbc1b6712",
+    "model_revision": "657e078c94084481950a2d555a941481f715536b",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "outcome": {
+    "RAW_C3": {
+      "native_final": 6,
+      "numeric_correct": 0,
+      "numeric_total": 12,
+      "faster_correct": 1,
+      "strict_full": 0,
+      "starts_abstain": 6
+    },
+    "JEF_C3": {
+      "native_final": 6,
+      "numeric_correct": 0,
+      "numeric_total": 12,
+      "faster_correct": 0,
+      "strict_full": 0,
+      "exact_copy": 0,
+      "literal_abstain_dot": 6
+    },
+    "utility_signal": "RED",
+    "native_structural": "GREEN"
+  },
+  "backup": {
+    "private_library_path": "/V13-Checkpoints/2026-10-30/Run13J-C3-Native/run13j-native-original-41084466744-e79ca481.zip",
+    "sha256": "ceb154c61440ac73f911b58317704f030b551aaae0784a96ad73c6d69dc3e906",
+    "materialized_readback": "cmp_exit_0"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Why all six JEF native C3 outputs were exactly ABSTAIN. (prompt wording/system abstention hypotheses, not proven)?",
+    "Can a new preregistered disjoint copy-instruction cohort improve source fidelity without new claims?",
+    "Historical Run13A native full-task and G14 full-suite RED remain."
+  ],
+  "next_command": "Read current branch/owner and register new disjoint native C3 instruction ablation before any model calls; preserve Run13J fixture and all raw.",
+  "platform_remaining_budget": "UNKNOWN"
+}

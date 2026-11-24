@@ -1,0 +1,40 @@
+{
+  "package": "JEF_OUTCOME_FINAL_IDEMPOTENT_20261030",
+  "parent_pr": 1177,
+  "review_pr": 1178,
+  "base_sha": "c55b8e6f54ce28a7ec7e2400809f051e0ec94b81",
+  "prereg_commit": "6d403782a4bbb6a040b576c926a0af7056812628",
+  "source_commit": "2597b958fbf1556e9b336d983ef0b4ee011df35e",
+  "source_blob": "71631957cbfe708d8bb1e4993177c317ab30124b",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "red": {
+    "run": 40975467884,
+    "head": "11507f5430e8ec1bb1b49daebdc529813de6e09a",
+    "tests": 29,
+    "failures": 2,
+    "artifact": 12942113235,
+    "zip_sha256": "0ad0148bfdc3ba63085db63b1784921946e5c98fbee180d8777939237dde65a1",
+    "inner_hashes_ok": 18,
+    "crc_ok": true
+  },
+  "green": {
+    "run": 40975507082,
+    "head": "2597b958fbf1556e9b336d983ef0b4ee011df35e",
+    "tests": 29,
+    "passed": 29,
+    "artifact": 12941947640,
+    "zip_sha256": "af8e464a567f26cb3eb10ddafbac07ccc4128724f48a52ec3cb84c8f4c0fb45a",
+    "inner_hashes_ok": 18,
+    "crc_ok": true,
+    "privacy": "CLEAN",
+    "stage_exits_all_zero": true
+  },
+  "known_limitations": [
+    "CAS losers may allocate unused source records; retained labels CAS deduped",
+    "Full unfiltered suite historically RED on frozen Run34/Run37",
+    "No native/Redmi evidence"
+  ],
+  "claim_limit": "software-only, no STEP2/B3/JEPA/age/whole-system promotion",
+  "next": "unfiltered full software suite on integrated head, then next canonical functional organ",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jefoutcome_idempotent_20261030 tests.test_skilllive_jef_route_correction_20261030 tests.test_skilllive tests.test_jefoutcome_session_20261030 tests.test_jefoutcome tests.test_jef_operator_session_20261030 tests.test_contextos_operator_session_20261029"
+}

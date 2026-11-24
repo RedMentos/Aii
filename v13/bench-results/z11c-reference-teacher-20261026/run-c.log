@@ -1,0 +1,176 @@
+{"arm": "off", "fixture": "summary00", "self_pass": false, "teacher_pass": null, "self_s": 16.58, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary01", "self_pass": false, "teacher_pass": null, "self_s": 10.04, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary02", "self_pass": false, "teacher_pass": null, "self_s": 11.25, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary03", "self_pass": true, "teacher_pass": null, "self_s": 9.94, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary04", "self_pass": false, "teacher_pass": null, "self_s": 11.34, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary05", "self_pass": false, "teacher_pass": null, "self_s": 9.93, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary06", "self_pass": true, "teacher_pass": null, "self_s": 10.04, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary07", "self_pass": true, "teacher_pass": null, "self_s": 10.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary08", "self_pass": false, "teacher_pass": null, "self_s": 12.05, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary09", "self_pass": true, "teacher_pass": null, "self_s": 10.23, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary10", "self_pass": true, "teacher_pass": null, "self_s": 10.54, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary11", "self_pass": false, "teacher_pass": null, "self_s": 10.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary12", "self_pass": false, "teacher_pass": null, "self_s": 9.77, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary13", "self_pass": true, "teacher_pass": null, "self_s": 9.83, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "summary14", "self_pass": true, "teacher_pass": null, "self_s": 10.74, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long00", "self_pass": true, "teacher_pass": null, "self_s": 9.94, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long01", "self_pass": true, "teacher_pass": null, "self_s": 10.34, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long02", "self_pass": true, "teacher_pass": null, "self_s": 10.44, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long03", "self_pass": true, "teacher_pass": null, "self_s": 10.03, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long04", "self_pass": true, "teacher_pass": null, "self_s": 10.04, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long05", "self_pass": true, "teacher_pass": null, "self_s": 10.03, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long06", "self_pass": true, "teacher_pass": null, "self_s": 10.03, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long07", "self_pass": true, "teacher_pass": null, "self_s": 10.64, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long08", "self_pass": true, "teacher_pass": null, "self_s": 10.14, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long09", "self_pass": true, "teacher_pass": null, "self_s": 9.84, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long10", "self_pass": true, "teacher_pass": null, "self_s": 9.84, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long11", "self_pass": true, "teacher_pass": null, "self_s": 9.85, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long12", "self_pass": true, "teacher_pass": null, "self_s": 10.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long13", "self_pass": true, "teacher_pass": null, "self_s": 10.04, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "long14", "self_pass": true, "teacher_pass": null, "self_s": 9.84, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes00", "self_pass": true, "teacher_pass": null, "self_s": 9.03, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes01", "self_pass": true, "teacher_pass": null, "self_s": 9.06, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes02", "self_pass": true, "teacher_pass": null, "self_s": 8.94, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes03", "self_pass": true, "teacher_pass": null, "self_s": 9.65, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes04", "self_pass": true, "teacher_pass": null, "self_s": 9.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes05", "self_pass": false, "teacher_pass": null, "self_s": 9.64, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes06", "self_pass": true, "teacher_pass": null, "self_s": 9.04, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes07", "self_pass": true, "teacher_pass": null, "self_s": 9.03, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes08", "self_pass": true, "teacher_pass": null, "self_s": 9.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes09", "self_pass": true, "teacher_pass": null, "self_s": 9.64, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes10", "self_pass": true, "teacher_pass": null, "self_s": 9.14, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes11", "self_pass": true, "teacher_pass": null, "self_s": 9.14, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes12", "self_pass": true, "teacher_pass": null, "self_s": 9.44, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes13", "self_pass": true, "teacher_pass": null, "self_s": 9.24, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "notes14", "self_pass": true, "teacher_pass": null, "self_s": 9.43, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare00", "self_pass": false, "teacher_pass": null, "self_s": 9.65, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare01", "self_pass": true, "teacher_pass": null, "self_s": 11.15, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare02", "self_pass": false, "teacher_pass": null, "self_s": 9.54, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare03", "self_pass": true, "teacher_pass": null, "self_s": 9.83, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare04", "self_pass": true, "teacher_pass": null, "self_s": 9.54, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare05", "self_pass": false, "teacher_pass": null, "self_s": 9.26, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare06", "self_pass": true, "teacher_pass": null, "self_s": 9.33, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare07", "self_pass": true, "teacher_pass": null, "self_s": 9.74, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare08", "self_pass": false, "teacher_pass": null, "self_s": 9.65, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare09", "self_pass": false, "teacher_pass": null, "self_s": 8.83, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare10", "self_pass": false, "teacher_pass": null, "self_s": 9.53, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare11", "self_pass": true, "teacher_pass": null, "self_s": 9.35, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare12", "self_pass": false, "teacher_pass": null, "self_s": 9.34, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare13", "self_pass": false, "teacher_pass": null, "self_s": 9.13, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "off", "fixture": "compare14", "self_pass": false, "teacher_pass": null, "self_s": 9.13, "teacher_s": null, "history_teacher_leak_chunks": null}
+{"arm": "on", "fixture": "summary00", "self_pass": false, "teacher_pass": false, "self_s": 10.54, "teacher_s": 37.2, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary01", "self_pass": false, "teacher_pass": true, "self_s": 10.44, "teacher_s": 33.08, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary02", "self_pass": false, "teacher_pass": false, "self_s": 11.86, "teacher_s": 34.28, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary03", "self_pass": true, "teacher_pass": true, "self_s": 10.84, "teacher_s": 33.47, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary04", "self_pass": false, "teacher_pass": false, "self_s": 13.05, "teacher_s": 35.03, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary05", "self_pass": false, "teacher_pass": false, "self_s": 11.15, "teacher_s": 34.09, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary06", "self_pass": true, "teacher_pass": false, "self_s": 11.25, "teacher_s": 29.27, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary07", "self_pass": true, "teacher_pass": false, "self_s": 11.05, "teacher_s": 30.48, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary08", "self_pass": false, "teacher_pass": false, "self_s": 12.95, "teacher_s": 35.7, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary09", "self_pass": true, "teacher_pass": false, "self_s": 11.24, "teacher_s": 33.68, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary10", "self_pass": true, "teacher_pass": false, "self_s": 11.13, "teacher_s": 33.68, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary11", "self_pass": false, "teacher_pass": true, "self_s": 11.14, "teacher_s": 33.97, "history_teacher_leak_chunks": 1}
+{"arm": "on", "fixture": "summary12", "self_pass": false, "teacher_pass": false, "self_s": 11.14, "teacher_s": 34.28, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary13", "self_pass": true, "teacher_pass": false, "self_s": 10.64, "teacher_s": 27.58, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "summary14", "self_pass": true, "teacher_pass": false, "self_s": 11.24, "teacher_s": 34.07, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long00", "self_pass": true, "teacher_pass": true, "self_s": 11.24, "teacher_s": 30.78, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long01", "self_pass": true, "teacher_pass": true, "self_s": 10.24, "teacher_s": 34.49, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long02", "self_pass": true, "teacher_pass": true, "self_s": 10.73, "teacher_s": 34.69, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long03", "self_pass": true, "teacher_pass": true, "self_s": 10.64, "teacher_s": 32.29, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long04", "self_pass": true, "teacher_pass": true, "self_s": 10.04, "teacher_s": 31.97, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long05", "self_pass": true, "teacher_pass": true, "self_s": 10.64, "teacher_s": 33.79, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long06", "self_pass": true, "teacher_pass": true, "self_s": 10.33, "teacher_s": 31.97, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long07", "self_pass": true, "teacher_pass": true, "self_s": 10.54, "teacher_s": 34.58, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long08", "self_pass": true, "teacher_pass": true, "self_s": 9.95, "teacher_s": 31.69, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long09", "self_pass": true, "teacher_pass": true, "self_s": 10.13, "teacher_s": 33.07, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long10", "self_pass": true, "teacher_pass": true, "self_s": 11.05, "teacher_s": 32.19, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long11", "self_pass": true, "teacher_pass": true, "self_s": 9.86, "teacher_s": 34.39, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long12", "self_pass": true, "teacher_pass": true, "self_s": 9.93, "teacher_s": 34.8, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long13", "self_pass": true, "teacher_pass": true, "self_s": 10.34, "teacher_s": 33.17, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "long14", "self_pass": true, "teacher_pass": true, "self_s": 10.94, "teacher_s": 29.58, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes00", "self_pass": true, "teacher_pass": true, "self_s": 8.94, "teacher_s": 33.09, "history_teacher_leak_chunks": 1}
+{"arm": "on", "fixture": "notes01", "self_pass": true, "teacher_pass": true, "self_s": 9.23, "teacher_s": 33.4, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes02", "self_pass": true, "teacher_pass": true, "self_s": 9.45, "teacher_s": 33.59, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes03", "self_pass": true, "teacher_pass": true, "self_s": 9.14, "teacher_s": 33.6, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes04", "self_pass": true, "teacher_pass": true, "self_s": 9.43, "teacher_s": 34.69, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes05", "self_pass": false, "teacher_pass": true, "self_s": 9.43, "teacher_s": 33.68, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes06", "self_pass": true, "teacher_pass": true, "self_s": 9.33, "teacher_s": 33.9, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes07", "self_pass": true, "teacher_pass": true, "self_s": 9.04, "teacher_s": 33.89, "history_teacher_leak_chunks": 1}
+{"arm": "on", "fixture": "notes08", "self_pass": true, "teacher_pass": true, "self_s": 9.33, "teacher_s": 34.32, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes09", "self_pass": true, "teacher_pass": true, "self_s": 10.34, "teacher_s": 34.59, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes10", "self_pass": true, "teacher_pass": true, "self_s": 9.74, "teacher_s": 34.27, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes11", "self_pass": true, "teacher_pass": true, "self_s": 9.43, "teacher_s": 33.8, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes12", "self_pass": true, "teacher_pass": true, "self_s": 9.34, "teacher_s": 32.98, "history_teacher_leak_chunks": 1}
+{"arm": "on", "fixture": "notes13", "self_pass": true, "teacher_pass": true, "self_s": 9.25, "teacher_s": 34.39, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "notes14", "self_pass": true, "teacher_pass": true, "self_s": 9.13, "teacher_s": 33.79, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare00", "self_pass": false, "teacher_pass": true, "self_s": 11.04, "teacher_s": 33.5, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare01", "self_pass": true, "teacher_pass": true, "self_s": 12.06, "teacher_s": 35.1, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare02", "self_pass": false, "teacher_pass": false, "self_s": 10.64, "teacher_s": 34.78, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare03", "self_pass": true, "teacher_pass": true, "self_s": 11.45, "teacher_s": 33.84, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare04", "self_pass": true, "teacher_pass": true, "self_s": 11.34, "teacher_s": 34.59, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare05", "self_pass": false, "teacher_pass": true, "self_s": 11.15, "teacher_s": 34.21, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare06", "self_pass": true, "teacher_pass": true, "self_s": 10.95, "teacher_s": 34.82, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare07", "self_pass": true, "teacher_pass": true, "self_s": 11.44, "teacher_s": 34.99, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare08", "self_pass": false, "teacher_pass": true, "self_s": 10.94, "teacher_s": 34.28, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare09", "self_pass": false, "teacher_pass": false, "self_s": 10.64, "teacher_s": 34.28, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare10", "self_pass": false, "teacher_pass": false, "self_s": 11.05, "teacher_s": 34.7, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare11", "self_pass": true, "teacher_pass": true, "self_s": 11.05, "teacher_s": 34.69, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare12", "self_pass": false, "teacher_pass": false, "self_s": 10.83, "teacher_s": 34.6, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare13", "self_pass": false, "teacher_pass": true, "self_s": 11.05, "teacher_s": 34.32, "history_teacher_leak_chunks": 0}
+{"arm": "on", "fixture": "compare14", "self_pass": false, "teacher_pass": false, "self_s": 10.64, "teacher_s": 34.98, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary00", "self_pass": false, "teacher_pass": false, "self_s": 11.04, "teacher_s": 34.42, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary01", "self_pass": false, "teacher_pass": true, "self_s": 10.74, "teacher_s": 33.92, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary02", "self_pass": false, "teacher_pass": false, "self_s": 12.24, "teacher_s": 35.32, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary03", "self_pass": true, "teacher_pass": true, "self_s": 12.45, "teacher_s": 34.92, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary04", "self_pass": false, "teacher_pass": false, "self_s": 12.95, "teacher_s": 35.6, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary05", "self_pass": false, "teacher_pass": false, "self_s": 11.05, "teacher_s": 34.44, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary06", "self_pass": true, "teacher_pass": false, "self_s": 11.54, "teacher_s": 29.37, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary07", "self_pass": true, "teacher_pass": false, "self_s": 11.54, "teacher_s": 31.58, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary08", "self_pass": false, "teacher_pass": false, "self_s": 12.85, "teacher_s": 34.9, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary09", "self_pass": true, "teacher_pass": false, "self_s": 11.65, "teacher_s": 34.39, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary10", "self_pass": true, "teacher_pass": false, "self_s": 11.55, "teacher_s": 37.8, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary11", "self_pass": false, "teacher_pass": true, "self_s": 11.44, "teacher_s": 34.9, "history_teacher_leak_chunks": 1}
+{"arm": "on_repeat", "fixture": "summary12", "self_pass": false, "teacher_pass": false, "self_s": 11.36, "teacher_s": 35.2, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary13", "self_pass": true, "teacher_pass": false, "self_s": 11.64, "teacher_s": 27.47, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "summary14", "self_pass": true, "teacher_pass": false, "self_s": 11.83, "teacher_s": 34.3, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "long00", "self_pass": true, "teacher_pass": true, "self_s": 11.34, "teacher_s": 32.29, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "long01", "self_pass": true, "teacher_pass": true, "self_s": 11.14, "teacher_s": 34.58, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "long02", "self_pass": true, "teacher_pass": true, "self_s": 10.54, "teacher_s": 35.11, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "long03", "self_pass": true, "teacher_pass": true, "self_s": 10.75, "teacher_s": 32.98, "history_teacher_leak_chunks": 0}
+{"arm": "on_repeat", "fixture": "long04", "self_pass": true, "teacher_pass": true, "self_s": 10.35, "teacher_s": 32.48, "history_teacher_leak_chunks": 0}
+{
+ "verdict": "STEP4_EXIT_FAIL",
+ "criteria": {
+  "T1_self_fixed_before_teacher": {
+   "value": "60/60",
+   "pass": true
+  },
+  "T2_teacher_never_in_history": {
+   "pass": false
+  },
+  "T3_teacher_on_off_same_self": {
+   "value": "60/60",
+   "pass": true
+  },
+  "T4_preference_vs_fact_separate": {
+   "value": 10,
+   "pass": true
+  },
+  "T5_reproducible_fingerprint": {
+   "value": "20/20",
+   "pass": true
+  },
+  "T6_record_only_no_params": {
+   "pass": true
+  }
+ },
+ "descriptive": {
+  "self_passed": 42,
+  "teacher_passed": 43,
+  "teacher_better": 7,
+  "teacher_worse": 6,
+  "teacher_final": 60,
+  "mean_teacher_s": 33.6,
+  "mean_self_s": 10.6
+ }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "V13_NIGHT_PRIORITY_EVIDENCE_V1",
+  "read_at": "2026-10-11T21:12:37.356887+00:00",
+  "sources": {
+    "drive_roadmap1": {
+      "repository_path": "code/docs/proofs/continuation-20261011/drive-plans/ROADMAP_Teil1von3.md",
+      "bytes": 42050,
+      "sha256": "3903ed4ec96cad2171f31df91deb0f604cdf97ed0b417f14d3a98954598dc41a"
+    },
+    "drive_roadmap3": {
+      "repository_path": "code/docs/proofs/continuation-20261011/drive-plans/ROADMAP_Teil3von3.md",
+      "bytes": 38480,
+      "sha256": "2ef510a82e6c79ea59b67619b67a206fdacfa16649a1276521537ed88f959ab6"
+    },
+    "drive_reconciliation": {
+      "repository_path": "code/docs/proofs/continuation-20261011/drive-plan-reconciliation.md",
+      "bytes": 7518,
+      "sha256": "e169fa3dc86494da5dbf5fccec3a158f1a0654e47bbeb0539cfafd7f02eac8ff"
+    },
+    "canon": {
+      "repository_path": "blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+      "bytes": 426204,
+      "sha256": "a08f9cee3c2a7cf451aaf505c4ae60d3f98cfae735cfd7bc8c835b67cdf53fa2"
+    },
+    "gist_scope": {
+      "repository_path": "code/docs/GIST_GROUPING.md",
+      "bytes": 2848,
+      "sha256": "d18ef02f0b82df04464a3b2bf71bbbff110694bfff32cc81d9fca8da65d88b20"
+    },
+    "objectives": {
+      "repository_path": "code/specs/learning-objectives.json",
+      "bytes": 27166,
+      "sha256": "abbd474eca76fad27d840df70d5a526f6a1a76fc634b8e56616a520c0fd1f659"
+    },
+    "b3_h2": {
+      "repository_path": "bench-results/b3-h2-20261010/README.md",
+      "bytes": 2629,
+      "sha256": "47f387e918024ba142b1f7017e9fb82f62f20b9b2f135f87585d793f857f383b"
+    },
+    "dream_report": {
+      "repository_path": "code/docs/proofs/continuation-20261011/dream2-b40-v2/dream_ablation_b40.json",
+      "bytes": 39813,
+      "sha256": "be0c2ed6d90d8d862bdd85d361e9c1f617dbc734dd3364cb299ba536fd5dd778"
+    }
+  },
+  "new_model_measurement": false,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false
+}

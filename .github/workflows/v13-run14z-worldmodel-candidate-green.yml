@@ -1,0 +1,78 @@
+name: V13 Run14Z World-model fit admission candidate GREEN
+on:
+  push:
+    branches: [assistant/v13-run14z-worldmodel-fit-admission-20261030-hourly11]
+    paths: ['.github/workflows/v13-run14z-worldmodel-candidate-green.yml']
+permissions:
+  contents: read
+jobs:
+  world:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Record candidate T8 source admission and real SQLite tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run14z-candidate"; mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          3a7dfe70007114379929ba5c60ec63660de57191 v13/code/docs/WORLD_MODEL_FIT_ADMISSION_PREREG_RUN14Z_20261030.md
+          697d9ac16bcb532784f6ad1645e57955925325b7 v13/code/tests/test_world_model_fit_admission_run14z.py
+          f5236f201ee90e16dae994d981e5d0ef67357722 v13/code/v13/world_model.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run14z-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run14z-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_model_fit_admission_run14z tests.test_world_model tests.test_world_model_strict_json_run14y tests.test_worldmodel_realstore_integration_20261029 tests.test_worldmodel_selection_binding_20261029 tests.test_worldmodel_stage_binding_20261029 tests.test_worldmodel_numeric_guard_20261029 tests.test_worldmodel_operator_20261029 tests.test_world_model_output_domain_20261029 tests.test_world_duplicate_json_run14u tests.test_run14w_context_world_effort_integration tests.test_sleep_validation) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/world_model.py v13/code/tests/test_world_model_fit_admission_run14z.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9a69c3a6799091f2aaea34cd40f620614d8d3f51 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9a69c3a6799091f2aaea34cd40f620614d8d3f51 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve candidate raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run14z-candidate
+          path: ${{ runner.temp }}/v13-run14z-candidate/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Expose fit admission candidate GREEN
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run14z-candidate"
+          for stage in PINS VENV DEPS PIP_CHECK COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
+          echo "CANDIDATE_TEST_EXIT=$(cat "$e/TEST_EXIT.txt")"
+          tail -70 "$e/TEST_RAW.log"
+          test "$(cat "$e/TEST_EXIT.txt")" = 0

@@ -1,0 +1,357 @@
+{
+  "status": "PREDECLARED_PROPOSAL_NOT_NATIVE_GRANTED",
+  "fixture_origin": "Unchanged first46 original-order queries/reference labels in tests/integration_output_adapter.py production_main 128row greet/thanks corpus; earliest fixed prefix meeting unchanged existing fold/class minimums before any model result",
+  "fixture_source_sha256": "aff703eb248450f49d49af8dc7e86a50856ed946b0a8c59ecf43a6636bcee6a0",
+  "rows": [
+    {
+      "input": "Begrüße Gast 1 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "23d2c9612c5d03863a96f5a5e038b4004fb8bfc2ddaf770348e0a66e81cc51f4",
+      "target_class": 0,
+      "fold": 3
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 1.",
+      "human_reference": "Danke",
+      "source_sha256": "34493f8f8c7c1feb25fd88f108e3a7cd553f803764ba67b32eb0aa3b454f073c",
+      "target_class": 1,
+      "fold": 2
+    },
+    {
+      "input": "Begrüße Gast 2 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "a3acd37d338e4e2e109e7a777026a3b71435477b2a5df936399a5350c2b27b09",
+      "target_class": 0,
+      "fold": 2
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 2.",
+      "human_reference": "Danke",
+      "source_sha256": "b0c2699d6fe16a08781778425bd02829f949022472edae7bf2bf1826df3d44d2",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 3 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "7e1cd53c30914aeeea10d7b770d3cd0d98911fbad11f49592f0eabef6ee9f03d",
+      "target_class": 0,
+      "fold": 3
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 3.",
+      "human_reference": "Danke",
+      "source_sha256": "b2d8523d414be9d975e25fe57c0c074c9fd63ef0101bc9e5e84440c81d1b811a",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 4 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "bd27209b84f45e0280173ac467292873fa428ed8bd46aafc1c62596a132dc1a8",
+      "target_class": 0,
+      "fold": 3
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 4.",
+      "human_reference": "Danke",
+      "source_sha256": "8076a8a33d8f1dbc4c6905938202c999312b3701e391774cffc153f4606e62a8",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 5 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "d2567cbcd520764d3eeae39df803fbc7406edefc7e05db7de760cf7bff475fd0",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 5.",
+      "human_reference": "Danke",
+      "source_sha256": "51752597b1db0d7d3a71ef075600ce9bf4193f68b6aa9a9cf2acd01f97b6f804",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 6 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "499f59c48f76274b47de368c47f0ba3094d86a00d5229f2f885e2aaa04adf2eb",
+      "target_class": 0,
+      "fold": 0
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 6.",
+      "human_reference": "Danke",
+      "source_sha256": "009e24b765896dd580485c96c60eb397d93295acbc712efa4d17fdbee4d3cadc",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 7 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "c182d5fd3878f9d08928eaee37cf35719320b7795e00075e2d907de2752e40ce",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 7.",
+      "human_reference": "Danke",
+      "source_sha256": "36e35ab0b993ab34105ab59d67dce89a021682397a2d731c133989271d7f92ec",
+      "target_class": 1,
+      "fold": 0
+    },
+    {
+      "input": "Begrüße Gast 8 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "7c94c73ed5dfcf9e2956fce271a974abe0d7326fe76db8140dd727c9eeddec18",
+      "target_class": 0,
+      "fold": 4
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 8.",
+      "human_reference": "Danke",
+      "source_sha256": "11d51ff718c3fd2591aea0c0ab965a66b8f38a66be8f789c4595e696bb8f542e",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 9 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "ce49ecf1a8d8417ccb6621d6a95b2656c958b36e8b8a45a40b9e3f5fe96b9da6",
+      "target_class": 0,
+      "fold": 0
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 9.",
+      "human_reference": "Danke",
+      "source_sha256": "53e01e9dfb5c8d49a0360489f56724fce0c5c66d440d2e16e7d3e6eed50420da",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 10 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "1e5269f0bab596956da285c7273d96ffa29483134b55a2ec85b52fba4bbd5598",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 10.",
+      "human_reference": "Danke",
+      "source_sha256": "21e2fefe4bfa5cae9de294dc1e44cde3285b065c793a3342120f738ce14f8f98",
+      "target_class": 1,
+      "fold": 0
+    },
+    {
+      "input": "Begrüße Gast 11 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "86df27ed44e331fba1f9b64b9d8ddd104bf65f6881fb30b2f7ca129351857897",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 11.",
+      "human_reference": "Danke",
+      "source_sha256": "5e022e297a6654d9f754e0047d9c462ee35e405f9ff00ec4483b901795f20bb8",
+      "target_class": 1,
+      "fold": 2
+    },
+    {
+      "input": "Begrüße Gast 12 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "ab5027cb8ef663b921b7c05ec08abf2b04cc34303f5a5d6f04b7b1c641165c10",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 12.",
+      "human_reference": "Danke",
+      "source_sha256": "44bc74826104c3af0a7fb4132b9d2e7c467aabebaa6688a6aaecafc6b5071aeb",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 13 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "3cb80582cc853eeb991741a616378651ee3f8aa2c9bc75b17963eeea49c9fc17",
+      "target_class": 0,
+      "fold": 3
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 13.",
+      "human_reference": "Danke",
+      "source_sha256": "5afbab37ed2f4b8c0df7262f134a76e642e97a1a4cc5b554a0a3f13c6db00aa1",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 14 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "805addb4c8f48f8845904f1044e36bdef37d7fa730423393c8b26b10ebb65ed3",
+      "target_class": 0,
+      "fold": 4
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 14.",
+      "human_reference": "Danke",
+      "source_sha256": "cbdbb5180335c9e5de0762f04d9f47da6499ac896952b963d5a113fce8ffa76f",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 15 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "dd394119b065dc37bf17341d116efbbd261e753fa84c451d4971380790e60688",
+      "target_class": 0,
+      "fold": 2
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 15.",
+      "human_reference": "Danke",
+      "source_sha256": "1f799e6661179304b0c3546cc3567c1f3922456cae79a6fe5508e7a1513f251b",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 16 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "7fdfee7c5a285e535b6c407c546315ccf911be2be94664e30a74bd74e2bc912c",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 16.",
+      "human_reference": "Danke",
+      "source_sha256": "da792fb05c4c3fb1926fe55af58de1385dd3f3e130f30cf1a353d437d0f00cb4",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 17 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "a3614dedc0ba5f3f21253304a3933cd91ad7ed51b765aad467943b55c59c818c",
+      "target_class": 0,
+      "fold": 2
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 17.",
+      "human_reference": "Danke",
+      "source_sha256": "98c6187d98ca7208eeacfe1d97cf57eecb4879324738b5ce88d8e1f66cfb4d5e",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 18 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "60f29d1f502b1f7df0ee85cbdb5724797d1a88190ee84480158054914673311d",
+      "target_class": 0,
+      "fold": 3
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 18.",
+      "human_reference": "Danke",
+      "source_sha256": "b3c572915d6808da6b8611c7d5faf809f6b6d4e1e17137528d93b988f7e8ee2c",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 19 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "e289ea5f0670960e116850e9af88c991346d632a2430658a2739a63a6cf7380c",
+      "target_class": 0,
+      "fold": 0
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 19.",
+      "human_reference": "Danke",
+      "source_sha256": "99d933d5fbbe6f3fbadff2197a408a2951afc4fffa23dd96b8c29dcbb7c6c797",
+      "target_class": 1,
+      "fold": 4
+    },
+    {
+      "input": "Begrüße Gast 20 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "f3513627cc83daf16c9193247583854ff06adba9f833de088123493bd67b8ad0",
+      "target_class": 0,
+      "fold": 0
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 20.",
+      "human_reference": "Danke",
+      "source_sha256": "d4065d463dbf1bbb2bd5db01f265f90bef09bb7c74d2e1f5384f4e6c21264ba2",
+      "target_class": 1,
+      "fold": 1
+    },
+    {
+      "input": "Begrüße Gast 21 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "5e40497fcfc80a18f20bf0d4a9bf3a93680302bb0360d8b99daa546f7f240485",
+      "target_class": 0,
+      "fold": 1
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 21.",
+      "human_reference": "Danke",
+      "source_sha256": "1020a5ec0fb3515ba40bdac4c790dd83821fd47e8cd0a7c2307a21533b6979bb",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 22 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "4cb23c458485690be6f9b968b50b73625b24d69d768d8e11995884bcc83dfad4",
+      "target_class": 0,
+      "fold": 0
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 22.",
+      "human_reference": "Danke",
+      "source_sha256": "78b9f470a8d6bca7b2e091a6106217f547b9eac9a0b0e75b824beb7882720193",
+      "target_class": 1,
+      "fold": 3
+    },
+    {
+      "input": "Begrüße Gast 23 kurz.",
+      "human_reference": "Hallo",
+      "source_sha256": "d0f075304f83ec58d767726b716fd76e41db29a4eafe9708f23f35bc4eba0e4e",
+      "target_class": 0,
+      "fold": 2
+    },
+    {
+      "input": "Bedanke dich kurz für Hilfe beim Projekt 23.",
+      "human_reference": "Danke",
+      "source_sha256": "09f4d03a72aa6f860eadcd29682249fb6fcafc196f6bbc6f71750fcdf544ee5a",
+      "target_class": 1,
+      "fold": 0
+    }
+  ],
+  "query_list_sha256": "16620bd434f77b84c3d6bdd9493424fb03935498f91b9e7ac3d60e02ac324f80",
+  "partition": {
+    "train": {
+      "count": 25,
+      "class_counts": [
+        11,
+        14
+      ]
+    },
+    "calibration": {
+      "count": 13,
+      "class_counts": [
+        7,
+        6
+      ]
+    },
+    "test": {
+      "count": 8,
+      "class_counts": [
+        5,
+        3
+      ]
+    }
+  },
+  "label_origin": "PREAUTHORED_TEST_OPERATOR_DIAGNOSTIC_REFERENCE_NOT_GENUINE_USER",
+  "native_cost_estimate": "46 real zero-bias Runtime turns + actual2label tokenization in one pinned server session; reuse recorded checked native artifacts, no extra feature prefill. If all unchanged fit/approval gates pass:8heldout native consumer turns +1rollback +1revocation (+optional unrelated1), total56..57turns. Earlier one Linux C3turn10.63s: about10min + IO/import; not measured newfixture speed. If any fit gatefails, preserveFAIL/stop activation; never retune scorer/prompts/drop rows.",
+  "all_original_gates_unchanged": true,
+  "approval_scope": "Only individually explicit TEST_OPERATOR approval in isolated Store, if legitimate actualfit passes; no real user candidate"
+}

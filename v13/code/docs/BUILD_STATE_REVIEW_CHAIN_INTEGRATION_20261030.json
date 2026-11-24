@@ -1,0 +1,53 @@
+{
+  "schema": "v13.build_state.review_chain_integration.v1",
+  "date_utc": "2026-10-30",
+  "owner": "assistant/v13-review-chain-integration-20261030-0510",
+  "parent_pr": 1209,
+  "parent_head": "277dc65df004439ff93b7129841531f2da1c2390",
+  "included_review_prs": [
+    1206,
+    1207,
+    1208,
+    1209
+  ],
+  "imported_files_exact_blob_count": 8,
+  "source_rewrites": false,
+  "original_v3_zip_sha256": "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46",
+  "original_v3_scores": {
+    "A_C3_ONLY": 0,
+    "B_DEFAULT_BOTH": 10,
+    "C_ARITH_BOTH": 9
+  },
+  "expression_posthoc_correct": {
+    "A_C3_ONLY": 3,
+    "B_DEFAULT_BOTH": 0,
+    "C_ARITH_BOTH": 0
+  },
+  "isolated_c2_native_invocations": 3,
+  "isolated_c2_native_selected_route": 1,
+  "auto_smoke_native_invocations": 3,
+  "auto_smoke_native_selected_route": 0,
+  "auto_smoke_body_offer_paths": 3,
+  "auto_smoke_c3_final_outputs": 0,
+  "auto_smoke_exploratory_correct_remainders": "2/6 NOT_COMPARATIVE",
+  "ci_run": 41000353507,
+  "ci_head": "ee911ce61a9bb5e867cbaf7674468cc85a0be72d",
+  "ci_status": "QUEUED_UNVERIFIED",
+  "expected_focused_tests": 37,
+  "source_only_ci": true,
+  "learning_mode": "RECORD_ONLY",
+  "jepa_weight": 0,
+  "step2_gate_promoted": false,
+  "b3_promoted": false,
+  "body_jepa_available": false,
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Focused integration CI pending",
+    "Historical Run34/Run37 source-pin full-suite RED",
+    "C2 native authority only simple scaffold, non-simple route remains BOOT_SCAFFOLD",
+    "No C3 FINAL in seed47 smoke",
+    "No disjoint controlled utility or Redmi"
+  ],
+  "next_command": "Inspect Actions 41000353507 original raw, verify SHA256/CRC/manifest/stages/37 focused tests and private byte backup; then new disjoint controlled utility or another Canon organ. Keep all negative gates."
+}

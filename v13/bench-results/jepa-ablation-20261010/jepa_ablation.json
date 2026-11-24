@@ -1,0 +1,95 @@
+{
+ "schema": "v13-jepa-ablation-v1",
+ "experiment": "blueprint \u00a799 JEPA predictor helps",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "body": "Qwen3.5-0.8B-Q4_0.gguf",
+ "tap_dim": 1024,
+ "topics": {
+  "train": [
+   "dogs",
+   "buying a car",
+   "camping",
+   "winter weather",
+   "football",
+   "birthday parties",
+   "computer programming",
+   "dentists",
+   "cooking pasta",
+   "museums"
+  ],
+  "test": [
+   "coffee",
+   "learning the guitar",
+   "the ocean",
+   "train travel",
+   "gardening",
+   "space and planets"
+  ]
+ },
+ "sentences": 375,
+ "pairs": {
+  "train": 2008,
+  "test": 1032,
+  "test_boundaries": 180
+ },
+ "boot_cfg": {
+  "predictor_steps": 240,
+  "predictor_lr": 0.002,
+  "ema_decay": 0.99,
+  "max_update_norm": 0.02,
+  "seed": 13
+ },
+ "long_cfg": {
+  "predictor_steps": 3000,
+  "predictor_lr": 0.05,
+  "ema_decay": 0.99,
+  "max_update_norm": 0.5,
+  "seed": 13
+ },
+ "arms": {
+  "jepa_boot": {
+   "auroc": 0.7297404799165362,
+   "prediction_mse": 0.35593574873665645,
+   "copy_baseline_mse": 0.3670723001594065,
+   "effective_rank": 16,
+   "steps": 240
+  },
+  "jepa_long": {
+   "auroc": 0.648943661971831,
+   "prediction_mse": 8.19453347132818,
+   "copy_baseline_mse": 2.1480641643432192,
+   "effective_rank": 16,
+   "steps": 3000
+  },
+  "jepa_sigreg": {
+   "auroc": 0.7581377151799688,
+   "prediction_mse": 0.4038858864917749,
+   "copy_baseline_mse": 0.46135090951024593,
+   "effective_rank": 16,
+   "steps": 3000
+  },
+  "no_predictor": {
+   "auroc": 0.742188315075639
+  },
+  "jepa_sigreg_128": {
+   "auroc": 0.87415232133542,
+   "steps": 3000
+  },
+  "no_predictor_128": {
+   "auroc": 0.9143779342723005
+  },
+  "raw_cosine": {
+   "auroc": 0.9290818988002086
+  },
+  "next_token": {
+   "auroc": 0.543792383933229
+  },
+  "supervised": {
+   "auroc": 0.815753781950965,
+   "uses_labels": true
+  }
+ },
+ "seconds": 437.5,
+ "claim_limit": "one seed, 16 synthetic topics from C3, mean-pooled last-layer taps, task = topic shift only"
+}

@@ -1,0 +1,119 @@
+name: V13 Run115B six-case JEF typed replication model-free preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run115b-jef-replication-native-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run115b-jef-replication-preflight.yml
+      - v13/code/scripts/run115b_jef_replication_native.py
+      - v13/code/tests/test_run115b_jef_replication_native.py
+      - v13/code/docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run actual Store and Context OS two-source model-free preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run115b-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run115b-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run115b-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115b_jef_replication_native.py -v) > "$e/NEW_TEST_RAW.log" 2>&1
+          new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run114b_jef_b1b2_c3_native.py -v) > "$e/INHERITED_TEST_RAW.log" 2>&1
+          inherited_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" scripts/run115b_jef_replication_native.py --fixture docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json --work "$RUNNER_TEMP/v13-run115b-direct-work" --out "$e/DIRECT") > "$e/DIRECT_RAW.log" 2>&1
+          direct_rc=$?
+          "$py" -m compileall -q v13/code/scripts/run115b_jef_replication_native.py v13/code/tests/test_run115b_jef_replication_native.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run115B.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$new_rc" > "$e/NEW_TEST_EXIT.txt"
+          echo "$inherited_rc" > "$e/INHERITED_TEST_EXIT.txt"
+          echo "$direct_rc" > "$e/DIRECT_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run115B.zip'
+          frozen=Path('v13/code/docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json').read_bytes()
+          assert hashlib.sha256(frozen).hexdigest()=='21617baf735436af9a388c9be596bf763dc46f8bb394548daa961ad5ec1f57fd'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('scripts/run115b_jef_replication_native.py',
+                           'scripts/run114b_jef_b1b2_c3_native.py'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'native_executed':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 472be2372190f737df44363f6cf95204d99a1de2 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 472be2372190f737df44363f6cf95204d99a1de2 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['NEW_TEST','INHERITED_TEST','DIRECT','COMPILE','PACK','ZIP','PRIVACY','DIFF']
+          r={'schema':'v13.run115b.jef_replication.preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_b1':False,'native_b2':False,'native_c3':False,'native_c2':False,
+             'redmi_measured':False,'step2_promoted':False,
+             'b3_promoted':False,'body_jepa_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 14 "$e/NEW_TEST_RAW.log"
+          for rc in "$new_rc" "$inherited_rc" "$direct_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run115b-two-source-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run115b-preflight/
+          if-no-files-found: warn
+          retention-days: 90

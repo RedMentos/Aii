@@ -1,0 +1,42 @@
+{
+  "status": "SLEEP_A_EXACT_RECALL_REVIEW_ONLY",
+  "owner": "GPT independent Sleep review",
+  "parent": "1ab88aa30947e2f3da9905b1d3055f04b98a8bed",
+  "prereg": "d9ee59ef7d189334533f58a9be63229466fa345f",
+  "red_test": "19c048e1f8fc585082acafa911d41ef0e24123ed",
+  "source_before": "12fc576c531a6da5ecad3c29e97c93ebca36a2eb",
+  "source_after": "469101c9979b9cabe0dbd154cffde40912fa8a2c",
+  "test_blob": "48a692f5d0d47aece40d5c56d6c2f2ae96ba3c6a",
+  "red": {
+    "run": 40593307317,
+    "tests": 40,
+    "expected_failures": 2,
+    "sha256": "99db85149d1daa8ef298ea922bc0804ce348c6a6cbd316236d6fa59adcf98129"
+  },
+  "green": {
+    "run": 40593625607,
+    "tests": 40,
+    "sha256": "5e433b74fa0f792f441d19e8921e9a323d450089f2189677d379c83281049efb"
+  },
+  "full": {
+    "run": 40593650413,
+    "tests": 2008,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "005abdcc02fc0180fc0599655b517dd4671b4fe8476aaf061eaf4c8f1a007430"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-Sleep-A-Exact-Recall/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_scheduler tests.test_sleep_validation tests.test_sleep_offline",
+  "next": "Independent review and multi-organ integration; no auto-merge."
+}

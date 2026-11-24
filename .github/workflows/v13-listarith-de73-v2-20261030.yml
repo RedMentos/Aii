@@ -1,0 +1,66 @@
+name: V13 seed73 German list_arith v2 SHADOW paired
+on:
+  push:
+    branches: [assistant/v13-listarith-de-v2-candidate-seed73-20261030]
+permissions:
+  contents: read
+jobs:
+  paired-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Frozen source-only candidate comparison, never live tool
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-listarith-de73-v2"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/listarith_de_v2_seed73_holdout.json > "$e/SEED73_BLOB.txt"
+          git hash-object v13/code/v13/agi/listarith_de_shadow_v2_candidate.py > "$e/CANDIDATE_BLOB.txt"
+          git merge-base --is-ancestor 4421c9ca3eff5a9f40137fb2c809a1d53b44b6ce HEAD > "$e/PREREG_RAW.log" 2>&1
+          echo "$?" > "$e/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/de73-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/de73-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_listarith_de_v2_seed73_20261030 tests.test_listarith_de_seed71_stress_20261030 tests.test_listarith_de_shadow_seed67_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          PYTHONPATH=v13/code "$py" v13/code/scripts/listarith_de_v2_seed73_paired_eval.py --out "$e/PAIRED_REPORT.json" > "$e/EVAL_RAW.log" 2>&1
+          echo "$?" > "$e/EVAL_EXIT.txt"
+          "$py" -m py_compile v13/code/scripts/listarith_de_v2_seed73_paired_eval.py v13/code/v13/agi/listarith_de_shadow_v2_candidate.py v13/code/tests/test_listarith_de_v2_seed73_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 55c3628929ad2d9059736d761d58e1fe810b817f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 55c3628929ad2d9059736d761d58e1fe810b817f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-listarith-de73-v2-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-listarith-de73-v2/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require reproducible source-only tests, preserve any candidate RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-listarith-de73-v2"
+          for stage in PREREG VENV DEPS TEST EVAL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo "SEED73_CANDIDATE_COMPARISON_SYNTHETIC_ONLY_NO_GATE"

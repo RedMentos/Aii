@@ -1,0 +1,70 @@
+{
+  "schema": "v13.run20.live_resource_sensor.software_focused_green.fullsuite_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; §97.2 live resource sensor fail-closed",
+  "parent": {
+    "pr": 1346,
+    "branch": "assistant/v13-run19-resource-measurement-finite-20261030-hourly11",
+    "head_sha": "07b72767342308567cd32e562d3166fb397f56ce",
+    "review_only": true
+  },
+  "branch": "assistant/v13-run20-resource-sensor-finite-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "44f7cd3d727b1b9cfdf4d8089bdad0ddb80e88f3",
+    "test_first": "1b6f7e59af0c8c0f8579e0561f7bdeec91e4cd06",
+    "resource_original": "d8325b0a05bec623bc45b30a1a26de3d7ca176f4",
+    "resource_candidate": "7bd80ab472483183bb04eb2dc83ef59fe5919901"
+  },
+  "change": "Resource classify() now distinguishes unmeasured None from malformed numeric sensor readings. Nonfinite/bool/negative mem or process RSS/PSS, malformed thermal readings fail closed to at least YELLOW and never downgrade previous ORANGE/RED; finite threshold behavior and unknown None unchanged.",
+  "evidence": {
+    "original_red": {
+      "run": 41132435258,
+      "head": "00a929c963b57c7d8b524de1c4234aa8d17b4dab",
+      "artifact": 13013891384,
+      "sha256": "b6ab4f3871202935fa7f70867389b9f4ff0a263775c2dd6afb3670d059974b2d",
+      "tests": 4,
+      "failures": 18,
+      "errors": 2,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; TEST 1 expected",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run20-SensorFinite/Run20_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41132477477,
+      "head": "9e07d8ce03365daf960d60c9986f3f8893ef1e08",
+      "artifact": 13014240519,
+      "sha256": "d53b46259a88f62942265ae3f368b5465f6fa06cd70697e899950e531b579d85",
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run20-SensorFinite/Run20_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "parent_run19_unfiltered": {
+      "run": 41132298857,
+      "status": "IN_PROGRESS_AT_CHECKPOINT"
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Linux software/synthetic snapshots only; no actual Redmi sensor measurements.",
+    "No independent external agent available; test-first adversarial invalid sensor suite and manual source review.",
+    "No production merge; historical unfiltered failures remain unwaived."
+  ],
+  "next_command": "Verify Run19 cumulative fullsuite raw 41132298857, compare exact error identities to Run16. Run latest Run20 cumulative fullsuite at exact head with all source/test pins; persist raw SHA/CRC/inner hashes and update review chain. Continue next blueprint organ if budget allows."
+}

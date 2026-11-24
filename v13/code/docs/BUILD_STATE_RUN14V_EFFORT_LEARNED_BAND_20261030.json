@@ -1,0 +1,86 @@
+{
+  "schema": "v13.run14v.learned_wake_band.software_green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent C2/JEF effort band integrity",
+  "parent": {
+    "pr": 1337,
+    "head_sha": "09f6ce79d1a7684a0421c6d509dc934218b71bf2"
+  },
+  "branch": "assistant/v13-run14v-effort-learned-wake-ceiling-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "197f77ad2c76611df33c1841e68be369ddb05bc2",
+    "test_first": "d1cda1627b93e30701a35f022df1ff09270886b8",
+    "effort_original": "e2cd61815eed0192dbe281e7edfb246d70a394ca",
+    "effort_candidate": "563a6db17c1331f5eaa9f6549502f8afc460ad57"
+  },
+  "change": "resolve_wake now caps learned wake by DIRECT=none / ONE_BODY=one / FOCAL and DEEP=both before resource/deadline ceiling; user forced modes unchanged.",
+  "evidence": {
+    "original_red": {
+      "run": 41124856690,
+      "head": "25e50acf77412fb38387757ac0f4f4d1e271a6ce",
+      "artifact": 13009204332,
+      "zip_sha256": "aa7261900d96e81f1a84347e23f521406d115af8b29e63479f8b9ccd5a1b606f",
+      "tests": 24,
+      "failures": 5,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14V-EffortBand/Run14V_Effort_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41124944903,
+      "head": "d9654f9edde634c12685554a08932f30ca01d42c",
+      "artifact": 13010586474,
+      "zip_sha256": "49bba8e4cb69cf266dae9182bf45a03b8a8744713918dcf5d7ccb7903236d2a3",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14V-EffortBand/Run14V_Effort_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "limitations": [
+    "37 focused software tests only; full unfiltered suite remains RED historically.",
+    "Resource/latency savings from fewer wake calls not measured on Redmi.",
+    "No production merge; no independent external review agent available."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review Run14V draft PR and integrate only after Run14S/Run14U ancestor review. Continue an independent canonical package (C3/Body/JEPA or Sleep) with test-first and native where available; preserve historical full-suite RED. Do not promote gates.",
+  "review": [
+    "Original test-first RED confirmed before candidate source was committed (queued run head immutable); candidate passed pure policy, C2 deadline preferred wake, resource modes and runtime C3 uncertainty wake regressions.",
+    "Learned proposals cannot exceed band or hard ceiling; explicit user forced modes unaffected.",
+    "No native model or Redmi proof; no autonomous age/learning gate promotion."
+  ]
+}

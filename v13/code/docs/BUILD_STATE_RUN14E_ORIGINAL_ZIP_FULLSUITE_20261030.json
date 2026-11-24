@@ -1,0 +1,61 @@
+{
+  "schema": "v13.run14e.original_native_zip_fullsuite.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; read-only original artifact prerequisite for unfiltered software suite",
+  "parent": {
+    "pr": 1321,
+    "commit": "f4a7064031f163d712e67bbe18babd0eba7ec689"
+  },
+  "branch": "assistant/v13-run14e-original-zip-fullsuite-20261030-hourly11",
+  "state": "EXACT_ORIGINAL_NATIVE_ARTIFACT_VERIFIED_PRIVATE_BACKUP_WORKFLOW_IN_PROGRESS",
+  "prereg_commit": "d628e152855fe7a26d385e95fce9aa5a1d2fa367",
+  "workflow_commit": "91f173cc86259e75fbe401db1f00d4812c1aca0f",
+  "ci": {
+    "run_id": 41106043575,
+    "status": "IN_PROGRESS",
+    "fullsuite": "UNKNOWN",
+    "original_artifact_fetch": "UNKNOWN",
+    "original_raw_zip_sha256": null
+  },
+  "original_native": {
+    "run_id": 41097658020,
+    "artifact_id": 12996917793,
+    "sha256": "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c",
+    "crc": "PASS",
+    "inner_sha256": "39/39 PASS",
+    "native_rows": 16,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14E-OriginalZipFullsuite/run13t_original_native_41097658020_sha86f72859.zip",
+    "private_readback": "BYTE_IDENTICAL_SHA256",
+    "evidence": "ORIGINAL_PRIOR_LINUX_NATIVE_ARTIFACT_NOT_RERUN"
+  },
+  "baseline": {
+    "run_id": 41088780210,
+    "zip_sha256": "4d4132478876762d14fd86d0acbd3632cdc4408988c81c363ceb8673f80c68fd",
+    "failure_identities": 120,
+    "unique_failure_identities": 86
+  },
+  "previous_unfiltered": {
+    "run_id": 41104878974,
+    "zip_sha256": "3936a9a32e95f5e954a19e6f16b79f2c879d30dece7e93e3b4fe07cbf550f4cc",
+    "tests": 4090,
+    "failures": 4,
+    "errors": 66,
+    "skips": 16,
+    "added_error": "RUN13X_REQUIRES_EXACT_ORIGINAL_NATIVE_ZIP"
+  },
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Check Actions 41106043575 original artifact fetch token permissions and exact stage exits.",
+    "Compare unfiltered original raw identities against Run13N; preserve all historical RED.",
+    "No native/model/Redmi rerun or production merge; full V13 incomplete."
+  ],
+  "next_command": "Poll 41106043575 terminal; download original Actions raw ZIP, verify CRC/SHA256SUMS/stage exits and failure identities, privately byte-backup and checkpoint. If artifact API fails, preserve exact fetch failure and continue independent package."
+}

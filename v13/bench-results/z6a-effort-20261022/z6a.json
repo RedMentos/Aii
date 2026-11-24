@@ -1,0 +1,5752 @@
+{
+ "kind": "V13_Z6A_EFFORT_BENCH",
+ "seed": 23,
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "fixtures": [
+  "summary00",
+  "summary01",
+  "summary02",
+  "summary03",
+  "summary04",
+  "summary05",
+  "summary06",
+  "summary07",
+  "summary08",
+  "summary09",
+  "summary10",
+  "summary11",
+  "summary12",
+  "summary13",
+  "summary14",
+  "long00",
+  "long01",
+  "long02",
+  "long03",
+  "long04",
+  "long05",
+  "long06",
+  "long07",
+  "long08",
+  "long09",
+  "long10",
+  "long11",
+  "long12",
+  "long13",
+  "long14",
+  "notes00",
+  "notes01",
+  "notes02",
+  "notes03",
+  "notes04",
+  "notes05",
+  "notes06",
+  "notes07",
+  "notes08",
+  "notes09",
+  "notes10",
+  "notes11",
+  "notes12",
+  "notes13",
+  "notes14",
+  "compare00",
+  "compare01",
+  "compare02",
+  "compare03",
+  "compare04",
+  "compare05",
+  "compare06",
+  "compare07",
+  "compare08",
+  "compare09",
+  "compare10",
+  "compare11",
+  "compare12",
+  "compare13",
+  "compare14"
+ ],
+ "arms": {
+  "disabled": {
+   "n": 60,
+   "passed": 42,
+   "mean_turn_s": 2.38,
+   "wake_rate": 0.0,
+   "bands": {
+    "DIRECT_C_NATIVE": 60
+   },
+   "by_kind": {
+    "compare": 5,
+    "long": 15,
+    "notes": 13,
+    "summary": 9
+   },
+   "turn_s_by_kind": {
+    "compare": 2.6,
+    "long": 2.12,
+    "notes": 1.59,
+    "summary": 3.24
+   }
+  },
+  "low": {
+   "n": 60,
+   "passed": 42,
+   "mean_turn_s": 2.37,
+   "wake_rate": 0.0,
+   "bands": {
+    "DIRECT_C_NATIVE": 60
+   },
+   "by_kind": {
+    "compare": 5,
+    "long": 15,
+    "notes": 13,
+    "summary": 9
+   },
+   "turn_s_by_kind": {
+    "compare": 2.46,
+    "long": 2.19,
+    "notes": 1.61,
+    "summary": 3.2
+   }
+  },
+  "adaptive": {
+   "n": 60,
+   "passed": 39,
+   "mean_turn_s": 6.6,
+   "wake_rate": 1.0,
+   "bands": {
+    "FOCAL_TARGETED": 60
+   },
+   "by_kind": {
+    "compare": 7,
+    "long": 15,
+    "notes": 9,
+    "summary": 8
+   },
+   "turn_s_by_kind": {
+    "compare": 7.86,
+    "long": 6.7,
+    "notes": 5.93,
+    "summary": 5.93
+   }
+  },
+  "high": {
+   "n": 60,
+   "passed": 33,
+   "mean_turn_s": 6.51,
+   "wake_rate": 1.0,
+   "bands": {
+    "FOCAL_TARGETED": 60
+   },
+   "by_kind": {
+    "compare": 3,
+    "long": 14,
+    "notes": 9,
+    "summary": 7
+   },
+   "turn_s_by_kind": {
+    "compare": 7.86,
+    "long": 6.68,
+    "notes": 5.55,
+    "summary": 5.93
+   }
+  },
+  "max": {
+   "n": 60,
+   "passed": 35,
+   "mean_turn_s": 15.19,
+   "wake_rate": 1.0,
+   "bands": {
+    "DEEP_FOCAL": 60
+   },
+   "by_kind": {
+    "compare": 4,
+    "long": 14,
+    "notes": 10,
+    "summary": 7
+   },
+   "turn_s_by_kind": {
+    "compare": 13.89,
+    "long": 14.39,
+    "notes": 15.5,
+    "summary": 16.99
+   }
+  }
+ },
+ "paired": {
+  "disabled_vs_adaptive": {
+   "n": 60,
+   "first_only_pass": 10,
+   "second_only_pass": 7,
+   "sign_test_p": 0.6291
+  },
+  "low_vs_adaptive": {
+   "n": 60,
+   "first_only_pass": 10,
+   "second_only_pass": 7,
+   "sign_test_p": 0.6291
+  },
+  "high_vs_adaptive": {
+   "n": 60,
+   "first_only_pass": 2,
+   "second_only_pass": 8,
+   "sign_test_p": 0.1094
+  },
+  "max_vs_adaptive": {
+   "n": 60,
+   "first_only_pass": 6,
+   "second_only_pass": 10,
+   "sign_test_p": 0.4545
+  }
+ },
+ "criteria": {
+  "A1_not_dominated": {
+   "dominated_by": [],
+   "pass": true
+  },
+  "A2_no_loss_vs_disabled": {
+   "value": {
+    "n": 60,
+    "first_only_pass": 10,
+    "second_only_pass": 7,
+    "sign_test_p": 0.6291
+   },
+   "pass": true
+  },
+  "A3_little_overthinking": {
+   "value": "42/42",
+   "pass": false
+  }
+ },
+ "verdict": "Z6A_EFFORT_ADAPTIVE_FAIL",
+ "descriptive": {
+  "underthinking": {
+   "n": 6,
+   "fixtures": [
+    "summary06",
+    "summary11",
+    "summary13",
+    "notes03",
+    "notes05",
+    "notes08"
+   ]
+  },
+  "escalation_calibration": {
+   "adaptive_wakes": 60,
+   "needed": 4,
+   "share": 0.067
+  }
+ },
+ "rows": [
+  {
+   "fixture": "summary00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.72,
+   "wall_s": 3.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.81,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 150 euros (36 + 46 + 68)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.81,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 25 + 22 + 75 = 122 euros. The current total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 4.53,
+   "wall_s": 4.63,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 57 + 19 + 38 = 94 euros. However, the user's request explicitly states \"Total: 94 euros\" as the expected answer, which contradicts the math (57+19=76; 76+38=114). Since the user's explicit number overrides the calculation, the correct total is 114 euros."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 4.82,
+   "wall_s": 5.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **186 euros** (91 + 39 + 58).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item values; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual sum of the listed expenses (91 + 39 + 58 = 186), not an arbitrary nu"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.22,
+   "wall_s": 3.43,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The current total of 169 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 4.32,
+   "wall_s": 4.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **149 euros** (35 + 34 + 80).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item amounts; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual total of the listed expenses rather than an arbitrary number like 1"
+  },
+  {
+   "fixture": "summary07",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.91,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 152 euros (22 + 24 + 66)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.42,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **106 euros** (87 + 54 + 25).\n\nThe user's request is factually consistent with the provided numbers, but the final calculation and the summary line are missing from the input."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.13,
+   "wall_s": 3.33,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 70 + 82 + 39 = 191 euros. The current total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.81,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 171 euros (75 + 42 + 54)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.42,
+   "wall_s": 3.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **122 euros** (33 + 69 + 16).\n\nThe current line \"Total: 98 euros\" appears to be a typo for \"Total: 122 euros\"."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.42,
+   "wall_s": 3.53,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The items listed are not real-world expenses; they are fictional items for a story. The actual expenses would be: projector 32 euros, snacks 40 euros, and printer paper 13 euros. The correct total is 85 euros."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.41,
+   "wall_s": 1.51,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **133 euros** (23 + 56 + 14)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.91,
+   "wall_s": 3.01,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 187 euros (21 + 45 + 71)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.22,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 422 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.61,
+   "wall_s": 2.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 952 bicycles in **Lyon**."
+  },
+  {
+   "fixture": "long02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 792 bicycles parked at the station in Ghent."
+  },
+  {
+   "fixture": "long03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 3.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 555 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long04",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 460 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.61,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 825 bicycles at the station in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.62,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 466 bicycles in Graz."
+  },
+  {
+   "fixture": "long07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.22,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 790 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.02,
+   "wall_s": 3.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "825 bicycles were counted in Cork."
+  },
+  {
+   "fixture": "long09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.02,
+   "wall_s": 2.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 351 bicycles in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.81,
+   "wall_s": 3.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 418 bicycles parked at the station in Brno."
+  },
+  {
+   "fixture": "long11",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.01,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 516 bicycles in Bremen."
+  },
+  {
+   "fixture": "long12",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 3.73,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "In Malmo, 827 bicycles were counted at the station."
+  },
+  {
+   "fixture": "long13",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 3.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "755 bicycles were counted at the station in Linz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.01,
+   "wall_s": 2.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 921 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.51,
+   "wall_s": 1.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 33, according to the note from 5 March."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 2.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 47, according to the 17 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.82,
+   "wall_s": 1.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 33, according to the 23 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 18, according to the 24 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 2.71,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The latest figure is from the 24 March note, which says 73 members."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 74, according to the 25 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.91,
+   "wall_s": 2.01,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 79, according to the 11 March note."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 1.21,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 23, according to the 14 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 44, according to the 19 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.01,
+   "wall_s": 2.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 61, according to the 24 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.71,
+   "wall_s": 2.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent note is from March 21 (63 members)."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.11,
+   "wall_s": 1.21,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent note is from March 12 (12 members)."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.21,
+   "wall_s": 2.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 29, according to the 14 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 2.71,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 56, according to the 16 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.02,
+   "wall_s": 3.63,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 50, as it appears in the later date."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.02,
+   "wall_s": 3.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (508 mm). The difference is 112 mm (689 - 476), so Bremen had the least rain."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.71,
+   "wall_s": 2.83,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Turin had the most rain (722 mm) compared to Graz (286 mm). The difference is 436 mm (722 - 286)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.61,
+   "wall_s": 1.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is **Linz** (500 mm). The city with the least rain is **Brno** (103 mm). The difference is 397 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.42,
+   "wall_s": 2.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Brno had the most rain at 854 mm. Graz had the least at 531 mm, so it was 323 mm more than Graz."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.52,
+   "wall_s": 2.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Brno had the most rain at 836 mm. Ghent had the least at 272 mm. That\u2019s 564 mm more than Ghent compared to Brno."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.81,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Cork has the most rain (655 mm) while Linz has the least (224 mm). The difference is 431 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.81,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is Turin (756 mm). The city with the least rain is Brno (249 mm). The difference is 507 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.21,
+   "wall_s": 1.31,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (868 mm) compared to Graz (720 mm). The difference is 148 mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.41,
+   "wall_s": 1.51,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is Porto (455 mm). The city with the least rain is Cork (375 mm). The difference is 80 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.92,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (659 mm) compared to Turin (402 mm). The difference is 257 mm."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.82,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Ghent has the most rain (784 mm) compared to Graz (683 mm) and Porto (675 mm). The difference is 101 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.11,
+   "wall_s": 2.21,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Bremen had the most rain at 783 mm. Cork had the least at 813 mm. That means Cork had 300 mm less than Bremen."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.31,
+   "wall_s": 3.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (696 mm). The city with the least rain is Cork (181 mm), so Malmo was 515 mm more than Cork."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 5.44,
+   "wall_s": 5.64,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Graz has the most rain (623 mm) compared to Turin (370 mm) and Cork (378 mm). The difference is 253 mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.82,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall (302 mm), while Graz has the lowest (775 mm). The difference is 473 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.42,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.82,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 150 euros (36 + 46 + 68)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.12,
+   "wall_s": 3.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 25 + 22 + 75 = 122 euros. The current total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 4.53,
+   "wall_s": 4.73,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 57 + 19 + 38 = 94 euros. However, the user's request explicitly states \"Total: 94 euros\" as the expected answer, which contradicts the math (57+19=76; 76+38=114). Since the user's explicit number overrides the calculation, the correct total is 114 euros."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 4.72,
+   "wall_s": 4.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **186 euros** (91 + 39 + 58).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item values; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual sum of the listed expenses (91 + 39 + 58 = 186), not an arbitrary nu"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.61,
+   "wall_s": 1.71,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The current total of 169 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 4.32,
+   "wall_s": 4.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **149 euros** (35 + 34 + 80).\n\nThe discrepancy arises because the user's request does not explicitly state that the \"Total\" line must be calculated from the individual item amounts; it only lists the items and asks for the sum. Therefore, the summary line should reflect the actual total of the listed expenses rather than an arbitrary number like 1"
+  },
+  {
+   "fixture": "summary07",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 1.31,
+   "wall_s": 1.51,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 152 euros (22 + 24 + 66)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 3.39,
+   "wall_s": 3.59,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **106 euros** (87 + 54 + 25).\n\nThe user's request is factually consistent with the provided numbers, but the final calculation and the summary line are missing from the input."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.11,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 70 + 82 + 39 = 191 euros. The current total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.92,
+   "wall_s": 3.03,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 171 euros (75 + 42 + 54)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 3.52,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **122 euros** (33 + 69 + 16).\n\nThe current line \"Total: 98 euros\" appears to be a typo for \"Total: 122 euros\"."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.62,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The items listed are not real-world expenses; they are fictional items for a story. The actual expenses would be: projector 32 euros, snacks 40 euros, and printer paper 13 euros. The correct total is 85 euros."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.82,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **133 euros** (23 + 56 + 14)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.82,
+   "wall_s": 2.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is 187 euros (21 + 45 + 71)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.21,
+   "wall_s": 3.83,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 422 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.61,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 952 bicycles in **Lyon**."
+  },
+  {
+   "fixture": "long02",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.52,
+   "wall_s": 2.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 792 bicycles parked at the station in Ghent."
+  },
+  {
+   "fixture": "long03",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.61,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 555 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long04",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 460 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long05",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 3.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 825 bicycles at the station in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.82,
+   "wall_s": 2.93,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 466 bicycles in Graz."
+  },
+  {
+   "fixture": "long07",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.21,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 790 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.91,
+   "wall_s": 2.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "825 bicycles were counted in Cork."
+  },
+  {
+   "fixture": "long09",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.32,
+   "wall_s": 4.03,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 351 bicycles in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.22,
+   "wall_s": 3.83,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 418 bicycles parked at the station in Brno."
+  },
+  {
+   "fixture": "long11",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 3.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 516 bicycles in Bremen."
+  },
+  {
+   "fixture": "long12",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.21,
+   "wall_s": 3.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "In Malmo, 827 bicycles were counted at the station."
+  },
+  {
+   "fixture": "long13",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 3.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "755 bicycles were counted at the station in Linz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 921 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 1.41,
+   "wall_s": 1.51,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 33, according to the note from 5 March."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 47, according to the 17 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 33, according to the 23 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 2.61,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 18, according to the 24 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.02,
+   "wall_s": 2.12,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The latest figure is from the 24 March note, which says 73 members."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 74, according to the 25 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 2.71,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 79, according to the 11 March note."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.91,
+   "wall_s": 2.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 23, according to the 14 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 2.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 44, according to the 19 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.63,
+   "wall_s": 4.34,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 61, according to the 24 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.42,
+   "wall_s": 2.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent note is from March 21 (63 members)."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.42,
+   "wall_s": 2.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent note is from March 12 (12 members)."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 29, according to the 14 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 2.61,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 56, according to the 16 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.02,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 50, as it appears in the later date."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.91,
+   "wall_s": 3.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (508 mm). The difference is 112 mm (689 - 476), so Bremen had the least rain."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.02,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Turin had the most rain (722 mm) compared to Graz (286 mm). The difference is 436 mm (722 - 286)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 3.01,
+   "wall_s": 3.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is **Linz** (500 mm). The city with the least rain is **Brno** (103 mm). The difference is 397 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.21,
+   "wall_s": 2.31,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Brno had the most rain at 854 mm. Graz had the least at 531 mm, so it was 323 mm more than Graz."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 1.51,
+   "wall_s": 1.61,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Brno had the most rain at 836 mm. Ghent had the least at 272 mm. That\u2019s 564 mm more than Ghent compared to Brno."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.92,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Cork has the most rain (655 mm) while Linz has the least (224 mm). The difference is 431 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 1.51,
+   "wall_s": 1.71,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is Turin (756 mm). The city with the least rain is Brno (249 mm). The difference is 507 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.92,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (868 mm) compared to Graz (720 mm). The difference is 148 mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 1.51,
+   "wall_s": 1.61,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is Porto (455 mm). The city with the least rain is Cork (375 mm). The difference is 80 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 2.83,
+   "wall_s": 2.93,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (659 mm) compared to Turin (402 mm). The difference is 257 mm."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 1.51,
+   "wall_s": 1.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Ghent has the most rain (784 mm) compared to Graz (683 mm) and Porto (675 mm). The difference is 101 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.12,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Bremen had the most rain at 783 mm. Cork had the least at 813 mm. That means Cork had 300 mm less than Bremen."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.02,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Malmo had the most rain (696 mm). The city with the least rain is Cork (181 mm), so Malmo was 515 mm more than Cork."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "low",
+   "pass": true,
+   "turn_s": 3.11,
+   "wall_s": 3.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Graz has the most rain (623 mm) compared to Turin (370 mm) and Cork (378 mm). The difference is 253 mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "low",
+   "pass": false,
+   "turn_s": 2.82,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.15,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall (302 mm), while Graz has the lowest (775 mm). The difference is 473 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.54,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.22,
+   "wall_s": 5.22,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 150 euros (36 + 46 + 68)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.42,
+   "wall_s": 5.42,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 25 + 22 + 75 = 122 euros. The stated total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 100 euros (57 + 19 + 38)."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.13,
+   "wall_s": 5.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The sum of 91 + 39 + 58 = 188 euros, not 198."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.63,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The current total of 169 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 159 euros (35 + 34 + 80)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.74,
+   "wall_s": 6.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 156 euros (22 + 24 + 66)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 190 euros (87 + 54 + 25)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 70 + 82 + 39 = 191 euros. The stated total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.24,
+   "wall_s": 6.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 169 euros (75 + 42 + 54)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.64,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 126 euros (33 + 69 + 16)."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.14,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 32 + 40 + 13 = 85 euros. The current total of 75 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.24,
+   "wall_s": 6.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 113 euros (23 + 56 + 14)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.25,
+   "wall_s": 6.25,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The item descriptions are: cleaning service (\u20ac21), office chairs (\u20ac45), and printer paper (\u20ac71). The total should be \u20ac137 euros, not \u20ac127."
+  },
+  {
+   "fixture": "long00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.54,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 422 bicycles in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.54,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text states the survey counted **exactly 952 bicycles** in **Lyon**."
+  },
+  {
+   "fixture": "long02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.04,
+   "wall_s": 7.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 792 bicycles parked at the station in Ghent."
+  },
+  {
+   "fixture": "long03",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.73,
+   "wall_s": 6.84,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 555 bicycles in Malmo."
+  },
+  {
+   "fixture": "long04",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.55,
+   "wall_s": 6.55,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 460 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long05",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "825 bicycles were counted in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.84,
+   "wall_s": 6.95,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The count is 466 bicycles, located in Graz."
+  },
+  {
+   "fixture": "long07",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.03,
+   "wall_s": 7.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 790 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.73,
+   "wall_s": 6.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 825 bicycles in Cork."
+  },
+  {
+   "fixture": "long09",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.34,
+   "wall_s": 6.45,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 351 bicycles in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.44,
+   "wall_s": 6.44,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 418 bicycles parked at the station in Brno."
+  },
+  {
+   "fixture": "long11",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.33,
+   "wall_s": 6.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 516 bicycles in Bremen."
+  },
+  {
+   "fixture": "long12",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.64,
+   "wall_s": 6.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "827 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long13",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.23,
+   "wall_s": 6.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 755 bicycles in Linz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.64,
+   "wall_s": 6.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 921 bicycles in Malmo."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.83,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is from the 5th March entry."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.23,
+   "wall_s": 5.23,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 47, according to the 17 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 33 members from March 23."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.14,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 12 members, according to the note from 6 March."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.23,
+   "wall_s": 6.23,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 73 members from the 24 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 46 members from the 2 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 23 members from the 14th of March."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 24 members from the 14 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.23,
+   "wall_s": 5.23,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 61, according to the 24 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 7.14,
+   "wall_s": 7.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's version wins on the specific factual claim regarding the date of the notes, as the text explicitly states \"Note from 5 March\" and \"Note from 21 March\"."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.24,
+   "wall_s": 7.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's request asks for a factual correction based on conflicting text, but the core task is to answer the question posed by the user rather than validating the text itself. Since the text provided in the prompt is a direct copy-paste of the user's query (which appears to be a test case or a specific scenario), I must answer the question asked by the user based on the context provided, as per "
+  },
+  {
+   "fixture": "notes12",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 29, according to the 14 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.83,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 30 members from the 14 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 4.93,
+   "wall_s": 4.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 50, as it appears in the later date."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 7.04,
+   "wall_s": 7.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Bremen** (689 mm). The difference between Bremen and Malmo is **181 mm** (689 - 508)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.13,
+   "wall_s": 5.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Turin has the most rain (722 mm) while Graz has 13 mm less than Turin (722 - 286 = 436 mm)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Porto** (567mm). The city with the least rain is **Linz** (500mm). The difference is 67mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 12.06,
+   "wall_s": 12.06,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the highest monthly rainfall at 854 mm. Graz was the least with 531 mm. The difference is 323 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 17.38,
+   "wall_s": 17.38,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the highest rainfall at 836 mm, while Ghent was the wettest with 272 mm. Malmo received 247 mm. The difference is 663 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.24,
+   "wall_s": 6.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Cork has the most rain (655mm) while Linz is 633mm less than Cork."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Linz** (802 mm). The city with the least rain is **Brno** (249 mm). The difference is 553 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.33,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Malmo has the most rain (868 mm) while Graz has the least (632 mm). The difference is 236 mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.13,
+   "wall_s": 5.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Lyon** (419mm). The difference between the most and least is **26mm** (419 - 375)."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.24,
+   "wall_s": 7.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Based on the provided text (Malmo 659, Brno 654, Turin 402), the cities are:\n- **Malmo**: 659\n- **Brno**: 654\n- **Turin**: 402\n\n**Malmo** has the most rain (659 mm).\nThe difference is $659 - 402 = 257$ mm."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Ghent** (784 mm), while **Porto** has the least (675 mm). The difference is 109 mm.\n\n*Note: This answer is based on the provided data points.*"
+  },
+  {
+   "fixture": "compare11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 17.29,
+   "wall_s": 17.29,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Bremen recorded the highest rainfall at 783 mm, while Cork had the least at 813 mm. That means Bremen had 174 mm more than the city with the least."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 7.03,
+   "wall_s": 7.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Malmo** (696 mm). The city with the least rain is **Cork** (181 mm). The difference is 515 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.33,
+   "wall_s": 5.33,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the most rain (623mm). The city with the least rain is Cork (378mm), so Graz is 25mm more than Cork."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.43,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (302 mm) while Brno has the least (852 mm). The difference is 550 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 7.13,
+   "wall_s": 7.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 190 euros (36 + 46 + 68)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 25 + 22 + 75 = 122 euros. The stated total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.64,
+   "wall_s": 6.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 57 + 19 + 38 = 94 euros. Therefore, the total should be **94 euros**, not 94 euros (which is a typo)."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.53,
+   "wall_s": 6.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **186 euros** (91 + 39 + 58).\n\nThe discrepancy arises because the user's text does not explicitly state the final sum; it only lists the individual items and their amounts. Without this explicit line, the \"Total\" cannot be calculated accurately from the provided data."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.13,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 85 + 22 + 72 = 179 euros. The stated total of 169 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.74,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **149 euros** (35 + 34 + 80)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.24,
+   "wall_s": 6.24,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **112 euros** (22 + 24 + 66)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.13,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 190 euros (87 + 54 + 25)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 70 + 82 + 39 = 191 euros. The stated total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 169 euros (75 + 42 + 54)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.53,
+   "wall_s": 5.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 126 euros (33 + 69 + 16)."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 95 euros (32 + 40 + 13)."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 4.83,
+   "wall_s": 4.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 133 euros (23 + 56 + 14)."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.44,
+   "wall_s": 6.44,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The item descriptions are: cleaning service (\u20ac21), office chairs (\u20ac45), and printer paper (\u20ac71). The correct total is \u20ac137 euros."
+  },
+  {
+   "fixture": "long00",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.94,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 422 bicycles in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 7.36,
+   "wall_s": 7.36,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text does not contain a question asking for the number of bicycles or the city."
+  },
+  {
+   "fixture": "long02",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 7.33,
+   "wall_s": 7.44,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 792 bicycles parked at the station in Ghent."
+  },
+  {
+   "fixture": "long03",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.94,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 555 bicycles in Malmo."
+  },
+  {
+   "fixture": "long04",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.14,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 460 bicycles in Bremen."
+  },
+  {
+   "fixture": "long05",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes mention 825 bicycles were counted in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 7.13,
+   "wall_s": 7.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The count is 466 bicycles, located in Graz."
+  },
+  {
+   "fixture": "long07",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 7.24,
+   "wall_s": 7.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 790 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.84,
+   "wall_s": 6.84,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 825 bicycles in Cork."
+  },
+  {
+   "fixture": "long09",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.34,
+   "wall_s": 6.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 351 bicycles in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.43,
+   "wall_s": 6.53,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 418 bicycles parked at the station in Brno."
+  },
+  {
+   "fixture": "long11",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.24,
+   "wall_s": 6.24,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 516 bicycles in Bremen."
+  },
+  {
+   "fixture": "long12",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.65,
+   "wall_s": 6.65,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "827 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long13",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 755 bicycles in Linz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 6.73,
+   "wall_s": 6.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 921 bicycles in Malmo."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.73,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is from the 5th March note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 4.93,
+   "wall_s": 5.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 47, according to the 17 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.93,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 33 members from March 23."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.72,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 12 members, according to the note from 6 March."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.02,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is from the 24 March note, which says 73 members."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.33,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 46 members from the 2 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.52,
+   "wall_s": 5.52,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 23 members from the 14th of March."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 24 members from the 14 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 4.62,
+   "wall_s": 4.62,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 61, according to the 24 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.63,
+   "wall_s": 6.73,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's version wins on the specific factual claim regarding the date of the notes, as the text explicitly states the discrepancy between the two dates."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.54,
+   "wall_s": 5.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The note from March 13 states 30 members, while the note from March 12 states 12 members. Since the dates are March 13 and March 12, the note from **March 13** is the most recent one."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 29, according to the 14 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 30 members from the 14 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 4.93,
+   "wall_s": 5.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 50, as it appears in the later date."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 7.16,
+   "wall_s": 7.16,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Bremen** (689 mm). The difference between Bremen and Malmo is **181 mm** (689 - 508 = 181)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 4.83,
+   "wall_s": 4.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Turin has the most rain (722 mm) while Graz has 13 mm less than Turin (722 - 286 = 436 mm)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 4.83,
+   "wall_s": 4.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Porto** (567mm). The difference between Porto and Linz is **64mm**."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 17.48,
+   "wall_s": 17.48,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the highest rainfall, Malmo the least, so Malmo is 531 - 854 = -323 millimetres more than Brno. That means Malmo is 323 millimetres less than Brno. The data suggests a difference of 323 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 16.48,
+   "wall_s": 16.58,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the most rain at 836 mm, while Ghent had the least at 272 mm. That\u2019s a difference of 564 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Cork has the most rain (655mm) while Linz is 633mm less than Cork."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.74,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Linz** (802 mm). The city with the least rain is **Brno** (249 mm). The difference is 553 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.74,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Graz** (720 mm). The difference between Graz and Malmo is **98 mm** (720 - 632 = 98)."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.13,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Lyon** (419mm). The difference between the most and least is **26mm** (419 - 375)."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 9.55,
+   "wall_s": 9.55,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user is asking for a factual calculation based on specific historical data points (Malmo 659, Brno 654, Turin 402) regarding monthly rainfall. However, the text explicitly states these are \"hypotheses\" or \"internal hypotheses\" that do not constitute verifiable facts.\n\nTherefore, I cannot invent missing facts or pretend to run tools. I must answer based on the provided context and acknowledge t"
+  },
+  {
+   "fixture": "compare10",
+   "arm": "high",
+   "pass": true,
+   "turn_s": 5.54,
+   "wall_s": 5.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Ghent** (784 mm). The city with the least rain is **Porto** (675 mm). The difference is 109 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 12.07,
+   "wall_s": 12.07,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Bremen recorded the highest rainfall at 783 mm, while Cork had the least at 813 mm. That means Bremen had 813 - 783 = 30 mm more than the city with the least."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 6.63,
+   "wall_s": 6.63,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Malmo has the most rain (696 mm) compared to Linz (183 mm). The difference is 513 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.33,
+   "wall_s": 5.33,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the most rain (623mm) while Turin has 370mm. The difference is 253mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "high",
+   "pass": false,
+   "turn_s": 5.42,
+   "wall_s": 5.42,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (302 mm) while Brno has the least (852 mm). The difference is 560 mm."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.29,
+   "wall_s": 17.39,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 87 + 51 + 66 = 204 euros. The stated total of 224 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.38,
+   "wall_s": 15.38,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 150 euros (36 + 46 + 68)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.57,
+   "wall_s": 16.57,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 25 + 22 + 75 = 122 euros. The stated total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.7,
+   "wall_s": 16.7,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 132 euros (57 + 19 + 38)."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.29,
+   "wall_s": 18.4,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **186 euros** (91 + 39 + 58)."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 12.87,
+   "wall_s": 12.87,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 169 euros (85 + 22 + 72)."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.7,
+   "wall_s": 17.7,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **149 euros** (35 + 34 + 80)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.18,
+   "wall_s": 17.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 156 euros (22 + 24 + 66)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.11,
+   "wall_s": 17.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 176 euros (87 + 54 + 25)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 18.08,
+   "wall_s": 18.08,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 70 + 82 + 39 = 191 euros. The stated total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.39,
+   "wall_s": 17.49,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 169 euros (75 + 42 + 54)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.78,
+   "wall_s": 16.78,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The sum of the individual items (33 + 69 + 16) equals 118 euros, not 98."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.8,
+   "wall_s": 18.8,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 95 euros (32 + 40 + 13)."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.58,
+   "wall_s": 15.58,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 23 + 56 + 14 = 93 euros. The reported total of 113 euros is wrong."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 19.2,
+   "wall_s": 19.2,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 187 euros (21 + 45 + 71)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.81,
+   "wall_s": 17.81,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 422 bicycles in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.89,
+   "wall_s": 11.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text does not contain a question asking for the number of bicycles or the city."
+  },
+  {
+   "fixture": "long02",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 19.22,
+   "wall_s": 19.22,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes state that exactly 792 bicycles were counted at the station in Ghent."
+  },
+  {
+   "fixture": "long03",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.97,
+   "wall_s": 13.08,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 555 bicycles parked at Malmo."
+  },
+  {
+   "fixture": "long04",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.97,
+   "wall_s": 12.97,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 460 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.16,
+   "wall_s": 13.16,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes state that 825 bicycles were counted in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.76,
+   "wall_s": 11.76,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states the survey counted **466** bicycles in **Graz**. The question asks for these two specific details."
+  },
+  {
+   "fixture": "long07",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.89,
+   "wall_s": 17.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 790 bicycles in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.28,
+   "wall_s": 13.28,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 825 bicycles in Cork."
+  },
+  {
+   "fixture": "long09",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.18,
+   "wall_s": 13.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes state that exactly 351 bicycles were counted in Linz."
+  },
+  {
+   "fixture": "long10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 18.09,
+   "wall_s": 18.19,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes mention 418 bicycles were counted in Brno."
+  },
+  {
+   "fixture": "long11",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.07,
+   "wall_s": 16.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 516 bicycles in Bremen."
+  },
+  {
+   "fixture": "long12",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.56,
+   "wall_s": 12.56,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes state that 827 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long13",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.66,
+   "wall_s": 12.76,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 755 bicycles at the station in Linz."
+  },
+  {
+   "fixture": "long14",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.35,
+   "wall_s": 12.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 921 bicycles in Malmo."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 15.9,
+   "wall_s": 15.9,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 33 members, as noted on 5 March."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.67,
+   "wall_s": 13.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 47 members from the 17 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.88,
+   "wall_s": 15.98,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 33 members from March 23."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.18,
+   "wall_s": 16.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 18 members from the 24 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 14.97,
+   "wall_s": 15.07,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 73 members from the 24 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.57,
+   "wall_s": 15.68,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest count is 74 members from March 25."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.19,
+   "wall_s": 15.19,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 79 members from March 11."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 14.28,
+   "wall_s": 14.28,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 15, from the 7 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.77,
+   "wall_s": 15.77,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 44 members from the March 19 note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 14.87,
+   "wall_s": 14.87,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 51 members from March 18."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.28,
+   "wall_s": 16.28,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The user's version wins on the specific factual claim regarding the date of the notes, as the text explicitly states the discrepancy between the two dates."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.8,
+   "wall_s": 17.8,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The discrepancy between the two notes (30 vs 12) indicates that the information provided by the user is unreliable or inconsistent, as stated in the text."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 14.37,
+   "wall_s": 14.37,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 29 members, from the 14 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.59,
+   "wall_s": 16.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The discrepancy between the two references needs clarification."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.18,
+   "wall_s": 15.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 50 members from March 11."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.69,
+   "wall_s": 18.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Malmo has the highest rainfall at 508 mm. The difference between Malmo's total (508) and Bremen's total (689) is 181 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.58,
+   "wall_s": 10.68,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Turin has the highest rainfall (722 mm) while Graz has the least (286 mm). The difference is 436 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.86,
+   "wall_s": 11.86,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Porto has the highest rainfall (567 mm) while Linz has the least (500 mm). The difference is 67 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 21.31,
+   "wall_s": 21.42,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Brno had the highest rainfall, Malmo was the least. That means Brno had 531 - 854 = -323 millimetres more than the city with the least\u2014wait, that doesn\u2019t make sense. Let's clarify:\n\n- Brno: 854 mm  \n- Malmo: 134 mm  \n- Graz: 531 mm  \n\nThe city with the most rain is Brno (854 mm), and the one with the least is Graz (531 mm). The difference is 854 - 531 = 323 mm.\n\nSo, Brno had the most, and it\u2019s 323"
+  },
+  {
+   "fixture": "compare04",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 12.27,
+   "wall_s": 12.27,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Brno had the highest monthly rainfall at 836 mm. Ghent had the least at 272 mm. That means Brno was 564 mm more than Ghent."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.19,
+   "wall_s": 17.19,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Cork has the highest rainfall at 655 mm. The difference between Cork and Linz is 213 mm (868 - 655). Turin has the lowest at 224 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.59,
+   "wall_s": 18.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states Linz has the highest rainfall (802 mm) while Turin has the lowest (756 mm). The difference is 46 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.67,
+   "wall_s": 11.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The city with the most rain is **Graz** (720 mm). The difference between Graz and Malmo is **98 mm** (720 - 632 = 98)."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.05,
+   "wall_s": 11.15,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The hypothesis is that Porto has the most rain while Cork has 20."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.46,
+   "wall_s": 11.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Malmo had the highest rainfall at 659 mm, while Turin had the least at 402 mm. The difference is 257 mm."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.56,
+   "wall_s": 11.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The city with the most rain is **Ghent** (784 mm), while **Porto** has the least (675 mm). The difference is 109 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 12.56,
+   "wall_s": 12.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Bremen recorded the highest rainfall at 783 mm, while Cork had the least at 813 mm. That means Bremen had 174 mm more than Cork."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.66,
+   "wall_s": 10.66,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Malmo had the highest rainfall (696 mm) while Cork had the least (181 mm). The difference is 515 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 10.95,
+   "wall_s": 11.06,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Graz has the highest rainfall at 623 mm (more than Cork by 25 mm)."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.89,
+   "wall_s": 17.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Lyon has the highest rainfall (302 mm) compared to Graz's lowest (775 mm). The difference is 473 mm."
+  }
+ ],
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "prereg": "docs/proofs/continuation-20261022/z6a-effort/PREREG.md",
+ "claim_limit": "deterministic bench decoding, generated English tasks, regex checks, one seed, cloud CPU"
+}

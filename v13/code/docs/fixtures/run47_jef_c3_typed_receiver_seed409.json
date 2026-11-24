@@ -1,0 +1,64 @@
+{
+  "schema": "v13.run47.jef_c3_typed_receiver_seed409.v1",
+  "seed": 409,
+  "arms": [
+    "A_RAW_SOURCES",
+    "B_JEF_TYPED_CANDIDATE"
+  ],
+  "fixtures": [
+    {
+      "id": "Aster",
+      "prior": "Project Aster. Budget 82 euros. Deadline 6 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Aster. Apply the earlier project rules. Option A costs 72 euros, takes 4 days, and is local. Option B costs 55 euros, takes 5 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 10
+      }
+    },
+    {
+      "id": "Birch",
+      "prior": "Project Birch. Budget 63 euros. Deadline 5 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Birch. Apply the earlier project rules. Option A costs 57 euros, takes 7 days, and is local. Option B costs 51 euros, takes 4 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 12
+      }
+    },
+    {
+      "id": "Cobalt",
+      "prior": "Project Cobalt. Budget 44 euros. Deadline 3 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Cobalt. Apply the earlier project rules. Option A costs 47 euros, takes 2 days, and is local. Option B costs 36 euros, takes 5 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Dune",
+      "prior": "Project Dune. No budget has been supplied. Deadline 7 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Dune. Apply the earlier project rules. Option A costs 28 euros, takes 5 days, and is local. Option B costs 37 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "UNKNOWN",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Eclipse",
+      "prior": "Project Eclipse. Spending limit: 91 euros. Finish within 8 days. Must remain local: yes. This policy is binding.",
+      "current": "Project Eclipse. Decide using the saved policy. Option A: cost 73 euros, duration 7 days, local true. Option B: cost 68 euros, duration 6 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 18
+      }
+    },
+    {
+      "id": "Fjord",
+      "prior": "Project Fjord. Spending limit: 56 euros. Finish within 4 days. Must remain local: no. This policy is binding.",
+      "current": "Project Fjord. Decide using the saved policy. Option A: cost 53 euros, duration 3 days, local true. Option B: cost 49 euros, duration 2 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 7
+      }
+    }
+  ]
+}

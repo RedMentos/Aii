@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-27",
+  "scope": "review_only_hx134_approval_origin_binding",
+  "parent": "02ebbedfc984992035c4634f05168fa3b8996b7f",
+  "prior_art_pr": 163,
+  "prereg": "560bbcb2e0e9a57db0349634ed66d7caf4164c34",
+  "red": {
+    "run": 40595465539,
+    "tests": 21,
+    "expected_failures": 3,
+    "zip_sha256": "ae3b69adfe8fae4c9c9fb2c4505f9d9c8eaa8933b5237d0fd33ea44bee9dc2de"
+  },
+  "green": {
+    "run": 40595592323,
+    "tests": 21,
+    "failures": 0,
+    "zip_sha256": "e93516f30485206fa3b43695a9137ee4dc2f44db095bb9f7ecfbf0b92627a3ab"
+  },
+  "full": {
+    "run": 40595819779,
+    "tested_head": "72b48d1b89bb73c8ffd6d7434a0e75242db349c3",
+    "tests": 2018,
+    "skipped": 1,
+    "success": true,
+    "zip_sha256": "4e41d1c3bef7be333f4d9fe19a2b3c1ea44c2c05c96884ac68b9e0efbea4c244",
+    "all_raw_exits_zero": true,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "private_backup_byte_identical": true
+  },
+  "gates": {
+    "Age": 0,
+    "latent_authority": 0,
+    "jepa_weight": 0,
+    "B3_L1": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native": false,
+  "redmi": false,
+  "production_merged": false,
+  "downstream_pr": 789,
+  "next": "Run133 request-row and evidence freshness full suite, then cross-organ integration and independent review"
+}

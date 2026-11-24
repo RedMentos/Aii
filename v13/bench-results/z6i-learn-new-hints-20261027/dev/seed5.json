@@ -1,0 +1,6528 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 5,
+ "scores": {
+  "fixed+now+words+teach": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 8,
+   "approval_requests": 8,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.95,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_ee3609535dff4091b8b83f378a536c39",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Katzen und Regeln?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Vögel und Zeit?",
+       "both"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 72 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 120 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 24 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 24 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 60 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_dd8b236c30a5413790d5fb06ee793a87",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_033e388c5ced4355bdc476077155a14c",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_2b156c91931a4895a582290836e38bf6",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_dcd239f41a274b2ca51498bec51bf64d",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p2-3",
+     "handover_reply": "Regel rsup_a46b92e12193469f96477caaadffff62 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_ee3609535dff4091b8b83f378a536c39",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ]
+  },
+  "adaptive+now+words+teach": {
+   "shadow_jobs": 7,
+   "unnecessary_updates": 0,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.925,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9666,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.625,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_46ad2664a7f44b778f30f761df12caf9",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.925,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.625,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9062,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Katzen und Regeln?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Städte und Zeit?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Vögel und Zeit?",
+       "both"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 72 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 120 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 24 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 24 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 60 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_adc81dee8bb142ef8d30c3f1edaa8c4a",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_3593b588e8b04734961ed89820cd8415",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_bb21556b9f0c44d4893ef43ddbc2a31d",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_46ad2664a7f44b778f30f761df12caf9",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p2-3",
+     "handover_reply": "Regel rsup_b08d9ac008904a9d85b2677dfb735193 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_46ad2664a7f44b778f30f761df12caf9",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ]
+  },
+  "fixed+now": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 4,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 48,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.725,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.7499,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.125,
+    "gist": 0.625,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_2f1e5d9c34a14952a3c797ab2ed58a99",
+    "expected_parent_acc": 0.7,
+    "after_rollback_acc": 0.7,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.7,
+     "half_items": 1.0,
+     "unchanged": 0.625
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.7,
+     "half_items": 0.0,
+     "unchanged": 0.875
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.575,
+     "half_items": 0.375,
+     "unchanged": 0.625
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "fixed+now+words+teach": {
+   "policy": "fixed+now+words+teach",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3559884dc9cc4e6098ed61b508a3939d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3559884dc9cc4e6098ed61b508a3939d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 0.375,
+       "detail": 0.8125,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 0.75,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Schönen Nacht, David! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Hallo Clara, was machst du heute am Nacht?",
+        "detail"
+       ],
+       [
+        "Hallo Clara, was machst du heute am Abend?",
+        "gist"
+       ],
+       [
+        "Schönen Tag, Ben! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Schönen Nacht, Hugo! Alles gut bei dir?",
+        "detail"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "gist"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0792260813942616
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d2dc87a491c54c94a956534748b65113 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d2dc87a491c54c94a956534748b65113",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.625
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "known_items_lost": 0,
+       "loss_after": 1.0398516639253872,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.33217411476949227
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f6a4b98517bd493d84ce62bafa8a9c45 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_f6a4b98517bd493d84ce62bafa8a9c45",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.2913631214022211,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.16889976725102476
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_de401f1921ac4a2381566decd5d31f30 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_de401f1921ac4a2381566decd5d31f30",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.875,
+       "known_items_lost": 0,
+       "loss_after": 0.3075174627411805,
+       "loss_before": 0.4022055953762458,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.22722622428233002,
+      "loss_after": 0.12683101057612028
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d9e1ef5a471e43518894b57625c2f830 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_d9e1ef5a471e43518894b57625c2f830",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.12574202416430647,
+       "loss_before": 0.2220663135895339,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.145878071178803,
+      "loss_after": 0.07356262430516998
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dd8b236c30a5413790d5fb06ee793a87 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dd8b236c30a5413790d5fb06ee793a87",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.21587683379965586,
+       "loss_before": 0.2711603853693116,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.11546668393994902,
+      "loss_after": 0.08499128630995405
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_033e388c5ced4355bdc476077155a14c PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_033e388c5ced4355bdc476077155a14c",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8333333333333334,
+       "anchors": 39,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.6117845855969234,
+       "loss_before": 1.6761001722379643,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.8,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.7098476228322932,
+      "loss_after": 0.21506412860962282
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.125,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_2b156c91931a4895a582290836e38bf6 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_2b156c91931a4895a582290836e38bf6",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9285714285714286,
+       "anchors": 43,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.18384979496261064,
+       "loss_before": 0.46108815701522465,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 0.8571428571428571,
+         "before": 0.7142857142857143
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5714285714285714
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3357083663896527,
+      "loss_after": 0.1346364025968418
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.25,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dcd239f41a274b2ca51498bec51bf64d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dcd239f41a274b2ca51498bec51bf64d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9411764705882353,
+       "anchors": 47,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.19357798221927514,
+       "loss_before": 0.2886340346688858,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.8888888888888888
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5294117647058824
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.20148143233007312,
+      "loss_after": 0.10619718452277417
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_ee3609535dff4091b8b83f378a536c39 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_ee3609535dff4091b8b83f378a536c39",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9545454545454546,
+       "anchors": 51,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.13976683564589643,
+       "loss_before": 0.17798108405502813,
+       "n": 22,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.75,
+         "before": 0.75
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5909090909090909
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.11052934876234079,
+      "loss_after": 0.07796873161954629
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_ee3609535dff4091b8b83f378a536c39",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Katzen und Regeln?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Vögel und Zeit?",
+       "both"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 72 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 120 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 24 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 24 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 60 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_dd8b236c30a5413790d5fb06ee793a87",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_033e388c5ced4355bdc476077155a14c",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_2b156c91931a4895a582290836e38bf6",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_dcd239f41a274b2ca51498bec51bf64d",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p2-3",
+     "handover_reply": "Regel rsup_a46b92e12193469f96477caaadffff62 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_a46b92e12193469f96477caaadffff62",
+     "head": "upd_ee3609535dff4091b8b83f378a536c39",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "adaptive+now+words+teach": {
+   "policy": "adaptive+now+words+teach",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_e3f47b48ad5340afa3718fedce98ff8d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e3f47b48ad5340afa3718fedce98ff8d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 0.375,
+       "detail": 0.8125,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 0.75,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Schönen Nacht, David! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Hallo Clara, was machst du heute am Nacht?",
+        "detail"
+       ],
+       [
+        "Hallo Clara, was machst du heute am Abend?",
+        "gist"
+       ],
+       [
+        "Schönen Tag, Ben! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Schönen Nacht, Hugo! Alles gut bei dir?",
+        "detail"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "gist"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0792260813942616
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_6ce863cd4f6c4005a2825cf5802d379e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_6ce863cd4f6c4005a2825cf5802d379e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.625
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "known_items_lost": 0,
+       "loss_after": 1.0398516639253872,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.33217411476949227
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_8128a9bf463d4c358260c61c7b65fb07 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_8128a9bf463d4c358260c61c7b65fb07",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.2913631214022211,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.16889976725102476
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_adc81dee8bb142ef8d30c3f1edaa8c4a PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_adc81dee8bb142ef8d30c3f1edaa8c4a",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.28209288794640563,
+       "loss_before": 0.4950189445486646,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.2940741141497342,
+      "loss_after": 0.1358486180829018
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3593b588e8b04734961ed89820cd8415 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_3593b588e8b04734961ed89820cd8415",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8333333333333334,
+       "anchors": 39,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.5798480627187798,
+       "loss_before": 1.4944912794079002,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.8,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.6563926758458024,
+      "loss_after": 0.21716675863338927
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.125,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bb21556b9f0c44d4893ef43ddbc2a31d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_bb21556b9f0c44d4893ef43ddbc2a31d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "anchors": 43,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.18460718034238616,
+       "loss_before": 0.451666258204557,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.7142857142857143
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5714285714285714
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.32927697469537,
+      "loss_after": 0.13628053630225853
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.25,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_46ad2664a7f44b778f30f761df12caf9 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_46ad2664a7f44b778f30f761df12caf9",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9411764705882353,
+       "anchors": 47,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "known_items_lost": 0,
+       "loss_after": 0.19282103639600234,
+       "loss_before": 0.28418004964668603,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.8888888888888888
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5294117647058824
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.2004711115640569,
+      "loss_after": 0.1078313615081626
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_46ad2664a7f44b778f30f761df12caf9",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.925,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.625,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9062,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Katzen und Regeln?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Städte und Zeit?",
+       "both"
+      ],
+      [
+       "Worum geht es im Kern: Vögel und Zeit?",
+       "both"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 72 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 120 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 24 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 24 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 60 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_adc81dee8bb142ef8d30c3f1edaa8c4a",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_3593b588e8b04734961ed89820cd8415",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_bb21556b9f0c44d4893ef43ddbc2a31d",
+     "observed": 8,
+     "agree_in_a_row": 3,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_46ad2664a7f44b778f30f761df12caf9",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p2-3",
+     "handover_reply": "Regel rsup_b08d9ac008904a9d85b2677dfb735193 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_b08d9ac008904a9d85b2677dfb735193",
+     "head": "upd_46ad2664a7f44b778f30f761df12caf9",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+now": {
+   "policy": "fixed+now",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d14119fcfdd34977a1f5cd83560447b6 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d14119fcfdd34977a1f5cd83560447b6",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.625,
+       "gist": 0.75,
+       "both": 0.5
+      },
+      "half_items": 0.625,
+      "unchanged": 0.625,
+      "wrong": [
+       [
+        "Guten Morgen, Jonas, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Schönen Tag, Ben! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Schönen Nacht, Hugo! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.0998916377601482
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_e3a81c053fb347289edac1a8666ddabe EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e3a81c053fb347289edac1a8666ddabe",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.6875,
+       "gist": 0.875,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "loss_after": 1.3256524049596505,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.1851209058010954
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "detail"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bahn, was für Stadt?",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_ee91468f55f84ad5b66ea81181c450de PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_ee91468f55f84ad5b66ea81181c450de",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 1.287965381153445,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.2215942139481406
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_28057421acb346f098b70fd4973f5d20 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_28057421acb346f098b70fd4973f5d20",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "loss_after": 1.1523120526746733,
+       "loss_before": 1.2584807318952091,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.5,
+         "before": 0.5
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.2308158434349077,
+      "loss_after": 1.1016392247666287
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_982df48444b4428fb060773a4c3f5e01 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_982df48444b4428fb060773a4c3f5e01",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.875,
+       "loss_after": 1.1045469036502027,
+       "loss_before": 1.1868097486683786,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.1186733295469786,
+      "loss_after": 1.013185133570127
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_47512bf0238e47379e40034c301bf49d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_47512bf0238e47379e40034c301bf49d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "loss_after": 1.0730302304003507,
+       "loss_before": 1.1443133018299134,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.0342317325090862,
+      "loss_after": 0.9474529891747162
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_9c5c755fdce94835896897f4a8afafc7 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_9c5c755fdce94835896897f4a8afafc7",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.6,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.25,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.25,
+      "unchanged": 0.6875,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "both"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "both"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "both"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.45454545454545453,
+       "loss_after": 1.150370058223048,
+       "loss_before": 1.2839850109437163,
+       "n": 11,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.45454545454545453
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.0165384754691817,
+      "loss_after": 0.8976976794046034
+     },
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 180?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 180 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 120 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_2f1e5d9c34a14952a3c797ab2ed58a99 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_2f1e5d9c34a14952a3c797ab2ed58a99",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8333333333333334,
+       "loss_after": 1.0621864289481853,
+       "loss_before": 1.2612026737157165,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.0649058562922826,
+      "loss_after": 0.9297169579391162
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_6e71399c191c4584910261f22f7e3761 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_6e71399c191c4584910261f22f7e3761",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6428571428571429,
+       "loss_after": 1.0333283900069945,
+       "loss_before": 1.0952010508623704,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.5,
+         "before": 0.5
+        },
+        "2": {
+         "after": 0.3333333333333333,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.9557055235452298,
+      "loss_after": 0.8944068145457504
+     },
+     "active_acc_after": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7f8934ae328445bdab34d6b12b8bf991 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_7f8934ae328445bdab34d6b12b8bf991",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5938,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Tee ab.",
+        "simple"
+       ],
+       [
+        "Wäge Auto gegen Winter ab.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5555555555555556,
+       "loss_after": 1.0286651919987764,
+       "loss_before": 1.0944921075112743,
+       "n": 18,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 0.5,
+         "before": 0.5
+        },
+        "2": {
+         "after": 0.25,
+         "before": 0.75
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.25
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.9666633663038663,
+      "loss_after": 0.9001983160351735
+     },
+     "active_acc_after": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 160 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Bahn?",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_2f1e5d9c34a14952a3c797ab2ed58a99",
+    "expected_parent_acc": 0.7,
+    "after_rollback_acc": 0.7,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.7,
+     "half_items": 1.0,
+     "unchanged": 0.625
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.7,
+     "half_items": 0.0,
+     "unchanged": 0.875
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.575,
+     "half_items": 0.375,
+     "unchanged": 0.625
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/z6i-learn-new-hints/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6i": {
+  "I1_head_alone_half_ge_80pct": true,
+  "I2_retention_ge_90pct": true,
+  "I3_false_promotions_le_control": true,
+  "I4_rollback_restores": true,
+  "I5_handover_and_runtime_half_ge_90pct": true,
+  "I6_safety_net_after_rollback_ge_90pct": true,
+  "I7_control_head_half_lt_50pct": false,
+  "I8_runtime_unchanged_not_worse_5pt": true
+ },
+ "verdict_z6i": "Z6I_LEARN_FAIL"
+}

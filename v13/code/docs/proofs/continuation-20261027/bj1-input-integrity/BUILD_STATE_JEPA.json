@@ -1,0 +1,44 @@
+{
+  "schema": "V13_BJ1_JEPA_INPUT_INTEGRITY_20261027",
+  "owner": "GPT-6 independent review",
+  "parent_pr": 701,
+  "review_pr": 703,
+  "base_head": "1c9e8275caaca8bf58010ad3544cb2d3321352a5",
+  "prereg": "07badf0f0558b9da14af61a028949792abed7901",
+  "original_body_jepa_blob": "a30cc0f06d7f103191e00b39b2a76bcf13cf9e2d",
+  "patched_body_jepa_blob": "b39c31d7d1f82f162e40add805b0c9efb102a08e",
+  "patch_commit": "4905199a97d44cc167705682e5f145fd5c134ed5",
+  "original_red_run": 40495005504,
+  "original_red_zip_sha256": "cfc08c5f0a9d299c958f28ceb54a6df7ba046fe6fef750f2f3eab1ef055bdbef",
+  "original_red": "4 test methods; 12 FAIL/2 ERROR, compile0 privacy CLEAN",
+  "focused_green_run": 40495109616,
+  "focused_green_zip_sha256": "907604199e92642dfc453f127d9530e116777c86f6b57cf862a089909577ac32",
+  "focused_green": "4/4 PASS; compile0; privacy CLEAN",
+  "inherited_green_run": 40495336100,
+  "inherited_green_head": "f6b62513b04305a992082a39bcf7e39961084571",
+  "inherited_green_zip_sha256": "9844afffa521862fa674bc5e53193e812baf84b5eab3574f1f8466a48a07b7b4",
+  "inherited_green": "13/13 PASS (9 original + 4 new); compile0; privacy CLEAN",
+  "guards": [
+    "Nonfinite/misaligned/negative/all-zero eligibility fails closed",
+    "Shuffled control requires exact derangement of target rows",
+    "Empty context/target and zero-length padded latent fails closed",
+    "Subspace rank/weight/singular mass finite and valid"
+  ],
+  "source_scope": "body_jepa.py plus new tests, workflows and scoped evidence only; original B1 JEPA measurements untouched",
+  "private_backup": "/V13-Checkpoints/2026-10-27/BJ1-Input-Integrity/",
+  "private_backup_original_bytes_verified": true,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Claude PR #701 owner to review guard patch; separate preregistered B1 JEPA/Q4/Redmi utility and diverse near-miss cohorts remain required.",
+  "limitations": [
+    "Tiny torch/PEFT unit tests only, no B1 native rerun",
+    "No quantized/mobile execution",
+    "Original BJ1_NO_SIGNAL and BP2A_PASS remain scoped to prior fp32 master experiments"
+  ]
+}

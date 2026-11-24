@@ -1,0 +1,26 @@
+{
+  "concurrency_limit": "Parent binds/tests final source after independent peer edits; focused tests do not certify subsequent peer changes.",
+  "files": {
+    "v13/code/scripts/r4_rule_question_only.py": "24b851c4ae3c1edab43b149af12583117937d15ca67a3c0be6d41faed1fecae5",
+    "v13/code/scripts/r4_rule_r3.py": "79fff11082c1e4a1fb82948cce3eba95b929442835cd89e5067d0f1cb8ad13df",
+    "v13/code/scripts/r4_tool_choice_head.py": "be6e3a9c98c6adb0c8c0105ff88df79ff7578636e09b5a82d7ba3daf832f06ea",
+    "v13/code/tests/test_listarith.py": "b2db34f897d8f5c09f38264610f3a7739eac1edebd4010390da12a40c5003360",
+    "v13/code/tests/test_toolpath_integration_20261016.py": "0c3f9d3b4460b171c464a60b2ffb1ae601148c1e2f68699957308180e353617f",
+    "v13/code/v13/agi/listarith.py": "e3e8ad02a59f2327fe5fb924b3070c1f90b2a0b2fa1c0f79c401c453399b7282",
+    "v13/code/v13/agi/tools.py": "cddb62d817e7369d78d4ff770eaecb48e41d0d5f642593b0d8e3a94a18202f66",
+    "v13/code/v13/broker.py": "747185bf79370c28b805711a45f69a2f6d3f233a791c54a6dd57ba7f0a56403c",
+    "v13/code/v13/toolstep.py": "e49a904b908eb9818100563602f74ade1ff308015c0681c25f62c6777461ae39",
+    "v13/code/v13/transaction.py": "33b4808084593877ea008b9bbe45df6783960b70020bcaa3ee3a94050777e234"
+  },
+  "native_runs": 0,
+  "ownership": "Coordinator-only integration branch; owner branches untouched; no commit/push by child agent",
+  "quality_claim": false,
+  "redmi_claim": false,
+  "schema": "V13_TOOLPATH_INTEGRATION_SOFTWARE_V1",
+  "sources": {
+    "G_approval_fix": "c13a281e5a74b0f889cb087d5f580259c2401136",
+    "H_text_contract": "b65e730447c4589ca3ae755d50bafa441da7d1f7",
+    "K": "4ed1539fb9fd6ea961fc6145bd98745e5f63adac",
+    "M": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe"
+  }
+}

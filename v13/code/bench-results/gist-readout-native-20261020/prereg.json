@@ -1,0 +1,43 @@
+{
+ "schema": "GIST_READOUT_NATIVE_PREREG_V1",
+ "body": "gist Qwen3.5-0.8B Q4_0 rev 8fea620810c4afa23dd6443f999a48574c1611a3",
+ "runner": "llama.cpp b10964 --embedding --pooling none",
+ "tap": "qwen35.result_norm.final.v1",
+ "docs": 40,
+ "facts_per_doc": 8,
+ "queries_per_doc": 4,
+ "size": 8,
+ "slots": 12,
+ "data_seed": 20261020,
+ "random_seeds": [
+  13,
+  21,
+  34,
+  55,
+  89
+ ],
+ "bootstrap": 2000,
+ "hybrid_weight": 1.0,
+ "arms": [
+  "fixed",
+  "text",
+  "native",
+  "hybrid",
+  "random"
+ ],
+ "primary": "recall@1 raw groups, centered cosine, correct = best group overlaps answer span",
+ "H1": "hybrid-fixed >= .05 and paired bootstrap 95% CI low > 0",
+ "H2": "hybrid-random >= .05 and CI low > 0",
+ "verdict": "SUPPORTED if H1 and H2; PARTIAL if one; FAIL otherwise",
+ "default_rule": "hybrid if SUPPORTED; else best of text/native/hybrid with CI vs fixed > 0; else fixed",
+ "secondary": [
+  "recall@1 fitted 12 slots",
+  "uncentered recall@1",
+  "answer split rate",
+  "group counts",
+  "native shift AUC at sentence ends"
+ ],
+ "script_sha256": "7c72a21906380715cd51443f7fec73ffe9e0bd81a05bfff09d0ad817df6af482",
+ "module_sha256": "030ba6d7b3c125f702e05dce2c9bbb5d9d1144993269633be07a83f530170ae9",
+ "facts_sha256": "41c107ee0c1a2f8bb23755e95568c45bc750dd1e354c57e7437a730abd46fc57"
+}

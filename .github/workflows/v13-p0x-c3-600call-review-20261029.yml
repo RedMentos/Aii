@@ -1,0 +1,177 @@
+name: V13 P0X pinned 600-call C3 exact/single/foreign Linux-native source ablation
+on:
+  push:
+    branches: [codex/v13-p0x-c3-600call-review-20261029]
+    paths: ['.github/workflows/v13-p0x-c3-600call-review-20261029.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-p0x-c3-600call-native
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Exact source, frozen 150 baseline, 600 serial native calls, closed evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p0x-c3-600call"
+          work="$RUNNER_TEMP/v13-p0x-c3-600work"
+          home="$RUNNER_TEMP/v13-p0x-c3-600home"
+          mkdir -p "$e/parent-baseline" "$e/parent-source" "$e/parent-mock" "$work" "$home"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_red=0
+          check() {
+            got="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$got" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$got" = "$1" ]
+          }
+          check 67e8fc6196e7ec83befcb45f3b1ad85e42d08774 v13/code/docs/proofs/continuation-20261029/P0X_C3_600CALL_NATIVE_REVIEW_BUILD_STATE.json || source_red=1
+          check 27074170ff9e6474e3e181afbd648005ca50a22c v13/code/docs/proofs/continuation-20261029/P0X_C3_SOURCE_ARMS_PREREG.md || source_red=1
+          check e159e7636362b6cee82dc5cd9d01d214f54d1850 v13/code/scripts/p0x_c3_source_arms.py || source_red=1
+          check 1058fd193224cb7fd361c5098127a0a7dc121435 v13/code/scripts/p0x_c3_600_native_executor.py || source_red=1
+          check be82818de99c3abf608b0bdabcc0c639f69754f9 v13/code/scripts/p0x_c3_600_native_verifier.py || source_red=1
+          check 7621afac707eaa5d8a5044de3752538daf6a714b v13/code/tests/test_p0x_c3_600_native_mock.py || source_red=1
+          check 7ec4e877ad5ea3eed1c60102dac3baa15391dd2b v13/code/scripts/p0x_independent_source_holdout.py || source_red=1
+          check a51cb76937febb0016d5a4bd71ccf08b164bead5 v13/code/scripts/p0x_c3_150_baseline.py || source_red=1
+          check a6fa2b0cd10dbb0c4c74466636737d57e0e9d353 v13/code/scripts/p0x_c3_150_native_executor.py || source_red=1
+          check e3b1c7818f06896a7ad8b0cee406b59a091cd799 v13/code/scripts/p0x_c3_150_native_verifier.py || source_red=1
+          check e85b0d636c75d6c6cf0cdd7f45a18609c2c4b04b v13/code/docs/proofs/continuation-20261029/P0X_150_SOURCE_HOLDOUT_REGISTRATION.json || source_red=1
+          check 033ea9c8c3e6f9ff631b84136afa1f74dd7e627c v13/code/scripts/hb1a_two_body_native_pilot.py || source_red=1
+          check 9791ad1a7b10692d4e75810856bd93fc4dcb44ea v13/code/scripts/hb1b_c3_format_native_executor.py || source_red=1
+          check efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py || source_red=1
+          check 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json || source_red=1
+          check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md || source_red=1
+          git merge-base --is-ancestor 90d904c9c8fe144cad23c516a18006a3c78a5b18 HEAD || source_red=1
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          gh run download 40840179920 -n v13-p0x-c3-150native-40840179920-577366b0059d8367f5c5446afc62b0d524d35768 -D "$e/parent-baseline" > "$e/PARENT_BASELINE_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_BASELINE_DOWNLOAD_EXIT.txt"
+          gh run download 40840507009 -n v13-p0x-source-arms-40840507009-a86405e9ee897db09cb046f269ca59529ccbd604 -D "$e/parent-source" > "$e/PARENT_SOURCE_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_SOURCE_DOWNLOAD_EXIT.txt"
+          gh run download 40841065036 -n v13-p0x-c3-600native-source-40841065036-90d904c9c8fe144cad23c516a18006a3c78a5b18 -D "$e/parent-mock" > "$e/PARENT_MOCK_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_MOCK_DOWNLOAD_EXIT.txt"
+          python3 - "$e/parent-baseline" "$e/parent-source" "$e/parent-mock" > "$e/PARENT_VERIFY_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          roots=list(map(Path,sys.argv[1:]))
+          specs=[
+              ('577366b0059d8367f5c5446afc62b0d524d35768',None,15),
+              ('a86405e9ee897db09cb046f269ca59529ccbd604','P0X_SOURCE_ARMS_SOFTWARE_ONLY_NO_NATIVE_NO_GATE',12),
+              ('90d904c9c8fe144cad23c516a18006a3c78a5b18','P0X_600_NATIVE_EXECUTOR_SOFTWARE_ONLY_NO_NATIVE_NO_GATE',8)]
+          for root,(head,status,count) in zip(roots,specs):
+              assert (root/'HEAD.txt').read_text().strip()==head,'PARENT_HEAD_RED'
+              if status:assert (root/'STATUS.txt').read_text().strip()==status,'PARENT_STATUS_RED'
+              lines=(root/'SHA256SUMS.txt').read_text().splitlines()
+              for line in lines:
+                  digest,rel=line.split('  ',1)
+                  path=(root/rel.removeprefix('./')).resolve()
+                  assert path.is_relative_to(root.resolve()) and path.is_file(),'PARENT_PATH_RED'
+                  assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,'PARENT_HASH_RED:'+rel
+              assert f'Ran {count} tests' in (root/'FOCUSED_RAW.log').read_text(),'PARENT_TEST_COUNT_RED'
+              assert 'OK' in (root/'FOCUSED_RAW.log').read_text(),'PARENT_TEST_RED'
+              assert 'CLEAN' in (root/'PRIVACY_RAW.log').read_text(),'PARENT_PRIVACY_RED'
+          a=roots[0]/'evidence'
+          raw=(a/'RAW.json').read_bytes();score=(a/'SCORE.json').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='79be6584d465b0fc3ccd33294d882a41bb1990920f3098ed39203b7aef7d18a1'
+          assert hashlib.sha256(score).hexdigest()=='7c603158c6d821592d5777d46bb4723503f74c063c5c30fcc0f72fe2720b836e'
+          r=json.loads((a/'RECEIPT.json').read_text());s=json.loads(score)
+          assert r['status']=='RECORDED_LINUX_NATIVE_P0X_C3_ONLY_BASELINE_NO_GATE'
+          assert r['recorded_calls']==150 and r['process_reaped'] is True
+          assert r['canonical_gate_pass'] is False and r['redmi_measured'] is False
+          assert s['per_arm']['c3_only']['exact']==50
+          assert s['oracle_headroom']==100 and s['headroom_sufficient'] is True
+          print('P0X_150_BASELINE_HEADROOM_100_AND_600_SOURCE_MOCK_PARENT_SHA256_OK')
+          PY
+          echo "$?" > "$e/PARENT_VERIFY_EXIT.txt"
+          python3 - "$work" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import json,platform,shutil,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          info={'platform':platform.platform(),'machine':platform.machine(),
+                'disk_free_bytes':shutil.disk_usage(root).free}
+          for line in Path('/proc/meminfo').read_text().splitlines():
+              if line.startswith(('MemAvailable:','MemTotal:')):
+                  key,value,*_=line.split()
+                  info[key.rstrip(':')]=int(value)*1024
+          c=Path('/sys/fs/cgroup/memory.max')
+          info['cgroup_memory_max']=c.read_text().strip() if c.exists() else 'UNAVAILABLE'
+          print(json.dumps(info,sort_keys=True))
+          assert platform.system()=='Linux' and platform.machine()=='x86_64'
+          assert info['disk_free_bytes']>=3_000_000_000
+          assert info.get('MemAvailable',0)>=2_500_000_000
+          assert info['cgroup_memory_max'] in ('max','UNAVAILABLE') or int(info['cgroup_memory_max'])>=2_000_000_000
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-p0x-c3-600native-venv"
+          py="$RUNNER_TEMP/v13-p0x-c3-600native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/p0x_c3_source_arms.py v13/code/scripts/p0x_c3_600_native_executor.py v13/code/scripts/p0x_c3_600_native_verifier.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/PARENT_VERIFY_EXIT.txt")" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 240s "$py" -m unittest -v tests.test_p0x_c3_source_arms tests.test_p0x_c3_600_native_mock) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQUISITE_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 25m "$py" -m scripts.p0x_c3_600_native_executor --home "$home" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 48m "$py" -m scripts.p0x_c3_600_native_executor --home "$home" --out "$work/evidence" --baseline-evidence-dir "$e/parent-baseline/evidence") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -d "$work/evidence" ]; then cp -a "$work/evidence" "$e/evidence"; fi
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && "$py" -m scripts.p0x_c3_600_native_verifier --evidence-dir "$e/evidence" --baseline-evidence-dir "$e/parent-baseline/evidence") > "$e/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_RED > "$e/VERIFY_RAW.log"; echo SKIPPED_RED > "$e/VERIFY_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 90d904c9c8fe144cad23c516a18006a3c78a5b18 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 90d904c9c8fe144cad23c516a18006a3c78a5b18 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve all original raw and RED attempts, exclude installed model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-c3-600call-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-c3-600call/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source, parent, native, privacy without gate promotion
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-c3-600call"
+          for n in SOURCE PARENT_BASELINE_DOWNLOAD PARENT_SOURCE_DOWNLOAD PARENT_MOCK_DOWNLOAD PARENT_VERIFY RESOURCE DEPS COMPILE FOCUSED INSTALL NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no STEP2 or other gate promotion"
+              tail -50 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo P0X_600_C3_NATIVE_SOURCE_ABLATIONS_RECORDED_NO_STEP2_B3_JEPA_REDMI_GATE

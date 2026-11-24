@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-10-03T00:09:15.411119+00:00",
+  "no_credentials_used": true,
+  "no_license_acceptance_performed": true,
+  "requests": {
+    "model_api": {
+      "url": "https://huggingface.co/api/models/facebook/MobileMoE-S-QAT",
+      "http_status": 200,
+      "body_sha256": "321b6b1180782e89f73b1c58af9e106853db8e50dd54fa516fff731546c927aa",
+      "public_metadata": {
+        "id": "facebook/MobileMoE-S-QAT",
+        "sha": "afda132cad380ac47da5ef055f186884d1c12f65",
+        "gated": "auto",
+        "private": false,
+        "disabled": false,
+        "library_name": "transformers",
+        "pipeline_tag": "text-generation",
+        "cardData": {
+          "license": "fair-noncommercial-research-license",
+          "extra_gated_fields": {
+            "First Name": "text",
+            "Last Name": "text",
+            "Date of birth": "date_picker",
+            "Country": "country",
+            "Affiliation": "text",
+            "Job title": {
+              "type": "select",
+              "options": [
+                "Student",
+                "Research Graduate",
+                "AI researcher",
+                "AI developer/engineer",
+                "Reporter",
+                "Other"
+              ]
+            },
+            "geo": "ip_location",
+            "By clicking Submit below I accept the terms of the license and acknowledge that the information I provide will be collected stored processed and shared in accordance with the Meta Privacy Policy": "checkbox"
+          },
+          "extra_gated_description": "The information you provide will be collected, stored, processed and shared in accordance with the [Meta Privacy Policy](https://www.facebook.com/privacy/policy/).",
+          "extra_gated_button_content": "Submit",
+          "language": [
+            "en"
+          ],
+          "library_name": "transformers",
+          "tags": [
+            "facebook",
+            "meta",
+            "pytorch",
+            "mixture-of-experts",
+            "MoE",
+            "on-device",
+            "quantization",
+            "int4"
+          ]
+        },
+        "siblings": [
+          {
+            "rfilename": ".gitattributes"
+          },
+          {
+            "rfilename": "LICENSE"
+          },
+          {
+            "rfilename": "README.md"
+          },
+          {
+            "rfilename": "config.json"
+          },
+          {
+            "rfilename": "configuration_mobilemoe.py"
+          },
+          {
+            "rfilename": "generation_config.json"
+          },
+          {
+            "rfilename": "mobilemoe_pareto.png"
+          },
+          {
+            "rfilename": "mobilemoe_recipe.png"
+          },
+          {
+            "rfilename": "model.safetensors"
+          },
+          {
+            "rfilename": "modeling_mobilemoe.py"
+          },
+          {
+            "rfilename": "special_tokens_map.json"
+          },
+          {
+            "rfilename": "tokenizer.json"
+          },
+          {
+            "rfilename": "tokenizer_config.json"
+          }
+        ]
+      }
+    },
+    "config": {
+      "url": "https://huggingface.co/facebook/MobileMoE-S-QAT/resolve/afda132cad380ac47da5ef055f186884d1c12f65/config.json",
+      "http_status": 401,
+      "body": "Access to model facebook/MobileMoE-S-QAT is restricted. You must have access to it and be authenticated to access it. Please log in.",
+      "body_sha256": "0f081fcecfa2df74cfa92445ad9852ed1ce165609a07ea3f11dc891d2619c9d8"
+    },
+    "pinned_training_readme": {
+      "url": "https://raw.githubusercontent.com/ggml-org/llama.cpp/b10964/examples/training/README.md",
+      "http_status": 200,
+      "body_sha256": "e654c9e704c8df438e4bde77e37c5303f741b2b7c5db93bda936bb218b8e9578",
+      "body": "# llama.cpp/examples/training\n\nThis directory contains examples related to language model training using llama.cpp/GGML.\nSo far finetuning is technically functional (for FP32 models and limited hardware setups) but the code is very much WIP.\nFinetuning of Stories 260K and LLaMA 3.2 1b seems to work with 24 GB of memory.\n**For CPU training, compile llama.cpp without any additional backends such as CUDA.**\n**For CUDA training, use the maximum number of GPU layers.**\n\nFlash attention is disabled during training because `FLASH_ATTN_EXT` has no backward pass.\n\nProof of concept:\n\n``` sh\nexport model_name=llama_3.2-1b && export quantization=f32\n./build/bin/llama-finetune --file wikitext-2-raw/wiki.test.raw -ngl 999 --model models/${model_name}-${quantization}.gguf -c 512 -b 512 -ub 512\n./build/bin/llama-perplexity --file wikitext-2-raw/wiki.test.raw -ngl 999 --model finetuned-model.gguf\n```\n\nThe perplexity value of the finetuned model should be lower after training on the test set for 2 epochs.\n"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "GPT V13 scheduled continuation",
+  "package_id": "B1-B2-ANCHOR-RETENTION-20261110-H08",
+  "branch": "codex/v13-body-anchor-retention-20261110-hour08",
+  "base_sha": "9c38cc3d54d3345c5a4375f651467d00b7db683c",
+  "depends_on": [
+    "PR #1661 (CI success 42766590254)"
+  ],
+  "files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_anchor_retention.py",
+    ".github/workflows/v13-body-anchor-retention.yml"
+  ],
+  "status": "DRAFT_CI_RUNNING",
+  "changes": [
+    "Measure post-update KL(master||adapted) on existing frozen locality anchor sequences",
+    "Report mean/max KL and anchor count in Body-JEPA receipt",
+    "Synthetic identical/shifted/nonfinite regression tests"
+  ],
+  "evidence": {
+    "remote_head": "637ef35cee5a9629cc666847897fb2e7554def47",
+    "workflow_run": "https://github.com/RedMentos/Aii/actions/runs/42773609905",
+    "local_probe": "3 synthetic CPU cases reproduced with torch 2.10.0; not exact checkout suite"
+  },
+  "negative_gates": [
+    "Body-JEPA remains UNAVAILABLE pending real pinned model and retention evidence",
+    "No Age/STEP2/B3/JEPA active authority promotion",
+    "No Android/Redmi native evidence"
+  ],
+  "next_command": "Inspect Actions 42773609905 and fix any failed test on a new review branch; run pinned B1/B2 adapter retention trial with pre-registered probes; independently review privacy and memory overhead before integration",
+  "blockers": [
+    "Actual pinned body weights and Redmi native device not executed here",
+    "SourceHandoff frozen runtime remains binding"
+  ]
+}

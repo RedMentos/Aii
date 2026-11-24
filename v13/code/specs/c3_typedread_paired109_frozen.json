@@ -1,0 +1,166 @@
+{
+  "schema": "v13.c3.typedread.paired109.v1",
+  "seed": 109,
+  "rows": [
+    {
+      "id": "C109-01",
+      "text": "Inventar: Birnbaum 4, Glimmer 13, Ranke 8. Wie hoch ist die Summe?",
+      "expected_values": [
+        {
+          "name": "Birnbaum",
+          "number": 4
+        },
+        {
+          "name": "Glimmer",
+          "number": 13
+        },
+        {
+          "name": "Ranke",
+          "number": 8
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 25
+    },
+    {
+      "id": "C109-02",
+      "text": "Liste: Wolfram 6, Fichte 14, Muschel 3. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "expected_values": [
+        {
+          "name": "Wolfram",
+          "number": 6
+        },
+        {
+          "name": "Fichte",
+          "number": 14
+        },
+        {
+          "name": "Muschel",
+          "number": 3
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 11
+    },
+    {
+      "id": "C109-03",
+      "text": "Vorrat: Wolke 5, Harfe 12, Insel 9. Wie hoch ist die Summe?",
+      "expected_values": [
+        {
+          "name": "Wolke",
+          "number": 5
+        },
+        {
+          "name": "Harfe",
+          "number": 12
+        },
+        {
+          "name": "Insel",
+          "number": 9
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 26
+    },
+    {
+      "id": "C109-04",
+      "text": "Messung: Bernstein 17, Schleier 4, Kranich 11. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "expected_values": [
+        {
+          "name": "Bernstein",
+          "number": 17
+        },
+        {
+          "name": "Schleier",
+          "number": 4
+        },
+        {
+          "name": "Kranich",
+          "number": 11
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 13
+    },
+    {
+      "id": "C109-05",
+      "text": "Kisten: Lotus 2, Schiefer 15, Zimt 7. Was ist die Summe?",
+      "expected_values": [
+        {
+          "name": "Lotus",
+          "number": 2
+        },
+        {
+          "name": "Schiefer",
+          "number": 15
+        },
+        {
+          "name": "Zimt",
+          "number": 7
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 24
+    },
+    {
+      "id": "C109-06",
+      "text": "Werte: Ufer 21, Kiesel 9, Pflaume 16. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "expected_values": [
+        {
+          "name": "Ufer",
+          "number": 21
+        },
+        {
+          "name": "Kiesel",
+          "number": 9
+        },
+        {
+          "name": "Pflaume",
+          "number": 16
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 12
+    },
+    {
+      "id": "C109-07",
+      "text": "Bestand: Hummel 8, Lavendel 3, Brise 14. Wie hoch ist die Summe?",
+      "expected_values": [
+        {
+          "name": "Hummel",
+          "number": 8
+        },
+        {
+          "name": "Lavendel",
+          "number": 3
+        },
+        {
+          "name": "Brise",
+          "number": 14
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 25
+    },
+    {
+      "id": "C109-08",
+      "text": "Zahlen: Fasan 10, Nuss 4, Tanne 19. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "expected_values": [
+        {
+          "name": "Fasan",
+          "number": 10
+        },
+        {
+          "name": "Nuss",
+          "number": 4
+        },
+        {
+          "name": "Tanne",
+          "number": 19
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 15
+    }
+  ]
+}

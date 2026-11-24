@@ -1,0 +1,15 @@
+# Run62 — exact Run60 real-file baseline into Run61 B2/World-JEPA review chain (2026-10-28)
+
+Owner: GPT-6 scheduled continuation. Review-only branch from **Run61 #969** exact head `77490d2c1c1c6c3f58533437be3f52cb86fdbf70`. Run61 original PR-merge CI Actions `40762951939` completed SUCCESS; original artifact SHA256 `68a58de05830ea0734b0308e2fc825128f12d3b71f22eff9433ddebc8b3ce262`, 20/20 SHA256SUMS, CRC clean, 64 focused/2600 full OK (1 skipped), privacy CLEAN. This is **PR merge-ref** evidence at `142adb1c8cf7bb0ed4ebcc9d9d15f40edf19e77a`, not exact-head push evidence. No production merge.
+
+Independent Run60 #968 exact-head **push** Actions `40762607763` SUCCESS on `a94e27cbe0c100af2d88c994ea4f89bfd89bf433`; artifact SHA256 `ef76f76d65627776d906e141571e0cfafe595ec65f76173dee14727ed9957ca7`, CRC clean, 20/20 SHA256SUMS, 14 focused/2596 full OK (1 skipped), privacy CLEAN. Original Z12b and frozen WorldJEPA hashes unchanged. Run60 source blob `08063f3df630f558589dd297860dd19e0021dc90`, test blob `e2e45040631b7f013e802417f86d8cb630d1deb3`, original prereg blob `dac891563ef78b97b19f0dde7f98001657dc25c1`. No source overlap with Run61's B2 source guard or synthetic readout.
+
+## Preregistered integration, not new experiment
+
+Copy those **three exact Run60 blobs** into Run61 child with no content changes. Add one combined pinned Linux CI workflow that checks Run60 real isolated file-action baseline plus Run61 B2 race, synthetic World-JEPA action-swap, previous synthetic controls, full suite, compile, source/frozen hashes, privacy/diff, negative gates, and closed raw evidence. Trigger on **push to exact child branch** and PR to Run61 to distinguish exact head from synthetic merge-ref. No edits to frozen original `z12b_world_jepa.py`, `world_jepa.py`, Runtime/Store, original cohorts/seeds/models, or any existing Run60/61 source/test. No new thresholds or model selection.
+
+Run60 fixed three seeds 211/223/227, 240 training/60 heldout real file transitions per seed, heldout op×slot combinations. Observed heldout overall MSE: persistence `0.0532817190410003`, global full-action ridge `0.06248578875059215`, slot-local operation-conditioned ridge `0.016492981896166048`. Slot-local outperforms both on this fresh **supervised filesystem** study; not a JEPA, native Body, causal, Redmi or generalized utility result. Global comparator uses exact full-action one-hot, so a future preregistered *factorized global operation×slot* comparator is required before attributing improvement uniquely to locality.
+
+## Claims and gates
+
+Only mark Run62 integration GREEN after original **exact-head** Actions artifact HEAD equals new branch commit, all exit files zero, full/focused counts, 20/20 SHA256SUMS, CRC, privacy and source identity independently audited. Preserve original Run60/61 ZIPs and failed historical evidence. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; phone UNMEASURED; V13 incomplete. Next substantive work: separately preregister fair factorized global comparator with fixed new seeds and real file outcomes, no posthoc changes to Run60.

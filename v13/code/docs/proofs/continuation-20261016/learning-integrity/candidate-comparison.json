@@ -1,0 +1,382 @@
+{
+  "schema": "V13_LEARNING_INTEGRITY_CANDIDATE_COMPARISON_V1",
+  "scope": "Synthetic software integrity and unchanged numerical gates only; no native learning gain",
+  "partial": {
+    "verdict": "CONTINUAL_LEARNING_NOT_CONFIRMED",
+    "worlds": {},
+    "gates": {
+      "shift_gain_max_ratio": 0.9,
+      "in_world_max_ratio": 1.02
+    },
+    "integrity": {
+      "pass": false,
+      "errors": [
+        {
+          "code": "MISSING_CASES",
+          "location": "rows",
+          "detail": "17 planned cases absent"
+        },
+        {
+          "code": "ROW_COUNT_MISMATCH",
+          "location": "rows",
+          "detail": "Expected 21"
+        }
+      ],
+      "expected_rows": 21,
+      "observed_rows": 4,
+      "expected_by_arm": {
+        "calc_shift_exp": 4,
+        "note_shift_exp": 3,
+        "calc_shift_test": 4,
+        "calc_in_test": 4,
+        "note_shift_test": 3,
+        "note_in_test": 3
+      },
+      "observed_by_arm": {
+        "calc_shift_exp": 0,
+        "note_shift_exp": 0,
+        "calc_shift_test": 1,
+        "calc_in_test": 1,
+        "note_shift_test": 1,
+        "note_in_test": 1
+      },
+      "experience_rows": 7,
+      "test_rows": 14,
+      "missing_cases": [
+        [
+          "calc_shift_exp",
+          "double",
+          1001
+        ],
+        [
+          "calc_shift_exp",
+          "add_15",
+          1001
+        ],
+        [
+          "calc_shift_exp",
+          "quarter",
+          1001
+        ],
+        [
+          "calc_shift_exp",
+          "subtract_7",
+          1001
+        ],
+        [
+          "note_shift_exp",
+          "append_done",
+          "New training note."
+        ],
+        [
+          "note_shift_exp",
+          "prefix_urgent",
+          "New training note."
+        ],
+        [
+          "note_shift_exp",
+          "uppercase",
+          "New training note."
+        ],
+        [
+          "calc_shift_test",
+          "add_15",
+          1002
+        ],
+        [
+          "calc_shift_test",
+          "quarter",
+          1002
+        ],
+        [
+          "calc_shift_test",
+          "subtract_7",
+          1002
+        ],
+        [
+          "calc_in_test",
+          "add_15",
+          12
+        ],
+        [
+          "calc_in_test",
+          "quarter",
+          12
+        ],
+        [
+          "calc_in_test",
+          "subtract_7",
+          12
+        ],
+        [
+          "note_shift_test",
+          "prefix_urgent",
+          "New testing note."
+        ],
+        [
+          "note_shift_test",
+          "uppercase",
+          "New testing note."
+        ],
+        [
+          "note_in_test",
+          "prefix_urgent",
+          "Call grandma on Monday."
+        ],
+        [
+          "note_in_test",
+          "uppercase",
+          "Call grandma on Monday."
+        ]
+      ]
+    },
+    "analysis_ran": false,
+    "claim_scope": "Row integrity and original numerical analysis only; no native/device/provenance gate established",
+    "canonical_gate_pass": false,
+    "phone_measured": false
+  },
+  "complete_small": {
+    "verdict": "CONTINUAL_LEARNING_CONFIRMED",
+    "worlds": {
+      "calc_counter": {
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 4,
+          "adapted_actions": [
+            "double",
+            "add_15",
+            "quarter",
+            "subtract_7"
+          ]
+        },
+        "calc_shift_test": {
+          "double": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          },
+          "add_15": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          },
+          "quarter": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          },
+          "subtract_7": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "calc_in_test": {
+          "double": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          },
+          "add_15": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          },
+          "quarter": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          },
+          "subtract_7": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "shift_actions_improved": 4,
+        "pass": true
+      },
+      "note_edit": {
+        "learn": {
+          "pass": true,
+          "reason": null,
+          "experience_rows": 3,
+          "adapted_actions": [
+            "append_done",
+            "prefix_urgent",
+            "uppercase"
+          ]
+        },
+        "note_shift_test": {
+          "append_done": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          },
+          "prefix_urgent": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          },
+          "uppercase": {
+            "measured": 1.0,
+            "adapted": 0.5,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 0.5,
+            "adapted_to_best_control": 0.25,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "note_in_test": {
+          "append_done": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          },
+          "prefix_urgent": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          },
+          "uppercase": {
+            "measured": 1.0,
+            "adapted": 1.0,
+            "copy": 2.0,
+            "mean_delta": 2.0,
+            "n": 1,
+            "adapted_vs_measured": 1.0,
+            "adapted_to_best_control": 0.5,
+            "measured_to_best_control": 0.5
+          }
+        },
+        "shift_actions_improved": 3,
+        "pass": true
+      }
+    },
+    "gates": {
+      "shift_gain_max_ratio": 0.9,
+      "in_world_max_ratio": 1.02
+    },
+    "integrity": {
+      "pass": true,
+      "errors": [],
+      "expected_rows": 21,
+      "observed_rows": 21,
+      "expected_by_arm": {
+        "calc_shift_exp": 4,
+        "note_shift_exp": 3,
+        "calc_shift_test": 4,
+        "calc_in_test": 4,
+        "note_shift_test": 3,
+        "note_in_test": 3
+      },
+      "observed_by_arm": {
+        "calc_shift_exp": 4,
+        "note_shift_exp": 3,
+        "calc_shift_test": 4,
+        "calc_in_test": 4,
+        "note_shift_test": 3,
+        "note_in_test": 3
+      },
+      "experience_rows": 7,
+      "test_rows": 14,
+      "missing_cases": []
+    },
+    "analysis_ran": true,
+    "claim_scope": "Row integrity and original numerical analysis only; no native/device/provenance gate established",
+    "canonical_gate_pass": false,
+    "phone_measured": false
+  },
+  "actual_fixed_plan_synthetic_grid": {
+    "pass": true,
+    "errors": [],
+    "expected_rows": 610,
+    "observed_rows": 610,
+    "expected_by_arm": {
+      "calc_shift_exp": 160,
+      "note_shift_exp": 90,
+      "calc_shift_test": 120,
+      "calc_in_test": 120,
+      "note_shift_test": 60,
+      "note_in_test": 60
+    },
+    "observed_by_arm": {
+      "calc_shift_exp": 160,
+      "note_shift_exp": 90,
+      "calc_shift_test": 120,
+      "calc_in_test": 120,
+      "note_shift_test": 60,
+      "note_in_test": 60
+    },
+    "experience_rows": 250,
+    "test_rows": 360,
+    "missing_cases": []
+  },
+  "native_models_launched": false,
+  "native_learning_gain_proven": false,
+  "canonical_gate_pass": false,
+  "phone_measured": false
+}

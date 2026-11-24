@@ -1,0 +1,7 @@
+# Run11 semantic forget/encoder race — first code candidate RED (2026-10-28)
+
+Exact source `1989f93c486b0d872582be755794a06196c7e3d9`, Actions `40689678856`: **18 focused tests, 17 PASS / 1 FAIL**. Four original counterexamples are now GREEN (no cache resurrection, no stale result, no stale recall after forget). The remaining `test_live_source_corruption_after_encoder_still_fails_closed` failed because the new post-encoder `_verified_rows` silently removed a **still-active but corrupted** human source instead of raising a provenance error. This violates the preregistered distinction between revocation and live integrity failure. No full suite or privacy/compile stages ran on this RED.
+
+Original artifact `12817040519` ZIP SHA256 `a40c6e0c86f35662efb5da339138ae8f50adb7d5fb97f7311971ca1aec0f712f`, CRC clean. Private Library backup `/V13-Checkpoints/2026-10-28/Run11-Handoff/SEMANTIC_LIVE_CORRUPTION_RED_40689678856_shaA40C6E0C.zip` retained. Original test-only RED `40689406131` separately preserved.
+
+Correction: after encoding, classify dropped rows by **live source + active memory**. A completed forget is dropped; still-live unverified source raises `ValueError` and clears query-vector authority. The full-suite workflow also needs pinned isolated CPU torch because four existing test modules import it at collection time (same prerequisite observed independently in organ CI `40688965960`). Re-run source-pinned focused/full, compile/privacy/diff. No model/native or gate promotion.

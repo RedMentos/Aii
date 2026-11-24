@@ -1,0 +1,74 @@
+name: V13 P2X frozen disjoint receiver corpus source-only export
+on:
+  push:
+    branches: [codex/v13-p2x-disjoint-receiver-trainset-20261029]
+    paths: ['.github/workflows/v13-p2x-frozen-export-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  source-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Export exact frozen source-only training and validation cohort
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/p2x-source-export-evidence"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 v13/code/scripts/p2x_disjoint_receiver_trainset.py \
+            --out "$e/cohort" \
+            --fixture-sha256 cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a \
+            > "$e/GENERATOR_RAW.json" 2>&1
+          echo "$?" > "$e/GENERATOR_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 9be1c524d1ab813be97b80873b0ba223372f7fd0 \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9be1c524d1ab813be97b80873b0ba223372f7fd0 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original source-only export and negative gates
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-source-export-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/p2x-source-export-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Independent structural export admission (no model calls)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/p2x-source-export-evidence"
+          for s in GENERATOR PRIVACY DIFF; do test "$(cat "$e/$s"_EXIT.txt)" = 0; done
+          python3 - "$e/cohort" <<'PY'
+          import hashlib,json,pathlib,sys,collections
+          p=pathlib.Path(sys.argv[1])
+          m=json.loads((p/'manifest.json').read_text())
+          assert m['schema']=='v13.p2x.disjoint_receiver_trainset.v1.export.v1'
+          assert m['status']=='P2X_SOURCE_ONLY_NO_TRAINING'
+          assert m['fixture_sha256']=='cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a'
+          assert (m['train_examples'],m['validation_inputs'],m['validation_answers'])==(504,360,72)
+          assert m['step2_status']=='UTILITY_FAIL' and m['jepa_weight']==0
+          data={}
+          for name,digest in m['sha256'].items():
+              raw=(p/name).read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==digest
+              data[name]=[json.loads(line) for line in raw.splitlines()]
+          train=data['train.jsonl']; val=data['validation_inputs.jsonl']; answers=data['validation_answers.jsonl']
+          assert (len(train),len(val),len(answers))==(504,360,72)
+          assert collections.Counter(r['target_action'] for r in train)=={'UNKNOWN':252,'A':84,'B':84,'NONE':84}
+          assert all(sum(r['arm']==arm for r in train)==63 for arm in ('c3_only','b1_only','b2_only','shuffled'))
+          assert len({r['id'] for r in answers})==72
+          assert all('oracle_action' not in str(r['messages']) and 'target_action' not in str(r['messages']) for r in train+val)
+          assert all(r['id'].startswith('P2X') for r in train+val+answers)
+          print('P2X_FROZEN_SOURCE_EXPORT_504_TRAIN_360_VALIDATION_NO_MODEL_OR_GATE')
+          PY

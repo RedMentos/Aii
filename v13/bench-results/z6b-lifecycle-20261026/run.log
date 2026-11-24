@@ -1,0 +1,109 @@
+{"policy": "none", "phase": "p1", "batch": 0, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p1", "batch": 1, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p1", "batch": 2, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p1", "batch": 5, "shadow": false, "status": null, "acc": 0.35}
+{"policy": "none", "phase": "p2", "batch": 0, "shadow": false, "status": null, "acc": 0.55}
+{"policy": "none", "phase": "p2", "batch": 1, "shadow": false, "status": null, "acc": 0.55}
+{"policy": "none", "phase": "p2", "batch": 2, "shadow": false, "status": null, "acc": 0.55}
+{"policy": "none", "phase": "p2", "batch": 3, "shadow": false, "status": null, "acc": 0.55}
+{"policy": "fixed", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.35}
+{"policy": "fixed", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "fixed", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.825}
+{"policy": "fixed", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "fixed", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "fixed", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "fixed", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "adaptive", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.35}
+{"policy": "adaptive", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "adaptive", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "adaptive", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.85}
+{"policy": "adaptive", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.85}
+{"policy": "adaptive", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "adaptive", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "adaptive", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "adaptive", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{"policy": "adaptive", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.65}
+{
+ "verdict": "Z6B_LIFECYCLE_ADAPTIVE_FAIL",
+ "criteria": {
+  "C1_fewer_unnecessary_updates_30pct": false,
+  "C2_final_acc_not_worse_3pt": true,
+  "C3_false_promotions_le_fixed": true,
+  "C4_rollback_restores": true,
+  "C5_retention_ge_90pct": true,
+  "C6_record_only_no_updates": true
+ },
+ "scores": {
+  "none": {
+   "shadow_jobs": 0,
+   "unnecessary_updates": 0,
+   "promotions": 0,
+   "approval_requests": 0,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": null,
+   "corrections_to_shift_half80": 56,
+   "p1_end_acc": 0.35,
+   "final_acc": 0.55,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.0,
+    "gist": 0.375,
+    "both": 0.375
+   },
+   "rollback": null,
+   "restart_same_session": true
+  },
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": null,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.85,
+   "final_acc": 0.65,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.875,
+    "both": 0.375
+   },
+   "rollback": null,
+   "restart_same_session": true
+  },
+  "adaptive": {
+   "shadow_jobs": 8,
+   "unnecessary_updates": 3,
+   "promotions": 3,
+   "approval_requests": 3,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": null,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.85,
+   "final_acc": 0.65,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.875,
+    "both": 0.375
+   },
+   "rollback": null,
+   "restart_same_session": true
+  }
+ }
+}

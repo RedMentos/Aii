@@ -1,0 +1,9 @@
+# AG6 gate request transaction atomicity — preregistered 2026-10-29
+
+- Review-only child of PR #1116 branch exact parent `a68fb7ffd25d4e92e68389fa9ddc723478259680`, which itself builds on PR #1114. No production merge or gate promotion.
+- File ownership: `v13/code/v13/agi/weights.py`, new `v13/code/tests/test_ag6_gate_request_atomic_20261029.py`, this prereg and dedicated workflow/handoff only. Do not alter frozen source/model/seed cohorts or other agents' branches.
+- Hypothesis: `WeightConsolidation.gate` creates `WEIGHT_CONSOLIDATION` requests through a committed nested transaction inside `StateBox.mutate`, before the gate state is durably written. A SQLite failure or optimistic state-version conflict after request creation can leave an orphaned pending human-approval request and can duplicate it on retries.
+- Original RED injection: install a SQLite `BEFORE INSERT ON states` trigger that aborts the gate state write after the request insertion. Assert no request exists and the batch remains TRAINED after the injected failure. The old code should leave an orphan request. Remove the trigger and retry; exactly one PENDING_USER request must then correspond to the committed batch.
+- Intended fix: create the request and commit the gate state within a single `Store.tx()` SQLite transaction using existing `_ApprovalStore` and versioned state; rollback must undo both. Preserve all numeric gate checks from PR #1116, explicit human approval and negative learning gates. No weights or native model involved.
+- Proof sequence: this prereg remotely persisted before test-only original RED; raw ZIP SHA256/CRC/SHA256SUMS; narrow source patch; focused and full software CI, privacy/diff, independent review and branch-scoped handoff.
+- Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight0, AG6 unapproved, V13 incomplete.

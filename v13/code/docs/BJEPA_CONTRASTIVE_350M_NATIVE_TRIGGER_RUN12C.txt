@@ -1,0 +1,14 @@
+RUN12C EXPLICIT SERIAL LINUX-NATIVE TRIGGER
+Date UTC: 2026-10-30
+Owner: GPT-6 automation; review-only PR #1260, child of PR #1258
+Protocol: preregistered Run12B disjoint seed239; fixture sha256 848021441551627c47107c7b1298d338ab674d8983ff10af4848cf33adf77748
+Seeds: 227,229,233
+Arms: CE,COS_EMA,CONTRAST_EMA,CONTRAST_SHUFFLED
+Source runner git blob: 15597550100de6ca546b1b024fbc6597fc600839
+Model: LiquidAI/LFM2.5-350M revision 120bf032c36dd1273de754669da040dba7ad4982
+Master SHA256: 1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e
+Source-only Actions: 41046307491 GREEN, 41046648653 GREEN; original raw privately byte-exact backed.
+GitHub Actions active workflow owners observed before trigger: 0 (point-in-time).
+Use existing v13-bodyjepa-350m-eval-paired-native-serial-20261030 concurrency group.
+No production activation, no model/adapter export, no Age0/STEP2/B3/Body-JEPA/jepa_weight promotion.
+Preserve all RED and partial results, audit original terminal artifact before any claim.

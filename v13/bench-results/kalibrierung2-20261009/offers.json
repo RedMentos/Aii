@@ -1,0 +1,2545 @@
+{
+ "b1": "lfm25_1p2b_body",
+ "b2": "qwen35_0p8b",
+ "offer_style": "solve",
+ "path": "native /completion, runner sampling, raw logprobs",
+ "token_unc": {
+  "key": "mean_prob",
+  "pivot": 0.6
+ },
+ "n": 40,
+ "rows": [
+  {
+   "id": "e645c56ff7f85992",
+   "kind": "arith_add",
+   "text": "Compute: 3 + 7 = ?",
+   "gold": "10",
+   "B1": {
+    "offer": {
+     "summary": "The sum of 3 and 7 equals 10.",
+     "quotes": [
+      "Compute: 3 + 7 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4054,
+    "token_confidence": {
+     "n": 50,
+     "mean_prob": 0.4595,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.8302,
+     "field_min_prob": 0.4282
+    },
+    "token_conf": 0.4595,
+    "seconds": 1.711,
+    "gen_tokens": 50,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user asks for the result of the mathematical expression 3 + 7.",
+     "quotes": [
+      "Compute: 3 + 7 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2333,
+    "token_confidence": {
+     "n": 59,
+     "mean_prob": 0.6889,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.5148,
+     "field_min_prob": 0.111
+    },
+    "token_conf": 0.6889,
+    "seconds": 2.096,
+    "gen_tokens": 59,
+    "correct": 0
+   }
+  },
+  {
+   "id": "6fae7ebaf0dd9b6c",
+   "kind": "arith_add",
+   "text": "Compute: 0 + 7 = ?",
+   "gold": "7",
+   "B1": {
+    "offer": {
+     "summary": "The calculation yields 7.",
+     "quotes": [
+      "Compute: 0 + 7 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4646,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.3894,
+     "field": "summary",
+     "field_tokens": 5,
+     "field_mean_prob": 0.7631,
+     "field_min_prob": 0.4892
+    },
+    "token_conf": 0.3894,
+    "seconds": 1.458,
+    "gen_tokens": 43,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user input '0 + 7 = ?' is a simple arithmetic problem asking for the result of adding zero and seven.",
+     "quotes": [
+      "Compute: 0 + 7 = ?"
+     ],
+     "uncertainty": "",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3041,
+    "token_confidence": {
+     "n": 67,
+     "mean_prob": 0.5946,
+     "field": "summary",
+     "field_tokens": 25,
+     "field_mean_prob": 0.4742,
+     "field_min_prob": 0.1194
+    },
+    "token_conf": 0.5946,
+    "seconds": 1.994,
+    "gen_tokens": 67,
+    "correct": 1
+   }
+  },
+  {
+   "id": "7dc8c4114b5d5cdc",
+   "kind": "arith_add",
+   "text": "Compute: 46 + 62 = ?",
+   "gold": "108",
+   "B1": {
+    "offer": {
+     "summary": "The sum of 46 and 62 equals 108.",
+     "quotes": [
+      "Compute: 46 + 62 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4206,
+    "token_confidence": {
+     "n": 49,
+     "mean_prob": 0.4392,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.8486,
+     "field_min_prob": 0.6292
+    },
+    "token_conf": 0.4392,
+    "seconds": 1.425,
+    "gen_tokens": 49,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation 46 + 62 equals 108.",
+     "quotes": [
+      "Compute: 46 + 62 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.1927,
+    "token_confidence": {
+     "n": 60,
+     "mean_prob": 0.7431,
+     "field": "summary",
+     "field_tokens": 12,
+     "field_mean_prob": 0.6916,
+     "field_min_prob": 0.1838
+    },
+    "token_conf": 0.7431,
+    "seconds": 1.779,
+    "gen_tokens": 60,
+    "correct": 1
+   }
+  },
+  {
+   "id": "49ca59a14f0aa304",
+   "kind": "arith_add",
+   "text": "Compute: 394 + 904 = ?",
+   "gold": "1298",
+   "B1": {
+    "offer": {
+     "summary": "The sum of 394 and 904 equals 1298.",
+     "quotes": [
+      "Compute: 394 + 904 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4132,
+    "token_confidence": {
+     "n": 50,
+     "mean_prob": 0.4491,
+     "field": "summary",
+     "field_tokens": 10,
+     "field_mean_prob": 0.8126,
+     "field_min_prob": 0.5153
+    },
+    "token_conf": 0.4491,
+    "seconds": 1.594,
+    "gen_tokens": 50,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation results in 1298.",
+     "quotes": [
+      "Compute: 394 + 904 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2153,
+    "token_confidence": {
+     "n": 57,
+     "mean_prob": 0.7129,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.5174,
+     "field_min_prob": 0.1494
+    },
+    "token_conf": 0.7129,
+    "seconds": 1.814,
+    "gen_tokens": 57,
+    "correct": 1
+   }
+  },
+  {
+   "id": "77d9ce01eb7c47c0",
+   "kind": "arith_mul",
+   "text": "Compute: 5 * 2 = ?",
+   "gold": "10",
+   "B1": {
+    "offer": {
+     "summary": "The calculation yields 10.",
+     "quotes": [
+      "Compute: 5 * 2 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4647,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.3893,
+     "field": "summary",
+     "field_tokens": 5,
+     "field_mean_prob": 0.7512,
+     "field_min_prob": 0.4741
+    },
+    "token_conf": 0.3893,
+    "seconds": 1.602,
+    "gen_tokens": 43,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation results in 10.",
+     "quotes": [
+      "Compute: 5 * 2 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2422,
+    "token_confidence": {
+     "n": 51,
+     "mean_prob": 0.677,
+     "field": "summary",
+     "field_tokens": 7,
+     "field_mean_prob": 0.4567,
+     "field_min_prob": 0.15
+    },
+    "token_conf": 0.677,
+    "seconds": 1.695,
+    "gen_tokens": 51,
+    "correct": 1
+   }
+  },
+  {
+   "id": "4a7d5b901f4563d2",
+   "kind": "arith_mul",
+   "text": "Compute: 4 * 4 = ?",
+   "gold": "16",
+   "B1": {
+    "offer": {
+     "summary": "The calculation yields 16.",
+     "quotes": [
+      "Compute: 4 * 4 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4309,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.4255,
+     "field": "summary",
+     "field_tokens": 5,
+     "field_mean_prob": 0.8029,
+     "field_min_prob": 0.5563
+    },
+    "token_conf": 0.4255,
+    "seconds": 1.326,
+    "gen_tokens": 43,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation results in 16.",
+     "quotes": [
+      "Compute: 4 * 4 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2439,
+    "token_confidence": {
+     "n": 51,
+     "mean_prob": 0.6748,
+     "field": "summary",
+     "field_tokens": 7,
+     "field_mean_prob": 0.4496,
+     "field_min_prob": 0.1414
+    },
+    "token_conf": 0.6748,
+    "seconds": 1.506,
+    "gen_tokens": 51,
+    "correct": 1
+   }
+  },
+  {
+   "id": "694defc39f4a57c5",
+   "kind": "arith_mul",
+   "text": "Compute: 24 * 2 = ?",
+   "gold": "48",
+   "B1": {
+    "offer": {
+     "summary": "The calculation yields 48.",
+     "quotes": [
+      "Compute: 24 * 2 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4372,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.417,
+     "field": "summary",
+     "field_tokens": 5,
+     "field_mean_prob": 0.7536,
+     "field_min_prob": 0.5593
+    },
+    "token_conf": 0.417,
+    "seconds": 1.354,
+    "gen_tokens": 43,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation yields 48.",
+     "quotes": [
+      "Compute: 24 * 2 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2435,
+    "token_confidence": {
+     "n": 51,
+     "mean_prob": 0.6754,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.4172,
+     "field_min_prob": 0.189
+    },
+    "token_conf": 0.6754,
+    "seconds": 1.558,
+    "gen_tokens": 51,
+    "correct": 1
+   }
+  },
+  {
+   "id": "e23eafd3b4af60b3",
+   "kind": "arith_mul",
+   "text": "Compute: 917 * 2 = ?",
+   "gold": "1834",
+   "B1": {
+    "offer": {
+     "summary": "The result of the calculation is 1834.",
+     "quotes": [
+      "Compute: 917 * 2 = ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4271,
+    "token_confidence": {
+     "n": 47,
+     "mean_prob": 0.4306,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.7307,
+     "field_min_prob": 0.4203
+    },
+    "token_conf": 0.4306,
+    "seconds": 1.47,
+    "gen_tokens": 47,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The calculation yields 1834.",
+     "quotes": [
+      "Compute: 917 * 2 = ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2283,
+    "token_confidence": {
+     "n": 54,
+     "mean_prob": 0.6956,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.5261,
+     "field_min_prob": 0.1846
+    },
+    "token_conf": 0.6956,
+    "seconds": 1.684,
+    "gen_tokens": 54,
+    "correct": 1
+   }
+  },
+  {
+   "id": "e65dd6976d77aa30",
+   "kind": "grid_path",
+   "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z",
+   "gold": "6",
+   "B1": {
+    "offer": {
+     "summary": "Analyzing the path from S to Z reveals the shortest route with specified constraints.",
+     "quotes": [
+      "Shortest path",
+      "steps up/down/left/right"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4475,
+    "token_confidence": {
+     "n": 57,
+     "mean_prob": 0.4033,
+     "field": "summary",
+     "field_tokens": 17,
+     "field_mean_prob": 0.6252,
+     "field_min_prob": 0.1527
+    },
+    "token_conf": 0.4033,
+    "seconds": 1.849,
+    "gen_tokens": 57,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The shortest path from S to Z is found by following the path with the fewest steps, which involves moving down and right.",
+     "quotes": [
+      "S..."
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.371,
+    "token_confidence": {
+     "n": 62,
+     "mean_prob": 0.5053,
+     "field": "summary",
+     "field_tokens": 26,
+     "field_mean_prob": 0.372,
+     "field_min_prob": 0.1168
+    },
+    "token_conf": 0.5053,
+    "seconds": 1.974,
+    "gen_tokens": 62,
+    "correct": 0
+   }
+  },
+  {
+   "id": "0af1c11eb15e3eac",
+   "kind": "grid_path",
+   "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.....\n#...#.\n#.....\n......\n......\n##...Z",
+   "gold": "10",
+   "B1": {
+    "offer": {
+     "summary": "Analyzing the grid path details.",
+     "quotes": [
+      "Shortest path",
+      "grid pattern"
+     ],
+     "uncertainty": "may require recheck",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5824,
+    "token_confidence": {
+     "n": 45,
+     "mean_prob": 0.3037,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.4785,
+     "field_min_prob": 0.1312
+    },
+    "token_conf": 0.3037,
+    "seconds": 1.506,
+    "gen_tokens": 45,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The shortest path from S to Z is found by following the path: S -> # -> # -> # -> Z (4 steps), while the direct path via #...# is blocked.",
+     "quotes": [
+      "S.....",
+      "#...#.",
+      "#....."
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 3,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4223,
+    "token_confidence": {
+     "n": 71,
+     "mean_prob": 0.4369,
+     "field": "summary",
+     "field_tokens": 38,
+     "field_mean_prob": 0.3995,
+     "field_min_prob": 0.1138
+    },
+    "token_conf": 0.4369,
+    "seconds": 2.774,
+    "gen_tokens": 71,
+    "correct": 0
+   }
+  },
+  {
+   "id": "4a2dbac3043a3695",
+   "kind": "grid_path",
+   "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....\n.......#\n..#....Z",
+   "gold": "14",
+   "B1": {
+    "offer": {
+     "summary": "Analyzing the path from S to Z reveals the shortest route with specified movement constraints.",
+     "quotes": [
+      "Shortest path",
+      "movement constraints"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4646,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.3894,
+     "field": "summary",
+     "field_tokens": 18,
+     "field_mean_prob": 0.6663,
+     "field_min_prob": 0.3052
+    },
+    "token_conf": 0.3894,
+    "seconds": 1.746,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The shortest path from S to Z is found by following the wall '#' in the provided grid.",
+     "quotes": [
+      "S.#.....",
+      "........",
+      "....#..."
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 3,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3272,
+    "token_confidence": {
+     "n": 64,
+     "mean_prob": 0.5637,
+     "field": "summary",
+     "field_tokens": 19,
+     "field_mean_prob": 0.3868,
+     "field_min_prob": 0.0987
+    },
+    "token_conf": 0.5637,
+    "seconds": 2.332,
+    "gen_tokens": 64,
+    "correct": 0
+   }
+  },
+  {
+   "id": "57c057ab220c9ea1",
+   "kind": "grid_path",
+   "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.......\n..........\n#...#.....\n........#.\n...#......\n..#..#...#\n......#...\n..........\n..........\n..#......Z",
+   "gold": "18",
+   "B1": {
+    "offer": {
+     "summary": "Analyzing the path reveals a clear shortest route through the grid.",
+     "quotes": [
+      "Shortest path",
+      "grid"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5531,
+    "token_confidence": {
+     "n": 47,
+     "mean_prob": 0.325,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.5781,
+     "field_min_prob": 0.2213
+    },
+    "token_conf": 0.325,
+    "seconds": 1.758,
+    "gen_tokens": 47,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "{\n  \"summary\": \"The shortest path from S to Z is found by following the wall '#' and moving down, resulting in a sequence of steps: S -> # -> . -> . -> . -> . -> . -> . -> . -> . -> . -> . -> . -> . -",
+     "quotes": [],
+     "uncertainty": "invalid json",
+     "needs_reentry": true,
+     "_invalid": true
+    },
+    "valid_quotes": 0,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.7,
+    "focal_uncertainty": 0.7,
+    "token_confidence": {
+     "n": 160,
+     "mean_prob": 0.7849,
+     "field": "summary",
+     "field_tokens": 153,
+     "field_mean_prob": 0.7905,
+     "field_min_prob": 0.0823
+    },
+    "token_conf": 0.7849,
+    "seconds": 4.534,
+    "gen_tokens": 160,
+    "correct": 0
+   }
+  },
+  {
+   "id": "8b874dc69658d08a",
+   "kind": "reverse_word",
+   "text": "Write backwards: island",
+   "gold": "dnalsi",
+   "B1": {
+    "offer": {
+     "summary": "The text ",
+     "quotes": [
+      "Write backwards: island"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.8838,
+    "token_confidence": {
+     "n": 36,
+     "mean_prob": 0.0845,
+     "field": "summary",
+     "field_tokens": 3,
+     "field_mean_prob": 0.4108,
+     "field_min_prob": 0.2123
+    },
+    "token_conf": 0.0845,
+    "seconds": 1.214,
+    "gen_tokens": 36,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis 'Write backwards: island' is the exact result of the analysis.",
+     "quotes": [
+      "Write backwards: island",
+      "source_segments"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2927,
+    "token_confidence": {
+     "n": 58,
+     "mean_prob": 0.6098,
+     "field": "summary",
+     "field_tokens": 16,
+     "field_mean_prob": 0.4168,
+     "field_min_prob": 0.1268
+    },
+    "token_conf": 0.6098,
+    "seconds": 1.846,
+    "gen_tokens": 58,
+    "correct": 0
+   }
+  },
+  {
+   "id": "eaae2528eb2da348",
+   "kind": "reverse_word",
+   "text": "Write backwards: rain",
+   "gold": "niar",
+   "B1": {
+    "offer": {
+     "summary": "The reversed phrase is 'niwrac ra.",
+     "quotes": [
+      "Write backwards: rain"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5622,
+    "token_confidence": {
+     "n": 42,
+     "mean_prob": 0.3184,
+     "field": "summary",
+     "field_tokens": 10,
+     "field_mean_prob": 0.3457,
+     "field_min_prob": 0.1601
+    },
+    "token_conf": 0.3184,
+    "seconds": 1.301,
+    "gen_tokens": 42,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis 'Write backwards: rain' is the primary goal derived from the source segments.",
+     "quotes": [
+      "Write backwards: rain",
+      "source_segments"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2895,
+    "token_confidence": {
+     "n": 60,
+     "mean_prob": 0.614,
+     "field": "summary",
+     "field_tokens": 18,
+     "field_mean_prob": 0.4183,
+     "field_min_prob": 0.1226
+    },
+    "token_conf": 0.614,
+    "seconds": 1.901,
+    "gen_tokens": 60,
+    "correct": 0
+   }
+  },
+  {
+   "id": "78959ae944989100",
+   "kind": "reverse_word",
+   "text": "Write backwards: candlewindow",
+   "gold": "wodniweldnac",
+   "B1": {
+    "offer": {
+     "summary": "The text ",
+     "quotes": [
+      "candlewindow"
+     ],
+     "uncertainty": "limited",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.9127,
+    "token_confidence": {
+     "n": 36,
+     "mean_prob": 0.0635,
+     "field": "summary",
+     "field_tokens": 3,
+     "field_mean_prob": 0.3899,
+     "field_min_prob": 0.2677
+    },
+    "token_conf": 0.0635,
+    "seconds": 1.222,
+    "gen_tokens": 36,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The source text contains no valid mathematical or scientific content to derive a hypothesis.",
+     "quotes": [
+      "candlewindow",
+      "Write backwards"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": true
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.6,
+    "focal_uncertainty": 0.6,
+    "token_confidence": {
+     "n": 56,
+     "mean_prob": 0.5074,
+     "field": "summary",
+     "field_tokens": 15,
+     "field_mean_prob": 0.2341,
+     "field_min_prob": 0.1233
+    },
+    "token_conf": 0.5074,
+    "seconds": 1.849,
+    "gen_tokens": 56,
+    "correct": 0
+   }
+  },
+  {
+   "id": "4cb59bf77c774f7f",
+   "kind": "reverse_word",
+   "text": "Write backwards: fogmoonmoon",
+   "gold": "noomnoomgof",
+   "B1": {
+    "offer": {
+     "summary": "The reversed string is 'nomoonfog'. Quotes confirm the transformation.",
+     "quotes": [
+      "Write backwards",
+      "fogmoonmoon"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5852,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.3017,
+     "field": "summary",
+     "field_tokens": 16,
+     "field_mean_prob": 0.4972,
+     "field_min_prob": 0.1226
+    },
+    "token_conf": 0.3017,
+    "seconds": 1.569,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The source text contains a single instruction to write the word 'fogmoonmoon' backwards.",
+     "quotes": [
+      "fogmoonmoon",
+      "Write backwards"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3145,
+    "token_confidence": {
+     "n": 59,
+     "mean_prob": 0.5807,
+     "field": "summary",
+     "field_tokens": 18,
+     "field_mean_prob": 0.3791,
+     "field_min_prob": 0.1062
+    },
+    "token_conf": 0.5807,
+    "seconds": 1.819,
+    "gen_tokens": 59,
+    "correct": 0
+   }
+  },
+  {
+   "id": "a95d04e64771c992",
+   "kind": "rule_map",
+   "text": "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?",
+   "gold": "elug",
+   "B1": {
+    "offer": {
+     "summary": "Apply the pattern consistently across examples.",
+     "quotes": [
+      "Examples: bread->euhdg; dog->grj; window->zlqgrz"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.404,
+    "token_confidence": {
+     "n": 55,
+     "mean_prob": 0.4614,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.6687,
+     "field_min_prob": 0.3544
+    },
+    "token_conf": 0.4614,
+    "seconds": 1.703,
+    "gen_tokens": 55,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The rule 'bird->?' is applied to derive the missing output.",
+     "quotes": [
+      "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2542,
+    "token_confidence": {
+     "n": 76,
+     "mean_prob": 0.661,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.3114,
+     "field_min_prob": 0.1191
+    },
+    "token_conf": 0.661,
+    "seconds": 2.266,
+    "gen_tokens": 76,
+    "correct": 0
+   }
+  },
+  {
+   "id": "8f9328b591054309",
+   "kind": "rule_map",
+   "text": "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?",
+   "gold": "amrhsa",
+   "B1": {
+    "offer": {
+     "summary": "The pattern suggests a consistent mapping across examples.",
+     "quotes": [
+      "Examples: apple->ettpi",
+      "Apply the same rule: window->?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4496,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.4005,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.533,
+     "field_min_prob": 0.278
+    },
+    "token_conf": 0.4005,
+    "seconds": 1.682,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The rule 'window->?' is applied to the input segment 'window' based on the pattern 'window->?'.",
+     "quotes": [
+      "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2902,
+    "token_confidence": {
+     "n": 87,
+     "mean_prob": 0.6131,
+     "field": "summary",
+     "field_tokens": 24,
+     "field_mean_prob": 0.4623,
+     "field_min_prob": 0.1548
+    },
+    "token_conf": 0.6131,
+    "seconds": 2.744,
+    "gen_tokens": 87,
+    "correct": 0
+   }
+  },
+  {
+   "id": "fdcc11841986338c",
+   "kind": "rule_map",
+   "text": "Examples: bird->cjse; garden->hbsefo; bird->cjse; bread->csfbe. Apply the same rule: garden->?",
+   "gold": "hbsefo",
+   "B1": {
+    "offer": {
+     "summary": "Apply the pattern consistently across examples.",
+     "quotes": [
+      "Examples: bird->cjse; garden->hbsefo"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3998,
+    "token_confidence": {
+     "n": 49,
+     "mean_prob": 0.4669,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.62,
+     "field_min_prob": 0.3194
+    },
+    "token_conf": 0.4669,
+    "seconds": 1.53,
+    "gen_tokens": 49,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The rule 'garden->hbsefo' is applied to the input 'garden', resulting in the output 'hbsefo'.",
+     "quotes": [
+      "Examples: bird->cjse; garden->hbsefo; bread->csfbe. Apply the same rule: garden->?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 0,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.25,
+    "focal_uncertainty": 0.3767,
+    "token_confidence": {
+     "n": 90,
+     "mean_prob": 0.6311,
+     "field": "summary",
+     "field_tokens": 28,
+     "field_mean_prob": 0.5992,
+     "field_min_prob": 0.1634
+    },
+    "token_conf": 0.6311,
+    "seconds": 2.781,
+    "gen_tokens": 90,
+    "correct": 1
+   }
+  },
+  {
+   "id": "513d1f7ab8fdfc88",
+   "kind": "rule_map",
+   "text": "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?",
+   "gold": "lvodqg",
+   "B1": {
+    "offer": {
+     "summary": "Apply the pattern consistently across examples.",
+     "quotes": [
+      "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq"
+     ],
+     "uncertainty": "may require recheck",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3631,
+    "token_confidence": {
+     "n": 70,
+     "mean_prob": 0.5159,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.5999,
+     "field_min_prob": 0.2562
+    },
+    "token_conf": 0.5159,
+    "seconds": 2.06,
+    "gen_tokens": 70,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The pattern 'moon->prrq' indicates a substitution where 'moon' is replaced by 'prrq', suggesting the target symbol for 'island' is 'prrq'.",
+     "quotes": [
+      "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2825,
+    "token_confidence": {
+     "n": 115,
+     "mean_prob": 0.6234,
+     "field": "summary",
+     "field_tokens": 39,
+     "field_mean_prob": 0.5233,
+     "field_min_prob": 0.0941
+    },
+    "token_conf": 0.6234,
+    "seconds": 3.441,
+    "gen_tokens": 115,
+    "correct": 0
+   }
+  },
+  {
+   "id": "f7b7d84a3d8dc2dd",
+   "kind": "seq_next",
+   "text": "Continue: 16, 18, 20, 22, ?",
+   "gold": "24",
+   "B1": {
+    "offer": {
+     "summary": "Analysis suggests a continuation at position 22.",
+     "quotes": [
+      "Continue: 16, 18, 20, 22, ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4893,
+    "token_confidence": {
+     "n": 51,
+     "mean_prob": 0.3714,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.4773,
+     "field_min_prob": 0.1841
+    },
+    "token_conf": 0.3714,
+    "seconds": 1.713,
+    "gen_tokens": 51,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The pattern of numbers 16, 18, 20, 22 suggests a sequence where the gap between consecutive terms increases by 2 each time (e.g., 16 to 18 is +2, 18 to 20 is +2, and 20 to 22 is +2).",
+     "quotes": [
+      "?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3131,
+    "token_confidence": {
+     "n": 109,
+     "mean_prob": 0.5825,
+     "field": "summary",
+     "field_tokens": 61,
+     "field_mean_prob": 0.6508,
+     "field_min_prob": 0.1279
+    },
+    "token_conf": 0.5825,
+    "seconds": 3.445,
+    "gen_tokens": 109,
+    "correct": 0
+   }
+  },
+  {
+   "id": "24c09e73b8b9e3c1",
+   "kind": "seq_next",
+   "text": "Continue: 1, 2, 3, 4, ?",
+   "gold": "5",
+   "B1": {
+    "offer": {
+     "summary": "Analysis suggests a potential inconsistency in the data.",
+     "quotes": [
+      "Continue: 1, 2, 3, 4, ?"
+     ],
+     "uncertainty": "may require recheck",
+     "needs_reentry": true
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.6,
+    "focal_uncertainty": 0.6,
+    "token_confidence": {
+     "n": 56,
+     "mean_prob": 0.4826,
+     "field": "summary",
+     "field_tokens": 10,
+     "field_mean_prob": 0.519,
+     "field_min_prob": 0.197
+    },
+    "token_conf": 0.4826,
+    "seconds": 1.856,
+    "gen_tokens": 56,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The sequence continues with the number 5.",
+     "quotes": [
+      "?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3294,
+    "token_confidence": {
+     "n": 44,
+     "mean_prob": 0.5608,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.3061,
+     "field_min_prob": 0.0973
+    },
+    "token_conf": 0.5608,
+    "seconds": 1.666,
+    "gen_tokens": 44,
+    "correct": 1
+   }
+  },
+  {
+   "id": "ae52f6441ea6e3b7",
+   "kind": "seq_next",
+   "text": "Continue: 9, 16, 23, 30, 37, ?",
+   "gold": "44",
+   "B1": {
+    "offer": {
+     "summary": "Analysis suggests a missing value at position ?. Quotes indicate focus on specific indices.",
+     "quotes": [
+      "Continue: 9, 16, 23, 30, 37, ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5273,
+    "token_confidence": {
+     "n": 63,
+     "mean_prob": 0.3438,
+     "field": "summary",
+     "field_tokens": 17,
+     "field_mean_prob": 0.46,
+     "field_min_prob": 0.1367
+    },
+    "token_conf": 0.3438,
+    "seconds": 2.043,
+    "gen_tokens": 63,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The pattern of the sequence continues with the next number being 42.",
+     "quotes": [
+      "Continue: 9, 16, 23, 30, 37",
+      "needs_reentry"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": true
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.6,
+    "focal_uncertainty": 0.6,
+    "token_confidence": {
+     "n": 74,
+     "mean_prob": 0.614,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.3473,
+     "field_min_prob": 0.1945
+    },
+    "token_conf": 0.614,
+    "seconds": 2.137,
+    "gen_tokens": 74,
+    "correct": 0
+   }
+  },
+  {
+   "id": "91d29498564b2c8d",
+   "kind": "seq_next",
+   "text": "Continue: 7, 8, 9, 10, 11, 12, ?",
+   "gold": "13",
+   "B1": {
+    "offer": {
+     "summary": "Analysis suggests a continuation at position 12.",
+     "quotes": [
+      "Continue: 7, 8, 9, 10, 11, 12, ?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4536,
+    "token_confidence": {
+     "n": 57,
+     "mean_prob": 0.3974,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.4644,
+     "field_min_prob": 0.1524
+    },
+    "token_conf": 0.3974,
+    "seconds": 1.844,
+    "gen_tokens": 57,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The sequence continues with the number 13.",
+     "quotes": [
+      "Continue: 7, 8, 9, 10, 11, 12, ?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2235,
+    "token_confidence": {
+     "n": 68,
+     "mean_prob": 0.702,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.4391,
+     "field_min_prob": 0.1399
+    },
+    "token_conf": 0.702,
+    "seconds": 2.455,
+    "gen_tokens": 68,
+    "correct": 1
+   }
+  },
+  {
+   "id": "959517696d129cb7",
+   "kind": "sort_letters",
+   "text": "Sort the letters alphabetically: fog",
+   "gold": "fgo",
+   "B1": {
+    "offer": {
+     "summary": "Alphabetize the letters in 'fog'.",
+     "quotes": [
+      "Sort the letters alphabetically"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4845,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.3749,
+     "field": "summary",
+     "field_tokens": 11,
+     "field_mean_prob": 0.6951,
+     "field_min_prob": 0.3445
+    },
+    "token_conf": 0.3749,
+    "seconds": 1.429,
+    "gen_tokens": 43,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis is that 'fog' should be sorted alphabetically.",
+     "quotes": [
+      "Sort the letters alphabetically: fog"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2502,
+    "token_confidence": {
+     "n": 54,
+     "mean_prob": 0.6664,
+     "field": "summary",
+     "field_tokens": 13,
+     "field_mean_prob": 0.4605,
+     "field_min_prob": 0.1596
+    },
+    "token_conf": 0.6664,
+    "seconds": 1.958,
+    "gen_tokens": 54,
+    "correct": 0
+   }
+  },
+  {
+   "id": "fbdfe49e35c69077",
+   "kind": "sort_letters",
+   "text": "Sort the letters alphabetically: island",
+   "gold": "adilns",
+   "B1": {
+    "offer": {
+     "summary": "Alphabetize the word 'island' → 'island'. Quotes confirm the task.",
+     "quotes": [
+      "Sort the letters alphabetically"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4498,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.4003,
+     "field": "summary",
+     "field_tokens": 20,
+     "field_mean_prob": 0.5482,
+     "field_min_prob": 0.1247
+    },
+    "token_conf": 0.4003,
+    "seconds": 1.638,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis 'Sort the letters alphabetically: island' is confirmed.",
+     "quotes": [
+      "Sort the letters alphabetically: island"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2437,
+    "token_confidence": {
+     "n": 55,
+     "mean_prob": 0.675,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.4812,
+     "field_min_prob": 0.0881
+    },
+    "token_conf": 0.675,
+    "seconds": 1.895,
+    "gen_tokens": 55,
+    "correct": 0
+   }
+  },
+  {
+   "id": "d468feee03339576",
+   "kind": "sort_letters",
+   "text": "Sort the letters alphabetically: fograin",
+   "gold": "afginor",
+   "B1": {
+    "offer": {
+     "summary": "Alphabetize the word 'fograin' → 'fograin'.",
+     "quotes": [
+      "Sort the letters alphabetically"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4178,
+    "token_confidence": {
+     "n": 50,
+     "mean_prob": 0.4429,
+     "field": "summary",
+     "field_tokens": 17,
+     "field_mean_prob": 0.6464,
+     "field_min_prob": 0.1985
+    },
+    "token_conf": 0.4429,
+    "seconds": 1.599,
+    "gen_tokens": 50,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis is that 'fograin' is a valid English word.",
+     "quotes": [
+      "",
+      "\""
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 0,
+    "rejected_quotes": 2,
+    "focal_uncertainty_legacy": 0.25,
+    "focal_uncertainty": 0.4426,
+    "token_confidence": {
+     "n": 50,
+     "mean_prob": 0.5432,
+     "field": "summary",
+     "field_tokens": 14,
+     "field_mean_prob": 0.405,
+     "field_min_prob": 0.1664
+    },
+    "token_conf": 0.5432,
+    "seconds": 1.7,
+    "gen_tokens": 50,
+    "correct": 0
+   }
+  },
+  {
+   "id": "28e5a89092610291",
+   "kind": "sort_letters",
+   "text": "Sort the letters alphabetically: appleovenapple",
+   "gold": "aaeeellnoppppv",
+   "B1": {
+    "offer": {
+     "summary": "Alphabetize the words in the provided segment.",
+     "quotes": [
+      "Sort the letters alphabetically"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5296,
+    "token_confidence": {
+     "n": 42,
+     "mean_prob": 0.3421,
+     "field": "summary",
+     "field_tokens": 10,
+     "field_mean_prob": 0.5211,
+     "field_min_prob": 0.1644
+    },
+    "token_conf": 0.3421,
+    "seconds": 1.392,
+    "gen_tokens": 42,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis is that the string 'appleovenapple' contains a hidden pattern or error in its sorting.",
+     "quotes": [
+      "appleovenapple"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": true
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.6,
+    "focal_uncertainty": 0.6,
+    "token_confidence": {
+     "n": 58,
+     "mean_prob": 0.503,
+     "field": "summary",
+     "field_tokens": 21,
+     "field_mean_prob": 0.3115,
+     "field_min_prob": 0.0759
+    },
+    "token_conf": 0.503,
+    "seconds": 1.856,
+    "gen_tokens": 58,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read0",
+   "kind": "reading",
+   "text": "The order has 3 boxes with 12 pens each. How many pens are in the order?",
+   "gold": "36",
+   "B1": {
+    "offer": {
+     "summary": "Calculated total pens by multiplying boxes and pens per box.",
+     "quotes": [
+      "The order has 3 boxes with 12 pens each"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4129,
+    "token_confidence": {
+     "n": 51,
+     "mean_prob": 0.4494,
+     "field": "summary",
+     "field_tokens": 13,
+     "field_mean_prob": 0.7497,
+     "field_min_prob": 0.2999
+    },
+    "token_conf": 0.4494,
+    "seconds": 1.675,
+    "gen_tokens": 51,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The total number of pens is 36.",
+     "quotes": [
+      "The order has 3 boxes with 12 pens each.",
+      "How many pens are in the order?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2834,
+    "token_confidence": {
+     "n": 67,
+     "mean_prob": 0.6221,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.6675,
+     "field_min_prob": 0.2078
+    },
+    "token_conf": 0.6221,
+    "seconds": 2.136,
+    "gen_tokens": 67,
+    "correct": 1
+   }
+  },
+  {
+   "id": "read1",
+   "kind": "reading",
+   "text": "Lena paid 45 euros and Tom paid 30 euros. How much did they pay together?",
+   "gold": "75",
+   "B1": {
+    "offer": {
+     "summary": "Total payment is 75 euros.",
+     "quotes": [
+      "Lena paid 45 euros",
+      "Tom paid 30 euros"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5684,
+    "token_confidence": {
+     "n": 47,
+     "mean_prob": 0.3139,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.6453,
+     "field_min_prob": 0.3224
+    },
+    "token_conf": 0.3139,
+    "seconds": 1.715,
+    "gen_tokens": 47,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The total amount is 75 euros.",
+     "quotes": [
+      "Lena paid 45 euros and Tom paid 30 euros.",
+      "How much did they pay together?"
+     ],
+     "uncertainty": "",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3014,
+    "token_confidence": {
+     "n": 65,
+     "mean_prob": 0.5982,
+     "field": "summary",
+     "field_tokens": 8,
+     "field_mean_prob": 0.5508,
+     "field_min_prob": 0.2222
+    },
+    "token_conf": 0.5982,
+    "seconds": 2.31,
+    "gen_tokens": 65,
+    "correct": 1
+   }
+  },
+  {
+   "id": "read2",
+   "kind": "reading",
+   "text": "The train leaves at 14:10 and the trip takes 50 minutes. At what time does it arrive?",
+   "gold": "15:00",
+   "B1": {
+    "offer": {
+     "summary": "Arrival time calculated from departure and duration.",
+     "quotes": [
+      "The train leaves at 14:10",
+      "trip takes 50 minutes"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4358,
+    "token_confidence": {
+     "n": 52,
+     "mean_prob": 0.419,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.7275,
+     "field_min_prob": 0.3664
+    },
+    "token_conf": 0.419,
+    "seconds": 1.693,
+    "gen_tokens": 52,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The train arrives at 19:20",
+     "quotes": [
+      "14:10",
+      "50 minutes"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2059,
+    "token_confidence": {
+     "n": 45,
+     "mean_prob": 0.7254,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.6852,
+     "field_min_prob": 0.2458
+    },
+    "token_conf": 0.7254,
+    "seconds": 1.855,
+    "gen_tokens": 45,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read3",
+   "kind": "reading",
+   "text": "Project Aurora has a budget of 120 euros and has spent 85. How much is left?",
+   "gold": "35",
+   "B1": {
+    "offer": {
+     "summary": "Remaining budget calculated as 120 minus 85.",
+     "quotes": [
+      "Project Aurora"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4727,
+    "token_confidence": {
+     "n": 40,
+     "mean_prob": 0.3835,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.8228,
+     "field_min_prob": 0.4733
+    },
+    "token_conf": 0.3835,
+    "seconds": 1.461,
+    "gen_tokens": 40,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user's question is incomplete as the source text only provides the total budget and the amount spent.",
+     "quotes": [
+      "Project Aurora",
+      "120 euros",
+      "85."
+     ],
+     "uncertainty": "High",
+     "needs_reentry": true
+    },
+    "valid_quotes": 3,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.6,
+    "focal_uncertainty": 0.6,
+    "token_confidence": {
+     "n": 67,
+     "mean_prob": 0.5454,
+     "field": "summary",
+     "field_tokens": 20,
+     "field_mean_prob": 0.3412,
+     "field_min_prob": 0.1115
+    },
+    "token_conf": 0.5454,
+    "seconds": 2.236,
+    "gen_tokens": 67,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read4",
+   "kind": "reading",
+   "text": "Anna is 31. Ben is 4 years younger than Anna. How old is Ben?",
+   "gold": "27",
+   "B1": {
+    "offer": {
+     "summary": "Ben is 27 years old.",
+     "quotes": [
+      "Anna is 31",
+      "Ben is 4 years younger than Anna"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4003,
+    "token_confidence": {
+     "n": 49,
+     "mean_prob": 0.4663,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.9551,
+     "field_min_prob": 0.7837
+    },
+    "token_conf": 0.4663,
+    "seconds": 1.544,
+    "gen_tokens": 49,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "Ben is 27 years old.",
+     "quotes": [
+      "Anna is 31",
+      "Ben is 4 years younger than Anna"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2033,
+    "token_confidence": {
+     "n": 57,
+     "mean_prob": 0.7289,
+     "field": "summary",
+     "field_tokens": 7,
+     "field_mean_prob": 0.6902,
+     "field_min_prob": 0.5205
+    },
+    "token_conf": 0.7289,
+    "seconds": 2.092,
+    "gen_tokens": 57,
+    "correct": 1
+   }
+  },
+  {
+   "id": "read5",
+   "kind": "reading",
+   "text": "A recipe needs 250 g flour per cake. How many grams for 3 cakes?",
+   "gold": "750",
+   "B1": {
+    "offer": {
+     "summary": "Calculated 750 grams total.",
+     "quotes": [
+      "A recipe needs 250 g flour per cake"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5401,
+    "token_confidence": {
+     "n": 43,
+     "mean_prob": 0.3345,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.5016,
+     "field_min_prob": 0.1971
+    },
+    "token_conf": 0.3345,
+    "seconds": 1.449,
+    "gen_tokens": 43,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user asks for the total weight of 3 cakes based on a recipe requiring 250g per cake.",
+     "quotes": [
+      "A recipe needs 250 g flour per cake. How many grams for 3 cakes?"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3185,
+    "token_confidence": {
+     "n": 79,
+     "mean_prob": 0.5754,
+     "field": "summary",
+     "field_tokens": 22,
+     "field_mean_prob": 0.507,
+     "field_min_prob": 0.1494
+    },
+    "token_conf": 0.5754,
+    "seconds": 2.519,
+    "gen_tokens": 79,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read6",
+   "kind": "reading",
+   "text": "The meeting is on Monday. It was moved two days later. Which day is it now?",
+   "gold": "wednesday",
+   "B1": {
+    "offer": {
+     "summary": "The meeting has been rescheduled to a later date.",
+     "quotes": [
+      "The meeting is on Monday",
+      "It was moved two days later"
+     ],
+     "uncertainty": "resolution pending",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.4809,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.3775,
+     "field": "summary",
+     "field_tokens": 11,
+     "field_mean_prob": 0.7009,
+     "field_min_prob": 0.2588
+    },
+    "token_conf": 0.3775,
+    "seconds": 1.802,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The current date is Monday.",
+     "quotes": [
+      "source_segments",
+      "prior_hypothesis"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 0,
+    "rejected_quotes": 2,
+    "focal_uncertainty_legacy": 0.25,
+    "focal_uncertainty": 0.3587,
+    "token_confidence": {
+     "n": 48,
+     "mean_prob": 0.6551,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.48,
+     "field_min_prob": 0.1548
+    },
+    "token_conf": 0.6551,
+    "seconds": 1.616,
+    "gen_tokens": 48,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read7",
+   "kind": "reading",
+   "text": "Mia has 5 apples, eats 2 and buys 6 more. How many apples does she have?",
+   "gold": "9",
+   "B1": {
+    "offer": {
+     "summary": "Mia starts with 5 apples, eats 2, then buys 6 more.",
+     "quotes": [
+      "Mia has 5 apples"
+     ],
+     "uncertainty": "none",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3869,
+    "token_confidence": {
+     "n": 53,
+     "mean_prob": 0.4842,
+     "field": "summary",
+     "field_tokens": 16,
+     "field_mean_prob": 0.8735,
+     "field_min_prob": 0.5038
+    },
+    "token_conf": 0.4842,
+    "seconds": 1.871,
+    "gen_tokens": 53,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "Mia has 11 apples.",
+     "quotes": [
+      "eats 2",
+      "buys 6"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2337,
+    "token_confidence": {
+     "n": 52,
+     "mean_prob": 0.6884,
+     "field": "summary",
+     "field_tokens": 7,
+     "field_mean_prob": 0.6914,
+     "field_min_prob": 0.3981
+    },
+    "token_conf": 0.6884,
+    "seconds": 1.622,
+    "gen_tokens": 52,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read8",
+   "kind": "reading",
+   "text": "What is the capital of Australia?",
+   "gold": "canberra",
+   "B1": {
+    "offer": {
+     "summary": "Capital of Australia is Sydney.",
+     "quotes": [
+      "What is the capital of Australia?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.491,
+    "token_confidence": {
+     "n": 41,
+     "mean_prob": 0.3702,
+     "field": "summary",
+     "field_tokens": 7,
+     "field_mean_prob": 0.7829,
+     "field_min_prob": 0.3451
+    },
+    "token_conf": 0.3702,
+    "seconds": 1.286,
+    "gen_tokens": 41,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user query asks for the capital of Australia.",
+     "quotes": [
+      "capital",
+      "Australia"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2652,
+    "token_confidence": {
+     "n": 48,
+     "mean_prob": 0.6464,
+     "field": "summary",
+     "field_tokens": 10,
+     "field_mean_prob": 0.472,
+     "field_min_prob": 0.1555
+    },
+    "token_conf": 0.6464,
+    "seconds": 1.823,
+    "gen_tokens": 48,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read9",
+   "kind": "reading",
+   "text": "How many legs does a spider have?",
+   "gold": "8",
+   "B1": {
+    "offer": {
+     "summary": "A spider has eight legs.",
+     "quotes": [
+      "How many legs does a spider have?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3974,
+    "token_confidence": {
+     "n": 42,
+     "mean_prob": 0.4702,
+     "field": "summary",
+     "field_tokens": 6,
+     "field_mean_prob": 0.8366,
+     "field_min_prob": 0.5785
+    },
+    "token_conf": 0.4702,
+    "seconds": 1.373,
+    "gen_tokens": 42,
+    "correct": 0
+   },
+   "B2": {
+    "offer": {
+     "summary": "The hypothesis is that spiders have 8 legs.",
+     "quotes": [
+      "legs",
+      "spider"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 2,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2862,
+    "token_confidence": {
+     "n": 49,
+     "mean_prob": 0.6184,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.449,
+     "field_min_prob": 0.1871
+    },
+    "token_conf": 0.6184,
+    "seconds": 1.492,
+    "gen_tokens": 49,
+    "correct": 1
+   }
+  },
+  {
+   "id": "read10",
+   "kind": "reading",
+   "text": "Which planet is closest to the sun?",
+   "gold": "mercury",
+   "B1": {
+    "offer": {
+     "summary": "The closest planet to the sun is Mercury.",
+     "quotes": [
+      "Which planet is closest to the sun?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3749,
+    "token_confidence": {
+     "n": 45,
+     "mean_prob": 0.5001,
+     "field": "summary",
+     "field_tokens": 9,
+     "field_mean_prob": 0.9301,
+     "field_min_prob": 0.7945
+    },
+    "token_conf": 0.5001,
+    "seconds": 1.494,
+    "gen_tokens": 45,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user asks for the closest planet to the Sun.",
+     "quotes": [
+      "closest",
+      "Sun"
+     ],
+     "uncertainty": "None",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.2759,
+    "token_confidence": {
+     "n": 49,
+     "mean_prob": 0.6322,
+     "field": "summary",
+     "field_tokens": 11,
+     "field_mean_prob": 0.4606,
+     "field_min_prob": 0.1396
+    },
+    "token_conf": 0.6322,
+    "seconds": 1.477,
+    "gen_tokens": 49,
+    "correct": 0
+   }
+  },
+  {
+   "id": "read11",
+   "kind": "reading",
+   "text": "What is 15 percent of 200?",
+   "gold": "30",
+   "B1": {
+    "offer": {
+     "summary": "The calculation yields 30.",
+     "quotes": [
+      "What is 15 percent of 200?"
+     ],
+     "uncertainty": "low",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 0,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.5266,
+    "token_confidence": {
+     "n": 42,
+     "mean_prob": 0.3443,
+     "field": "summary",
+     "field_tokens": 5,
+     "field_mean_prob": 0.7278,
+     "field_min_prob": 0.3578
+    },
+    "token_conf": 0.3443,
+    "seconds": 1.396,
+    "gen_tokens": 42,
+    "correct": 1
+   },
+   "B2": {
+    "offer": {
+     "summary": "The user asks for 15% of 200.",
+     "quotes": [
+      "What is 15 percent of 200?",
+      "15 percent of 200 = 30"
+     ],
+     "uncertainty": "",
+     "needs_reentry": false
+    },
+    "valid_quotes": 1,
+    "rejected_quotes": 1,
+    "focal_uncertainty_legacy": 0.15,
+    "focal_uncertainty": 0.3028,
+    "token_confidence": {
+     "n": 72,
+     "mean_prob": 0.5963,
+     "field": "summary",
+     "field_tokens": 12,
+     "field_mean_prob": 0.6376,
+     "field_min_prob": 0.1951
+    },
+    "token_conf": 0.5963,
+    "seconds": 2.057,
+    "gen_tokens": 72,
+    "correct": 0
+   }
+  }
+ ],
+ "per_role": {
+  "B1": {
+   "accuracy": 0.325,
+   "invalid_json": 0,
+   "auroc_error": {
+    "focal_offer_uncertainty": 0.6282,
+    "focal_legacy_text": 0.5185,
+    "tok_mean": 0.594,
+    "tok_field_mean": 0.8262,
+    "tok_field_min": 0.8832,
+    "needs_reentry": 0.5185,
+    "hedge_regex": 0.5
+   },
+   "needs_reentry_rate": 0.025,
+   "hedge_rate": 0.0,
+   "best": {
+    "mean_prob": {
+     "threshold": 0.5967,
+     "tpr": 0.6667,
+     "fpr": 0.3846,
+     "f1": 0.72,
+     "accuracy": 0.65
+    },
+    "field_mean_prob": {
+     "threshold": 0.2725,
+     "tpr": 0.8148,
+     "fpr": 0.1538,
+     "f1": 0.8627,
+     "accuracy": 0.825
+    },
+    "field_min_prob": {
+     "threshold": 0.6456,
+     "tpr": 0.8519,
+     "fpr": 0.1538,
+     "f1": 0.8846,
+     "accuracy": 0.85
+    }
+   },
+   "at_boot_uncertainty_trigger": {
+    "new": {
+     "threshold": 0.45,
+     "tpr": 0.5926,
+     "fpr": 0.3846,
+     "accuracy": 0.6
+    },
+    "legacy": {
+     "threshold": 0.45,
+     "tpr": 0.037,
+     "fpr": 0.0,
+     "accuracy": 0.35
+    }
+   },
+   "seconds": {
+    "p50": 1.594,
+    "p90": 1.856,
+    "max": 2.06,
+    "mean": 1.584
+   }
+  },
+  "B2": {
+   "accuracy": 0.35,
+   "invalid_json": 1,
+   "auroc_error": {
+    "focal_offer_uncertainty": 0.7473,
+    "focal_legacy_text": 0.6058,
+    "tok_mean": 0.7143,
+    "tok_field_mean": 0.6346,
+    "tok_field_min": 0.7239,
+    "needs_reentry": 0.5962,
+    "hedge_regex": 0.5
+   },
+   "needs_reentry_rate": 0.125,
+   "hedge_rate": 0.0,
+   "best": {
+    "mean_prob": {
+     "threshold": 0.3336,
+     "tpr": 0.8077,
+     "fpr": 0.4286,
+     "f1": 0.7925,
+     "accuracy": 0.725
+    },
+    "field_mean_prob": {
+     "threshold": 0.5832,
+     "tpr": 0.4231,
+     "fpr": 0.0714,
+     "f1": 0.5789,
+     "accuracy": 0.6
+    },
+    "field_min_prob": {
+     "threshold": 0.8604,
+     "tpr": 0.6154,
+     "fpr": 0.1429,
+     "f1": 0.7273,
+     "accuracy": 0.7
+    }
+   },
+   "at_boot_uncertainty_trigger": {
+    "new": {
+     "threshold": 0.45,
+     "tpr": 0.1923,
+     "fpr": 0.0,
+     "accuracy": 0.475
+    },
+    "legacy": {
+     "threshold": 0.45,
+     "tpr": 0.1923,
+     "fpr": 0.0,
+     "accuracy": 0.475
+    }
+   },
+   "seconds": {
+    "p50": 1.958,
+    "p90": 2.781,
+    "max": 4.534,
+    "mean": 2.118
+   }
+  }
+ },
+ "pair_disagreement": {
+  "positives": 9,
+  "auroc": 0.5448,
+  "best": {
+   "threshold": 0.2,
+   "tpr": 0.2222,
+   "fpr": 0.129,
+   "f1": 0.2667,
+   "accuracy": 0.725
+  },
+  "at_boot": {
+   "threshold": 0.4,
+   "tpr": 0.1111,
+   "fpr": 0.0968,
+   "accuracy": 0.725
+  },
+  "scores": [
+   0.2,
+   0.3,
+   0.0,
+   0.4,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.48,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.6,
+   0.0,
+   0.6,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "experiment": "offers",
+ "seconds": 161.2,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "v13.build_state.scoped.de_closedworld_seed101.v1",
+  "owner": "assistant/v13-de-closedworld-run11a-20261030",
+  "parent_pr": 1223,
+  "parent_head": "be26f5176a55180be0f9086868a9c4a1c2a5889c",
+  "prereg_commit": "ea8cf0e6f220dc5d516f37ab85433dadb27e9b62",
+  "fixture_commit": "2048a043fe3f7b06bf8310d3af3e7adc4de05dab",
+  "fixture_blob": "71011ba309759931f2cb9afa487d621e66aebdaa",
+  "baseline_pipeline_blob": "25cacd7388e5464dd814f4b18c545e2ec2f78b54",
+  "software": {
+    "run_id": 41018254933,
+    "tested_head": "e4a9f5073749cadde3cec0bc950c196e8ac44927",
+    "artifact_id": 12960930057,
+    "zip_sha256": "8610f8938f242940fe3929cb0e2e348ad4c9cf7112a758cca993c52ce14fc8e1",
+    "inner_hashes": "9/9",
+    "tests": "28/28 PASS",
+    "stage_exits": "4/4 ZERO",
+    "privacy": "CLEAN",
+    "supported_exact": 12,
+    "negative_abstain": 12,
+    "baseline_unsafe_omission_min": 8
+  },
+  "evidence_level": "SOFTWARE_SYNTHETIC_ONLY",
+  "native_calls": 0,
+  "production_integration": false,
+  "next_package": "read-only original seed83 Linux-native raw replay with frozen score and candidate coverage comparison",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_listarith_de_closedworld_seed101_20261030 tests.test_listarith_de_shadow_pipeline_20261030",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}

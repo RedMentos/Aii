@@ -1,0 +1,61 @@
+name: V14 A5 UI lease regressions
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
+    paths:
+      - "v13/code/v13/a5_ui_admission_bridge.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_a5_ui_observation_lease.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
+      - "v13/code/tests/test_a5_ui_revocation_blob_race.py"
+      - ".github/workflows/v14-a5-ui-lease.yml"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_A5_UI_LEASE_20261121.md"
+  pull_request:
+    paths:
+      - "v13/code/v13/a5_ui_admission_bridge.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_a5_ui_observation_lease.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
+      - "v13/code/tests/test_a5_ui_revocation_blob_race.py"
+      - ".github/workflows/v14-a5-ui-lease.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-a5-ui-lease-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  a5-ui-lease:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install minimal A5 test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5
+      - name: Compile A5 bridge, Store and regression tests
+        run: python -m py_compile v13/code/v13/a5_ui_admission_bridge.py v13/code/v13/store.py v13/code/tests/test_a5_ui_observation_lease.py v13/code/tests/test_v14_store_source_blob_serialization.py v13/code/tests/test_a5_ui_revocation_blob_race.py
+      - name: Run source-bound UI lease, revocation and shared-blob tests
+        working-directory: v13/code
+        env:
+          PYTHONPATH: ${{ github.workspace }}/v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q -s tests/test_a5_ui_observation_lease.py tests/test_v14_store_source_blob_serialization.py tests/test_a5_ui_revocation_blob_race.py
+      - name: Scan changed public content for secrets and private identifiers
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree

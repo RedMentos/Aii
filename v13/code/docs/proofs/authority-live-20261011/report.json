@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_SOFTWARE_PASS",
+  "phase": "WP-T10_LIVE_COMPARISONS",
+  "base_commit": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+  "branch": "codex/authority-live-comparisons",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "source_sha256": {
+    "v13/attention.py": "0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739",
+    "v13/deliberation.py": "5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c",
+    "v13/callosum.py": "26356f4408fc0714979bb33062763eb9d1079becd7a60912f92f1d4afba6a3e9",
+    "v13/authority.py": "01e1550943f22b117b5bc471fac88ed729b61c6dadf24a1c4d4ad99ec14dbfdb",
+    "tests/test_authority_live.py": "59acd964f9ddd0fe43b504981a9b013760b587e48940f96525e51ef1fd1b47af"
+  },
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m unittest test_authority_live test_authority test_attention test_deliberation test_callosum test_local_updates -v",
+  "tests_run": 46,
+  "new_integration_tests": 6,
+  "failures": 0,
+  "errors": 0,
+  "log_sha256": "33810f58cf6129c467c3ad2af55f8b5fd31c4853ae33ded0c55c985fc8a7e343",
+  "native_inference": false,
+  "phone_measured": false,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "claim_limits": [
+    "Software controller decisions and SQLite restart only",
+    "Rank/order/channel agreement, not counterfactual outcome or semantic quality",
+    "Authority ledger is aggregate, not model-revision-bound utility evidence",
+    "PARTIAL objectives and gate failures remain blocking",
+    "Historical raw proof collections were not in the GitHub import",
+    "Four optional PyTorch tests skipped; no native-model or phone proof"
+  ],
+  "package_selftest": {
+    "status": "SOFTWARE_SELFTEST_PASS_WITH_EXPLICIT_SKIPS",
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m v13 --home ../test-home selftest",
+    "scope": "Extracted install ZIP, Linux software and compiled synthetic C++ policy tests; no model inference or Android test",
+    "tests_run": 946,
+    "passed": 942,
+    "skipped": 4,
+    "skip_reason": "PyTorch not installed",
+    "errors": 0,
+    "failures": 0,
+    "duration_seconds": 59.081,
+    "original_failed_attempt": {
+      "tests_run": 946,
+      "errors": 12,
+      "failures": 1,
+      "skipped": 4,
+      "log_sha256": "374ddca1cdef68a6f0ab5eadf9d3e6f149ad73ac3655bfadf14a1a3738cf5dc2"
+    },
+    "log_sha256": "5d3561051a4e69a1848b16972a5726650472cd07a3a429f82ac576dc07318cfd",
+    "tested_package_manifest_sha256": "548b53244472085f5830bece256526c2b264b774d1f210ef5226ebec8b69183c",
+    "restored_files_report": "restored-import-files.json",
+    "native_inference": false,
+    "phone_measured": false
+  }
+}

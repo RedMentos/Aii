@@ -1,0 +1,107 @@
+{
+  "schema": "v13.review_build_state.context_warm_final.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1134 child of PR1133; no production merge",
+  "owner": {
+    "branch": "codex/v13-context-warm-final-20261029-auto10t",
+    "pr": 1134,
+    "parent_pr": 1133,
+    "parent_commit": "f1af2f174c1b6d3ef416dc346ebd998f9a4061bb",
+    "owned_paths": [
+      "v13/code/v13/context_os.py (warm status guard only)",
+      "v13/code/tests/test_context_warm_final_20261029.py",
+      ".github/workflows/v13-context-warm-final-20261029.yml",
+      "v13/code/docs/CONTEXT_WARM_FINAL_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_CONTEXT_WARM_FINAL_20261029.json"
+    ]
+  },
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "prereg": {
+    "commit": "705a269725c8d2fb05085c1744e76d066c7c96bb",
+    "path": "v13/code/docs/CONTEXT_WARM_FINAL_PREREG_20261029.md"
+  },
+  "original_red": {
+    "run": 40937808237,
+    "head": "aff159d293dfc3190ce7de0a260714a6a2601e9a",
+    "tests": "36 total, 4 FAIL, 32 PASS; CANCELLED, decayed CANCELLED, ERROR and PROVISIONAL warm-memory state leakage",
+    "artifact": 12924569712,
+    "zip_sha256": "e2e4f92e61513dcade270cdcded22cd85ee01423dca4b094eb3f353bdeab6dc4",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-ContextWarmFinal/RAW_RED_40937808237_shaE2E4F9.zip",
+    "private_readback": "byte-exact"
+  },
+  "focused_green": {
+    "run": 40938027303,
+    "head": "642decd38c79c6ba726f443a47eed936dbd00f68",
+    "tests": "36/36 PASS including original Context OS and singlequote suites",
+    "source_blob": "5e978ae6bac8a19eb085ac8dc09b61d070f5c5ac",
+    "test_blob": "27e6b956885f7bf2b6b1133e6b03319492a0735a",
+    "artifact": 12924669570,
+    "zip_sha256": "6ff51dccf2e7e85bbab729030e2193cad6264586f6b8a275a79602d07039e103",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-ContextWarmFinal/RAW_GREEN_40938027303_sha6FF51D.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "inherited_full": {
+    "run": 40930097502,
+    "head": "4bb586b0001180446b159d1fa543f69f1f30c6f4",
+    "tests": "3244 total, 2 ERROR (Run34 and Run37 historical pinned utility.py source mismatch), 11 skipped; no other errors or failures",
+    "artifact": 12922312420,
+    "zip_sha256": "f65d9e2301b79fa74d052e1b5b2d6f92a3c8e0e7de1b7f724bc933b7c01ecef0",
+    "crc": true,
+    "inner_sha256": "17/17",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-AG6-Second-Tx/RAW_FULL_INHERITED_RED_40930097502_shaF65D9E.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "PIP_CHECK": 0,
+      "FULL": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "claim_limit": "Parent AG6 full run, not a full suite of this child head; preserve original frozen cohort pin"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Real software Store/Memory state tests only; no native inference or Redmi evidence",
+    "No schema migration, no source/provenance rewrite, no learned authority",
+    "Full suite not independently rerun on this exact head",
+    "Existing warm() source/HumanDecision checks still apply"
+  ],
+  "open_questions": [
+    "Evaluate World-Model counterfactual nonphysical predicted outputs as next separate functional package",
+    "Run34/Run37 historical frozen utility.py must be tested in an isolated exact-source worktree without rewriting cohort pins",
+    "Full native/Redmi and end-to-end utility remain open"
+  ],
+  "next_commands": [
+    "Verify PR1134 branch head and BUILD_STATE blob remotely; keep PR draft",
+    "Create a new child review branch from this exact checkpoint for World-Model counterfactual output-domain tests",
+    "Run preregistered RED->GREEN and independent review; persist raw privately; never promote negative gates"
+  ],
+  "checkpoint_reason": "Verified RED->GREEN software package, raw private backups byte-exact; platform remaining budget UNKNOWN"
+}

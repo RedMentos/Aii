@@ -1,0 +1,96 @@
+{
+  "schema": "v13.run22.ag12_bilingual_compare.software_review_only.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run22-ag12-bilingual-compare-20261030-hourly11",
+  "base_pr": 1348,
+  "base_sha": "b02a73917bdb2b5aa451890e41af988c83bb2f5f",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "prereg_blob": "7a83e74e3472f4386c724fb4133714790382e32e",
+  "source_blobs": {
+    "language_compare": "1944cffced498a32a28d74ec13bc9674df8e55fb",
+    "agi_operator": "7f6f56b2b0731a5d34a63e364e42262221cf71f6",
+    "operator_help": "6636efcb7e79acd9a010b3ef31bab55342cca349",
+    "generality": "a1cab60363814cb86472a42defb5089d4cdbd432",
+    "test": "5458d6cbac9ae0383b780738985657ef5c0f6003"
+  },
+  "changes": [
+    "Read-only EN/DE persisted AG12 comparison without suite registration, model call or Store write",
+    "Exact seed/hash, holdout, latest full run, finite score, same generation and optimistic version stability gates",
+    "Operator :growth eval compare en-de [solver] before Growth hub initialization",
+    "Explicit DIAGNOSTIC_ONLY and no causal transfer or model revision claim",
+    "Adversarial review fixed huge integer metric OverflowError"
+  ],
+  "evidence": [
+    {
+      "type": "ORIGINAL_RED",
+      "actions": 41135323646,
+      "source_head": "413dd8186224926c02588ea5636f7d7d5de47616",
+      "tests": 1,
+      "errors": 1,
+      "test_exit": 1,
+      "pins": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0,
+      "zip_sha256": "36739136617ef0b89318c20e1bb40b4a323b2652e1b74f181dd757cc9f378f0c",
+      "crc": "PASS",
+      "inner": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run22-AG12-BilingualCompare/ORIGINAL_RED_sha36739136.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    {
+      "type": "ADVERSARIAL_RED",
+      "actions": 41135753998,
+      "source_head": "217018961d464b9fdd51646aa5be1e1e90c86f72",
+      "tests": 48,
+      "errors": 1,
+      "test_exit": 1,
+      "pins": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0,
+      "zip_sha256": "eee32c10bcba6dd1e354a61e2ef6f522768494232e94d702db688e2c7de9a90e",
+      "crc": "PASS",
+      "inner": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run22-AG12-BilingualCompare/ADVERSARIAL_RED_shaEEE32C10.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    {
+      "type": "FINAL_GREEN",
+      "actions": 41135853353,
+      "source_head": "e9086118773cf4e2c9de195f6c2b2f4f7b78d277",
+      "tests": 48,
+      "failures": 0,
+      "errors": 0,
+      "test_exit": 0,
+      "pins": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0,
+      "zip_sha256": "b8c05719b09d2f5ad76f53978ced4e9056481d63a36d86f23ece388bda2f3473",
+      "crc": "PASS",
+      "inner": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run22-AG12-BilingualCompare/FINAL_GREEN_shaB8C05719.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  ],
+  "evidence_level": "software real Runtime/SQLite and fake solver, no native model/Redmi",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "learned_german_transfer": false
+  },
+  "known_limitations": [
+    "EN/DE word sets and prompts differ; delta is observational only",
+    "Run metadata lacks exact model/source revision binding; same generation is not sufficient for causal transfer proof",
+    "German real body evaluation operator route is not yet implemented",
+    "Run20 unfiltered historical full suite remains 4 failures / 66 errors / 16 skipped"
+  ],
+  "next_command": "Implement a separately gated German AG12 real-body evaluation path via scheduler and BodySolver with source/holdout protections and tests; preserve English legacy payload/AG9 behavior. No native/Redmi promotion without real models and device."
+}

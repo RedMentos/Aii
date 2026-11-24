@@ -1,0 +1,8 @@
+Run13R explicit native trigger — 2026-10-30
+Owner GPT-6. One serialized 8-arm pinned LFM2.5-350M Linux CPU synthetic heldout/retention dose experiment.
+Prereg before code: 533b0d2749954a0e564128aaa927ab9446f59210.
+Preflight Actions 41093474409 GREEN, tested 94a6935d24b3b750f8190f368d3168484083ccbd, 18/18 tests, all nine stage exits0, privacy CLEAN.
+Original preflight artifact 12994996417 SHA256 ef4ccc643a54410f2783d9f46d5fb912a4dcd153ec7fbbfd686cfd207d2067de, CRC PASS, 26/26 inner hashes, private byte-identical backup.
+Frozen master/source/license/seed pins in Run13R prereg; new runner blob 5d665c09909ae77eeb12bf038a053232371abcb8, tests ac3a38192de0c5dd6cde632746da4e191d196adf, prereg c979514672c01d74999868c307a46d3be8ba455d.
+Active GitHub Actions in_progress=0 before launch; workflow shares serialized Body-JEPA native group and cancel-in-progress=false.
+Do not change original Run12C or Run13P cohorts. Preserve all native raw, failures, source hashes and no-export status. No live learning, Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0 runtime, Redmi unmeasured, whole-system incomplete.

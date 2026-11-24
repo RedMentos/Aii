@@ -1,0 +1,86 @@
+name: V13 C1 plus World-JEPA two-parent integration software
+on:
+  push:
+    branches: [assistant/v13-c1-world-integration-review-20261027]
+    paths:
+      - '.github/workflows/c1-world-integration-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-gradient-350m
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact merge ancestry, focused and full source-wide raw evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-world-integration"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/C1_BLOB.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/WORLD_MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/WORLD_COHORT_BLOB.txt"
+          git cat-file -p 081ad6753bb37feee0f875a4aa1a6d2655c59f40 | head -8 > "$evidence/MERGE_PARENTS_RAW.txt"
+          if [ "$(cat "$evidence/C1_BLOB.txt")" = "05500ee25d7cd83b3412f027e1503ca907e12d43" ] && [ "$(cat "$evidence/WORLD_MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/WORLD_COHORT_BLOB.txt")" = "f4c1136bb9a527a776522ccd776f03c390bdd3a3" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git merge-base --is-ancestor 081ad6753bb37feee0f875a4aa1a6d2655c59f40 HEAD
+          ancestor=$?
+          parents=$(git cat-file -p 081ad6753bb37feee0f875a4aa1a6d2655c59f40 | grep '^parent ' | cut -d' ' -f2 | paste -sd, -)
+          if [ "$ancestor" -eq 0 ] && [ "$parents" = "686994a638038b8ae3f5f254c143d4cf8a7cc842,1d0ab1ca8cf64f7d2d4f9e313ca39e87bf2370c5" ]; then echo 0; else echo 1; fi > "$evidence/MERGE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-world-integration-venv"
+          py="$RUNNER_TEMP/c1-world-integration-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_task_origin_binding_review tests.test_executive_source_action_integrity_review tests.test_world_jepa_matched_action_cohort tests.test_world_jepa_action_permutation_control
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e8aab0e2b00c66db83b196d8f8ab04d3830e1255 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check e8aab0e2b00c66db83b196d8f8ab04d3830e1255 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-world-integration-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-world-integration/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all genuine exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-world-integration"
+          for name in FROZEN MERGE INSTALL FOCUSED UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_WORLD_INTEGRATION_REVIEW_ONLY_NO_AGE_PROMOTION'

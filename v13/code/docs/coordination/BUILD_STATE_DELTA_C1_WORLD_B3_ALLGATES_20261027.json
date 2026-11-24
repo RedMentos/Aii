@@ -1,0 +1,41 @@
+{
+  "status": "C1_WORLD_B3_ALLGATES_REVIEW_ONLY",
+  "owner": "GPT coordinator",
+  "prereg": "706c660931e1b67ec03db395ef9b8391b1e0b60d",
+  "parents": [
+    "1ab88aa30947e2f3da9905b1d3055f04b98a8bed",
+    "a748e4a3326cdd2afee17da2543b4150f6ecb67b",
+    "cca60edf86674e14cb864bb25b8e7b76374d3640"
+  ],
+  "merge_commits": [
+    "4df8ff0132583b78df4f0e6b92e49ef726c0d312",
+    "d0a03f922e27e3768fa6a0820f4e4cb61f6e94f1"
+  ],
+  "tested_head": "a46fda283463a3ee47a9e96cab8f2ef16772aa1a",
+  "c1_source_blob": "057dda1e705053047489516fc9ab10581018f5a4",
+  "b3_source_blob": "8837693b4ee1b37ed2fec538c40a2b398ad8261a",
+  "b3_promotion_blob": "5cc822ecad749887acfad69f5fcba39a5a2dae8f",
+  "full": {
+    "run": 40593591303,
+    "focused_tests": 62,
+    "tests": 2012,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "de04bc96bd6a93414063f2bde7bc5e17254ada9d6cd2bbe30b3a012fbccd7414"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-C1-World-B3-AllGates/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_receiver_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest discover -s tests -p 'test_*.py' -q",
+  "next": "Review all-gates PR and integrate verified Sleep/HX SHADOW branches; no auto-merge."
+}

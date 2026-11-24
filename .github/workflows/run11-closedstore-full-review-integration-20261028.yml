@@ -1,0 +1,117 @@
+name: V13 Run11 closed-store full integration Linux software review
+on:
+  push:
+    branches: [assistant/v13-run11-closedstore-full-review-integration-20261028]
+    paths:
+      - '.github/workflows/run11-closedstore-full-review-integration-20261028.yml'
+      - 'v13/code/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-closedstore-full-integration-20261028
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture exact imports and full Linux software regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11-closedstore-full-integration"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git show -s --format='%P' HEAD > "$e/PARENTS.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          b20f5eaec7fdd108832d37d46c0a94829e3fc8b5 .github/workflows/world-jepa-checkpoint-heldout-crossorgan-20261028.yml
+          237eab4c44bccfc187d9119e6f4d57150336bcee v13/code/docs/coordination/RUN11_WORLD_CHECKPOINT_HELDOUT_CROSSORGAN_HANDOFF_20261028.md
+          0a3cff0d350fd56cd71f485c5cc9be7b5da9310f v13/code/docs/coordination/RUN11_WORLD_CHECKPOINT_HELDOUT_CROSSORGAN_PREREG_20261028.md
+          4d7b7aa02b9a69497526cfb3341af4b3ec23eb78 v13/code/tests/test_world_jepa_checkpoint_heldout_crossorgan_20261028.py
+          cd7bcb934d114be3781c180ccf0ad0701b1adafe .github/workflows/control-stage-boundary-20261028.yml
+          8466b0a77407dba6b74a153b8b17a22bd9eae44e v13/code/docs/coordination/RUN11_CONTROL_STAGE_BOUNDARY_HANDOFF_20261028.md
+          08f1224667f2a65576a69cd9157a4d543af1c033 v13/code/docs/coordination/RUN11_CONTROL_STAGE_BOUNDARY_PREREG_20261028.md
+          e15976b74b89626751ed7d1485928c13dfe64e5e v13/code/tests/test_control_stage_boundary_20261028.py
+          19e888af73bef40e6206c2d8ebbc5b28f3b81548 v13/code/v13/control_budget.py
+          42cbdb8b4ea78210aabb9f823595f4c44283d533 .github/workflows/world-jepa-shadow-operator-probe-20261028.yml
+          42e0164e3879b18edd579aeba313c610454b2d75 v13/code/docs/coordination/RUN11_WORLD_SHADOW_OPERATOR_PROBE_HANDOFF_20261028.md
+          d26a0d24e2fadbd9fea1e0ef1f1567af73fcd814 v13/code/docs/coordination/RUN11_WORLD_SHADOW_OPERATOR_PROBE_PREREG_20261028.md
+          0690399a08b1050ba63592580d3c4406d5009292 v13/code/scripts/world_jepa_shadow_operator_probe.py
+          de4368b6c00ef811cdb7c9ecbb99194622897fa1 v13/code/tests/test_world_jepa_shadow_operator_probe_20261028.py
+          8b4594d62c6ba4e108c7d5c874fb63edb37c7aa7 .github/workflows/world-jepa-closedstore-private-pipeline-20261028.yml
+          a0073b2e03b6aef2365518c47fa28b8cb1f3ba8f v13/code/docs/WORLD_JEPA_PRIVATE_SHADOW_OPERATOR_20261028.md
+          fb84779949a7c5d1eaee122ef57ed5c7f5a3832a v13/code/docs/coordination/RUN11_CLOSEDSTORE_WORLD_SHADOW_PIPELINE_HANDOFF_20261028.md
+          4e4a7c3e3475385552c3b8ff3a943161a233f018 v13/code/docs/coordination/RUN11_CLOSEDSTORE_WORLD_SHADOW_PIPELINE_PREREG_20261028.md
+          46ad273c3d15eacfeaaa5248cfdec2660d70dec7 v13/code/scripts/world_jepa_closedstore_private_pipeline.py
+          7b3b91fa77c614ef821096925ee59cd60cd4220e v13/code/tests/test_world_jepa_closedstore_private_pipeline_20261028.py
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo BLOB_MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q BLOB_MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run11-closedstore-full-venv"
+          py="$RUNNER_TEMP/v13-run11-closedstore-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_closedstore_private_pipeline_20261028 tests.test_world_jepa_shadow_operator_probe_20261028 tests.test_world_jepa_checkpoint_heldout_crossorgan_20261028 tests.test_world_jepa_shadow_checkpoint_20261028 tests.test_world_jepa_heldout_action_readout_20261028 tests.test_control_stage_boundary_20261028 tests.test_control_budget_monotonic_20261028 tests.test_control_budget tests.test_step2_crossarm_b1_identity_20261028 tests.test_step2_collector_scorer_crossorgan_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/world_jepa_closedstore_private_pipeline.py v13/code/tests/test_world_jepa_closedstore_private_pipeline_20261028.py v13/code/scripts/world_jepa_shadow_operator_probe.py v13/code/tests/test_world_jepa_shadow_operator_probe_20261028.py v13/code/tests/test_control_stage_boundary_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 41c05a078533677a2a7cd889fc28448a6fc96590 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 41c05a078533677a2a7cd889fc28448a6fc96590 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-run11-closedstore-full-integration-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11-closedstore-full-integration/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11-closedstore-full-integration"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -60 "$e/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'THREECHILD_LINUX_SOFTWARE_ONLY_NO_NATIVE_REDM I_OR_GATE_PROMOTION'

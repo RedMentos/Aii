@@ -1,0 +1,67 @@
+{
+  "schema": "V13_RUN12K_C2_STRICT_LINUX_NATIVE_COMPAT_PARTIAL_GREEN_NO_UTILITY",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12k-c2-strict-native-compatibility-20261030",
+  "pr": 1267,
+  "parent_pr": 1266,
+  "parent_head": "05d70bbace6fa242577e7019aa477a51e7a100c5",
+  "preregistration": {
+    "prompt_sha256": "cc45889077cae32fac4911ad91e7b2fa279a6bfd2d8d43ddac712e0ca1cc7014",
+    "seed": 43,
+    "prompts": 4,
+    "expected_scaffolds": [
+      "simple",
+      "simple",
+      "detail",
+      "gist"
+    ],
+    "threshold": "4/4 native invoked, 4/4 strict match, >=1/2 simple admitted",
+    "disjoint_from_original_seed43": true
+  },
+  "source_blobs": {
+    "prereg": "59f31e1ba1a964b1f8674393abdd60f68cb9f6a8",
+    "script": "cee1980787f1217e9a7aa2a1f180686b4add67fb",
+    "tests": "fe9084c872be32ba260b3554b4a73708a0c048a7",
+    "runtime": "22ed11e4a53d9eeae8fbc74a1753082b5785be2b",
+    "original_turn": "fb34dba97ae3700ba5accdcb928bfb72afcf4fcb",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "linux_native": {
+    "run_id": 41051796172,
+    "tested_head": "a0f1bf06a1eb5d7cab887d8691d42aad508d69df",
+    "status": "NATIVE_STRICT_COMPAT_PARTIAL_NO_UTILITY",
+    "native_c2_invocations": "4/4",
+    "strict_matches": "4/4",
+    "simple_admitted": "1/2",
+    "non_simple_scaffold_preserved": "2/2",
+    "selected_native_route_for_greeting": "gist",
+    "native_route_utility_proven": false,
+    "needle_model_sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
+    "needle_worker_sha256": "76d3fbef91004b9279dcf66ca7166e0870da1f819fd77193393bc4ab3dba342e",
+    "software_tests": "11/11 PASS",
+    "stages": "10/10 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12974778111,
+    "zip_sha256": "55c84b057944478dfd3f08145142c873a927a0a3e95c45b2ae41395a17c1dbc2",
+    "zip_bytes": 18839,
+    "crc": "PASS",
+    "inner_sha256": "32/32",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12K-C2NativeCompat/V13_Run12K_C2_41051796172.zip",
+    "backup_byte_exact": true
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Native C2 chose gist for a greeting; no measured answer utility, so structural compatibility is not a routing quality endorsement",
+    "Need paired disjoint native C2/C3/Body task utility and Redmi memory/latency before promotion"
+  ],
+  "next_command": "Preserve Run12K original raw and prereg; no threshold changes. Compare native C2 route task utility with fixed baselines on new disjoint cohort if resources allow. Continue independent Context OS and other Canon organ work."
+}

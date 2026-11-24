@@ -1,0 +1,134 @@
+{
+ "kind": "B3_L1_RECEIVER_ADAPTER_READ",
+ "sender": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+ "receiver": "Qwen3.5-0.8B-Q4_0.gguf",
+ "n": 480,
+ "rank": 16,
+ "seeds": 10,
+ "embedding_seconds": 0.1,
+ "sender_dim": 2048,
+ "receiver_dim": 1024,
+ "results": {
+  "sum_ok": {
+   "NO_MESSAGE": {
+    "mean": 0.632,
+    "sd": 0.048
+   },
+   "EXACT": {
+    "mean": 0.996,
+    "sd": 0.005
+   },
+   "SYMBOLIC": {
+    "mean": 0.625,
+    "sd": 0.052
+   },
+   "L1": {
+    "mean": 0.63,
+    "sd": 0.047
+   },
+   "L1_SHUFFLED": {
+    "mean": 0.637,
+    "sd": 0.05
+   },
+   "L1_RANDOM": {
+    "mean": 0.624,
+    "sd": 0.057
+   },
+   "chance": 0.512,
+   "paired_L1_minus_NO_MESSAGE": {
+    "mean": -0.002,
+    "se": 0.011,
+    "wins": 5,
+    "ties": 0,
+    "n": 10
+   },
+   "paired_L1_minus_SHUFFLED": {
+    "mean": -0.007,
+    "se": 0.016,
+    "wins": 5,
+    "n": 10
+   }
+  },
+  "max_item": {
+   "NO_MESSAGE": {
+    "mean": 0.693,
+    "sd": 0.051
+   },
+   "EXACT": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "SYMBOLIC": {
+    "mean": 0.697,
+    "sd": 0.05
+   },
+   "L1": {
+    "mean": 0.718,
+    "sd": 0.057
+   },
+   "L1_SHUFFLED": {
+    "mean": 0.682,
+    "sd": 0.05
+   },
+   "L1_RANDOM": {
+    "mean": 0.692,
+    "sd": 0.062
+   },
+   "chance": 0.344,
+   "paired_L1_minus_NO_MESSAGE": {
+    "mean": 0.025,
+    "se": 0.014,
+    "wins": 6,
+    "ties": 2,
+    "n": 10
+   },
+   "paired_L1_minus_SHUFFLED": {
+    "mean": 0.035,
+    "se": 0.012,
+    "wins": 6,
+    "n": 10
+   }
+  },
+  "topic": {
+   "NO_MESSAGE": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "EXACT": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "SYMBOLIC": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "L1": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "L1_SHUFFLED": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "L1_RANDOM": {
+    "mean": 1.0,
+    "sd": 0.0
+   },
+   "chance": 0.354,
+   "paired_L1_minus_NO_MESSAGE": {
+    "mean": 0.0,
+    "se": 0.0,
+    "wins": 0,
+    "ties": 10,
+    "n": 10
+   },
+   "paired_L1_minus_SHUFFLED": {
+    "mean": 0.0,
+    "se": 0.0,
+    "wins": 0,
+    "n": 10
+   }
+  }
+ },
+ "claim_limit": "Receiver-side readout only (L1); no backbone injection; synthetic labels; SYMBOLIC uses an oracle-built hypothesis string"
+}

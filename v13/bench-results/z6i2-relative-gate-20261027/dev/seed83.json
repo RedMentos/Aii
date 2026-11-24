@@ -1,0 +1,4265 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 83,
+ "scores": {
+  "fixed+now+words+teach+rel": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 2,
+   "promotions": 6,
+   "approval_requests": 6,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 32,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.875,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9643,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 0.625
+   },
+   "rollback": {
+    "update_id": "upd_82541608fd4c4808a5d4b57a2da6ae2d",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.9,
+     "half_items": 1.0,
+     "unchanged": 0.875
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.875,
+     "half_items": 1.0,
+     "unchanged": 0.8438
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.875,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 0.625
+     },
+     "half_items": 1.0,
+     "unchanged": 0.8438,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Firmen und Wasser?",
+       "simple"
+      ],
+      [
+       "Worum geht es im Kern: Katzen und Pflege?",
+       "simple"
+      ],
+      [
+       "Wäge Winter gegen Land ab.",
+       "gist"
+      ],
+      [
+       "Vergleiche Sommer mit Miete.",
+       "simple"
+      ],
+      [
+       "Vergleiche Sommer mit Stadt.",
+       "simple"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 36 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 160 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 84 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 48 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 140 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 120 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 60 durch 2?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_304b0c8e9124440c94b09c4b3bc3ec19",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_8b8a4e6153014078961f72a73fc314e6",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_5b3bac0c35974976ad5af1082ee97baf",
+     "observed": 8,
+     "agree_in_a_row": 2,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_ef0e513863584b73a04adc1ffe4f3213",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_82541608fd4c4808a5d4b57a2da6ae2d",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p3",
+     "handover_reply": "Regel rsup_8d2ba9ff3f4249299d3ef8d73eb363f1 an den gelernten Kopf übergeben. Sie"
+    }
+   ]
+  },
+  "adaptive+now+words+teach+rel": {
+   "shadow_jobs": 7,
+   "unnecessary_updates": 1,
+   "promotions": 6,
+   "approval_requests": 6,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 48,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 0.925,
+   "final_acc": 0.9,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9656,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 0.75
+   },
+   "rollback": {
+    "update_id": "upd_210280e0726e4f32b16a2e3d2819dc24",
+    "expected_parent_acc": 0.9,
+    "after_rollback_acc": 0.9,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.9,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.875,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Firmen und Wasser?",
+       "simple"
+      ],
+      [
+       "Worum geht es im Kern: Katzen und Pflege?",
+       "simple"
+      ],
+      [
+       "Wäge Winter gegen Land ab.",
+       "gist"
+      ],
+      [
+       "Vergleiche Sommer mit Miete.",
+       "simple"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 36 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 160 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 84 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 48 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 140 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 120 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 60 durch 2?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_dc69ebce893b48f7bf03b60ef088322c",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_772554c4e01a46849b40aa300a54e325",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_83daf1a9a649464bb566bb3da3690d3a",
+     "observed": 8,
+     "agree_in_a_row": 2,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_3183c674577c42c39be129e969cc7240",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_210280e0726e4f32b16a2e3d2819dc24",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p3",
+     "handover_reply": "Regel rsup_177fb135466f41ba91b1e924626c7fc2 an den gelernten Kopf übergeben. Sie"
+    }
+   ]
+  }
+ },
+ "arms": {
+  "fixed+now+words+teach+rel": {
+   "policy": "fixed+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3d1a353dc8454e9e9d287022f23020ad EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3d1a353dc8454e9e9d287022f23020ad",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.875,
+       "gist": 0.875,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.625,
+      "wrong": [
+       [
+        "Hallo Greta, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Schönen Abend, Hugo! Alles gut bei dir?",
+        "gist"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.06978166027215564
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3e4c934d24c640adb4155775b797f082 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_3e4c934d24c640adb4155775b797f082",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.31723763780188524,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.13464646258282698
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_41a2c17bba10446d82f62c4c3165edae EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_41a2c17bba10446d82f62c4c3165edae",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9583333333333334,
+       "known_accuracy_before": 0.9583333333333334,
+       "known_items_lost": 0,
+       "loss_after": 0.6634254850861342,
+       "loss_before": 0.6368916939526438,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.2670366489259271,
+      "loss_after": 0.15528302177392228
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_304b0c8e9124440c94b09c4b3bc3ec19 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_304b0c8e9124440c94b09c4b3bc3ec19",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9375,
+       "known_items_lost": 0,
+       "loss_after": 0.27040074619159826,
+       "loss_before": 0.42305462441942815,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3060411427993024,
+      "loss_after": 0.12323281773561838
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0477abb00f764b77b65691d50f482123 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0477abb00f764b77b65691d50f482123",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.054554460207731616,
+       "loss_before": 0.08548543817093923,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.11568334182268254,
+      "loss_after": 0.05480997264933864
+     },
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bac0e48b4a374687ae2d4916f6f704b0 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_bac0e48b4a374687ae2d4916f6f704b0",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "active_accuracy": 0.9166666666666666,
+       "gate": "relative",
+       "known_accuracy_after": 0.9791666666666666,
+       "known_accuracy_before": 0.9791666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.33181060124764405,
+       "loss_before": 0.4161218287323778,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.19138227928034834,
+      "loss_after": 0.12360254500652353
+     },
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.75,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_8b8a4e6153014078961f72a73fc314e6 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_8b8a4e6153014078961f72a73fc314e6",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5833333333333334,
+       "active_accuracy": 0.4166666666666667,
+       "anchors": 34,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.8888888888888888,
+       "known_accuracy_before": 0.7962962962962963,
+       "known_items_lost": 0,
+       "loss_after": 0.7360779603404822,
+       "loss_before": 1.5625426738010493,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.6644647753183249,
+      "loss_after": 0.26007324420332295
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_5b3bac0c35974976ad5af1082ee97baf PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5b3bac0c35974976ad5af1082ee97baf",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6,
+       "active_accuracy": 0.4666666666666667,
+       "anchors": 38,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.8939393939393939,
+       "known_accuracy_before": 0.803030303030303,
+       "known_items_lost": 0,
+       "loss_after": 1.0305124801086156,
+       "loss_before": 1.2783858264521073,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 0.7142857142857143,
+         "before": 0.5714285714285714
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5056672290957197,
+      "loss_after": 0.3277585415462977
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.25,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_ef0e513863584b73a04adc1ffe4f3213 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_ef0e513863584b73a04adc1ffe4f3213",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7647058823529411,
+       "active_accuracy": 0.6470588235294118,
+       "anchors": 42,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9230769230769231,
+       "known_accuracy_before": 0.8717948717948718,
+       "known_items_lost": 0,
+       "loss_after": 0.5962968924451945,
+       "loss_before": 0.7834703249178108,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.7777777777777778
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5882352941176471
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.36657350992837184,
+      "loss_after": 0.22662740399883644
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.25,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_82541608fd4c4808a5d4b57a2da6ae2d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_82541608fd4c4808a5d4b57a2da6ae2d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7727272727272727,
+       "active_accuracy": 0.7272727272727273,
+       "anchors": 46,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9333333333333333,
+       "known_accuracy_before": 0.8888888888888888,
+       "known_items_lost": 0,
+       "loss_after": 0.4839233293287473,
+       "loss_before": 0.5401804400177931,
+       "n": 22,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.9166666666666666
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.6363636363636364
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.24304744257284744,
+      "loss_after": 0.18130612713110983
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_82541608fd4c4808a5d4b57a2da6ae2d",
+    "expected_parent_acc": 0.875,
+    "after_rollback_acc": 0.875,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.9,
+     "half_items": 1.0,
+     "unchanged": 0.875
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.875,
+     "half_items": 1.0,
+     "unchanged": 0.8438
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.875,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 0.625
+     },
+     "half_items": 1.0,
+     "unchanged": 0.8438,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Firmen und Wasser?",
+       "simple"
+      ],
+      [
+       "Worum geht es im Kern: Katzen und Pflege?",
+       "simple"
+      ],
+      [
+       "Wäge Winter gegen Land ab.",
+       "gist"
+      ],
+      [
+       "Vergleiche Sommer mit Miete.",
+       "simple"
+      ],
+      [
+       "Vergleiche Sommer mit Stadt.",
+       "simple"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 36 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 160 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 84 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 48 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 140 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 120 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 60 durch 2?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_304b0c8e9124440c94b09c4b3bc3ec19",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_8b8a4e6153014078961f72a73fc314e6",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_5b3bac0c35974976ad5af1082ee97baf",
+     "observed": 8,
+     "agree_in_a_row": 2,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_ef0e513863584b73a04adc1ffe4f3213",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_8d2ba9ff3f4249299d3ef8d73eb363f1",
+     "head": "upd_82541608fd4c4808a5d4b57a2da6ae2d",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p3",
+     "handover_reply": "Regel rsup_8d2ba9ff3f4249299d3ef8d73eb363f1 an den gelernten Kopf übergeben. Sie"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "adaptive+now+words+teach+rel": {
+   "policy": "adaptive+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_58dea929b057427a924277d485eac5bd EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_58dea929b057427a924277d485eac5bd",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 0.875,
+       "gist": 0.875,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.625,
+      "wrong": [
+       [
+        "Hallo Greta, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Schönen Abend, Hugo! Alles gut bei dir?",
+        "gist"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.06978166027215564
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 96 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 120 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 96 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 240 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 36 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 84 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Pflanzen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Bäume brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Java?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Winter, was für Miete?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_abf7bd9eb0e744f5bed610154528601d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_abf7bd9eb0e744f5bed610154528601d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.31723763780188524,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.13464646258282698
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Was kostet 36 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Was kostet 24 Euro minus 15 Prozent?",
+        "both"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Winter und Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Kauf und Kaffee?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Stadt.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dc69ebce893b48f7bf03b60ef088322c PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dc69ebce893b48f7bf03b60ef088322c",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9791666666666666,
+       "known_accuracy_before": 0.8958333333333334,
+       "known_items_lost": 0,
+       "loss_after": 0.39899043233638437,
+       "loss_before": 0.6846871917779355,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.6666666666666666
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.38848161282416854,
+      "loss_after": 0.1661230034097257
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.625,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.725,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_772554c4e01a46849b40aa300a54e325 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_772554c4e01a46849b40aa300a54e325",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6666666666666666,
+       "active_accuracy": 0.5,
+       "anchors": 34,
+       "anchors_changed": 1,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9074074074074074,
+       "known_accuracy_before": 0.8148148148148148,
+       "known_items_lost": 0,
+       "loss_after": 0.6688671042628425,
+       "loss_before": 1.4234792241566572,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5914465698520628,
+      "loss_after": 0.23639141885948134
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 72 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 96 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_83daf1a9a649464bb566bb3da3690d3a PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_83daf1a9a649464bb566bb3da3690d3a",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6,
+       "active_accuracy": 0.5333333333333333,
+       "anchors": 38,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.8939393939393939,
+       "known_accuracy_before": 0.8181818181818182,
+       "known_items_lost": 0,
+       "loss_after": 0.9736935937572871,
+       "loss_before": 1.1823304263216934,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 0.7142857142857143,
+         "before": 0.5714285714285714
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.47540682161537645,
+      "loss_after": 0.3118895715556579
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.25,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3183c674577c42c39be129e969cc7240 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_3183c674577c42c39be129e969cc7240",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7647058823529411,
+       "active_accuracy": 0.6470588235294118,
+       "anchors": 42,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9230769230769231,
+       "known_accuracy_before": 0.8717948717948718,
+       "known_items_lost": 0,
+       "loss_after": 0.5679910291699288,
+       "loss_before": 0.7637838513687507,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.7777777777777778
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5882352941176471
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.35488822017642757,
+      "loss_after": 0.2168433152667795
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.125,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_210280e0726e4f32b16a2e3d2819dc24 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_210280e0726e4f32b16a2e3d2819dc24",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 6,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8181818181818182,
+       "active_accuracy": 0.7727272727272727,
+       "anchors": 46,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9444444444444444,
+       "known_accuracy_before": 0.9,
+       "known_items_lost": 0,
+       "loss_after": 0.43873725021939763,
+       "loss_before": 0.5004956506623437,
+       "n": 22,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.9166666666666666
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.6363636363636364
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.23156320197999994,
+      "loss_after": 0.16826905752921267
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Firmen und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Katzen und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Winter gegen Land ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Miete.",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_210280e0726e4f32b16a2e3d2819dc24",
+    "expected_parent_acc": 0.9,
+    "after_rollback_acc": 0.9,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.9,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 0.75,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.875,
+     "wrong": [
+      [
+       "Worum geht es im Kern: Firmen und Wasser?",
+       "simple"
+      ],
+      [
+       "Worum geht es im Kern: Katzen und Pflege?",
+       "simple"
+      ],
+      [
+       "Wäge Winter gegen Land ab.",
+       "gist"
+      ],
+      [
+       "Vergleiche Sommer mit Miete.",
+       "simple"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 36 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 160 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 84 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 48 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 140 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 120 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 60 durch 2?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_dc69ebce893b48f7bf03b60ef088322c",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_772554c4e01a46849b40aa300a54e325",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_83daf1a9a649464bb566bb3da3690d3a",
+     "observed": 8,
+     "agree_in_a_row": 2,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_3183c674577c42c39be129e969cc7240",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_177fb135466f41ba91b1e924626c7fc2",
+     "head": "upd_210280e0726e4f32b16a2e3d2819dc24",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "when": "p3",
+     "handover_reply": "Regel rsup_177fb135466f41ba91b1e924626c7fc2 an den gelernten Kopf übergeben. Sie"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261026/z6b-lifecycle/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate"
+}

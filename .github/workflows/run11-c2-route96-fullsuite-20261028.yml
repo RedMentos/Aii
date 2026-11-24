@@ -1,0 +1,93 @@
+name: V13 Run11 C2 route96 full Linux software review
+on:
+  push:
+    branches:
+      - codex/v13-run11-c2-route96-native-eval-20261028
+    paths:
+      - '.github/workflows/run11-c2-route96-fullsuite-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-c2-route96-fullsuite
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source hashes and complete Linux software regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11-c2-route96-fullsuite"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git show -s --format='%P' HEAD > "$e/PARENTS.txt"
+          for p in v13/code/specs/models.json v13/code/specs/c2-benchmark.json v13/code/scripts/c2_benchmark.py v13/code/BUILD_STATE.json; do
+            git hash-object "$p"
+            echo "$p"
+          done > "$e/SOURCE_BLOBS_RAW.log"
+          python3 -m venv "$RUNNER_TEMP/v13-c2-route96-fullsuite-venv"
+          py="$RUNNER_TEMP/v13-c2-route96-fullsuite-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_c2_benchmark tests.test_current_c2_native_linux_smoke_20261028 tests.test_native_smoke_io_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/c2_benchmark.py v13/code/tests/test_c2_benchmark.py v13/code/scripts/current_c2_native_linux_smoke_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base af71f1ebc26d934a180db39f77a2978ced7b6261 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check af71f1ebc26d934a180db39f77a2978ced7b6261 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c2-route96-fullsuite-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11-c2-route96-fullsuite/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact full software review
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11-c2-route96-fullsuite"
+          for name in INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -70 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'V13_C2_ROUTE96_FULL_LINUX_SOFTWARE_ONLY_NO_QUALITY_PROMOTION'

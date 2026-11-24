@@ -1,0 +1,17 @@
+{
+  "authority_commit": "a1973d4120b4de8951faadcb6b75d3b24953184e",
+  "files": {
+    "BUILD_STATE_RUN7_20261019.json": "cbd3225f1f41b007612ce9d531d1af777cda06cfabc2a3098a575c79e9b808e7",
+    "PUBLISH_STATUS_RUN7_20261019.md": "401d2f7a0001cab3b7680f53286640eca1e1bfc13a075a7cf8ebd71da65de013",
+    "RESEARCH_AND_PROVENANCE.md": "e5265e9b10158a67fa8c2bf69766297f472b9af4b49aff0a409c73514fa63842",
+    "USER_DECISIONS_AND_OPEN_QUESTIONS.md": "bb9cb2e10b947124c622040a8651d1fae7b9c7c4e0a47cf6838d29b8013c10f2",
+    "candidate/README.md": "65a71dca5db0e09b44a10704549335b271e66ffefaa1d0defbfcdda52a6bff11",
+    "candidate/audit_private_pilot.py": "7f030a5852303ac4deb36158b6bcff15c3d14514ee9441946ce5a57474d0d062",
+    "candidate/test_audit_private_pilot.py": "a3654267d45b428c98916478419f7b3125b344f59dcbe6e00f7b3662e93df245",
+    "completion-ledger-run7-delta.json": "af0f7fe6d17d2b5e8066f46d0aeab6e6e7d876a54c5ca0aed964b70bdb464b9e",
+    "proofs/audit-tests.log": "98f2847e9dc19371044b7454c15fa14113b66bc910ed4889a28441afe7b8af33",
+    "proofs/compileall.log": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+  },
+  "schema": "V13_RUN7_SOURCE_DELTA_SHA256_V1",
+  "scope": "isolated candidate overlay; NOT complete integrated source checkout"
+}

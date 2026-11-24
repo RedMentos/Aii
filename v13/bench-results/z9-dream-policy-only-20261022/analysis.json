@@ -1,0 +1,588 @@
+{
+ "schema": "v13-z9-analysis-v1",
+ "verdict": "Z9_POLICY_DREAM_NO_GAIN",
+ "attribution": "FACT_WRITE_CARRIES",
+ "base_reproduces_dream2v3": true,
+ "no_writes_identical_to_none_seed13": true,
+ "delta_paraphrase_vs_replay": 0.0833,
+ "any_seed_worse": false,
+ "means": {
+  "none": {
+   "A_recall": 0.3333,
+   "A_paraphrase": 0.4167,
+   "B_recall": 1.0,
+   "probe_retention": 0.6111,
+   "near_miss_leak": 0.3333,
+   "kl_to_base": 2.1495
+  },
+  "replay_exact": {
+   "A_recall": 1.0,
+   "A_paraphrase": 0.4167,
+   "B_recall": 1.0,
+   "probe_retention": 0.6111,
+   "near_miss_leak": 0.9333,
+   "kl_to_base": 1.8876
+  },
+  "dream_validated": {
+   "A_recall": 1.0,
+   "A_paraphrase": 0.75,
+   "B_recall": 1.0,
+   "probe_retention": 0.1944,
+   "near_miss_leak": 0.9333,
+   "kl_to_base": 2.1395
+  },
+  "dream_policy_only": {
+   "A_recall": 0.25,
+   "A_paraphrase": 0.0,
+   "B_recall": 1.0,
+   "probe_retention": 0.1667,
+   "near_miss_leak": 0.3333,
+   "kl_to_base": 2.2324
+  },
+  "replay_dream_policy": {
+   "A_recall": 1.0,
+   "A_paraphrase": 0.5,
+   "B_recall": 1.0,
+   "probe_retention": 0.2222,
+   "near_miss_leak": 0.8667,
+   "kl_to_base": 2.1204
+  },
+  "replay_dream_validated": {
+   "A_recall": 1.0,
+   "A_paraphrase": 0.6667,
+   "B_recall": 1.0,
+   "probe_retention": 0.2222,
+   "near_miss_leak": 0.9333,
+   "kl_to_base": 2.1195
+  }
+ },
+ "per_seed": {
+  "13/dream_no_writes": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.25
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.4166666666666667,
+   "kl_to_base": 2.1980350414911904,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/dream_policy_only": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.0
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.21280545492967,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/dream_self": {
+   "A": {
+    "recall": 0.75,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.5833333333333334,
+   "kl_to_base": 2.105373385051886,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the largest ocean on Earth?",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/dream_unanchored": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.3333333333333333,
+   "kl_to_base": 2.025677045186361,
+   "forgotten": [
+    "What is the capital of France?",
+    "What is the capital of Japan?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.0941988428433738,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/none": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.25
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.4166666666666667,
+   "kl_to_base": 2.1980350414911904,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/replay_dream_policy": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.093921502431234,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/replay_dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.0738114019234977,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "13/replay_exact": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.4166666666666667,
+   "kl_to_base": 1.885774274667104,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/dream_policy_only": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.0
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.2,
+   "probe_retention": 0.16666666666666666,
+   "kl_to_base": 2.2191216349601746,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "What is 7 plus 5?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/dream_self": {
+   "A": {
+    "recall": 0.75,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.6666666666666666,
+   "kl_to_base": 1.802149015168349,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "What is the largest ocean on Earth?",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/dream_unanchored": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.25,
+   "kl_to_base": 1.9780436356862385,
+   "forgotten": [
+    "What is the capital of France?",
+    "What is the capital of Japan?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.1117906123399734,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/none": {
+   "A": {
+    "recall": 0.5,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.75,
+   "kl_to_base": 2.0735770960648856,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "What is the largest ocean on Earth?"
+   ]
+  },
+  "21/replay_dream_policy": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.16666666666666666,
+   "kl_to_base": 2.0807148615519204,
+   "forgotten": [
+    "What is the capital of France?",
+    "What is the capital of Japan?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/replay_dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.0771201451619468,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "21/replay_exact": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.75,
+   "kl_to_base": 1.7876504734158516,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "What is the largest ocean on Earth?"
+   ]
+  },
+  "34/dream_policy_only": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.0
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.08333333333333333,
+   "kl_to_base": 2.265281453728676,
+   "forgotten": [
+    "What is the capital of France?",
+    "How many legs does a spider have?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "What is 7 plus 5?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/dream_self": {
+   "A": {
+    "recall": 0.75,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.75,
+   "kl_to_base": 2.104041909178098,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/dream_unanchored": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.25,
+   "kl_to_base": 1.990768497188886,
+   "forgotten": [
+    "What is the capital of France?",
+    "What is the capital of Japan?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is 7 plus 5?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.08333333333333333,
+   "kl_to_base": 2.212389921148618,
+   "forgotten": [
+    "What is the capital of France?",
+    "How many legs does a spider have?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "What is 7 plus 5?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/none": {
+   "A": {
+    "recall": 0.25,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.2,
+   "probe_retention": 0.6666666666666666,
+   "kl_to_base": 2.1769602050383887,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/replay_dream_policy": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.25,
+   "kl_to_base": 2.1865352789560952,
+   "forgotten": [
+    "What is the capital of France?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/replay_dream_validated": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.5
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 1.0,
+   "probe_retention": 0.16666666666666666,
+   "kl_to_base": 2.2074535290400186,
+   "forgotten": [
+    "What is the capital of France?",
+    "How many legs does a spider have?",
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "What is the opposite of hot?",
+    "What is the largest ocean on Earth?",
+    "List three fruits.",
+    "Translate \"thank you\" into German."
+   ]
+  },
+  "34/replay_exact": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.25
+   },
+   "B": {
+    "recall": 1.0,
+    "paraphrase": 1.0
+   },
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.6666666666666666,
+   "kl_to_base": 1.9894638235370319,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?",
+    "Translate \"thank you\" into German."
+   ]
+  }
+ },
+ "phone_measured": false,
+ "canonical_gate_pass": false
+}

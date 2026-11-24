@@ -1,0 +1,738 @@
+{
+ "kind": "B3_L1_AUX_EXPLORE",
+ "status": "EXPLORATORY (seen test items); motivates attempt 4 only, no canon verdict",
+ "script_sha256": "f1d960dbf952dc103261a3a92bb349fd7e2c35af0704431c591fcf9675a3f19b",
+ "bridge_sha256": "2d3fe7bf6d1184e20f7096a3b08104bf4c559ea3260d056c52251061ce766fb3",
+ "tasks": {
+  "escalate": {
+   "acc_mean": {
+    "LATENT_AUX": 0.825,
+    "LATENT_AUX_SHUFFLED": 0.5183,
+    "LATENT_AUX_RANDOM": 0.5617,
+    "NO_MESSAGE": 0.6783,
+    "EXACT": 0.7683,
+    "SYMBOLIC": 0.7733,
+    "SYMBOLIC_ATTR": 0.8367,
+    "SCALAR": 0.9083,
+    "LATENT": 0.77
+   },
+   "acc_per_seed": {
+    "LATENT_AUX": [
+     0.8583,
+     0.8,
+     0.825,
+     0.825,
+     0.8167
+    ],
+    "LATENT_AUX_SHUFFLED": [
+     0.6167,
+     0.5417,
+     0.4917,
+     0.45,
+     0.4917
+    ],
+    "LATENT_AUX_RANDOM": [
+     0.6583,
+     0.5667,
+     0.4583,
+     0.55,
+     0.575
+    ]
+   },
+   "ood_rate": 0.005,
+   "paired_LATENT_AUX_minus_LATENT": {
+    "mean": 0.055,
+    "se": 0.0186,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "gates": {
+    "label_word": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "PASS",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.1467,
+       "se": 0.0247,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3067,
+       "se": 0.0248,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.2633,
+       "se": 0.0285,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0795,
+       "se": 0.0201,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0478,
+       "se": 0.0196,
+       "wins": 4,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.005,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.0632,
+      "LATENT": 0.1427,
+      "LATENT_SHUFFLED": -0.16,
+      "LATENT_RANDOM": -0.1167,
+      "SYMBOLIC": 0.0948
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+    },
+    "attr_words": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.1467,
+       "se": 0.0247,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3067,
+       "se": 0.0248,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.2633,
+       "se": 0.0285,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0795,
+       "se": 0.0201,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0139,
+       "se": 0.0068,
+       "wins": 1,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.005,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.0632,
+      "LATENT": 0.1427,
+      "LATENT_SHUFFLED": -0.16,
+      "LATENT_RANDOM": -0.1167,
+      "SYMBOLIC": 0.1565
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    },
+    "strict_scalar": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.1467,
+       "se": 0.0247,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3067,
+       "se": 0.0248,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.2633,
+       "se": 0.0285,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0795,
+       "se": 0.0201,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0871,
+       "se": 0.0112,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.005,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.0632,
+      "LATENT": 0.1427,
+      "LATENT_SHUFFLED": -0.16,
+      "LATENT_RANDOM": -0.1167,
+      "SYMBOLIC": 0.2297
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "exploratory_verdict": "FAIL",
+   "note": "role retention not re-measured here (receiver path unchanged); reload identity covered by tests/test_b3bridge"
+  },
+  "apologize": {
+   "acc_mean": {
+    "LATENT_AUX": 0.8517,
+    "LATENT_AUX_SHUFFLED": 0.4983,
+    "LATENT_AUX_RANDOM": 0.5167,
+    "NO_MESSAGE": 0.5267,
+    "EXACT": 0.8567,
+    "SYMBOLIC": 0.7967,
+    "SYMBOLIC_ATTR": 0.8467,
+    "SCALAR": 0.935,
+    "LATENT": 0.805
+   },
+   "acc_per_seed": {
+    "LATENT_AUX": [
+     0.8583,
+     0.85,
+     0.8333,
+     0.8667,
+     0.85
+    ],
+    "LATENT_AUX_SHUFFLED": [
+     0.6,
+     0.425,
+     0.4833,
+     0.4917,
+     0.4917
+    ],
+    "LATENT_AUX_RANDOM": [
+     0.5583,
+     0.4667,
+     0.475,
+     0.525,
+     0.5583
+    ]
+   },
+   "ood_rate": 0.0117,
+   "paired_LATENT_AUX_minus_LATENT": {
+    "mean": 0.0467,
+    "se": 0.0148,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "gates": {
+    "label_word": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.325,
+       "se": 0.0075,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3533,
+       "se": 0.0271,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.335,
+       "se": 0.0174,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0178,
+       "se": 0.0159,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0511,
+       "se": 0.0114,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.3032,
+      "LATENT": 0.321,
+      "LATENT_SHUFFLED": -0.0283,
+      "LATENT_RANDOM": -0.01,
+      "SYMBOLIC": 0.2698
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    },
+    "attr_words": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.325,
+       "se": 0.0075,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3533,
+       "se": 0.0271,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.335,
+       "se": 0.0174,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0178,
+       "se": 0.0159,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0028,
+       "se": 0.0281,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.3032,
+      "LATENT": 0.321,
+      "LATENT_SHUFFLED": -0.0283,
+      "LATENT_RANDOM": -0.01,
+      "SYMBOLIC": 0.3182
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    },
+    "strict_scalar": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "FAIL",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.325,
+       "se": 0.0075,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.3533,
+       "se": 0.0271,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.335,
+       "se": 0.0174,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.0178,
+       "se": 0.0159,
+       "wins": 3,
+       "n": 5,
+       "significant": false
+      },
+      "utility_beats_symbolic": {
+       "mean": -0.0871,
+       "se": 0.0099,
+       "wins": 0,
+       "n": 5,
+       "significant": false
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0117,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.3032,
+      "LATENT": 0.321,
+      "LATENT_SHUFFLED": -0.0283,
+      "LATENT_RANDOM": -0.01,
+      "SYMBOLIC": 0.4081
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only"
+    }
+   },
+   "exploratory_verdict": "FAIL",
+   "note": "role retention not re-measured here (receiver path unchanged); reload identity covered by tests/test_b3bridge"
+  },
+  "action": {
+   "acc_mean": {
+    "LATENT_AUX": 0.88,
+    "LATENT_AUX_SHUFFLED": 0.37,
+    "LATENT_AUX_RANDOM": 0.3683,
+    "NO_MESSAGE": 0.4767,
+    "EXACT": 0.655,
+    "SYMBOLIC": 0.8133,
+    "SYMBOLIC_ATTR": 0.7983,
+    "SCALAR": 0.8383,
+    "LATENT": 0.7817
+   },
+   "acc_per_seed": {
+    "LATENT_AUX": [
+     0.925,
+     0.875,
+     0.875,
+     0.8667,
+     0.8583
+    ],
+    "LATENT_AUX_SHUFFLED": [
+     0.4583,
+     0.375,
+     0.3833,
+     0.275,
+     0.3583
+    ],
+    "LATENT_AUX_RANDOM": [
+     0.4583,
+     0.3583,
+     0.2917,
+     0.3167,
+     0.4167
+    ]
+   },
+   "ood_rate": 0.0017,
+   "paired_LATENT_AUX_minus_LATENT": {
+    "mean": 0.0983,
+    "se": 0.0255,
+    "wins": 5,
+    "n": 5,
+    "significant": true
+   },
+   "gates": {
+    "label_word": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "PASS",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.4033,
+       "se": 0.0191,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.51,
+       "se": 0.0213,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.5117,
+       "se": 0.026,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.2478,
+       "se": 0.0105,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0631,
+       "se": 0.014,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0017,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.1515,
+      "LATENT": 0.3993,
+      "LATENT_SHUFFLED": -0.1067,
+      "LATENT_RANDOM": -0.1083,
+      "SYMBOLIC": 0.3362
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+    },
+    "attr_words": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "PASS",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.4033,
+       "se": 0.0191,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.51,
+       "se": 0.0213,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.5117,
+       "se": 0.026,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.2478,
+       "se": 0.0105,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0795,
+       "se": 0.0331,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0017,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.1515,
+      "LATENT": 0.3993,
+      "LATENT_SHUFFLED": -0.1067,
+      "LATENT_RANDOM": -0.1083,
+      "SYMBOLIC": 0.3199
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+    },
+    "strict_scalar": {
+     "gate": "G-CALLOSUM-UTILITY-002",
+     "level": "L1",
+     "verdict": "PASS",
+     "criteria": {
+      "beats_no_message": {
+       "mean": 0.4033,
+       "se": 0.0191,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_shuffled": {
+       "mean": 0.51,
+       "se": 0.0213,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "beats_latent_random": {
+       "mean": 0.5117,
+       "se": 0.026,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_exact": {
+       "mean": 0.2478,
+       "se": 0.0105,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "utility_beats_symbolic": {
+       "mean": 0.0379,
+       "se": 0.0124,
+       "wins": 5,
+       "n": 5,
+       "significant": true
+      },
+      "role_retention": {
+       "drop": 0.0,
+       "significant": true
+      },
+      "receiver_ood": {
+       "rate": 0.0017,
+       "significant": true
+      },
+      "restart_reproducibility": {
+       "significant": true
+      }
+     },
+     "utility_mean": {
+      "NO_MESSAGE": 0.0,
+      "EXACT": 0.1515,
+      "LATENT": 0.3993,
+      "LATENT_SHUFFLED": -0.1067,
+      "LATENT_RANDOM": -0.1083,
+      "SYMBOLIC": 0.3614
+     },
+     "missing_baselines": [
+      "CONTROL"
+     ],
+     "consequence": "L2 prefix SHADOW test allowed; LATENT authority stays 0"
+    }
+   },
+   "exploratory_verdict": "PASS",
+   "note": "role retention not re-measured here (receiver path unchanged); reload identity covered by tests/test_b3bridge"
+  }
+ },
+ "seconds": 1223.8
+}

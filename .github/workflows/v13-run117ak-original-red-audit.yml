@@ -1,0 +1,86 @@
+name: V13 Run117AK independent original Run117AH native RED audit
+on:
+  push:
+    branches:
+      - assistant/v13-run117ak-native-body-audit-20261031-gpt6
+    paths:
+      - v13/code/docs/RUN117AK_ORIGINAL_RED_AUDIT_SENTINEL_20261031.md
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-original-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      ORIGINAL_ARTIFACT_ID: '13056238483'
+      ORIGINAL_ARTIFACT_SHA: '256efa611a31d3696d9e8f6f125c917ac242de280ae1e64b4ecc6f2e4d567195'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Audit immutable original RED ZIP without native models
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117ak-original-audit"
+          original="$RUNNER_TEMP/run117ah-original-red.zip"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/AUDITOR_HEAD.txt"
+          git hash-object v13/code/scripts/run117ak_independent_body_native_audit.py > "$e/AUDITOR_BLOB.txt"
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$ORIGINAL_ARTIFACT_ID/zip" \
+            --output "$original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          download_rc=$?
+          unset GH_TOKEN
+          echo "$download_rc" > "$e/DOWNLOAD_EXIT.txt"
+          if test "$download_rc" -eq 0; then
+            printf '%s  %s\n' "$ORIGINAL_ARTIFACT_SHA" "$original" | sha256sum -c - > "$e/OUTER_SHA_RAW.log" 2>&1
+            sha_rc=$?
+          else
+            sha_rc=125;echo DOWNLOAD_RED > "$e/OUTER_SHA_RAW.log"
+          fi
+          echo "$sha_rc" > "$e/OUTER_SHA_EXIT.txt"
+          if test "$download_rc" -eq 0 && test "$sha_rc" -eq 0; then
+            python3 v13/code/scripts/run117ak_independent_body_native_audit.py "$original" \
+              --expected-sha "$ORIGINAL_ARTIFACT_SHA" > "$e/AUDIT_RAW.log" 2>&1
+            audit_rc=$?
+          else
+            audit_rc=125;echo PREREQUISITE_RED > "$e/AUDIT_RAW.log"
+          fi
+          echo "$audit_rc" > "$e/AUDIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v \
+            tests.test_run117ak_independent_body_native_audit) > "$e/TEST_RAW.log" 2>&1
+          test_rc=$?
+          echo "$test_rc" > "$e/TEST_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/run117ak_independent_body_native_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 35e3bee123166b7761b6335adc423c8f73654c2b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 35e3bee123166b7761b6335adc423c8f73654c2b HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/AUDIT_RAW.log"
+          tail -n 8 "$e/TEST_RAW.log"
+          for rc in "$download_rc" "$sha_rc" "$audit_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do
+            if test "$rc" -ne 0; then exit 1; fi
+          done
+      - name: Preserve independent original RED audit GREEN or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ak-original-red-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ak-original-audit/
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,11 @@
+# Run38 interpretation note — original W6 ceiling (exploratory, no gate changes)
+
+2026-10-31 UTC. Derived **after** Run38 preregistration and heavy launch, from the previously verified original Run35 real-file ZIP `13022096998` (SHA256 `4e9870c1f6530990ebd987d34b6efd324f1b93f9e8b9d974a29f74c5e294160b`). No change to Run38 source, seed, model, W1–W7, H1/H2 or thresholds.
+
+The frozen Z12b `criteria` defines **W6** as `no_action_balanced <= action_balanced - 0.20`. The `balanced` field in `attr_eval` is the mean of only `own_only_self` and `world_only_world`, **not** the W7c four-class macro. Run35 aligned pooled action-balanced **0.9522**, no-action-balanced **0.9534**; the action gap is **-0.0012**, while W6 requires **+0.20**. Even a perfect action-balanced score of 1.0 could not satisfy W6 while the no-action control remains above 0.80; with the observed 0.9534 control, the required action score would be **1.1534**, impossible. This is a genuine action-specificity failure in the registered comparison, not grounds to weaken W6.
+
+Original aligned per-seed action-minus-no-action balanced: seed301 **+0.0583**, seed302 **-0.0365**, seed303 **-0.0254**. The four-class W7c macro is a distinct metric and cannot substitute for W6. Original aligned covered-confidence/error Spearman per seed (computed from original raw `_conf_err`): 301 **-0.2664**, 302 **-0.2601**, 303 **-0.2961**; pooled **-0.2789**, below the required magnitude 0.30. All of these are **exploratory diagnostics on already observed Run35 data**, not a new blind cohort.
+
+Run38 all-six-slot training changes the local action/noop example ratio from approximately 1:1 in original two-slot sampling to 1:5 for ordinary affected transitions; the action fraction therefore drops from ~50% to ~16.7%. That is an explicit causal confound of the training-sampling intervention. Run38 must report this fact and retain all original W6 failures. If Run38 fails, a separately preregistered disjoint action-balanced sampler or a more discriminating attribution task may be a research candidate; neither may silently waive original negative gates.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; World-JEPA SHADOW; no Redmi or whole-system completion.

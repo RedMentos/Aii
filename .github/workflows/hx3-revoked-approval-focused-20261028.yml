@@ -1,0 +1,77 @@
+name: V13 HX3 revoked AG8 approval read RED GREEN focused (software only)
+on:
+  push:
+    branches: [assistant/v13-hx3-approval-revocation-read-20261028]
+    paths:
+      - '.github/workflows/hx3-revoked-approval-focused-20261028.yml'
+      - 'v13/code/v13/agi/experience.py'
+      - 'v13/code/tests/test_hx3_revoked_approval_read_20261028.py'
+      - 'v13/code/tests/test_hx_approval_run133.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hx3-revoked-approval-focused-20261028
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw focused test and exact source
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-hx3-revoked-focused"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/HX3_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_hx3_revoked_approval_read_20261028.py > "$evidence/CROSS_TEST_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-hx3-revoked-venv"
+          py="$RUNNER_TEMP/v13-hx3-revoked-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_hx3_revoked_approval_read_20261028
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1a412fae18204dd4f33ffd1ef7e7998ad9c863a7 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 1a412fae18204dd4f33ffd1ef7e7998ad9c863a7 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-hx3-revoked-focused-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hx3-revoked-focused/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits (RED remains failed)
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-hx3-revoked-focused"
+          for name in INSTALL FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'HX3_REVOKED_APPROVAL_SOFTWARE_ONLY_NO_GATE_PROMOTION'

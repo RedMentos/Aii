@@ -1,0 +1,674 @@
+[
+ {
+  "id": "simple-00",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.91439898699997,
+  "error": null
+ },
+ {
+  "id": "simple-01",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.4576551719999884,
+  "error": null
+ },
+ {
+  "id": "simple-02",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2639271440000357,
+  "error": null
+ },
+ {
+  "id": "simple-03",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7012797689999957,
+  "error": null
+ },
+ {
+  "id": "simple-04",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7237203969999655,
+  "error": null
+ },
+ {
+  "id": "simple-05",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.28107102000001305,
+  "error": null
+ },
+ {
+  "id": "simple-06",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7557396439999593,
+  "error": null
+ },
+ {
+  "id": "simple-07",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7314567980000106,
+  "error": null
+ },
+ {
+  "id": "simple-08",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.724883004999981,
+  "error": null
+ },
+ {
+  "id": "simple-09",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2880660259999672,
+  "error": null
+ },
+ {
+  "id": "simple-10",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.27674159399998643,
+  "error": null
+ },
+ {
+  "id": "simple-11",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7141794979999645,
+  "error": null
+ },
+ {
+  "id": "simple-12",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.4130783049999991,
+  "error": null
+ },
+ {
+  "id": "simple-13",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7069361640000125,
+  "error": null
+ },
+ {
+  "id": "simple-14",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.26648113999999623,
+  "error": null
+ },
+ {
+  "id": "simple-15",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.5711219579999351,
+  "error": null
+ },
+ {
+  "id": "simple-16",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.31132438399993134,
+  "error": null
+ },
+ {
+  "id": "simple-17",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2748678379999774,
+  "error": null
+ },
+ {
+  "id": "simple-18",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2739054699999315,
+  "error": null
+ },
+ {
+  "id": "simple-19",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.25734850499998174,
+  "error": null
+ },
+ {
+  "id": "simple-20",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.7040223510000487,
+  "error": null
+ },
+ {
+  "id": "simple-21",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2681350240000029,
+  "error": null
+ },
+ {
+  "id": "simple-22",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.4698272440000437,
+  "error": null
+ },
+ {
+  "id": "simple-23",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.9221998880000228,
+  "error": null
+ },
+ {
+  "id": "detail-00",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.3016401049999331,
+  "error": null
+ },
+ {
+  "id": "detail-01",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7916514139999435,
+  "error": null
+ },
+ {
+  "id": "detail-02",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7170383359999732,
+  "error": null
+ },
+ {
+  "id": "detail-03",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.46117225299997244,
+  "error": null
+ },
+ {
+  "id": "detail-04",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.311677584999984,
+  "error": null
+ },
+ {
+  "id": "detail-05",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.8141739760000064,
+  "error": null
+ },
+ {
+  "id": "detail-06",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.2872315399999934,
+  "error": null
+ },
+ {
+  "id": "detail-07",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7978697209999837,
+  "error": null
+ },
+ {
+  "id": "detail-08",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.6900624950000065,
+  "error": null
+ },
+ {
+  "id": "detail-09",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.6759486329999618,
+  "error": null
+ },
+ {
+  "id": "detail-10",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.27986465599997246,
+  "error": null
+ },
+ {
+  "id": "detail-11",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7612824249999903,
+  "error": null
+ },
+ {
+  "id": "detail-12",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.4742911660000573,
+  "error": null
+ },
+ {
+  "id": "detail-13",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7319221669999934,
+  "error": null
+ },
+ {
+  "id": "detail-14",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7178108189999648,
+  "error": null
+ },
+ {
+  "id": "detail-15",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.3280139999999392,
+  "error": null
+ },
+ {
+  "id": "detail-16",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.6517671650000239,
+  "error": null
+ },
+ {
+  "id": "detail-17",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.5240145960000291,
+  "error": null
+ },
+ {
+  "id": "detail-18",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7845776750000368,
+  "error": null
+ },
+ {
+  "id": "detail-19",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.7228443609999431,
+  "error": null
+ },
+ {
+  "id": "detail-20",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.2672813959999303,
+  "error": null
+ },
+ {
+  "id": "detail-21",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.6956046640000295,
+  "error": null
+ },
+ {
+  "id": "detail-22",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.6884979509999312,
+  "error": null
+ },
+ {
+  "id": "detail-23",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.5451433660000475,
+  "error": null
+ },
+ {
+  "id": "gist-00",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.699922096000023,
+  "error": null
+ },
+ {
+  "id": "gist-01",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.709846789999915,
+  "error": null
+ },
+ {
+  "id": "gist-02",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.2690021550000665,
+  "error": null
+ },
+ {
+  "id": "gist-03",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.27637712700004613,
+  "error": null
+ },
+ {
+  "id": "gist-04",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.735140365999996,
+  "error": null
+ },
+ {
+  "id": "gist-05",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7374178320000055,
+  "error": null
+ },
+ {
+  "id": "gist-06",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.4956352200000538,
+  "error": null
+ },
+ {
+  "id": "gist-07",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7347319629999447,
+  "error": null
+ },
+ {
+  "id": "gist-08",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.6930085589999635,
+  "error": null
+ },
+ {
+  "id": "gist-09",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.2757005720000052,
+  "error": null
+ },
+ {
+  "id": "gist-10",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7371255200000633,
+  "error": null
+ },
+ {
+  "id": "gist-11",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.27976962699995056,
+  "error": null
+ },
+ {
+  "id": "gist-12",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7202359620000607,
+  "error": null
+ },
+ {
+  "id": "gist-13",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7823802709999654,
+  "error": null
+ },
+ {
+  "id": "gist-14",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7112251869999682,
+  "error": null
+ },
+ {
+  "id": "gist-15",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.6826879159999635,
+  "error": null
+ },
+ {
+  "id": "gist-16",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.26211198099997546,
+  "error": null
+ },
+ {
+  "id": "gist-17",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.267003620999958,
+  "error": null
+ },
+ {
+  "id": "gist-18",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.31482986299999993,
+  "error": null
+ },
+ {
+  "id": "gist-19",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.655577724000068,
+  "error": null
+ },
+ {
+  "id": "gist-20",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.32043540799998027,
+  "error": null
+ },
+ {
+  "id": "gist-21",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7813013119999823,
+  "error": null
+ },
+ {
+  "id": "gist-22",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7491783820000819,
+  "error": null
+ },
+ {
+  "id": "gist-23",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.7333612500000299,
+  "error": null
+ },
+ {
+  "id": "both-00",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7386337129998992,
+  "error": null
+ },
+ {
+  "id": "both-01",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.6705803419999938,
+  "error": null
+ },
+ {
+  "id": "both-02",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.6942140769999696,
+  "error": null
+ },
+ {
+  "id": "both-03",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7065246419999767,
+  "error": null
+ },
+ {
+  "id": "both-04",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.4431129559999363,
+  "error": null
+ },
+ {
+  "id": "both-05",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.6622493890000669,
+  "error": null
+ },
+ {
+  "id": "both-06",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7284708780000528,
+  "error": null
+ },
+ {
+  "id": "both-07",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7200771369999757,
+  "error": null
+ },
+ {
+  "id": "both-08",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7562798999999814,
+  "error": null
+ },
+ {
+  "id": "both-09",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.6876039229999833,
+  "error": null
+ },
+ {
+  "id": "both-10",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.749090711000008,
+  "error": null
+ },
+ {
+  "id": "both-11",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7270909740000207,
+  "error": null
+ },
+ {
+  "id": "both-12",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7410114150000027,
+  "error": null
+ },
+ {
+  "id": "both-13",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.4385440800000424,
+  "error": null
+ },
+ {
+  "id": "both-14",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.5080165419999503,
+  "error": null
+ },
+ {
+  "id": "both-15",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7538899509999055,
+  "error": null
+ },
+ {
+  "id": "both-16",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7444928749999917,
+  "error": null
+ },
+ {
+  "id": "both-17",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7443126140000231,
+  "error": null
+ },
+ {
+  "id": "both-18",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.6334300849999863,
+  "error": null
+ },
+ {
+  "id": "both-19",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7407532500000116,
+  "error": null
+ },
+ {
+  "id": "both-20",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7210497529999884,
+  "error": null
+ },
+ {
+  "id": "both-21",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.7455722239999432,
+  "error": null
+ },
+ {
+  "id": "both-22",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.3090719320000517,
+  "error": null
+ },
+ {
+  "id": "both-23",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.5275191729999733,
+  "error": null
+ }
+]

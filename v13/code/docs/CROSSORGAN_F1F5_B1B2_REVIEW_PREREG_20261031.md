@@ -1,0 +1,7 @@
+# Cross-organ review prereg: F1/F5 finalizer + B1/B2 Run52 metric audit — 2026-10-31
+
+Review-only integration branch, parent `3dd56daacd063199735053d0e419c25d0dc1218f` (Run52 + independent lexical audit PR #1380). Import exactly four **existing immutable blobs** from separate F1/F5 finalizer audit PR #1379 head `53f15ac73e4deea8644dc6a1e68acfb7a53352eb`, without modifying them: `f1f5_event_finalizer_candidate.py`, its tests, its original prereg and its verified BUILD_STATE. Preserve original two PR histories; the copied blob identities, not a claim of merged production history, establish content equivalence.
+
+Predeclared software check: run unmodified Run52, Run51, Run50, Run49, Run48 and Run46B focused tests plus both new adversarial suites in one isolated GitHub Actions environment. Expected 69 tests (49 historical + 5 Run52 + 5 metric + 10 F1/F5). Pin exact original Run52 source/fixture/Canon and imported F1/F5 blob SHAs. Preserve all exit receipts, raw logs, SHA256SUMS and privacy scan. No model downloads, native inference, output delivery or learning. If RED, preserve and debug without suppressing tests or silently changing original registered files.
+
+This tests compatibility of independent additive review packages only. It does not make either package production-integrated, resolve the native Run52 owner, approve C5/C6 delivery or promote Age0/STEP2/B3/JEPA/Redmi. No production merge or auto-merge.

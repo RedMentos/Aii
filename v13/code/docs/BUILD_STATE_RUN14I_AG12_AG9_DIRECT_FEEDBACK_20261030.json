@@ -1,0 +1,74 @@
+{
+  "schema": "v13.run14i.ag12_ag9_direct_feedback.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 V13 continuation; review-only cross-organ AG12->AG9",
+  "parent": {
+    "pr": 1325,
+    "commit": "5c5d0475ce329f4557bcaf1a517e9e7c41e32557"
+  },
+  "branch": "assistant/v13-run14i-ag12-ag9-direct-feedback-20261030-hourly11",
+  "state": "EXACT_IN_MEMORY_AG12_ROWS_BIND_AG9_LANGUAGE_SCOPED_SOFTWARE_TESTFIRST_RED_CANDIDATE_GREEN_PRIVATE_BYTE_VERIFIED",
+  "prereg_commit": "aa80cca3e9f2ea8a61f78b1836fff2ff69aa412f",
+  "test_commit": "8619ccf7ac1adf39fc8d5bda4357733b50179901",
+  "original_red_workflow_commit": "d1dd871b80b34967f6ac6b7b154e5f7d78748f5e",
+  "candidate_generality_commit": "b1640aca10e71a02443253f43782341ee1b9f1a9",
+  "candidate_solver_commit": "5d222b807a4f09e1dbda69dc1977d7cfa277efb6",
+  "candidate_workflow_commit": "6b3c57071ff46b0e20552e79c8e4e2dabcfec214",
+  "source_blobs": {
+    "original_generality": "e5e381d129f675f2b9a568660e024dc9f702566c",
+    "candidate_generality": "e0daa99e5953caeba49a1167cfbbbc5885a7522f",
+    "original_solver": "aca3973ac45893c217f9319e7251d5c940f2dd8d",
+    "candidate_solver": "1e7d8dce2790c908dd294f3c3680dbab519adc10",
+    "test": "73934d854a07e73d84e4155f02c0acc7e0704a58",
+    "prereg": "afadcc9d959ee7b38fb195be3b13a1ce2eb84bb2",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "red_run": 41109432646,
+    "red_artifact": 13002757023,
+    "red_zip_sha256": "99d72ab1d504181d216f13768e35e464e006200eddf03cfe8a374d531e926338",
+    "red_tests": 15,
+    "red_failures": 6,
+    "red_errors": 1,
+    "red_stage_exits": {
+      "PINS": 0,
+      "TEST": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "green_run": 41109564200,
+    "green_artifact": 13002628493,
+    "green_zip_sha256": "2bf5ca4dee8125824f7ec6d047c2fc9a6ba1c4e9001be61eb98e3a5a526ee0f1",
+    "green_tests": 22,
+    "green_failures": 0,
+    "green_stage_exits": {
+      "PINS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "crc": "BOTH_PASS",
+    "inner_sha256": "12/12_BOTH_PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14I-AG12AG9DirectFeedback/",
+    "private_readback": "BOTH_BYTE_IDENTICAL_SHA256"
+  },
+  "source_scope": "GeneralityEval.run optionally returns ephemeral scored rows; agi.solver uses exact in-process rows with suite/id/finite checks, never rereads mutable export; English AG9 component unchanged, German component :de separate",
+  "limitations": [
+    "Tests use real SQLite Store and fake body solver; no native/model or real German learned transfer evidence.",
+    "AG9 feedback rows are validated before writes, but per-row AG9 Store updates are not a single transaction; a mid-write SQLite error can leave a partial batch.",
+    "Historical holdout digests across same-language seed rotations still need retention policy.",
+    "Full-suite Run14E RED persists: 4098 tests, 4 failures, 65 errors, 16 skips."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review AG9 atomic bulk feedback receipt and idempotent run replay as separate cross-organ package, or prioritize JEF/C3 native-source utility; never promote calibration or age from synthetic rows."
+}

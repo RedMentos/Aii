@@ -1,0 +1,1 @@
+Historical numerical draft, preserved for recovery and rejected-attempt provenance. The C2 runtime implementation is `v13/control_calibration_worker.py`, integrated through the existing Learner/Runtime and component lifecycle. The draft is not imported or executed by the application. The Canon handoff remains the Single Source of Truth.

@@ -1,0 +1,67 @@
+{
+  "schema": "v13.review_build_state.verified_exact_budget.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only F1/F5 deterministic source answer candidate, no production merge",
+  "owner": {
+    "branch": "codex/v13-verified-exact-budget-20261029-auto10ad",
+    "parent_pr": 1141,
+    "parent_sha": "0cbf94d8d3a53f70044f4905fbf7a18970d91390"
+  },
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "feature": {
+    "operator": ":verified exact <Frage>",
+    "default_preflight_unchanged": true,
+    "source": "Verified human-authored F1/F5 budget SourceRef",
+    "answer_status": "FINAL_SOURCE_EXACT",
+    "authority": "EXACT_SOURCE",
+    "native_c3_calls": 0,
+    "learned": false,
+    "semantic_encoder_note": "Existing semantic recall may invoke a retrieval encoder when configured; no unconditional zero-model-call claim",
+    "atomicity_note": "Two preflight rechecks reduce but do not prove elimination of all concurrent source mutations"
+  },
+  "blobs": {
+    "operator_parent": "6083841a92e25886febc766439237ac43e213471",
+    "operator_candidate": "33f561ea5cec5117ad5a658139f283f204eb3275",
+    "script_parent": "75ca7f3f197665f665d9582b7f5c2efb1f598235",
+    "script_candidate": "6b29de7304ca5d45357d08bfa28a53931ccaf3ce",
+    "test_candidate": "64900eac2c35d3f3048b0f545045b3c937f7671a"
+  },
+  "evidence": {
+    "red": "5 tests on exact parent operator/script with new exact test: 4 FAIL + 1 ERROR, no source-exact command",
+    "green": "24/24 local Linux software tests on exact GitHub candidate blobs: 5 verified exact + 3 operator + 1 real Store + 12 WorldModel + 3 inverse baseline",
+    "source_export": {
+      "actions": 40944561465,
+      "head": "a1a931effd5e0b280297000d9692ad26aba8d2bc",
+      "sha256": "e262dff5545897f33d3313ffd67e0d25084516f1c55f0d0324978d85ef073238",
+      "crc": "CLEAN",
+      "inner_sha256": "4/4",
+      "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-Verified-Exact-Budget/EXACT_PATCH_SOURCE_40944561465_shaE262DFF5.zip",
+      "private_readback": "byte-exact"
+    },
+    "focused_ci": "new workflow v13-verified-exact-focused-20261029.yml pending"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Close original F1/F5 focused CI and preserve raw; detect any source-consumer regressions",
+    "Full software suite on this exact candidate not yet closed",
+    "No claim C3 German learned; deterministic source exact copy only",
+    "Concurrent source changes after second preflight remain a theoretical TOCTOU window; do not claim atomic authorization",
+    "No merge while frozen SourceHandoff runtime Python review is pending"
+  ],
+  "next_commands": [
+    "Fetch latest branch and focused Actions run",
+    "Download raw ZIP, CRC and inner SHA256SUMS, stage exits and source head; private backup and byte-exact readback",
+    "Review parent PR1140/1141 full software raw, preserve historical Run34/Run37 source-pin errors",
+    "Continue independent canonical package from latest verified owner branch"
+  ],
+  "remaining_platform_budget": "UNKNOWN"
+}

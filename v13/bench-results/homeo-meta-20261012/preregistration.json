@@ -1,0 +1,32 @@
+{
+ "schema": "ABLATION_HOMEO_META_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "win_rule": "v13 primary metric lower than control in >=4/5 seeds, for every control",
+ "verdicts": {
+  "SUPPORTED_SYNTHETIC": "beats every control",
+  "PARTIAL": "beats at least one control",
+  "NOT_SUPPORTED": "beats none"
+ },
+ "meta": {
+  "primary": "mean per-step parameter error over the noisy and shift phases",
+  "secondary": [
+   "phase errors",
+   "final error",
+   "mean P"
+  ]
+ },
+ "homeostasis": {
+  "primary": "mean over paths of the time-averaged parameter error after the pre-phase",
+  "secondary": [
+   "dominant-path error",
+   "revived-path recovery error",
+   "final error"
+  ]
+ }
+}

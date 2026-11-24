@@ -1,0 +1,77 @@
+name: V13 AG8 Sleep policy cross-organ RED GREEN focused (software only)
+on:
+  push:
+    branches: [assistant/v13-ag8-f5-context-crossorgan-20261028]
+    paths:
+      - '.github/workflows/ag8-f5-crossorgan-focused-20261028.yml'
+      - 'v13/code/v13/agi/self_improve.py'
+      - 'v13/code/tests/test_ag8_sleep_policy_shield_crossorgan_20261028.py'
+      - 'v13/code/tests/test_ag8_shield_metrics_run380.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-ag8-f5-crossorgan-focused-20261028
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw focused test and exact source
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-ag8-f5-focused"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_ag8_sleep_policy_shield_crossorgan_20261028.py > "$evidence/CROSS_TEST_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-ag8-f5-venv"
+          py="$RUNNER_TEMP/v13-ag8-f5-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_ag8_sleep_policy_shield_crossorgan_20261028
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 990ea980b1a31db860702e74c6dada70f9ace8d5 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 990ea980b1a31db860702e74c6dada70f9ace8d5 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-ag8-f5-focused-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-ag8-f5-focused/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits (RED remains failed)
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-ag8-f5-focused"
+          for name in INSTALL FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'AG8_F5_CROSSORGAN_FOCUSED_SOFTWARE_ONLY_NO_GATE_PROMOTION'

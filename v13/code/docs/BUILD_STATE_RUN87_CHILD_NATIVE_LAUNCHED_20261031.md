@@ -1,0 +1,9 @@
+# Run87 child native execution launched — 2026-10-31
+
+Owner: GPT-6 Auto11. Original Run87 #1447 source owner branch unchanged. Review-only PR #1460 child exact parent `f2b1ceceeceb6199ecd1bf2dac6cfaf786e56653`. Original seed877 prereg and 14/14 source blob pins verified. Child prereg `1396d911293d755a774c659a311fed9509a5d1b0` before new workflow; child workflow `a3fe9188b257f15f2052ecb58182d7f100d951a8` verified byte-identical to original except four named routing/artifact substitutions.
+
+**Launched:** GitHub Actions `41200115473`, exact trigger HEAD `94741c8c6e4e9ee43286777cfcfccaa2f10af367`, workflow `v13-run87-b1b2-budget-native-child-auto11.yml`, status IN_PROGRESS at observation. Shared native concurrency `v13-step2-budget-paired-native-20261030`; 48 planned B1/B2 native calls, SHORT_96 vs LONG_160, seed877, six disjoint projects. No native output/score/result yet. No active other native owner at trigger; Run94 full-suite software-only in separate GitHub runner.
+
+**Next exact API command:** GET `https://api.github.com/repos/RedMentos/Aii/actions/runs/41200115473`; at terminal GET `.../actions/runs/41200115473/artifacts`; download ORIGINAL artifact, verify outer SHA256, CRC, unique members, SHA256SUMS, 10 stage exits, PINS/48 native calls, model/runner hashes, independent verifier and preserved failed attempts. Back up privately and rematerialize SHA byte-exact. Do not infer scientific result from workflow conclusion alone. If run fails, preserve raw and isolate root cause; do not overwrite original failed artifact or registered cohort. Never run another native job while this owner active.
+
+**Gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight0, Redmi UNMEASURED, whole V13 INCOMPLETE. Original Run77 RED remains.

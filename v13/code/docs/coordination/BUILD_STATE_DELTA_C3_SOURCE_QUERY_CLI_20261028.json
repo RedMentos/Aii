@@ -1,0 +1,53 @@
+{
+  "owner_branch": "assistant/v13-c3-source-query-cli-20261028",
+  "base_sha": "7b48d94eee00734891fef1fe1ac3eb360023c39a",
+  "prereg_commit": "09a21cf57f5b105f96256be84558d3034c009ab9",
+  "source_ci_sha": "2c9bed20517d7204bbc8e7e21d263c1f38f173b2",
+  "status": "SCOPED_SOFTWARE_GREEN_NATIVE_CLI_NOT_YET_RUN",
+  "script_blob": "ca25b6686e8c691712a2841cd525a380e0ceba2d",
+  "test_blob": "1f0cd307b85ae367694e5601d0e13cbba0295d70",
+  "software_run": 40662957262,
+  "software_conclusion": "success",
+  "focused_tests": 29,
+  "full_tests": 2298,
+  "skipped": 1,
+  "artifact_id": 12803929586,
+  "artifact_sha256": "b84ba497912be83eab466a6b337433b1e55ef4d99712dc026a5b21785ad1309a",
+  "artifact_crc": "CLEAN",
+  "internal_sha256_verified": 16,
+  "stage_exits_all_zero": true,
+  "privacy": "CLEAN",
+  "diff": "CLEAN",
+  "failed_attempts": [
+    {
+      "run": 40662637424,
+      "status": "FOCUSED_RED_3_FAIL_TEST_DOUBLE_EMBEDDING_ROLE",
+      "artifact_id": 12805050652,
+      "sha256": "7b5faeac629331998bdfc8caa61b131262f838baa0fcaa4ab687e4308edb23db"
+    },
+    {
+      "run": 40662935153,
+      "status": "SOURCE_PIN_MISMATCH_FULL_SKIPPED",
+      "artifact_id": 12803909171,
+      "sha256": "cb99d77583caf2c8ad7dfb61d011c2dbffeec712ee75411592b35b0da22142b1"
+    }
+  ],
+  "limitations": [
+    "CLI still starts full Runtime and changes sleep policy on existing home; successor no-worker candidate is separately preregistered.",
+    "Installed model is deep-hashed against its own manifest, not yet required to match frozen canonical catalog; successor candidate adds pin.",
+    "Only fake C3 runner software tests, no actual native CLI proof or Redmi.",
+    "Default preflight may write operational metadata through Runtime; do not claim strictly read-only."
+  ],
+  "gates": {
+    "stage11": "FAIL_ORIGINAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL_ORIGINAL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL_ORIGINAL",
+    "jepa_weight": 0,
+    "age": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review successor assistant/v13-c3-cli-no-worker-pinned-20261028 and run exact-source full software; after GREEN preregister actual native CLI smoke with a fresh synthetic store and exclusive native group."
+}

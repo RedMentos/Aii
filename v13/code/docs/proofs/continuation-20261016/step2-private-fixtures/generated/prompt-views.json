@@ -1,0 +1,1799 @@
+{
+  "fixtures": [
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BVAPEDNR. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 3 days, local true. Option B: cost 22 euros, duration 7 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BVAPEDNR. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 3 days, local true. Option B: cost 22 euros, duration 7 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"a485155914cebba6fa1e4069388eb04c59a83ef69fa2de157ec597bdd261856e\",\"source_id\":\"src_a485155914cebba6fa1e4069\",\"text\":\"Project BVAPEDNR. Budget 44 euros.\"},{\"sha256\":\"782e8d98a4211b221d65ce1bc612ef5914dafb841148b0ca9a163af6c700ac47\",\"source_id\":\"src_782e8d98a4211b221d65ce1b\",\"text\":\"Project BVAPEDNR. Deadline 3 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bvapednr",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BVAPEDNR. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 3 days, local true. Option B: cost 22 euros, duration 7 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a485155914cebba6fa1e4069388eb04c59a83ef69fa2de157ec597bdd261856e\",\"source_id\":\"src_a485155914cebba6fa1e4069\",\"text\":\"Project BVAPEDNR. Budget 44 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BVAPEDNR. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 3 days, local true. Option B: cost 22 euros, duration 7 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"782e8d98a4211b221d65ce1bc612ef5914dafb841148b0ca9a163af6c700ac47\",\"source_id\":\"src_782e8d98a4211b221d65ce1b\",\"text\":\"Project BVAPEDNR. Deadline 3 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project MSRPDUVK. Decide from the private project rules supplied by the analysts. Option A: cost 46 euros, duration 4 days, local false. Option B: cost 61 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project MSRPDUVK. Decide from the private project rules supplied by the analysts. Option A: cost 46 euros, duration 4 days, local false. Option B: cost 61 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"e3c389b8507680151e1f42bd896b361e93aa7260f0de7b05abcef9d262105c05\",\"source_id\":\"src_e3c389b8507680151e1f42bd\",\"text\":\"Project MSRPDUVK. Budget 47 euros.\"},{\"sha256\":\"bc6e286915a0e16315ef32c9943b4e8c9f56e46b0a161d21a7cd7b3d8d6a6da2\",\"source_id\":\"src_bc6e286915a0e16315ef32c9\",\"text\":\"Project MSRPDUVK. Deadline 1 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_msrpduvk",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project MSRPDUVK. Decide from the private project rules supplied by the analysts. Option A: cost 46 euros, duration 4 days, local false. Option B: cost 61 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"e3c389b8507680151e1f42bd896b361e93aa7260f0de7b05abcef9d262105c05\",\"source_id\":\"src_e3c389b8507680151e1f42bd\",\"text\":\"Project MSRPDUVK. Budget 47 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project MSRPDUVK. Decide from the private project rules supplied by the analysts. Option A: cost 46 euros, duration 4 days, local false. Option B: cost 61 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"bc6e286915a0e16315ef32c9943b4e8c9f56e46b0a161d21a7cd7b3d8d6a6da2\",\"source_id\":\"src_bc6e286915a0e16315ef32c9\",\"text\":\"Project MSRPDUVK. Deadline 1 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project NWYEPZEU. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 8 days, local false. Option B: cost 40 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project NWYEPZEU. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 8 days, local false. Option B: cost 40 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"c8249976d940f938c8143fab5c50f249223aabb08555324fb9a3b7318e051484\",\"source_id\":\"src_c8249976d940f938c8143fab\",\"text\":\"Project NWYEPZEU. Budget 55 euros.\"},{\"sha256\":\"a6bbb58751f4302444c7462ab435e0a98ae5b8a53c8e6efdfecbc0c88f6588aa\",\"source_id\":\"src_a6bbb58751f4302444c7462a\",\"text\":\"Project NWYEPZEU. Deadline 3 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_nwyepzeu",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project NWYEPZEU. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 8 days, local false. Option B: cost 40 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"c8249976d940f938c8143fab5c50f249223aabb08555324fb9a3b7318e051484\",\"source_id\":\"src_c8249976d940f938c8143fab\",\"text\":\"Project NWYEPZEU. Budget 55 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project NWYEPZEU. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 8 days, local false. Option B: cost 40 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a6bbb58751f4302444c7462ab435e0a98ae5b8a53c8e6efdfecbc0c88f6588aa\",\"source_id\":\"src_a6bbb58751f4302444c7462a\",\"text\":\"Project NWYEPZEU. Deadline 3 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RHTSLEEJ. Decide from the private project rules supplied by the analysts. Option A: cost 77 euros, duration 2 days, local true. Option B: cost 48 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RHTSLEEJ. Decide from the private project rules supplied by the analysts. Option A: cost 77 euros, duration 2 days, local true. Option B: cost 48 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"e921f1f6241ecd0a75867f71cb2f4d2d5a4f0b8ade41a4f3661844a34de8b3d6\",\"source_id\":\"src_e921f1f6241ecd0a75867f71\",\"text\":\"Project RHTSLEEJ. Budget 92 euros.\"},{\"sha256\":\"a6e0f726d4ee19b712cf7c2da87571eb5e444a7cca30086cc24b10c9af3df4c4\",\"source_id\":\"src_a6e0f726d4ee19b712cf7c2d\",\"text\":\"Project RHTSLEEJ. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_rhtsleej",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RHTSLEEJ. Decide from the private project rules supplied by the analysts. Option A: cost 77 euros, duration 2 days, local true. Option B: cost 48 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"e921f1f6241ecd0a75867f71cb2f4d2d5a4f0b8ade41a4f3661844a34de8b3d6\",\"source_id\":\"src_e921f1f6241ecd0a75867f71\",\"text\":\"Project RHTSLEEJ. Budget 92 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RHTSLEEJ. Decide from the private project rules supplied by the analysts. Option A: cost 77 euros, duration 2 days, local true. Option B: cost 48 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a6e0f726d4ee19b712cf7c2da87571eb5e444a7cca30086cc24b10c9af3df4c4\",\"source_id\":\"src_a6e0f726d4ee19b712cf7c2d\",\"text\":\"Project RHTSLEEJ. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RYZQKFBP. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 6 days, local false. Option B: cost 61 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RYZQKFBP. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 6 days, local false. Option B: cost 61 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"0da3c45ed9de60c02f229bf987845c6fb740314f5947e1afcb12fa0786b81708\",\"source_id\":\"src_0da3c45ed9de60c02f229bf9\",\"text\":\"Project RYZQKFBP. Budget 74 euros.\"},{\"sha256\":\"6b3e64fe3205127ab25bc781616fa7a4944d090b9bdaba35fab269461419fc9d\",\"source_id\":\"src_6b3e64fe3205127ab25bc781\",\"text\":\"Project RYZQKFBP. Deadline 6 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_ryzqkfbp",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RYZQKFBP. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 6 days, local false. Option B: cost 61 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"0da3c45ed9de60c02f229bf987845c6fb740314f5947e1afcb12fa0786b81708\",\"source_id\":\"src_0da3c45ed9de60c02f229bf9\",\"text\":\"Project RYZQKFBP. Budget 74 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RYZQKFBP. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 6 days, local false. Option B: cost 61 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"6b3e64fe3205127ab25bc781616fa7a4944d090b9bdaba35fab269461419fc9d\",\"source_id\":\"src_6b3e64fe3205127ab25bc781\",\"text\":\"Project RYZQKFBP. Deadline 6 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project AMVCGHCT. Decide from the private project rules supplied by the analysts. Option A: cost 25 euros, duration 8 days, local false. Option B: cost 59 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project AMVCGHCT. Decide from the private project rules supplied by the analysts. Option A: cost 25 euros, duration 8 days, local false. Option B: cost 59 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"59b58f10a04c20a3e2d061f12e07238c4e2fe3c9711c7d46af8a13c459037e46\",\"source_id\":\"src_59b58f10a04c20a3e2d061f1\",\"text\":\"Project AMVCGHCT. Budget 44 euros.\"},{\"sha256\":\"f14546605c4c82c1c283cc36a2d3863d776e08a9bd394c9e1d572c63c3b43309\",\"source_id\":\"src_f14546605c4c82c1c283cc36\",\"text\":\"Project AMVCGHCT. Deadline 3 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_amvcghct",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project AMVCGHCT. Decide from the private project rules supplied by the analysts. Option A: cost 25 euros, duration 8 days, local false. Option B: cost 59 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"59b58f10a04c20a3e2d061f12e07238c4e2fe3c9711c7d46af8a13c459037e46\",\"source_id\":\"src_59b58f10a04c20a3e2d061f1\",\"text\":\"Project AMVCGHCT. Budget 44 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project AMVCGHCT. Decide from the private project rules supplied by the analysts. Option A: cost 25 euros, duration 8 days, local false. Option B: cost 59 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"f14546605c4c82c1c283cc36a2d3863d776e08a9bd394c9e1d572c63c3b43309\",\"source_id\":\"src_f14546605c4c82c1c283cc36\",\"text\":\"Project AMVCGHCT. Deadline 3 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project LLQCESZV. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 3 days, local true. Option B: cost 43 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project LLQCESZV. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 3 days, local true. Option B: cost 43 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"cef1ec8d33714a548c0102aab1178ca66d43172302e8df32d63f3e98d362cec3\",\"source_id\":\"src_cef1ec8d33714a548c0102aa\",\"text\":\"Project LLQCESZV. Budget 75 euros.\"},{\"sha256\":\"94270f7e359b25e970f41678d38bbe4ed444d45d97ad68f2253e1ea5e92357e7\",\"source_id\":\"src_94270f7e359b25e970f41678\",\"text\":\"Project LLQCESZV. Deadline 6 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_llqceszv",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project LLQCESZV. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 3 days, local true. Option B: cost 43 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"cef1ec8d33714a548c0102aab1178ca66d43172302e8df32d63f3e98d362cec3\",\"source_id\":\"src_cef1ec8d33714a548c0102aa\",\"text\":\"Project LLQCESZV. Budget 75 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project LLQCESZV. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 3 days, local true. Option B: cost 43 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"94270f7e359b25e970f41678d38bbe4ed444d45d97ad68f2253e1ea5e92357e7\",\"source_id\":\"src_94270f7e359b25e970f41678\",\"text\":\"Project LLQCESZV. Deadline 6 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"},{\"sha256\":\"b2bd4a1b74856d8d68ba58e758450d33a053b3776b7a66eceac35277f993733d\",\"source_id\":\"src_b2bd4a1b74856d8d68ba58e7\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_eztsxxpt",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"b2bd4a1b74856d8d68ba58e758450d33a053b3776b7a66eceac35277f993733d\",\"source_id\":\"src_b2bd4a1b74856d8d68ba58e7\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"},{\"sha256\":\"dcb416a7aead58f538cbd72db5fc99ac025c3b3ed183a87147f2d58c9c62ce43\",\"source_id\":\"src_dcb416a7aead58f538cbd72d\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_xwwmunqd",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"dcb416a7aead58f538cbd72db5fc99ac025c3b3ed183a87147f2d58c9c62ce43\",\"source_id\":\"src_dcb416a7aead58f538cbd72d\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FJNMTMQW. Decide from the private project rules supplied by the analysts. Option A: cost 73 euros, duration 2 days, local true. Option B: cost 51 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FJNMTMQW. Decide from the private project rules supplied by the analysts. Option A: cost 73 euros, duration 2 days, local true. Option B: cost 51 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"177fb371ae21595b4ad193e958645684229eaf96b5bb8bbff28a7654a006325d\",\"source_id\":\"src_177fb371ae21595b4ad193e9\",\"text\":\"Project FJNMTMQW. Budget 93 euros.\"},{\"sha256\":\"3af00d6426b719c68016316ea94a507e1f454a547546924f8e6864fa7c22e899\",\"source_id\":\"src_3af00d6426b719c68016316e\",\"text\":\"Project FJNMTMQW. Deadline 6 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_fjnmtmqw",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FJNMTMQW. Decide from the private project rules supplied by the analysts. Option A: cost 73 euros, duration 2 days, local true. Option B: cost 51 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"177fb371ae21595b4ad193e958645684229eaf96b5bb8bbff28a7654a006325d\",\"source_id\":\"src_177fb371ae21595b4ad193e9\",\"text\":\"Project FJNMTMQW. Budget 93 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FJNMTMQW. Decide from the private project rules supplied by the analysts. Option A: cost 73 euros, duration 2 days, local true. Option B: cost 51 euros, duration 6 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"3af00d6426b719c68016316ea94a507e1f454a547546924f8e6864fa7c22e899\",\"source_id\":\"src_3af00d6426b719c68016316e\",\"text\":\"Project FJNMTMQW. Deadline 6 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project VWBCAWYF. Decide from the private project rules supplied by the analysts. Option A: cost 56 euros, duration 4 days, local true. Option B: cost 33 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project VWBCAWYF. Decide from the private project rules supplied by the analysts. Option A: cost 56 euros, duration 4 days, local true. Option B: cost 33 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"a3aeaa96848679f64cf5e5a0463a0a289570a38ac7c4627888ac6b75bbae6925\",\"source_id\":\"src_a3aeaa96848679f64cf5e5a0\",\"text\":\"Project VWBCAWYF. Budget 60 euros.\"},{\"sha256\":\"f18a81138c55f092645a844f2e54e9115845b76d3e51cb708819514cefb5ba06\",\"source_id\":\"src_f18a81138c55f092645a844f\",\"text\":\"Project VWBCAWYF. Deadline 6 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_vwbcawyf",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project VWBCAWYF. Decide from the private project rules supplied by the analysts. Option A: cost 56 euros, duration 4 days, local true. Option B: cost 33 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a3aeaa96848679f64cf5e5a0463a0a289570a38ac7c4627888ac6b75bbae6925\",\"source_id\":\"src_a3aeaa96848679f64cf5e5a0\",\"text\":\"Project VWBCAWYF. Budget 60 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project VWBCAWYF. Decide from the private project rules supplied by the analysts. Option A: cost 56 euros, duration 4 days, local true. Option B: cost 33 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"f18a81138c55f092645a844f2e54e9115845b76d3e51cb708819514cefb5ba06\",\"source_id\":\"src_f18a81138c55f092645a844f\",\"text\":\"Project VWBCAWYF. Deadline 6 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BDNBPRGU. Decide from the private project rules supplied by the analysts. Option A: cost 53 euros, duration 6 days, local false. Option B: cost 66 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BDNBPRGU. Decide from the private project rules supplied by the analysts. Option A: cost 53 euros, duration 6 days, local false. Option B: cost 66 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"a4c392ffb73f4950f0603cda0583a5e879bc3536234069d7169b3f41247fbf1b\",\"source_id\":\"src_a4c392ffb73f4950f0603cda\",\"text\":\"Project BDNBPRGU. Budget 58 euros.\"},{\"sha256\":\"b350a1ee2f598815fa624dceb40b8346d4d93e0486eaad0a09791a75e28d82f8\",\"source_id\":\"src_b350a1ee2f598815fa624dce\",\"text\":\"Project BDNBPRGU. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bdnbprgu",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BDNBPRGU. Decide from the private project rules supplied by the analysts. Option A: cost 53 euros, duration 6 days, local false. Option B: cost 66 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a4c392ffb73f4950f0603cda0583a5e879bc3536234069d7169b3f41247fbf1b\",\"source_id\":\"src_a4c392ffb73f4950f0603cda\",\"text\":\"Project BDNBPRGU. Budget 58 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BDNBPRGU. Decide from the private project rules supplied by the analysts. Option A: cost 53 euros, duration 6 days, local false. Option B: cost 66 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"b350a1ee2f598815fa624dceb40b8346d4d93e0486eaad0a09791a75e28d82f8\",\"source_id\":\"src_b350a1ee2f598815fa624dce\",\"text\":\"Project BDNBPRGU. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project JGMLZMNN. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 3 days, local true. Option B: cost 15 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project JGMLZMNN. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 3 days, local true. Option B: cost 15 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"92ca05f32b3f7ed4f00381a2c4170528783d8438ad0206709670c3ad11a54227\",\"source_id\":\"src_92ca05f32b3f7ed4f00381a2\",\"text\":\"Project JGMLZMNN. Budget 55 euros.\"},{\"sha256\":\"ef29d2dc5e151af0942f2750c7838075b536adc46a28196eba8c9868151656bd\",\"source_id\":\"src_ef29d2dc5e151af0942f2750\",\"text\":\"Project JGMLZMNN. Deadline 3 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_jgmlzmnn",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project JGMLZMNN. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 3 days, local true. Option B: cost 15 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"92ca05f32b3f7ed4f00381a2c4170528783d8438ad0206709670c3ad11a54227\",\"source_id\":\"src_92ca05f32b3f7ed4f00381a2\",\"text\":\"Project JGMLZMNN. Budget 55 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project JGMLZMNN. Decide from the private project rules supplied by the analysts. Option A: cost 35 euros, duration 3 days, local true. Option B: cost 15 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ef29d2dc5e151af0942f2750c7838075b536adc46a28196eba8c9868151656bd\",\"source_id\":\"src_ef29d2dc5e151af0942f2750\",\"text\":\"Project JGMLZMNN. Deadline 3 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project CMCTCNYX. Decide from the private project rules supplied by the analysts. Option A: cost 19 euros, duration 6 days, local false. Option B: cost 35 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project CMCTCNYX. Decide from the private project rules supplied by the analysts. Option A: cost 19 euros, duration 6 days, local false. Option B: cost 35 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"189f2b42f4d4b1673be61b2d85425f2542c65064a5fb934bc1b27f2913b7c51f\",\"source_id\":\"src_189f2b42f4d4b1673be61b2d\",\"text\":\"Project CMCTCNYX. Budget 28 euros.\"},{\"sha256\":\"6bca3074e57c11a40e247df5a30cb466e808c206f5d7eff12a05893ef68f8b3d\",\"source_id\":\"src_6bca3074e57c11a40e247df5\",\"text\":\"Project CMCTCNYX. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_cmctcnyx",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project CMCTCNYX. Decide from the private project rules supplied by the analysts. Option A: cost 19 euros, duration 6 days, local false. Option B: cost 35 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"189f2b42f4d4b1673be61b2d85425f2542c65064a5fb934bc1b27f2913b7c51f\",\"source_id\":\"src_189f2b42f4d4b1673be61b2d\",\"text\":\"Project CMCTCNYX. Budget 28 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project CMCTCNYX. Decide from the private project rules supplied by the analysts. Option A: cost 19 euros, duration 6 days, local false. Option B: cost 35 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"6bca3074e57c11a40e247df5a30cb466e808c206f5d7eff12a05893ef68f8b3d\",\"source_id\":\"src_6bca3074e57c11a40e247df5\",\"text\":\"Project CMCTCNYX. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"},{\"sha256\":\"1a7a56cb3a7894cb4b8530f2c108e88ec553cf1d3e18cc8469988fc5408d1f72\",\"source_id\":\"src_1a7a56cb3a7894cb4b8530f2\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bfzwzwww",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"1a7a56cb3a7894cb4b8530f2c108e88ec553cf1d3e18cc8469988fc5408d1f72\",\"source_id\":\"src_1a7a56cb3a7894cb4b8530f2\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project ECMFZBKL. Decide from the private project rules supplied by the analysts. Option A: cost 37 euros, duration 9 days, local false. Option B: cost 51 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project ECMFZBKL. Decide from the private project rules supplied by the analysts. Option A: cost 37 euros, duration 9 days, local false. Option B: cost 51 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"2c8fecc68260dfe7db75277e9c1b79a848319cc4d5f7893713dace8d13912363\",\"source_id\":\"src_2c8fecc68260dfe7db75277e\",\"text\":\"Project ECMFZBKL. Budget 53 euros.\"},{\"sha256\":\"2b94709e0bad18e748d6c04a59ecd277240b046fc8f634093136066388344406\",\"source_id\":\"src_2b94709e0bad18e748d6c04a\",\"text\":\"Project ECMFZBKL. Deadline 9 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_ecmfzbkl",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project ECMFZBKL. Decide from the private project rules supplied by the analysts. Option A: cost 37 euros, duration 9 days, local false. Option B: cost 51 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"2c8fecc68260dfe7db75277e9c1b79a848319cc4d5f7893713dace8d13912363\",\"source_id\":\"src_2c8fecc68260dfe7db75277e\",\"text\":\"Project ECMFZBKL. Budget 53 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project ECMFZBKL. Decide from the private project rules supplied by the analysts. Option A: cost 37 euros, duration 9 days, local false. Option B: cost 51 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"2b94709e0bad18e748d6c04a59ecd277240b046fc8f634093136066388344406\",\"source_id\":\"src_2b94709e0bad18e748d6c04a\",\"text\":\"Project ECMFZBKL. Deadline 9 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project QYTSUNJW. Decide from the private project rules supplied by the analysts. Option A: cost 27 euros, duration 4 days, local false. Option B: cost 50 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project QYTSUNJW. Decide from the private project rules supplied by the analysts. Option A: cost 27 euros, duration 4 days, local false. Option B: cost 50 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"fab65f85b1180ac897e2ae00521c5fd47e671d92e3e6baf4dbda1481c1a1e82d\",\"source_id\":\"src_fab65f85b1180ac897e2ae00\",\"text\":\"Project QYTSUNJW. Budget 64 euros.\"},{\"sha256\":\"731852a3f32191a53d80e8ec363c639e89529a02d325b9c56a5418cccc3ec0af\",\"source_id\":\"src_731852a3f32191a53d80e8ec\",\"text\":\"Project QYTSUNJW. Deadline 1 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_qytsunjw",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project QYTSUNJW. Decide from the private project rules supplied by the analysts. Option A: cost 27 euros, duration 4 days, local false. Option B: cost 50 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"fab65f85b1180ac897e2ae00521c5fd47e671d92e3e6baf4dbda1481c1a1e82d\",\"source_id\":\"src_fab65f85b1180ac897e2ae00\",\"text\":\"Project QYTSUNJW. Budget 64 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project QYTSUNJW. Decide from the private project rules supplied by the analysts. Option A: cost 27 euros, duration 4 days, local false. Option B: cost 50 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"731852a3f32191a53d80e8ec363c639e89529a02d325b9c56a5418cccc3ec0af\",\"source_id\":\"src_731852a3f32191a53d80e8ec\",\"text\":\"Project QYTSUNJW. Deadline 1 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project GWJKQZYF. Decide from the private project rules supplied by the analysts. Option A: cost 15 euros, duration 7 days, local false. Option B: cost 39 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project GWJKQZYF. Decide from the private project rules supplied by the analysts. Option A: cost 15 euros, duration 7 days, local false. Option B: cost 39 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"61fe5256134179ce163c6d3a17a86d3b5094049ae45e3d0d64acab4bd805f778\",\"source_id\":\"src_61fe5256134179ce163c6d3a\",\"text\":\"Project GWJKQZYF. Budget 59 euros.\"},{\"sha256\":\"9a9ef4d2945756dcd49d389648a74f30316e75a42da980e1afe1c43b95411d5d\",\"source_id\":\"src_9a9ef4d2945756dcd49d3896\",\"text\":\"Project GWJKQZYF. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_gwjkqzyf",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project GWJKQZYF. Decide from the private project rules supplied by the analysts. Option A: cost 15 euros, duration 7 days, local false. Option B: cost 39 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"61fe5256134179ce163c6d3a17a86d3b5094049ae45e3d0d64acab4bd805f778\",\"source_id\":\"src_61fe5256134179ce163c6d3a\",\"text\":\"Project GWJKQZYF. Budget 59 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project GWJKQZYF. Decide from the private project rules supplied by the analysts. Option A: cost 15 euros, duration 7 days, local false. Option B: cost 39 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"9a9ef4d2945756dcd49d389648a74f30316e75a42da980e1afe1c43b95411d5d\",\"source_id\":\"src_9a9ef4d2945756dcd49d3896\",\"text\":\"Project GWJKQZYF. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project VUZHTFPX. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 6 days, local false. Option B: cost 52 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project VUZHTFPX. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 6 days, local false. Option B: cost 52 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"fbd96b88ec7f5b94984db459bc7374cbf716c1e658ae13fa6c1f198833ce7521\",\"source_id\":\"src_fbd96b88ec7f5b94984db459\",\"text\":\"Project VUZHTFPX. Budget 56 euros.\"},{\"sha256\":\"bf5e7204ceef0cb1a897fd465e18c960fbf82daac3454b31ccb7e3f4f66ca942\",\"source_id\":\"src_bf5e7204ceef0cb1a897fd46\",\"text\":\"Project VUZHTFPX. Deadline 6 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_vuzhtfpx",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project VUZHTFPX. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 6 days, local false. Option B: cost 52 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"fbd96b88ec7f5b94984db459bc7374cbf716c1e658ae13fa6c1f198833ce7521\",\"source_id\":\"src_fbd96b88ec7f5b94984db459\",\"text\":\"Project VUZHTFPX. Budget 56 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project VUZHTFPX. Decide from the private project rules supplied by the analysts. Option A: cost 34 euros, duration 6 days, local false. Option B: cost 52 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"bf5e7204ceef0cb1a897fd465e18c960fbf82daac3454b31ccb7e3f4f66ca942\",\"source_id\":\"src_bf5e7204ceef0cb1a897fd46\",\"text\":\"Project VUZHTFPX. Deadline 6 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project PXPFJREK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 3 days, local true. Option B: cost 23 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project PXPFJREK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 3 days, local true. Option B: cost 23 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"cc5bfd9c1b37e7ac731c8f18df4e05415b6cdd5ef7057228f9b0a4651c5205cb\",\"source_id\":\"src_cc5bfd9c1b37e7ac731c8f18\",\"text\":\"Project PXPFJREK. Budget 75 euros.\"},{\"sha256\":\"8f0528cd78fc9d12a96f19d208081f7ce0c8c01896c51ba13bc82c907e28894a\",\"source_id\":\"src_8f0528cd78fc9d12a96f19d2\",\"text\":\"Project PXPFJREK. Deadline 5 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_pxpfjrek",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project PXPFJREK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 3 days, local true. Option B: cost 23 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"cc5bfd9c1b37e7ac731c8f18df4e05415b6cdd5ef7057228f9b0a4651c5205cb\",\"source_id\":\"src_cc5bfd9c1b37e7ac731c8f18\",\"text\":\"Project PXPFJREK. Budget 75 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project PXPFJREK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 3 days, local true. Option B: cost 23 euros, duration 5 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"8f0528cd78fc9d12a96f19d208081f7ce0c8c01896c51ba13bc82c907e28894a\",\"source_id\":\"src_8f0528cd78fc9d12a96f19d2\",\"text\":\"Project PXPFJREK. Deadline 5 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FYNVNFSZ. Decide from the private project rules supplied by the analysts. Option A: cost 62 euros, duration 4 days, local true. Option B: cost 33 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FYNVNFSZ. Decide from the private project rules supplied by the analysts. Option A: cost 62 euros, duration 4 days, local true. Option B: cost 33 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"580d50997098392501881a6eee659c6dc5cb21db53fcb211c8c32d1e65d1378f\",\"source_id\":\"src_580d50997098392501881a6e\",\"text\":\"Project FYNVNFSZ. Budget 45 euros.\"},{\"sha256\":\"ea07d2b10159e09c712b643232ef1670f07854b6b54c4a815f3c8bb4040c5ed2\",\"source_id\":\"src_ea07d2b10159e09c712b6432\",\"text\":\"Project FYNVNFSZ. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_fynvnfsz",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FYNVNFSZ. Decide from the private project rules supplied by the analysts. Option A: cost 62 euros, duration 4 days, local true. Option B: cost 33 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"580d50997098392501881a6eee659c6dc5cb21db53fcb211c8c32d1e65d1378f\",\"source_id\":\"src_580d50997098392501881a6e\",\"text\":\"Project FYNVNFSZ. Budget 45 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FYNVNFSZ. Decide from the private project rules supplied by the analysts. Option A: cost 62 euros, duration 4 days, local true. Option B: cost 33 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ea07d2b10159e09c712b643232ef1670f07854b6b54c4a815f3c8bb4040c5ed2\",\"source_id\":\"src_ea07d2b10159e09c712b6432\",\"text\":\"Project FYNVNFSZ. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project PJJFWGSL. Decide from the private project rules supplied by the analysts. Option A: cost 48 euros, duration 5 days, local false. Option B: cost 76 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project PJJFWGSL. Decide from the private project rules supplied by the analysts. Option A: cost 48 euros, duration 5 days, local false. Option B: cost 76 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"222e870fbee7726f0e881515bf31eb434a0500da7694c072663455d60f594ffc\",\"source_id\":\"src_222e870fbee7726f0e881515\",\"text\":\"Project PJJFWGSL. Budget 77 euros.\"},{\"sha256\":\"7144323d3b300bda29032b157a054d5e62e60b0a0a09bcce35178a1e7cbde5df\",\"source_id\":\"src_7144323d3b300bda29032b15\",\"text\":\"Project PJJFWGSL. Deadline 2 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_pjjfwgsl",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project PJJFWGSL. Decide from the private project rules supplied by the analysts. Option A: cost 48 euros, duration 5 days, local false. Option B: cost 76 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"222e870fbee7726f0e881515bf31eb434a0500da7694c072663455d60f594ffc\",\"source_id\":\"src_222e870fbee7726f0e881515\",\"text\":\"Project PJJFWGSL. Budget 77 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project PJJFWGSL. Decide from the private project rules supplied by the analysts. Option A: cost 48 euros, duration 5 days, local false. Option B: cost 76 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"7144323d3b300bda29032b157a054d5e62e60b0a0a09bcce35178a1e7cbde5df\",\"source_id\":\"src_7144323d3b300bda29032b15\",\"text\":\"Project PJJFWGSL. Deadline 2 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFJWNJBG. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 8 days, local false. Option B: cost 68 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFJWNJBG. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 8 days, local false. Option B: cost 68 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"227d853af98052e314f6724bcca2bca90fee64c4893bfbd8ede045d18f6a8fe7\",\"source_id\":\"src_227d853af98052e314f6724b\",\"text\":\"Project BFJWNJBG. Budget 52 euros.\"},{\"sha256\":\"a5b2a98cc795484492bc21857004e8202bc80a5ed8948be52503d88f611974ed\",\"source_id\":\"src_a5b2a98cc795484492bc2185\",\"text\":\"Project BFJWNJBG. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bfjwnjbg",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFJWNJBG. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 8 days, local false. Option B: cost 68 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"227d853af98052e314f6724bcca2bca90fee64c4893bfbd8ede045d18f6a8fe7\",\"source_id\":\"src_227d853af98052e314f6724b\",\"text\":\"Project BFJWNJBG. Budget 52 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFJWNJBG. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 8 days, local false. Option B: cost 68 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a5b2a98cc795484492bc21857004e8202bc80a5ed8948be52503d88f611974ed\",\"source_id\":\"src_a5b2a98cc795484492bc2185\",\"text\":\"Project BFJWNJBG. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project GTDPTGZN. Decide from the private project rules supplied by the analysts. Option A: cost 21 euros, duration 4 days, local false. Option B: cost 54 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project GTDPTGZN. Decide from the private project rules supplied by the analysts. Option A: cost 21 euros, duration 4 days, local false. Option B: cost 54 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"3c0ae5e89099625d9914e1f8ffb5dceae0f136798883460b4fc0a539daa2f1f8\",\"source_id\":\"src_3c0ae5e89099625d9914e1f8\",\"text\":\"Project GTDPTGZN. Budget 29 euros.\"},{\"sha256\":\"89771692e3ebe79c479abd82a1cdab1dea20a90d14fd34cac0dcd296b1445aa0\",\"source_id\":\"src_89771692e3ebe79c479abd82\",\"text\":\"Project GTDPTGZN. Deadline 2 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_gtdptgzn",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project GTDPTGZN. Decide from the private project rules supplied by the analysts. Option A: cost 21 euros, duration 4 days, local false. Option B: cost 54 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"3c0ae5e89099625d9914e1f8ffb5dceae0f136798883460b4fc0a539daa2f1f8\",\"source_id\":\"src_3c0ae5e89099625d9914e1f8\",\"text\":\"Project GTDPTGZN. Budget 29 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project GTDPTGZN. Decide from the private project rules supplied by the analysts. Option A: cost 21 euros, duration 4 days, local false. Option B: cost 54 euros, duration 2 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"89771692e3ebe79c479abd82a1cdab1dea20a90d14fd34cac0dcd296b1445aa0\",\"source_id\":\"src_89771692e3ebe79c479abd82\",\"text\":\"Project GTDPTGZN. Deadline 2 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project CKEDFKWL. Decide from the private project rules supplied by the analysts. Option A: cost 70 euros, duration 4 days, local true. Option B: cost 55 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project CKEDFKWL. Decide from the private project rules supplied by the analysts. Option A: cost 70 euros, duration 4 days, local true. Option B: cost 55 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"3d5cb61a58114b28304ada05dec9b537f711476a95c60c067d329f291de4596c\",\"source_id\":\"src_3d5cb61a58114b28304ada05\",\"text\":\"Project CKEDFKWL. Budget 73 euros.\"},{\"sha256\":\"0cf18ca50b600d6c0576d1f9ded87b4989d3eef8d1e40c08c7177db5678fbb0f\",\"source_id\":\"src_0cf18ca50b600d6c0576d1f9\",\"text\":\"Project CKEDFKWL. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_ckedfkwl",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project CKEDFKWL. Decide from the private project rules supplied by the analysts. Option A: cost 70 euros, duration 4 days, local true. Option B: cost 55 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"3d5cb61a58114b28304ada05dec9b537f711476a95c60c067d329f291de4596c\",\"source_id\":\"src_3d5cb61a58114b28304ada05\",\"text\":\"Project CKEDFKWL. Budget 73 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project CKEDFKWL. Decide from the private project rules supplied by the analysts. Option A: cost 70 euros, duration 4 days, local true. Option B: cost 55 euros, duration 8 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"0cf18ca50b600d6c0576d1f9ded87b4989d3eef8d1e40c08c7177db5678fbb0f\",\"source_id\":\"src_0cf18ca50b600d6c0576d1f9\",\"text\":\"Project CKEDFKWL. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project YJYFYYWT. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 1 days, local true. Option B: cost 48 euros, duration 3 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project YJYFYYWT. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 1 days, local true. Option B: cost 48 euros, duration 3 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"b93201c9737d83cd2ab7591df03ea0335510ae02148435a2fff194f1b91eff4d\",\"source_id\":\"src_b93201c9737d83cd2ab7591d\",\"text\":\"Project YJYFYYWT. Budget 85 euros.\"},{\"sha256\":\"0c8ef0278cf084cca78337170e4ec8989a53098c97c5366273056d6e44908095\",\"source_id\":\"src_0c8ef0278cf084cca7833717\",\"text\":\"Project YJYFYYWT. Deadline 1 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_yjyfyywt",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project YJYFYYWT. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 1 days, local true. Option B: cost 48 euros, duration 3 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"b93201c9737d83cd2ab7591df03ea0335510ae02148435a2fff194f1b91eff4d\",\"source_id\":\"src_b93201c9737d83cd2ab7591d\",\"text\":\"Project YJYFYYWT. Budget 85 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project YJYFYYWT. Decide from the private project rules supplied by the analysts. Option A: cost 74 euros, duration 1 days, local true. Option B: cost 48 euros, duration 3 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"0c8ef0278cf084cca78337170e4ec8989a53098c97c5366273056d6e44908095\",\"source_id\":\"src_0c8ef0278cf084cca7833717\",\"text\":\"Project YJYFYYWT. Deadline 1 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project ZGAHGMMA. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 4 days, local false. Option B: cost 41 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project ZGAHGMMA. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 4 days, local false. Option B: cost 41 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"af8e7a53c6ce418d08a5ddb1ad9817dbb242b155f9ceb549e44d666b2464ccbf\",\"source_id\":\"src_af8e7a53c6ce418d08a5ddb1\",\"text\":\"Project ZGAHGMMA. Budget 34 euros.\"},{\"sha256\":\"0d292485b8dab51451079c56e5bcb702e3c0d7fb87f2e5f92ee158fdfa99d1f0\",\"source_id\":\"src_0d292485b8dab51451079c56\",\"text\":\"Project ZGAHGMMA. Deadline 1 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_zgahgmma",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project ZGAHGMMA. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 4 days, local false. Option B: cost 41 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"af8e7a53c6ce418d08a5ddb1ad9817dbb242b155f9ceb549e44d666b2464ccbf\",\"source_id\":\"src_af8e7a53c6ce418d08a5ddb1\",\"text\":\"Project ZGAHGMMA. Budget 34 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project ZGAHGMMA. Decide from the private project rules supplied by the analysts. Option A: cost 16 euros, duration 4 days, local false. Option B: cost 41 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"0d292485b8dab51451079c56e5bcb702e3c0d7fb87f2e5f92ee158fdfa99d1f0\",\"source_id\":\"src_0d292485b8dab51451079c56\",\"text\":\"Project ZGAHGMMA. Deadline 1 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project MUQDZULH. Decide from the private project rules supplied by the analysts. Option A: cost 18 euros, duration 3 days, local true. Option B: cost 37 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project MUQDZULH. Decide from the private project rules supplied by the analysts. Option A: cost 18 euros, duration 3 days, local true. Option B: cost 37 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"f37cf607b585b43065214fa0e0001ede59e72e534ced6aa0f65012c0f84963eb\",\"source_id\":\"src_f37cf607b585b43065214fa0\",\"text\":\"Project MUQDZULH. Budget 41 euros.\"},{\"sha256\":\"8adc1d2393d71c74d843d1df704ad5c0d3d0f7b329dbd9971cfe404af792aa62\",\"source_id\":\"src_8adc1d2393d71c74d843d1df\",\"text\":\"Project MUQDZULH. Deadline 3 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_muqdzulh",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project MUQDZULH. Decide from the private project rules supplied by the analysts. Option A: cost 18 euros, duration 3 days, local true. Option B: cost 37 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"f37cf607b585b43065214fa0e0001ede59e72e534ced6aa0f65012c0f84963eb\",\"source_id\":\"src_f37cf607b585b43065214fa0\",\"text\":\"Project MUQDZULH. Budget 41 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project MUQDZULH. Decide from the private project rules supplied by the analysts. Option A: cost 18 euros, duration 3 days, local true. Option B: cost 37 euros, duration 1 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"8adc1d2393d71c74d843d1df704ad5c0d3d0f7b329dbd9971cfe404af792aa62\",\"source_id\":\"src_8adc1d2393d71c74d843d1df\",\"text\":\"Project MUQDZULH. Deadline 3 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FGMHRMQH. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 4 days, local true. Option B: cost 15 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project FGMHRMQH. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 4 days, local true. Option B: cost 15 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"67b0a378e57738ee9a6e7f99c53a806263c94222197ebb890ff211fbc6c01a6d\",\"source_id\":\"src_67b0a378e57738ee9a6e7f99\",\"text\":\"Project FGMHRMQH. Budget 19 euros.\"},{\"sha256\":\"2f42bafdaef725ece340ac615a269e51384b08ec15c6054bf648f9ecfed40a40\",\"source_id\":\"src_2f42bafdaef725ece340ac61\",\"text\":\"Project FGMHRMQH. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_fgmhrmqh",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FGMHRMQH. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 4 days, local true. Option B: cost 15 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"67b0a378e57738ee9a6e7f99c53a806263c94222197ebb890ff211fbc6c01a6d\",\"source_id\":\"src_67b0a378e57738ee9a6e7f99\",\"text\":\"Project FGMHRMQH. Budget 19 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project FGMHRMQH. Decide from the private project rules supplied by the analysts. Option A: cost 41 euros, duration 4 days, local true. Option B: cost 15 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"2f42bafdaef725ece340ac615a269e51384b08ec15c6054bf648f9ecfed40a40\",\"source_id\":\"src_2f42bafdaef725ece340ac61\",\"text\":\"Project FGMHRMQH. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RCNPBXXK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 4 days, local true. Option B: cost 41 euros, duration 9 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project RCNPBXXK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 4 days, local true. Option B: cost 41 euros, duration 9 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"61bb00e98744b8414629cd97dcc79868e67152c8481a52560d451a4b4fc70403\",\"source_id\":\"src_61bb00e98744b8414629cd97\",\"text\":\"Project RCNPBXXK. Budget 73 euros.\"},{\"sha256\":\"db9fdcef084074401fd0129f2b6729355a1999c9954fad95201f60353419f736\",\"source_id\":\"src_db9fdcef084074401fd0129f\",\"text\":\"Project RCNPBXXK. Deadline 4 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_rcnpbxxk",
+      "kind": "complementary",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RCNPBXXK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 4 days, local true. Option B: cost 41 euros, duration 9 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"61bb00e98744b8414629cd97dcc79868e67152c8481a52560d451a4b4fc70403\",\"source_id\":\"src_61bb00e98744b8414629cd97\",\"text\":\"Project RCNPBXXK. Budget 73 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project RCNPBXXK. Decide from the private project rules supplied by the analysts. Option A: cost 55 euros, duration 4 days, local true. Option B: cost 41 euros, duration 9 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"db9fdcef084074401fd0129f2b6729355a1999c9954fad95201f60353419f736\",\"source_id\":\"src_db9fdcef084074401fd0129f\",\"text\":\"Project RCNPBXXK. Deadline 4 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"},{\"sha256\":\"08d7e850bbaba12536170ed2818f60a2866c27f176ba9a9d6b3237ebbfc29c97\",\"source_id\":\"src_08d7e850bbaba12536170ed2\",\"text\":\"Project EZTSXXPT. Deadline 4 days.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_eztsxxpt_missing",
+      "kind": "missing_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"08d7e850bbaba12536170ed2818f60a2866c27f176ba9a9d6b3237ebbfc29c97\",\"source_id\":\"src_08d7e850bbaba12536170ed2\",\"text\":\"Project EZTSXXPT. Deadline 4 days.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"},{\"sha256\":\"a2dcc78ee6bf2e7e685e81edfd3079e01123e11e19f9e32e5a7774f0b7f229a7\",\"source_id\":\"src_a2dcc78ee6bf2e7e685e81ed\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false. Budget 83 euros.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_eztsxxpt_conflict",
+      "kind": "contradictory_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"a2dcc78ee6bf2e7e685e81edfd3079e01123e11e19f9e32e5a7774f0b7f229a7\",\"source_id\":\"src_a2dcc78ee6bf2e7e685e81ed\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false. Budget 83 euros.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"},{\"sha256\":\"b2bd4a1b74856d8d68ba58e758450d33a053b3776b7a66eceac35277f993733d\",\"source_id\":\"src_b2bd4a1b74856d8d68ba58e7\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_eztsxxpt_exact",
+      "kind": "exact_control",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"c8e543ce6419380be31f8dfd15298f8ee0e277e9cad4617b50d64267c4085556\",\"source_id\":\"src_c8e543ce6419380be31f8dfd\",\"text\":\"Project EZTSXXPT. Budget 76 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project EZTSXXPT. Decide from the private project rules supplied by the analysts. Option A: cost 59 euros, duration 2 days, local true. Option B: cost 33 euros, duration 4 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"b2bd4a1b74856d8d68ba58e758450d33a053b3776b7a66eceac35277f993733d\",\"source_id\":\"src_b2bd4a1b74856d8d68ba58e7\",\"text\":\"Project EZTSXXPT. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"},{\"sha256\":\"87df7a9e59847ce247c1181f90828f6341baa5bd2d3c561e7c7b14e11883e001\",\"source_id\":\"src_87df7a9e59847ce247c1181f\",\"text\":\"Project BFZWZWWW. Deadline 1 days.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bfzwzwww_missing",
+      "kind": "missing_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"87df7a9e59847ce247c1181f90828f6341baa5bd2d3c561e7c7b14e11883e001\",\"source_id\":\"src_87df7a9e59847ce247c1181f\",\"text\":\"Project BFZWZWWW. Deadline 1 days.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"},{\"sha256\":\"44e188f3d09189af5fae3248a28ab9771292d10274158baf3ed2b021a4210b95\",\"source_id\":\"src_44e188f3d09189af5fae3248\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true. Budget 77 euros.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bfzwzwww_conflict",
+      "kind": "contradictory_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"44e188f3d09189af5fae3248a28ab9771292d10274158baf3ed2b021a4210b95\",\"source_id\":\"src_44e188f3d09189af5fae3248\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true. Budget 77 euros.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"},{\"sha256\":\"1a7a56cb3a7894cb4b8530f2c108e88ec553cf1d3e18cc8469988fc5408d1f72\",\"source_id\":\"src_1a7a56cb3a7894cb4b8530f2\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_bfzwzwww_exact",
+      "kind": "exact_control",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"7175ad52cb41de52cd35876a19b7a650ca1a0e09117d65db45d9e4c5e369a3db\",\"source_id\":\"src_7175ad52cb41de52cd35876a\",\"text\":\"Project BFZWZWWW. Budget 70 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project BFZWZWWW. Decide from the private project rules supplied by the analysts. Option A: cost 51 euros, duration 1 days, local true. Option B: cost 18 euros, duration 6 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"1a7a56cb3a7894cb4b8530f2c108e88ec553cf1d3e18cc8469988fc5408d1f72\",\"source_id\":\"src_1a7a56cb3a7894cb4b8530f2\",\"text\":\"Project BFZWZWWW. Deadline 1 days. Local-only requirement: true.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"},{\"sha256\":\"87d20bc68f879075cc8647daa978c61e80e23d5b882501e413a2722139e7b6e2\",\"source_id\":\"src_87d20bc68f879075cc8647da\",\"text\":\"Project XWWMUNQD. Deadline 4 days.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_xwwmunqd_missing",
+      "kind": "missing_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"87d20bc68f879075cc8647daa978c61e80e23d5b882501e413a2722139e7b6e2\",\"source_id\":\"src_87d20bc68f879075cc8647da\",\"text\":\"Project XWWMUNQD. Deadline 4 days.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"},{\"sha256\":\"b38dc7e8f0234415c6fb0854fd6875497ea0041d89d357d27ccbe532742eefd3\",\"source_id\":\"src_b38dc7e8f0234415c6fb0854\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false. Budget 63 euros.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_xwwmunqd_conflict",
+      "kind": "contradictory_rule",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"b38dc7e8f0234415c6fb0854fd6875497ea0041d89d357d27ccbe532742eefd3\",\"source_id\":\"src_b38dc7e8f0234415c6fb0854\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false. Budget 63 euros.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    {
+      "consumer_current_only": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[]}",
+          "role": "user"
+        }
+      ],
+      "consumer_exact_control": [
+        {
+          "content": "Make a source-grounded project decision. Current option facts and supplied exact source quotations are evidence. Each option is eligible if cost <= budget, days <= deadline, and local if local-only is required. Choose the cheapest eligible option, choosing A on a cost tie; choose NONE if neither is eligible. Return project, action (A, B, NONE, UNKNOWN) and options with entity, cost, remaining, days, local, eligible. remaining = budget - cost even for an ineligible option. All rules are same-revision claims: if any required rule is missing or contradicts another supplied source, action must be UNKNOWN and remaining and eligible must be null for both options. Never infer a missing rule from a source identifier.",
+          "role": "system"
+        },
+        {
+          "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"verified_quotes\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"},{\"sha256\":\"dcb416a7aead58f538cbd72db5fc99ac025c3b3ed183a87147f2d58c9c62ce43\",\"source_id\":\"src_dcb416a7aead58f538cbd72d\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false.\"}]}",
+          "role": "user"
+        }
+      ],
+      "id": "private_xwwmunqd_exact",
+      "kind": "exact_control",
+      "producers": {
+        "B1_DETAIL": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"ec17b388357195f17ee27078351aa8be28772f225c6d13e33bce6a60761ebcb2\",\"source_id\":\"src_ec17b388357195f17ee27078\",\"text\":\"Project XWWMUNQD. Budget 56 euros.\"}],\"role\":\"B1_DETAIL\"}",
+            "role": "user"
+          }
+        ],
+        "B2_GIST": [
+          {
+            "content": "Read only the supplied current source and private source. Quote the private project rules exactly. Do not guess the other analyst's private rules. A summary is a hypothesis, not evidence. This is reading supplied text, not executing an external action.",
+            "role": "system"
+          },
+          {
+            "content": "{\"current_source\":\"Project XWWMUNQD. Decide from the private project rules supplied by the analysts. Option A: cost 42 euros, duration 8 days, local false. Option B: cost 74 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.\",\"private_sources\":[{\"sha256\":\"dcb416a7aead58f538cbd72db5fc99ac025c3b3ed183a87147f2d58c9c62ce43\",\"source_id\":\"src_dcb416a7aead58f538cbd72d\",\"text\":\"Project XWWMUNQD. Deadline 4 days. Local-only requirement: false.\"}],\"role\":\"B2_GIST\"}",
+            "role": "user"
+          }
+        ]
+      }
+    }
+  ],
+  "schema": "V13_STEP2_PRIVATE_FIXTURES_V1_PROMPTS"
+}

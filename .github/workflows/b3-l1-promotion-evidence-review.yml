@@ -1,0 +1,75 @@
+name: V13 B3 explicit L1 promotion evidence RED GREEN
+on:
+  push:
+    branches: [assistant/v13-b3-l1-promotion-evidence-review-20261027]
+    paths:
+      - '.github/workflows/b3-l1-promotion-evidence-review.yml'
+      - 'v13/code/v13/b3degrade.py'
+      - 'v13/code/tests/test_b3_l1_promotion_evidence_review.py'
+      - 'v13/code/tests/test_b3degrade.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-b3-l1-promotion-evidence
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw explicit promotion exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/b3-l1-promotion"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/b3degrade.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_b3_l1_promotion_evidence_review.py > "$evidence/TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_b3degrade.py > "$evidence/EXISTING_TEST_BLOB.txt"
+          git merge-base --is-ancestor 6a3280dc7859870a0c7ad80eceef1dc4d972fa5e HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/b3-l1-promotion-venv"
+          py="$RUNNER_TEMP/b3-l1-promotion-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_b3_l1_promotion_evidence_review tests.test_b3_l1_report_revalidation_review tests.test_b3degrade tests.test_b3bridge
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/b3degrade.py v13/code/tests/test_b3_l1_promotion_evidence_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b45194a2e8ad6625b40e4b8a985b0c512414c703 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check b45194a2e8ad6625b40e4b8a985b0c512414c703 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-b3-l1-promotion-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/b3-l1-promotion/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/b3-l1-promotion"
+          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'B3_L1_PROMOTION_SOFTWARE_ONLY_NO_AUTHORITY'

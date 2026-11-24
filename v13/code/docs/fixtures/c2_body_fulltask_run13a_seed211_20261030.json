@@ -1,0 +1,86 @@
+{
+  "cases": [
+    {
+      "a": "Cedar",
+      "a_cost": 318,
+      "a_days": 6,
+      "b": "Quartz",
+      "b_cost": 429,
+      "b_days": 2,
+      "budget": 487,
+      "project": "Beacon211"
+    },
+    {
+      "a": "Maple",
+      "a_cost": 477,
+      "a_days": 3,
+      "b": "Briar",
+      "b_cost": 588,
+      "b_days": 9,
+      "budget": 653,
+      "project": "Lantern211"
+    },
+    {
+      "a": "Aspen",
+      "a_cost": 516,
+      "a_days": 8,
+      "b": "Delta",
+      "b_cost": 642,
+      "b_days": 4,
+      "budget": 734,
+      "project": "Nimbus211"
+    },
+    {
+      "a": "Slate",
+      "a_cost": 394,
+      "a_days": 5,
+      "b": "Opal",
+      "b_cost": 507,
+      "b_days": 1,
+      "budget": 568,
+      "project": "Harbor211"
+    },
+    {
+      "a": "Pine",
+      "a_cost": 605,
+      "a_days": 2,
+      "b": "Frost",
+      "b_cost": 748,
+      "b_days": 7,
+      "budget": 821,
+      "project": "Prism211"
+    },
+    {
+      "a": "Moss",
+      "a_cost": 337,
+      "a_days": 9,
+      "b": "Larch",
+      "b_cost": 411,
+      "b_days": 6,
+      "budget": 469,
+      "project": "Orion211"
+    },
+    {
+      "a": "Echo",
+      "a_cost": 699,
+      "a_days": 4,
+      "b": "River",
+      "b_cost": 835,
+      "b_days": 3,
+      "budget": 912,
+      "project": "Summit211"
+    },
+    {
+      "a": "Flint",
+      "a_cost": 248,
+      "a_days": 7,
+      "b": "Willow",
+      "b_cost": 351,
+      "b_days": 5,
+      "budget": 397,
+      "project": "Meadow211"
+    }
+  ],
+  "schema": "v13.c2_c3_body.fulltask.run13a.fixture.v1",
+  "seed": 211
+}

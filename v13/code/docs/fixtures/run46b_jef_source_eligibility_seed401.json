@@ -1,0 +1,60 @@
+{
+  "schema": "v13.run46b.jef_source_eligibility_seed401.v1",
+  "seed": 401,
+  "fixtures": [
+    {
+      "id": "Helios",
+      "prior": "Project Helios. Budget 78 euros. Deadline 7 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Helios. Apply the earlier project rules. Option A costs 60 euros, takes 6 days, and is local. Option B costs 45 euros, takes 5 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 18
+      }
+    },
+    {
+      "id": "Lyra",
+      "prior": "Project Lyra. Budget 58 euros. Deadline 4 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Lyra. Apply the earlier project rules. Option A costs 49 euros, takes 6 days, and is local. Option B costs 46 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 12
+      }
+    },
+    {
+      "id": "Orion",
+      "prior": "Project Orion. Budget 37 euros. Deadline 3 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Orion. Apply the earlier project rules. Option A costs 42 euros, takes 2 days, and is local. Option B costs 31 euros, takes 5 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Cedar",
+      "prior": "Project Cedar. No budget has been supplied. Deadline 8 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Cedar. Apply the earlier project rules. Option A costs 26 euros, takes 4 days, and is local. Option B costs 33 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "UNKNOWN",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Mistral",
+      "prior": "Project Mistral. Spending limit: 67 euros. Finish within 6 days. Must remain local: yes. This policy is binding.",
+      "current": "Project Mistral. Decide using the saved policy. Option A: cost 42 euros, duration 5 days, local true. Option B: cost 38 euros, duration 4 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 25
+      }
+    },
+    {
+      "id": "Nexus",
+      "prior": "Project Nexus. Spending limit: 48 euros. Finish within 5 days. Must remain local: no. This policy is binding.",
+      "current": "Project Nexus. Decide using the saved policy. Option A: cost 44 euros, duration 4 days, local true. Option B: cost 41 euros, duration 3 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 7
+      }
+    }
+  ]
+}

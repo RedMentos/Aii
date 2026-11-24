@@ -1,0 +1,222 @@
+{
+ "schema": "v13-eligibility-live-prereg-v1",
+ "created_utc": "2026-10-21T06:32:42Z",
+ "dev_seed": 7,
+ "dev_sha256": "1c25f74bf2d4f96966715896f17b1f06726c2f09df2fb1a9c04b94bacd2c3551",
+ "dev": {
+  "all": {
+   "n": 12,
+   "correct": {
+    "c3_alone": 5,
+    "tool_active": 6
+   },
+   "wrong_committed": {
+    "c3_alone": 7,
+    "tool_active": 6
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wins": 2,
+   "losses": 1,
+   "net": 1,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 10,
+   "shown_wins": 6,
+   "shown_losses": 1,
+   "shown_net": 5,
+   "shown_sign_test_p": 0.125,
+   "proposals": 12,
+   "executed": 12,
+   "read_failures": 0,
+   "decision_unknown": 5,
+   "decision_correct": 10,
+   "values_exact": 8,
+   "corrections": 6,
+   "turn_s_median": {
+    "c3_alone": 1.81,
+    "tool_active": 2.81
+   }
+  },
+  "complete": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 2,
+    "tool_active": 3
+   },
+   "wrong_committed": {
+    "c3_alone": 1,
+    "tool_active": 0
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wins": 1,
+   "losses": 0,
+   "net": 1,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 3,
+   "shown_wins": 1,
+   "shown_losses": 0,
+   "shown_net": 1,
+   "shown_sign_test_p": 1.0,
+   "proposals": 3,
+   "executed": 3,
+   "read_failures": 0,
+   "decision_unknown": 0,
+   "decision_correct": 3,
+   "values_exact": 3,
+   "corrections": 0,
+   "turn_s_median": {
+    "c3_alone": 1.92,
+    "tool_active": 2.91
+   }
+  },
+  "missing": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 0,
+    "tool_active": 1
+   },
+   "wrong_committed": {
+    "c3_alone": 3,
+    "tool_active": 2
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wins": 1,
+   "losses": 0,
+   "net": 1,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 3,
+   "shown_wins": 3,
+   "shown_losses": 0,
+   "shown_net": 3,
+   "shown_sign_test_p": 0.25,
+   "proposals": 3,
+   "executed": 3,
+   "read_failures": 0,
+   "decision_unknown": 3,
+   "decision_correct": 3,
+   "values_exact": 1,
+   "corrections": 2,
+   "turn_s_median": {
+    "c3_alone": 1.71,
+    "tool_active": 2.51
+   }
+  },
+  "earlier": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 2,
+    "tool_active": 2
+   },
+   "wrong_committed": {
+    "c3_alone": 1,
+    "tool_active": 1
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wins": 0,
+   "losses": 0,
+   "net": 0,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 3,
+   "shown_wins": 1,
+   "shown_losses": 0,
+   "shown_net": 1,
+   "shown_sign_test_p": 1.0,
+   "proposals": 3,
+   "executed": 3,
+   "read_failures": 0,
+   "decision_unknown": 0,
+   "decision_correct": 3,
+   "values_exact": 3,
+   "corrections": 1,
+   "turn_s_median": {
+    "c3_alone": 1.41,
+    "tool_active": 2.42
+   }
+  },
+  "override": {
+   "n": 3,
+   "correct": {
+    "c3_alone": 1,
+    "tool_active": 0
+   },
+   "wrong_committed": {
+    "c3_alone": 2,
+    "tool_active": 3
+   },
+   "unparsed": {
+    "c3_alone": 0,
+    "tool_active": 0
+   },
+   "wins": 0,
+   "losses": 1,
+   "net": -1,
+   "sign_test_p": 1.0,
+   "tool_wrong": 0,
+   "shown_correct": 1,
+   "shown_wins": 1,
+   "shown_losses": 1,
+   "shown_net": 0,
+   "shown_sign_test_p": 1.0,
+   "proposals": 3,
+   "executed": 3,
+   "read_failures": 0,
+   "decision_unknown": 2,
+   "decision_correct": 1,
+   "values_exact": 1,
+   "corrections": 3,
+   "turn_s_median": {
+    "c3_alone": 1.81,
+    "tool_active": 2.81
+   }
+  }
+ },
+ "fresh_task_seed": 29,
+ "fresh_per_kind": 15,
+ "fresh_tasks_sha256": "293eaa880247ca729598575aad69e371693211a9f2215c7673bb36d2b5cc3c92",
+ "arms": [
+  "c3_alone",
+  "tool_active"
+ ],
+ "kinds": [
+  "complete",
+  "missing",
+  "earlier",
+  "override"
+ ],
+ "cfg": {
+  "learning_mode": "RECORD_ONLY",
+  "teacher_enabled": false,
+  "history_turns": 2,
+  "observer_mode": "off",
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "decision_rule": "Fresh seed 29, 15 tasks per kind (60 total), tool_active vs c3_alone paired on the same task. TOOL_LIVE_SUPPORTED iff (a) net correct wins >= +10 AND two-sided sign test p < .05, (b) wrong_committed(tool_active) <= wrong_committed(c3_alone), (c) tool_wrong == 0 (the recipe never commits a wrong decision), and (d) no kind loses more than 2 tasks net. Second verdict, fixed in advance as well: TOOL_SHOWN_SUPPORTED iff shown_correct(tool_active) vs correct(c3_alone) (what the user sees including the broker's late correction) has net wins >= +10 AND sign test p < .05 AND (c). Dev seed 7 showed the 350M body often keeps its own decision next to the TOOL_RESULT layer, so the first verdict may fail while the second passes; both are reported. Reported, not part of the verdicts: per kind, proposals, executed calls, read failures, guard refusals, values read exactly, turn time.",
+ "script_sha256": "027a31d524628619a4b2c306194814e8c57b0cf6285097e51d3ca958984f89a0",
+ "code_sha256": {
+  "toolstep.py": "cb386d213891873f2af498509065834639c4a49c10bb1de2d7d71e4097bb2216",
+  "agi/eligibility.py": "a9395f80cd87722c0d6aae53721cffeb284a1f41a012e258c819b0ecc2c33f69",
+  "agi/tools.py": "aaec7fb801392d7bc3084760985ebc57f79506c87175cbaad1864ff691a403da",
+  "transaction.py": "7edd8e349cfc449a1123c660d35cfc337261754b138cd6cf8ba62c0b5b6530b0",
+  "runtime.py": "038b07591b561a8a8a0f0d93f5f7c61113b279f303805d9c56cfc6b1dcf0c246",
+  "broker.py": "27186038aaa89b5409e26d5d3fff7278ad6fc3ff03a35bd6c92dcf3bf15feacd",
+  "history.py": "45c0893c31194336886ed02a19417f1f9375f90c750f4a276acf01f0b322df49"
+ }
+}

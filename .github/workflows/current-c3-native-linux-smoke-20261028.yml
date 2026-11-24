@@ -1,0 +1,91 @@
+name: V13 current-catalog C3 real Linux native smoke (pinned official bytes)
+on:
+  push:
+    branches: [assistant/v13-run11-current-c3-linux-native-smoke-20261028]
+    paths:
+      - '.github/workflows/current-c3-native-linux-smoke-20261028.yml'
+      - 'v13/code/scripts/current_c3_native_linux_smoke_20261028.py'
+      - 'v13/code/tests/test_current_c3_native_linux_smoke_20261028.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-current-c3-native-linux-smoke-20261028
+  cancel-in-progress: false
+jobs:
+  pinned-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run software guards, then one bounded real native C3 inference
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-current-c3-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_BLOB.txt"
+          git hash-object v13/code/v13/models.py > "$e/MANAGER_BLOB.txt"
+          git hash-object v13/code/scripts/current_c3_native_linux_smoke_20261028.py > "$e/PROBE_BLOB.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_current_c3_native_linux_smoke_20261028) > "$e/GUARDS_RAW.log" 2>&1
+          echo "$?" > "$e/GUARDS_EXIT.txt"
+          if [ "$(cat "$e/GUARDS_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=v13/code python3 v13/code/scripts/current_c3_native_linux_smoke_20261028.py \
+              --scratch-home "$RUNNER_TEMP/v13-current-c3-native-scratch" \
+              --evidence-dir "$e/native" > "$e/NATIVE_PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_PROBE_EXIT.txt"
+          else
+            echo SKIPPED_GUARDS_RED > "$e/NATIVE_PROBE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_PROBE_EXIT.txt"
+          fi
+          python3 - "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path(sys.argv[1])/'native/REPORT.json'
+          if not p.is_file():
+              raise SystemExit('NO_CLOSED_NATIVE_REPORT')
+          j=json.loads(p.read_text())
+          assert j['evidence_kind']=='LINUX_NATIVE_C3_ONLY'
+          assert j['model_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          assert j['runner_tar_sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          assert j['native_exit_code']==0 and j['native_execution_performed'] and j['native_smoke_pass']
+          assert j['stdout_chars']>len('Hello.')
+          assert not j['c2_jef_executed'] and not j['b1_b2_executed'] and not j['redmi_measured']
+          assert not j['step2_gate_promoted'] and j['jepa_weight']==0 and j['age_authority']==0
+          print('PINNED_CURRENT_C3_LINUX_NATIVE_SMOKE_ONLY')
+          PY
+          echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/current_c3_native_linux_smoke_20261028.py v13/code/tests/test_current_c3_native_linux_smoke_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9da8df36dfe7a5bb79fadd252d344b979576da6d --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9da8df36dfe7a5bb79fadd252d344b979576da6d HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-current-c3-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-current-c3-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native proof without any gate promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-current-c3-native"
+          for name in GUARDS NATIVE_PROBE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw evidence retained, no native PASS claim"
+              tail -80 "$e/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'CURRENT_C3_NATIVE_LINUX_ONLY_NO_C2_B1_B2_REDM I_OR_GATE_PROMOTION'

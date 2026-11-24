@@ -1,0 +1,76 @@
+name: V13 World-JEPA SHADOW operator probe RED GREEN Linux review
+on:
+  push:
+    branches: [assistant/v13-run11-world-shadow-operator-probe-20261028]
+    paths:
+      - '.github/workflows/world-jepa-shadow-operator-probe-20261028.yml'
+      - 'v13/code/scripts/world_jepa_shadow_operator_probe.py'
+      - 'v13/code/tests/test_world_jepa_shadow_operator_probe_20261028.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-shadow-operator-probe-20261028
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve offline operator inference raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-world-shadow-operator-probe"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/scripts/world_jepa_shadow_operator_probe.py > "$e/SOURCE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-world-shadow-operator-venv"
+          py="$RUNNER_TEMP/v13-world-shadow-operator-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_shadow_operator_probe_20261028 tests.test_world_jepa_checkpoint_heldout_crossorgan_20261028 tests.test_world_jepa_shadow_checkpoint_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/world_jepa_shadow_operator_probe.py v13/code/tests/test_world_jepa_shadow_operator_probe_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base aa0fe52e08f2ea0fc450838bd74e0747ecee0358 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check aa0fe52e08f2ea0fc450838bd74e0747ecee0358 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-shadow-operator-probe-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-world-shadow-operator-probe/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-world-shadow-operator-probe"
+          for name in INSTALL FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -70 "$e/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'OPERATOR_ONLY_SHADOW_NO_RUNTIME_NO_AGE_OR_TOOL_AUTHORITY'

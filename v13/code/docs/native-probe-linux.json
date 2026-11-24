@@ -1,0 +1,253 @@
+{
+  "device": {
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "android": false,
+    "cpu_count": 9
+  },
+  "model_revisions": {
+    "C3_LANGUAGE": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+    "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "B2_GIST": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "C2_CONTROL": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+    "TEACHER": "unavailable"
+  },
+  "roles": {
+    "C3_LANGUAGE": {
+      "ok": true,
+      "actual_output": "Hallo! Wie kann ich dir heute helfen?",
+      "metrics": {
+        "role": "C3_LANGUAGE",
+        "duration_s": 0.7601330669999697,
+        "ttft_s": 0.6695061289999558,
+        "generated_tokens": 11,
+        "prompt_tokens": 34,
+        "history_trimmed": false,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 34,
+          "prompt_ms": 51.3,
+          "prompt_per_token_ms": 1.5088235294117647,
+          "prompt_per_second": 662.7680311890838,
+          "predicted_n": 11,
+          "predicted_ms": 90.299,
+          "predicted_per_token_ms": 9.029900000000001,
+          "predicted_per_second": 110.74319759908747
+        },
+        "sampled_peak_rss_bytes": 304893952,
+        "memory": {
+          "pid": 8,
+          "rss_bytes": 304893952,
+          "pss_bytes": 303502336,
+          "mapped_file_bytes": 176128000,
+          "minor_faults": 40936,
+          "major_faults": 0
+        },
+        "actual_model": "LFM2.5-230M-QAD-Q4_0.gguf",
+        "CAN_LATENT_TAP": false,
+        "CAN_LATENT_INJECT": false,
+        "CAN_TRAIN_BODY": false
+      },
+      "unload": {
+        "before": {
+          "pid": 8,
+          "rss_bytes": 304893952,
+          "pss_bytes": 303502336,
+          "mapped_file_bytes": 176128000,
+          "minor_faults": 40936,
+          "major_faults": 0
+        },
+        "process_reaped": true
+      }
+    },
+    "B1_DETAIL": {
+      "ok": true,
+      "actual_output": "Hallo! Ich bin hier, um zu helfen. Was möchtest du wissen?",
+      "metrics": {
+        "role": "B1_DETAIL",
+        "duration_s": 4.376366742000073,
+        "ttft_s": 3.4831495820001237,
+        "generated_tokens": 19,
+        "prompt_tokens": 34,
+        "history_trimmed": false,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 34,
+          "prompt_ms": 383.719,
+          "prompt_per_token_ms": 11.28585294117647,
+          "prompt_per_second": 88.60650632363787,
+          "predicted_n": 19,
+          "predicted_ms": 892.27,
+          "predicted_per_token_ms": 49.57055555555556,
+          "predicted_per_second": 20.173265939681936
+        },
+        "sampled_peak_rss_bytes": 1339252736,
+        "memory": {
+          "pid": 26,
+          "rss_bytes": 1339252736,
+          "pss_bytes": 1337825280,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 169892,
+          "major_faults": 0
+        },
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "CAN_LATENT_TAP": false,
+        "CAN_LATENT_INJECT": false,
+        "CAN_TRAIN_BODY": false
+      },
+      "structured_offer": {
+        "verified_quote_count": 1,
+        "rejected_quote_count": 0,
+        "actual": {
+          "needs_reentry": true,
+          "quotes": [
+            "Projekt Test: Budget 120 Euro. Berechne die Hälfte."
+          ],
+          "summary": "The analysis highlights key details from the provided text.",
+          "uncertainty": "limited"
+        }
+      },
+      "unload": {
+        "before": {
+          "pid": 26,
+          "rss_bytes": 1365610496,
+          "pss_bytes": 1364183040,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 176402,
+          "major_faults": 0
+        },
+        "process_reaped": true
+      }
+    },
+    "B2_GIST": {
+      "ok": true,
+      "actual_output": "Hallo! Ich bin hier, um zu helfen. Was möchtest du wissen?",
+      "metrics": {
+        "role": "B2_GIST",
+        "duration_s": 2.1803496219999943,
+        "ttft_s": 1.2731017050000446,
+        "generated_tokens": 19,
+        "prompt_tokens": 34,
+        "history_trimmed": false,
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 34,
+          "prompt_ms": 354.749,
+          "prompt_per_token_ms": 10.433794117647059,
+          "prompt_per_second": 95.84241252265686,
+          "predicted_n": 19,
+          "predicted_ms": 907.131,
+          "predicted_per_token_ms": 50.396166666666666,
+          "predicted_per_second": 19.842779047348177
+        },
+        "sampled_peak_rss_bytes": 1339252736,
+        "memory": {
+          "pid": 45,
+          "rss_bytes": 1339252736,
+          "pss_bytes": 1337825280,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 169917,
+          "major_faults": 0
+        },
+        "actual_model": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+        "CAN_LATENT_TAP": false,
+        "CAN_LATENT_INJECT": false,
+        "CAN_TRAIN_BODY": false
+      },
+      "structured_offer": {
+        "verified_quote_count": 1,
+        "rejected_quote_count": 0,
+        "actual": {
+          "needs_reentry": true,
+          "quotes": [
+            "Projekt Test: Budget 120 Euro. Berechne die Hälfte."
+          ],
+          "summary": "Budget calculation task identified.",
+          "uncertainty": "limited"
+        }
+      },
+      "unload": {
+        "before": {
+          "pid": 45,
+          "rss_bytes": 1391439872,
+          "pss_bytes": 1390012416,
+          "mapped_file_bytes": 715722752,
+          "minor_faults": 182780,
+          "major_faults": 0
+        },
+        "process_reaped": true
+      }
+    },
+    "C2_CONTROL": {
+      "ok": true,
+      "embedding_dim": 3072,
+      "embedding_squared_norm": 0.9999998392208923,
+      "embedding_hash": "b278e1e8aa22fcf2d6c64111ae006bfe028d5334c9d4b1ad91bca57670c972e1",
+      "actual_control": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "select_processing",
+            "arguments": {
+              "route": "both"
+            }
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'120' -> route '120'.",
+        "confidence": 1.0,
+        "prefill_tps": 109.9,
+        "decode_tps": 105.2,
+        "peak_ram_mb": 94.0,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      },
+      "metrics": {
+        "role": "C2_CONTROL",
+        "operation": "C",
+        "duration_s": 0.49731003599981705,
+        "memory": {
+          "pid": 64,
+          "rss_bytes": 99328000,
+          "pss_bytes": 98522112,
+          "mapped_file_bytes": 7479296,
+          "minor_faults": 41663,
+          "major_faults": 0
+        }
+      },
+      "confidence_calibrated": false
+    }
+  },
+  "full_runner_proof": false,
+  "phone_measured": false,
+  "gates": {
+    "MobileMoE_native_bodies": "UNAVAILABLE: gated weights/license and packed Android runner/train proof absent; temporary dense bodies only",
+    "B3_latents": "OFF: no native taps/injection, no receiver calibration, utility/stability/OOD/ablation proof",
+    "A3_student_projector": "UNAVAILABLE: no representation alignment training implemented",
+    "world_self_JEPA": "UNAVAILABLE: explicit route-head SGD is not JEPA or body learning",
+    "predictive_head": "UNAVAILABLE: no validated future-state target dataset/objective in this release",
+    "semantic_procedural_consolidation": "UNAVAILABLE: exact/episodic corrections only; no fabricated semantic facts",
+    "teacher": "OPTIONAL: separate imported frozen GGUF, only after own committed candidate",
+    "learning": "SHADOW: real frozen embeddings + explicit labels + external route head; individual artifact approval",
+    "sleep": "EXPERIMENTAL: one explicit hypothetical test draft; no autonomous consolidation",
+    "external_tools": "OFF: no shell, messaging, web action or filesystem tools callable by models",
+    "vision_audio": "UNAVAILABLE: text-only Age 0",
+    "higher_age": "OFF: cap does not promote system",
+    "phone_proof": "MISSING until probe and sustained runs on target device; Linux is not Redmi"
+  },
+  "status": "SMOKE_PASS",
+  "missing_proofs": [
+    "sustained thermal/energy",
+    "target-phone RSS/KV growth under pressure",
+    "native sparse body training",
+    "B3 receiver-effect ablations",
+    "long-term retention"
+  ]
+}

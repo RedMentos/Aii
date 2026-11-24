@@ -1,0 +1,71 @@
+name: V13 Run100 B2 prior quote exact subspan candidate software review
+on:
+  push:
+    branches:
+      - assistant/v13-run100-b2-prior-span-candidate-20261031-auto11
+    paths:
+      - v13/code/docs/RUN100_B2_PRIOR_SPAN_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test candidate, frozen original scorer and adversarial provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run100"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run100-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run100-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/scripts/b2_prior_quote_span_candidate.py \
+            v13/code/tests/test_b2_prior_quote_span_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_prior_quote_span_candidate.py -v) > "$e/CANDIDATE_RAW.log" 2>&1
+          candidate_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_run87_b1b2_budget_fixture.py -v) > "$e/FROZEN_FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_run87_native_verify.py -v) > "$e/FROZEN_VERIFY_RAW.log" 2>&1
+          verify_rc=$?
+          printf 'NOT_RUN: Run87 owner branch is not a compatible frozen SourceHandoff snapshot; original 11/11 RED in Actions 41204997472 retained.\n' > "$e/SOURCE_COMPAT_SCOPE.txt"
+          set -e
+          echo "$candidate_rc" > "$e/CANDIDATE_EXIT.txt"
+          echo "$fixture_rc" > "$e/FROZEN_FIXTURE_EXIT.txt"
+          echo "$verify_rc" > "$e/FROZEN_VERIFY_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base fef9f07613109b1cff19a051fff21741f539c62b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check fef9f07613109b1cff19a051fff21741f539c62b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 14 "$e/CANDIDATE_RAW.log"
+          tail -n 5 "$e/FROZEN_VERIFY_RAW.log"
+          test "$candidate_rc" -eq 0
+          test "$fixture_rc" -eq 0
+          test "$verify_rc" -eq 0
+      - name: Upload exact software-only raw receipts including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run100-b2-prior-span-${{ github.sha }}
+          path: ${{ runner.temp }}/run100/
+          if-no-files-found: error
+          retention-days: 90

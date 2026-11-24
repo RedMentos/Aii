@@ -1,0 +1,161 @@
+name: V13 Run107 pinned b10964 compatibility from extracted Run104 phone source
+on:
+  push:
+    branches:
+      - assistant/v13-run104-phone-pinned-tar-20261031-auto11
+    paths:
+      - v13/code/docs/RUN107_PHONE_PINNED_TAR_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download exact pinned upstream tarballs and verify transactional extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run107-tar-evidence"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run107-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run107-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          python3 -m compileall -q v13/code/v13/safe_tar.py v13/code/v13/bootstrap.py v13/code/scripts/phone_pinned_tar_compat_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          env PYTHONPATH=v13/code "$py" v13/code/scripts/phone_pinned_tar_compat_20261031.py \
+            --work "$RUNNER_TEMP/v13-run107-tar-input" --out "$e/PINNED_REPORT.json" > "$e/PINNED_RAW.log" 2>&1
+          pinned_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_bootstrap_safe_tar_20261031.py -v) > "$e/REGRESSION_RAW.log" 2>&1
+          regression_rc=$?
+          set -e
+          echo "$pinned_rc" > "$e/PINNED_EXIT.txt"
+          echo "$regression_rc" > "$e/REGRESSION_EXIT.txt"
+          set +e
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run107.zip" --phone-install > "$e/PACKAGE_RAW.log" 2>&1
+          package_rc=$?
+          set -e
+          echo "$package_rc" > "$e/PACKAGE_EXIT.txt"
+          if test "$package_rc" -eq 0; then
+            set +e
+            "$py" - "$e" "$RUNNER_TEMP/v13-run107-extracted" <<'PY' > "$e/ZIP_VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);root=Path(sys.argv[2]);path=e/'V13-Phone-Run107.zip'
+          with zipfile.ZipFile(path) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              files=manifest['files']
+              for name,expected in files.items():
+                  assert not name.startswith('/') and '..' not in Path(name).parts
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('scripts/phone_pinned_tar_compat_20261031.py',
+                           'v13/bootstrap.py','v13/safe_tar.py',
+                           'scripts/install_selftest.py'):
+                  assert name in files
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(root)
+          for name,expected in files.items():
+              assert hashlib.sha256((root/'V13-Phone'/name).read_bytes()).hexdigest()==expected,name
+          report={'schema':'v13.run107.phone_zip.software.v1',
+                  'files':len(files),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+                  'bytes':path.stat().st_size,'manifest_hashes_pass':True,
+                  'native_executed':False,'redmi_measured':False}
+          (e/'ZIP_REPORT.json').write_text(json.dumps(report,sort_keys=True)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+            zip_rc=$?
+            if test "$zip_rc" -eq 0; then
+              (cd "$RUNNER_TEMP/v13-run107-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/phone_pinned_tar_compat_20261031.py --work "$RUNNER_TEMP/v13-run107-tar-input" --out "$e/EXTRACTED_PINNED_REPORT.json") > "$e/EXTRACTED_PINNED_RAW.log" 2>&1
+              extracted_rc=$?
+              (cd "$RUNNER_TEMP/v13-run107-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --cohort run104_c3_c5_exit --timeout-seconds 120) > "$e/EXTRACTED_RUN104_RAW.log" 2>&1
+              smoke_rc=$?
+              if test "$extracted_rc" -eq 0 && test "$pinned_rc" -eq 0; then
+                "$py" - "$e" <<'PY' > "$e/COMPARE_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          a=json.loads((e/'PINNED_REPORT.json').read_text())
+          b=json.loads((e/'EXTRACTED_PINNED_REPORT.json').read_text())
+          assert a==b, 'Pinned tar source/binary extraction differs between checkout and extracted phone ZIP'
+          assert set(a['archives'])=={'source','linux-x86_64'}
+          assert all(v['retry_identical'] is True for v in a['archives'].values())
+          print('PINNED_ARCHIVES_EXACT_MATCH')
+          PY
+                compare_rc=$?
+              else
+                compare_rc=125; echo 'PREREQUISITE_RED' > "$e/COMPARE_RAW.log"
+              fi
+            else
+              extracted_rc=125;smoke_rc=125;compare_rc=125
+              echo 'ZIP_RED_NO_EXTRACTED_RUN' > "$e/EXTRACTED_PINNED_RAW.log"
+            fi
+            set -e
+          else
+            zip_rc=125;extracted_rc=125;smoke_rc=125;compare_rc=125
+            echo 'PACKAGE_RED_NO_ZIP' > "$e/ZIP_VERIFY_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_VERIFY_EXIT.txt"
+          echo "$extracted_rc" > "$e/EXTRACTED_PINNED_EXIT.txt"
+          echo "$smoke_rc" > "$e/EXTRACTED_RUN104_EXIT.txt"
+          echo "$compare_rc" > "$e/COMPARE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 35113fc42f0b4594ca46ef33194877b8e277054f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 35113fc42f0b4594ca46ef33194877b8e277054f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          python3 - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          r={'schema':'v13.phone_pinned_tar_compat.linux_software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'pinned_exit':int((e/'PINNED_EXIT.txt').read_text()),
+             'regression_exit':int((e/'REGRESSION_EXIT.txt').read_text()),
+             'package_exit':int((e/'PACKAGE_EXIT.txt').read_text()),
+             'zip_verify_exit':int((e/'ZIP_VERIFY_EXIT.txt').read_text()),
+             'extracted_pinned_exit':int((e/'EXTRACTED_PINNED_EXIT.txt').read_text()),
+             'extracted_run104_exit':int((e/'EXTRACTED_RUN104_EXIT.txt').read_text()),
+             'compare_exit':int((e/'COMPARE_EXIT.txt').read_text()),
+             'native_executed':False,'model_downloaded':False,'redmi_measured':False,
+             'step2_promoted':False,'b3_promoted':False,'body_jepa_promoted':False,
+             'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 15 "$e/PINNED_RAW.log"
+          tail -n 5 "$e/REGRESSION_RAW.log"
+          test "$pinned_rc" -eq 0
+          test "$regression_rc" -eq 0
+          test "$package_rc" -eq 0
+          test "$zip_rc" -eq 0
+          test "$extracted_rc" -eq 0
+          test "$smoke_rc" -eq 0
+          test "$compare_rc" -eq 0
+          grep -q 'INSTALL_SELFTEST_PASS: 21 exact model-free cases' "$e/EXTRACTED_RUN104_RAW.log"
+      - name: Upload raw results including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run107-phone-pinned-tar-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run107-tar-evidence/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,132 @@
+{
+  "schema": "v13.hb1a.native_54call_review_result.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated review branch",
+  "parent_pr": 1053,
+  "review_pr": 1054,
+  "preregistration": {
+    "pr": 1052,
+    "blob": "9d6652e99ac9aa0de7898f15eeb8a54d598c49e6",
+    "registered_before_implementation": true
+  },
+  "attempt_1": {
+    "run_id": 40836608947,
+    "head_sha": "6cc70df41a4857db05a2a660933391fb7905c2ae",
+    "status": "RED_PRE_INSTALL",
+    "reason": "fresh V13_HOME missing before shutil.disk_usage; zero native model calls",
+    "artifact_id": 12881141167,
+    "zip_sha256": "c928799624fec5b16b249089dcbdfecd1f61a99cdc180aa5bfa04217dd0ac172",
+    "sha256sums_verified": 47,
+    "private_backup": "/V13/RawEvidence/HB1A_40836608947_install_home_missing_RED.zip"
+  },
+  "attempt_2": {
+    "run_id": 40836705747,
+    "head_sha": "f7db8dcfa3297061c1cdc9d234f3097c6a417e96",
+    "status": "GREEN_CLOSED_RECORD_CONSISTENT_LINUX_NATIVE_DIAGNOSTIC_NO_GATE",
+    "artifact_id": 12881321580,
+    "zip_sha256": "7d180436ab64165f867a80902add7b23f8dae19cbbfd72b8b266ac48c47b4552",
+    "crc_clean": true,
+    "sha256sums_verified": 50,
+    "stage_exit_zero": [
+      "SOURCE",
+      "PARENT_SOURCE_DOWNLOAD",
+      "PARENT_EXECUTOR_DOWNLOAD",
+      "PARENT_VERIFY",
+      "RESOURCE",
+      "DEPS",
+      "COMPILE",
+      "FOCUSED",
+      "INSTALL",
+      "ADMISSION",
+      "NATIVE",
+      "VERIFY",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "focused_tests": "16 PASS",
+    "parent_pr_1052_full_tests": "2894 PASS (11 skipped), separate earlier CI",
+    "private_backup": "/V13/RawEvidence/HB1A_40836705747_54call_linux_native_exact_head_raw.zip",
+    "backup_rematerialized_sha256": "7d180436ab64165f867a80902add7b23f8dae19cbbfd72b8b266ac48c47b4552"
+  },
+  "native_evidence": {
+    "kind": "LINUX_NATIVE_THREE_ORGAN_PUBLIC_SYNTHETIC",
+    "fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
+    "body_calls": 24,
+    "c3_calls": 30,
+    "model_roles": {
+      "B1_DETAIL": 18,
+      "B2_GIST": 6,
+      "C3_LANGUAGE": 30
+    },
+    "seed": 13,
+    "body_tokens": 96,
+    "c3_tokens": 48,
+    "raw_sha256": "abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1",
+    "score_sha256": "b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44",
+    "runner_sha256_before_after": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "model_hashes_unchanged": true,
+    "process_reaped": true,
+    "weights_updated": false
+  },
+  "score_per_arm": {
+    "c3_only": {
+      "exact": 2,
+      "wrong_committed": 4,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "both_exact": {
+      "exact": 0,
+      "wrong_committed": 6,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "both_native": {
+      "exact": 2,
+      "wrong_committed": 4,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "single_body_native": {
+      "exact": 2,
+      "wrong_committed": 4,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "shuffled_native": {
+      "exact": 2,
+      "wrong_committed": 4,
+      "unknown": 0,
+      "unparseable": 0
+    }
+  },
+  "output_distribution": {
+    "c3_only": "NONE 6/6",
+    "both_exact": "B 2/6; NONE 4/6",
+    "both_native": "NONE 6/6",
+    "single_body_native": "NONE 6/6",
+    "shuffled_native": "NONE 6/6"
+  },
+  "diagnostic_interpretation": "On this six-row public synthetic pilot, real B1/B2 offers did not improve exact action accuracy over C3-only (2/6 each). C3 committed NONE on all generated-offer arms; both-exact was 0/6. This is a negative diagnostic, not evidence that B1/B2 are incapable or that a general STEP2 gate has been tested. No statistical significance or independent blind holdout is claimed.",
+  "claim_limits": [
+    "No native B1/B2 complementarity demonstrated",
+    "No robust foreign-source rejection demonstrated",
+    "No independent 150-row model-native holdout",
+    "No real Redmi thermal/RSS/energy or weeklong testing",
+    "No body JEPA/latent authority/learning",
+    "No production integration"
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_package": "Preregister a fresh independent source-dependent 150-row native held-out cohort with headroom check, or isolate C3 receiver training/format bias in a separate default-off controlled package; preserve six-row original scores and all failed attempts.",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

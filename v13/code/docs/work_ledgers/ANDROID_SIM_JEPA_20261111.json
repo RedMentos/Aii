@@ -1,0 +1,61 @@
+{
+  "schema": "v13-work-package-v1",
+  "observed_utc": "2026-11-11T07:58:15Z",
+  "owner": "V13 Core/Harness adjunct sandbox-world and JEPA synthetic probe; disjoint from Android Core #1749 and QA #1750",
+  "branch": "codex/v13-android-sandbox-world-20261111",
+  "base_sha": "0b5cd871e8cc6fb42eb8d3acaca8ad7d96b1edfc",
+  "base_pr": 1749,
+  "pr": 1752,
+  "tested_head": "39f34f2dbdef1150725117d0d201b806c4c20bb9",
+  "packages": [
+    {
+      "id": "ANDROID-SIM-WORLD-001",
+      "files": [
+        "v13/code/v13/android_control_sim.py",
+        "v13/code/tests/test_android_control_sim.py"
+      ],
+      "behavior": "Apply broker dry-run envelopes to finite fake Notes app; durable atomic SQLite state and anti-replay action IDs across process restart, valid actions only; no Android OS calls",
+      "status": "SOFTWARE_VERIFIED_DRAFT"
+    },
+    {
+      "id": "ANDROID-SIM-JEPA-002",
+      "files": [
+        "v13/code/v13/android_sim_jepa_probe.py",
+        "v13/code/tests/test_android_sim_jepa_probe.py"
+      ],
+      "behavior": "Persist numeric text-free simulator transitions, strict disjoint holdout, update tiny NumPy WorldJEPA encoder/predictor weights and EMA, measure old heldout prediction loss before/after; signed synthetic inference checkpoint reload; replay/no-replay old-cohort forgetting comparison",
+      "status": "SOFTWARE_VERIFIED_DRAFT"
+    }
+  ],
+  "ci": {
+    "run_url": "https://github.com/RedMentos/Aii/actions/runs/42983309265",
+    "sha": "39f34f2dbdef1150725117d0d201b806c4c20bb9",
+    "result": "SUCCESS",
+    "tests": "31 passed",
+    "privacy": "CLEAN",
+    "command": "cd v13/code && python -m pytest -q tests/test_android_control_sim.py tests/test_android_sim_jepa_probe.py tests/test_android_control.py tests/test_android_control_cli.py"
+  },
+  "immutable_gates": [
+    "No AccessibilityService/MediaProjection/Android OS action executed",
+    "Broker execute(dry_run=False) remains denied",
+    "No model-origin approvals, real operator transport not authenticated",
+    "Synthetic samples NOT admitted to registered/authoritative T8 corpus",
+    "B1/B2/C3 pretrained GGUF masters unchanged",
+    "No active model promotion, STEP2/B3/Body-JEPA negative gates unchanged",
+    "No verified Redmi native learning/latency/energy measurements"
+  ],
+  "blockers": [
+    "Review-only PR #1752 parent #1749; not integrated production",
+    "Simulator envelopes are structurally checked but not cryptographically authenticated local UI consent",
+    "Synthetic UI action dataset has tiny hand-crafted state features, cannot prove generalization to real screens",
+    "WorldJEPA inference save/load does not certify exact optimizer trajectory",
+    "Potential next hardening: bind replay ablation source SHA to full target outcomes and validate digest grammar"
+  ],
+  "next_exact_commands": [
+    "Fetch PR #1752 latest SHA/CI and check owner comments",
+    "cd v13/code && python -m pytest -q tests/test_android_control_sim.py tests/test_android_sim_jepa_probe.py tests/test_android_control.py tests/test_android_control_cli.py",
+    "Review replay source pin: include after_sha256 and x2 in digest, fail nonhex hashes",
+    "Add synthetic UI end-to-end probe CLI with isolated ephemeral environment and truthful model-weight metrics, no master promotion",
+    "Future native Android companion requires explicit OS permissions and authenticated confirmation (not spoofable bool)"
+  ]
+}

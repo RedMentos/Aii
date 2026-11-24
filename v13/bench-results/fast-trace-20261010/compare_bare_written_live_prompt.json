@@ -1,0 +1,689 @@
+{
+ "base": {
+  "facts": 0.0,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "The name of my cat is Whiskers.",
+    "hit": false
+   },
+   {
+    "q": "Where do I work?",
+    "a": "I don't have personal information or location details.",
+    "hit": false
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "I don't have personal preferences.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "The name of your brother is Alex.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "I don't have a specific instrument, but I can play any instrument I know.",
+    "hit": false
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "The phone model is iPhone 13.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "The name of your project is \"Project Alpha.\"",
+    "hit": false
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is in the month of October and the day of the month is October 15th.",
+    "hit": false
+   }
+  ],
+  "paraphrase": 0.0,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "The cat's name is Whiskers.",
+    "hit": false
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "There is no information provided about a brother.",
+    "hit": false
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "I don't have personal preferences.",
+    "hit": false
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "I don't have a musical instrument.",
+    "hit": false
+   },
+   {
+    "q": "What is my project called?",
+    "a": "The project is called \"Project Alpha.\"",
+    "hit": false
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "The task request is not applicable.",
+    "hit": false
+   }
+  ],
+  "near_miss": 0.0,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "The name of your dog is Max.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "The name of your sister is Emily.",
+    "hit": false
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "I don't have personal preferences or feelings, so I can't determine my least favourite colour.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "Your brother plays the guitar.",
+    "hit": false
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "Your brother works in a different city.",
+    "hit": false
+   }
+  ],
+  "probes": 0.75,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "Paris",
+    "hit": true
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "Tokyo",
+    "hit": true
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has 8 legs.",
+    "hit": true
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day is typically a clear blue.",
+    "hit": true
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Mars.",
+    "hit": false
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold.",
+    "hit": true
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey and pollen.",
+    "hit": true
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean.",
+    "hit": true
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 is 12.",
+    "hit": true
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Apples, bananas, and oranges.",
+    "hit": true
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Guten Tag\"",
+    "hit": false
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week.",
+    "hit": false
+   }
+  ],
+  "prompt_tokens_mean": 192.83870967741936,
+  "seconds_mean": 0.219
+ },
+ "exact": {
+  "facts": 1.0,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "Where do I work?",
+    "a": "You work at the Kranich bakery in Leipzig.",
+    "hit": true
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "Your favourite colour is teal.",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "Jonte",
+    "hit": true
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "You play the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "Your phone model is Redmi Note 9 Pro.",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "V13 Inquisition",
+    "hit": true
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is on the 14th of March.",
+    "hit": true
+   }
+  ],
+  "paraphrase": 0.6666666666666666,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "Your brother is Jonte.",
+    "hit": true
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "The user did not specify a colour they like most.",
+    "hit": false
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "You play the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "What is my project called?",
+    "a": "Your project is called V13 Inquisition.",
+    "hit": true
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "The task request is not applicable.",
+    "hit": false
+   }
+  ],
+  "near_miss": 0.6,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "Mitzi",
+    "hit": false
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "Your least favourite colour is blue.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "The instrument my brother plays is the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "Your brother works at the Kranich bakery in Leipzig.",
+    "hit": true
+   }
+  ],
+  "probes": 0.8333333333333334,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "Paris",
+    "hit": true
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "Tokyo",
+    "hit": true
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has 8 legs.",
+    "hit": true
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day is typically a clear blue.",
+    "hit": true
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Mars.",
+    "hit": false
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold.",
+    "hit": true
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey and pollen.",
+    "hit": true
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean.",
+    "hit": true
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 is 12.",
+    "hit": true
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Apple  \nBanana  \nMango",
+    "hit": true
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Danke\" translates to \"vielen Dank\" in German.",
+    "hit": true
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week.",
+    "hit": false
+   }
+  ],
+  "prompt_tokens_mean": 227.1290322580645,
+  "seconds_mean": 0.211,
+  "forgotten": []
+ },
+ "trace": {
+  "facts": 0.125,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "The name of my cat is Whiskers.",
+    "hit": false
+   },
+   {
+    "q": "Where do I work?",
+    "a": "I don't have personal information or location details.",
+    "hit": false
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "I don't have personal preferences.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "The name of your brother is Alex.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "I don't have a specific instrument, but I can play any instrument I know.",
+    "hit": false
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "The phone is a Samsung Galaxy S23.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "The name of your project is \"Eco-Friendly Living.\"",
+    "hit": false
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is on the 14th of March.",
+    "hit": true
+   }
+  ],
+  "paraphrase": 0.0,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "The cat's name is Whiskers.",
+    "hit": false
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "There is no information provided about a brother.",
+    "hit": false
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "I don't have personal preferences.",
+    "hit": false
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "I don't have a musical instrument.",
+    "hit": false
+   },
+   {
+    "q": "What is my project called?",
+    "a": "The project is called \"Project Alpha.\"",
+    "hit": false
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "The task request is not applicable.",
+    "hit": false
+   }
+  ],
+  "near_miss": 0.0,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "The name of your dog is Max.",
+    "hit": false
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "The name of your sister is Emily.",
+    "hit": false
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "I don't have personal preferences or feelings, so I can't determine my least favourite colour.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "Your brother plays the guitar.",
+    "hit": false
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "Your brother works in a different city.",
+    "hit": false
+   }
+  ],
+  "probes": 0.75,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "Paris",
+    "hit": true
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "Tokyo",
+    "hit": true
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has 8 legs.",
+    "hit": true
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day is typically a clear blue.",
+    "hit": true
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Mars.",
+    "hit": false
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold.",
+    "hit": true
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey and pollen.",
+    "hit": true
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean.",
+    "hit": true
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 is 12.",
+    "hit": true
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Apples, bananas, and oranges.",
+    "hit": true
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Guten Tag\"",
+    "hit": false
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week.",
+    "hit": false
+   }
+  ],
+  "prompt_tokens_mean": 192.83870967741936,
+  "seconds_mean": 0.243,
+  "forgotten": []
+ },
+ "exact+trace": {
+  "facts": 1.0,
+  "facts_rows": [
+   {
+    "q": "What is the name of my cat?",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "Where do I work?",
+    "a": "You work at the Kranich bakery in Leipzig.",
+    "hit": true
+   },
+   {
+    "q": "What is my favourite colour?",
+    "a": "Your favourite colour is teal.",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my brother?",
+    "a": "Jonte",
+    "hit": true
+   },
+   {
+    "q": "Which instrument do I play?",
+    "a": "You play the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "What is my phone model?",
+    "a": "Your phone is a Redmi Note 9 Pro.",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my project?",
+    "a": "V13 Inquisition",
+    "hit": true
+   },
+   {
+    "q": "When is my birthday?",
+    "a": "Your birthday is on the 14th of March.",
+    "hit": true
+   }
+  ],
+  "paraphrase": 0.6666666666666666,
+  "paraphrase_rows": [
+   {
+    "q": "Tell me my cat's name.",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "Who is my brother?",
+    "a": "Your brother is Jonte.",
+    "hit": true
+   },
+   {
+    "q": "What colour do I like most?",
+    "a": "The user did not specify a colour they like most.",
+    "hit": false
+   },
+   {
+    "q": "What musical instrument do I play?",
+    "a": "You play the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "What is my project called?",
+    "a": "Your project is called V13 Inquisition.",
+    "hit": true
+   },
+   {
+    "q": "Which company employs me?",
+    "a": "The task request is not applicable.",
+    "hit": false
+   }
+  ],
+  "near_miss": 0.6,
+  "near_miss_rows": [
+   {
+    "q": "What is the name of my dog?",
+    "a": "Mitzi",
+    "hit": true
+   },
+   {
+    "q": "What is the name of my sister?",
+    "a": "Mitzi",
+    "hit": false
+   },
+   {
+    "q": "What is my least favourite colour?",
+    "a": "Your least favourite colour is blue.",
+    "hit": false
+   },
+   {
+    "q": "Which instrument does my brother play?",
+    "a": "The instrument my brother plays is the bandoneon.",
+    "hit": true
+   },
+   {
+    "q": "Where does my brother work?",
+    "a": "Your brother works at the Kranich bakery in Leipzig.",
+    "hit": true
+   }
+  ],
+  "probes": 0.8333333333333334,
+  "probes_rows": [
+   {
+    "q": "What is the capital of France?",
+    "a": "Paris",
+    "hit": true
+   },
+   {
+    "q": "What is the capital of Japan?",
+    "a": "Tokyo",
+    "hit": true
+   },
+   {
+    "q": "How many legs does a spider have?",
+    "a": "A spider has 8 legs.",
+    "hit": true
+   },
+   {
+    "q": "What colour is the sky on a clear day?",
+    "a": "The sky on a clear day is typically a clear blue.",
+    "hit": true
+   },
+   {
+    "q": "Which planet do we live on?",
+    "a": "We live on Mars.",
+    "hit": false
+   },
+   {
+    "q": "What is the opposite of hot?",
+    "a": "The opposite of hot is cold.",
+    "hit": true
+   },
+   {
+    "q": "What do bees make?",
+    "a": "Bees make honey and pollen.",
+    "hit": true
+   },
+   {
+    "q": "What is the largest ocean on Earth?",
+    "a": "The largest ocean on Earth is the Pacific Ocean.",
+    "hit": true
+   },
+   {
+    "q": "What is 7 plus 5?",
+    "a": "7 plus 5 is 12.",
+    "hit": true
+   },
+   {
+    "q": "List three fruits.",
+    "a": "Apple  \nBanana  \nMango",
+    "hit": true
+   },
+   {
+    "q": "Translate \"thank you\" into German.",
+    "a": "\"Danke\" translates to \"vielen Dank\" in German.",
+    "hit": true
+   },
+   {
+    "q": "What day comes after Monday?",
+    "a": "Monday is the first day of the week.",
+    "hit": false
+   }
+  ],
+  "prompt_tokens_mean": 227.1290322580645,
+  "seconds_mean": 0.227,
+  "forgotten": []
+ }
+}

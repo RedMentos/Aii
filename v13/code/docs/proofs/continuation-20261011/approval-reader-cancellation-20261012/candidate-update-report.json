@@ -1,0 +1,34 @@
+{
+  "schema": "APPROVAL_READER_CANCEL_DEADLINE_CANDIDATE_V1",
+  "runtime_integrated": false,
+  "native_model_launched": false,
+  "phone_proof": false,
+  "canonical_pass": false,
+  "live_sources_unchanged": true,
+  "baseline_held_lock_regressions": {
+    "tests": 2,
+    "failures": 2,
+    "errors": 0
+  },
+  "updated_focus": {
+    "tests": 31,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "change": "Timed Store.mutex acquisition checks cancellation and deadline every <=50 ms, rechecks after acquiring, and releases only an acquired lock. All three existing guard boundaries use request cancel/deadline.",
+  "limits": [
+    "Lock waiting is now interruptible; filesystem copy/hash operations inside an acquired lock remain synchronous.",
+    "Software fixtures use real SQLite approval transactions and authored loopback subprocesses; no native models or useful-learning evidence.",
+    "Original archived reader/firing patch and reports were preserved.",
+    "Candidate remains isolated while frozen SourceHandoff sources are unchanged."
+  ],
+  "files_sha256": {
+    "scripts/approval_reader_runtime_candidate.py": "d48c5713cf99c72aec27a8b656393d9576f631261a05267edcb8c784770c5029",
+    "tests/test_approval_reader_runtime_candidate.py": "b0ecbc43edb86b2135a4d8b7f6c8d2526430f8315582def0f31ac5da6ac786d5",
+    "/workspace/scratch/f559488bccb1/ag6-reader-review/approval-reader-runtime-updated.patch": "6ebb3804573b7fb80bf37313e1e44f8a8d711a231bcc9e07049507219e2f62ef",
+    "/workspace/scratch/f559488bccb1/ag6-reader-review/approval-reader-and-firing-updated.patch": "b2f9a9f12cb0c7854af77120bcea7ddaee2fbdf73c847a9954e245ff88ffb460",
+    "/workspace/scratch/f559488bccb1/ag6-reader-review/before-held-lock-regressions.log": "2cc1200cccf41348c586dc88278554b3e8b45d96f34dbd19d4ddd48854af5486",
+    "/workspace/scratch/f559488bccb1/ag6-reader-review/after-focused-tests.log": "f3a605a3e9109a6e4b834b128f6829b6f39168325e458131954b9e7ad40d54e2"
+  }
+}

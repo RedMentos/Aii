@@ -1,0 +1,38 @@
+{
+  "package": "G13_CUMULATIVE_UNFILTERED_CROSSORGAN_REVIEW",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "base_sha": "9d14c3cc0ffeacf3ac7fc2c8cffedae9b6ea5bb6",
+  "tested_head": "86c706eba2ece7da3234e245a8e3e8860e607b7e",
+  "pr": 1286,
+  "mode": "REVIEW_ONLY_NOT_MERGED",
+  "workflow_run": 41069560040,
+  "workflow_conclusion": "FAILURE",
+  "workflow_steps": {
+    "checkout": "SUCCESS",
+    "unfiltered_raw_capture": "SUCCESS",
+    "artifact_upload": "SUCCESS",
+    "enforce_all_stages": "FAILURE"
+  },
+  "artifact_id": 12984132884,
+  "artifact_status": "UPLOADED_NOT_DOWNLOADED_IN_THIS_SESSION",
+  "exact_failed_stage": "UNVERIFIED_NO_RAW_DOWNLOAD_ACCESS",
+  "historical_baseline": "Run13A PR1281 fullsuite Actions 41066576739 FAILURE; no waiver; do not assume identical cause without raw comparison",
+  "evidence_level": "UNFILTERED_GITHUB_SOFTWARE_RED_NOT_NATIVE_OR_REDMi",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Retrieve original Actions raw artifact 12984132884 through an authorized binary-capable channel, inspect stage *_EXIT.txt and FULL_RAW.log",
+    "Compare original #1281 raw failures before attributing to G13 changes",
+    "No source/model/seed/score changes or test waivers allowed"
+  ],
+  "exact_next_command": "Download original GitHub Actions artifact 12984132884 and verify SHA256SUMS; inspect first nonzero stage and full suite failure names, compare with #1281, fix only confirmed new G13 regression on isolated branch with tests; meanwhile continue independent C2 route-head and remaining Canon work.",
+  "remaining_platform_budget": "UNKNOWN"
+}

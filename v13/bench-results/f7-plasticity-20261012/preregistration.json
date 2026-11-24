@@ -1,0 +1,38 @@
+{
+ "schema": "ABLATION_F7_PLASTICITY_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "trials": 240,
+ "trials_per_task": 8,
+ "phase_trials": 40,
+ "drift": {
+  "calm": 0.1,
+  "conflict": 0.5
+ },
+ "retention_tolerance_abs": 0.1,
+ "base_step_grid": [
+  0.05,
+  0.1,
+  0.2,
+  0.3,
+  0.5
+ ],
+ "calibration_seeds": [
+  101,
+  102,
+  103,
+  104,
+  105
+ ],
+ "base_step_selection": "min |mean(full)-mean(half)| on calibration seeds, ties -> smaller",
+ "eligible_min_drop": 0.02,
+ "batch": 20,
+ "dim": 8,
+ "primary": "mean held-out MSE of current + previous 3 tasks after each trial (lower is better)",
+ "win_rule": "f7 beats full, half and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

@@ -1,0 +1,67 @@
+{
+  "b1b2_complementarity_proven": false,
+  "c3_reasoning_gain_proven": false,
+  "claim": "SIX_CASE_FORMATTER_COPY_NONINTERFERENCE_ONLY",
+  "fixture_sha256": "e31e2d68331cc4280e161b2dbdbd022f493325ca234f050cda06065fa6775a69",
+  "learning_gain_proven": false,
+  "median_prompt_tokens": {
+    "RAW_TWO_SOURCE_ROLE": 538.5,
+    "TYPED_JEF_ROLE": 686.5,
+    "TYPED_JEF_WITH_BODY_ROLE": 1626.0
+  },
+  "original_sha256": "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5",
+  "paired_raw_to_typed_improved": 5,
+  "paired_raw_to_typed_worsened": 0,
+  "paired_typed_to_body_improved": 0,
+  "paired_typed_to_body_worsened": 0,
+  "per_case": [
+    {
+      "id": "Ardent",
+      "raw_correct": true,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    },
+    {
+      "id": "Birch",
+      "raw_correct": false,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    },
+    {
+      "id": "Cetus",
+      "raw_correct": false,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    },
+    {
+      "id": "Dawn",
+      "raw_correct": false,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    },
+    {
+      "id": "Eider",
+      "raw_correct": false,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    },
+    {
+      "id": "Fjord",
+      "raw_correct": false,
+      "typed_correct": true,
+      "typed_with_body_correct": true
+    }
+  ],
+  "redmi_measured": false,
+  "rows": 6,
+  "schema": "v13.run117q.original_native_attribution.v1",
+  "scores": {
+    "RAW_TWO_SOURCE_ROLE": 1,
+    "TYPED_JEF_ROLE": 6,
+    "TYPED_JEF_WITH_BODY_ROLE": 6
+  },
+  "source_head": "df08a4ce311317bdfd322ba7c7520d9fe8fb2b93",
+  "step2_promoted": false,
+  "typed_candidate_is_deterministic_oracle_in_user_prompt": true,
+  "whole_system_complete": false
+}

@@ -1,0 +1,5 @@
+# C3 paired109 native launch marker — 2026-10-30
+
+Prereg `ce3f0aec61bcbaee6472626ac463b98d26fd4567` committed before frozen fixture `3cdf98647e3903b4de6f51adf7cde02401156662` (blob `8b27c1dce8b83d7964b56405d3fdd7e8a4eb2181`) and source script `69e5be0948fb2df897809d16a0d827cbc9e3a72c` (blob `ca46e435374cf892290d8e4e7377f4c4621c6e48`). Original C3 source/model/binary pins unchanged. Software preflight Actions `41021864340` **GREEN 30/30** exact tested HEAD `30d30e6dfa1b21d33916ce7c1438a6e80543e8f3`, artifact `12961648734` ZIP SHA256 `87aab9058d432b51934f19e578457cda524febafe6c6b627b05efddfa92760b8`, CRC clean 13/13 hashes, six stages0, private backup uploaded. No active heavy native workflows observed before launch.
+
+Run fixed 8 source rows × A/B order counterbalanced, 16 isolated C3 native processes under original serial concurrency group, unchanged model, seed109, no repeated trials. Deterministic no-model baseline and exact typed values scored independently. Raw must be audited before any result claim. No learning, live tool, STEP2/B3/JEPA/Redmi or whole-system promotion.

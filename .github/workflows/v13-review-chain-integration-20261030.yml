@@ -1,0 +1,146 @@
+name: V13 reviewed STEP2 C2 expression and auto-route focused integration
+on:
+  push:
+    branches:
+      - assistant/v13-review-chain-integration-20261030-0510
+    paths:
+      - '.github/workflows/v13-review-chain-integration-20261030.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  focused-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify source-equivalent review chain with original native ZIP
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-review-chain-integration"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          dc0c46fc66c6547bca2f22a9eb7dd2cda2c9d279 v13/code/scripts/step2_budget_paired_native_v3_20261030.py
+          57cf6adfa5fce1d1594bfadd25c9b111e105926c v13/code/tests/test_step2_budget_paired_native_v3_20261030.py
+          fb34dba97ae3700ba5accdcb928bfb72afcf4fcb v13/code/scripts/c2_native_route_provenance_20261030.py
+          3d517b27ddcc8a2fb2fa966be88c8d7eb2984738 v13/code/tests/test_c2_native_route_provenance_20261030.py
+          e97bd4ca787f8d8f6b6ac52e06988e590a896103 v13/code/scripts/c2_c3_body_auto_native_smoke_20261030.py
+          6b4ee8d2ceaefc17ddb28420eead4d5b09ebf70e v13/code/tests/test_c2_c3_body_auto_native_smoke_20261030.py
+          f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
+          1ef0799efb29b103fde0c82712c986271c395e4c v13/code/tests/test_step2_expression_diagnostic_20261030.py
+          fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          BLOBS
+          red=0
+          : > "$e/PINS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-review-chain-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-review-chain-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else
+            echo SKIPPED_VENV_RED > "$e/DEPS_RAW.log"
+            echo SKIPPED_RED > "$e/DEPS_EXIT.txt"
+          fi
+          original="$RUNNER_TEMP/v13-original-native-v3-40996792157.zip"
+          curl --fail --location --silent --show-error --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12951963045/zip' \
+            -o "$original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          dl="$?"
+          if [ "$dl" = 0 ]; then
+            printf '%s  %s\n' '98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46' "$original" | sha256sum --check >> "$e/DOWNLOAD_RAW.log" 2>&1
+            dl="$?"
+          fi
+          echo "$dl" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$dl" = 0 ]; then
+            ln -s "$original" v13/code/tests/NATIVE_40996792157.zip
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=.:scripts:tests "$py" -m unittest -v \
+              tests.test_step2_budget_paired_native_v3_20261030 \
+              tests.test_c2_native_route_provenance_20261030 \
+              tests.test_c2_c3_body_auto_native_smoke_20261030 \
+              tests.test_step2_expression_diagnostic_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+              (cd v13/code && PYTHONPATH=.:scripts "$py" scripts/step2_expression_diagnostic_20261030.py tests/NATIVE_40996792157.zip --out "$e/diagnostic.json") > "$e/DIAGNOSTIC_RAW.log" 2>&1
+              echo "$?" > "$e/DIAGNOSTIC_EXIT.txt"
+            else
+              echo SKIPPED_TEST_RED > "$e/DIAGNOSTIC_RAW.log"
+              echo SKIPPED_RED > "$e/DIAGNOSTIC_EXIT.txt"
+            fi
+            rm v13/code/tests/NATIVE_40996792157.zip
+          else
+            echo SKIPPED_PINS_DEPS_OR_DOWNLOAD_RED > "$e/TEST_RAW.log"
+            echo SKIPPED_RED > "$e/TEST_EXIT.txt"
+            echo SKIPPED_TEST_RED > "$e/DIAGNOSTIC_RAW.log"
+            echo SKIPPED_RED > "$e/DIAGNOSTIC_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DIAGNOSTIC_EXIT.txt")" = 0 ]; then
+            "$py" - "$e/diagnostic.json" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          j=json.load(open(sys.argv[1]))
+          assert j['original_scores_out_of_18_unchanged']=={'A_C3_ONLY':0,'B_DEFAULT_BOTH':10,'C_ARITH_BOTH':9}
+          assert j['equation_correct_by_arm_not_a_new_score']=={'A_C3_ONLY':3,'B_DEFAULT_BOTH':0,'C_ARITH_BOTH':0}
+          assert len(j['lexical_missing_but_equation_correct'])==3
+          assert j['posthoc_only'] is True and j['step2_gate_promoted'] is False
+          assert j['native_c2_control_proven'] is False and j['redmi_measured'] is False
+          print('INTEGRATION_SOURCE_ONLY_NO_NATIVE_OR_STEP2_PROMOTION')
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_DIAGNOSTIC_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          "$py" -m py_compile \
+            v13/code/scripts/step2_budget_paired_native_v3_20261030.py \
+            v13/code/scripts/c2_native_route_provenance_20261030.py \
+            v13/code/scripts/c2_c3_body_auto_native_smoke_20261030.py \
+            v13/code/scripts/step2_expression_diagnostic_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 277dc65df004439ff93b7129841531f2da1c2390 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 277dc65df004439ff93b7129841531f2da1c2390 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-review-chain-integration-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-review-chain-integration/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce reviewed focused integration, never full acceptance
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-review-chain-integration"
+          for stage in PINS VENV DEPS DOWNLOAD TEST DIAGNOSTIC REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; source integration not verified"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'REVIEW_CHAIN_FOCUSED_SOFTWARE_ONLY_NO_WHOLE_SYSTEM_ACCEPTANCE'

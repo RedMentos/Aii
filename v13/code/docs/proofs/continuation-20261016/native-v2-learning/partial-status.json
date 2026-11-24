@@ -1,0 +1,95 @@
+{
+ "status": "IN_PROGRESS_NO_FINAL_VERDICT",
+ "checkpoint_completed_calls": 90,
+ "parity": {
+  "gate": 0.98,
+  "status": "PASS",
+  "worlds": {
+   "calc_counter": {
+    "drift_vs_capture": {
+     "bit_identical": false,
+     "cos_min": 0.9998691837016781,
+     "rel_rms_max": 0.016175061242649235
+    },
+    "pass": true,
+    "per_action": {
+     "add_15": {
+      "copy": 0.41286468440736357,
+      "forecast": 0.005533352116963193,
+      "mean_delta": 0.05842007805707283,
+      "rows": 80
+     },
+     "double": {
+      "copy": 0.1771252590158075,
+      "forecast": 0.0078067027032059965,
+      "mean_delta": 0.05808980624923067,
+      "rows": 80
+     },
+     "quarter": {
+      "copy": 0.45917634557805737,
+      "forecast": 0.02201900877821336,
+      "mean_delta": 0.11706815789471756,
+      "rows": 80
+     },
+     "subtract_7": {
+      "copy": 0.6073222779959705,
+      "forecast": 0.005194715384603888,
+      "mean_delta": 0.05692746830279734,
+      "rows": 80
+     }
+    },
+    "ratio_to_best_control": {
+     "add_15": 0.0947,
+     "double": 0.1344,
+     "quarter": 0.1881,
+     "subtract_7": 0.0913
+    },
+    "texts": 400
+   },
+   "note_edit": {
+    "drift_vs_capture": {
+     "bit_identical": false,
+     "cos_min": 0.9998379156542899,
+     "rel_rms_max": 0.01800468663496196
+    },
+    "pass": true,
+    "per_action": {
+     "append_done": {
+      "copy": 0.4800054566355164,
+      "forecast": 0.0037779772539589113,
+      "mean_delta": 0.0641697412181094,
+      "rows": 80
+     },
+     "prefix_urgent": {
+      "copy": 0.18916024406624402,
+      "forecast": 0.0031838749154063156,
+      "mean_delta": 0.03278961569381163,
+      "rows": 80
+     },
+     "undo": {
+      "copy": 0.2386768914657666,
+      "forecast": 0.0029039892444568697,
+      "mean_delta": 0.026015840357057875,
+      "rows": 80
+     },
+     "uppercase": {
+      "copy": 0.5219591118668696,
+      "forecast": 0.005810759515399328,
+      "mean_delta": 0.06715919527136933,
+      "rows": 80
+     }
+    },
+    "ratio_to_best_control": {
+     "append_done": 0.0589,
+     "prefix_urgent": 0.0971,
+     "undo": 0.1116,
+     "uppercase": 0.0865
+    },
+    "texts": 400
+   }
+  }
+ },
+ "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+ "runtime_sources_unchanged": true,
+ "claim_limit": "Partial evidence prefix only; no learning-gate verdict before full610."
+}

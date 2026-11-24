@@ -1,0 +1,74 @@
+name: V13 BP2b prefix-to-native-child contract review
+on:
+  push:
+    branches: [codex/automation11-bp2b-prefix-contract-20261027]
+    paths:
+      - '.github/workflows/bp2b-prefix-contract-review.yml'
+      - 'v13/code/scripts/bp2b_native_batch.py'
+      - 'v13/code/tests/test_bp2b_native_batch.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-native-batch-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software-only tests and dry-run
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/bp2b-native-batch-software"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/bp2b_native_batch.py > "$evidence/BATCH_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/bp2b-native-batch-venv"
+          "$RUNNER_TEMP/bp2b-native-batch-venv/bin/python" -m pip install -q numpy > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            PYTHONPATH=. "$RUNNER_TEMP/bp2b-native-batch-venv/bin/python" -m unittest -v \
+              tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          (
+            cd v13/code
+            PYTHONPATH=. "$RUNNER_TEMP/bp2b-native-batch-venv/bin/python" scripts/bp2b_native_batch.py \
+              --out "$RUNNER_TEMP/bp2b-batch-dryrun-must-not-exist" --max-jobs 12
+            test ! -e "$RUNNER_TEMP/bp2b-batch-dryrun-must-not-exist"
+          ) > "$evidence/DRY_RAW.log" 2>&1
+          echo "$?" > "$evidence/DRY_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp2b_native_batch.py v13/code/tests/test_bp2b_native_batch.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c13aee9b1ab29bb197b9a8c4a42bb664e1a353fc --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-native-batch-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-native-batch-software/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only result
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/bp2b-native-batch-software"
+          for name in INSTALL UNIT DRY COMPILE PRIVACY; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo "BP2B_BATCH_SOFTWARE_ONLY_NO_NATIVE_PROOF_NO_AGE_PROMOTION"

@@ -1,0 +1,1 @@
+{"status": "PASS_EXECUTION_ONLY", "checks": {"answers_identical": true, "prompt_tokens_identical": true, "three_requests_bound": true, "all_requests_observed": true, "only_nonzero_unguarded_row_fired": true, "entity_guard_blocked": true}}

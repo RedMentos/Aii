@@ -1,0 +1,72 @@
+{
+  "retrieved_utc": "2026-10-11T03:51:46.862864+00:00",
+  "sources": [
+    {
+      "id": "137M-wjLgZjwpQUF7a953cUHzI-9XoHtw",
+      "name": "ROADMAP_Teil1von3.md",
+      "url": "https://drive.google.com/file/d/137M-wjLgZjwpQUF7a953cUHzI-9XoHtw/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T01:48:26.411Z",
+      "created_time": "2026-10-11T01:48:26.411Z",
+      "characters": 41526,
+      "bytes": 42050,
+      "sha256": "3903ed4ec96cad2171f31df91deb0f604cdf97ed0b417f14d3a98954598dc41a"
+    },
+    {
+      "id": "1ivAGYzQTrpQ9hPci9Ga_I5LS4ctIEG0J",
+      "name": "ROADMAP_Teil2von3.md",
+      "url": "https://drive.google.com/file/d/1ivAGYzQTrpQ9hPci9Ga_I5LS4ctIEG0J/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T01:50:11.828Z",
+      "created_time": "2026-10-11T01:50:11.828Z",
+      "characters": 40693,
+      "bytes": 41456,
+      "sha256": "07d6784af0fe05354a0c8732f82ef3ce3a3f300e7abff265c5a123d333c60ead"
+    },
+    {
+      "id": "1lltknrr_8Ddk55h8vAvE2W9XA_JDL2Gd",
+      "name": "ROADMAP_Teil3von3.md",
+      "url": "https://drive.google.com/file/d/1lltknrr_8Ddk55h8vAvE2W9XA_JDL2Gd/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T01:51:48.677Z",
+      "created_time": "2026-10-11T01:51:48.677Z",
+      "characters": 37744,
+      "bytes": 38480,
+      "sha256": "2ef510a82e6c79ea59b67619b67a206fdacfa16649a1276521537ed88f959ab6"
+    },
+    {
+      "id": "1mrXICK6KXg5a3fP4WcBxnfP7c_FC3Bm1",
+      "name": "UEBERGABE_FUER_ANDERE_KI.md",
+      "url": "https://drive.google.com/file/d/1mrXICK6KXg5a3fP4WcBxnfP7c_FC3Bm1/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T02:05:36.668Z",
+      "created_time": "2026-10-11T02:05:36.668Z",
+      "characters": 1998,
+      "bytes": 2014,
+      "sha256": "a8ac9de89fb0c7e449129f7ec3ccb3fa1ad1bef31c5cdfd52daefcce9ee6916b"
+    },
+    {
+      "id": "1To4YqiZ_2k2cuMMj-SD8SRB443dfg4fK",
+      "name": "SICHTUNG.md",
+      "url": "https://drive.google.com/file/d/1To4YqiZ_2k2cuMMj-SD8SRB443dfg4fK/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T01:46:24.733Z",
+      "created_time": "2026-10-11T01:46:24.733Z",
+      "characters": 15319,
+      "bytes": 15644,
+      "sha256": "805f38c1d6db79e5708afcbc3f1b570c1e3cf859b79a73881715b085ce3278d2"
+    },
+    {
+      "id": "15CZWB73LwPRkcPO6wPyRpC-12O2ZHFdV",
+      "name": "NUTZER_ENTSCHEIDUNGEN.md",
+      "url": "https://drive.google.com/file/d/15CZWB73LwPRkcPO6wPyRpC-12O2ZHFdV/view?usp=drivesdk",
+      "mime_type": "text/markdown",
+      "modified_time": "2026-10-11T01:45:32.889Z",
+      "created_time": "2026-10-11T01:45:32.889Z",
+      "characters": 1527,
+      "bytes": 1550,
+      "sha256": "c6e077812d8f0ef310d9a226c7fd0efac07dff8bdccf4617f2102a5f63016ea1"
+    }
+  ],
+  "retrieval": "complete non-native raw download; fetched text truncation discarded"
+}

@@ -1,0 +1,13 @@
+# Run13X prereg — original Run13T native output / Run13W receipt consistency replay (2026-10-30)
+
+Owner GPT-6, review-only child of Run13W PR #1314 at `0b2a64021c19c2886f6f1b90296f06a836f02e91`. This preregistration precedes implementation/tests. Original Run13T native Actions **41097658020**, artifact **12996917793**, exact ZIP SHA256 `86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c`, 39/39 inner hashes, 16 FINAL/reaped original rows. Frozen Run13T seed283 fixture cases SHA256 `c9a28de0e7fb198015b4b8845096d31f4af43f5c9679df7a8019a55ee4767b11`. No native rerun, no original ZIP mutation, no cohort/scorer/seed/model/Canon changes.
+
+## Exact offline scope
+
+Build a stdlib read-only auditor of the exact original ZIP, verifying ZIP bytes, CRC, SHA256SUMS, expected 16 raw filenames, original source/answer/prompt/model/role/age pins and paired source IDs. Reconstruct the deterministic JEF answer from frozen case arithmetic and demand SHA equality to each original row. For each native `final_output`, derive exact UTF-8 SHA256 and byte length from original bytes and pass them as **synthetic receipt augmentation** to Run13W's `_native_receipt_ok`; separately run frozen Run13M source-facts validator. This does NOT create a new native receipt or cryptographic attestation. Report the number of rows that *would* satisfy the Run13W receipt+facts guard **conditional on a separately valid Store source recheck**. Do not call `select_shadow` without the original Store; no active output.
+
+## Required counterexamples and evidence
+
+Test original ZIP (if available), altered candidate text with unchanged receipt, altered output hash/byte length, wrong model/prompt/source ID, bool native_calls, missing/corrupt ZIP, wrong fixture and non-finite/extra raw fields. Retain the original Run13T negative `FIDELITY_HURT` and report unchanged; any new offline count is descriptive, not rescored preregistered native utility. Run focused tests, compile, privacy scan; save raw and hashes to authorized GitHub review branch and private Library when available. No native model execution, no Redmi, no JEF source recheck, no learning, no gate promotion. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, whole V13 incomplete.
+
+Source ownership: new `scripts/run13x_*`, `tests/test_run13x_*`, workflow and scoped checkpoint only. Run13W and Run13T frozen code unchanged. Exact next step: implement offline auditor, test against downloaded original ZIP and deliberate counterexamples, preserve original read-only evidence and branch checkpoint.

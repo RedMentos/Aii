@@ -1,0 +1,52 @@
+{
+  "schema": "v13.run117.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run117-exact-rule-source-candidate-20261029",
+  "base_head": "12b0e3ad0d1876de83e2ecc38216cc9e268e26ea",
+  "base_pr": 1018,
+  "prereg_first_commit": "7b72cdd4127384eecf3a19377caeb9a818e0ca22",
+  "source": "v13/code/scripts/run117_step2_rule_source_candidate.py",
+  "source_git_blob": "959cc898e2fd6386d999443b914a5b7c6701386d",
+  "tests": "v13/code/tests/test_run117_step2_rule_source_candidate.py",
+  "tests_git_blob": "b86fcdc6f915b6a4f6fd7e54df1c93b5d46f6884",
+  "prereg_git_blob": "35ff7d424821bf49eeefe249375b16112c33d35e",
+  "run114_parent_audit": {
+    "head": "12b0e3ad0d1876de83e2ecc38216cc9e268e26ea",
+    "actions": 40803179849,
+    "artifact": 12866744283,
+    "zip_sha256": "2bfd768a12ff54298ee5d56809e1afa8b28c5763b1fdc765bda87ba473f24e2d",
+    "crc": "CLEAN",
+    "inner": "29/29",
+    "exits": "12/12 ZERO",
+    "source_prior_rule_quote_coverage": "0/7",
+    "tool_unknown": "7/7",
+    "step2": "UTILITY_FAIL"
+  },
+  "status": "IMPLEMENTED_CANDIDATE_NOT_YET_CI_VERIFIED_NO_NATIVE",
+  "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+  "expected_software_coverage": "6/6 candidate, 3/6 first240 baseline; prereg before test",
+  "candidate_authority": "ZERO_SOFTWARE_ONLY",
+  "negative_gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "blocked": [
+    "No native inference or phone proof in this candidate",
+    "Must independently audit software original raw before any GREEN claim",
+    "Production runtime frozen; separate prereg/ablation needed to integrate candidate"
+  ],
+  "next_command": "Run pinned Run117 software-only CI, independently download/verify original ZIP and backup privately, then compare against Run115 native source failures and design separate authorized bounded ablation.",
+  "prerequisites": [
+    "exact source and test blob hashes",
+    "frozen fixture SHA unchanged",
+    "no source/oracle leaks",
+    "full suite and privacy clean"
+  ]
+}

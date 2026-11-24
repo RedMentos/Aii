@@ -1,0 +1,7 @@
+# IH-H25 Body-JEPA ObjectiveAdapter first software RED and test-source correction (2026-10-30)
+
+Actions **40979370043** at `d0041f7902cf4e1b62a6bd23f9404ae0cfc20482` failed TEST_EXIT=1, **13/15** tests passed, two test-infrastructure errors: (1) the new test incorrectly assumed `v13.objectives.report({})` includes the *canonical spec* row `B_local_JEPA`; it only reports registered runtime plugins, while `specs/learning-objectives.json` retains the canonical `B_local_JEPA: UNAVAILABLE`. (2) workflow named nonexistent `tests.test_objectives`; the real related test is `tests.test_action_jepa_objective`. All new differentiable gradient/stop-gradient/source/authority tests passed. No native model job or runtime change.
+
+Original raw artifact **12943683611**, ZIP SHA256 `9f1e8939311197ef12129aa037ec5313f2a2b377ba70675c2142721bcd458338`, CRC clean, 24/24 SHA256SUMS, byte-verified private Library backup `/V13/automation-evidence/20261030/bodyjepa-objective-bridge-first-RED-40979370043.zip`. No error is waived or rewritten.
+
+**Narrow repair before rerun:** make the test assert the actual `specs/learning-objectives.json` canonical B_local_JEPA status UNAVAILABLE and absence of the research plugin in `objectives.report({})`; replace nonexistent test module with `tests.test_action_jepa_objective`. Do not change the research bridge source, its schema/gradient/loss, parent Canon, training cohorts or any negative gate. Rerun new exact-head isolated CI and preserve both raw runs.

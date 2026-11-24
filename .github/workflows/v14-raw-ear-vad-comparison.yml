@@ -1,0 +1,79 @@
+name: V14 RAW EAR vs WebRTC/libfvad comparison harness
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v14/experiments/raw_ear_vad_compare.py"
+      - "v14/experiments/test_raw_ear_vad_compare.py"
+      - ".github/workflows/v14-raw-ear-vad-comparison.yml"
+  pull_request:
+    branches:
+      - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
+      - "qa/v14-jepa-checkpoint-publication-20261121"
+      - "boss/v14-recall-store-pin-rebind-20261122"
+      - "boss/v14-audio-antialias-integration-20261122"
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v14/experiments/raw_ear_vad_compare.py"
+      - "v14/experiments/test_raw_ear_vad_compare.py"
+      - ".github/workflows/v14-raw-ear-vad-comparison.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test-only WebRTC comparator
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install webrtcvad-wheels==2.0.14.post1
+      - name: Build pinned native libfvad shared library
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config
+          git clone https://github.com/dpirch/libfvad.git "$RUNNER_TEMP/libfvad-src"
+          git -C "$RUNNER_TEMP/libfvad-src" checkout 532ab666c20d3cfda38bca63abbb0f152706c369
+          test "$(git -C "$RUNNER_TEMP/libfvad-src" rev-parse HEAD)" = "532ab666c20d3cfda38bca63abbb0f152706c369"
+          cd "$RUNNER_TEMP/libfvad-src"
+          autoreconf -i
+          ./configure --prefix="$RUNNER_TEMP/libfvad-install" --disable-static
+          make -j2
+          make check
+          make install
+          LIBFVAD_PATH="$(find "$RUNNER_TEMP/libfvad-install/lib" -maxdepth 1 -type f -name 'libfvad.so*' | sort | head -n1)"
+          test -n "$LIBFVAD_PATH"
+          echo "V14_LIBFVAD_LIBRARY=$LIBFVAD_PATH" >> "$GITHUB_ENV"
+          echo "V14_LIBFVAD_VERSION=dpirch/libfvad@532ab666c20d3cfda38bca63abbb0f152706c369" >> "$GITHUB_ENV"
+      - name: Compile exact V3 source and benchmark
+        run: |
+          python -m py_compile \
+            v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/audio_speaker_evidence.py \
+            v13/code/v13/audio_temporal_evidence.py \
+            v14/experiments/raw_ear_vad_compare.py \
+            v14/experiments/test_raw_ear_vad_compare.py
+      - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
+        env:
+          PYTHONPATH: v14/experiments
+          V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
+        run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v

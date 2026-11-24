@@ -1,0 +1,9 @@
+# WP-BP2b pinned public master full-file preflight prereg · 2026-10-27
+
+Owner: independent GPT-6 review branch `assistant/v13-bp2b-full-master-preflight-20261027`; exact parent `ac3a6294c316e58ba0e5f8ea1f1f1f5b1fc82b22` (PR #710, review-only). File ownership: only new `.github/workflows/bp2b-full-master-preflight.yml` and this proof folder; no runtime edits or model/seed/score changes.
+
+Goal: resolve the missing **real public master artifact** prerequisite for the registered BP2b native FP32 runner without loading/training a model. From official LiquidAI/LFM2.5-1.2B-Instruct pinned Hugging Face revision `8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf`, fetch `model.safetensors` plus seven exact small metadata/license files into an isolated GitHub Actions runner cache. Enforce `bp2b_master_preflight.verify()` against existing immutable `specs/bp2b_master_metadata.json`: expected master SHA256 `1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a` and seven metadata hashes. Record full raw stdout/stderr, file byte sizes, exact HEAD, source URLs (no credentials), verification status, CPU/disk bounds, privacy scan and failure exit codes. Downloaded weights remain ephemeral and **must not** be uploaded to public artifacts or Git.
+
+Budget: no paid resources, GitHub-hosted standard Ubuntu runner only, bounded 30-minute job and 3GB transfer ceiling; fail and preserve raw attempt if network/space/license/size/hash blocks. No model load, training, Q4, Redmi or Age/learning activation. This is provenance evidence only, not native utility. Heavy model training must be separately serialized after owner clearance. Existing STEP2/B3/BJ1/jepa/full-scope negative gates unchanged.
+
+Acceptance: raw ZIP with download and preflight logs; exact revision + hashes; independent ZIP CRC/SHA256 audit; private backup and readback. If full model download fails, record the exact blocker and continue other authorized work rather than fabricate a pass.

@@ -1,0 +1,32 @@
+{
+  "schema": "v13.run44.current_source_handoff_native_seed307.v1",
+  "seed": 307,
+  "sampling_seed": 13,
+  "arms": ["A_CURRENT_ONLY", "B_VERIFIED_B2_TO_C3", "C_RAW_PRIOR_TO_C3"],
+  "fixtures": [
+    {
+      "id": "Quartz",
+      "prior": "Project Quartz. Budget 63 euros. Deadline 5 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Quartz. Apply the earlier project rules. Option A costs 51 euros, takes 4 days, and is local. Option B costs 43 euros, takes 3 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "A", "remaining": 12}
+    },
+    {
+      "id": "Amber",
+      "prior": "Project Amber. Budget 52 euros. Deadline 4 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Amber. Apply the earlier project rules. Option A costs 49 euros, takes 6 days, and is local. Option B costs 46 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "B", "remaining": 6}
+    },
+    {
+      "id": "Onyx",
+      "prior": "Project Onyx. Budget 35 euros. Deadline 3 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Onyx. Apply the earlier project rules. Option A costs 40 euros, takes 2 days, and is local. Option B costs 30 euros, takes 5 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "NONE", "remaining": null}
+    },
+    {
+      "id": "Ivory",
+      "prior": "Project Ivory. No budget has been supplied. Deadline 6 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Ivory. Apply the earlier project rules. Option A costs 25 euros, takes 4 days, and is local. Option B costs 32 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "UNKNOWN", "remaining": null}
+    }
+  ]
+}

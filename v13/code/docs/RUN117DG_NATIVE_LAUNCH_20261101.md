@@ -1,0 +1,9 @@
+# Run117DG native launch — frozen new normalized-source C3 cohort
+
+2026-11-01 UTC. Explicit one-shot launch marker, **after** original [software Actions 41264635300](https://github.com/RedMentos/Aii/actions/runs/41264635300) terminal SUCCESS 19/19, ZIP SHA256 `d4fce8861e75d08102b1bb92d75b1446f445539bd2ee3c43b1177ed3ffc5920b`, CRC/17 inner SHA verified, private Library backup. Original [RED 41264503431](https://github.com/RedMentos/Aii/actions/runs/41264503431) retained, corrected adversarial test, no native inference in software.
+
+Prereg Run117DE committed before fixture/runner at `adbe73d8c94a5975c48cda79bd157f5b46f57ff4`, blob `990684341968b0515cacad36aaf4c09d7f8c37e6`. Frozen seed117061 EB01–EB12 table SHA256 `81af85fb4a93baf8ea32c925f41548c6e9380ccd6025df43f2d4c346caad2e64`. Source blobs candidate `b625f989f7c3236652c7f646540f0e99d86cf016`, fixture `04f79fb713344407c618fe736e94fb8549cc7121`, paired preflight `280c2f32e5ac707b8c0d3ca22cf9a1cf8d7255d1`, native harness `d4a533349834668beb014b7d47fc7c4315ebf554`, tests `1a0ad94ce9dbb3eb5d87f229d748c79437e5c8f1`.
+
+No active heavy native owner in current repository Actions list before launch. Native concurrency group `v13-native-c3-ag12-20261030`, no cancel, 48 serial calls, LFM350M/Qwen0.8B unchanged pinned public models, b10964 pinned runner, exact same JSON schema both RAW/NORMALIZED arms, original strict scorer, raw partial retention. No frozen Run117DA rerun or score change. All failures and original ZIP must be preserved; independent audit and private backup after terminal. No model weights in artifacts.
+
+All negative gates remain unchanged: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no Redmi, Body/C2/JEF native, learning, production merge or whole-system promotion.

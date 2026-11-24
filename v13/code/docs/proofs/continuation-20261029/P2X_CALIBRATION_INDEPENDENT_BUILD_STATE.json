@@ -1,0 +1,112 @@
+{
+  "schema": "v13.p2x.calibration_independent_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated independent raw/oracle review",
+  "review_pr": 1080,
+  "parent_pr": 1079,
+  "parent_head": "7174040ad6ab005f5a75704d796ce194a0bd2fe6",
+  "branch": "assistant/v13-p2x-calibration-independent-audit-20261029",
+  "prereg_commit": "00542f5536830dfa0b7cc281d227b73a02faf14e",
+  "prereg_blob": "a3f9d89c9e8ae1231294df78d0a1f728f92e1bc5",
+  "auditor_blob": "efab826d482ed69e84eaa5b799036ef80dd72c6a",
+  "tests_blob": "db7e9b4594f0add726f024cd78ab704dca5421d3",
+  "source_only": {
+    "run": 40863066134,
+    "head": "c06d37b66e67c946298fe615826936cf452f4ca5",
+    "status": "INDEPENDENT_SOURCE_ONLY_GREEN",
+    "focused": "24/24 PASS",
+    "zip_sha256": "b22cf10e81223260f410a19d845d1265adfb893d03b18a5c42b6db06a93a3438",
+    "zip_crc": "CLEAN",
+    "sha256sums": "12/12 MATCH",
+    "stage_exits": "5/5 ZERO",
+    "privacy": "CLEAN",
+    "diff": "PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/INDEPENDENT_SOURCE_GREEN_40863066134_shab22cf10e.zip",
+    "private_backup_byte_verified": true,
+    "latest_run": 40863466702,
+    "latest_head": "8a5e058a20a8697f44f6c4faddbe08efc67d50ce",
+    "latest_zip_sha256": "00039ddd675fcc6814e277de126c13eef82e501bc8a0809a7c31d0df3cb91615",
+    "latest_sha256sums": "14/14 MATCH",
+    "latest_exits": "6/6 ZERO",
+    "standalone_cli": "PASS",
+    "latest_private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/INDEPENDENT_SOURCE_GREEN_40863466702_sha00039ddd.zip",
+    "latest_private_backup_byte_verified": true
+  },
+  "native_original": {
+    "run": 40862592051,
+    "status": "INDEPENDENT_ORIGINAL_RAW_REPLAY_GREEN_NEGATIVE_UTILITY",
+    "native_calls_verified": 360,
+    "original_zip_sha256": "0cef7a72655ba4e58c15ca52b0189e2bdd0b90c3f58daa69e22da2b12259d9d9",
+    "raw_sha256": "cc8221f33fb5d30515aafcb9bbd4312e00f820f89c5ee1d3ef78123eac4c3bc8",
+    "score_sha256": "9436147589763695881b764b340b0d8881c3962c30816b5b8d985c8884d13ed6",
+    "paired": {
+      "c3_only": {
+        "improved": 36,
+        "regressed": 0
+      },
+      "b1_only": {
+        "improved": 36,
+        "regressed": 0
+      },
+      "b2_only": {
+        "improved": 36,
+        "regressed": 0
+      },
+      "both_exact": {
+        "improved": 0,
+        "regressed": 12,
+        "both_wrong": 24
+      },
+      "shuffled": {
+        "improved": 36,
+        "regressed": 0
+      }
+    },
+    "original_red": {
+      "run": 40863315508,
+      "reason": "standalone PYTHONPATH import error before scoring",
+      "zip_sha256": "a05c4ec4cb50c11862354422d7eb4d1a76535fe16a9ba9cdd58fbfc136fcfa52",
+      "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/INDEPENDENT_NATIVE_AUDIT_RED_40863315508_shaa05c4ec4.zip",
+      "byte_verified": true
+    },
+    "corrected_green": {
+      "run": 40863448309,
+      "head": "2705b2efb1218732b28afd2fb87785d2c96cea7a",
+      "zip_sha256": "b3eb4e38257e9ea43687629331cf24513def10601be03f435c105c73ac447490",
+      "zip_crc": "CLEAN",
+      "sha256sums": "22/22 MATCH",
+      "stage_exits": "11/11 ZERO",
+      "original_native_sha256sums": "29/29 MATCH",
+      "original_native_stage_exits": "11/11 ZERO",
+      "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/INDEPENDENT_NATIVE_GREEN_40863448309_shab3eb4e38.zip",
+      "private_backup_byte_verified": true
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Continue from newest verified review PR1080; do not promote STEP2 or use P2X validation oracle for tuning. Next substantive Canon package: default-off typed JEF/Context OS source consumer or trainable C3 receiver with separate prospective cohort and source-identity/foreign/missing controls, actual output utility, persistence and telemetry. No AG6 activation without approval. Redmi TESTEN.sh remains device-blocked.",
+  "remaining_platform_budget": "UNKNOWN",
+  "full_software": {
+    "run": 40862737502,
+    "head": "7174040ad6ab005f5a75704d796ce194a0bd2fe6",
+    "status": "GREEN",
+    "tests": "3074 OK (11 skipped)",
+    "focused": "16/16 PASS",
+    "zip_sha256": "f29a40a31d012ac883f458eff3ef6e0033d977d96dd1aa85f0b2dd79e9f30ab6",
+    "sha256sums": "16/16 MATCH",
+    "stage_exits": "7/7 ZERO",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/FULL_SOFTWARE_GREEN_40862737502_shaf29a40a3.zip",
+    "private_backup_byte_verified": true
+  }
+}

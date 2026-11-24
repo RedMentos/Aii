@@ -1,0 +1,76 @@
+{
+  "schema": "v13.p2.firsttoken_native_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 native first-token review",
+  "branch": "codex/v13-p2-firsttoken-native-review-20261029",
+  "parent_pr": 1069,
+  "review_pr": 1070,
+  "parent_head_sha": "955c7abab8a56e68781f651b2661de94b03aa382",
+  "original_prereg": "P2_QAD_FP32_VS_GGUF_FIRSTTOKEN_NATIVE_PREREG.md",
+  "independent_prereg_commit": "ab223d25443224ab85e4920ecc9f4cd81d689147",
+  "native_attempts": [
+    {
+      "run": 40850998235,
+      "head": "20002c31be0dc3215e0e5de3db99a12b451df081",
+      "status": "RED_DEPENDENCY_TOKENIZERS",
+      "artifact": 12886404615,
+      "zip_sha256": "bc900460800282865a5d8334e6b150d6da20e9bdaac6c6c88011d88fd0421ca5",
+      "model_forward_calls": 0
+    },
+    {
+      "run": 40851169183,
+      "head": "4309b9306d235865624944b24227e014ad5bc49b",
+      "status": "RED_DEPENDENCY_SAFETENSORS",
+      "artifact": 12887296566,
+      "zip_sha256": "56f16af2c01ee09a51b8dec1fda09c0889a5dfc71be36994ef5f6a44aef96442",
+      "model_forward_calls": 0
+    },
+    {
+      "run": 40851408574,
+      "head": "d101aec5000e2e45fbe1b7da25475d1244c8cece",
+      "status": "GREEN_DESCRIPTIVE_SAMPLING_CONFOUND",
+      "artifact": 12887870364,
+      "zip_sha256": "2cb67b8dc3a861d821e75b0dfab4a56cd2f1a046a9e36ce0929197648c1d1633",
+      "model_forward_calls": 8,
+      "manifest_entries": 30,
+      "stage_exits_zero": 13,
+      "input_ids_equal": 8,
+      "hf_vs_gguf_generated": 3,
+      "hf_vs_gguf_toplogprob_first": 7,
+      "top5_overlap_total": 28,
+      "gguf_generated_vs_toplogprob_disagreement": 5
+    }
+  ],
+  "source_only_independent_review": {
+    "run": 40851352741,
+    "head": "c6903a4db2b6fd96b2d303b55781d81504c2e9aa",
+    "status": "PASS",
+    "tests": 9,
+    "privacy": "CLEAN"
+  },
+  "tokenizer_reference": {
+    "run": 40850029535,
+    "artifact": 12886198086,
+    "zip_sha256": "fff6a6477090166176b71674ef593d1954966b5cbb685723054cd1b230c8e342",
+    "verified_eight_ids_equal": true
+  },
+  "private_backup": {
+    "location": "/V13/RawEvidence/2026-10-29/P2-firsttoken/",
+    "saved_and_byte_reverified": true,
+    "files": 4
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Preregister a disjoint GGUF-only 8-prompt ignore_eos=false causal sampling control, using frozen native 40851408574 HF result and exact pinned GGUF/runtime. Preserve original RED and GREEN; do not promote parity. Then continue P2 disjoint receiver-training prerequisite and broader canonical work.",
+  "remaining_platform_budget": "UNKNOWN",
+  "independent_result": "P2_FIRSTTOKEN_NATIVE_INDEPENDENT_RESULT.md"
+}

@@ -1,0 +1,251 @@
+{
+ "prereg": {
+  "schema": "ABLATION_ATTENTION_PRIOR_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "events": 300,
+  "requests_per_event": 8,
+  "grants_per_event": 3,
+  "primary": "mean hidden usefulness of granted requests, second half of events",
+  "streams": [
+   "blind",
+   "informed"
+  ],
+  "win_rule": "learned_active > scaffold in >=4/5 seeds on both streams -> SUPPORTED_SYNTHETIC; one stream -> PARTIAL; else NOT_SUPPORTED"
+ },
+ "streams": {
+  "blind": {
+   "per_seed": {
+    "13": {
+     "scaffold": {
+      "primary": 0.07127,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.17493,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.11603,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.60337,
+      "granted": 450
+     }
+    },
+    "14": {
+     "scaffold": {
+      "primary": -0.00798,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.12544,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.01563,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.54097,
+      "granted": 450
+     }
+    },
+    "15": {
+     "scaffold": {
+      "primary": 0.1037,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.24823,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.09278,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.71631,
+      "granted": 450
+     }
+    },
+    "16": {
+     "scaffold": {
+      "primary": -0.07131,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.02663,
+      "granted": 450
+     },
+     "random": {
+      "primary": -0.07439,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.44926,
+      "granted": 450
+     }
+    },
+    "17": {
+     "scaffold": {
+      "primary": 0.11282,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.2226,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.09585,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.68399,
+      "granted": 450
+     }
+    }
+   },
+   "learned_beats_scaffold_of_5": 5,
+   "summary": {
+    "scaffold": {
+     "mean": 0.0417,
+     "sd": 0.07908
+    },
+    "learned_active": {
+     "mean": 0.15957,
+     "sd": 0.0879
+    },
+    "random": {
+     "mean": 0.04918,
+     "sd": 0.07897
+    },
+    "oracle": {
+     "mean": 0.59878,
+     "sd": 0.10816
+    }
+   }
+  },
+  "informed": {
+   "per_seed": {
+    "13": {
+     "scaffold": {
+      "primary": 0.37425,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.46611,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.04639,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.59807,
+      "granted": 450
+     }
+    },
+    "14": {
+     "scaffold": {
+      "primary": 0.36894,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.44136,
+      "granted": 450
+     },
+     "random": {
+      "primary": -0.01717,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.56205,
+      "granted": 450
+     }
+    },
+    "15": {
+     "scaffold": {
+      "primary": 0.48956,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.5811,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.11732,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.70174,
+      "granted": 450
+     }
+    },
+    "16": {
+     "scaffold": {
+      "primary": 0.23526,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.31702,
+      "granted": 450
+     },
+     "random": {
+      "primary": -0.03652,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.46101,
+      "granted": 450
+     }
+    },
+    "17": {
+     "scaffold": {
+      "primary": 0.45076,
+      "granted": 450
+     },
+     "learned_active": {
+      "primary": 0.55123,
+      "granted": 450
+     },
+     "random": {
+      "primary": 0.0984,
+      "granted": 450
+     },
+     "oracle": {
+      "primary": 0.6759,
+      "granted": 450
+     }
+    }
+   },
+   "learned_beats_scaffold_of_5": 5,
+   "summary": {
+    "scaffold": {
+     "mean": 0.38375,
+     "sd": 0.09753
+    },
+    "learned_active": {
+     "mean": 0.47136,
+     "sd": 0.10389
+    },
+    "random": {
+     "mean": 0.04168,
+     "sd": 0.06808
+    },
+    "oracle": {
+     "mean": 0.59975,
+     "sd": 0.09601
+    }
+   }
+  }
+ },
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic request stream, hidden usefulness per (reason,target), BOOT knobs (LEARNED_MAX, POLICY_RATE)"
+}

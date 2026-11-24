@@ -1,0 +1,66 @@
+name: V13 BP2b pinned public FP32 tokenizer metadata preflight
+on:
+  push:
+    branches: [codex/automation11-bp2b-master-metadata-20261027]
+    paths:
+      - '.github/workflows/bp2b-master-metadata-review.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-master-metadata/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-master-metadata-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Closed raw bounded metadata-only collection
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp2b-hf/files"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp2b-hf/HEAD.txt"
+          (
+            set -euo pipefail
+            revision=8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf
+            base="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/resolve/$revision"
+            for name in config.json generation_config.json tokenizer.json tokenizer_config.json special_tokens_map.json chat_template.jinja LICENSE; do
+              echo "FETCH_METADATA_ONLY $name"
+              curl --fail --location --silent --show-error --retry 3 --retry-all-errors --connect-timeout 20 --max-time 120 \
+                --output "$RUNNER_TEMP/bp2b-hf/files/$name" "$base/$name"
+              test -s "$RUNNER_TEMP/bp2b-hf/files/$name"
+              test "$(stat -c %s "$RUNNER_TEMP/bp2b-hf/files/$name")" -le 8388608
+            done
+            test "$(du -sb "$RUNNER_TEMP/bp2b-hf/files" | cut -f1)" -le 16777216
+            (cd "$RUNNER_TEMP/bp2b-hf/files" && sha256sum config.json generation_config.json tokenizer.json tokenizer_config.json special_tokens_map.json chat_template.jinja LICENSE) > "$RUNNER_TEMP/bp2b-hf/SHA256SUMS.txt"
+            python3 -c 'import json,os,pathlib; d=pathlib.Path(os.environ["RUNNER_TEMP"])/"bp2b-hf"/"files"; rev="8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf"; files={p.name:p.stat().st_size for p in d.iterdir() if p.is_file()}; assert len(files)==7; print(json.dumps({"schema":"v13-bp2b-hf-metadata-v1","revision":rev,"model_id":"LiquidAI/LFM2.5-1.2B-Instruct","model_safetensors_sha256_from_primary":"1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a","weights_downloaded":False,"weights_sha_verified_locally":False,"files":files},sort_keys=True,indent=2))' > "$RUNNER_TEMP/bp2b-hf/FILES.json"
+            echo METADATA_SEVEN_FILES_COMPLETE
+          ) > "$RUNNER_TEMP/bp2b-hf/COLLECT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-hf/COLLECT_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 96973e070d91f5dfb456e0ae8166dfedc4ad6f15 --head HEAD > "$RUNNER_TEMP/bp2b-hf/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-hf/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-hf-metadata-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-hf/
+          if-no-files-found: error
+      - name: Enforce metadata and privacy gates
+        run: |
+          set -euo pipefail
+          for n in COLLECT PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp2b-hf/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp2b-hf/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP2B_METADATA_ONLY_NO_MODEL_WEIGHTS_OR_NATIVE"

@@ -1,0 +1,16 @@
+{
+ "schema": "ABLATION_WORLD_MODEL_CONFIDENCE_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "transitions": 300,
+ "queries": 400,
+ "noise": 0.1,
+ "policy": "simple short inputs only, detail long inputs only, gist anywhere, both 5 %",
+ "primary": "Spearman(confidence, -error)",
+ "win_rule": "confidence beats samples_only, spread_only and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

@@ -1,0 +1,168 @@
+name: V13 P2X C3 QAD FP32 LoRA eight-example native pilot
+on:
+  push:
+    branches: [codex/v13-p2x-lora-c3-pilot-20261029]
+    paths: ['.github/workflows/v13-p2x-lora-c3-native-pilot-20261029.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-fp32-real-value-serial-20261029
+  cancel-in-progress: false
+jobs:
+  native-lora-pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-hash-bound P2X one-step QAD FP32 training pilot
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-lora-pilot-evidence"
+          w="$RUNNER_TEMP/v13-p2x-lora-pilot-work"
+          mkdir -p "$e" "$w/master"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 - "$w" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import sys
+          sys.path.insert(0,"v13/code/scripts")
+          from p2x_c3_lora_pilot import resource_admission
+          print(resource_admission(sys.argv[1]))
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          if [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/p2x_disjoint_receiver_trainset.py \
+              --out "$w/cohort" \
+              --fixture-sha256 cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a \
+              > "$e/COHORT_RAW.json" 2>&1
+            echo "$?" > "$e/COHORT_EXIT.txt"
+            printf '%s  %s\n' \
+              'af191c087d872a42924f2d2d465a3f26f6c323bf48c5c0682b30094b9d666cf1' "$w/cohort/train.jsonl" \
+              'a7f2d70d463305a43ec03bbd758a61cc91129a411094ed60e5503d4ffe0894cf' "$w/cohort/validation_inputs.jsonl" \
+              'd1cbe570ae3caa2a80177f861ba5751c93208ffccc98f8d12d90578c59555e9a' "$w/cohort/validation_answers.jsonl" \
+              | sha256sum -c > "$e/COHORT_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/COHORT_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/COHORT_EXIT.txt"; echo SKIPPED > "$e/COHORT_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/COHORT_SHA_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+            echo "$?" > "$e/VENV_EXIT.txt"
+          else echo SKIPPED > "$e/VENV_EXIT.txt"; fi
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check \
+              --index-url https://download.pytorch.org/whl/cpu 'torch==2.14.1' > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+          else echo SKIPPED > "$e/TORCH_EXIT.txt"; fi
+          if [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ]; then
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check \
+              'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' \
+              'peft==0.21.2' 'gguf==0.19.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$w/venv/bin/python" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$w/venv/bin/python" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            for name in config.json tokenizer.json tokenizer_config.json chat_template.jinja model.safetensors; do
+              curl -fL --retry 2 --connect-timeout 20 --max-time 900 \
+                "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/qad/$name?download=true" \
+                -o "$w/master/$name" >> "$e/MASTER_DOWNLOAD_RAW.log" 2>&1 || break
+            done
+            test -f "$w/master/model.safetensors"
+            echo "$?" > "$e/MASTER_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' \
+              '884c7b2b936f296dd448bfca18a14fd9bc903be7d3bff1303ac62bbb43f641d6' "$w/master/config.json" \
+              'df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd' "$w/master/tokenizer.json" \
+              'b99856c5bdc9f88cc30a7ffff78bfc7768427e0b1216d0c196b27e5d55043455' "$w/master/tokenizer_config.json" \
+              'ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6' "$w/master/chat_template.jinja" \
+              '1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079' "$w/master/model.safetensors" \
+              | sha256sum -c > "$e/MASTER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/MASTER_SHA_EXIT.txt"
+            curl -fL --retry 2 --connect-timeout 20 --max-time 180 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LICENSE?download=true' \
+              -o "$w/LICENSE" > "$e/LICENSE_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/LICENSE_DOWNLOAD_EXIT.txt"
+            sha256sum "$w/LICENSE" > "$e/LICENSE_SHA_RAW.log" 2>&1
+          else
+            for s in MASTER_DOWNLOAD MASTER_SHA LICENSE_DOWNLOAD; do echo SKIPPED > "$e/$s"_EXIT.txt; done
+          fi
+          if [ "$(cat "$e/MASTER_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/LICENSE_DOWNLOAD_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code timeout --signal=TERM --kill-after=10s 1500s \
+              "$w/venv/bin/python" v13/code/scripts/p2x_c3_lora_pilot.py \
+              --cohort "$w/cohort" --master "$w/master" --work "$w/training" \
+              --budget-seconds 1200 --output "$e/RESULT.json" \
+              > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+          if [ "$(cat "$e/AUDIT_EXIT.txt")" = 0 ]; then
+            python3 - "$e/RESULT.json" "$e" "$w/LICENSE" > "$e/ADAPTER_COPY_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,pathlib,shutil,sys
+          result=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          e=pathlib.Path(sys.argv[2]); out=e/"adapter";out.mkdir()
+          assert result["status"]=="EIGHT_EXAMPLE_ONE_STEP_LORA_PILOT_ONLY"
+          files=result["files"]
+          for name,key in (("adapter.gguf","gguf"),("adapter_model.safetensors","safetensors")):
+              src=pathlib.Path(files[key]);dst=out/name
+              assert src.is_file() and src.stat().st_size>0
+              shutil.copyfile(src,dst)
+              h=hashlib.sha256(dst.read_bytes()).hexdigest()
+              assert h==files[key+"_sha256"]
+          config=pathlib.Path(files["gguf"]).parent/"adapter_config.json"
+          assert config.is_file()
+          shutil.copyfile(config,out/"adapter_config.json")
+          shutil.copyfile(sys.argv[3],out/"LICENSE")
+          (out/"MODIFIED_NOTICE.txt").write_text(
+              "V13 P2X synthetic eight-example experimental LoRA derivative of "
+              "LiquidAI LFM2.5-350M-GGUF QAD FP32, revision "
+              "657e078c94084481950a2d555a941481f715536b. "
+              "Research pilot only; modified adapter, not original base weights. "
+              "LFM Open License v1.0 and original notices retained.\n")
+          PY
+            echo "$?" > "$e/ADAPTER_COPY_EXIT.txt"
+          else echo SKIPPED > "$e/ADAPTER_COPY_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9a5184df4d06d0adc7deed5c3ff183ef8657fc42 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9a5184df4d06d0adc7deed5c3ff183ef8657fc42 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw, adapter license and all RED exits before gate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-lora-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-lora-pilot-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce narrow one-step training proof, never AG6 activation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-lora-pilot-evidence"
+          for s in RESOURCE COHORT COHORT_SHA VENV TORCH DEPS PIP_CHECK MASTER_DOWNLOAD MASTER_SHA LICENSE_DOWNLOAD AUDIT ADAPTER_COPY PRIVACY DIFF; do
+            test "$(cat "$e/$s"_EXIT.txt)" = 0
+          done
+          python3 - "$e/RESULT.json" <<'PY'
+          import json,sys,math
+          x=json.load(open(sys.argv[1]))
+          assert x['schema']=='v13.p2x.c3_lora_pilot.v1'
+          assert x['status']=='EIGHT_EXAMPLE_ONE_STEP_LORA_PILOT_ONLY'
+          assert len(x['selected'])==8
+          assert x['metrics']['steps']==1 and math.isfinite(x['metrics']['final_ce'])
+          assert x['metrics']['trainable_parameter_count']>0
+          assert x['training_pilot'] is True and x['ag6_approved'] is False
+          assert x['production_activation'] is False and x['p0x_used_for_training'] is False
+          assert x['step2_utility_pass'] is False and x['jepa_weight']==0
+          assert x['redmi_measured'] is False and x['whole_system_complete'] is False
+          print('EIGHT_EXAMPLE_ONE_STEP_LORA_PILOT_NO_UTILITY_OR_ACTIVATION')
+          PY

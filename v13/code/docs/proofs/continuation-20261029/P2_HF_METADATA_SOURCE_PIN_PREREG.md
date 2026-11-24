@@ -1,0 +1,9 @@
+# P2 pinned HF instruction-master metadata source-only retrieval registration — 2026-10-29
+
+Owner: GPT-6, independent follow-up to structural tensor audit review branch `codex/v13-p2-structural-tensor-audit-20261029`, parent PR #1068. This registration is committed **before** any new source-metadata retrieval on this branch. It does not authorize downloading the full HF model, native inference, training or adapter activation.
+
+Official public source: `LiquidAI/LFM2.5-350M`, exact immutable HF revision `120bf032c36dd1273de754669da040dba7ad4982`, existing registered `model.safetensors` SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e` and LFM Open License 1.0. Download only `config.json`, `tokenizer.json`, `tokenizer_config.json` via public HTTPS `/resolve/<exact-revision>/<filename>`. No credentials, user data, new model weights, heldout P0X answers or network write to HF.
+
+Workflow `.github/workflows/v13-p2-hf-metadata-source-pin-20261029.yml`: isolated ubuntu-24.04 job, 10-minute bound, strict curl HTTP failure, SHA256 + byte count for each of three files, exact URL/revision recorded. A successful download proves only the metadata bytes retrieved at that revision; it **does not** establish GGUF tokenizer identity, tensor parity, native logits, LP3 or STEP2 utility. Preserve failed runs. The workflow's hash receipt is a public source-only artifact; no original private content is uploaded.
+
+Acceptance: all three files nonempty, HTTP 2xx after redirects, three SHA256 strings and byte counts, exact head/run/receipt verified; then freeze their hashes in a follow-up addendum **before** any native P2 parity experiment. Failure => source pin incomplete, no inference/training. No changes to any existing cohort/seed/model/Canon/approval or negative gates.

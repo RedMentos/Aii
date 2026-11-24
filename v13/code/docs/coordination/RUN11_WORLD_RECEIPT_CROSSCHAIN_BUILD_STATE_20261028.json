@@ -1,0 +1,71 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-receipt-crosschain-20261028",
+  "pr": 865,
+  "parent_pr": 864,
+  "prereg_commit": "685145ebf674d369316531ef93e3799c85220eeb",
+  "world_source_blob": "3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7",
+  "historical_source_blob": "e26416301e3ff56339ab73c5cc7f46d66b9c66f7",
+  "historical_test_blobs": {
+    "atomic": "328904eb5e855503d6d44e79fdadd1886bfd298c",
+    "corrupt": "166864e5ca465fee0080e100564f62f6b2959eaa",
+    "forged": "78c6a7b859d246c90e9b0702d49bb48188d5424c",
+    "recent": "357057d35aa931b97fba19d1944f0cc1eb771fe2"
+  },
+  "red": {
+    "run": 40645810035,
+    "source_sha": "bce019265b9f64daae4ef055ab3d65b0b3d41607",
+    "focused_total": 23,
+    "failures": 4,
+    "errors": 6,
+    "zip_sha256": "fe5d1dcd4f2d5cde1652eda6fdb8da28367974e489be44e506b6b97687daff07",
+    "private_library_readback": true
+  },
+  "intermediate_pin_mismatch": {
+    "run": 40646065747,
+    "zip_sha256": "19815016aa7dae012c446749e77f264ea89488d9fe4d1697d2dd1e69a481fc1e",
+    "retained": true
+  },
+  "green": {
+    "run": 40646074310,
+    "source_sha": "3de35568ff5905fa892a73358713a85bda626e1f",
+    "focused_pass": 23,
+    "full_pass": 2238,
+    "full_skipped": 1,
+    "artifact_id": 12797916737,
+    "zip_sha256": "5c663be0a1acc087d76117ca938bf37a5a9ebfc9658c363124950171113bc514",
+    "internal_hashes": 16,
+    "private_library_readback": true,
+    "stage_exits": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "evidence_kind": "LINUX_SOFTWARE_SYNTHETIC_ONLY",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Independent source/receipt integrity review and native integration needed; no Redmi.",
+    "Cross-organ C2 validated benchmark sibling #859 integrated on child PR #866, combined CI pending.",
+    "Runtime C2 sibling #860 excluded due frozen-source full-suite RED."
+  ],
+  "next_command": "git fetch origin assistant/v13-run11-world-receipt-crosschain-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_world_modulator_atomicity_run349 tests.test_world_corrupt_packet_recovery_run420 tests.test_world_receipt_binding_run424 tests.test_world_valid_recent_window_run431 tests.test_world_timing_invalid_sample_20261028 tests.test_world_multiaction_recovery_20261028 tests.test_selfstate_session_unfinished_20261028",
+  "prerequisites": "Review PR #865 and combined source-pinned CI; preserve all RED raw and negative native gates.",
+  "platform_remaining_budget": "UNKNOWN"
+}

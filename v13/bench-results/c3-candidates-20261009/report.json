@@ -1,0 +1,578 @@
+{
+ "kind": "C3_CANDIDATES_BENCH",
+ "threads": 4,
+ "seeds": [
+  13,
+  14,
+  15
+ ],
+ "decoder": "anti_echo (guards.C3_DECODER)",
+ "models": {
+  "lfm25_230m (installed)": {
+   "families": {
+    "grounded": {
+     "accuracy": 0.967,
+     "query_echo": 0.526,
+     "repetition": 0.002
+    },
+    "abstain": {
+     "accuracy": 0.056,
+     "query_echo": 0.118,
+     "repetition": 0.0
+    },
+    "format": {
+     "accuracy": 0.333,
+     "query_echo": 0.287,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 1.0,
+     "query_echo": 0.519,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 0.833,
+     "query_echo": 0.056,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.024,
+     "repetition": 0.0
+    }
+   },
+   "overall": 0.644,
+   "decode_tps": 143.6,
+   "prompt_tps": 708.7,
+   "peak_rss_bytes": 383180800,
+   "samples": [
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 1.0,
+     "rep": 0.0,
+     "out": "The router password is blue-otter.",
+     "seed": 13,
+     "q": "Source: The router password is blue-otter-77. Question: What is the router passw"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Project Aurora is led by Dr. Maria Chen, who has been in charge since 2019.",
+     "seed": 13,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Project Aurora is led by the CEO.",
+     "seed": 15,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.25,
+     "rep": 0.0,
+     "out": "The ticket cost is approximately €50.",
+     "seed": 13,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs €30.",
+     "seed": 14,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs **€30**.",
+     "seed": 15,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    }
+   ]
+  },
+  "lfm25_350m": {
+   "families": {
+    "grounded": {
+     "accuracy": 0.967,
+     "query_echo": 0.273,
+     "repetition": 0.0
+    },
+    "abstain": {
+     "accuracy": 0.056,
+     "query_echo": 0.056,
+     "repetition": 0.0
+    },
+    "format": {
+     "accuracy": 0.722,
+     "query_echo": 0.037,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 0.917,
+     "query_echo": 0.204,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 1.0,
+     "query_echo": 0.028,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.016,
+     "repetition": 0.0
+    }
+   },
+   "overall": 0.733,
+   "decode_tps": 104.1,
+   "prompt_tps": 472.3,
+   "peak_rss_bytes": 519024640,
+   "samples": [
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 1.0,
+     "rep": 0.0,
+     "out": "The router password is blue-otter.",
+     "seed": 13,
+     "q": "Source: The router password is blue-otter-77. Question: What is the router passw"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The project is led by Sarah Chen.",
+     "seed": 14,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The project is led by Sarah Chen.",
+     "seed": 15,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $12.",
+     "seed": 13,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $15.",
+     "seed": 14,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $40.",
+     "seed": 15,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    }
+   ]
+  },
+  "gemma3_270m_it": {
+   "families": {
+    "grounded": {
+     "accuracy": 0.033,
+     "query_echo": 0.001,
+     "repetition": 0.001
+    },
+    "abstain": {
+     "accuracy": 0.222,
+     "query_echo": 0.04,
+     "repetition": 0.002
+    },
+    "format": {
+     "accuracy": 0.056,
+     "query_echo": 0.141,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 0.167,
+     "query_echo": 0.015,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 0.583,
+     "query_echo": 0.023,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.028,
+     "repetition": 0.006
+    }
+   },
+   "overall": 0.167,
+   "decode_tps": 95.0,
+   "prompt_tps": 525.7,
+   "peak_rss_bytes": 703897600,
+   "samples": [
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will answer your questions in English, with no invented missing facts. I will follow the same format as you.",
+     "seed": 13,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: How large is the bud"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will answer your questions in English, focusing on the context where the topic is being used as a text assistant. I will make no attempts to invent missing facts or pretend to ru",
+     "seed": 14,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: How large is the bud"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will answer your questions in English, keeping my answer concise and direct. I will not attempt to invent any missing facts or pretend to run tools. The user's original question ",
+     "seed": 15,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: How large is the bud"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will respond in English and be as direct as possible.\n",
+     "seed": 13,
+     "q": "Source: The train to Graz leaves at 7:45 from platform 3. Question: From which p"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will answer your questions in English.",
+     "seed": 14,
+     "q": "Source: The train to Graz leaves at 7:45 from platform 3. Question: From which p"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Okay, I understand. I will answer in English, direct, and not invent missing facts. I will also follow the instructions precisely.",
+     "seed": 15,
+     "q": "Source: The train to Graz leaves at 7:45 from platform 3. Question: From which p"
+    }
+   ]
+  },
+  "qwen35_0p8b": {
+   "families": {
+    "grounded": {
+     "accuracy": 0.9,
+     "query_echo": 0.115,
+     "repetition": 0.005
+    },
+    "abstain": {
+     "accuracy": 0.667,
+     "query_echo": 0.007,
+     "repetition": 0.0
+    },
+    "format": {
+     "accuracy": 0.611,
+     "query_echo": 0.0,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 0.833,
+     "query_echo": 0.094,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 0.917,
+     "query_echo": 0.0,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.022,
+     "repetition": 0.0
+    }
+   },
+   "overall": 0.789,
+   "decode_tps": 38.6,
+   "prompt_tps": 128.3,
+   "peak_rss_bytes": 1949745152,
+   "samples": [
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.5,
+     "rep": 0.11111111111111116,
+     "out": "The invoice number is 55-1709 (found in \"The invoice number is...\").",
+     "seed": 15,
+     "q": "Source: The invoice number is 55-1209 and it is due on 2026-11-02. Question: Wha"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "No, we currently have 10 members who work remotely out of a total of 14 (2 are at home).",
+     "seed": 15,
+     "q": "Source: Our team has 14 members; 5 work remotely. Question: How many members wor"
+    },
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Shipping costs are not explicitly mentioned in the source text. I am unable to determine the total amount based on this information alone.\n\n*Note: This is an internal offer.*",
+     "seed": 13,
+     "q": "Source: The package weighs 3.4 kg and costs 12.90 euros to ship. Question: How m"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Baking time varies significantly by oven temperature and whether you prefer a dry or moist finish (e.g., using parchment paper). If the recipe calls for 250g of flour, you can expect to bake it for ap",
+     "seed": 13,
+     "q": "Source: The recipe needs 250 grams of flour. Question: How long does it bake?"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Based on standard baking guidelines for a 250-gram batch, the dough should be kneaded for **about 10 to 14 minutes**. You must verify this duration in your specific recipe's instructions by checking i",
+     "seed": 14,
+     "q": "Source: The recipe needs 250 grams of flour. Question: How long does it bake?"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Based on standard baking instructions for 250g of flour (typically a cake), the batter is usually baked in an oven at **350°F (175°C) for about 40 to 45 minutes**.\n\n*Note: Specific baking times can va",
+     "seed": 15,
+     "q": "Source: The recipe needs 250 grams of flour. Question: How long does it bake?"
+    }
+   ]
+  }
+ },
+ "legacy_v3": {
+  "lfm25_230m (installed)": {
+   "families": {
+    "grounded": {
+     "accuracy": 0.967,
+     "query_echo": 0.61,
+     "repetition": 0.0
+    },
+    "abstain": {
+     "accuracy": 0.0,
+     "query_echo": 0.043,
+     "repetition": 0.001
+    },
+    "format": {
+     "accuracy": 0.222,
+     "query_echo": 0.333,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 1.0,
+     "query_echo": 0.694,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 1.0,
+     "query_echo": 0.083,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.054,
+     "repetition": 0.0
+    }
+   },
+   "overall": 0.633,
+   "decode_tps": 161.8,
+   "prompt_tps": 731.4,
+   "peak_rss_bytes": 385544192,
+   "samples": [
+    {
+     "family": "grounded",
+     "ok": false,
+     "echo": 0.1111111111111111,
+     "rep": 0.0,
+     "out": "The source states that the team has 14 members and works remotely, so the number of remote workers is 14.",
+     "seed": 14,
+     "q": "Source: Our team has 14 members; 5 work remotely. Question: How many members wor"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Project Aurora is led by the project manager.",
+     "seed": 13,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Project Aurora is led by the project manager.",
+     "seed": 14,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "Project Aurora is led by the project manager.",
+     "seed": 15,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs €30.",
+     "seed": 13,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs €30.",
+     "seed": 14,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    }
+   ]
+  },
+  "lfm25_350m": {
+   "families": {
+    "grounded": {
+     "accuracy": 1.0,
+     "query_echo": 0.3,
+     "repetition": 0.0
+    },
+    "abstain": {
+     "accuracy": 0.0,
+     "query_echo": 0.042,
+     "repetition": 0.0
+    },
+    "format": {
+     "accuracy": 0.833,
+     "query_echo": 0.0,
+     "repetition": 0.0
+    },
+    "rewrite": {
+     "accuracy": 0.917,
+     "query_echo": 0.058,
+     "repetition": 0.0
+    },
+    "digest": {
+     "accuracy": 1.0,
+     "query_echo": 0.083,
+     "repetition": 0.0
+    },
+    "open": {
+     "accuracy": null,
+     "query_echo": 0.023,
+     "repetition": 0.0
+    }
+   },
+   "overall": 0.756,
+   "decode_tps": 107.3,
+   "prompt_tps": 482.8,
+   "peak_rss_bytes": 519077888,
+   "samples": [
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The project is led by Sarah Chen.",
+     "seed": 13,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The project is led by Sarah Chen.",
+     "seed": 14,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The project is led by Sarah Chen.",
+     "seed": 15,
+     "q": "Source: Project Aurora has a budget of 120 euros. Question: Who leads Project Au"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $15.",
+     "seed": 13,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $15.",
+     "seed": 14,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    },
+    {
+     "family": "abstain",
+     "ok": false,
+     "echo": 0.0,
+     "rep": 0.0,
+     "out": "The ticket costs $15.",
+     "seed": 15,
+     "q": "Source: The train to Graz leaves at 7:45. Question: How much does the ticket cos"
+    }
+   ]
+  }
+ }
+}

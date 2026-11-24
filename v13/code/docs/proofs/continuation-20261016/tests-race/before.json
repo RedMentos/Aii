@@ -1,0 +1,14 @@
+{
+  "injected": "CRITICAL",
+  "before_tick": "CRITICAL",
+  "tick_result": "RECOVERY",
+  "resident_roles": [
+    "C3_LANGUAGE",
+    "B2_GIST"
+  ],
+  "assertion_expected": [
+    "B2_GIST"
+  ],
+  "assertion_passed": false,
+  "native_runs": 0
+}

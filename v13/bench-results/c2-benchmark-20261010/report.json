@@ -1,0 +1,198 @@
+{
+ "schema": "c2-benchmark-report-v1",
+ "corpus_sha256": "54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6",
+ "n": 96,
+ "label_source": "AUTHOR_LABELS_FROM_TOOL_DEFINITION (Claude-written, not user labels; see specs/control_tools.json select_processing)",
+ "host": "x86_64",
+ "cpus": 4,
+ "claim_limit": "cloud x86 latency/RSS are not Redmi numbers; author labels; no production promotion",
+ "candidates": {
+  "scaffold": {
+   "n": 96,
+   "accuracy": 0.4792,
+   "macro_f1": 0.4698,
+   "per_class_f1": {
+    "simple": 0.4948,
+    "detail": 0.3871,
+    "gist": 0.4516,
+    "both": 0.5455
+   },
+   "valid_rate": 1.0,
+   "latency_p50_s": 0.0,
+   "latency_p95_s": 0.0,
+   "confusion": {
+    "simple": {
+     "simple": 24
+    },
+    "detail": {
+     "simple": 18,
+     "detail": 6
+    },
+    "gist": {
+     "simple": 17,
+     "gist": 7
+    },
+    "both": {
+     "simple": 14,
+     "detail": 1,
+     "both": 9
+    }
+   }
+  },
+  "needle": {
+   "n": 96,
+   "accuracy": 0.1667,
+   "macro_f1": 0.1563,
+   "per_class_f1": {
+    "simple": 0.093,
+    "detail": 0.1852,
+    "gist": 0.2295,
+    "both": 0.1176
+   },
+   "valid_rate": 1.0,
+   "latency_p50_s": 0.1148,
+   "latency_p95_s": 0.2013,
+   "confusion": {
+    "simple": {
+     "simple": 2,
+     "detail": 11,
+     "gist": 11
+    },
+    "detail": {
+     "simple": 7,
+     "detail": 5,
+     "gist": 7,
+     "both": 5
+    },
+    "gist": {
+     "simple": 6,
+     "detail": 8,
+     "gist": 7,
+     "both": 3
+    },
+    "both": {
+     "simple": 4,
+     "detail": 6,
+     "gist": 12,
+     "both": 2
+    }
+   },
+   "peak_rss_bytes": 102146048,
+   "model_file": "needle3.cact",
+   "model_bytes": 35335380,
+   "validated_rate": 1.0,
+   "confidence_auroc": 0.515625,
+   "accuracy_validated_only": 0.1667
+  },
+  "needle_embedding_probe": {
+   "n": 96,
+   "accuracy": 0.8542,
+   "macro_f1": 0.8529,
+   "per_class_f1": {
+    "simple": 0.8519,
+    "detail": 0.8571,
+    "gist": 0.7826,
+    "both": 0.92
+   },
+   "valid_rate": 1.0,
+   "latency_p50_s": 0.0376,
+   "latency_p95_s": 0.0376,
+   "confusion": {
+    "simple": {
+     "simple": 23,
+     "gist": 1
+    },
+    "detail": {
+     "simple": 3,
+     "detail": 18,
+     "gist": 2,
+     "both": 1
+    },
+    "gist": {
+     "simple": 4,
+     "gist": 18,
+     "both": 2
+    },
+    "both": {
+     "gist": 1,
+     "both": 23
+    }
+   },
+   "embedding_dim": 3072,
+   "folds": 4,
+   "note": "k-fold probe on author labels; deployable head = control_calibration with retention gate"
+  },
+  "functiongemma_tool": {
+   "n": 96,
+   "accuracy": 0.0417,
+   "macro_f1": 0.0684,
+   "per_class_f1": {
+    "simple": 0.08,
+    "detail": 0.1935,
+    "gist": 0.0,
+    "both": 0.0
+   },
+   "valid_rate": 0.1042,
+   "latency_p50_s": 0.3658,
+   "latency_p95_s": 0.5265,
+   "confusion": {
+    "simple": {
+     "simple": 1,
+     "detail": 1,
+     "both": 1,
+     "None": 21
+    },
+    "detail": {
+     "detail": 3,
+     "None": 21
+    },
+    "gist": {
+     "detail": 3,
+     "both": 1,
+     "None": 20
+    },
+    "both": {
+     "None": 24
+    }
+   },
+   "peak_rss_bytes": 736325632,
+   "model_file": "functiongemma-270m-it-Q8_0.gguf",
+   "model_bytes": 291558624,
+   "model_revision": "1de0f7fc7cae0062012c2e91ef02e642c161aa57",
+   "license_id": "gemma"
+  },
+  "functiongemma_forced": {
+   "n": 96,
+   "accuracy": 0.25,
+   "macro_f1": 0.1,
+   "per_class_f1": {
+    "simple": 0.4,
+    "detail": 0.0,
+    "gist": 0.0,
+    "both": 0.0
+   },
+   "valid_rate": 1.0,
+   "latency_p50_s": 0.693,
+   "latency_p95_s": 0.7917,
+   "confusion": {
+    "simple": {
+     "simple": 24
+    },
+    "detail": {
+     "simple": 24
+    },
+    "gist": {
+     "simple": 24
+    },
+    "both": {
+     "simple": 24
+    }
+   },
+   "peak_rss_bytes": 800432128,
+   "model_file": "functiongemma-270m-it-Q8_0.gguf",
+   "model_bytes": 291558624,
+   "model_revision": "1de0f7fc7cae0062012c2e91ef02e642c161aa57",
+   "license_id": "gemma"
+  }
+ }
+}

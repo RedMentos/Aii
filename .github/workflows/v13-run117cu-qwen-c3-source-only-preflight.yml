@@ -1,0 +1,106 @@
+name: V13 Run117CU source-only Qwen/LFM C3 model-swap preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run117cu-qwen-c3-source-only-preflight-20261101-gpt6
+  pull_request:
+    branches:
+      - assistant/v13-run117cs-run12j-reviewed-chain-20261101-gpt6
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-model-swap-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Real SQLite source-only envelope and pinned-model checks
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117cu"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          b7e72d029406fa42440566dd2f490c396e3f075f v13/code/scripts/run117cu_qwen_c3_source_only_preflight.py
+          65c47320695dc29d311d0635923bfd4a963d235f v13/code/tests/test_run117cu_qwen_c3_source_only_preflight.py
+          e84dfe066b15a310700329636734fc85084d4766 v13/code/specs/cloud-candidates.json
+          a482bc6b289a080b56c4fe721de1337d680119d9 v13/code/scripts/run117cn_c3_source_independence_fixture.py
+          6886799315457fe51698e43fd483707da7b9b5e2 v13/code/v13/jef_c3_source_only_shadow_candidate.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117cu-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117cu-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else
+            for stage in DEPS PIP_CHECK; do echo SKIPPED > "$e/${stage}_RAW.log"; echo 99 > "$e/${stage}_EXIT.txt"; done
+          fi
+          python3 -m py_compile v13/code/scripts/run117cu_qwen_c3_source_only_preflight.py v13/code/tests/test_run117cu_qwen_c3_source_only_preflight.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117cu_qwen_c3_source_only_preflight tests.test_run117cm_c3_source_only_candidate tests.test_run117cn_c3_source_independence_fixture tests.test_jef_range_policy_shadow) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" scripts/run117cu_qwen_c3_source_only_preflight.py) > "$e/PREFLIGHT_RAW.json" 2> "$e/PREFLIGHT_STDERR.log"
+            echo "$?" > "$e/PREFLIGHT_EXIT.txt"
+          else
+            echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"
+            echo SKIPPED > "$e/PREFLIGHT_RAW.json"; echo 99 > "$e/PREFLIGHT_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 720ac9595975f0f6946b23e3309a5e50f55b469b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 720ac9595975f0f6946b23e3309a5e50f55b469b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original source-only preflight raw on GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117cu-source-only-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117cu/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce zero native calls and no gate promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117cu"
+          for stage in PINS VENV DEPS PIP_CHECK COMPILE TEST PREFLIGHT PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/PREFLIGHT_RAW.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='SOURCE_ONLY_MODEL_SWAP_PREFLIGHT_NO_NATIVE'
+          assert len(r['rows'])==9 and len(r['models'])==2
+          assert r['planned_serial_native_calls']==18
+          assert r['native_calls']==r['model_calls']==r['learning_authority']==r['delivery_authority']==r['jepa_weight']==0
+          assert r['step2']=='UTILITY_FAIL' and r['b3']=='NO_PROMOTION'
+          PY
+          echo RUN117CU_REAL_STORE_SOURCE_ONLY_PREFLIGHT_NO_NATIVE_OR_PROMOTION

@@ -1,0 +1,94 @@
+name: V13 Run13X exact-original native output receipt replay
+on:
+  push:
+    branches: [assistant/v13-run13x-original-native-receipt-replay-20261030-auto11]
+    paths:
+      - '.github/workflows/v13-run13x-original-native-receipt-replay.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-raw-readonly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch exact original ZIP and replay output receipts without native inference
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13x-original"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          283df0c08b849842f8040e8d0a59a1fa8c2a2e1b v13/code/scripts/run13x_original_native_receipt_replay.py
+          6248791ac8790b386f288b856ad1090f3dc6de44 v13/code/tests/test_run13x_original_native_receipt_replay.py
+          b3677dd946776d5a152ccf17c79fa99731c40532 v13/code/docs/RUN13X_ORIGINAL_NATIVE_RECEIPT_REPLAY_PREREG_20261030.md
+          0044a96979db760fdd0c9fe35d6be17152289170 v13/code/v13/agi/jef_c3_shadow_fallback_run13v.py
+          df7c23c7bf1af068a4cadc42fd1418fcbb05bf48 v13/code/docs/fixtures/run13t_c3_verbatim_seed283_20261030.json
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          curl --fail --silent --show-error --location --max-time 90 --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12996917793/zip" \
+            --output "$RUNNER_TEMP/run13x-original-native.zip" > "$e/FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          if [ -f "$RUNNER_TEMP/run13x-original-native.zip" ]; then
+            sha256sum "$RUNNER_TEMP/run13x-original-native.zip" > "$e/ORIGINAL_ZIP_SHA256.txt"
+          else echo NO_ORIGINAL_ZIP > "$e/ORIGINAL_ZIP_SHA256.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run13x-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run13x-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env RUN13X_ORIGINAL_ZIP="$RUNNER_TEMP/run13x-original-native.zip" PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run13x_original_native_receipt_replay tests.test_jef_c3_output_binding_run13w tests.test_c3_source_fidelity_shadow_run13m) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m scripts.run13x_original_native_receipt_replay --original-zip "$RUNNER_TEMP/run13x-original-native.zip" --fixture docs/fixtures/run13t_c3_verbatim_seed283_20261030.json) > "$e/REPORT_RAW.json" 2>&1
+            echo "$?" > "$e/REPORT_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; echo SKIPPED > "$e/REPORT_RAW.json"; echo 99 > "$e/REPORT_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run13x_original_native_receipt_replay.py v13/code/tests/test_run13x_original_native_receipt_replay.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0b2a64021c19c2886f6f1b90296f06a836f02e91 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 0b2a64021c19c2886f6f1b90296f06a836f02e91 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw verification logs on PASS or FAIL
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13x-original-replay-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13x-original/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Explicit scoped verdict
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run13x-original"
+          for stage in PINS FETCH VENV DEPS TEST REPORT COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done

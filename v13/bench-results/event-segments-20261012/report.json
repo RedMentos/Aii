@@ -1,0 +1,264 @@
+{
+ "prereg": {
+  "schema": "ABLATION_EVENT_SEGMENTS_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "texts_per_seed": 40,
+  "topics_per_text": 3,
+  "sentences_per_topic": [
+   3,
+   5
+  ],
+  "width": 240,
+  "corpus": "bench-results/jepa-ablation-20261010/sentences.json",
+  "primary": "mean boundary F1 on flat texts (exact sentence-start match)",
+  "win_rule": "event beats fixed, even and random in >=4/5 seeds on flat -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "conditions": {
+  "flat": {
+   "per_seed": {
+    "13": {
+     "event": {
+      "primary": 0.19988,
+      "mean_cuts": 3.75
+     },
+     "fixed": {
+      "primary": 0.02917,
+      "mean_cuts": 2.025
+     },
+     "even": {
+      "primary": 0.27488,
+      "mean_cuts": 3.75
+     },
+     "random": {
+      "primary": 0.18923,
+      "mean_cuts": 3.75
+     }
+    },
+    "14": {
+     "event": {
+      "primary": 0.22812,
+      "mean_cuts": 4.0
+     },
+     "fixed": {
+      "primary": 0.0,
+      "mean_cuts": 2.15
+     },
+     "even": {
+      "primary": 0.28825,
+      "mean_cuts": 4.0
+     },
+     "random": {
+      "primary": 0.20976,
+      "mean_cuts": 4.0
+     }
+    },
+    "15": {
+     "event": {
+      "primary": 0.30268,
+      "mean_cuts": 3.925
+     },
+     "fixed": {
+      "primary": 0.0,
+      "mean_cuts": 2.05
+     },
+     "even": {
+      "primary": 0.25863,
+      "mean_cuts": 3.925
+     },
+     "random": {
+      "primary": 0.23786,
+      "mean_cuts": 3.925
+     }
+    },
+    "16": {
+     "event": {
+      "primary": 0.26024,
+      "mean_cuts": 3.4
+     },
+     "fixed": {
+      "primary": 0.01,
+      "mean_cuts": 2.0
+     },
+     "even": {
+      "primary": 0.3156,
+      "mean_cuts": 3.4
+     },
+     "random": {
+      "primary": 0.31286,
+      "mean_cuts": 3.4
+     }
+    },
+    "17": {
+     "event": {
+      "primary": 0.32179,
+      "mean_cuts": 3.6
+     },
+     "fixed": {
+      "primary": 0.0125,
+      "mean_cuts": 1.9
+     },
+     "even": {
+      "primary": 0.25976,
+      "mean_cuts": 3.6
+     },
+     "random": {
+      "primary": 0.28214,
+      "mean_cuts": 3.6
+     }
+    }
+   },
+   "wins_of_5": {
+    "fixed": 5,
+    "even": 2,
+    "random": 4
+   },
+   "summary": {
+    "event": {
+     "primary": 0.2625,
+     "mean_cuts": 3.735
+    },
+    "fixed": {
+     "primary": 0.0103,
+     "mean_cuts": 2.025
+    },
+    "even": {
+     "primary": 0.2794,
+     "mean_cuts": 3.735
+    },
+    "random": {
+     "primary": 0.2464,
+     "mean_cuts": 3.735
+    }
+   }
+  },
+  "para": {
+   "per_seed": {
+    "13": {
+     "event": {
+      "primary": 0.45835,
+      "mean_cuts": 4.2
+     },
+     "fixed": {
+      "primary": 0.0125,
+      "mean_cuts": 2.05
+     },
+     "even": {
+      "primary": 0.62468,
+      "mean_cuts": 4.1
+     },
+     "random": {
+      "primary": 0.49238,
+      "mean_cuts": 3.95
+     }
+    },
+    "14": {
+     "event": {
+      "primary": 0.50252,
+      "mean_cuts": 4.45
+     },
+     "fixed": {
+      "primary": 0.0125,
+      "mean_cuts": 2.15
+     },
+     "even": {
+      "primary": 0.65563,
+      "mean_cuts": 4.175
+     },
+     "random": {
+      "primary": 0.41611,
+      "mean_cuts": 4.0
+     }
+    },
+    "15": {
+     "event": {
+      "primary": 0.50893,
+      "mean_cuts": 4.325
+     },
+     "fixed": {
+      "primary": 0.0,
+      "mean_cuts": 2.1
+     },
+     "even": {
+      "primary": 0.62456,
+      "mean_cuts": 4.025
+     },
+     "random": {
+      "primary": 0.45347,
+      "mean_cuts": 4.15
+     }
+    },
+    "16": {
+     "event": {
+      "primary": 0.53762,
+      "mean_cuts": 3.85
+     },
+     "fixed": {
+      "primary": 0.02,
+      "mean_cuts": 2.0
+     },
+     "even": {
+      "primary": 0.67583,
+      "mean_cuts": 3.65
+     },
+     "random": {
+      "primary": 0.51411,
+      "mean_cuts": 3.425
+     }
+    },
+    "17": {
+     "event": {
+      "primary": 0.5556,
+      "mean_cuts": 3.95
+     },
+     "fixed": {
+      "primary": 0.0125,
+      "mean_cuts": 1.9
+     },
+     "even": {
+      "primary": 0.66583,
+      "mean_cuts": 3.7
+     },
+     "random": {
+      "primary": 0.44577,
+      "mean_cuts": 3.7
+     }
+    }
+   },
+   "wins_of_5": {
+    "fixed": 5,
+    "even": 0,
+    "random": 4
+   },
+   "summary": {
+    "event": {
+     "primary": 0.5126,
+     "mean_cuts": 4.155
+    },
+    "fixed": {
+     "primary": 0.0115,
+     "mean_cuts": 2.04
+    },
+    "even": {
+     "primary": 0.6493,
+     "mean_cuts": 3.93
+    },
+    "random": {
+     "primary": 0.4644,
+     "mean_cuts": 3.845
+    }
+   }
+  }
+ },
+ "verdict": "PARTIAL",
+ "beats_on_flat": [
+  "fixed",
+  "random"
+ ],
+ "claim_limit": "short synthetic topic mixtures from one corpus, lexical signals only, width 240"
+}

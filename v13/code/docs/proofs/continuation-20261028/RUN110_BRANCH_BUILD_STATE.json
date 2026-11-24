@@ -1,0 +1,58 @@
+{
+  "schema": "v13.run110.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "repository": "RedMentos/Aii",
+  "branch": "assistant/v13-run110-step2-fixtures-software-ci-20261029",
+  "base_pr": 1013,
+  "base_head": "1107f5b0ac2c55b62df775f0222fbdab319b5aa1",
+  "run108_parent": {
+    "pr": 1012,
+    "head": "7546d14bb116f3a3c32f6c8d687eb35e464c9f46",
+    "actions": 40800196929,
+    "artifact_id": 12865648113,
+    "original_zip_sha256": "a014945c18f18466866289825f37de4049ca460b30769168a5f8cb27bd208950",
+    "zip_crc": "CLEAN",
+    "inner_sha256sum": "18/18 PASS",
+    "exit_files": "8/8 ZERO",
+    "focused": "23 PASS",
+    "full": "2676 PASS, 1 skipped",
+    "probe": "TRANSPORT_BOUNDARY_OBSERVED; short positive, long header misses rules, revised ambiguous, cap24 excludes rules",
+    "evidence": "SOFTWARE_ONLY_NO_MODEL",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run108-STEP2-Pointer/RAW_40800196929_shaA014945C.zip",
+    "private_backup_byte_match": true
+  },
+  "run109_source": {
+    "pr": 1013,
+    "prereg_first": "8283555d4505e6bb430044d3f60d6ca6f8873f95",
+    "head": "1107f5b0ac2c55b62df775f0222fbdab319b5aa1",
+    "prereg_blob": "fa81effcf6a9e7cf82e2f2377ae030e512897015",
+    "generator_blob_current": "6cc3d52524e8c9122710eae2a908d024f0f44f24",
+    "generator_blob_before_immutability_amendment": "31206feb0f2d4acb910d4db83a4b8518e0f5c435",
+    "test_blob": "78227dcd4a78dbc0ab33fb4ad2ef9938aee1de9c",
+    "z2_frozen_blob": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "workflow": ".github/workflows/v13-run110-step2-fixtures-software.yml",
+    "first_commit": "f99e47ced146963956498f376fb515d496cb54d5",
+    "workflow_blob": "a3d5b389d52358dffc1eb362422ad4806ec67f89",
+    "status": "PUSHED; RUN_ID_NOT_YET_OBSERVED; ORIGINAL_RAW_NOT_YET_AUDITED",
+    "source_checks": true,
+    "full_tests_required": true,
+    "privacy_scan_required": true,
+    "closed_raw_sha256sum_required": true
+  },
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Find Run110 Actions for exact workflow/head, download original ZIP, CRC+all inner SHA256SUMS+8 exit files+report+full suite, private Library byte-identical backup; then separately preregister B1/B2 native STEP2 fresh cohort with source/model/runner hashes and serial resource owner.",
+  "remaining_execution_budget": "UNKNOWN"
+}

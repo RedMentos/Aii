@@ -1,0 +1,4 @@
+{"name": "A", "cfg": {"threads": 2, "lr": 0.0003}, "steps": 20, "ce": 0.01171, "recall": 1.0, "kl": 0.1102, "s": 172.92, "gguf": "/tmp/claude-0/lora/sweep/A/9ce1f966b3afef9014eb32e7/adapter.gguf"}
+{"name": "B", "cfg": {"threads": 2, "lr": 0.0003, "anchor_weight": 4}, "steps": 20, "ce": 0.02852, "recall": 1.0, "kl": 0.063, "s": 176.86, "gguf": "/tmp/claude-0/lora/sweep/B/c72e1fa8f4f9603ef423e2e1/adapter.gguf"}
+{"name": "C", "cfg": {"threads": 2, "lr": 0.0003, "targets": ["w1", "w2", "w3"], "anchor_weight": 4}, "steps": 21, "ce": 0.04857, "recall": 1.0, "kl": 0.0559, "s": 163.15, "gguf": "/tmp/claude-0/lora/sweep/C/7d9209e5b4a4acd521929fd2/adapter.gguf"}
+{"name": "D", "cfg": {"threads": 2, "lr": 0.001, "anchor_weight": 4, "rank": 4}, "steps": 20, "ce": 0.00604, "recall": 1.0, "kl": 0.0756, "s": 164.83, "gguf": "/tmp/claude-0/lora/sweep/D/ceae884407c29fd599cffc2f/adapter.gguf"}

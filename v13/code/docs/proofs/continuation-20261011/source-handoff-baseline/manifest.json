@@ -1,0 +1,8 @@
+{
+  "schema": "SOURCE_HANDOFF_FROZEN_BASELINE_V1",
+  "files": {
+    "v13/bodyview.py": "f6a5d4b5b86bfecddcd5bf7a322cd19fc838bbc737d45f69a9e4effa2fe02f9e",
+    "v13/cognition.py": "a52ca7412da3a2ced5d6dc90780188ce71a9c0569ddb7e1989daf236773fe77b",
+    "v13/runtime.py": "7bc3c2958f59916ebb6a364f94fd40e8f379b70399e7e61ba1c2cc8cad3fb820"
+  }
+}

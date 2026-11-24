@@ -1,0 +1,40 @@
+name: V13 P2 pinned HF metadata source-only SHA receipt
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-hf-metadata-source-pin-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-hf-metadata-source-pin-20261029
+  cancel-in-progress: false
+jobs:
+  pin-public-metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Fetch exactly three public HF metadata files at pinned revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision='120bf032c36dd1273de754669da040dba7ad4982'
+          mkdir -p p2-source
+          printf 'schema=v13.p2.hf_metadata_source_pin.v1\nrepo=LiquidAI/LFM2.5-350M\nrevision=%s\n' "$revision" > p2-source/SHA256_RECEIPT.txt
+          for name in config.json tokenizer.json tokenizer_config.json; do
+            url="https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/${revision}/${name}?download=true"
+            curl --fail --location --silent --show-error --retry 2 --connect-timeout 20 --max-time 180 "$url" -o "p2-source/$name"
+            test -s "p2-source/$name"
+            size=$(wc -c < "p2-source/$name")
+            hash=$(sha256sum "p2-source/$name" | cut -d ' ' -f 1)
+            printf '%s sha256=%s bytes=%s\n' "$name" "$hash" "$size" >> p2-source/SHA256_RECEIPT.txt
+          done
+          cat p2-source/SHA256_RECEIPT.txt
+          cp p2-source/SHA256_RECEIPT.txt "$GITHUB_STEP_SUMMARY"
+      - name: Persist public source hash receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: v13-p2-hf-metadata-source-pin
+          path: p2-source/SHA256_RECEIPT.txt
+          retention-days: 30
+          if-no-files-found: error

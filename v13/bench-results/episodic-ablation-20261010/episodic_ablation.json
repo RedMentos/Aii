@@ -1,0 +1,398 @@
+{
+ "schema": "v13-episodic-ablation-v1",
+ "experiment": "blueprint \u00a799 Episodic fast memory helps",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "memory_threshold": 0.25,
+ "arms": {
+  "no_memory": {
+   "exact_recall": 0.0,
+   "paraphrase_recall": 0.0,
+   "near_miss_leak": 0.0,
+   "probe_retention": 0.8333333333333334,
+   "retrieved_on_near_miss": 0,
+   "retrieved_on_probes": 0,
+   "rows": {
+    "exact": [
+     {
+      "q": "What is the name of my cat?",
+      "hit": false,
+      "out": "I'm sorry, but I can't determine your cat's name. Could you please provide more details about your cat ("
+     },
+     {
+      "q": "Where do I work?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or locations, but I can help you explore options based on your interests! What kind of"
+     },
+     {
+      "q": "What is my favourite colour?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you what your favourite colour is. However, if"
+     },
+     {
+      "q": "What is the name of my brother?",
+      "hit": false,
+      "out": "I'm sorry, but I can't provide personal information about individuals. If you have any other questions or need assistanc"
+     },
+     {
+      "q": "Which instrument do I play?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or experiences, but I can help you explore different instruments! What kind of music a"
+     },
+     {
+      "q": "What is my phone model?",
+      "hit": false,
+      "out": "I don\u2019t have access to your personal information or device details, so I can\u2019t determine your phone model. However,"
+     },
+     {
+      "q": "What is the name of my project?",
+      "hit": false,
+      "out": "I don't have personal experiences or specific information about your project. However, if you provide more details about"
+     },
+     {
+      "q": "When is my birthday?",
+      "hit": false,
+      "out": "I don\u2019t have access to personal information like your birthday. However, you can share the date of your birthday, and"
+     }
+    ],
+    "paraphrase": [
+     {
+      "q": "Tell me my cat's name.",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or memories, so I can\u2019t tell you your cat\u2019s name. However, if you"
+     },
+     {
+      "q": "Who is my brother?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or relationships, so I can\u2019t tell you who your brother is. If you\u2019re asking"
+     },
+     {
+      "q": "What colour do I like most?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences, but you can tell me what color you enjoy the most! If you\u2019d like,"
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "hit": false,
+      "out": "I don't have personal preferences or experiences, but I can help you explore different musical instruments! Could you te"
+     },
+     {
+      "q": "What is my project called?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or experiences, so I can\u2019t determine your specific project name. However, if you share"
+     },
+     {
+      "q": "Which company employs me?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or opinions, but I can tell you that **Apple Inc.** is a well-known multinational"
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "hit": false,
+      "out": "I'm sorry, but I can't determine your dog's name. Could you please provide more details about your dog ("
+     },
+     {
+      "q": "What is the name of my sister?",
+      "hit": false,
+      "out": "I don't have personal experiences or memories, so I can't recall your sister's name. If you're looking for"
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you which color you\u2019re most drawn to. However"
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "hit": false,
+      "out": "I don't have personal experiences or preferences, but I can tell you that your brother might be playing a musical instru"
+     },
+     {
+      "q": "Where does my brother work?",
+      "hit": false,
+      "out": "I don\u2019t have access to personal information about individuals, including their workplaces. If you\u2019d like, I can help"
+     }
+    ]
+   }
+  },
+  "response_cache": {
+   "exact_recall": 1.0,
+   "paraphrase_recall": 0.0,
+   "near_miss_leak": 0.0,
+   "probe_retention": 0.8333333333333334,
+   "retrieved_on_near_miss": 0,
+   "retrieved_on_probes": 0,
+   "rows": {
+    "exact": [
+     {
+      "q": "What is the name of my cat?",
+      "hit": true,
+      "out": "Your cat is called Mitzi.",
+      "cache_hit": true
+     },
+     {
+      "q": "Where do I work?",
+      "hit": true,
+      "out": "You work at the Kranich bakery in Leipzig.",
+      "cache_hit": true
+     },
+     {
+      "q": "What is my favourite colour?",
+      "hit": true,
+      "out": "Your favourite colour is teal.",
+      "cache_hit": true
+     },
+     {
+      "q": "What is the name of my brother?",
+      "hit": true,
+      "out": "Your brother is called Jonte.",
+      "cache_hit": true
+     },
+     {
+      "q": "Which instrument do I play?",
+      "hit": true,
+      "out": "You play the bandoneon.",
+      "cache_hit": true
+     },
+     {
+      "q": "What is my phone model?",
+      "hit": true,
+      "out": "Your phone is a Redmi Note 9 Pro.",
+      "cache_hit": true
+     },
+     {
+      "q": "What is the name of my project?",
+      "hit": true,
+      "out": "Your project is called V13 Inquisition.",
+      "cache_hit": true
+     },
+     {
+      "q": "When is my birthday?",
+      "hit": true,
+      "out": "Your birthday is on the 14th of March.",
+      "cache_hit": true
+     }
+    ],
+    "paraphrase": [
+     {
+      "q": "Tell me my cat's name.",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or memories, so I can\u2019t tell you your cat\u2019s name. However, if you"
+     },
+     {
+      "q": "Who is my brother?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or relationships, so I can\u2019t tell you who your brother is. If you\u2019re asking"
+     },
+     {
+      "q": "What colour do I like most?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences, but you can tell me what color you enjoy the most! If you\u2019d like,"
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "hit": false,
+      "out": "I don't have personal preferences or experiences, but I can help you explore different musical instruments! Could you te"
+     },
+     {
+      "q": "What is my project called?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or experiences, so I can\u2019t determine your specific project name. However, if you share"
+     },
+     {
+      "q": "Which company employs me?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or opinions, but I can tell you that **Apple Inc.** is a well-known multinational"
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "hit": false,
+      "out": "I'm sorry, but I can't determine your dog's name. Could you please provide more details about your dog ("
+     },
+     {
+      "q": "What is the name of my sister?",
+      "hit": false,
+      "out": "I don't have personal experiences or memories, so I can't recall your sister's name. If you're looking for"
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you which color you\u2019re most drawn to. However"
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "hit": false,
+      "out": "I don't have personal experiences or preferences, but I can tell you that your brother might be playing a musical instru"
+     },
+     {
+      "q": "Where does my brother work?",
+      "hit": false,
+      "out": "I don\u2019t have access to personal information about individuals, including their workplaces. If you\u2019d like, I can help"
+     }
+    ]
+   }
+  },
+  "retrieval": {
+   "exact_recall": 1.0,
+   "paraphrase_recall": 0.3333333333333333,
+   "near_miss_leak": 0.4,
+   "probe_retention": 0.8333333333333334,
+   "retrieved_on_near_miss": 3,
+   "retrieved_on_probes": 0,
+   "rows": {
+    "exact": [
+     {
+      "q": "What is the name of my cat?",
+      "hit": true,
+      "out": "The name of your cat is **Mitzi**.",
+      "retrieved": "What is the name of my cat?",
+      "score": 0.5
+     },
+     {
+      "q": "Where do I work?",
+      "hit": true,
+      "out": "The stored note says you work at the **Kranich bakery** in **Leipzig**. \n\n",
+      "retrieved": "Where do I work?",
+      "score": 0.444
+     },
+     {
+      "q": "What is my favourite colour?",
+      "hit": true,
+      "out": "Your favourite colour is **teal**! \ud83c\udf08",
+      "retrieved": "What is my favourite colour?",
+      "score": 0.6
+     },
+     {
+      "q": "What is the name of my brother?",
+      "hit": true,
+      "out": "The name of your brother is Jonte.",
+      "retrieved": "What is the name of my brother?",
+      "score": 0.5
+     },
+     {
+      "q": "Which instrument do I play?",
+      "hit": true,
+      "out": "The correct answer is **the bandoneon**. \n\nA bandoneon is an Italian string instrument that produces",
+      "retrieved": "Which instrument do I play?",
+      "score": 0.667
+     },
+     {
+      "q": "What is my phone model?",
+      "hit": true,
+      "out": "Your phone model is the **Redmi Note 9 Pro**.",
+      "retrieved": "What is my phone model?",
+      "score": 0.375
+     },
+     {
+      "q": "What is the name of my project?",
+      "hit": true,
+      "out": "The name of your project is **V13 Inquisition**.",
+      "retrieved": "What is the name of my project?",
+      "score": 0.429
+     },
+     {
+      "q": "When is my birthday?",
+      "hit": true,
+      "out": "Your birthday is on the **14th of March**.",
+      "retrieved": "When is my birthday?",
+      "score": 0.429
+     }
+    ],
+    "paraphrase": [
+     {
+      "q": "Tell me my cat's name.",
+      "hit": true,
+      "out": "My cat's name is **Mitzi**.",
+      "retrieved": "What is the name of my cat?",
+      "score": 0.375
+     },
+     {
+      "q": "Who is my brother?",
+      "hit": true,
+      "out": "Based on the information provided, your brother is Jonte.",
+      "retrieved": "What is the name of my brother?",
+      "score": 0.286
+     },
+     {
+      "q": "What colour do I like most?",
+      "hit": false,
+      "out": "I don\u2019t have personal preferences, but you can tell me what color you enjoy the most! If you\u2019d like,",
+      "retrieved": null,
+      "score": 0.222
+     },
+     {
+      "q": "What musical instrument do I play?",
+      "hit": false,
+      "out": "The musical instrument you play is the **stored note**.  \n\nThis is a common and widely recognized term in",
+      "retrieved": "Which instrument do I play?",
+      "score": 0.571
+     },
+     {
+      "q": "What is my project called?",
+      "hit": false,
+      "out": "Your project is called **\"Mitzi's Cat Project\"**. \n\nThis is a common and creative title",
+      "retrieved": "What is the name of my cat?",
+      "score": 0.286
+     },
+     {
+      "q": "Which company employs me?",
+      "hit": false,
+      "out": "I don\u2019t have personal experiences or opinions, but I can tell you that **Apple Inc.** is a well-known multinational",
+      "retrieved": null,
+      "score": 0.0
+     }
+    ],
+    "near_miss": [
+     {
+      "q": "What is the name of my dog?",
+      "hit": true,
+      "out": "The name of your dog is **Mitzi**.",
+      "retrieved": "What is the name of my cat?",
+      "score": 0.286
+     },
+     {
+      "q": "What is the name of my sister?",
+      "hit": false,
+      "out": "The name of your sister is **Mitzi**.",
+      "retrieved": "What is the name of my cat?",
+      "score": 0.286
+     },
+     {
+      "q": "What is my least favourite colour?",
+      "hit": true,
+      "out": "Your least favourite colour is **teal**. \n\nHere's why:\n- Teal is often associated with calm",
+      "retrieved": "What is my favourite colour?",
+      "score": 0.5
+     },
+     {
+      "q": "Which instrument does my brother play?",
+      "hit": false,
+      "out": "I don't have personal experiences or preferences, but I can tell you that your brother might be playing a musical instru",
+      "retrieved": null,
+      "score": 0.222
+     },
+     {
+      "q": "Where does my brother work?",
+      "hit": false,
+      "out": "I don\u2019t have access to personal information about individuals, including their workplaces. If you\u2019d like, I can help",
+      "retrieved": null,
+      "score": 0.222
+     }
+    ]
+   }
+  },
+  "param_delta": {
+   "exact_recall": 1.0,
+   "paraphrase_recall": 0.5,
+   "near_miss_leak": 0.8,
+   "probe_retention": 0.8333333333333334,
+   "kl_to_base": 2.9763842979146915e-06,
+   "trainable_parameters": 81920
+  }
+ },
+ "claim_limit": "230M master, 8 facts, one seed; retrieval = lexical runtime path without embeddings",
+ "seconds": 259.2
+}

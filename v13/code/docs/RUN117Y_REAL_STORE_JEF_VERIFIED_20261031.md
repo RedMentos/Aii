@@ -1,0 +1,13 @@
+# Run117Y — verified real SQLite USER SourceRef → deterministic JEF budget candidate
+
+Review-only PR #1505 child of Run117X #1504; parent `33be6b44a87b481486c3d6079b3c7e828a958ea5`. Source/test/workflow remote head `971870cc63560007ae81acf3db5d93a3de37b159`, remote file bytes independently fetched and compared to uploaded source snapshots.
+
+**Implemented**: `v13/jef_span_budget_shadow_candidate.py` (default-OFF). Uses existing `bind_two_source` for same-session, generation, project, latest-USER and exact Store source integrity; parses exactly one binding budget/deadline/local policy and two current options, rejects ambiguous/overriding/duplicate or stale source, computes `choice` and `remaining` via existing deterministic `agi.eligibility.recipe`, emits exact Store span pointers plus zero-authority typed C3 formatter candidate. Source rechecked before return. No native model, no action, no output, no learning, no new persistent state. `candidate_authority=0`, `jepa_weight=0`.
+
+**Local tests**: `cd v13/code && PYTHONPATH=. python -m unittest -q tests.test_jef_span_budget_shadow_candidate tests.test_run117w_c3_arithmetic_native tests.test_two_source_pointer_shadow_candidate tests.test_jef_two_source_role_formatter_candidate tests.test_run46b_jef_source_eligibility_shadow tests.test_run117s_r_prior_source_binding_review` → **51/51 PASS**, 9 new real SQLite/restart/adversarial tests and 42 inherited. Six disjoint seed1063 rows each produce exact expected candidate; this is a software candidate, not C3 native arithmetic.
+
+**GitHub Actions**: `41232760821` at `971870cc63560007ae81acf3db5d93a3de37b159` → **SUCCESS**, 51/51 tests, compile/privacy `CLEAN`/diff all exit 0. Original CI artifact ID `13054626082`, SHA256 `e4de0c38630cc845ad5e08fc32901bcf0af08f180e13c5ea8db0f96f8b7166c3`, ZIP CRC and 14/14 SHA256SUMS PASS. Private backup of source/tests/workflow/prereg/raw CI at `/V13-Checkpoints/2026-10-31/Run117Y-JEF-Store-Span/`.
+
+**Claims and limits**: Real SQLite Store + synthetic test runtime; no native B1/B2/JEF/C2/C3 run in this package, no Redmi, no second-attempt benefit demonstrated. Run117W original C3 source-only 0/6 + explicit arithmetic 0/6 + precomputed typed copy 6/6 remain unchanged and independently audited in Run117X. STEP2_EXIT `EVIDENCE_NOT_PASSING`, B3 `NO_PROMOTION`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Age0 `RECORD_ONLY`, whole-system incomplete.
+
+**Next**: preregister a new disjoint native C3 two-arm comparison using *this actual Store-verified JEF candidate* rather than precomputed fixture oracle. Keep baseline raw source-only, typed candidate authority zero, serialized pinned native execution, original raw artifact and independent audit. Do not infer whole-system completion from formatter copying.

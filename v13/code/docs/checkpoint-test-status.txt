@@ -1,0 +1,6 @@
+52/52 UNIT PASS
+BODY_STATE_CHECKS_PASS (6 native offers)
+VERTICAL_CHECKS_PASS
+FAMILY_CHECKS_PASS (12 native turns)
+STARTEN.sh: setup + selftests + SMOKE_PASS on Linux
+Current-source Redmi run remains open.

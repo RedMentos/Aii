@@ -1,0 +1,9 @@
+{
+  "status": "FAILED_ATTEMPT",
+  "reason": "Remote end closed connection without response",
+  "error_type": "RemoteDisconnected",
+  "captured_utc": "2026-10-11T04:06:37.177174+00:00",
+  "completed_rows": 384,
+  "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+  "native_server_log": "native-server-c4f0511da2d64351822c002e36abc7f7.log"
+}

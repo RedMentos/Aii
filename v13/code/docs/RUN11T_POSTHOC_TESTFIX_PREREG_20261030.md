@@ -1,0 +1,11 @@
+# Run11T — Run11R posthoc replay test-fixture repair (2026-10-30)
+
+Scope: independent review-only child of Run11R PR #1247 at `3346063841bc9a96a167fe5edf43863a7f34688e`. Preserve frozen seed163 fixtures, original native Actions 41035932580, original artifact 12967698710 (GitHub ZIP SHA256 `47493d719ac1d6dedcb0142106b29b96817c0d4a211a6a2219879dec93cc8c5e`), runner and primary/secondary scorer blobs. No model rerun, rescore, runtime, native evidence or gate changes.
+
+Observed original native workflow RED: `REPORT_CHECK` failed with `SOURCE_SCORE_REPLAY_MISMATCH`. Parent posthoc verifier normalized Python tuples to JSON wire arrays, but its new synthetic regression `test_equation_tuple_json_list_roundtrip_replays` fails before the replay: both named equations are in the **same line**, whereas frozen `equation_diagnostic` deliberately treats a line naming both options as ambiguous, yielding no owned equations. Parent posthoc Actions 41036791173 RED, 29 tests, 1 failure (`self.assertTrue(equations)`). This is a test-fixture mistake, not evidence that the native original succeeded.
+
+Minimal repair: split the two named equation claims onto separate lines, keeping all numbers, option names, and expected outcomes unchanged. Test should verify pre-wire tuple and persisted JSON-list replay; add a negative check that a same-line dual-owner claim remains ambiguous. Do not change the frozen scorer, validator, source prompts, cohort or original raw. Run source-pinned, model-free posthoc CI against byte-pinned original ZIP, preserve RED evidence and check privacy. Original native workflow stays RED even if posthoc replay becomes GREEN.
+
+Negative gates remain Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight 0, Redmi UNMEASURED, whole V13 incomplete. Any additional mismatch in the original raw is a separate finding; do not bypass it.
+
+Owner: GPT-6 Run11T review branch; file ownership: Run11R verifier synthetic tests, Run11T posthoc workflow, Run11T scoped evidence/handoff only. No concurrent mutation of PR #1247 branch. Next command: inspect Run11T GitHub Actions raw after workflow trigger and fix only independently reproduced software defects, preserving all original failures.

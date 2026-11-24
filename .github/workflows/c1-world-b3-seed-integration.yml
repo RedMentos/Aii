@@ -1,0 +1,90 @@
+name: V13 C1 World B3 seed integrated software proof
+on:
+  push:
+    branches: [assistant/v13-c1-world-b3-seed-integration-20261027]
+    paths:
+      - '.github/workflows/c1-world-b3-seed-integration.yml'
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/v13/b3bridge.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-world-b3-seed-integration
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture integrated raw software evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-world-b3-seed"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/C1_SOURCE_BLOB.txt"
+          git hash-object v13/code/v13/b3bridge.py > "$evidence/B3_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_b3_l1_seed_identity_review.py > "$evidence/B3_TEST_BLOB.txt"
+          git merge-base --is-ancestor 5ae819b04f6bcf88f45163458f1c6a42c15cbcdc HEAD
+          a=$?
+          git merge-base --is-ancestor 38d76f8fee75cc19c554fdf880074f738744a1b6 HEAD
+          b=$?
+          git merge-base --is-ancestor 3a3892a8525f51e0dab914b4a58e44a7ac4c3017 HEAD
+          c=$?
+          if [ "$a" -eq 0 ] && [ "$b" -eq 0 ] && [ "$c" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/PARENTS_EXIT.txt"
+          if [ "$(cat "$evidence/C1_SOURCE_BLOB.txt")" = "057dda1e705053047489516fc9ab10581018f5a4" ] && [ "$(cat "$evidence/B3_SOURCE_BLOB.txt")" = "556c0a9f018f183483812e41db96ee4ebcc93258" ] && [ "$(cat "$evidence/B3_TEST_BLOB.txt")" = "3921e38e02e168cddd0e3d4f303664980a936b2c" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-world-b3-venv"
+          py="$RUNNER_TEMP/c1-world-b3-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 6m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_goal_sequence_binding_review tests.test_executive_question_origin_binding_review tests.test_b3_l1_seed_identity_review tests.test_b3_l1_baseline_completeness_review tests.test_b3bridge tests.test_b3_completion tests.test_b3degrade
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 87dd02f82abdcc3762029dac3ea8170c9db30e7c --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 87dd02f82abdcc3762029dac3ea8170c9db30e7c HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-world-b3-seed-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-world-b3-seed/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-world-b3-seed"
+          for name in PARENTS FROZEN INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_WORLD_B3_SEED_SOFTWARE_ONLY_NO_PROMOTION'

@@ -1,0 +1,51 @@
+{
+  "schema": "v13-recovered-phone-package-complete-qa-v1",
+  "status": "FULL_EXTRACTED_PACKAGE_SOFTWARE_PASS",
+  "finished_at": "2026-10-11T10:17:06.908620+00:00",
+  "extracted_path": "/workspace/scratch/5a9214d3f329/recovered-phone-qa/V13-Phone",
+  "session_id": 86285,
+  "actual_exit_code": 0,
+  "runner": "/workspace/scratch/5a9214d3f329/training-resources/venv/bin/python -u -m unittest discover -s tests -v",
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "tests_run": 1075,
+  "passed": 1075,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 102.503,
+  "actual_footer": "Ran 1075 tests in 102.503s\n\nOK",
+  "packages": {
+    "torch": "2.8.0+cpu",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "safetensors": "0.8.0",
+    "numpy": "2.5.4",
+    "Pillow": "12.3.0"
+  },
+  "log_sha256": "f6304786cfdb2d8cf6b3cd6f960ab2a89dd22aeefab16928226a30b0128cf4a0",
+  "manifest_sha256": "1c744a8cc7f8d9b7a90f3fd8f50d50ddc60f55f10f390fc39b079ab35aa69ffd",
+  "extracted_files_verified": 481,
+  "mismatches": [],
+  "previous_attempts": [
+    {
+      "file": "full-suite.log",
+      "sha256": "24c0936625eaff4be65197247eea646892112b20a485ff48b9f1c679cf4e5307",
+      "status": "INCOMPLETE_LOG_NOT_USED_AS_COMPLETION_EVIDENCE",
+      "reason": "Only 230 dots and no final summary, despite root-observed exit0; no leftover process when checked. Cause unestablished; no source regression reproduced."
+    },
+    {
+      "file": "recovery-qa-verbose.log",
+      "sha256": "297d654d4818444e609bb50864fd3c43f55b6a48561aae43c5e046ccc6237f02",
+      "status": "FULL_PASS_WITH_10_PILLOW_DEPENDENCY_SKIPS",
+      "tests": 1075,
+      "skipped": 10,
+      "dependency_remedy": "Installed Pillow 12.3.0, same version as existing primary runtime, then ran distinct full suite with actual footer."
+    }
+  ],
+  "canonical_gate_pass": false,
+  "phone_measured": false,
+  "claim_limit": "Actual Linux extracted model-free Phone ZIP full software suite with Torch and Pillow; no Android hardware, thermal, sustained native inference, learned-memory quality or fullarchitecture acceptance claimed."
+}

@@ -1,0 +1,81 @@
+{
+ "schema": "v13-action-jepa-round6-preregistration-v1",
+ "utc": "2026-10-12T07:25:00Z",
+ "thread": "Nächste offene Pakete F",
+ "question": "Does a fixed per-action mean-delta base plus a closed-form ridge residual on native taps beat copy, mean-delta and shuffled controls on calibration and test, without retention loss?",
+ "objective": "mean-delta-ridge-residual-shadow-v1",
+ "candidate_source": {
+  "path": "code/scripts/action_jepa_round6_ridge.py",
+  "sha256": "acb8264ebca7b846a33177f0c243d1f2ded157d574dde823c193cf0d4f841fab"
+ },
+ "objective_source": {
+  "path": "code/scripts/action_jepa_objective.py",
+  "sha256": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439"
+ },
+ "tests": {
+  "path": "code/tests/test_action_jepa_round6_ridge.py",
+  "sha256": "b61fec03a35fd2c5ad1a8c49a86e87211e640178b88f957cb4e16dd9bd906091"
+ },
+ "datasets": {
+  "round3/mean_final": {
+   "sha256": "7d3eaec00126726bf72e9cc50a33d5ff28d06e65be5f358dbaa6f36d84da15b6",
+   "native_taps_sha256": "bd891ff7b6b7eee8965258cc403606c092cee21295348c8b0800955e4be38526"
+  },
+  "round4/l11_last": {
+   "sha256": "5d7405710e61545d4a79537e2bc6d844d8288ea1b6f5dafa1342fa54a2e1f80b",
+   "native_taps_sha256": "65be1eddf1209cf502cf37a47a699b735f4a27919b04aaaf939d1e7af4e11e04"
+  },
+  "round5/l11_last": {
+   "sha256": "58b9b2a76b7958d2f466900579d2834abbc54cd199aefc85633d1b53554228fc",
+   "native_taps_sha256": "bac4e80c01469da0ff4dc57db6700723cae04f3de30491ed9f281a4e304dd5b3"
+  },
+  "round4/l11_mean": {
+   "sha256": "f94eed05e85b095ccefca7b45cb41d00271c1eddecbc947007f80c1bd7abc22f",
+   "native_taps_sha256": "3a9c2a87d7e9b079ab007ceac1fe85c10b39291512014b94f89e80367111a2a6"
+  },
+  "round5/l11_mean": {
+   "sha256": "d1f59daf7439abf57c16e4bd45cf063d9254238011702e2945ac8e13da189e80",
+   "native_taps_sha256": "e1bf59d743bde72a41ef9896123ceca4466d2fe6d1c8d4952c6d3be9cf0f8f38"
+  },
+  "round4/l23_last": {
+   "sha256": "d247bc6f7aed95f50fecb9c1b69f7876cfc3d6a0c2b5499bc180a7283e4c698f",
+   "native_taps_sha256": "8b6cdeefaf1aae357d2b1838701310ce073daf1e6869f430fc91e8918ca3e07c"
+  },
+  "round5/l23_last": {
+   "sha256": "98eda86c30722498eccee8ed3ba8a3a58d8033d6474fe9819621684dfd1f6f09",
+   "native_taps_sha256": "17896530fb783cf05624d2611c62f37f590ea2ebe3fd31c7abb6ec4276832edf"
+  },
+  "round4/l23_mean": {
+   "sha256": "8e133c7e9ad8068618cafb434e808d794c6f9e920b3c71ae768917c0dde994d6",
+   "native_taps_sha256": "d84fc7539f67c9cc5a186eb985ae42ba834c5bb8043405f2dad9c06d2d9a9421"
+  },
+  "round5/l23_mean": {
+   "sha256": "cd6eafb3915275da8feb2562ec936063c1c3b93b6f3f363801e6514dd32ff02f",
+   "native_taps_sha256": "24f5610cded55699c04755aa0e3b6ad3281dfa142e4bddf2d9eb060ac783c417"
+  }
+ },
+ "arms": {
+  "full": "ridge on the full 1024-d rms-normalized tap, centered per action on train",
+  "proj": "ridge on the 16-d fixed projection z = x @ p"
+ },
+ "seeds": [
+  13,
+  21,
+  34
+ ],
+ "dim": 16,
+ "lambda_grid": "lambda = s * trace(K)/n for s in [0.01, 0.1, 1, 10, 100, 1000] plus inf (= mean-delta control); per action, chosen on calibration MSE only, ties to stronger regularization",
+ "runs": 54,
+ "gates": {
+  "normal_equations": "max relative residual of (F^T F + lam I) W = F^T R below 1e-8 (replaces analytic_gradient; no iterative training)",
+  "finite": "unchanged",
+  "deterministic": "two fits bit-identical",
+  "checkpoint_reload": "unchanged",
+  "noncollapse": "unchanged formula; target is the fixed projection, so it cannot fail by construction (declared, not evidence)",
+  "predictive_gain_over_controls": "unchanged: per action prediction < .98 * min(copy, mean_delta, shuffled) on calibration and test",
+  "fixed_reference_retention": "unchanged: per action retention MSE <= mean-delta control (delta 0)",
+  "observed_input_declared": "unchanged"
+ },
+ "decision_rule": "A run passes only if all gates hold. Test partitions of rounds 3-5 are already exposed (results of rounds 3-5 were read), so even a pass is only a hint and would need a fresh capture (round 7) before any claim about §99. Failures are kept and reported unchanged; no grid or gate change after this registration.",
+ "not_changed": "No file under code/v13/ changed; no runtime, receiver or learn authority."
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "v13.build_state.c2_simple_scaffold_seed59.v1",
+  "date_utc": "2026-10-30",
+  "owner": "codex/v13-c2-simple-scaffold-native-20261030-hourly11d",
+  "parent_head": "e5d1c9b90670006989ac161246aa2793384fc319",
+  "prereg_commit": "aef0ba95a3db4a98446c359f21528ae56450f39e",
+  "prereg_blob": "82eb328ccb853b8a5a6e3ffb6427b8cb09c39e87",
+  "source_blob": "56e173dc5067032de8b0c18995f57cbd34168fbb",
+  "tests_blob": "0b577fb6483e03e109f374d7624de1fabd3f0bc4",
+  "seed": 59,
+  "fixture_sha256": "610b7b1c2b2d203b6388a7717394cd9c7c8460f434509167286e7bf7a972e651",
+  "arms": [
+    "A_FORCED_SIMPLE",
+    "B_NATIVE_AUTO",
+    "C_FORCED_BOTH"
+  ],
+  "expected_native_rows": 12,
+  "software_preflight": {
+    "run": 41002576457,
+    "head": "c12a3eb77164e34646a42545867423a25178ec16",
+    "conclusion": "SUCCESS",
+    "tests": "11/11 PASS",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12953972793,
+    "artifact_sha256": "c79db5fa69c60a9e8d343c27e38d05be04f7b392c173899956d13adc5dd18e4c",
+    "artifact_bytes": 4343,
+    "zip_crc": "CLEAN",
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2-SimpleScaffold-Seed59/PREFLIGHT_41002576457.zip",
+    "private_byte_identical": true
+  },
+  "native_status": "PENDING_CONCURRENCY_AFTER_SEED53",
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2_gate_promoted": false,
+    "b3_promoted": false,
+    "body_jepa_available": false,
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Seed53 24-row native Actions 41002194549 in progress",
+    "Seed59 12-row native not yet launched",
+    "C2 actual route-selection utility not proven",
+    "Historical Run34/Run37 full suite RED"
+  ],
+  "next_command": "After seed53 Actions 41002194549 terminal, seed59 Actions 41002769766 should start automatically under same concurrency group. At terminal verify original raw SHA/CRC/manifest, 12 source-bound rows, C2 actual selection, private byte-identical backup. Continue next canonical package.",
+  "pr": 1213,
+  "native_workflow_run": 41002769766,
+  "native_workflow_commit": "bab4b4a1ade9abf831404be85d9dea86b6277555",
+  "native_concurrency_group": "v13-step2-budget-paired-native-20261030",
+  "native_expected_status": "12 raw rows; no gate promotion even if pilot signal"
+}

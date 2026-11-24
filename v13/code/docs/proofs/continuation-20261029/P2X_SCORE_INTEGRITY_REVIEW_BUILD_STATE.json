@@ -1,0 +1,45 @@
+{
+  "schema": "v13.p2x.score_integrity_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated paired scorer integrity review",
+  "branch": "assistant/v13-p2x-score-integrity-review-20261029",
+  "parent_pr": 1074,
+  "parent_sha": "c0ee5b389fafb9adc11929f8b942bea6a0679b5a",
+  "review_pr": 1076,
+  "canonical_blob_sha": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "prereg_commit": "681507502e65b5789c64150ed8904e2d277e76f4",
+  "changes": [
+    "recompute per_arm from all 360 detail rows",
+    "validate 72 unique hashed IDs × 5 fixed arms",
+    "strict action/kind/oracle consistency and paired base/candidate identity",
+    "negative gate flag integrity"
+  ],
+  "source_only": {
+    "run": 40855708481,
+    "head": "6b58d95f2ceb9cc0bb9d0651e6a3153114a3f7ee",
+    "zip_sha256": "6106587952b130ed3c9a04554f37af2285e086cb091d67cd960acfc2f81cf09e",
+    "zip_crc": "CLEAN",
+    "hashes": "9/9",
+    "stage_exits": "4/4",
+    "tests": "18/18 PASS",
+    "privacy": "CLEAN",
+    "diff": "CLEAN"
+  },
+  "native_model_calls": 0,
+  "proof_level": "SOFTWARE_SOURCE_ONLY",
+  "limits": "Cannot cryptographically prove original raw model execution; must independently audit future native raw and bind to frozen cohort.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Inspect exact remote PR #1074 and future native P2X raw; run paired integrity guard only on source-hash-bound frozen 360-call raw for both base/candidate after explicit prereg, AG6 gating and independent original ZIP audit. Meanwhile continue Context OS/JEF/B1-B2 roadmap work; no production merge.",
+  "remaining_platform_budget": "UNKNOWN"
+}

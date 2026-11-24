@@ -1,0 +1,63 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-selfstate-session-unfinished-20261028",
+  "pr": 864,
+  "parent_pr": 863,
+  "parent_source_sha": "e7c99eb95c90ac6538c94a7d2611fc5d1b72cae5",
+  "prereg_commit": "777dfd5ba28bd9c25705aea1fa54a0ef99031a38",
+  "world_source_blob": "13f77eb3956ea1e4545234ee2eecc1bf56b60c60",
+  "new_test_blob": "bdeae71f380ab7d83f61acdf6adf69780b7e0745",
+  "red": {
+    "run": 40645249350,
+    "focused_total": 11,
+    "failures": 2,
+    "zip_sha256": "f65557826513356bc623cc3c8edd28e20c71358dfb1a305bc548bdcf07ee62b3",
+    "private_readback": true
+  },
+  "intermediate_pin_mismatch": {
+    "run": 40645398569,
+    "zip_sha256": "b9a0bab2cd728090ab5cc44eec3aa43c05235d594f6e7fd2aa81f44be476a86e",
+    "retained": true
+  },
+  "green": {
+    "run": 40645410037,
+    "source_sha": "d82292fe80a3b0706a21a1010335be0328c41461",
+    "focused_pass": 11,
+    "full_pass": 2225,
+    "full_skipped": 1,
+    "artifact_id": 12797084487,
+    "zip_sha256": "b4128bf8a0c5be79f838ecbfb2d641f1397dc49e592b61f85c524901b44155f5",
+    "internal_hashes": 16,
+    "private_library_readback": true,
+    "stage_exits": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "evidence_kind": "LINUX_SOFTWARE_SYNTHETIC_ONLY",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Historical unmerged PR #430 stronger World receipt/atomicity fixes not yet integrated; separate child candidate preregistered.",
+    "No native or Redmi proof."
+  ],
+  "next_command": "git fetch origin assistant/v13-run11-selfstate-session-unfinished-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_selfstate_session_unfinished_20261028 tests.test_world_multiaction_recovery_20261028 tests.test_world_state",
+  "prerequisites": "Independent review and combined source-pinned full-suite/privacy evidence before production integration.",
+  "platform_remaining_budget": "UNKNOWN"
+}

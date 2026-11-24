@@ -1,0 +1,96 @@
+name: V13 Run30 original native AG12 vote paired raw audit (read-only)
+on:
+  push:
+    branches: [assistant/v13-run30-ag12-vote-paired-audit-20261031-hourly11]
+    paths:
+      - '.github/workflows/v13-run30-ag12-vote-paired-original-raw.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-native-raw:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch exact original Run25 and Run27 ZIPs, verify all raw and compute paired aggregates
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run30-original-raw"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          1854c1b67190843644ac4c1ec540768b0a9f633d v13/code/scripts/run30_ag12_vote_paired_raw_audit.py
+          082b7cc68666914bd6ab0f1c3880036f3bd62ea4 v13/code/tests/test_run30_ag12_vote_paired_raw_audit.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          if [ "$bad" = 0 ]; then
+            curl -fLSs --retry 2 --connect-timeout 20 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13020430675/zip" -o "$e/run25-original.zip" > "$e/RUN25_FETCH_RAW.log" 2>&1
+            echo "$?" > "$e/RUN25_FETCH_EXIT.txt"
+            curl -fLSs --retry 2 --connect-timeout 20 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13019429115/zip" -o "$e/run27-original.zip" > "$e/RUN27_FETCH_RAW.log" 2>&1
+            echo "$?" > "$e/RUN27_FETCH_EXIT.txt"
+          else echo SKIPPED_PIN_RED > "$e/RUN25_FETCH_RAW.log"; echo 99 > "$e/RUN25_FETCH_EXIT.txt"; echo SKIPPED_PIN_RED > "$e/RUN27_FETCH_RAW.log"; echo 99 > "$e/RUN27_FETCH_EXIT.txt"; fi
+          if [ "$(cat "$e/RUN25_FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/RUN27_FETCH_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:scripts python3 scripts/run30_ag12_vote_paired_raw_audit.py --run25 "$e/run25-original.zip" --run27 "$e/run27-original.zip" --out "$e/RESULT.json") > "$e/ANALYSIS_RAW.log" 2>&1
+            echo "$?" > "$e/ANALYSIS_EXIT.txt"
+          else echo SKIPPED_FETCH_RED > "$e/ANALYSIS_RAW.log"; echo 99 > "$e/ANALYSIS_EXIT.txt"; fi
+          if [ -f "$e/RESULT.json" ]; then
+            python3 - "$e/RESULT.json" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='v13.run30.ag12_native_vote_paired_readonly.v1'
+          assert not r['pre_registered_utility_gate'] and not r['redmi_measured'] and not r['whole_system_complete']
+          assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL' and r['b3']=='NO_PROMOTION' and r['jepa_weight']==0
+          assert [(r['pairs'][k]['baseline_correct'],r['pairs'][k]['vote_correct'],r['pairs'][k]['vote_only_correct'],r['pairs'][k]['baseline_only_correct']) for k in ('de_b1','de_b2','en_b1','en_b2')]==[(19,31,14,2),(30,31,4,3),(14,30,16,0),(31,30,1,2)]
+          print('RUN30_ORIGINAL_NATIVE_RAW_PAIRED_READONLY_VERIFIED_NO_PROMOTION')
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else echo NO_RESULT_RED > "$e/REPORT_CHECK_RAW.log"; echo 99 > "$e/REPORT_CHECK_EXIT.txt"; fi
+          python3 -m py_compile v13/code/scripts/run30_ag12_vote_paired_raw_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base be88168989fb47cac2c8a81db62217468456fb4b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check be88168989fb47cac2c8a81db62217468456fb4b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          # Raw ZIPs are original GitHub artifacts, not re-published; upload only
+          # closed audit receipts and aggregate rows, never source prompts.
+          mkdir -p "$e/receipts"
+          for f in HEAD.txt PINS.txt PINS_RAW.log PINS_EXIT.txt RUN25_FETCH_RAW.log RUN25_FETCH_EXIT.txt RUN27_FETCH_RAW.log RUN27_FETCH_EXIT.txt ANALYSIS_RAW.log ANALYSIS_EXIT.txt REPORT_CHECK_RAW.log REPORT_CHECK_EXIT.txt COMPILE_RAW.log COMPILE_EXIT.txt PRIVACY_RAW.log PRIVACY_EXIT.txt DIFF_RAW.log DIFF_EXIT.txt RESULT.json; do
+            [ ! -f "$e/$f" ] || cp "$e/$f" "$e/receipts/$f"
+          done
+          (cd "$e/receipts" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve independent raw-audit receipts, not original ZIP contents
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run30-original-native-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run30-original-raw/receipts/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require exact original native raw identity and all stages
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run30-original-raw"
+          for stage in PINS RUN25_FETCH RUN27_FETCH ANALYSIS REPORT_CHECK COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${stage}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN30_ORIGINAL_NATIVE_ROW_AUDIT_ONLY_NO_LIVE_FUSION_OR_PROMOTION

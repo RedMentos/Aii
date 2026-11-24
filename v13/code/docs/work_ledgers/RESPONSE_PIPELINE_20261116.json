@@ -1,0 +1,111 @@
+{
+  "schema": "v13.response-pipeline-review/1",
+  "release_parent": "858d83c304bfcdf29455bf055ed740fbc24e016f",
+  "branch": "codex/v13-arithmetic-staged-integration-20261116",
+  "pr": 1990,
+  "features": [
+    {
+      "feature_id": "source_bound_exact_arithmetic",
+      "canon_source": [
+        "W3",
+        "W5",
+        "IH-H12",
+        "IH-H13",
+        "C5",
+        "C6/C7"
+      ],
+      "implementation_files": [
+        "v13/code/v13/arithmetic_reflex.py",
+        "v13/code/scripts/integrated_arithmetic_candidate_20261116.py",
+        "v13/code/scripts/integrated_arithmetic_outcome_candidate_20261116.py"
+      ],
+      "runtime_owner": "final composed Runtime review stage",
+      "state_owner": "existing device-local Store",
+      "schema_id": [
+        "PerceptPacket",
+        "ActionSelection",
+        "ActionOutcome",
+        "OutputBrokerDecision",
+        "EgressCheck",
+        "WorldTransition"
+      ],
+      "persistence": "Real SQLite messages/actions/packets and source readback after Runtime restart",
+      "current_mode": "SHADOW_REVIEW_ONLY",
+      "hardware_proof": false,
+      "unit_tests": "tests/test_arithmetic_stage_20261116.py: 42 inner passed, 37 subtests",
+      "integration_tests": "Final shared stage: 105 passed, 9 intentional skips, 29 subtests",
+      "benchmark": "No native performance measurement",
+      "gate_status": "NOT_RELEASED / REDMI_UNVERIFIED",
+      "known_limitations": [
+        "Two bounded signed integers and one binary operator only",
+        "Arithmetic is deterministic, not model reasoning",
+        "World model training role dimensions remain frozen"
+      ]
+    },
+    {
+      "feature_id": "sequential_observer_fairness",
+      "canon_source": [
+        "W3",
+        "W5",
+        "22.2.4",
+        "C4",
+        "C3"
+      ],
+      "implementation_files": [
+        "v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py"
+      ],
+      "runtime_owner": "final composed Runtime review stage",
+      "state_owner": "existing device-local Store",
+      "schema_id": [
+        "OfferPacket",
+        "FocalCycle",
+        "ActionSelection"
+      ],
+      "persistence": "Valid B2 source quote and packet stored in actual SQLite; delivered through C4 to C3 prompt",
+      "current_mode": "SHADOW_REVIEW_ONLY",
+      "hardware_proof": false,
+      "unit_tests": "tests/test_observer_fair_budget_stage_20261116.py: 2 outer passed, 6 disposable cases",
+      "integration_tests": "Final shared stage: 105 passed, 9 intentional skips, 29 subtests",
+      "benchmark": "No native performance measurement",
+      "gate_status": "NOT_RELEASED / REDMI_UNVERIFIED",
+      "known_limitations": [
+        "Native boundary is a synthetic runner",
+        "A native backend ignoring its deadline can overrun its slice"
+      ]
+    },
+    {
+      "feature_id": "native_recovery_evidence",
+      "canon_source": [
+        "W3",
+        "W5",
+        "F7"
+      ],
+      "implementation_files": [
+        "v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py"
+      ],
+      "runtime_owner": "final composed Runtime review stage",
+      "state_owner": "existing device-local Store",
+      "schema_id": [
+        "EffortDecision"
+      ],
+      "persistence": "Reads bounded persisted assistant metadata through existing Cognition pre-answer gate",
+      "current_mode": "SHADOW_REVIEW_ONLY",
+      "hardware_proof": false,
+      "unit_tests": "Malformed/boolean/fractional/zero token counts and deterministic FINAL excluded; genuine C3 success retained",
+      "integration_tests": "Final shared stage: 105 passed, 9 intentional skips, 29 subtests",
+      "benchmark": "No native performance measurement",
+      "gate_status": "NOT_RELEASED / REDMI_UNVERIFIED",
+      "known_limitations": [
+        "No real device recovery measurement"
+      ]
+    }
+  ],
+  "full_integrated_regression": "415 passed / 3 CUDA skips / 58 subtests; outer wrapper passed",
+  "negative_gates_unchanged": true,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "next_action": "Boss/Integration: review exact-commit CI and compose into fixed phone release; then measure 20+ diverse real Redmi turns with B1/B2 offer delivery and C4/C3 consumption",
+  "stop_reason": "Bounded reviewed integration checkpoint; hardware acceptance remains unavailable",
+  "remaining_platform_budget": "UNKNOWN",
+  "additive_auto_merge": "BLOCKED_BY_DESIGN: edits existing stage, manual integration review required"
+}

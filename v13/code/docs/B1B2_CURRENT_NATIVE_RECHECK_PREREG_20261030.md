@@ -1,0 +1,9 @@
+# V13 current-chain distinct B1/B2 real Linux native recheck — prereg 2026-10-30
+
+Review-only child of verified #1189 at `0fb05a442da9eaf6f0756b4e46ea51ed6c4b1064`. No runtime/model/catalog edits. This is a native execution/identity smoke, not a semantic complementarity test.
+
+The current catalog has two **different** frozen GGUF weights: B1_DETAIL `LiquidAI/LFM2.5-1.2B-Instruct-GGUF` revision `6767265158422fb8a19c62ceb45f16f05363615b`, SHA256 `bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1`, 695,755,488 bytes, LFM Open License 1.0; B2_GIST `ggml-org/Qwen3.5-0.8B-GGUF` revision `8fea620810c4afa23dd6443f999a48574c1611a3`, SHA256 `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf`, 563,036,064 bytes, Apache-2.0. Pinned official llama.cpp runner tar SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`. Source catalog and manager Git blobs must remain `7af05962af41d0bc3f7dd18ef01d4eba55eabf99` / `bd035cf8029850cce00b179edf533e53bf24358a`.
+
+Run only **after** current-chain C3 native job `40985573677` completed GREEN (it did). On Linux x86_64 CI, download pinned public bytes into fresh scratch, verify all SHA256, run B1 then B2 strictly serially with `Hello.`, max12 tokens each, capture complete raw output and report, process exit, timeouts, stdout/stderr hashes, memory/disk prerequisites, privacy/diff and artifact hash. No weight files in published artifact. Retain failures.
+
+A GREEN would prove only **distinct B1/B2 Linux native load/decode**; C2/JEF/C3 are not run in this job, and no B1/B2 complementarity, STEP2 utility, JEPA, Age, Redmi thermal/energy/RSS or whole-system claim follows. All original negative gates stay unchanged. Exact next command: `PYTHONPATH=v13/code python3 v13/code/scripts/current_b1b2_native_linux_smoke_20261028.py --scratch-home <fresh> --evidence-dir <fresh>`. Runtime budget UNKNOWN.

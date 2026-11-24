@@ -1,0 +1,15 @@
+{
+ "status": "EXPORTED",
+ "dataset_sha256": "167e5694f0ff5fbd7703b29a5d4d380ee2f4e7606d5289ebc295b6ab74bee63f",
+ "pairs": 1656,
+ "episodes": {
+  "train": 139,
+  "calibration": 47,
+  "retention": 44,
+  "test": 184
+ },
+ "excluded_fresh": 0,
+ "taps_sha256": "40091257299b60cf7edd2c0333ee4625f6a7ccfc88517a43e0152ed35e6dd4e6",
+ "receiver_authority": 0,
+ "semantic_quality_proven": false
+}

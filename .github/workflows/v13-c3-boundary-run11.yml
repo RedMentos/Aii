@@ -1,0 +1,74 @@
+name: V13 C3 deterministic question-boundary run11 software review
+on:
+  push:
+    branches:
+      - 'assistant/v13-c3-question-boundary-run11-20261030-gpt6'
+    paths:
+      - '.github/workflows/v13-c3-boundary-run11.yml'
+      - 'v13/code/tests/test_c3_deterministic_boundary_run11.py'
+      - 'v13/code/v13/agi/listarith_de_deterministic_source_candidate.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Software tests with lossless raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/c3-boundary-run11"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/c3-boundary-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/c3-boundary-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout 5m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+            tests.test_c3_deterministic_boundary_run11 \
+            tests.test_c3_deterministic_operator_auto11 \
+            tests.test_c3_operator_bounded_input_auto11 \
+            tests.test_c3_operator_receipt_boundary_auto11 \
+            tests.test_c3_de_operator_shadow_run11g_20261030 \
+            tests.test_listarith_de_closedworld_seed101_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/v13/agi/listarith_de_deterministic_source_candidate.py \
+            v13/code/tests/test_c3_deterministic_boundary_run11.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 10b3c8d01ff8ed55ba1bfcafd42a90be677a2c5b \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 10b3c8d01ff8ed55ba1bfcafd42a90be677a2c5b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c3-boundary-run11-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c3-boundary-run11/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed, retain RED evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/c3-boundary-run11"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/"$stage"_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -100 "$e/"$stage"_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "SOFTWARE_SHADOW_ONLY_NO_NATIVE_OR_AGE_PROMOTION"

@@ -1,0 +1,9 @@
+# V13 WorldJEPA / Age0 / WP-T6 / P2X unified review — prereg (2026-10-29)
+
+- Exact parent: PR #1101 head `b9acd518a0c5f8494255c8e3fe0b2d75db11c8a2`, source-green 3175 tests on previous source head `6ff552446b266b12e4cb3f0b52e1c65f1d7e0e76`. Parent review-only child of #1100. Production main remains older.
+- Disjoint donor: PR #1102 head `79144fc563025a72369bc3f1173bdc48b2ac5ced`, source-green 3171 tests on `4f80f88920678ea1aad3a50550b4bc73ea1d80c5`. Import exact P2X CLI and CAL36 diagnostic source/test/docs blobs, no source edits; preserve both original donor branches.
+- Question: do Age direct typed evidence admission, World-JEPA single-member uncertainty guard, WP-T6 trusted cross-skill C_fast fallback and P2X source-transport diagnostics coexist in the same source tree without changing any learning/authority gate or frozen source/model/seed/cohort identity?
+- Acceptance: exact blob pin, 20+17 focused software tests plus a combined Store/Runtime regression, full software suite, compile, privacy and diff. Save original raw, stage exits, SHA256SUMS, independent audit and private backup. No native execution in this integration; Linux-native CAL36 all-NONE result remains negative.
+- New branch owns only this prereg, new integration workflow/handoff and exact donor P2X blobs. No edit to Age/WorldJEPA/skilllive owners, no production merge, no force-push.
+- Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi unmeasured; V13 incomplete.
+- Next exact command: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_worldjepa_age_skill_crosschain_20261029 tests.test_age_record_typed_evidence_candidate tests.test_run49_world_jepa_single_ensemble_confidence tests.test_p2x_candidate360_standalone tests.test_p2x_lora_scaled_cli_review tests.test_p2x_cal36_transport_20261029 tests.test_skilllive_crossskill_conflict_20261029`, then full discover.

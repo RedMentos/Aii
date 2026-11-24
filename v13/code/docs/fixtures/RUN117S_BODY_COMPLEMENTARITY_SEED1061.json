@@ -1,0 +1,77 @@
+{
+  "arms": [
+    "RAW_FULL_SOURCES",
+    "SOURCE_SPANS_ONLY",
+    "BODY_VERIFIED_QUOTES"
+  ],
+  "rows": [
+    {
+      "current": "Project Atlas. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 270 euros, duration 5 days, local true. Option B: cost 250 euros, duration 8 days, local true. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Atlas",
+      "option_span": "Option A: cost 270 euros, duration 5 days, local true. Option B: cost 250 euros, duration 8 days, local true.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 50
+      },
+      "policy_span": "Binding policy: budget 320 euros; deadline 6 days; local-only true.",
+      "prior": "Project Atlas. Archive memo 1: a draft from last year proposed a 100-euro cap and a 2-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 320 euros; deadline 6 days; local-only true. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    },
+    {
+      "current": "Project Boreal. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 390 euros, duration 8 days, local false. Option B: cost 350 euros, duration 7 days, local true. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Boreal",
+      "option_span": "Option A: cost 390 euros, duration 8 days, local false. Option B: cost 350 euros, duration 7 days, local true.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 70
+      },
+      "policy_span": "Binding policy: budget 420 euros; deadline 9 days; local-only false.",
+      "prior": "Project Boreal. Archive memo 2: a draft from last year proposed a 120-euro cap and a 3-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 420 euros; deadline 9 days; local-only false. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    },
+    {
+      "current": "Project Cinder. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 170 euros, duration 3 days, local true. Option B: cost 150 euros, duration 5 days, local true. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Cinder",
+      "option_span": "Option A: cost 170 euros, duration 3 days, local true. Option B: cost 150 euros, duration 5 days, local true.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "policy_span": "Binding policy: budget 160 euros; deadline 4 days; local-only true.",
+      "prior": "Project Cinder. Archive memo 3: a draft from last year proposed a 140-euro cap and a 4-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 160 euros; deadline 4 days; local-only true. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    },
+    {
+      "current": "Project Delta. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 450 euros, duration 6 days, local true. Option B: cost 420 euros, duration 5 days, local false. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Delta",
+      "option_span": "Option A: cost 450 euros, duration 6 days, local true. Option B: cost 420 euros, duration 5 days, local false.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 50
+      },
+      "policy_span": "Binding policy: budget 500 euros; deadline 6 days; local-only true.",
+      "prior": "Project Delta. Archive memo 4: a draft from last year proposed a 160-euro cap and a 5-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 500 euros; deadline 6 days; local-only true. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    },
+    {
+      "current": "Project Elm. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 250 euros, duration 9 days, local false. Option B: cost 260 euros, duration 8 days, local true. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Elm",
+      "option_span": "Option A: cost 250 euros, duration 9 days, local false. Option B: cost 260 euros, duration 8 days, local true.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 50
+      },
+      "policy_span": "Binding policy: budget 300 euros; deadline 10 days; local-only false.",
+      "prior": "Project Elm. Archive memo 5: a draft from last year proposed a 180-euro cap and a 6-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 300 euros; deadline 10 days; local-only false. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    },
+    {
+      "current": "Project Flux. Compare these two offers against the saved binding policy, not the archive draft. Option A: cost 270 euros, duration 5 days, local false. Option B: cost 260 euros, duration 6 days, local true. Choose the cheapest eligible option and give the remaining euros, or NONE with null if neither qualifies.",
+      "id": "Flux",
+      "option_span": "Option A: cost 270 euros, duration 5 days, local false. Option B: cost 260 euros, duration 6 days, local true.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "policy_span": "Binding policy: budget 280 euros; deadline 5 days; local-only true.",
+      "prior": "Project Flux. Archive memo 6: a draft from last year proposed a 200-euro cap and a 7-day deadline, but the draft was withdrawn. The binding record is separate from this historical discussion. Binding policy: budget 280 euros; deadline 5 days; local-only true. A later review confirmed that only the binding policy controls eligibility; the archive figures have no authority."
+    }
+  ],
+  "schema": "v13.run117s.body_complementarity_seed1061.v1",
+  "seed": 1061
+}

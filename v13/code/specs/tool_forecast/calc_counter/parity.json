@@ -1,0 +1,1607 @@
+{
+"schema": "v13-tool-forecast-v1-parity",
+"world": "calc_counter",
+"partition": "test",
+"rows": [
+{
+"input": "The counter shows 18.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 33."
+},
+{
+"input": "The counter shows 18.",
+"action": "double",
+"outcome": "After doubling, the counter shows 36."
+},
+{
+"input": "The counter shows 18.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 4.5."
+},
+{
+"input": "The counter shows 18.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 11."
+},
+{
+"input": "The counter shows 25.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 40."
+},
+{
+"input": "The counter shows 25.",
+"action": "double",
+"outcome": "After doubling, the counter shows 50."
+},
+{
+"input": "The counter shows 25.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 6.25."
+},
+{
+"input": "The counter shows 25.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 18."
+},
+{
+"input": "The counter shows 35.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 50."
+},
+{
+"input": "The counter shows 35.",
+"action": "double",
+"outcome": "After doubling, the counter shows 70."
+},
+{
+"input": "The counter shows 35.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 8.75."
+},
+{
+"input": "The counter shows 35.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 28."
+},
+{
+"input": "The counter shows 53.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 68."
+},
+{
+"input": "The counter shows 53.",
+"action": "double",
+"outcome": "After doubling, the counter shows 106."
+},
+{
+"input": "The counter shows 53.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 13.25."
+},
+{
+"input": "The counter shows 53.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 46."
+},
+{
+"input": "The counter shows 56.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 71."
+},
+{
+"input": "The counter shows 56.",
+"action": "double",
+"outcome": "After doubling, the counter shows 112."
+},
+{
+"input": "The counter shows 56.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 14."
+},
+{
+"input": "The counter shows 56.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 49."
+},
+{
+"input": "The counter shows 59.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 74."
+},
+{
+"input": "The counter shows 59.",
+"action": "double",
+"outcome": "After doubling, the counter shows 118."
+},
+{
+"input": "The counter shows 59.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 14.75."
+},
+{
+"input": "The counter shows 59.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 52."
+},
+{
+"input": "The counter shows 61.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 76."
+},
+{
+"input": "The counter shows 61.",
+"action": "double",
+"outcome": "After doubling, the counter shows 122."
+},
+{
+"input": "The counter shows 61.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 15.25."
+},
+{
+"input": "The counter shows 61.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 54."
+},
+{
+"input": "The counter shows 62.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 77."
+},
+{
+"input": "The counter shows 62.",
+"action": "double",
+"outcome": "After doubling, the counter shows 124."
+},
+{
+"input": "The counter shows 62.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 15.5."
+},
+{
+"input": "The counter shows 62.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 55."
+},
+{
+"input": "The counter shows 63.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 78."
+},
+{
+"input": "The counter shows 63.",
+"action": "double",
+"outcome": "After doubling, the counter shows 126."
+},
+{
+"input": "The counter shows 63.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 15.75."
+},
+{
+"input": "The counter shows 63.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 56."
+},
+{
+"input": "The counter shows 79.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 94."
+},
+{
+"input": "The counter shows 79.",
+"action": "double",
+"outcome": "After doubling, the counter shows 158."
+},
+{
+"input": "The counter shows 79.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 19.75."
+},
+{
+"input": "The counter shows 79.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 72."
+},
+{
+"input": "The counter shows 95.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 110."
+},
+{
+"input": "The counter shows 95.",
+"action": "double",
+"outcome": "After doubling, the counter shows 190."
+},
+{
+"input": "The counter shows 95.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 23.75."
+},
+{
+"input": "The counter shows 95.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 88."
+},
+{
+"input": "The counter shows 105.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 120."
+},
+{
+"input": "The counter shows 105.",
+"action": "double",
+"outcome": "After doubling, the counter shows 210."
+},
+{
+"input": "The counter shows 105.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 26.25."
+},
+{
+"input": "The counter shows 105.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 98."
+},
+{
+"input": "The counter shows 113.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 128."
+},
+{
+"input": "The counter shows 113.",
+"action": "double",
+"outcome": "After doubling, the counter shows 226."
+},
+{
+"input": "The counter shows 113.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 28.25."
+},
+{
+"input": "The counter shows 113.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 106."
+},
+{
+"input": "The counter shows 138.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 153."
+},
+{
+"input": "The counter shows 138.",
+"action": "double",
+"outcome": "After doubling, the counter shows 276."
+},
+{
+"input": "The counter shows 138.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 34.5."
+},
+{
+"input": "The counter shows 138.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 131."
+},
+{
+"input": "The counter shows 145.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 160."
+},
+{
+"input": "The counter shows 145.",
+"action": "double",
+"outcome": "After doubling, the counter shows 290."
+},
+{
+"input": "The counter shows 145.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 36.25."
+},
+{
+"input": "The counter shows 145.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 138."
+},
+{
+"input": "The counter shows 170.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 185."
+},
+{
+"input": "The counter shows 170.",
+"action": "double",
+"outcome": "After doubling, the counter shows 340."
+},
+{
+"input": "The counter shows 170.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 42.5."
+},
+{
+"input": "The counter shows 170.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 163."
+},
+{
+"input": "The counter shows 209.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 224."
+},
+{
+"input": "The counter shows 209.",
+"action": "double",
+"outcome": "After doubling, the counter shows 418."
+},
+{
+"input": "The counter shows 209.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 52.25."
+},
+{
+"input": "The counter shows 209.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 202."
+},
+{
+"input": "The counter shows 214.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 229."
+},
+{
+"input": "The counter shows 214.",
+"action": "double",
+"outcome": "After doubling, the counter shows 428."
+},
+{
+"input": "The counter shows 214.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 53.5."
+},
+{
+"input": "The counter shows 214.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 207."
+},
+{
+"input": "The counter shows 227.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 242."
+},
+{
+"input": "The counter shows 227.",
+"action": "double",
+"outcome": "After doubling, the counter shows 454."
+},
+{
+"input": "The counter shows 227.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 56.75."
+},
+{
+"input": "The counter shows 227.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 220."
+},
+{
+"input": "The counter shows 309.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 324."
+},
+{
+"input": "The counter shows 309.",
+"action": "double",
+"outcome": "After doubling, the counter shows 618."
+},
+{
+"input": "The counter shows 309.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 77.25."
+},
+{
+"input": "The counter shows 309.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 302."
+},
+{
+"input": "The counter shows 312.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 327."
+},
+{
+"input": "The counter shows 312.",
+"action": "double",
+"outcome": "After doubling, the counter shows 624."
+},
+{
+"input": "The counter shows 312.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 78."
+},
+{
+"input": "The counter shows 312.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 305."
+},
+{
+"input": "The counter shows 325.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 340."
+},
+{
+"input": "The counter shows 325.",
+"action": "double",
+"outcome": "After doubling, the counter shows 650."
+},
+{
+"input": "The counter shows 325.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 81.25."
+},
+{
+"input": "The counter shows 325.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 318."
+},
+{
+"input": "The counter shows 327.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 342."
+},
+{
+"input": "The counter shows 327.",
+"action": "double",
+"outcome": "After doubling, the counter shows 654."
+},
+{
+"input": "The counter shows 327.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 81.75."
+},
+{
+"input": "The counter shows 327.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 320."
+},
+{
+"input": "The counter shows 330.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 345."
+},
+{
+"input": "The counter shows 330.",
+"action": "double",
+"outcome": "After doubling, the counter shows 660."
+},
+{
+"input": "The counter shows 330.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 82.5."
+},
+{
+"input": "The counter shows 330.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 323."
+},
+{
+"input": "The counter shows 332.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 347."
+},
+{
+"input": "The counter shows 332.",
+"action": "double",
+"outcome": "After doubling, the counter shows 664."
+},
+{
+"input": "The counter shows 332.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 83."
+},
+{
+"input": "The counter shows 332.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 325."
+},
+{
+"input": "The counter shows 339.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 354."
+},
+{
+"input": "The counter shows 339.",
+"action": "double",
+"outcome": "After doubling, the counter shows 678."
+},
+{
+"input": "The counter shows 339.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 84.75."
+},
+{
+"input": "The counter shows 339.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 332."
+},
+{
+"input": "The counter shows 356.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 371."
+},
+{
+"input": "The counter shows 356.",
+"action": "double",
+"outcome": "After doubling, the counter shows 712."
+},
+{
+"input": "The counter shows 356.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 89."
+},
+{
+"input": "The counter shows 356.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 349."
+},
+{
+"input": "The counter shows 368.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 383."
+},
+{
+"input": "The counter shows 368.",
+"action": "double",
+"outcome": "After doubling, the counter shows 736."
+},
+{
+"input": "The counter shows 368.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 92."
+},
+{
+"input": "The counter shows 368.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 361."
+},
+{
+"input": "The counter shows 385.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 400."
+},
+{
+"input": "The counter shows 385.",
+"action": "double",
+"outcome": "After doubling, the counter shows 770."
+},
+{
+"input": "The counter shows 385.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 96.25."
+},
+{
+"input": "The counter shows 385.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 378."
+},
+{
+"input": "The counter shows 406.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 421."
+},
+{
+"input": "The counter shows 406.",
+"action": "double",
+"outcome": "After doubling, the counter shows 812."
+},
+{
+"input": "The counter shows 406.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 101.5."
+},
+{
+"input": "The counter shows 406.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 399."
+},
+{
+"input": "The counter shows 422.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 437."
+},
+{
+"input": "The counter shows 422.",
+"action": "double",
+"outcome": "After doubling, the counter shows 844."
+},
+{
+"input": "The counter shows 422.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 105.5."
+},
+{
+"input": "The counter shows 422.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 415."
+},
+{
+"input": "The counter shows 428.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 443."
+},
+{
+"input": "The counter shows 428.",
+"action": "double",
+"outcome": "After doubling, the counter shows 856."
+},
+{
+"input": "The counter shows 428.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 107."
+},
+{
+"input": "The counter shows 428.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 421."
+},
+{
+"input": "The counter shows 451.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 466."
+},
+{
+"input": "The counter shows 451.",
+"action": "double",
+"outcome": "After doubling, the counter shows 902."
+},
+{
+"input": "The counter shows 451.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 112.75."
+},
+{
+"input": "The counter shows 451.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 444."
+},
+{
+"input": "The counter shows 454.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 469."
+},
+{
+"input": "The counter shows 454.",
+"action": "double",
+"outcome": "After doubling, the counter shows 908."
+},
+{
+"input": "The counter shows 454.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 113.5."
+},
+{
+"input": "The counter shows 454.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 447."
+},
+{
+"input": "The counter shows 475.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 490."
+},
+{
+"input": "The counter shows 475.",
+"action": "double",
+"outcome": "After doubling, the counter shows 950."
+},
+{
+"input": "The counter shows 475.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 118.75."
+},
+{
+"input": "The counter shows 475.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 468."
+},
+{
+"input": "The counter shows 483.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 498."
+},
+{
+"input": "The counter shows 483.",
+"action": "double",
+"outcome": "After doubling, the counter shows 966."
+},
+{
+"input": "The counter shows 483.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 120.75."
+},
+{
+"input": "The counter shows 483.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 476."
+},
+{
+"input": "The counter shows 484.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 499."
+},
+{
+"input": "The counter shows 484.",
+"action": "double",
+"outcome": "After doubling, the counter shows 968."
+},
+{
+"input": "The counter shows 484.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 121."
+},
+{
+"input": "The counter shows 484.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 477."
+},
+{
+"input": "The counter shows 504.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 519."
+},
+{
+"input": "The counter shows 504.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1008."
+},
+{
+"input": "The counter shows 504.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 126."
+},
+{
+"input": "The counter shows 504.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 497."
+},
+{
+"input": "The counter shows 506.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 521."
+},
+{
+"input": "The counter shows 506.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1012."
+},
+{
+"input": "The counter shows 506.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 126.5."
+},
+{
+"input": "The counter shows 506.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 499."
+},
+{
+"input": "The counter shows 545.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 560."
+},
+{
+"input": "The counter shows 545.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1090."
+},
+{
+"input": "The counter shows 545.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 136.25."
+},
+{
+"input": "The counter shows 545.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 538."
+},
+{
+"input": "The counter shows 549.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 564."
+},
+{
+"input": "The counter shows 549.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1098."
+},
+{
+"input": "The counter shows 549.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 137.25."
+},
+{
+"input": "The counter shows 549.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 542."
+},
+{
+"input": "The counter shows 554.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 569."
+},
+{
+"input": "The counter shows 554.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1108."
+},
+{
+"input": "The counter shows 554.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 138.5."
+},
+{
+"input": "The counter shows 554.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 547."
+},
+{
+"input": "The counter shows 564.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 579."
+},
+{
+"input": "The counter shows 564.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1128."
+},
+{
+"input": "The counter shows 564.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 141."
+},
+{
+"input": "The counter shows 564.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 557."
+},
+{
+"input": "The counter shows 574.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 589."
+},
+{
+"input": "The counter shows 574.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1148."
+},
+{
+"input": "The counter shows 574.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 143.5."
+},
+{
+"input": "The counter shows 574.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 567."
+},
+{
+"input": "The counter shows 588.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 603."
+},
+{
+"input": "The counter shows 588.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1176."
+},
+{
+"input": "The counter shows 588.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 147."
+},
+{
+"input": "The counter shows 588.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 581."
+},
+{
+"input": "The counter shows 595.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 610."
+},
+{
+"input": "The counter shows 595.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1190."
+},
+{
+"input": "The counter shows 595.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 148.75."
+},
+{
+"input": "The counter shows 595.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 588."
+},
+{
+"input": "The counter shows 611.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 626."
+},
+{
+"input": "The counter shows 611.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1222."
+},
+{
+"input": "The counter shows 611.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 152.75."
+},
+{
+"input": "The counter shows 611.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 604."
+},
+{
+"input": "The counter shows 614.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 629."
+},
+{
+"input": "The counter shows 614.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1228."
+},
+{
+"input": "The counter shows 614.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 153.5."
+},
+{
+"input": "The counter shows 614.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 607."
+},
+{
+"input": "The counter shows 624.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 639."
+},
+{
+"input": "The counter shows 624.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1248."
+},
+{
+"input": "The counter shows 624.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 156."
+},
+{
+"input": "The counter shows 624.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 617."
+},
+{
+"input": "The counter shows 626.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 641."
+},
+{
+"input": "The counter shows 626.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1252."
+},
+{
+"input": "The counter shows 626.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 156.5."
+},
+{
+"input": "The counter shows 626.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 619."
+},
+{
+"input": "The counter shows 641.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 656."
+},
+{
+"input": "The counter shows 641.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1282."
+},
+{
+"input": "The counter shows 641.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 160.25."
+},
+{
+"input": "The counter shows 641.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 634."
+},
+{
+"input": "The counter shows 643.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 658."
+},
+{
+"input": "The counter shows 643.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1286."
+},
+{
+"input": "The counter shows 643.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 160.75."
+},
+{
+"input": "The counter shows 643.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 636."
+},
+{
+"input": "The counter shows 682.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 697."
+},
+{
+"input": "The counter shows 682.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1364."
+},
+{
+"input": "The counter shows 682.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 170.5."
+},
+{
+"input": "The counter shows 682.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 675."
+},
+{
+"input": "The counter shows 691.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 706."
+},
+{
+"input": "The counter shows 691.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1382."
+},
+{
+"input": "The counter shows 691.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 172.75."
+},
+{
+"input": "The counter shows 691.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 684."
+},
+{
+"input": "The counter shows 710.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 725."
+},
+{
+"input": "The counter shows 710.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1420."
+},
+{
+"input": "The counter shows 710.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 177.5."
+},
+{
+"input": "The counter shows 710.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 703."
+},
+{
+"input": "The counter shows 712.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 727."
+},
+{
+"input": "The counter shows 712.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1424."
+},
+{
+"input": "The counter shows 712.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 178."
+},
+{
+"input": "The counter shows 712.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 705."
+},
+{
+"input": "The counter shows 723.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 738."
+},
+{
+"input": "The counter shows 723.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1446."
+},
+{
+"input": "The counter shows 723.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 180.75."
+},
+{
+"input": "The counter shows 723.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 716."
+},
+{
+"input": "The counter shows 725.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 740."
+},
+{
+"input": "The counter shows 725.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1450."
+},
+{
+"input": "The counter shows 725.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 181.25."
+},
+{
+"input": "The counter shows 725.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 718."
+},
+{
+"input": "The counter shows 741.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 756."
+},
+{
+"input": "The counter shows 741.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1482."
+},
+{
+"input": "The counter shows 741.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 185.25."
+},
+{
+"input": "The counter shows 741.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 734."
+},
+{
+"input": "The counter shows 770.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 785."
+},
+{
+"input": "The counter shows 770.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1540."
+},
+{
+"input": "The counter shows 770.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 192.5."
+},
+{
+"input": "The counter shows 770.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 763."
+},
+{
+"input": "The counter shows 775.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 790."
+},
+{
+"input": "The counter shows 775.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1550."
+},
+{
+"input": "The counter shows 775.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 193.75."
+},
+{
+"input": "The counter shows 775.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 768."
+},
+{
+"input": "The counter shows 851.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 866."
+},
+{
+"input": "The counter shows 851.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1702."
+},
+{
+"input": "The counter shows 851.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 212.75."
+},
+{
+"input": "The counter shows 851.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 844."
+},
+{
+"input": "The counter shows 852.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 867."
+},
+{
+"input": "The counter shows 852.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1704."
+},
+{
+"input": "The counter shows 852.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 213."
+},
+{
+"input": "The counter shows 852.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 845."
+},
+{
+"input": "The counter shows 853.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 868."
+},
+{
+"input": "The counter shows 853.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1706."
+},
+{
+"input": "The counter shows 853.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 213.25."
+},
+{
+"input": "The counter shows 853.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 846."
+},
+{
+"input": "The counter shows 863.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 878."
+},
+{
+"input": "The counter shows 863.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1726."
+},
+{
+"input": "The counter shows 863.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 215.75."
+},
+{
+"input": "The counter shows 863.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 856."
+},
+{
+"input": "The counter shows 864.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 879."
+},
+{
+"input": "The counter shows 864.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1728."
+},
+{
+"input": "The counter shows 864.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 216."
+},
+{
+"input": "The counter shows 864.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 857."
+},
+{
+"input": "The counter shows 900.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 915."
+},
+{
+"input": "The counter shows 900.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1800."
+},
+{
+"input": "The counter shows 900.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 225."
+},
+{
+"input": "The counter shows 900.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 893."
+},
+{
+"input": "The counter shows 912.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 927."
+},
+{
+"input": "The counter shows 912.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1824."
+},
+{
+"input": "The counter shows 912.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 228."
+},
+{
+"input": "The counter shows 912.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 905."
+},
+{
+"input": "The counter shows 927.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 942."
+},
+{
+"input": "The counter shows 927.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1854."
+},
+{
+"input": "The counter shows 927.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 231.75."
+},
+{
+"input": "The counter shows 927.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 920."
+},
+{
+"input": "The counter shows 948.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 963."
+},
+{
+"input": "The counter shows 948.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1896."
+},
+{
+"input": "The counter shows 948.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 237."
+},
+{
+"input": "The counter shows 948.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 941."
+},
+{
+"input": "The counter shows 949.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 964."
+},
+{
+"input": "The counter shows 949.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1898."
+},
+{
+"input": "The counter shows 949.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 237.25."
+},
+{
+"input": "The counter shows 949.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 942."
+},
+{
+"input": "The counter shows 951.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 966."
+},
+{
+"input": "The counter shows 951.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1902."
+},
+{
+"input": "The counter shows 951.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 237.75."
+},
+{
+"input": "The counter shows 951.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 944."
+},
+{
+"input": "The counter shows 955.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 970."
+},
+{
+"input": "The counter shows 955.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1910."
+},
+{
+"input": "The counter shows 955.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 238.75."
+},
+{
+"input": "The counter shows 955.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 948."
+},
+{
+"input": "The counter shows 958.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 973."
+},
+{
+"input": "The counter shows 958.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1916."
+},
+{
+"input": "The counter shows 958.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 239.5."
+},
+{
+"input": "The counter shows 958.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 951."
+},
+{
+"input": "The counter shows 964.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 979."
+},
+{
+"input": "The counter shows 964.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1928."
+},
+{
+"input": "The counter shows 964.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 241."
+},
+{
+"input": "The counter shows 964.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 957."
+},
+{
+"input": "The counter shows 968.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 983."
+},
+{
+"input": "The counter shows 968.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1936."
+},
+{
+"input": "The counter shows 968.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 242."
+},
+{
+"input": "The counter shows 968.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 961."
+},
+{
+"input": "The counter shows 972.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 987."
+},
+{
+"input": "The counter shows 972.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1944."
+},
+{
+"input": "The counter shows 972.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 243."
+},
+{
+"input": "The counter shows 972.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 965."
+},
+{
+"input": "The counter shows 975.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 990."
+},
+{
+"input": "The counter shows 975.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1950."
+},
+{
+"input": "The counter shows 975.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 243.75."
+},
+{
+"input": "The counter shows 975.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 968."
+},
+{
+"input": "The counter shows 992.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 1007."
+},
+{
+"input": "The counter shows 992.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1984."
+},
+{
+"input": "The counter shows 992.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 248."
+},
+{
+"input": "The counter shows 992.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 985."
+},
+{
+"input": "The counter shows 995.",
+"action": "add_15",
+"outcome": "After adding 15, the counter shows 1010."
+},
+{
+"input": "The counter shows 995.",
+"action": "double",
+"outcome": "After doubling, the counter shows 1990."
+},
+{
+"input": "The counter shows 995.",
+"action": "quarter",
+"outcome": "After dividing by 4, the counter shows 248.75."
+},
+{
+"input": "The counter shows 995.",
+"action": "subtract_7",
+"outcome": "After subtracting 7, the counter shows 988."
+}
+]
+}

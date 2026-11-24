@@ -1,0 +1,15 @@
+# Run13E — Context OS SOURCE_LINKS -> exact Store/JEF answer, SHADOW (2026-10-30)
+
+Review-only prospective cross-organ software integration child of Run13B #1289 at `38e02285d4e27f9b4e27b5ad45ea1f7fa3b750f5`. Owner GPT-6; new files only `v13/code/v13/agi/context_source_link_budget_run13e.py`, `v13/code/tests/test_context_source_link_budget_run13e.py`, this doc, scoped checkpoint and dedicated CI. Do not edit Context OS, Store, Runtime, JEF parser, native scorers/models, source fixtures, seed or Canon.
+
+## Purpose and exact contract
+
+Context OS can deliberately replace an old, source-valid turn in a bounded model view with a `SOURCE_LINKS` pointer, preserving the event/source provenance outside the prompt. Run13B separately proves exact Store-backed budget answers in a closed grammar. Build a **non-wired SHADOW bridge** that takes a persisted ContextPlan packet ID, the current query event ID and one old source event ID; accepts only an actual `SOURCE_LINKS`/`POINTER` item of the persisted plan; reconstructs both complete Store SourceRefs from live event/source rows; requires same session, nondeleted USER sources, exact JEF query/project/source grammar; then renders the exact two remainders and faster option through Run13B. Revalidate plan/rows before returning. No model calls, no tool action, no C5 authority, no automatic retrieval or source mutation.
+
+Prospective test uses **unchanged** Run13A seed211 case Beacon211, source prompt exactly frozen Run11V style. Create a real Store source event, five additional long turns, then a real query event in the same session. Force low Context OS character budget in SHADOW so the oldest source turn is `SOURCE_LINKS` (not visible in the planned prompt), and prove the bridge still returns a 2/2 numeric answer plus explicit correct faster choice from the original Store bytes. Verify Context OS remains SHADOW and no native pool acquisition. Negative controls: wrong/missing packet, source not pointed, cross-session event, deleted source, forged event binding, duplicate pointer entry and invalid project. All must return no answer with zero authority. The bridge does not trust a caller-supplied ContextPlan dict.
+
+## Scope and limitations
+
+The ContextPlan packet is a **software provenance receipt**, not a cryptographic capability or authorization token; this bridge is not a live memory retrieval policy, C3 output repair, ACTIVE Context OS promotion, general language reasoning, model utility or STEP2. Store/source changes after final read remain possible; a future live consumer needs dispatch-time authorization. Never turn model hypotheses into facts.
+
+CI: real-Store tests plus Run13B and existing Context OS focused tests, compile, Canon pin, privacy/diff, original raw SHA256SUMS and private byte-exact backup. Original native Run13A utility RED and historical fullsuite RED stay. Negative gates: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi unmeasured, whole V13 incomplete.

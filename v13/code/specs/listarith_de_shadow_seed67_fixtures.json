@@ -1,0 +1,290 @@
+[
+  {
+    "expected": "total",
+    "id": "total-00",
+    "split": "dev",
+    "text": "Werte: Ort A 12, Ort B 30, Ort C 5. Wie hoch ist die Summe der Werte?"
+  },
+  {
+    "expected": "total",
+    "id": "total-01",
+    "split": "holdout",
+    "text": "Werte: Ort A 13, Ort B 32, Ort C 8. Wie viel ist das insgesamt?"
+  },
+  {
+    "expected": "total",
+    "id": "total-02",
+    "split": "dev",
+    "text": "Werte: Ort A 14, Ort B 34, Ort C 11. Addiere alle Beträge."
+  },
+  {
+    "expected": "total",
+    "id": "total-03",
+    "split": "holdout",
+    "text": "Werte: Ort A 15, Ort B 36, Ort C 14. Was ergibt sich zusammen?"
+  },
+  {
+    "expected": "total",
+    "id": "total-04",
+    "split": "dev",
+    "text": "Werte: Ort A 16, Ort B 38, Ort C 17. Wie groß ist die Gesamtsumme?"
+  },
+  {
+    "expected": "total",
+    "id": "total-05",
+    "split": "holdout",
+    "text": "Werte: Ort A 17, Ort B 40, Ort C 20. Rechne alle Werte zusammen."
+  },
+  {
+    "expected": "total",
+    "id": "total-06",
+    "split": "dev",
+    "text": "Werte: Ort A 18, Ort B 42, Ort C 23. Wie viel ergeben alle Posten insgesamt?"
+  },
+  {
+    "expected": "total",
+    "id": "total-07",
+    "split": "holdout",
+    "text": "Werte: Ort A 19, Ort B 44, Ort C 26. Wie viel kosten die Dinge zusammen?"
+  },
+  {
+    "expected": "total",
+    "id": "total-08",
+    "split": "dev",
+    "text": "Werte: Ort A 20, Ort B 46, Ort C 29. Bestimme die Summe."
+  },
+  {
+    "expected": "total",
+    "id": "total-09",
+    "split": "holdout",
+    "text": "Werte: Ort A 21, Ort B 48, Ort C 32. Wie hoch ist der Gesamtbetrag der Preise?"
+  },
+  {
+    "expected": "total",
+    "id": "total-10",
+    "split": "dev",
+    "text": "Werte: Ort A 22, Ort B 50, Ort C 35. Wie hoch ist der Gesamtwert?"
+  },
+  {
+    "expected": "total",
+    "id": "total-11",
+    "split": "holdout",
+    "text": "Werte: Ort A 23, Ort B 52, Ort C 38. Was ist die Summe aller drei Werte?"
+  },
+  {
+    "expected": "total",
+    "id": "total-12",
+    "split": "dev",
+    "text": "Werte: Ort A 24, Ort B 54, Ort C 41. Bitte alles addieren."
+  },
+  {
+    "expected": "total",
+    "id": "total-13",
+    "split": "holdout",
+    "text": "Werte: Ort A 25, Ort B 56, Ort C 44. Wie viel kommt insgesamt heraus?"
+  },
+  {
+    "expected": "total",
+    "id": "total-14",
+    "split": "dev",
+    "text": "Werte: Ort A 26, Ort B 58, Ort C 47. Wie lautet die Addition?"
+  },
+  {
+    "expected": "total",
+    "id": "total-15",
+    "split": "holdout",
+    "text": "Werte: Ort A 27, Ort B 60, Ort C 50. Was ist die Summe aus den drei Werten?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-00",
+    "split": "dev",
+    "text": "Werte: Ort A 12, Ort B 30, Ort C 5. Wie groß ist die Differenz zwischen dem höchsten und niedrigsten Wert?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-01",
+    "split": "holdout",
+    "text": "Werte: Ort A 13, Ort B 32, Ort C 8. Wie viel mehr hat der größte Wert als der kleinste?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-02",
+    "split": "dev",
+    "text": "Werte: Ort A 14, Ort B 34, Ort C 11. Was ist der Abstand zwischen Maximum und Minimum?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-03",
+    "split": "holdout",
+    "text": "Werte: Ort A 15, Ort B 36, Ort C 14. Um wie viel übersteigt der höchste den niedrigsten Betrag?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-04",
+    "split": "dev",
+    "text": "Werte: Ort A 16, Ort B 38, Ort C 17. Wie weit liegen größter und kleinster Wert auseinander?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-05",
+    "split": "holdout",
+    "text": "Werte: Ort A 17, Ort B 40, Ort C 20. Berechne die Spannweite der Werte."
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-06",
+    "split": "dev",
+    "text": "Werte: Ort A 18, Ort B 42, Ort C 23. Wie viel größer ist das Maximum als das Minimum?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-07",
+    "split": "holdout",
+    "text": "Werte: Ort A 19, Ort B 44, Ort C 26. Differenz von größtem und kleinstem Wert?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-08",
+    "split": "dev",
+    "text": "Werte: Ort A 20, Ort B 46, Ort C 29. Wie viele Einheiten trennen den höchsten vom niedrigsten Wert?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-09",
+    "split": "holdout",
+    "text": "Werte: Ort A 21, Ort B 48, Ort C 32. Wie groß ist die Differenz zwischen Maximum und Minimum?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-10",
+    "split": "dev",
+    "text": "Werte: Ort A 22, Ort B 50, Ort C 35. Wieviel mehr ist der höchste als der niedrigste?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-11",
+    "split": "holdout",
+    "text": "Werte: Ort A 23, Ort B 52, Ort C 38. Größter minus kleinster Wert?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-12",
+    "split": "dev",
+    "text": "Werte: Ort A 24, Ort B 54, Ort C 41. Was ergibt max minus min?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-13",
+    "split": "holdout",
+    "text": "Werte: Ort A 25, Ort B 56, Ort C 44. Wie viel liegt das Maximum über dem Minimum?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-14",
+    "split": "dev",
+    "text": "Werte: Ort A 26, Ort B 58, Ort C 47. Wie groß ist der Unterschied zwischen größtem und kleinstem Wert?"
+  },
+  {
+    "expected": "difference_max_min",
+    "id": "difference_max_min-15",
+    "split": "holdout",
+    "text": "Werte: Ort A 27, Ort B 60, Ort C 50. Wie viel höher ist der Spitzenwert als der Tiefstwert?"
+  },
+  {
+    "expected": null,
+    "id": "none-00",
+    "split": "dev",
+    "text": "Werte: Ort A 12, Ort B 30, Ort C 5. Gesamtsumme: 47. Wie viele Einträge gibt es insgesamt?"
+  },
+  {
+    "expected": null,
+    "id": "none-01",
+    "split": "holdout",
+    "text": "Werte: Ort A 13, Ort B 32, Ort C 8. Wie hoch ist die Gesamtzahl der Positionen?"
+  },
+  {
+    "expected": null,
+    "id": "none-02",
+    "split": "dev",
+    "text": "Werte: Ort A 14, Ort B 34, Ort C 11. Wie viele unterschiedliche Werte stehen hier?"
+  },
+  {
+    "expected": null,
+    "id": "none-03",
+    "split": "holdout",
+    "text": "Werte: Ort A 15, Ort B 36, Ort C 14. Gesamtsumme: 65. Welche Stadt hat den höchsten Wert?"
+  },
+  {
+    "expected": null,
+    "id": "none-04",
+    "split": "dev",
+    "text": "Werte: Ort A 16, Ort B 38, Ort C 17. Ist A teurer als B?"
+  },
+  {
+    "expected": null,
+    "id": "none-05",
+    "split": "holdout",
+    "text": "Werte: Ort A 17, Ort B 40, Ort C 20. Wie viel mehr hat A als B?"
+  },
+  {
+    "expected": null,
+    "id": "none-06",
+    "split": "dev",
+    "text": "Werte: Ort A 18, Ort B 42, Ort C 23. Gesamtsumme: 83. Wie viel kostet A?"
+  },
+  {
+    "expected": null,
+    "id": "none-07",
+    "split": "holdout",
+    "text": "Werte: Ort A 19, Ort B 44, Ort C 26. Fasse die Werte kurz zusammen."
+  },
+  {
+    "expected": null,
+    "id": "none-08",
+    "split": "dev",
+    "text": "Werte: Ort A 20, Ort B 46, Ort C 29. Wie ist der Durchschnitt?"
+  },
+  {
+    "expected": null,
+    "id": "none-09",
+    "split": "holdout",
+    "text": "Werte: Ort A 21, Ort B 48, Ort C 32. Gesamtsumme: 101. Wie hoch ist die Prozentänderung?"
+  },
+  {
+    "expected": null,
+    "id": "none-10",
+    "split": "dev",
+    "text": "Werte: Ort A 22, Ort B 50, Ort C 35. Wie groß ist die Differenz zwischen A und B?"
+  },
+  {
+    "expected": null,
+    "id": "none-11",
+    "split": "holdout",
+    "text": "Werte: Ort A 23, Ort B 52, Ort C 38. Was ist die Gesamtzahl der Städte?"
+  },
+  {
+    "expected": null,
+    "id": "none-12",
+    "split": "dev",
+    "text": "Werte: Ort A 24, Ort B 54, Ort C 41. Gesamtsumme: 119. Nenne nur die drei Werte."
+  },
+  {
+    "expected": null,
+    "id": "none-13",
+    "split": "holdout",
+    "text": "Werte: Ort A 25, Ort B 56, Ort C 44. Welche Zahl ist am kleinsten?"
+  },
+  {
+    "expected": null,
+    "id": "none-14",
+    "split": "dev",
+    "text": "Werte: Ort A 26, Ort B 58, Ort C 47. Wie viel ist der Median?"
+  },
+  {
+    "expected": null,
+    "id": "none-15",
+    "split": "holdout",
+    "text": "Werte: Ort A 27, Ort B 60, Ort C 50. Gesamtsumme: 137. Was ist die Gesamtanzahl?"
+  }
+]

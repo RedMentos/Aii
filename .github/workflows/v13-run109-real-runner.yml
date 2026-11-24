@@ -1,0 +1,142 @@
+name: V13 Run109 actual pinned Linux runner version and phone ZIP parity
+on:
+  push:
+    branches:
+      - assistant/v13-run109-real-runner-version-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run109-real-runner.yml
+      - v13/code/scripts/run109_real_runner_activation_20261031.py
+permissions:
+  contents: read
+jobs:
+  native-version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify original binary tar and execute bounded real version on both source trees
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run109"
+          work="$RUNNER_TEMP/v13-run109-work"
+          mkdir -p "$e" "$work"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run109-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run109-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts "$py" scripts/run109_real_runner_activation_20261031.py --work "$work" --label checkout --out "$e/CHECKOUT_REPORT.json") > "$e/CHECKOUT_RAW.log" 2>&1
+          checkout_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_runner_activation_20261031.py -v) > "$e/REGRESSION_RAW.log" 2>&1
+          regression_rc=$?
+          "$py" -m compileall -q v13/code/v13/bootstrap.py v13/code/v13/runner_activation.py v13/code/scripts/run109_real_runner_activation_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run109.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$checkout_rc" > "$e/CHECKOUT_EXIT.txt"
+          echo "$regression_rc" > "$e/REGRESSION_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" "$RUNNER_TEMP/v13-run109-extracted" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);p=e/'V13-Phone-Run109.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('scripts/run109_real_runner_activation_20261031.py',
+                           'v13/bootstrap.py','v13/runner_activation.py'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'manifest_hashes_pass':True,'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            if test "$zip_rc" -eq 0 && test "$checkout_rc" -eq 0; then
+              (cd "$RUNNER_TEMP/v13-run109-extracted/V13-Phone" && env PYTHONPATH=.:scripts "$py" scripts/run109_real_runner_activation_20261031.py --work "$work" --label extracted --out "$e/EXTRACTED_REPORT.json") > "$e/EXTRACTED_RAW.log" 2>&1
+              extracted_rc=$?
+              if test "$extracted_rc" -eq 0; then
+                "$py" - "$e" <<'PY' > "$e/COMPARE_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          a=json.loads((e/'CHECKOUT_REPORT.json').read_text())
+          b=json.loads((e/'EXTRACTED_REPORT.json').read_text())
+          assert a==b,'Actual pinned native version receipts differ between checkout and phone ZIP'
+          assert a['native_version_executed'] is True
+          assert a['native_inference_executed'] is False
+          assert a['redmi_measured'] is False
+          print('ACTUAL_PINNED_RUNNER_VERSION_PARITY_PASS')
+          PY
+                compare_rc=$?
+              else
+                compare_rc=125
+                echo 'EXTRACTED_RED' > "$e/COMPARE_RAW.log"
+              fi
+            else
+              extracted_rc=125;compare_rc=125
+              echo 'PREREQUISITE_RED' > "$e/EXTRACTED_RAW.log"
+            fi
+            set -e
+          else
+            zip_rc=125;extracted_rc=125;compare_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          echo "$extracted_rc" > "$e/EXTRACTED_EXIT.txt"
+          echo "$compare_rc" > "$e/COMPARE_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4e0ace8463885edfecf78d162ac9a37197379070 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 4e0ace8463885edfecf78d162ac9a37197379070 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['CHECKOUT','REGRESSION','COMPILE','PACK','ZIP','EXTRACTED','COMPARE','PRIVACY','DIFF']
+          result={'schema':'v13.run109.actual_native_version.linux.v1',
+                  'head':(e/'HEAD.txt').read_text().strip(),
+                  'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+                  'native_version_only':True,'native_model_inference':False,
+                  'redmi_measured':False,'step2_promoted':False,
+                  'body_jepa_promoted':False,'b3_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(result,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 4 "$e/CHECKOUT_RAW.log"
+          tail -n 5 "$e/REGRESSION_RAW.log"
+          for rc in "$checkout_rc" "$regression_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$extracted_rc" "$compare_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run109-actual-native-version-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run109/
+          if-no-files-found: warn
+          retention-days: 90

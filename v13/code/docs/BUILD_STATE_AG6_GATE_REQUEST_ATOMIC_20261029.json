@@ -1,0 +1,58 @@
+{
+  "revision": "ag6-gate-request-atomic-review-v1",
+  "date_utc": "2026-10-29",
+  "owner": "codex/v13-ag6-gate-request-atomic-20261029-auto10c",
+  "parent_pr": 1116,
+  "parent_sha": "a68fb7ffd25d4e92e68389fa9ddc723478259680",
+  "review_pr": 1117,
+  "scope": "AG6 SQLite gate/request atomicity; inherits finite numeric admission",
+  "original_red": {
+    "run_id": 40908230221,
+    "head_sha": "e708beee596e2b7eca20f843344f367f5e6a9750",
+    "artifact_id": 12911978583,
+    "sha256": "a50d2e7927359ba78feddf192b58677af93174f7edfe1610dae96f70ab1e3309",
+    "crc": "PASS",
+    "sha256sums": "5/5 PASS",
+    "focused": "1 FAIL (orphan request count 1, expected 0)",
+    "privacy": "PASS"
+  },
+  "candidate": {
+    "source_commit": "93f66ebba5838a886df3225e05b20969654c273e",
+    "ci_run_id": 40908318232,
+    "ci_status": "FOCUSED_GREEN_FULL_RED",
+    "evidence_level": "SOFTWARE_STORE_ONLY",
+    "focused": "34/34 PASS",
+    "full": "3198 tests; 11 skipped; two inherited frozen-source identity errors run34/run37",
+    "artifact_id": 12911539713,
+    "artifact_sha256": "727c1fa889b0cd024620f4a7e1796c3d5977fdba0bd4964f2de1033290539543",
+    "raw_verified": "CRC and 19/19 SHA256SUMS PASS",
+    "stage_exits": {
+      "venv": 0,
+      "deps": 0,
+      "pip_check": 0,
+      "focused": 0,
+      "full": 1,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    }
+  },
+  "gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Does SQLite rollback test pass after atomic patch at exact CI head?",
+    "Does inherited full suite still have two frozen-source identity errors?",
+    "Independent concurrency/restart review before any merge"
+  ],
+  "next_command": "Fetch Actions run 40908318232 and run 40907705671; verify raw artifacts and status; correct focused failures without changing frozen pins.",
+  "production_integrated": false
+}

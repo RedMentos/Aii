@@ -1,0 +1,46 @@
+{
+  "schema": "v13.c2_c3_body.observer_off.run12n.fixture.v1",
+  "seed": 197,
+  "cases": [
+    {
+      "project": "CedarGate197",
+      "budget": 421,
+      "a": "Elm",
+      "a_cost": 259,
+      "a_days": 5,
+      "b": "Vale",
+      "b_cost": 374,
+      "b_days": 3
+    },
+    {
+      "project": "Helix197",
+      "budget": 608,
+      "a": "Pollen",
+      "a_cost": 449,
+      "a_days": 8,
+      "b": "Ridge",
+      "b_cost": 537,
+      "b_days": 4
+    },
+    {
+      "project": "Tundra197",
+      "budget": 352,
+      "a": "Lumen",
+      "a_cost": 207,
+      "a_days": 2,
+      "b": "Wisp",
+      "b_cost": 295,
+      "b_days": 6
+    },
+    {
+      "project": "Aster197",
+      "budget": 574,
+      "a": "Kite",
+      "a_cost": 389,
+      "a_days": 7,
+      "b": "Lotus",
+      "b_cost": 518,
+      "b_days": 5
+    }
+  ]
+}

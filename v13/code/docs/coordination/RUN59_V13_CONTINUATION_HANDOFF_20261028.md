@@ -1,0 +1,11 @@
+# Run59 handoff — 2026-10-28 (staged; CI not yet audited)
+
+Owner GPT-6 scheduled continuation. Branch `codex/automation11-run59-worldjepa-heldout-action-swap-20261028`, child of exact Run56 source `e37fe520b924786001e3fa707ee5e9c0a17054ec`. Separate owner/file scope from Run58 B2 cross-chain integration. Production main and registered model/cohort source unchanged.
+
+Prereg before code: `v13/code/docs/proofs/continuation-20261028/RUN59_WORLDJEPA_HELDOUT_ACTION_SWAP_PREREG.md` blob `(see git hash-object)`. Source `v13/code/v13/world_jepa_synthetic_heldout_action_swap.py` blob `fda1c652e9e9e2a5c6ac0b57999ec392450c61d0`; tests `v13/code/tests/test_run59_world_jepa_synthetic_heldout_action_swap.py` blob `0d6d637af23c2e4e127defd0673358243f9c7df7`. New workflow `.github/workflows/v13-run59-worldjepa-heldout-action-swap.yml`. Source/test blobs remotely fetched and verified. Source-only CI and original raw audit PENDING; **do not claim test pass**.
+
+Run59 fits a supervised train-only ridge decoder to predicted latent states from exact Run51 registered synthetic source; reuses unchanged weights and 39 holdout outcomes for scoring correct vs guaranteed-different, supported, cyclic-rotated heldout actions. Both observed-action and shuffled-training-action models reported; correct metrics must match Run55. No alternate counterfactual outcomes, real Store, Runtime, native, phone, publication, authority or utility promotion. Direct linear state+action remains a stronger baseline in Run55.
+
+Parent Run56 PR #965 CI run 40760675167 was in progress when this was written. Run55 independent GREEN Actions 40758292446, original artifact SHA256 `80d7f18cb556b60247dfc69c949a28381a9a78467aeecdfd991e598927951adb`, 20/20 SHA256SUMS, 36 focused/2589 full OK, privacy CLEAN. Run53 source was already correct; positive fallback regression only.
+
+Exact next: verify Run56 original CI ZIP SHA256SUMS/HEAD/exits; if GREEN open Run59 draft PR against Run56 branch, inspect focused/full + METRICS_RAW.json; preserve RED and fix in branch if needed; independently audit final original ZIP and private Library backup. Continue Run58 integration separately. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; full V13 incomplete. Remaining platform budget UNKNOWN.

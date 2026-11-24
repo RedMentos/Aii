@@ -1,0 +1,30 @@
+{
+  "schema": "V13_REVIEW_BRANCH_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "workflow_run": 40656979245,
+  "conclusion": "FAILURE_MISWIRED_NATIVE_COMMAND",
+  "source_commit": "e74429afc1b931ca180fa4333039bac156b754ab",
+  "artifact_id": 12802156594,
+  "artifact_zip_sha256": "5142c5ed60c11d3e15b7c53f71aecc6bed0073cd97ffb5a4e46ea47d0ae7b66f",
+  "artifact_crc": "PASS",
+  "artifact_sha256s": "23/23 PASS",
+  "focused": "11/11 PASS",
+  "blobs": "PASS",
+  "bootstrap": "PASS",
+  "model_deep_verify": "4/4 PASS",
+  "native": "EXIT2",
+  "report_check": "RED",
+  "root_cause": "Workflow command still invoked scripts/native_memory_consumer_ablation.py (32 original-style calls), not scripts/native_source_consumer_admission.py (8 guarded positive +24 no-model negatives). This is a wiring failure; no guarded native result exists. The original prereg and negative gates are unchanged.",
+  "next_command": "Correct only workflow native command, pin source, rerun serialized native; require NATIVE_REPORT positive=8 negative=24, native_call_count=8, strict 7/8 positive, all 24 negatives no-model. Keep failed miswired artifact.",
+  "negative_gates": [
+    "original_stage11_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "Body-JEPA_UNAVAILABLE",
+    "LP3_FAIL",
+    "jepa_weight_0",
+    "Age0_RECORD_ONLY",
+    "Redmi_UNMEASURED"
+  ]
+}

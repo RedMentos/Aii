@@ -1,0 +1,16 @@
+{"arm":"baseline","fixture":"Mira","status":"RECORDED","utility":0.5833333333333334}
+{"arm":"state_off","fixture":"Mira","status":"RECORDED","utility":0.5833333333333334}
+{"arm":"semantics_only","fixture":"Mira","status":"RECORDED","utility":0.5833333333333334}
+{"arm":"full_candidate","fixture":"Mira","status":"RECORDED","utility":0.5833333333333334}
+{"arm":"baseline","fixture":"Lumen","status":"RECORDED","utility":0.6666666666666666}
+{"arm":"state_off","fixture":"Lumen","status":"RECORDED","utility":0.0}
+{"arm":"semantics_only","fixture":"Lumen","status":"RECORDED","utility":0.6666666666666666}
+{"arm":"full_candidate","fixture":"Lumen","status":"RECORDED","utility":0.5}
+{"arm":"baseline","fixture":"Nacre","status":"RECORDED","utility":0.5}
+{"arm":"state_off","fixture":"Nacre","status":"RECORDED","utility":0.5}
+{"arm":"semantics_only","fixture":"Nacre","status":"RECORDED","utility":0.5}
+{"arm":"full_candidate","fixture":"Nacre","status":"RECORDED","utility":0.5}
+{"arm":"baseline","fixture":"Tessera","status":"RECORDED","utility":0.5}
+{"arm":"state_off","fixture":"Tessera","status":"RECORDED","utility":0.5}
+{"arm":"semantics_only","fixture":"Tessera","status":"RECORDED","utility":0.5}
+{"arm":"full_candidate","fixture":"Tessera","status":"RECORDED","utility":0.5}

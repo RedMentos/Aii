@@ -1,0 +1,21 @@
+{
+  "bytes": 1542312,
+  "chunk_bytes": 1048576,
+  "file_name": "r5v1-failed.closed.zip",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "ecdfe61441cfaea422209630bdaca870d48a412ad76edc1d291f19689f87ae16"
+    },
+    {
+      "bytes": 493736,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "83f7e1aab570ffd0baf3b59f371d55721dac419f2463629af58f1296e5fe6cac"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "7907c0a6b848c23772904cb75f4199f59a032cc98ba69746b4695f79d3a23437"
+}

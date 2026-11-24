@@ -1,0 +1,68 @@
+name: V13 P0X C3 600-call source-arm executor software-only preflight
+on:
+  push:
+    branches: [codex/v13-p0x-c3-600native-20261029]
+    paths:
+      - '.github/workflows/v13-p0x-c3-600native-source-20261029.yml'
+      - 'v13/code/scripts/p0x_c3_600_native_executor.py'
+      - 'v13/code/scripts/p0x_c3_600_native_verifier.py'
+      - 'v13/code/tests/test_p0x_c3_600_native_mock.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p0x-c3-600native-source
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Frozen source/baseline pins, 600 mock calls, independent verifier, privacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-c3-600native-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          check() { [ "$(git hash-object "$2")" = "$1" ]; }
+          {
+            check 8897f737f05003ecee978161d44de9e258e43d2c v13/code/docs/proofs/continuation-20261029/P0X_C3_600NATIVE_REVIEW_BUILD_STATE.json
+            check 27074170ff9e6474e3e181afbd648005ca50a22c v13/code/docs/proofs/continuation-20261029/P0X_C3_SOURCE_ARMS_PREREG.md
+            check e159e7636362b6cee82dc5cd9d01d214f54d1850 v13/code/scripts/p0x_c3_source_arms.py
+            check 1058fd193224cb7fd361c5098127a0a7dc121435 v13/code/scripts/p0x_c3_600_native_executor.py
+            check be82818de99c3abf608b0bdabcc0c639f69754f9 v13/code/scripts/p0x_c3_600_native_verifier.py
+            check 7621afac707eaa5d8a5044de3752538daf6a714b v13/code/tests/test_p0x_c3_600_native_mock.py
+            check a51cb76937febb0016d5a4bd71ccf08b164bead5 v13/code/scripts/p0x_c3_150_baseline.py
+            check a6fa2b0cd10dbb0c4c74466636737d57e0e9d353 v13/code/scripts/p0x_c3_150_native_executor.py
+            check e3b1c7818f06896a7ad8b0cee406b59a091cd799 v13/code/scripts/p0x_c3_150_native_verifier.py
+            check 7ec4e877ad5ea3eed1c60102dac3baa15391dd2b v13/code/scripts/p0x_independent_source_holdout.py
+            check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+            git merge-base --is-ancestor a86405e9ee897db09cb046f269ca59529ccbd604 HEAD
+            echo P0X_600_NATIVE_SOURCE_PINS_OK
+          } > "$e/SOURCE_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/v13-p0x-600-venv"
+          py="$RUNNER_TEMP/v13-p0x-600-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/p0x_c3_600_native_executor.py v13/code/scripts/p0x_c3_600_native_verifier.py v13/code/tests/test_p0x_c3_600_native_mock.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 240s "$py" -m unittest -v tests.test_p0x_c3_source_arms tests.test_p0x_c3_600_native_mock) > "$e/FOCUSED_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a86405e9ee897db09cb046f269ca59529ccbd604 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check a86405e9ee897db09cb046f269ca59529ccbd604 HEAD
+          echo P0X_600_NATIVE_EXECUTOR_SOFTWARE_ONLY_NO_NATIVE_NO_GATE > "$e/STATUS.txt"
+      - name: Preserve raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-c3-600native-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-c3-600native-source/
+          if-no-files-found: error
+          retention-days: 30

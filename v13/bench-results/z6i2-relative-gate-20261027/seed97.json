@@ -1,0 +1,5268 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 97,
+ "scores": {
+  "adaptive+now+words+teach+rel": {
+   "shadow_jobs": 5,
+   "unnecessary_updates": 0,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 0.975,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0322,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 1.0,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 1.0,
+     "wrong": []
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 0.625,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist 96 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 240 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 12 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Teile 72 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 300 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 180 Euro?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_52cda1c5d33448cfb1e3d01b8ac77a95",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_45781c5fbaab4132a075b48f1edb9d5e",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "when": "p2-2",
+     "handover_reply": "Regel rsup_4c30d0dc74d944f6aa5be49e65191d51 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 24,
+     "agree_in_a_row": 24,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ]
+  },
+  "fixed+now+words+teach+rel": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 0.975,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0322,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_d9b25b2b369a425c81686064ea3d49f0",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 1.0,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 1.0,
+     "wrong": []
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 0.625,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist 96 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 240 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 12 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Teile 72 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 300 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 180 Euro?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_e3c523007a404dad9e7d0aef183d4c57",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_7323ad544632436287850c9a8ef52ee0",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_0526d99edba748edadaf1bf9813386b4",
+     "when": "p2-2",
+     "handover_reply": "Regel rsup_0526d99edba748edadaf1bf9813386b4 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 24,
+     "agree_in_a_row": 24,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ]
+  },
+  "fixed+now": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 7,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": null,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.85,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.5
+   },
+   "rollback": {
+    "update_id": "upd_93fb44183986413c9f089b29098abba0",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.975,
+     "half_items": 1.0,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    }
+   },
+   "nowords_head_simple": 0.0,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "adaptive+now+words+teach+rel": {
+   "policy": "adaptive+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_2454b9c3c0f3461588ad5c99ba3dca98 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_2454b9c3c0f3461588ad5c99ba3dca98",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.07101040235905187
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bc252224f8e345c88e9e4b31214b69e8 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_bc252224f8e345c88e9e4b31214b69e8",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.5406201832844081,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.21165004716926
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_52cda1c5d33448cfb1e3d01b8ac77a95 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_52cda1c5d33448cfb1e3d01b8ac77a95",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.13710866797722213,
+       "loss_before": 0.4122497232419585,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3581380778588575,
+      "loss_after": 0.0851803321291142
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_45781c5fbaab4132a075b48f1edb9d5e PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_45781c5fbaab4132a075b48f1edb9d5e",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.6923076923076923,
+       "anchors": 36,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9649122807017544,
+       "known_accuracy_before": 0.8596491228070176,
+       "known_items_lost": 0,
+       "loss_after": 0.4338966680640218,
+       "loss_before": 0.908521623274438,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6923076923076923
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.46586598630251996,
+      "loss_after": 0.178166492532447
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.125,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "superseded": 3,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.8666666666666667,
+       "anchors": 40,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9420289855072463,
+       "known_items_lost": 0,
+       "loss_after": 0.187301486331934,
+       "loss_before": 0.4476997918117153,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.7142857142857143
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6666666666666666
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.2564107489486104,
+      "loss_after": 0.11226533191323014
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 1.0,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 1.0,
+     "wrong": []
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 0.625,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist 96 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 240 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 12 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Teile 72 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 300 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 180 Euro?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_52cda1c5d33448cfb1e3d01b8ac77a95",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_45781c5fbaab4132a075b48f1edb9d5e",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "when": "p2-2",
+     "handover_reply": "Regel rsup_4c30d0dc74d944f6aa5be49e65191d51 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_4c30d0dc74d944f6aa5be49e65191d51",
+     "head": "upd_5964033e9cb94f8e9bf3d0bcfeb3cb37",
+     "observed": 24,
+     "agree_in_a_row": 24,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+now+words+teach+rel": {
+   "policy": "fixed+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_15b3cdd9d93c42b3abe9ba21259df9e8 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_15b3cdd9d93c42b3abe9ba21259df9e8",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.07101040235905187
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0f908489309847008e5e6b9703c9b63e PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_0f908489309847008e5e6b9703c9b63e",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.5406201832844081,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.21165004716926
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Hallo Jonas, was machst du heute am Morgen?",
+        "both"
+       ],
+       [
+        "Hallo Anna, was machst du heute am Abend?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "gist"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_e3c523007a404dad9e7d0aef183d4c57 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_e3c523007a404dad9e7d0aef183d4c57",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.13710866797722213,
+       "loss_before": 0.4122497232419585,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3581380778588575,
+      "loss_after": 0.0851803321291142
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_e0741a42bd9b4e6ea6b47c11b5d179cb EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e0741a42bd9b4e6ea6b47c11b5d179cb",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.21920392806533395,
+       "loss_before": 0.294660449178208,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.13755036139138765,
+      "loss_after": 0.08853089852361007
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7f9182354b874830880c5e856007b7eb EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_7f9182354b874830880c5e856007b7eb",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.0689951140300537,
+       "loss_before": 0.14088771702226532,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1382178325175632,
+      "loss_after": 0.06355182438315471
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f00743a321fe4931b2db7acc7005cdee EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_f00743a321fe4931b2db7acc7005cdee",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.08663946664131211,
+       "loss_before": 0.16385074607443081,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.14213336870938434,
+      "loss_after": 0.06840672071238506
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7323ad544632436287850c9a8ef52ee0 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_7323ad544632436287850c9a8ef52ee0",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.6923076923076923,
+       "anchors": 36,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9649122807017544,
+       "known_accuracy_before": 0.8596491228070176,
+       "known_items_lost": 0,
+       "loss_after": 0.4334757921189414,
+       "loss_before": 0.908521623274438,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6923076923076923
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.46586598630251996,
+      "loss_after": 0.17771114661202747
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.125,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d9b25b2b369a425c81686064ea3d49f0 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "superseded": 3,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.8666666666666667,
+       "anchors": 40,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9420289855072463,
+       "known_items_lost": 0,
+       "loss_after": 0.1864131647347196,
+       "loss_before": 0.44763958199068005,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.7142857142857143
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6666666666666666
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.2560546044470396,
+      "loss_after": 0.11163552381481685
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "shadow_result": "upd_96f6dda04c9840eb9ae876a5fefa12ea EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_96f6dda04c9840eb9ae876a5fefa12ea",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "superseded": 3,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "anchors": 44,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.12721875855662262,
+       "loss_before": 0.21556882073985822,
+       "n": 18,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6111111111111112
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1327791135102389,
+      "loss_after": 0.07747068143538449
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": false,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "shadow_result": "upd_3f9f8f59946b4d34971c002ab95090ec EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3f9f8f59946b4d34971c002ab95090ec",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     },
+     "superseded": 3,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "anchors": 48,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.10465991111160516,
+       "loss_before": 0.19039284871532855,
+       "n": 23,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.6521739130434783
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.13980046868886545,
+      "loss_after": 0.0738020286910471
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "wrong": []
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_d9b25b2b369a425c81686064ea3d49f0",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 1.0,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "half_items": 1.0,
+     "unchanged": 1.0,
+     "wrong": []
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 0.625,
+     "items": [
+      [
+       "Wie viel ist eine halbe Portion von 36 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist 96 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 240 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 12 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Teile 72 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "detail"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 300 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 180 Euro?",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_e3c523007a404dad9e7d0aef183d4c57",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_7323ad544632436287850c9a8ef52ee0",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_0526d99edba748edadaf1bf9813386b4",
+     "when": "p2-2",
+     "handover_reply": "Regel rsup_0526d99edba748edadaf1bf9813386b4 an den gelernten Kopf übergeben. Sie"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 16,
+     "agree_in_a_row": 16,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_0526d99edba748edadaf1bf9813386b4",
+     "head": "upd_d9b25b2b369a425c81686064ea3d49f0",
+     "observed": 24,
+     "agree_in_a_row": 24,
+     "needed": 8,
+     "learned": true,
+     "handover": true,
+     "when": "p3"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+now": {
+   "policy": "fixed+now",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0efb059200cb463e8a70ce1dc82e1d63 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0efb059200cb463e8a70ce1dc82e1d63",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.875,
+       "gist": 0.375,
+       "both": 0.375
+      },
+      "half_items": 0.75,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Schönen Nacht, Ida! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Gib mir den Überblick: Städte brauchen Pflege.",
+        "both"
+       ],
+       [
+        "Gib mir den Überblick: Flüsse brauchen Pflege.",
+        "both"
+       ],
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.131498402662278
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Wärme.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Bahn?",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Java?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_72350d9a1ae34d24a3baf6d9594b1b27 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_72350d9a1ae34d24a3baf6d9594b1b27",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.75,
+       "both": 0.375
+      },
+      "half_items": 0.75,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "loss_after": 1.2758715781233234,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.2129326389095967
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.75,
+       "both": 0.375
+      },
+      "half_items": 0.75,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.75,
+       "both": 0.375
+      },
+      "half_items": 0.75,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "both"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_622d96521ad34da6b65a2692818111e9 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_622d96521ad34da6b65a2692818111e9",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 1.1924987133113019,
+       "loss_before": 1.2868259831025965,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.2450953800683173,
+      "loss_after": 1.1202595808028424
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a703561354aa4a4bbc726842927985b2 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_a703561354aa4a4bbc726842927985b2",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 1.0826895061828774,
+       "loss_before": 1.1771753355028007,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.1344885194778318,
+      "loss_after": 1.0305652124428355
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_93fb44183986413c9f089b29098abba0 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_93fb44183986413c9f089b29098abba0",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 0.9567596344134203,
+       "loss_before": 1.047421362832173,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.033936442520703,
+      "loss_after": 0.9410316593328687
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0db8b7d997d8478d96f8ad15b4f3c169 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0db8b7d997d8478d96f8ad15b4f3c169",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "loss_after": 0.9346318371593272,
+       "loss_before": 1.0063244829668294,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.9549243757744371,
+      "loss_after": 0.876543442978044
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.75,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_162df699a020446c8f78dc1d7df53b62 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_162df699a020446c8f78dc1d7df53b62",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "gist"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5833333333333334,
+       "loss_after": 1.1231150546212338,
+       "loss_before": 1.1916633336822824,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.6666666666666666
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.0069417203991693,
+      "loss_after": 0.9227592439789511
+     },
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_8bf62fd9796f4262a73036125a0fe70d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_8bf62fd9796f4262a73036125a0fe70d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.5,
+       "both": 0.375
+      },
+      "half_items": 0.625,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Gib mir den Überblick: Städte brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6923076923076923,
+       "loss_after": 1.0843926158882715,
+       "loss_before": 1.2037045298807,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.6153846153846154
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.040848597136726,
+      "loss_after": 0.9437649067995921
+     },
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_8c28cb7ecac442ce8466bd26cf828e2b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_8c28cb7ecac442ce8466bd26cf828e2b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.375,
+       "gist": 0.375,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5312,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Städte brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Flüsse brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "simple"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7333333333333333,
+       "loss_after": 1.0397097300087452,
+       "loss_before": 1.168224223034014,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.3333333333333333
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.3333333333333333,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.073683764074163,
+      "loss_after": 0.9580769702238394
+     },
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f844adbd43b24e49805a970ed63ba693 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_f844adbd43b24e49805a970ed63ba693",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.55,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.25,
+       "gist": 0.25,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.4375,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 160 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Städte brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Flüsse brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Bäume brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Gib mir den Überblick: Flüsse brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Pflanzen und Platz?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Zeit?",
+        "simple"
+       ],
+       [
+        "Vergleiche Miete mit Bus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Java?",
+        "simple"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "simple"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Sommer ab.",
+        "simple"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 3,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6842105263157895,
+       "loss_after": 1.0702620803203968,
+       "loss_before": 1.223919189951888,
+       "n": 19,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.25,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.25,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.5789473684210527
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.1016266250087914,
+      "loss_after": 0.9685142915270119
+     },
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Vergleiche Miete mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Sommer mit Auto.",
+        "detail"
+       ],
+       [
+        "Vergleiche Bahn mit Bus.",
+        "gist"
+       ],
+       [
+        "Vergleiche Rad mit Python.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 96?",
+        "both"
+       ],
+       [
+        "Halbiere bitte 12 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 24?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_93fb44183986413c9f089b29098abba0",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.975,
+     "half_items": 1.0,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.0,
+    "routes": [
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/z6j-relative-gate/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6j": {
+  "J1_adaptive_all": true,
+  "J2_fixed_learns": true,
+  "J3_control_not_clean": true
+ },
+ "verdict_z6j": "Z6J_PASS"
+}

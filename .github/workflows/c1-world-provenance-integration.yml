@@ -1,0 +1,88 @@
+name: V13 C1 plus World-JEPA provenance integration software
+on:
+  push:
+    branches: [assistant/v13-c1-world-provenance-integration-20261027]
+    paths:
+      - '.github/workflows/c1-world-provenance-integration.yml'
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/tests/test_executive_goal_sequence_binding_review.py'
+      - 'v13/code/tests/test_executive_question_origin_binding_review.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-world-provenance-integration
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact combined source, focused/full raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-world-provenance"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/EXEC_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_goal_sequence_binding_review.py > "$evidence/GOAL_TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_question_origin_binding_review.py > "$evidence/QUESTION_TEST_BLOB.txt"
+          git merge-base --is-ancestor 541871a8a3d7fb4df6a710bbc2a34138f08b5e34 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          if [ "$(cat "$evidence/EXEC_BLOB.txt")" = "057dda1e705053047489516fc9ab10581018f5a4" ] && [ "$(cat "$evidence/GOAL_TEST_BLOB.txt")" = "86cbbb3b20a7fe11aad77802d4be1ffaf2197925" ] && [ "$(cat "$evidence/QUESTION_TEST_BLOB.txt")" = "f1d081392cddc7b4bf69bf1d4bcf527b9699f974" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git diff --name-only 87dd02f82abdcc3762029dac3ea8170c9db30e7c HEAD > "$evidence/CHANGED_PATHS.txt"
+          if grep -E '^v13/code/(v13|scripts|tests)/world|^v13/code/tests/test_world' "$evidence/CHANGED_PATHS.txt"; then echo 1; else echo 0; fi > "$evidence/WORLD_UNCHANGED_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-world-provenance-venv"
+          py="$RUNNER_TEMP/c1-world-provenance-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 6m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_goal_sequence_binding_review tests.test_executive_question_origin_binding_review tests.test_executive_task_origin_binding_review tests.test_world_jepa_matched_action_cohort tests.test_world_jepa_digital_shadow tests.test_world_jepa_fair_baseline
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 87dd02f82abdcc3762029dac3ea8170c9db30e7c --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 87dd02f82abdcc3762029dac3ea8170c9db30e7c HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-world-provenance-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-world-provenance/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-world-provenance"
+          for name in PREREG FROZEN WORLD_UNCHANGED INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_WORLD_PROVENANCE_SOFTWARE_ONLY_NO_GATE_PROMOTION'

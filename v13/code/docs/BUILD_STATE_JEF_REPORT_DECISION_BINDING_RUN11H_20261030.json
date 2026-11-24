@@ -1,0 +1,46 @@
+{
+  "schema": "v13.build_state.scoped.run11h.jef_report_decision_binding.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "parent_pr": 1237,
+  "parent_sha": "0b6fb758828c2834a45c9879191a7854ac96060f",
+  "prereg_commit": "0591e101c67b326f11a56efea6bca355b27bd0d3",
+  "test_first_commit": "8162b99211c5f0f63298a966fd9aef7e94b9b83e",
+  "red": {
+    "run": 41027588342,
+    "head": "5e208e0c6e7e22c2904e5636e2debd7ecabdd60a",
+    "artifact": 12964203312,
+    "sha256": "5cd8dafa13d2c08fe833a10d94d588cc3654728005a53c48d41791de912c1e24",
+    "tests": 36,
+    "failures": 5,
+    "inner_hashes_verified": 13
+  },
+  "green": {
+    "run": 41027700881,
+    "head": "6d74134b2b15e5cff975d84c02025a93bc9ac23a",
+    "artifact": 12963724616,
+    "sha256": "5eda41ad7bdcc5299f6fde6fff1102644dfdcc044232615ce0a477bfd7107d45",
+    "tests": 36,
+    "failures": 0,
+    "inner_hashes_verified": 13
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11H-JEF-Report-Lineage/",
+  "private_backup_byte_reverified": true,
+  "evidence_level": "SOFTWARE_SYNTHETIC_REAL_STORE_ONLY",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "blockers": [
+    "Historical full unfiltered Run34/Run37 source-pin RED remains, no waiver",
+    "No Redmi available in this execution environment"
+  ],
+  "next": "Continue independent ContextOS typographic exact-literal candidate; focused tests and cross-organ review, no automatic merge",
+  "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jef_report_decision_binding_run11h tests.test_jef_report_self_source_run11 tests.test_jef_human_receipt_integrity_20261030 tests.test_jef_human_report_receipt_integrity_20261030 tests.test_jefoutcome_self_source_20261030 tests.test_jefoutcome_report_source_20261030 tests.test_jefoutcome"
+}
