@@ -122,8 +122,9 @@ class TeacherEarManifest:
             raise TeacherEarError("model root is unavailable") from exc
         if not root.is_dir():
             raise TeacherEarError("model root must be a directory")
-        if not hasattr(os, "O_DIRECTORY") or not hasattr(os, "O_NOFOLLOW"):
-            raise TeacherEarError("secure model loading requires O_DIRECTORY and O_NOFOLLOW")
+        if (not hasattr(os, "O_DIRECTORY") or not hasattr(os, "O_NOFOLLOW")
+                or os.open not in getattr(os, "supports_dir_fd", set())):
+            raise TeacherEarError("secure model loading requires O_DIRECTORY, O_NOFOLLOW and dir_fd support")
         proc_fd_root = Path("/proc/self/fd")
         if not proc_fd_root.is_dir():
             raise TeacherEarError("stable model loading requires /proc/self/fd")
