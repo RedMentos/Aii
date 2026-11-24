@@ -11,7 +11,9 @@ from pathlib import Path
 import numpy as np
 
 from experiments.m1.array_data import ArrayDataset
+from experiments.m1.baselines import LADARBaseline, RidgeARBaseline
 from experiments.m1.data import DataConfig, MinuteRow
+from experiments.m1.raw_probes import RawWindowProbe
 from experiments.m1.download_uci import DATASET_DOI, DATASET_LICENSE, EXPECTED_MEMBER
 from experiments.m1.runner import (
     PilotConfig,
@@ -70,6 +72,41 @@ class TrainingWindowViewTests(unittest.TestCase):
         self.assertEqual(validation_count, full_validation_count)
         batches = list(view.iter_batches("train", batch_size=16, shuffle=False))
         self.assertEqual([len(batch.origin_indices) for batch in batches], [16, 16, 5])
+
+
+class ScalerCapParityTests(unittest.TestCase):
+    def setUp(self):
+        self.dataset = synthetic_dataset()
+        self.view = TrainingWindowView(self.dataset, 37)
+        self.full_train_windows = sum(
+            len(batch.origin_indices)
+            for batch in self.dataset.iter_batches("train", batch_size=16)
+        )
+
+    def test_raw_window_scaler_uses_all_train_windows_but_fit_obeys_cap(self):
+        capped = RawWindowProbe(epochs=1, seed=13, batch_size=16).fit(self.view)
+        full = RawWindowProbe(epochs=1, seed=13, batch_size=16).fit(self.dataset)
+        self.assertEqual(capped.n_train_windows, 37)
+        self.assertEqual(capped.n_scaler_windows, self.full_train_windows)
+        self.assertEqual(full.n_scaler_windows, self.full_train_windows)
+        np.testing.assert_array_equal(capped.feature_mean, full.feature_mean)
+        np.testing.assert_array_equal(capped.feature_scale, full.feature_scale)
+
+    def test_ar_scalers_use_all_train_windows_but_linear_fits_obey_cap(self):
+        capped_ridge = RidgeARBaseline(ar_lags=(1, 4, 8)).fit(self.view, batch_size=16)
+        full_ridge = RidgeARBaseline(ar_lags=(1, 4, 8)).fit(self.dataset, batch_size=16)
+        self.assertEqual(capped_ridge.n_train_windows, 37)
+        self.assertEqual(capped_ridge.n_scaler_windows, self.full_train_windows)
+        np.testing.assert_array_equal(capped_ridge.feature_mean, full_ridge.feature_mean)
+        np.testing.assert_array_equal(capped_ridge.feature_scale, full_ridge.feature_scale)
+
+        capped_lad = LADARBaseline(ar_lags=(1, 4, 8), epochs=1, seed=13).fit(
+            self.view, batch_size=16
+        )
+        self.assertEqual(capped_lad.n_train_windows, 37)
+        self.assertEqual(capped_lad.n_scaler_windows, self.full_train_windows)
+        np.testing.assert_array_equal(capped_lad.feature_mean, full_ridge.feature_mean)
+        np.testing.assert_array_equal(capped_lad.feature_scale, full_ridge.feature_scale)
 
 
 class PilotRunnerTests(unittest.TestCase):
