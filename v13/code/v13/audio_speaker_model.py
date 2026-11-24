@@ -244,7 +244,11 @@ class SherpaSpeakerEmbeddingEncoder:
             if not config.validate():
                 raise SpeakerModelError("sherpa-onnx rejected the speaker model configuration")
             extractor = sherpa_module.SpeakerEmbeddingExtractor(config)
-            revision = getattr(sherpa_module, "__version__", "unknown")
+            revision = getattr(sherpa_module, "__version__", None)
+            if not revision:
+                revision = getattr(sherpa_module, "version", "unknown")
+            if callable(revision):
+                revision = revision()
             return cls(
                 manifest,
                 extractor,
@@ -252,9 +256,12 @@ class SherpaSpeakerEmbeddingEncoder:
                 encoder_revision=revision,
                 verified_model=verified,
             )
-        except Exception:
+        except SpeakerModelError:
             verified.close()
             raise
+        except Exception as exc:
+            verified.close()
+            raise SpeakerModelError("sherpa-onnx speaker extractor could not be loaded") from exc
 
     def close(self) -> None:
         if self._closed:
@@ -308,10 +315,11 @@ class SherpaSpeakerEmbeddingEncoder:
             raise SpeakerModelError("speaker input must be complete mono PCM16 bytes")
         if sample_rate != self.manifest.sample_rate:
             raise SpeakerModelError("speaker PCM sample rate does not match the pinned model manifest")
+        if (type(start_ms) is not int or type(end_ms) is not int
+                or start_ms < 0 or end_ms <= start_ms):
+            raise SpeakerModelError("speaker window timestamps are invalid")
         if len(pcm) != sample_rate * 2 or end_ms - start_ms != _MAX_WINDOW_MS:
             raise SpeakerModelError("speaker encoder requires exactly one second of PCM16")
-        if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0:
-            raise SpeakerModelError("speaker window timestamps are invalid")
 
         pcm_sha256 = hashlib.sha256(pcm).hexdigest()
         if expected_pcm_sha256 is not None and expected_pcm_sha256 != pcm_sha256:
