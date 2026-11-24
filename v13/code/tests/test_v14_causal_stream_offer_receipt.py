@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 from v13.brain_panel import status as brain_status
 from v13.common import digest, dumps
+from v13.native_offer_prompt_receipt import native_prefill_evidence, native_completion_receipt
 from v13.runners import CausalStreamRunner
 
 
@@ -223,3 +224,93 @@ def test_same_causal_stream_rejects_prompt_token_mismatch(tmp_path):
     assert receipt["native_template_submitted"] is False
     assert receipt["native_stream_completed"] is True
     assert receipt["native_attention_or_semantic_use_proven"] is False
+
+
+def test_server_prefill_evidence_requires_processed_plus_cached_count_match():
+    verified = native_prefill_evidence(120, {
+        "prompt_n": 80, "cache_n": 40, "prompt_ms": 600.0,
+        "prompt_per_second": 133.3,
+    })
+    assert verified["status"] == "VERIFIED"
+    assert verified["verified"] is True
+    assert verified["server_total_prompt_tokens"] == 120
+    assert verified["prompt_ms"] == 600.0
+
+    mismatch = native_prefill_evidence(120, {"prompt_n": 80, "cache_n": 39})
+    assert mismatch["status"] == "MISMATCH"
+    assert mismatch["verified"] is False
+    assert mismatch["server_total_prompt_tokens"] == 119
+
+    missing_cache = native_prefill_evidence(120, {"prompt_n": 120})
+    assert missing_cache["status"] == "UNVERIFIED"
+    assert missing_cache["verified"] is False
+    assert native_prefill_evidence(True, {"prompt_n": 1, "cache_n": 0})["status"] == "UNVERIFIED"
+
+
+def test_native_completion_receipt_separates_prefill_from_completed_stream():
+    witness = {
+        "revision": "v13.native-offer-prompt-receipt/1",
+        "status": "RENDERED_WITH_QUOTES",
+        "offers": [
+            {"role": "B1_DETAIL", "packet_id": "b1", "rendered_quote_count": 1},
+            {"role": "B2_GIST", "packet_id": "b2", "rendered_quote_count": 1},
+        ],
+        "native_semantic_use_proven": False,
+    }
+    metrics = {
+        "prompt_tokens": 120,
+        "timings": {"prompt_n": 80, "cache_n": 40, "prompt_ms": 600.0},
+        "native_stream_completed": True,
+    }
+    receipt = native_completion_receipt(witness, http_200=True, status="FINAL", metrics=metrics)
+    assert receipt["native_template_submitted"] is True
+    assert receipt["native_prompt_prefill_verified"] is True
+    assert receipt["native_completion_completed"] is True
+    assert receipt["native_stream_completed"] is True
+    assert receipt["native_attention_or_semantic_use_proven"] is False
+
+    partial = native_completion_receipt(witness, http_200=True, status="DEADLINE", metrics=metrics)
+    assert partial["native_prompt_prefill_verified"] is True
+    assert partial["native_completion_completed"] is False
+    assert partial["native_stream_completed"] is False
+
+    rejected = native_completion_receipt(witness, http_200=False, status="ERROR", metrics=metrics)
+    assert rejected["native_template_submitted"] is False
+    assert rejected["native_prompt_prefill_verified"] is False
+    assert rejected["native_completion_completed"] is False
+
+
+def test_brain_panel_exposes_sanitized_native_prefill_and_c4_join():
+    witness = {
+        "revision": "v13.native-offer-prompt-receipt/1",
+        "status": "RENDERED_WITH_QUOTES",
+        "offers": [
+            {"role": "B1_DETAIL", "packet_id": "b1", "rendered_quote_count": 1},
+            {"role": "B2_GIST", "packet_id": "b2", "rendered_quote_count": 1},
+        ],
+        "native_semantic_use_proven": False,
+    }
+    metrics = {
+        "role": "C3_LANGUAGE", "status": "FINAL", "actual_model": "c3-test",
+        "prompt_tokens": 120, "generated_tokens": 4, "ttft_s": 1.2,
+        "duration_s": 2.4, "sampled_peak_pss_bytes": 1234,
+        "timings": {"prompt_n": 80, "cache_n": 40, "prompt_ms": 600.0,
+                     "prompt_per_second": 133.3},
+        "native_stream_completed": True,
+    }
+    receipt = native_completion_receipt(witness, http_200=True, status="FINAL", metrics=metrics)
+    metrics["native_offer_prompt_receipt"] = receipt
+    runtime = SimpleNamespace(
+        cfg={"learning_mode": "RECORD_ONLY"}, current=None,
+        store=EvidenceStore({"runner": metrics}, selected_ids=("b1", "b2")),
+    )
+    latest = brain_status(runtime)["latest_turn"]
+    flow = latest["offer_flow"]
+    assert latest["evidence_environment"] == "RUNNER_REPORTED"
+    assert flow["native_completion_completed"] is True
+    assert flow["native_prompt_prefill_verified"] is True
+    assert flow["native_prompt_prefill"]["status"] == "VERIFIED"
+    assert flow["native_prompt_prefill"]["server_total_prompt_tokens"] == 120
+    assert flow["c4_native_offer_ids_match"] is True
+    assert flow["semantic_use_proven"] is False
+    assert SECRET not in json.dumps(latest)
