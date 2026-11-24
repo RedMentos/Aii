@@ -70,7 +70,7 @@ MODEL_NAMES = frozenset({
     "matched_dlinear",
     "matched_nlinear",
     "raw_gru",
-    "jepa",
+    "jepa_pretrain",
     "direct_mae",
     "frozen_context_probe",
     "random_context_probe",
@@ -99,7 +99,9 @@ class PilotConfig:
         "train_median",
         "matched_dlinear",
         "matched_nlinear",
-        "jepa",
+        "jepa_pretrain",
+        "frozen_context_probe",
+        "random_context_probe",
         "direct_mae",
         "raw_gru",
     )
@@ -169,13 +171,13 @@ class PilotConfig:
             raise ValueError("models contains an unknown name or is empty")
         if len(set(self.models)) != len(self.models):
             raise ValueError("models must not contain duplicates")
-        if self.reference_model not in self.models:
-            raise ValueError("reference_model must be included in models")
+        if self.reference_model not in self.models or self.reference_model == "jepa_pretrain":
+            raise ValueError("reference_model must be an evaluated forecast model")
         if "seasonal_persistence_lag_1" in self.models and len(self.seasonal_lags) < 2:
             raise ValueError("seasonal_persistence_lag_1 requires at least two seasonal lags")
         if "frozen_context_probe" in self.models:
-            if "jepa" not in self.models or self.models.index("jepa") > self.models.index("frozen_context_probe"):
-                raise ValueError("frozen_context_probe requires jepa earlier in models")
+            if "jepa_pretrain" not in self.models or self.models.index("jepa_pretrain") > self.models.index("frozen_context_probe"):
+                raise ValueError("frozen_context_probe requires jepa_pretrain earlier in models")
         if not self.seeds or any(type(seed) is not int for seed in self.seeds):
             raise ValueError("seeds must be a non-empty sequence of integers")
         if len(set(self.seeds)) != len(self.seeds):
@@ -422,7 +424,7 @@ def _fit_one(
             learning_rate=config.learning_rate, weight_decay=config.weight_decay,
             seed=seed, device=config.device,
         )
-    elif name == "jepa":
+    elif name == "jepa_pretrain":
         model = build_seeded_model(JEPAForecaster, model_config, seed)
         history = train_jepa(
             model, train_view, epochs=config.epochs, batch_size=config.batch_size,
@@ -477,7 +479,10 @@ def _fit_one(
             },
         )
         checkpoint_path = str(checkpoint)
-        predictor = TorchBatchPredictor(model, name=name, device=config.device)
+        predictor = (
+            None if name == "jepa_pretrain"
+            else TorchBatchPredictor(model, name=name, device=config.device)
+        )
 
     trainable, total = _parameter_counts(model if model is not None else predictor)
     if name in {"train_mean", "train_median"}:
@@ -498,7 +503,7 @@ def _fit_one(
         "training_window_cap": config.max_train_windows,
         **extra,
     }
-    return predictor, manifest, (model if name == "jepa" else None)
+    return predictor, manifest, (model if name == "jepa_pretrain" else None)
 
 
 def run_validation_experiment(
@@ -545,7 +550,8 @@ def run_validation_experiment(
             )
             if trained_jepa is not None:
                 jepa_model = trained_jepa
-            runs.append((predictor, seed))
+            if predictor is not None:
+                runs.append((predictor, seed))
             manifest.append({
                 **entry,
                 "train_windows_per_epoch": (
@@ -562,6 +568,8 @@ def run_validation_experiment(
                 ),
             })
 
+    if not runs:
+        raise ValueError("pilot config produced no evaluated forecast predictors")
     result = evaluate_suite(
         runs,
         dataset,
