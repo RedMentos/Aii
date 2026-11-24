@@ -1388,3 +1388,12 @@ Boss PR #2443 carries the newer A3/vision composition, but the same #1904 checkp
 ### Cross-lane exact-head CI reconciliation — 2026-11-24
 
 The last sanitized #1904 owner receipt reported Boss #2443 at 5/37 checks complete on an earlier head `88ba1cc...`. Current GitHub PR API readback is head `cdf6b64067ac426ba32194100d3764f6e74c105f`, base `8d93236`, OPEN / DRAFT, with zero check-runs and commit status pending. Latest workflow records for #2443 and #2448 report `startup_failure` with zero jobs; the cause is not diagnosed. Do not carry the earlier 5/37 count forward as current-head evidence. #2443 contains the newer A3/vision composition but is not merged/released; avoid duplicate edits.
+
+
+### Run-31 ownership correction — A4/N10 remains in Boss #2443, not Perception #2448
+
+After the selective port, the current #2441 and #2443 branches were re-read. Boss #2443 already contains byte-identical A4/N10 files, the receipt tests, dedicated workflow and Core guard update. Its current branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean` has `attention.py` blob ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb, `neuromod.py` blob fbb02147cbcfff10896736a20838fbce08d7409b, receipt test blob 200085b88497af331beb49eaf061944ad30542de, workflow blob 05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57 and guard blob ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc. The guard contains the current attention SHA-256 allowlist.
+
+To avoid two competing owners, Perception reverted the duplicate A4/N10 files/workflow from #2448 to the exact current release-base bytes and deleted the duplicate new test/workflow. Revert commits: attention ee08a65644958780c64fd9f6fc1dfb7e972252d5; neuromod 214157e7d90ded915087d8e9d6e158ebe7a06b0b; test_attention 9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43; duplicate test deletion 1ddd5109596a3a42ee815e3a67baf7a46a5a7634; duplicate workflow deletion 3b0416862c75c780b0a3de46d73fce6db72bb010. The attempted-port handoff is explicitly marked SUPERSEDED.
+
+Current #2443 remains OPEN / DRAFT / NOT_MERGED; API readback has zero check-runs and pending commit status, while its latest workflow records are startup_failure/zero jobs. Do not call A4/N10 accepted or released. Perception #2448 remains focused on RAW EAR/Teacher Ear/duplex; the A4/N10 integration belongs to Boss #2443 until the exact combined head is reviewed and green.
