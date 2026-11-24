@@ -9,8 +9,19 @@ Status: working draft. This package is an independent copy of selected M1 experi
 - Required gap: max(max_candidate_input_length, horizon, max(seasonal_lags)) + horizon. Current configured maximum is 10,140 rows.
 - Test access requires exact data/config/split hashes, complete preregistration fields, an exact match to the executing commit hash, and an fsync-backed access event before unlocking.
 
-## Copied modules
-The data pipeline, NumPy array path, baselines, paired block bootstrap, and raw-window probes were copied as starting material and moved under this package namespace. Copying is not validation.
+## Modules
+- data.py / array_data.py: reference and bounded-memory NumPy data paths.
+- baselines.py: persistence, seasonal persistence, train mean/median, Ridge-AR and LAD-AR.
+- raw_probes.py: linear raw-window and nonlinear raw-window MLP controls.
+- bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks.
+- metrics.py: common prefix-horizon and primary MAE metrics, per-window errors, paired multi-model/seed validation and atomic result persistence.
 
-## Evidence status
-GitHub Actions run 45316419035 passed all 55 tests on Python 3.12, 3.13 and 3.14 at commit 5760ca1f2a0853357affc00c1e66a3cc5cf6911e. The run is CI evidence for the synthetic suite only; no real UCI evaluation has been run here. Preregistration must carry the exact executing commit SHA supplied independently by the trusted runner.
+## Verification status
+GitHub Actions run 45316419035 passed 55 tests on Python 3.12, 3.13 and 3.14 at commit 5760ca1f2a0853357affc00c1e66a3cc5cf6911e. This is synthetic CI evidence only. No real UCI evaluation or test-year access is claimed.
+
+## Next gates
+1. Review all baseline and raw-probe semantics against the experiment protocol.
+2. Implement direct-MAE and JEPA representation training with identical data, seeds, train/validation policy and probe capacity.
+3. Add random-encoder, Raw-GRU and collapse/effective-rank controls.
+4. Benchmark actual UCI ingestion and bounded batch throughput.
+5. Lock preregistration and commit binding before any test access.
