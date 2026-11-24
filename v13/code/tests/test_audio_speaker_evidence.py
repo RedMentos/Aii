@@ -1232,7 +1232,7 @@ def test_audio_generation_scope_holds_provider_lease_through_full_runner_iterato
             deadline=1_000_000_000.0,
             sample_rate=16000,
             start_ms=0,
-            event_id=event,
+            event_id=event["event_id"],
             generation_id=runtime.store.generation_id,
             source_id=SOURCE,
             consent_receipt=RECEIPT,
