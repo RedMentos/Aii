@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:43:12.734+01:00",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6 at this read. M1 DATA snapshot a0088effa5e820b86e69751744d7f6dcda99a780 remains a separate experiment. V14-006 now records Perception #2469 interval-ordering follow-up at head 75cc4f6841c14ad2512ad592ee8ade3b8629f085; this PR is not merged or deployed.",
+  "updated_at": "2026-11-24T18:46:32.318+01:00",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6. V14-006 records Perception #2469 A5 interval-ordering follow-up; code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862 passed focused CI, but the PR remains stacked/not released. Latest available private V13OBS #115 snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled/UP_TO_DATE at 8d93236, AI STOPPED_BY_USER, no B1/B2 offers; no fresh relay receipt for this run.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -199,7 +199,7 @@
       "proof_environment": "LOCAL_LINUX minimal timestamp-order reproduction PASS; exact CI frame-ingress and vision-source-lineage PASS on Python 3.13/3.14; A5 lease/staged/integrated BLOCKED by Core source-lifecycle chain; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
       "next_step": "Core/Boss must finish PR #2465's source-lifecycle and nested memory/world builder pin chain without weakening hashes. #2465 head e8044b7 advances past the vision pin but staged-runtime still fails at integrated_feedback_bootstrap_candidate_20261111.py:34 (memory/world builder source changed) plus a nested SHA mismatch. After Core acceptance, rebase/integrate #2469 on that accepted head and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 implementation after integration is near-duplicate source grouping and source-level uncertainty for A3 projector train/holdout.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T18:43:12.734+01:00",
+      "last_checkpoint": "2026-11-24T18:46:32.318+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -213,7 +213,7 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 source-disjoint projector gates remain from #2463. Perception follow-up #2469 adds a temporal interval-order guard: reject backward start_ms even when end_ms advances, allow equal starts for overlapping windows, and retain the last valid baseline after rejection. Code b09f731224f71da0fdb19e81f511540329b6c2cf; regression 9844efaf66c13b1e5562397ae1bc62ed7926c862; tested code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862; current branch head after docs/board sync acba8ddc9fe729e6dcb595a55892310965d3d13d. Exact CI: frame-ingress 52/52 on Python 3.13 and 3.14; vision-source-lineage 39/39 on both; offline-bridge-security PASS. A5 lease fails on both versions and staged/integrated fail because this branch excludes Core #2465's composer (unsupported lifecycle source: vision.py). LOCAL_LINUX minimal repro 4 assertions PASS; full local Aii suite BLOCKED/NOT_RUN. Synthetic/fixture CI only; no native JEPA/latent, weight update, Android provider or Redmi proof.",
+      "proof": "A3 source-disjoint projector gates remain from #2463. Perception follow-up #2469 adds a temporal interval-order guard: reject backward start_ms even when end_ms advances, allow equal starts for overlapping windows, and retain the last valid baseline after rejection. Code b09f731224f71da0fdb19e81f511540329b6c2cf; regression 9844efaf66c13b1e5562397ae1bc62ed7926c862; tested code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862; current branch head after docs/board sync acba8ddc9fe729e6dcb595a55892310965d3d13d. Exact CI: frame-ingress 52/52 on Python 3.13 and 3.14; vision-source-lineage 39/39 on both; offline-bridge-security PASS. A5 lease fails on both versions and staged/integrated fail because this branch excludes Core #2465's composer (unsupported lifecycle source: vision.py). LOCAL_LINUX minimal repro 4 assertions PASS; full local Aii suite BLOCKED/NOT_RUN. Synthetic/fixture CI only; no native JEPA/latent, weight update, Android provider or Redmi proof. Latest available private V13OBS #115 snapshot (09:28 UTC, not a fresh receipt) still shows installed 8d93236/auto-update enabled but AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers; #2469 is not installed.",
       "latest_followup_pr": {
         "pr": 2469,
         "branch": "research-perception/v14-ui-session-temporal-20261124-run11",
@@ -222,11 +222,11 @@
         "state": "OPEN_NOT_RELEASED_STACKED_ON_2463",
         "ci": "FRAME_INGRESS_52_OF_52_PY313_AND_314; VISION_SOURCE_LINEAGE_39_OF_39_PY313_AND_314; OFFLINE_BRIDGE_SECURITY_PASS; A5_UI_LEASE_FAILS_SOURCE_LIFECYCLE_VISION_PIN; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_ONE_SETUP_FAILURE",
         "local_linux": "MINIMAL_TIMESTAMP_ORDER_REPRO_PASS_4_ASSERTIONS; FULL_AII_SUITE_BLOCKED_NO_CHECKOUT_DNS",
-        "device": "REDMI_UNVERIFIED; NO_DEPLOYMENT_RECEIPT",
+        "device": "REDMI_UNVERIFIED_FOR_2469; latest available private V13OBS #115 snapshot 2026-11-24 09:28 UTC reports installed 8d93236 / auto-update enabled and UP_TO_DATE, but AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers; no live receipt for this run; #2469 NOT_INSTALLED; no update request.",
         "next_action": "Wait for Core #2465 source-lifecycle and nested memory/world builder pin chain; then rebase #2469 and rerun full matrix.",
         "tested_code_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
         "docs_board_sync_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d",
-        "branch_head_before_board_sync_sha": "ba734842248712d70738ce17ca3cf30e74a05b61",
+        "branch_head_before_board_sync_sha": "69e83a2ccb5a230f336ab2cfbfde1b78c500afcc",
         "code_test_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
         "docs_handoff_ledger_next_action_and_board_are_committed_in_same_pr": true
       }
