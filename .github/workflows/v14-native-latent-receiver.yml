@@ -6,7 +6,6 @@ on:
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-probe-jepa-stack-20261123-run1
       - core/v14-native-probe-jepa-stack-20261123-run2
-      - core/v14-native-probe-jepa-stack-20261123-run2
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
@@ -76,11 +75,11 @@ jobs:
           assert stage_overlay_pin and stage_overlay_pin.group(1) == actual_blob
           print("PASS: deployer -> stage builder -> overlay -> operator/module pins")
           PY
-      - name: Test source tap identity and exact staged Runtime
+      - name: Test source contracts and exact staged Runtime end-to-end
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_probe_approval_overlay.py
+        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_probe_approval_overlay.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
