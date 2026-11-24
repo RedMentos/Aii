@@ -108,6 +108,18 @@ def apply_source(raw):
             if selected != before:
                 after = after.replace(before, selected, 1)
                 before = selected
+        if before.startswith("        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background'"):
+            variants = (
+                before,
+                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\n",
+            )
+            counts = [raw.count(item.encode('utf-8')) for item in variants]
+            if sum(counts) != 1:
+                raise ValueError('postcommit observer status signature mismatch')
+            selected = variants[counts.index(1)]
+            if selected != before:
+                after = after.replace(before, selected, 1)
+                before = selected
         old, new = before.encode('utf-8'), after.encode('utf-8')
         if raw.count(old) != 1:
             raise ValueError('postcommit observer anchor mismatch')
