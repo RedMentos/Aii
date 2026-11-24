@@ -219,3 +219,30 @@ def test_missing_c4_receipt_and_malformed_telemetry_fail_closed():
         body_rows=[{"kind": "body_offer_attempt", "metrics": "not-json"}],
     )
     assert brain_panel._latest_native_evidence(runtime)["offer_flow"]["body_attempts"] == []
+
+def test_body_telemetry_is_bounded_and_invalid_store_shapes_fail_closed():
+    event_id = _id("evt", "e")
+    rows = []
+    for index in range(17):
+        query_id = _id("pkt", format(index, "032x")[-32:])
+        rows.append({
+            "kind": "body_offer_attempt",
+            "metrics": json.dumps({
+                "role": "B1_DETAIL" if index % 2 == 0 else "B2_GIST",
+                "query_packet_id": query_id,
+                "status": "FINAL",
+                "runner": {"prompt_tokens": index + 1, "generated_tokens": 1},
+            }),
+        })
+    runtime = _runtime(body_rows=rows)
+    latest = brain_panel._latest_native_evidence(runtime)
+    attempts = latest["offer_flow"]["body_attempts"]
+    assert len(attempts) == 16
+    assert attempts[0]["telemetry_truncated"] is True
+    assert all("private_prompt" not in item for item in attempts)
+
+    class RaisingStore:
+        def rows(self, sql, args=()):
+            raise RuntimeError("private store failure")
+    assert brain_panel._body_offer_evidence(RaisingStore(), event_id) == []
+    assert brain_panel._body_offer_evidence(RaisingStore(), None) == []
