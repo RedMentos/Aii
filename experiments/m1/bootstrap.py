@@ -99,7 +99,7 @@ def paired_block_bootstrap(
 
     reference_origins: np.ndarray | None = None
     block_ids: np.ndarray | None = None
-    block_matrix = np.empty((len(models), len(seed_ids), 0), dtype=np.float64)
+    block_sums = np.empty((len(models), len(seed_ids), 0), dtype=np.float64)
     for model_index, model in enumerate(models):
         for seed_index, run_seed in enumerate(seed_ids):
             item = next(x for x in series if x.model == model and x.seed == run_seed)
@@ -114,7 +114,8 @@ def paired_block_bootstrap(
                 day_ids = origins // 1440
                 block_ids = day_ids // block_days
                 unique_blocks = np.unique(block_ids)
-                block_matrix = np.empty((len(models), len(seed_ids), len(unique_blocks)), dtype=np.float64)
+                block_sums = np.empty((len(models), len(seed_ids), len(unique_blocks)), dtype=np.float64)
+                block_counts = np.asarray([(block_ids == block).sum() for block in unique_blocks], dtype=np.int64)
             elif not np.array_equal(origins, reference_origins):
                 raise ValueError("all models and seeds must use identical forecast origins")
             assert block_ids is not None
@@ -123,17 +124,18 @@ def paired_block_bootstrap(
                 mask = block_ids == block
                 if not np.any(mask):
                     raise AssertionError("empty temporal block")
-                block_matrix[model_index, seed_index, block_index] = errors[mask].mean()
+                block_sums[model_index, seed_index, block_index] = errors[mask].sum()
 
     assert block_ids is not None
     assert unique_blocks is not None
     reference_index = models.index(reference_model)
-    full_seed_mae = block_matrix.mean(axis=2)
+    full_seed_mae = block_sums.sum(axis=2) / block_counts.sum()
     rng = np.random.default_rng(seed)
     replicate_deltas = np.empty((n_resamples, len(models)), dtype=np.float64)
     for replicate in range(n_resamples):
         sampled = rng.integers(0, len(unique_blocks), size=len(unique_blocks))
-        sampled_mae = block_matrix[:, :, sampled].mean(axis=2)
+        sampled_counts = int(block_counts[sampled].sum())
+        sampled_mae = block_sums[:, :, sampled].sum(axis=2) / sampled_counts
         per_seed_delta = sampled_mae - sampled_mae[reference_index:reference_index + 1, :]
         replicate_deltas[replicate] = per_seed_delta.mean(axis=1)
 
