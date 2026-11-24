@@ -230,6 +230,8 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
             check(self.cancel_event,deadline)
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
+            from .arithmetic_reflex import exact_arithmetic
+            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)
             check(self.cancel_event,deadline)
             if fixed_policy is None:
                 from .fast_greeting import is_text_only_event, match_unclaimed
@@ -273,7 +275,10 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     )
     runtime = _replace_once(
         runtime,
-        b"            from .output_policy import match\n            mark('policy_check');fixed_policy=match(self.store,text)\n            mark('perception_and_state')\n",
+        b"            mark('policy_check');fixed_policy=match(self.store,text)\n"
+        b"            from .arithmetic_reflex import exact_arithmetic\n"
+        b"            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)\n"
+        b"            mark('perception_and_state')\n",
         b"            mark('perception_and_state')\n",
         "remove duplicate policy check",
     )
