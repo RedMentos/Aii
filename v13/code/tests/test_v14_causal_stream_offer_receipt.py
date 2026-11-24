@@ -245,6 +245,13 @@ def test_server_prefill_evidence_requires_processed_plus_cached_count_match():
     assert missing_cache["status"] == "UNVERIFIED"
     assert missing_cache["verified"] is False
     assert native_prefill_evidence(True, {"prompt_n": 1, "cache_n": 0})["status"] == "UNVERIFIED"
+    sanitized = native_prefill_evidence(120, {
+        "prompt_n": 80, "cache_n": 40, "prompt_ms": float("nan"),
+        "prompt_per_second": 10 ** 1000,
+    })
+    assert sanitized["status"] == "VERIFIED"
+    assert sanitized["prompt_ms"] is None
+    assert sanitized["prompt_per_second"] is None
 
 
 def test_native_completion_receipt_separates_prefill_from_completed_stream():
