@@ -897,10 +897,6 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             )
             raise PermissionError("audio packet binding does not match active consent lease")
 
-        _persist_audio_packet_under_consent_lease(
-            runtime, audio_packet, lease_active=lease_active,
-        )
-
         if temporal_state is None:
             temporal_voice = _runtime_temporal_voice_registry(runtime).update(
                 source_id=source_id,
@@ -921,6 +917,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
+        # Persist the source-bound temporal evidence with the PerceptPacket for
+        # every caller, not only callers that also invoke the duplex bridge.
+        audio_segment["acoustic"]["temporal_voice"] = temporal_voice
+        _persist_audio_packet_under_consent_lease(
+            runtime, audio_packet, lease_active=lease_active,
+        )
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
