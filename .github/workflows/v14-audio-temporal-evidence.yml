@@ -1,0 +1,49 @@
+name: V14 RAW EAR temporal interval regressions
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - ".github/workflows/v14-audio-temporal-evidence.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - ".github/workflows/v14-audio-temporal-evidence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-audio-temporal-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  temporal-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded test dependency
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0
+      - name: Compile temporal evidence and regression tests
+        run: python -m py_compile v13/code/v13/audio_temporal_evidence.py v13/code/tests/test_audio_temporal_evidence.py
+      - name: Run RAW EAR temporal interval and state-retention tests
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q tests/test_audio_temporal_evidence.py
