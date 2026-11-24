@@ -240,7 +240,7 @@ class Turn(unittest.TestCase):
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
         Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
-        with patch.object(lw,"residency",return_value=None):
+        with patch.object(lw,"residency",return_value=None), patch("v13.output_policy.match",return_value=None):
             self.r.submit("Compare plan A and plan B in detail")
             until=time.monotonic()+15
             while not self.r.idle() and time.monotonic()<until:
