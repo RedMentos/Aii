@@ -6,6 +6,7 @@ neither model quality nor native or Android behaviour is established here.
 """
 
 from hashlib import sha256
+import json
 from pathlib import Path
 
 
@@ -55,6 +56,19 @@ REPLACEMENTS = (
         "            delivered={p.get('role') for p in offers if isinstance(p,dict)}\n"
         "            late_role=(meta.get('late_watch') or {}).get('offered')\n"
         "            background_roles=[role for role in background_roles if role not in delivered and role!=late_role]\n"
+        "            # A body that exhausted this turn's hard deadline must not\n"
+        "            # be retried after C3 has already committed its answer.\n"
+        "            try:\n"
+        "                deadline_roles=set()\n"
+        "                for row in self.store.rows(\"SELECT metrics FROM telemetry WHERE event_id=? AND kind='body_offer_attempt'\",(eid,)):\n"
+        "                    metrics=row.get('metrics') if isinstance(row,dict) else None\n"
+        "                    if isinstance(metrics,str):\n"
+        "                        try:metrics=json.loads(metrics)\n"
+        "                        except (TypeError,ValueError):metrics={}\n"
+        "                    if isinstance(metrics,dict) and metrics.get('role') in ('B1_DETAIL','B2_GIST') and metrics.get('status') in ('DEADLINE','CANCELLED','INTERRUPTED'):\n"
+        "                        deadline_roles.add(metrics['role'])\n"
+        "                background_roles=[role for role in background_roles if role not in deadline_roles]\n"
+        "            except Exception:pass\n"
         "            # If the first foreground attempt exhausted its budget, give\n"
         "            # the as-yet unattempted eligible body the first opportunity.\n"
         "            background_roles.sort(key=lambda role:role in foreground_body_attempts)\n"
