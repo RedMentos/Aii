@@ -1,7 +1,7 @@
-"""Synthetic logic tests for the V14 M1 DATA pipeline.
+"""Synthetic logic tests for the M1 clean-room DATA pipeline.
 
 Run from repository root:
-    python -m unittest v14.m1.test_data -v
+    python -m unittest experiments.m1.test_data -v
 
 These tests validate pipeline logic only. They are not a UCI real-data run.
 """
