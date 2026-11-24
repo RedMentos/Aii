@@ -2292,3 +2292,8 @@ Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8b
 | Whole-system integration | Current Perception PR #2448 still requires Boss/Integrator PR #2443 to rebind strict audio/vision source pins and run combined staged/integrated/same-turn/migration checks. | NOT_RELEASED / INTEGRATION_BLOCKED. | No release SHA or phone installation receipt for this candidate. |
 
 This overlay does not change any whole-system acceptance state. One synthetic A4/C3 path is not evidence that the whole Canon, native voice loop, learned turn-taking, or Android target is complete.
+
+
+## Run 36 source-binding correction — exact code/test SHA 1c472 — 2026-11-24
+
+The earlier candidate-only overlay is extended: `audio_voice_cues.py` persists the full temporal object in `PerceptPacket.segments[0].acoustic.temporal_voice` under the active consent lease for all consumers. The duplex bridge validates exact equality across this persisted object, the A4 result and the one-use temporal receipt before it can make a provider-mode decision. The initial test-fixture KeyError and stale comparator blob pins were fixed; exact-head CI for `1c472abd672ab8e2838db48f80b5a252b6336aae` is pending/in progress. This remains WIRED_SYNTHETIC, not native voice or learned turn-taking. No whole-system acceptance status changes.
