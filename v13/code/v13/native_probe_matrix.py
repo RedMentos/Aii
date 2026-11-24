@@ -119,6 +119,11 @@ def consume_matrix(runtime, event, source_ref, *, now=None, lease_token=None):
         raise PermissionError("native pair-matrix local approval expired")
     if record.get("pairs") != _pairs_json():
         raise PermissionError("native pair-matrix pair set differs from the fixed approved matrix")
+    if (
+        record.get("max_total_seconds") != MAX_TOTAL_SECONDS
+        or record.get("pair_deadline_seconds") != PAIR_DEADLINE_SECONDS
+    ):
+        raise PermissionError("native pair-matrix time bounds differ from the fixed approved limits")
 
     current_event, current_ref = approval._current_event(runtime)
     if (
