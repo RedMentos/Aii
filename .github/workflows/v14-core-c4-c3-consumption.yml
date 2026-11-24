@@ -24,6 +24,9 @@ on:
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
       - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
+      - 'v13/code/v13/latewatch.py'
+      - 'v13/code/tests/test_latewatch.py'
+      - 'v13/code/tests/test_effort.py'
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
@@ -58,6 +61,9 @@ on:
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
       - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
+      - 'v13/code/v13/latewatch.py'
+      - 'v13/code/tests/test_latewatch.py'
+      - 'v13/code/tests/test_effort.py'
       - 'v14/V14_WORK_BOARD.json'
       - 'v14/V14_LIVE_WORKPLAN.md'
       - 'v14/V14_CANON_COVERAGE_INDEX.md'
@@ -88,6 +94,9 @@ jobs:
             v13/code/v13/native_turn_budget.py \
             v13/code/v13/observer_schedule.py \
             v13/code/v13/focal.py \
+            v13/code/v13/latewatch.py \
+            v13/code/tests/test_latewatch.py \
+            v13/code/tests/test_effort.py \
             v13/code/v13/brain_panel.py \
             v13/code/v13/native_offer_prompt_receipt.py \
             v13/code/v13/runners.py \
@@ -107,6 +116,11 @@ jobs:
             v13/code/scripts/integrated_memory_world_candidate_20261111.py \
             v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Run independent late-watch and effort regressions
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_latewatch.py v13/code/tests/test_effort.py
       - name: Exercise final staged fair-budget composition
         env:
           PYTHONPATH: v13/code
