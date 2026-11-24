@@ -114,4 +114,26 @@ class Turn(unittest.TestCase):
         self.assertEqual(self.calls,[]);self.assertNotIn('offered',meta['late_watch'])
         with self.assertRaises(ValueError):Operator(self.r).run(':latewatch maybe')
 
+
+
+class LatewatchBudget(unittest.TestCase):
+    def test_latewatch_offer_is_not_charged_to_preanswer_recovery_window(self):
+        class Cognition:
+            def __init__(self):
+                self.kwargs = None
+            def offer(self, *args, **kwargs):
+                self.kwargs = kwargs
+                return OFFER
+
+        cognition = Cognition()
+        watcher = lw.Watcher(
+            SimpleNamespace(cognition=cognition),
+            {"event_id": "evt-late"}, {}, "shadow", role="B2_GIST"
+        )
+        watcher._run(1, time.monotonic() + 1.0, time.monotonic() + 10.0)
+        self.assertIs(watcher.offer, OFFER)
+        self.assertIs(cognition.kwargs.get("preanswer_budgeted"), False)
+        self.assertTrue(watcher.done.is_set())
+
+
 if __name__=='__main__':unittest.main()
