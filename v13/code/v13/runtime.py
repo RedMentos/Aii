@@ -464,13 +464,19 @@ class Runtime:
                                        recent=recent_proof(self.store),
                                        background_enabled=True)
                     if native_budget['recovery']:
-                        observer_end=min(observer_end,native_budget['preanswer_end_monotonic'])
+                        # Recovery replaces the ordinary 45% observer window with
+                        # the measured C3-reserved envelope; per-role observer_seconds
+                        # and the total turn deadline remain hard caps.
+                        observer_end=min(deadline,native_budget['preanswer_end_monotonic'])
                         body_observer_end=min(observer_end,native_budget['body_preanswer_end_monotonic'])
                         minimum_body_seconds=native_budget['minimum_role_slice_s']
                         self.store.log('native_turn_budget_plan',eid,{
                             'preanswer_seconds_available':round(max(0.,body_observer_end-time.monotonic()),3),
                             'focal_reserved_seconds':native_budget['focal_reserved_seconds'],
                             'c3_reserved_seconds':native_budget['c3_reserved_seconds'],
+                            'c3_reserve_estimate_seconds':native_budget['c3_reserve_estimate_seconds'],
+                            'c3_reserve_source':native_budget['c3_reserve_source'],
+                            'c3_reserve_capped':native_budget['c3_reserve_capped'],
                             'recent_real_prefill_failures':native_budget['recent_real_prefill_failures'],
                             'minimum_role_slice_s':minimum_body_seconds})
                 except (OSError,ValueError,RuntimeError,KeyError,TypeError) as exc:
