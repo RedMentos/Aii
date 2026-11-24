@@ -52,3 +52,14 @@
 - PR #2462 is OPEN / NOT_RELEASED; no release SHA.
 - Redmi status remains STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay read, update request, chat send, shell, APK install, permission change, model/weight change or user-data mutation occurred.
 - User action required: none. No manual Termux command or update request.
+
+
+## Follow-up — 2026-11-24T04:38:22Z
+
+- Exact branch head: `d0a30b18cc629d7498373e01985f89df00fa7461` (PR #2462, OPEN / NOT_RELEASED).
+- `latewatch.py`: post-answer-start offers pass `preanswer_budgeted=False`; `_record_once` prevents duplicate status counts from `check()` + `finish()`.
+- Tests: added `test_latewatch_offer_is_not_charged_to_preanswer_recovery_window`; updated the `test_effort.py` Runtime double to accept `preanswer_budgeted`. LOCAL_LINUX / CPython 3.13.5 isolated `py_compile` + 2/2 contract assertions PASS. Full local repository suite NOT_RUN (no checkout; GitHub DNS failure).
+- Exact-head CI remains blocked: same-turn, staged/integrated, owner-read bootstrap FAIL due stale shared Runtime source pins/anchors; six other workflows SUCCESS, one SKIPPED. No source pin was weakened.
+- Coordination posted to Boss PR #2443; shared lifecycle/audio composer files were not edited by Core.
+- Latest private device observation: runtime STOPPED_BY_USER, autostart OFF, no valid B1/B2 offers in last diagnostic. Last authenticated updater receipt is older and points to `8d93236c`; no installation receipt for #2462. No device action was taken.
+- Next: Boss/Integrator recompose source-pinned builders against current Runtime; then rerun exact staged/integrated/same-turn/owner-read/migration matrix. No user action is required.
