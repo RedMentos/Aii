@@ -1,3 +1,36 @@
+# Core & Harness - C4-to-C3 receipt checkpoint (2026-11-24T05:14:43Z)
+
+**Current code/test checkpoint:** PR #2462, branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1, code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f, based on release-development 8d93236c753f0194224c19edc7411d8d7082b1d6. The PR is DRAFT / OPEN / NOT_RELEASED.
+
+## What now works
+
+- FocalLoop persists c4_offer_context_ready immediately after its source/freshness-checked coalition selection and before Runtime builds the C3 hypotheses context.
+- The receipt records only C3 role, PASS/REJECTED, count and exact selected OfferPacket IDs. It is a delivery/selection receipt, not proof of native attention, semantic use or trained latent exchange.
+- The direct same-turn Runtime test verifies both B1_DETAIL and B2_GIST in the same C4 coalition, both summaries in the C3 system context, exact C4/template receipt ID equality, and rejection of a tampered offer without a second C4 receipt.
+
+## Evidence and blockers
+
+- LOCAL_LINUX isolated Python checks: telemetry sanitization and C4/template ID-match plus tamper-negative contracts PASS. These are isolated checks, not the full repository suite.
+- CI Python 3.13: the direct Runtime same-turn B1/B2-to-C4-to-C3 step PASS. The overall workflow FAILS at the separate final staged-composition step.
+- CI Python 3.14: focused dependency installation was still in progress at the last poll; no result is claimed.
+- Staged-runtime failed: 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests passed. The integrated-regression job was still running at the last poll.
+- Owner-read unit tests passed, but the Python 3.14 staged bootstrap failed at the same immutable Runtime source pin. Other exact-head workflows observed PASS: runtime deployment integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity and release-event integration. Safe-additive validation was policy-skipped.
+- The full local Aii suite is BLOCKED / NOT_RUN: no checkout is mounted and git ls-remote fails because GitHub DNS cannot resolve.
+- Runtime bytes are unchanged: Git blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0; SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Four shared consumers still expect old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No source pin was relaxed.
+- Exact coordination notes were posted to Boss PR #2443 (comment 7122728300) and QA PR #2455 (comment 7122728809). Core did not edit their pin files.
+
+## Redmi and user action
+
+The last stored private observation says the runtime is STOPPED_BY_USER and autostart is OFF. No fresh device read or action was made in this run. Redmi remains REDMI_UNVERIFIED; PR #2462 is not installed. No update request, service restart, shell, model/weight/permission change or user-data mutation occurred.
+
+No model alternative is recommended without measured device TTFT/prefill/PSS and output-quality comparison. After a verified release and a separately authorized service run, the next useful measurement is per-role cold/warm load, prefill, TTFT, generated tokens and peak PSS under the same source-bound prompt.
+
+**Next internal step:** Boss/Integrator recompose the four pinned Runtime consumers and downstream recovery/stage/deployer chain against the reviewed exact source bytes. QA then reruns Python 3.13/3.14 same-turn, staged, integrated, owner-read and two-checkout migration checks.
+
+**User action:** none required. Do not restart the user-stopped service or run a manual Termux command.
+
+---
+
 # Core & Harness — fair B1/B2 recovery follow-up (2026-11-24 04:38 UTC)
 
 **PR #2462** remains DRAFT / OPEN / NOT_RELEASED on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, latest branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3` (documentation/handoff only after code head `d0a30b18cc629d7498373e01985f89df00fa7461`), based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`.
