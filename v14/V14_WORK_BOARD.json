@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:25:00Z",
+  "updated_at": "2026-11-24T18:38:34.128Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -384,12 +384,12 @@
       "reviewer": "Core & QA",
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
-      "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
-      "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "No full local Aii checkout; exact current-base CI pending; Android AudioRecord provider OFF / REDMI_UNVERIFIED",
-      "next_step": "Run exact current-base Python 3.13/3.14, A4 source-outcome, FASTDIAR, RAW EAR, consent-revocation, privacy, RECORD_ONLY guard, deployment and staged/integrated workflows on PR #2472. Fix source-pin failures without weakening hashes. If green and independently reviewed, close old #2433 as superseded; do not merge the 82-commit-behind branch. AudioRecord remains OFF until QA companion signature, lifecycle, consent revocation and zeroization are verified.",
+      "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels. RAW EAR interval start monotonicity is now guarded per source/generation.",
+      "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate. Interval starts must be nondecreasing within a source/generation; a rejected backwards start must not mutate the ordering baseline; equal-start cumulative extension remains valid.",
+      "proof_environment": "LOCAL_LINUX isolated temporal-order reproduction 5 assertions PASS; exact #2472 GitHub Actions queued/pending; full local Aii suite BLOCKED/NOT_RUN; TERMUX/REDMI REDMI_UNVERIFIED.",
+      "next_step": "Inspect exact-head #2472 CI (head 8df6a16); fix Perception-owned failures only. Core owns staged composer and dependent source-pin rebinding. After #2472 is green and independently reviewed, close #2433 and #2471 as superseded. AudioRecord remains OFF until QA signed companion, lifecycle, revocation and zeroization gates pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T18:25:00Z",
+      "last_checkpoint": "2026-11-24T18:38:34.128Z",
       "latest_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
@@ -397,20 +397,24 @@
         "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence. Current-base rebase PR #2472 transplanted the A4 source-bound outcome and RAW EAR speaker/prosody code, tests and workflows from #2433 onto 8d93236. Exact attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e was added to RECORD_ONLY guard while preserving old pin 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739. No wildcard or bypass. No AudioRecord provider or Android microphone test.",
+      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence. Current-base rebase PR #2472 transplanted the A4 source-bound outcome and RAW EAR speaker/prosody code, tests and workflows from #2433 onto 8d93236. Exact attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e was added to RECORD_ONLY guard while preserving old pin 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739. No wildcard or bypass. No AudioRecord provider or Android microphone test. PR #2472 exact head 8df6a16 additionally carries monotonic RAW EAR interval-start validation: source blob f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e, test blob 6f16afa97a04d4f0da9ab37a95cad38a25413fce, comparator workflow pin 76389ccba3d68c121c26876a5f5eb6f99f111375. LOCAL_LINUX isolated reproduction 5 assertions PASS; new exact-head CI queued/pending. Full local suite NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED.",
       "latest_current_base_pr": {
         "pr": 2472,
         "url": "https://github.com/RedMentos/Aii/pull/2472",
         "branch": "research-perception/v14-a4-audio-source-outcomes-current-20261124-run16",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "tested_code_sha": "35ba3fc0aad39bcc79193bb6b0311c354b567b07",
-        "attention_sha256": "58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e",
-        "state": "OPEN_DRAFT_CI_PENDING",
-        "old_pr": 2433,
-        "old_pr_action": "DO_NOT_MERGE; close as superseded after #2472 CI green and independent review",
-        "local_tests": "BLOCKED_NO_CHECKOUT_DNS",
+        "head_sha": "8df6a16fd5dced71a2643eae141f9f204fc66855",
+        "source_commit": "c5a68bafed30365eec7719c56f190b76f9061ea9",
+        "test_commit": "87dc1cc8a2a27fb74188a3c1ef66559e87830ac3",
+        "workflow_commit": "8df6a16fd5dced71a2643eae141f9f204fc66855",
+        "temporal_source_blob": "f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e",
+        "temporal_test_blob": "6f16afa97a04d4f0da9ab37a95cad38a25413fce",
+        "comparator_workflow_blob": "76389ccba3d68c121c26876a5f5eb6f99f111375",
+        "local_isolated_test": "PASS_5_ASSERTIONS",
+        "local_full_suite": "BLOCKED_NO_CHECKOUT_DNS",
+        "exact_head_ci": "QUEUED_PENDING",
         "device": "REDMI_UNVERIFIED",
-        "audio_record": "OFF"
+        "release": "NOT_RELEASED"
       }
     },
     {
