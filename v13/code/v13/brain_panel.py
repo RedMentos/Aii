@@ -77,8 +77,8 @@ def _identifier(value):
 
 
 def _body_offer_evidence(
-    store, event_id, *, c4_ids=(), c4_accepted=False,
-    template_ids=(), template_submitted=False, synthetic=False,
+    store, event_id, *, c4_ids=(), c4_recorded=False, c4_accepted=False,
+    template_ids=(), template_receipt_available=False, template_submitted=False, synthetic=False,
     native_prefill_verified=False, synthetic_prefill_verified=False,
     native_completion_completed=False, synthetic_completion_completed=False,
 ):
@@ -102,8 +102,10 @@ def _body_offer_evidence(
         return []
     truncated = len(rows) > 16
     rows = rows[:16]
-    c4_ids = {value for value in c4_ids if _identifier(value)}
-    template_ids = {value for value in template_ids if _identifier(value)}
+    c4_values = c4_ids if type(c4_ids) in (list, tuple, set) else ()
+    template_values = template_ids if type(template_ids) in (list, tuple, set) else ()
+    c4_ids = {value for value in c4_values if _identifier(value)}
+    template_ids = {value for value in template_values if _identifier(value)}
     by_query = {}
     for row in rows:
         if type(row) is not dict:
@@ -165,10 +167,14 @@ def _body_offer_evidence(
             item["selected_by_c4"] = packet_id in c4_ids if c4_accepted else None
             item["included_in_c3_template"] = packet_id in template_ids if template_submitted else None
             path_synthetic = synthetic or item["evidence_environment"] == "SYNTHETIC"
-            if not c4_accepted:
+            if not c4_recorded:
+                state = "C4_RECEIPT_UNAVAILABLE"
+            elif not c4_accepted:
                 state = "C4_RECEIPT_NOT_ACCEPTED"
             elif packet_id not in c4_ids:
                 state = "DELIVERED_NOT_SELECTED_BY_C4"
+            elif not template_receipt_available:
+                state = "C4_SELECTED_C3_RECEIPT_UNAVAILABLE"
             elif not template_submitted:
                 state = "C4_SELECTED_C3_TEMPLATE_NOT_SUBMITTED"
             elif packet_id not in template_ids:
@@ -336,8 +342,10 @@ def _latest_native_evidence(r):
         r.store,
         event_id,
         c4_ids=c4_ids,
+        c4_recorded=c4_recorded,
         c4_accepted=c4_accepted,
         template_ids=native_ids,
+        template_receipt_available=bool(receipt),
         template_submitted=submitted,
         synthetic=synthetic,
         native_prefill_verified=native_prefill_verified,
