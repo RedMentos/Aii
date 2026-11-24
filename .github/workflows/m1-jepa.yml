@@ -7,6 +7,7 @@ on:
       - "experiments/m1/gru.py"
       - "experiments/m1/dlinear.py"
       - "experiments/m1/runner.py"
+      - "experiments/m1/recurrence.py"
       - "experiments/m1/requirements-ml.txt"
       - "experiments/.gitignore"
       - "experiments/m1_torch_tests/**"

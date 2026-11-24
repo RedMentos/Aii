@@ -21,6 +21,7 @@ class JEPAConfig:
     d_model: int = 64
     n_heads: int = 4
     encoder_layers: int = 2
+    recurrent_steps: int = 1
     predictor_layers: int = 1
     dropout: float = 0.0
     ema_start: float = 0.99
@@ -32,7 +33,7 @@ class JEPAConfig:
         positive = (
             self.input_channels, self.seasonal_lags, self.horizon,
             self.patch_size, self.d_model, self.n_heads,
-            self.encoder_layers, self.predictor_layers,
+            self.encoder_layers, self.recurrent_steps, self.predictor_layers,
         )
         if any(type(value) is not int or value < 1 for value in positive):
             raise ValueError("model dimensions and layer counts must be positive integers")
@@ -144,6 +145,52 @@ class PatchTransformerEncoder(nn.Module):
             tokens.shape[1], tokens.shape[2], device=tokens.device, dtype=tokens.dtype
         )
         return self.norm(self.encoder(tokens))
+
+
+class RecurrentPatchTransformerEncoder(nn.Module):
+    """Universal-Transformer-style depth recurrence with one shared block.
+
+    The same TransformerEncoderLayer is reused for every recurrence step.
+    Step embeddings are deterministic, so T=1/2/4 change compute depth but
+    do not add trainable parameters. This is an M1b ablation; M1a's stacked
+    PatchTransformerEncoder remains unchanged.
+    """
+
+    def __init__(self, config: JEPAConfig):
+        super().__init__()
+        if config.encoder_layers != 1:
+            raise ValueError("shared recurrence requires encoder_layers=1")
+        if config.recurrent_steps not in (1, 2, 4):
+            raise ValueError("shared recurrence steps must be one of 1, 2 or 4")
+        self.patch_size = config.patch_size
+        self.recurrent_steps = config.recurrent_steps
+        self.input_projection = nn.Linear(
+            config.patch_size * config.input_channels, config.d_model
+        )
+        self.recurrent_block = nn.TransformerEncoderLayer(
+            d_model=config.d_model,
+            nhead=config.n_heads,
+            dim_feedforward=4 * config.d_model,
+            dropout=config.dropout,
+            activation="gelu",
+            batch_first=True,
+            norm_first=True,
+        )
+        self.norm = nn.LayerNorm(config.d_model)
+
+    def forward(self, sequence: torch.Tensor) -> torch.Tensor:
+        patches, _ = patchify(sequence, self.patch_size)
+        tokens = self.input_projection(patches)
+        tokens = tokens + sinusoidal_positions(
+            tokens.shape[1], tokens.shape[2], device=tokens.device, dtype=tokens.dtype
+        )
+        step_positions = sinusoidal_positions(
+            self.recurrent_steps, tokens.shape[2],
+            device=tokens.device, dtype=tokens.dtype,
+        )
+        for step in range(self.recurrent_steps):
+            tokens = self.recurrent_block(tokens + step_positions[:, step:step + 1, :])
+        return self.norm(tokens)
 
 
 class FutureQueryEncoder(nn.Module):
@@ -267,6 +314,25 @@ class JEPAForecaster(nn.Module):
         return float(tau)
 
 
+class RecurrentJEPAForecaster(JEPAForecaster):
+    """JEPA whose online and EMA target encoders share one recurrent block."""
+
+    def __init__(self, config: JEPAConfig):
+        if config.encoder_layers != 1:
+            raise ValueError("RecurrentJEPAForecaster requires encoder_layers=1")
+        if config.recurrent_steps not in (1, 2, 4):
+            raise ValueError("recurrent_steps must be one of 1, 2 or 4")
+        nn.Module.__init__(self)
+        self.config = config
+        self.scaler = ChannelStandardizer(config.input_channels)
+        self.context_encoder = RecurrentPatchTransformerEncoder(config)
+        self.target_encoder = copy.deepcopy(self.context_encoder)
+        self.target_encoder.requires_grad_(False)
+        self.target_encoder.eval()
+        self.future_query_encoder = FutureQueryEncoder(config)
+        self.predictor = CrossAttentionPredictor(config)
+
+
 def _vicreg_terms(latents: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     # Pool temporal patches per window; variance is measured across independent windows.
     pooled = latents.mean(dim=1)
@@ -360,6 +426,25 @@ class DirectMAEForecaster(nn.Module):
 
 
 
+class RecurrentDirectMAEForecaster(DirectMAEForecaster):
+    """Direct-MAE control with the same shared recurrent context encoder."""
+
+    def __init__(self, config: JEPAConfig):
+        if config.encoder_layers != 1:
+            raise ValueError("RecurrentDirectMAEForecaster requires encoder_layers=1")
+        if config.recurrent_steps not in (1, 2, 4):
+            raise ValueError("recurrent_steps must be one of 1, 2 or 4")
+        nn.Module.__init__(self)
+        self.config = config
+        self.scaler = ChannelStandardizer(config.input_channels)
+        self.context_encoder = RecurrentPatchTransformerEncoder(config)
+        self.future_query_encoder = FutureQueryEncoder(config)
+        self.predictor = CrossAttentionPredictor(config)
+        self.value_head = nn.Linear(
+            config.d_model, config.patch_size * config.input_channels
+        )
+
+
 class FrozenContextProbe(nn.Module):
     """Linear readout over a frozen context encoder plus known future covariates."""
 
@@ -419,6 +504,16 @@ def make_random_context_probe(config: JEPAConfig, seed: int) -> FrozenContextPro
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
         random_backbone = JEPAForecaster(config)
+    return FrozenContextProbe(random_backbone, config, readout_seed=seed)
+
+
+def make_random_recurrent_context_probe(config: JEPAConfig, seed: int) -> FrozenContextProbe:
+    """Build a random frozen probe with the same shared-recurrence geometry."""
+    if type(seed) is not int:
+        raise ValueError("seed must be an integer")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        random_backbone = RecurrentJEPAForecaster(config)
     return FrozenContextProbe(random_backbone, config, readout_seed=seed)
 
 
