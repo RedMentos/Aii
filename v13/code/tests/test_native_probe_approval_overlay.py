@@ -56,6 +56,15 @@ def test_overlay_changes_only_staged_operator_and_preserves_source(tmp_path):
     compile(staged.decode("utf-8"), str(staging / "v13/operator.py"), "exec")
 
 
+def test_runtime_close_anchor_uses_real_newline_not_backslash_n():
+    expected = b"        self.worker.join(6)\n        if self.worker.is_alive():"
+    assert OVERLAY.RUNTIME_CLOSE_OLD == expected
+    runtime = (CODE / "v13/runtime.py").read_bytes()
+    assert runtime.count(expected) == 1
+    patched = OVERLAY._replace_once(runtime, OVERLAY.RUNTIME_CLOSE_OLD, OVERLAY.RUNTIME_CLOSE_NEW, "Runtime close barrier")
+    assert b"wait_for_runtime_probe_shutdown" in patched
+    assert patched.index(b"wait_for_runtime_probe_shutdown") < patched.index(b"if self.worker.is_alive():")
+
 def test_overlay_rejects_staged_operator_drift(tmp_path):
     code_dir, staging = _trees(tmp_path)
     path = staging / "v13/operator.py"
