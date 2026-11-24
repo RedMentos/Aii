@@ -209,6 +209,15 @@ class RecurrenceRunnerTests(unittest.TestCase):
                 self.assertEqual(len({row["total_parameter_count"] for row in rows}), 1)
                 for row in rows:
                     self.assertEqual(row["train_windows_per_epoch"], 32)
+                    expected_multiplier = 2 if row["model"].startswith("jepa_pretrain_t") else 1
+                    self.assertEqual(
+                        row["encoder_block_calls_per_epoch"],
+                        expected_multiplier * 2 * row["recurrent_steps"],
+                    )
+                    self.assertEqual(
+                        row["encoder_block_calls_total"],
+                        row["encoder_block_calls_per_epoch"],
+                    )
                     self.assertEqual(len(row["checkpoint_sha256"]), 64)
                     self.assertTrue(Path(row["checkpoint_path"]).is_file())
 
