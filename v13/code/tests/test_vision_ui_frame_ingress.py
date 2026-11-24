@@ -1105,6 +1105,163 @@ def test_temporal_visual_evidence_accumulates_across_frame_receipts_under_one_se
     assert len(runtime._a5_temporal_visual_registry) == 0
 
 
+def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    _path, projector_sha = install_student_projector(runtime, tmp_path)
+    session_receipt = "session-consent-a3-0001"
+    first_obs = observation(
+        source_id="ui-a3-frame-0001", receipt_ref="frame-a3-receipt-0001",
+        session_receipt_ref=session_receipt, start_ms=1000, end_ms=1033,
+    )
+    second_obs = observation(
+        source_id="ui-a3-frame-0002", receipt_ref="frame-a3-receipt-0002",
+        session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
+    )
+    first, second = image_buffer(), image_buffer_variant()
+
+    with lease_for(runtime, first_obs, lock=runtime.store.mutex) as lease:
+        first_result = consume_with_provider_verifier(
+            runtime, first_obs, first, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
+    with lease_for(runtime, second_obs, lock=runtime.store.mutex) as lease:
+        second_result = consume_with_provider_verifier(
+            runtime, second_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
+
+    first_change = first_result["a3_projected_change"]
+    second_change = second_result["a3_projected_change"]
+    assert first_result["student_projector_used"] is True
+    assert first_change["status"] == "WARMUP"
+    assert first_change["projector_sha256"] == projector_sha
+    assert second_result["student_projector_used"] is True
+    assert second_change["status"] == "MEASURED"
+    assert second_change["projector_sha256"] == projector_sha
+    assert second_change["embedding_dim"] > 0
+    assert second_change["change_score"] > 0.0
+    assert second_change["changed_tile_ids"]
+    assert second_change["previous_source_ref"] == first_result["frame_source_ref"]
+    assert second_change["source_ref"] == second_result["frame_source_ref"]
+    assert second_result["packet"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    assert second_change["authority"] == "DIAGNOSTIC_ONLY"
+    assert second_change["learning_authority"] is False
+    assert second_change["action_authority"] is False
+    assert "embeddings" not in second_change and "vectors" not in second_change
+    assert second_result["packet"]["learning_authority"] is False
+    assert second_result["packet"]["action_authority"] is False
+    assert not any(first) and not any(second)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(second_obs["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
+def test_a3_projected_change_rebaselines_on_projector_change_and_missing_projector():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    first_embeddings = {tile: [1.0, 0.0] for tile in TILE_IDS}
+    changed_embeddings = {tile: [0.0, 1.0] for tile in TILE_IDS}
+    first_ref = {
+        "source_id": "ui_frame_first", "sha256": "a" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    second_ref = {
+        "source_id": "ui_frame_second", "sha256": "b" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    common = dict(
+        capture_session_id="a3-session", generation_id="a3-generation",
+        session_consent_receipt_ref="a3-session-consent", tile_luminance=luminance,
+    )
+    first = registry.update(
+        consent_receipt_ref="frame-1", start_ms=1000, end_ms=1033,
+        a3_tile_embeddings=first_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=first_ref, **common,
+    )
+    measured = registry.update(
+        consent_receipt_ref="frame-2", start_ms=1033, end_ms=1066,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    assert first["a3_projected_change"]["status"] == "WARMUP"
+    assert measured["a3_projected_change"]["status"] == "MEASURED"
+    assert measured["a3_projected_change"]["change_score"] == 0.5
+    assert measured["a3_projected_change"]["changed_tile_ids"] == list(TILE_IDS)
+
+    changed_projector = registry.update(
+        consent_receipt_ref="frame-3", start_ms=1066, end_ms=1099,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="d" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    missing = registry.update(
+        consent_receipt_ref="frame-4", start_ms=1099, end_ms=1132,
+        a3_unavailable_reason="NO_PROJECTOR", **common,
+    )
+    warm_after_missing = registry.update(
+        consent_receipt_ref="frame-5", start_ms=1132, end_ms=1165,
+        a3_tile_embeddings=first_embeddings, a3_projector_sha256="d" * 64,
+        frame_source_ref=first_ref, **common,
+    )
+    assert changed_projector["a3_projected_change"]["status"] == "PROJECTOR_CHANGED"
+    assert missing["a3_projected_change"]["status"] == "NO_PROJECTOR"
+    assert warm_after_missing["a3_projected_change"]["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="a3-session") == 1
+    assert len(registry) == 0
+
+
+def test_a3_projected_change_rejects_malformed_embeddings_and_source_refs():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    good = {tile: [1.0, 0.0] for tile in TILE_IDS}
+    ref = {
+        "source_id": "ui_frame_valid", "sha256": "e" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    common = dict(start_ms=1000, end_ms=1033, tile_luminance=luminance)
+    malformed = dict(good)
+    malformed.pop(TILE_IDS[0])
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=malformed, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    nonfinite = dict(good)
+    nonfinite[TILE_IDS[0]] = [float("nan"), 0.0]
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=nonfinite, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    too_wide = dict(good)
+    too_wide[TILE_IDS[0]] = [1.0] * 1025
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=too_wide, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=good, a3_projector_sha256="not-a-hash",
+            frame_source_ref=ref,
+        )
+    bad_ref = dict(ref, sha256="not-a-hash")
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=good, a3_projector_sha256="f" * 64,
+            frame_source_ref=bad_ref,
+        )
+
+
 def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
     from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
 

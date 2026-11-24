@@ -33,7 +33,7 @@ from .a5_ui_admission_bridge import (
 )
 from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
-from .vision_temporal_evidence import TemporalVisualEvidenceRegistry
+from .vision_temporal_evidence import MAX_A3_TEMPORAL_DIM, TemporalVisualEvidenceRegistry
 
 REVISION = "v14-a5-media-projection-raw-eye-v2-temporal"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
@@ -619,6 +619,8 @@ def consume_projected_frame(
         student_query = goal.strip() or current_source[:512].strip()
         student = _load_local_tile_projector(runtime, cfg, student_query)
         student_status = student["status"]
+        student_projected_by_tile = None
+        a3_unavailable_reason = "PROJECTOR_UNAVAILABLE"
         tile_feature_rows = []
         tile_region_ids = []
         region_records = []
@@ -647,7 +649,12 @@ def consume_projected_frame(
             if student_status == "READY" and tile_feature_rows:
                 try:
                     np = vision._np()
-                    projected = student["projector"](np.stack(tile_feature_rows))
+                    projected = np.asarray(
+                        student["projector"](np.stack(tile_feature_rows)), dtype=np.float64,
+                    )
+                    if (projected.ndim != 2 or projected.shape[0] != len(tile_feature_rows)
+                            or projected.shape[1] < 1 or not np.isfinite(projected).all()):
+                        raise ValueError("student projector returned invalid frame embeddings")
                     margins = projected @ student["query"] - projected @ student["background"]
                     if not np.isfinite(margins).all():
                         raise ValueError("student projector returned a non-finite margin")
@@ -655,9 +662,20 @@ def consume_projected_frame(
                         region_id: float(margin)
                         for region_id, margin in zip(tile_region_ids, margins)
                     }
+                    if projected.shape[1] <= MAX_A3_TEMPORAL_DIM:
+                        student_projected_by_tile = {
+                            region_id: tuple(float(value) for value in row)
+                            for region_id, row in zip(tile_region_ids, projected)
+                        }
+                        a3_unavailable_reason = None
+                    else:
+                        a3_unavailable_reason = "DIMENSION_LIMIT"
                     student_status = "USED"
                 except Exception:
                     student_status = "INFERENCE_FAILED"
+                    a3_unavailable_reason = "INFERENCE_FAILED"
+            elif student_status == "NO_TILE_PROJECTOR":
+                a3_unavailable_reason = "NO_PROJECTOR"
 
             for region, box, features, salience in region_records:
                 region_id = region["region_id"]
@@ -721,6 +739,10 @@ def consume_projected_frame(
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
             tile_features=tile_features,
+            a3_tile_embeddings=student_projected_by_tile,
+            a3_projector_sha256=student.get("sha256") if student_projected_by_tile is not None else None,
+            frame_source_ref=frame_ref,
+            a3_unavailable_reason=a3_unavailable_reason,
         )
         temporal_visual = temporal_update.result
         attention_novelty = float(temporal_visual["attention_novelty"])
@@ -852,6 +874,7 @@ def consume_projected_frame(
             "attention_novelty": round(attention_novelty, 6),
             "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
             "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
+            "a3_projected_change": temporal_visual["a3_projected_change"],
             "source_ref": dict(frame_ref),
             "truth_authority": 0,
         }
@@ -878,6 +901,7 @@ def consume_projected_frame(
             "student_projector_status": student_status,
             "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
             "temporal_visual_evidence": temporal_visual_packet,
+            "a3_projected_change": temporal_visual["a3_projected_change"],
             "temporal_visual_modulation": temporal_modulation,
             "learning_authority": False,
             "action_authority": False,

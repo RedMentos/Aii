@@ -26,6 +26,9 @@ LUMINANCE_METHOD = "RAW_EYE_TEMPORAL_LUMINANCE_DELTA_V1"
 METHOD = "RAW_EYE_TEMPORAL_MULTICHANNEL_DELTA_V2"
 FEATURE_METHOD = "RAW_EYE_TILE_FEATURES_V1"
 FEATURE_VALUES_PER_TILE = 37
+MAX_A3_TEMPORAL_DIM = 1024
+A3_PROJECTED_CHANGE_METHOD = "A3_TILE_COSINE_DELTA_V1"
+A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FAILED", "DIMENSION_LIMIT"}
 MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
 DEFAULT_SURFACE_WINDOW_MS = 50
@@ -80,6 +83,44 @@ def _validate_features(value, luminance) -> dict[str, tuple[float, ...]] | None:
     return result
 
 
+def _validate_frame_source_ref(value) -> dict:
+    if type(value) is not dict or set(value) != {"source_id", "sha256", "char_start", "char_end", "modality"}:
+        raise TemporalVisualEvidenceError("A3 temporal frame source reference is invalid")
+    source_id, sha256 = value.get("source_id"), value.get("sha256")
+    if (type(source_id) is not str or not source_id or len(source_id) > 256
+            or type(sha256) is not str or len(sha256) != 64
+            or any(char not in "0123456789abcdef" for char in sha256)
+            or type(value.get("char_start")) is not int or value["char_start"] != 0
+            or type(value.get("char_end")) is not int or value["char_end"] != 0
+            or value.get("modality") != "image"):
+        raise TemporalVisualEvidenceError("A3 temporal frame source reference is malformed")
+    return dict(value)
+
+
+def _validate_a3_tile_embeddings(value) -> tuple[dict[str, tuple[float, ...]], int]:
+    if type(value) is not dict or set(value) != set(TILE_IDS):
+        raise TemporalVisualEvidenceError("A3 temporal embeddings require the complete 4x4 tile grid")
+    result = {}
+    dimension = None
+    for tile_id in TILE_IDS:
+        row = value[tile_id]
+        if type(row) not in (list, tuple) or not 1 <= len(row) <= MAX_A3_TEMPORAL_DIM:
+            raise TemporalVisualEvidenceError("A3 temporal embedding dimension is outside the bounded range")
+        if dimension is None:
+            dimension = len(row)
+        elif len(row) != dimension:
+            raise TemporalVisualEvidenceError("A3 temporal embedding dimensions must match across tiles")
+        vector = []
+        for item in row:
+            if type(item) not in (int, float) or not math.isfinite(float(item)):
+                raise TemporalVisualEvidenceError("A3 temporal embeddings must be finite numeric values")
+            vector.append(float(item))
+        norm = math.sqrt(sum(item * item for item in vector))
+        if norm <= 1e-8:
+            raise TemporalVisualEvidenceError("A3 temporal embedding cannot be a zero vector")
+        result[tile_id] = tuple(item / norm for item in vector)
+    return result, int(dimension)
+
 class TemporalVisualEvidence:
     """One-stream, one-frame-history temporal delta accumulator."""
 
@@ -105,6 +146,9 @@ class TemporalVisualEvidence:
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
         self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         self._last_activity_ms = None
+        self._previous_a3_embeddings = None
+        self._previous_a3_projector_sha256 = None
+        self._previous_a3_source_ref = None
 
     def reset(self) -> None:
         self._last_end_ms = None
@@ -114,9 +158,91 @@ class TemporalVisualEvidence:
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
         self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         self._last_activity_ms = None
+        self._previous_a3_embeddings = None
+        self._previous_a3_projector_sha256 = None
+        self._previous_a3_source_ref = None
+
+    def _update_a3_projected_change(self, *, tile_embeddings, projector_sha256,
+                                    frame_source_ref, unavailable_reason):
+        source_ref = _validate_frame_source_ref(frame_source_ref) if frame_source_ref is not None else None
+        if tile_embeddings is None:
+            if projector_sha256 is not None:
+                raise TemporalVisualEvidenceError("A3 projector hash cannot be supplied without embeddings")
+            reason = unavailable_reason or "NO_PROJECTOR"
+            if reason not in A3_UNAVAILABLE_REASONS:
+                raise TemporalVisualEvidenceError("A3 temporal unavailable reason is invalid")
+            self._previous_a3_embeddings = None
+            self._previous_a3_projector_sha256 = None
+            self._previous_a3_source_ref = None
+            return {
+                "schema": "v14.a3-projected-temporal-change/1",
+                "status": reason,
+                "method": A3_PROJECTED_CHANGE_METHOD,
+                "projector_sha256": None,
+                "embedding_dim": None,
+                "change_score": 0.0,
+                "tile_delta": {},
+                "changed_tile_ids": [],
+                "previous_source_ref": None,
+                "source_ref": source_ref,
+                "authority": "DIAGNOSTIC_ONLY",
+                "truth_authority": 0,
+                "learning_authority": False,
+                "action_authority": False,
+            }
+        if unavailable_reason is not None:
+            raise TemporalVisualEvidenceError("A3 temporal embeddings conflict with unavailable status")
+        if (type(projector_sha256) is not str or len(projector_sha256) != 64
+                or any(char not in "0123456789abcdef" for char in projector_sha256)):
+            raise TemporalVisualEvidenceError("A3 temporal projector SHA-256 is invalid")
+        if source_ref is None:
+            raise TemporalVisualEvidenceError("A3 temporal embeddings require the exact frame SourceRef")
+        current, dimension = _validate_a3_tile_embeddings(tile_embeddings)
+        previous_ref = self._previous_a3_source_ref
+        status = "WARMUP"
+        tile_delta = {}
+        change_score = 0.0
+        if self._previous_a3_embeddings is not None:
+            if self._previous_a3_projector_sha256 != projector_sha256:
+                status = "PROJECTOR_CHANGED"
+            elif len(next(iter(self._previous_a3_embeddings.values()))) != dimension:
+                status = "DIMENSION_CHANGED"
+            else:
+                status = "MEASURED"
+                for tile_id in TILE_IDS:
+                    cosine = sum(a * b for a, b in zip(self._previous_a3_embeddings[tile_id], current[tile_id]))
+                    cosine = max(-1.0, min(1.0, cosine))
+                    tile_delta[tile_id] = round(max(0.0, min(1.0, (1.0 - cosine) * 0.5)), 6)
+                ordered = sorted(tile_delta.values(), reverse=True)
+                mean_change = sum(ordered) / len(ordered)
+                top4_change = sum(ordered[:4]) / 4.0
+                change_score = round(0.6 * top4_change + 0.4 * mean_change, 6)
+        self._previous_a3_embeddings = current
+        self._previous_a3_projector_sha256 = projector_sha256
+        self._previous_a3_source_ref = source_ref
+        return {
+            "schema": "v14.a3-projected-temporal-change/1",
+            "status": status,
+            "method": A3_PROJECTED_CHANGE_METHOD,
+            "projector_sha256": projector_sha256,
+            "embedding_dim": dimension,
+            "change_score": change_score,
+            "tile_delta": tile_delta,
+            "changed_tile_ids": [tile for tile in TILE_IDS if tile_delta.get(tile, 0.0) > 1e-6],
+            "previous_source_ref": previous_ref,
+            "source_ref": source_ref,
+            "authority": "DIAGNOSTIC_ONLY",
+            "truth_authority": 0,
+            "learning_authority": False,
+            "action_authority": False,
+        }
 
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict,
-               tile_features: dict | None = None) -> dict:
+               tile_features: dict | None = None,
+               a3_tile_embeddings: dict | None = None,
+               a3_projector_sha256: str | None = None,
+               frame_source_ref: dict | None = None,
+               a3_unavailable_reason: str | None = "NO_PROJECTOR") -> dict:
         if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms:
             raise TemporalVisualEvidenceError("temporal visual interval must be positive monotonic milliseconds")
         current = _validate_luminance(tile_luminance)
@@ -131,6 +257,13 @@ class TemporalVisualEvidence:
                 self.reset()
                 reset_reason = "STREAM_GAP"
 
+        a3_projected_change = self._update_a3_projected_change(
+            tile_embeddings=a3_tile_embeddings,
+            projector_sha256=a3_projector_sha256,
+            frame_source_ref=frame_source_ref,
+            unavailable_reason=a3_unavailable_reason,
+        )
+
         if self._previous is None:
             self._previous = current
             self._previous_features = current_features
@@ -138,6 +271,7 @@ class TemporalVisualEvidence:
             return {
                 "method": METHOD if current_features is not None else LUMINANCE_METHOD,
                 "feature_method": FEATURE_METHOD if current_features is not None else None,
+                "a3_projected_change": a3_projected_change,
                 "status": "WARMUP",
                 "multichannel_status": "WARMUP" if current_features is not None else "UNAVAILABLE",
                 "multichannel_tile_delta": {}, "multichannel_changed_tile_ids": [],
@@ -254,6 +388,7 @@ class TemporalVisualEvidence:
         return {
             "method": METHOD if current_features is not None else LUMINANCE_METHOD,
             "feature_method": FEATURE_METHOD if current_features is not None else None,
+            "a3_projected_change": a3_projected_change,
             "multichannel_status": multichannel_status,
             "multichannel_tile_delta": {k: round(v, 6) for k, v in multichannel_tile_delta.items()},
             "multichannel_changed_tile_ids": multichannel_changed_tile_ids,
@@ -320,7 +455,11 @@ class TemporalVisualEvidenceRegistry:
     def prepare_update(self, *, capture_session_id: str, generation_id: str,
                        consent_receipt_ref: str, start_ms: int, end_ms: int,
                        tile_luminance: dict, tile_features: dict | None = None,
-                       session_consent_receipt_ref: str | None = None):
+                       session_consent_receipt_ref: str | None = None,
+                       a3_tile_embeddings: dict | None = None,
+                       a3_projector_sha256: str | None = None,
+                       frame_source_ref: dict | None = None,
+                       a3_unavailable_reason: str | None = "NO_PROJECTOR"):
         session = _identity(capture_session_id, "capture_session_id")
         generation = _identity(generation_id, "generation_id")
         receipt = _identity(consent_receipt_ref, "consent_receipt_ref")
@@ -336,7 +475,9 @@ class TemporalVisualEvidenceRegistry:
             state = copy.deepcopy(current) if current is not None else TemporalVisualEvidence(**self._state_options)
         result = state.update(
             start_ms=start_ms, end_ms=end_ms, tile_luminance=tile_luminance,
-            tile_features=tile_features,
+            tile_features=tile_features, a3_tile_embeddings=a3_tile_embeddings,
+            a3_projector_sha256=a3_projector_sha256, frame_source_ref=frame_source_ref,
+            a3_unavailable_reason=a3_unavailable_reason,
         )
         return _PreparedTemporalVisualUpdate(
             self, session, key, epoch, version, state, result,
@@ -368,12 +509,18 @@ class TemporalVisualEvidenceRegistry:
     def update(self, *, capture_session_id: str, generation_id: str,
                consent_receipt_ref: str, start_ms: int, end_ms: int,
                tile_luminance: dict, tile_features: dict | None = None,
-               session_consent_receipt_ref: str | None = None) -> dict:
+               session_consent_receipt_ref: str | None = None,
+               a3_tile_embeddings: dict | None = None,
+               a3_projector_sha256: str | None = None,
+               frame_source_ref: dict | None = None,
+               a3_unavailable_reason: str | None = "NO_PROJECTOR") -> dict:
         ticket = self.prepare_update(
             capture_session_id=capture_session_id, generation_id=generation_id,
             consent_receipt_ref=consent_receipt_ref, start_ms=start_ms, end_ms=end_ms,
             tile_luminance=tile_luminance, tile_features=tile_features,
             session_consent_receipt_ref=session_consent_receipt_ref,
+            a3_tile_embeddings=a3_tile_embeddings, a3_projector_sha256=a3_projector_sha256,
+            frame_source_ref=frame_source_ref, a3_unavailable_reason=a3_unavailable_reason,
         )
         if not self.commit_update(ticket):
             raise TemporalVisualEvidenceError("concurrent temporal update; retry the frame")
