@@ -1,3 +1,13 @@
+## Core #2462 exact-head follow-up - 2026-11-24T05:16:34Z
+
+- Direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step: PASS on Python 3.13 and 3.14. Both verify same-turn body summaries in synthetic C3 context, C4/template ID equality and tamper rejection.
+- Overall same-turn workflows remain FAIL at final staged composition. Staged-runtime: 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests; integrated-regression: 1 selected test failed. Both fail because the shared integrated_online_world and observer-fair-budget composers reject the current Runtime source hash.
+- Owner-read tests PASS; Python 3.14 staged installer self-test FAILs at the same source pin. No hash gate relaxed.
+- This supersedes the previous note that Python 3.14 was pending. PR #2462 remains OPEN / NOT_RELEASED; Redmi REDMI_UNVERIFIED; no device action.
+- Next: Boss/Integrator recompose the four Runtime consumers and downstream stage/deployer; QA reruns the exact staged/integrated/owner-read/migration matrix.
+
+---
+
 ## Core C4-to-C3 receipt checkpoint - 2026-11-24T05:14:43Z
 
 - PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the exact C4-selected OfferPacket ID receipt before C3 context assembly. Both B1/B2 summaries are verified in the same synthetic C3 system prompt.
