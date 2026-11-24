@@ -319,3 +319,51 @@ def test_turn_candidate_config_rejects_unbounded_or_boolean_eot_thresholds():
         TemporalVoiceEvidence(eot_silence_ms=0)
     with pytest.raises(ValueError, match="eot_silence_ms"):
         TemporalVoiceEvidence(eot_silence_ms=True)
+
+
+
+def test_non_speech_noise_is_onset_gated_and_silence_rearms_impulses():
+    state = TemporalVoiceEvidence()
+    first = step(state, 0, "UNVOICED_NOISE", 0.8)
+    sustained = step(state, 40, "UNVOICED_NOISE", 0.8)
+    assert first["non_speech_active"] is True
+    assert first["non_speech_kind"] == "UNVOICED_NOISE"
+    assert first["non_speech_onset"] is True
+    assert first["non_speech_novelty"] == pytest.approx(0.8)
+    assert sustained["non_speech_active"] is True
+    assert sustained["non_speech_onset"] is False
+    assert sustained["non_speech_novelty"] == 0.0
+
+    silence = step(state, 80, "SILENCE", 0.0)
+    impulse = step(state, 120, "IMPULSIVE", 1.0)
+    assert silence["non_speech_offset"] is True
+    assert impulse["non_speech_onset"] is True
+    assert impulse["non_speech_novelty"] == pytest.approx(1.0)
+
+
+def test_non_speech_state_decays_across_uncertain_windows_and_short_gaps():
+    state = TemporalVoiceEvidence()
+    step(state, 0, "UNVOICED_NOISE", 0.8)
+    for index in range(1, 18):
+        result = step(state, index * 40, "UNCERTAIN", 0.25)
+    assert result["non_speech_active"] is False
+    assert result["non_speech_score"] == 0.0
+    resumed = step(state, 18 * 40, "UNVOICED_NOISE", 0.8)
+    assert resumed["non_speech_onset"] is True
+
+    gap_state = TemporalVoiceEvidence()
+    step(gap_state, 0, "UNVOICED_NOISE", 0.8)
+    gap_resumed = step(gap_state, 540, "UNVOICED_NOISE", 0.8)
+    assert gap_resumed["gap_ms"] == 500
+    assert gap_resumed["non_speech_offset"] is True
+    assert gap_resumed["non_speech_onset"] is True
+
+
+def test_non_speech_state_resets_at_source_and_consent_boundaries():
+    state = TemporalVoiceEvidence()
+    first = step(state, 0, "IMPULSIVE", 1.0, source="mic-a", receipt="receipt-a")
+    assert first["non_speech_onset"] is True
+    changed = step(state, 40, "IMPULSIVE", 1.0, source="mic-b", receipt="receipt-b")
+    assert changed["state_reset"] is True
+    assert changed["non_speech_onset"] is True
+    assert changed["non_speech_active"] is True

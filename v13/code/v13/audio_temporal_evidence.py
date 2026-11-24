@@ -56,6 +56,10 @@ class TemporalVoiceEvidence:
         self._silence_ms = 0
         self._speech_seen = False
         self._eot_emitted = False
+        # A4 non-speech event state is source/consent scoped like voice evidence.
+        self._non_speech_active = False
+        self._non_speech_kind = None
+        self._non_speech_score = 0.0
 
     def update(
         self,
@@ -105,6 +109,7 @@ class TemporalVoiceEvidence:
         previous_end_ms = self._last_end_ms
         gap_ms = 0
         gap_offset = False
+        non_speech_gap_offset = False
         if previous_end_ms is not None:
             if end_ms <= previous_end_ms:
                 raise ValueError("audio windows must advance monotonically")
@@ -141,6 +146,16 @@ class TemporalVoiceEvidence:
             elapsed_ms = gap_ms + observed_ms
             gap_decay_ms = gap_ms
 
+        # Decay non-speech activity across observed gaps; an unobserved interval
+        # is never itself a new event or evidence of a semantic sound.
+        if gap_ms and self._non_speech_active:
+            self._non_speech_score *= math.exp(-gap_ms / self.release_tau_ms)
+            if self._non_speech_score <= self.offset_threshold:
+                self._non_speech_active = False
+                self._non_speech_kind = None
+                self._non_speech_score = 0.0
+                non_speech_gap_offset = True
+
         # Only the already-voiced RAW EAR class contributes speech evidence.
         # Silence, impulsive activity and unvoiced noise remain distinct cues.
         target = float(score) if hint == "VOICED" else 0.0
@@ -156,6 +171,43 @@ class TemporalVoiceEvidence:
         else:
             active = active_after_gap
         offset = gap_offset or window_offset
+
+        # Non-speech cues remain distinct from speech. A continuous noise bed or
+        # overlapping impulse windows emits one onset, not repeated A4 novelty.
+        # SILENCE/VOICED end the episode; UNCERTAIN decays it conservatively.
+        non_speech_kind = hint if hint in {"UNVOICED_NOISE", "IMPULSIVE"} else None
+        non_speech_onset = False
+        non_speech_offset = non_speech_gap_offset
+        if non_speech_kind is not None:
+            updated_non_speech_score = max(
+                self._non_speech_score * math.exp(-observed_ms / self.release_tau_ms),
+                float(score),
+            )
+            if updated_non_speech_score > self.offset_threshold:
+                non_speech_onset = (
+                    not self._non_speech_active or self._non_speech_kind != non_speech_kind
+                )
+                self._non_speech_active = True
+                self._non_speech_kind = non_speech_kind
+                self._non_speech_score = updated_non_speech_score
+            else:
+                non_speech_offset = non_speech_offset or self._non_speech_active
+                self._non_speech_active = False
+                self._non_speech_kind = None
+                self._non_speech_score = 0.0
+        elif hint in {"SILENCE", "VOICED"}:
+            non_speech_offset = non_speech_offset or self._non_speech_active
+            self._non_speech_active = False
+            self._non_speech_kind = None
+            self._non_speech_score = 0.0
+        else:
+            self._non_speech_score *= math.exp(-observed_ms / self.release_tau_ms)
+            if self._non_speech_active and self._non_speech_score <= self.offset_threshold:
+                non_speech_offset = True
+                self._non_speech_active = False
+                self._non_speech_kind = None
+                self._non_speech_score = 0.0
+        non_speech_novelty = float(score) if non_speech_onset else 0.0
 
         # Turn candidates are deliberately separate from floor-transfer truth.
         # Only newly observed, contiguous SILENCE after sustained voiced activity
@@ -193,6 +245,12 @@ class TemporalVoiceEvidence:
             "voice_onset": onset,
             "voice_offset": offset,
             "gap_offset": gap_offset,
+            "non_speech_active": self._non_speech_active,
+            "non_speech_kind": self._non_speech_kind,
+            "non_speech_onset": non_speech_onset,
+            "non_speech_offset": non_speech_offset,
+            "non_speech_score": round(self._non_speech_score, 6),
+            "non_speech_novelty": round(non_speech_novelty, 6),
             "turn_candidates": {
                 "method": "RAW_EAR_TURN_CANDIDATES_V1",
                 "speech_candidate": bool(self._active),

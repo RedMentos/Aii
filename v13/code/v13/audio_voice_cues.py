@@ -935,10 +935,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     or speaker_evidence.get("change_score")
                     or 0.0
                 )
+        non_speech_novelty = temporal_voice["non_speech_novelty"]
         voice_novelty = max(
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
+            0.35 * non_speech_novelty,
         )
         prosody_interrupt = (0.25 * cues["prosody_change_score"]
                              if temporal_voice["voice_active"] else 0.0)
@@ -947,13 +949,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
         vad_interrupt = 0.25 * vad_speech_fraction
         voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
-        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
-            # Preserve non-speech events as their own salience channel.
-            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
         attention = attctl.controller(runtime)
         attention_result = attention.modulate(event_id, sal={
-            "novelty": min(1.0, max(zcr, voice_novelty)),
-            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
+            # BOOT: absolute RMS/ZCR remain low-gain background cues; a new
+            # non-speech episode, not a sustained noise bed, drives A4 novelty.
+            "novelty": min(1.0, max(0.15 * zcr, voice_novelty)),
+            "external_interrupt": min(1.0, max(
+                0.15 * rms, prosody_interrupt, onset_interrupt,
+                vad_interrupt, speaker_interrupt, 0.25 * non_speech_novelty,
+            )),
         })
         a4 = {
             "packet_id": audio_packet["packet_id"],
@@ -963,6 +967,13 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "non_speech_event": {
+                "kind": temporal_voice["non_speech_kind"],
+                "active": temporal_voice["non_speech_active"],
+                "onset": temporal_voice["non_speech_onset"],
+                "offset": temporal_voice["non_speech_offset"],
+                "novelty": non_speech_novelty,
+            },
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,

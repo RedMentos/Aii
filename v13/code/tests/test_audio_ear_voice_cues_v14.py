@@ -1267,3 +1267,42 @@ def test_sustained_silence_candidate_reaches_a4_and_c3_without_floor_transfer(tm
         assert "floor_transfer=UNVERIFIED" in summary
     finally:
         runtime.store.close()
+
+
+
+def test_persistent_non_speech_noise_only_recruits_attention_once(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    state = TemporalVoiceEvidence()
+    observed = []
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal=None):
+            observed.append(dict(sal or {}))
+            return {"captured": True}
+
+    monkeypatch.setattr(
+        audio_voice_cues_module.attctl, "controller", lambda _runtime: CaptureAttention()
+    )
+    guard = _guard_for(consent_ok)
+    try:
+        results = []
+        for start_ms in (100, 140, 180):
+            results.append(consume_pcm16_voice_window(
+                runtime, white_noise(), sample_rate=16000, start_ms=start_ms,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=guard, finality="FINAL",
+                temporal_state=state,
+            ))
+        assert len(observed) == 3
+        assert observed[0]["novelty"] > observed[1]["novelty"] + 0.1
+        assert observed[1]["novelty"] == pytest.approx(observed[2]["novelty"])
+        assert observed[0]["external_interrupt"] > observed[1]["external_interrupt"]
+        assert results[0]["a4"]["non_speech_event"]["kind"] == "UNVOICED_NOISE"
+        assert results[0]["a4"]["non_speech_event"]["onset"] is True
+        assert results[1]["a4"]["non_speech_event"]["onset"] is False
+        assert results[2]["a4"]["non_speech_event"]["active"] is True
+        assert all(result["a4"]["learning_authority"] is False for result in results)
+        assert all(result["a4"]["action_authority"] is False for result in results)
+    finally:
+        runtime.store.close()
