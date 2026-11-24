@@ -1,3 +1,25 @@
+# Research & Perception — latest combined checkpoint (2026-11-24, run 18)
+
+**Current release-development base:** gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
+
+**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch research-perception/v14-a4-audio-source-outcomes-current-20261124-run16, base 8d93236c753f0194224c19edc7411d8d7082b1d6. New code commit b08238d53a441aeb2aa650b97c0ac8cbda39b5f8; new regression-test commit / current head before handoff updates 4b036157337debaa2a6db2cb70e9cc5f142dcdef.
+
+- Added audio_consent_generation_scope() in v13/code/v13/audio_voice_cues.py. It opens one provider revocation lease, consumes the source-bound PCM16 RAW EAR window and A4/A5 packet, calls a Runtime-supplied messages_factory (where Core can compose B1/B2/C4 context), and yields the C3 runner iterator while the same lease remains held. The iterator is closed on context exit, early cancellation/close, or exception. It does not itself grant microphone access or action/learning authority.
+- Added test_audio_generation_scope_holds_provider_lease_through_full_runner_iterator to v13/code/tests/test_audio_speaker_evidence.py. The test checks that the provider's revocation lock remains held through message composition and both generated tokens, and that revocation proceeds only after the generation scope exits.
+- **LOCAL_LINUX isolated contract harness: PASS** — py_compile plus two concurrency assertions (full iterator and early close) passed. This harness used stubs for Store/RAW EAR internals; it is not the full repository test.
+- **Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN** — no repository checkout is mounted; git ls-remote to GitHub failed in this runtime due DNS/network resolution. Exact project test is committed but awaits CI.
+- **Exact #2472 head CI: QUEUED** after the new code/test commits; no exact-head CI pass is claimed. The previous head's controller record-only guard and staged/integrated workflows failed before feature assertions because the Recovery Builder pins an older guard SHA. That pin chain is Core/QA-owned and must be rebound, not bypassed.
+- **Important integration gap:** Core PR #2478's current v13/code/v13/runtime.py (blob 7a803bae06e3bca606ffb7cd3103b74148c8cbf8) still calls runner.generate(...) directly at line 651 and does not import the new scope. Thus the new adapter is available and tested in isolation, but the production Runtime has **not yet** wired one lease across B1/B2/C4 composition and the complete C3 iterator. Core must wrap that path in with audio_consent_generation_scope(...) and iterate the yielded stream inside the context; Perception has not edited Core-owned Runtime files.
+- PR #2472 remains **OPEN / DRAFT / NOT_RELEASED**. No code was installed; no new authenticated Redmi receipt was obtained. REDMI_UNVERIFIED. The last available consented device snapshot remains historical and does not prove this branch installed. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation was performed.
+
+**Research:** R-108 now has a full-text review of FD-VAD (arXiv:2609.35791v1); R-109 records the full-text review of HiThink Turn (arXiv:2609.34096v1). Both support separating acoustic activity, semantic completeness, response intent and playback state. FD-VAD's 0.5B+WavLM stack is ~1.5 GB and CUDA-oriented; HiThink fine-tunes 1.7B on eight H100s. Neither is an approved Redmi model candidate. No download/import/model swap.
+
+**Next internal action:** Core integrates the lease scope in the actual Runtime around A4/A5 packet consumption, B1/B2/C4 context composition and full C3 iterator; then run the exact audio lease test plus staged/integrated regression on one head. Perception will handle any failure in its own files; Core/QA owns the recovery/stage/deployer source-pin repair.
+
+**User action:** none required.
+**Run started:** 2026-11-24 21:37:30 Europe/Berlin. **Completion time:** recorded in the next handoff checkpoint.
+---
+
 # Research & Perception — latest combined checkpoint (2026-11-24, run 17)
 
 **Current base:** release-development `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
