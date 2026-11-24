@@ -30,7 +30,8 @@ No real UCI file was available in this execution environment: the Library search
 - dlinear.py: matched-information DLinear and NLinear controls; DLinear uses replicate-edge trend/residual decomposition, while NLinear centers X on its last value. Both include a future-known S/calendar branch and bind look-back length at construction.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
-- runner.py: validation-only multi-model pilot; applies a per-epoch train-window cap only to fitting, evaluates every model on the full shared validation origins, saves model checkpoints and writes one provenance-bound result JSON. JEPA pretraining is recorded separately from raw-unit forecast predictors.
+- runner.py: validation-only M1a multi-model pilot; applies a per-epoch train-window cap only to fitting, evaluates every model on the full shared validation origins, saves model checkpoints and writes one provenance-bound result JSON. JEPA pretraining is recorded separately from raw-unit forecast predictors.
+- recurrence.py: M1b T=1/2/4 shared-weight context-encoder ablation with JEPA+frozen probe, matched random recurrent probe and recurrent Direct-MAE, paired on identical validation origins.
 - download_uci.py: explicit official-host-only dataset downloader; checks ZIP CRC, path traversal, archive/member sizes and overwrite policy, then writes a SHA-256 provenance sidecar. It is never invoked automatically by the runner.
 
 ## Model contract
@@ -74,6 +75,23 @@ The default is an **exploratory pilot**, not a locked experiment: one seed, one 
 The runner writes the canonical result JSON and a separate `*.checkpoints/` directory beside it. It refuses to overwrite an existing result or checkpoint directory. The result records the raw-file and parsed-data hashes, split statistics, code SHA, model parameter counts, training histories, checkpoint hashes, per-origin paired block-bootstrap intervals and the explicit `test_split_accessed=false` gate.
 
 JEPA is a latent pretraining objective, not a raw-unit forecast head. Its latent loss and collapse telemetry are recorded separately; forecast MAE is measured through the trained frozen-context probe, Direct-MAE, DLinear/NLinear, Raw-GRU and the other raw/baseline controls. Do not rank the JEPA latent loss against forecast MAE.
+
+## M1b shared-weight recurrence ablation
+
+M1a's stacked encoder remains unchanged. M1b adds a separate recurrent encoder: one TransformerEncoderLayer is reused for T=1, 2 or 4 depth steps, with deterministic sinusoidal step embeddings. The same block and trainable parameter count are used at all three T values; only recurrent compute depth changes. The predictor, future-known S/calendar path, EMA target, data split, train-window cap, seeds and validation-origin set are held to the same configuration.
+
+Run it with:
+
+```bash
+python -m experiments.m1.recurrence \
+  --data experiments/datasets/household_power_consumption.txt \
+  --output experiments/results/m1b-recurrence.json \
+  --steps 1,2,4
+```
+
+The comparison reports JEPA latent loss/collapse telemetry, frozen-JEPA probe MAE, a matched random-recurrent probe, recurrent Direct-MAE, parameter counts, fit time and paired temporal-block validation intervals. It never opens the test split. Defaults remain exploratory, not preregistered or promoted.
+
+The recurrence design follows the weight-shared depth idea in [Universal Transformers (Dehghani et al., ICLR 2019)](https://arxiv.org/abs/1807.03819). The archived Tensor2Tensor reference implementation is Apache-2.0; no upstream source was copied into M1. The M1 implementation is a PyTorch adaptation with a fixed T=1/2/4 sweep and no adaptive-computation/halting mechanism.
 
 ## Verification status
 - **Core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at latest documentation-aligned HEAD `97d653753204a97cedf9fbf6d9610ada78dd9af0` (run [45383562209](https://github.com/RedMentos/Aii/actions/runs/45383562209)). Includes the NumPy data path, fixed splits, preregistration gates, baselines, paired bootstrap, metrics and integrity checks.
