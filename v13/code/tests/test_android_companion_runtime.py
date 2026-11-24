@@ -172,13 +172,13 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
     assert recorded["jef_space"]["trained_latent"] is False
     assert recorded["jef_space"]["t8_authoritative"] is False
+    assert recorded["jef_space"]["world_learning_eligible"] is False
     repeated = json.loads(controller.poll(pending["action_id"]))
     assert repeated["status"] == "ALREADY_FINAL"
     assert repeated["jef_space"]["status"] == "ALREADY_PRESENT"
 
     event_row = runtime.store.one(
         "SELECT session_id,packet FROM events WHERE id=?", (pending["source_event_id"],))
-    event_packet = json.loads(event_row["packet"])
     space = EnlightenedSpace(runtime.store, event_row["session_id"])
     followup = runtime.store.event(runtime.session, "Did the Android app launch?")
     view = space.consume(followup, "C3_LANGUAGE", query="Did the Android app launch?")
