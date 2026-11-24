@@ -128,9 +128,14 @@ def _latest_native_evidence(r):
     if not receipt:
         flow_status = "OFFER_RECEIPT_UNAVAILABLE"
     elif submitted and c4_recorded and ids_match:
-        if not synthetic and native_prefill_verified and native_generation_completed:
+        fingerprint_complete = bool(
+            native_prompt_sha256 and native_token_ids_sha256
+            and native_prompt_tokens is not None and native_prompt_tokens > 0)
+        if (not synthetic and fingerprint_complete
+                and native_prefill_verified and native_generation_completed):
             flow_status = "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
-        elif not synthetic and native_prefill_observed and native_generation_completed:
+        elif (not synthetic and fingerprint_complete
+                and native_prefill_observed and native_generation_completed):
             flow_status = "NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED_MATCHED_C4"
         else:
             flow_status = prefix + "TEMPLATE_SUBMITTED_MATCHED_C4"
