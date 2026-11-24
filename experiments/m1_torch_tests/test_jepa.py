@@ -91,7 +91,7 @@ class JEPAModelTests(unittest.TestCase):
         model = JEPAForecaster(self.config)
         model.scaler.fit(self.dataset)
         start, end = self.dataset.bounds["train"]
-        expected_mean = np.nanmean(self.dataset.values[start:end], axis=0)
+        expected_mean = np.nanmean(self.dataset.train_values(), axis=0)
         expected_scale = np.nanstd(self.dataset.values[start:end], axis=0)
         expected_scale[expected_scale <= 1e-6] = 1.0
         np.testing.assert_allclose(model.scaler.mean.cpu().numpy(), expected_mean, rtol=1e-6)
