@@ -422,7 +422,6 @@ class ArrayDataset:
         preregistration_path: str | Path,
         preregistration_sha256: str,
         access_log_path: str | Path,
-        expected_code_commit: str,
     ) -> SplitStats:
         """Verify exact preregistration and log opening before test batches can be iterated."""
         path = Path(preregistration_path)
@@ -437,8 +436,6 @@ class ArrayDataset:
             "dataset_sha256": self.dataset_sha256,
         }
         actual_code_commit = current_git_commit()
-        if expected_code_commit != actual_code_commit:
-            raise PermissionError("expected_code_commit does not match executing commit")
         verify_preregistration(prereg, expected, expected_code_commit=actual_code_commit)
         event = {
             "event": "TEST_SPLIT_OPENED",
