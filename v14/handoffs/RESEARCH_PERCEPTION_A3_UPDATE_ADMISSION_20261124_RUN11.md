@@ -64,3 +64,14 @@ These papers do not directly validate the A3 ridge projector. The current change
 - Auto-updater evidence for the installed base does not deploy this PR; this branch is NOT_RELEASED.
 - **User action:** none.
 - **Next executable Perception step after Core composition:** run the same no-update / uniform-baseline / source-disjoint-update / replay-retention ablation on both global and tile projectors in the composed staged Runtime, including source forget and process restart. Then request a separately authorized Redmi frame/A3 test only when the device is no longer user-stopped.
+
+
+## Exact follow-up after documentation readback
+
+- Documentation branch head: `bf51f2b477995c217a6aeec5539eda6813b1a973`; executable code/test tree remains at `607d7db7265b69aacb8d7cdc99c63c89992036b2`.
+- Re-triggered exact-head CI on the documentation head: vision source-lineage 35/35 PASS on Python 3.13 and 3.14; MediaProjection RAW EYE ingress 39/39 PASS on both; privacy scan PASS; runtime-deployment-integrity PASS.
+- Staged-runtime #45353599482: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Root remains `source_lifecycle_lock_integration_candidate.py` rejecting `vision.py` as an unsupported lifecycle source.
+- Core same-turn #45353599652: Python 3.13 FAIL at the same source-lifecycle composer; Python 3.14 was still IN_PROGRESS at last poll. Integrated-regression on #45353599482 was still IN_PROGRESS at last poll. No combined integration pass.
+- LOCAL_LINUX helper test re-read: CPython 3.13.5, `py_compile` + 6 admission controls PASS. Full repository suite remains NOT_RUN/BLOCKED by no mounted checkout and DNS failure.
+
+**Important limitation:** this gate checks that the current source-disjoint dataset exhibits measured above-chance generalization, then applies the existing old-source replay-retention gate. It does *not yet* report a direct old-projector-versus-candidate performance delta on the same held-out new-source cohort. Therefore it is an update-admission precondition, not proof that the candidate improves the current task. The next Perception ablation must add a same-holdout old-vs-candidate comparison (plus no-update and shuffled-target controls) before any utility claim or promotion.
