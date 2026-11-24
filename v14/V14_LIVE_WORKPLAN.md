@@ -1376,3 +1376,10 @@ The current #2448 branch already contains the requested 1s/2s timestamp-invarian
 - `test_missing_threshold_emits_score_without_a_decision` checks that missing calibration does not become a speaker-change decision.
 - `test_non_voiced_embeddings_never_seed_or_replace_speaker_history` and `test_three_regime_gate_defers_nonvoiced_low_similarity` check non-voiced suppression and fail-closed decision gating.
 - Status: PRESENT / NOT_RUN on current PR head. Restore exact-head Actions, then execute on Python 3.13 and 3.14 plus staged/integrated A5/A4/C3. No new code is required unless one of those tests fails.
+
+
+### P0 and cross-lane status refresh — 2026-11-24
+
+Latest sanitized public #1904 comment 7108089370: installed base `8d93236c753f0194224c19edc7411d8d7082b1d6`, 41/41 check-runs on that SHA, auto-update enabled, pipeline `CI_WAIT` / `PARTIAL` / no error. Separate DIAGNOSTICS: Runtime `STOPPED_BY_USER`, autostart false, model process stopped. Last stored turn remains incorrect (`2+2` returned `2`): 6.295 s total, TTFT 2.046 s, C3 prefill 3.1 s, 358 prompt / 7 generated; B1/B2 `TIME_BUDGET` 53.2 / 54.2 s. This is stored evidence, not a new run; no restart or new device command was made.
+
+Boss PR #2443 carries the newer A3/vision composition, but the same #1904 checkpoint reports it DRAFT / NOT_MERGED / NOT_RELEASED / NOT_INSTALLED with 5/37 checks complete, 2 in progress, 30 queued. Perception will not duplicate or overwrite those A3 sources. P0 C3 correctness and B1/B2 useful offers remain blocking across the product.
