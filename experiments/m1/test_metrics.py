@@ -9,9 +9,9 @@ from pathlib import Path
 
 import numpy as np
 
-from .array_data import ArrayDataset
-from .data import DataConfig, MinuteRow
-from .metrics import evaluate_predictor, evaluate_suite, write_result_atomic
+from experiments.m1.array_data import ArrayDataset
+from experiments.m1.data import DataConfig, MinuteRow
+from experiments.m1.metrics import evaluate_predictor, evaluate_suite, write_result_atomic
 
 
 class ZeroPredictor:
