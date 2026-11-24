@@ -190,7 +190,21 @@ try:
     assert observation['external_world_observation'] is False
     assert observation['semantic_success'] is None
     assert observation['causal_claim'] is False
-    for kind in ('ExperienceRecord', 'WorldTransition', 'ModulatorPacket', 'LearningTrace'):
+    modulators = [json.loads(x['payload']) for x in r.store.rows(
+        "SELECT payload FROM packets WHERE event_id=? AND kind='ModulatorPacket'",
+        (event_id,),
+    )]
+    assert len(modulators) == 1
+    modulator = modulators[0]
+    assert modulator['producer_component'] == 'N10_NEUROMOD'
+    assert modulator['path_id'] == 'world_predictor'
+    assert modulator['source_class'] == 'real_deterministic_outcome'
+    assert set(modulator['channels']) == {'world_prediction_error'}
+    assert 0.0 <= modulator['channels']['world_prediction_error'] <= 1.0
+    assert modulator['task_success'] == 0.0
+    assert modulator['human_correction'] == 0.0
+    assert modulator['safety_veto'] is False
+    for kind in ('ExperienceRecord', 'WorldTransition', 'LearningTrace'):
         assert r.store.one(
             'SELECT id FROM packets WHERE event_id=? AND kind=?', (event_id, kind)
         ) is None, kind
