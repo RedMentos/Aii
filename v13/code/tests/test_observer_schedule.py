@@ -227,7 +227,6 @@ class Turn(unittest.TestCase):
             if kind=="wake":return {"learned":False,"action":"both"}
             return original_decide(kind,*args,**kwargs)
         self.r.learner.decide=deterministic_decide
-        original_offer=self.r.cognition.offer
         self.c3_messages=[]
         def pool_get(role):
             if role=="C3_LANGUAGE":
@@ -255,7 +254,7 @@ class Turn(unittest.TestCase):
             self.calls.append((role,preanswer,thread,valid_until_present,status))
             if role=="B2_GIST" and valid_until_present:
                 raise Limits("pre-answer/late-watch B2 attempt expired")
-            return original_offer(role,e,version,deadline,peer,**kw)
+            return dict(OFFER,role=role,packet_id="pkt_"+role+"_postcommit")
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
         Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
