@@ -203,8 +203,8 @@ public final class CompanionProviderRecoveryTest {
         AtomicInteger externalDispatches = new AtomicInteger();
         assertEquals("DISPATCHED", CompanionProvider.claimAndDispatch(
                 context, db, id, () -> now, externalDispatches::incrementAndGet));
-        String otherReceipt = "{\\"fixture_receipt\\":\\"other-finalizer\\"}";
-        String issuedReceipt = "{\\"fixture_receipt\\":\\"this-finalizer\\"}";
+        String otherReceipt = "{\"fixture_receipt\":\"other-finalizer\"}";
+        String issuedReceipt = "{\"fixture_receipt\":\"this-finalizer\"}";
         assertFalse(CompanionProvider.recoverClaimedAction(
                 context, db, id, now,
                 (action, status, localConsent, issuedAt) -> {
@@ -230,7 +230,7 @@ public final class CompanionProviderRecoveryTest {
         insertPending(db, id, now);
         postApprovalNotification(id);
         assertTrue(db.claimForExecution(id, now));
-        String strayReceipt = "{\\"fixture_receipt\\":\\"nonterminal\\"}";
+        String strayReceipt = "{\"fixture_receipt\":\"nonterminal\"}";
         db.finish(id, "EXECUTING", "EXECUTING", strayReceipt);
         assertFalse(CompanionProvider.recoverClaimedAction(
                 context, db, id, now,
