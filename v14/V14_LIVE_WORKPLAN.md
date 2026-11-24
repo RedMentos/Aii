@@ -1383,3 +1383,8 @@ The current #2448 branch already contains the requested 1s/2s timestamp-invarian
 Latest sanitized public #1904 comment 7108089370: installed base `8d93236c753f0194224c19edc7411d8d7082b1d6`, 41/41 check-runs on that SHA, auto-update enabled, pipeline `CI_WAIT` / `PARTIAL` / no error. Separate DIAGNOSTICS: Runtime `STOPPED_BY_USER`, autostart false, model process stopped. Last stored turn remains incorrect (`2+2` returned `2`): 6.295 s total, TTFT 2.046 s, C3 prefill 3.1 s, 358 prompt / 7 generated; B1/B2 `TIME_BUDGET` 53.2 / 54.2 s. This is stored evidence, not a new run; no restart or new device command was made.
 
 Boss PR #2443 carries the newer A3/vision composition, but the same #1904 checkpoint reports it DRAFT / NOT_MERGED / NOT_RELEASED / NOT_INSTALLED with 5/37 checks complete, 2 in progress, 30 queued. Perception will not duplicate or overwrite those A3 sources. P0 C3 correctness and B1/B2 useful offers remain blocking across the product.
+
+
+### Cross-lane exact-head CI reconciliation — 2026-11-24
+
+The last sanitized #1904 owner receipt reported Boss #2443 at 5/37 checks complete on an earlier head `88ba1cc...`. Current GitHub PR API readback is head `cdf6b64067ac426ba32194100d3764f6e74c105f`, base `8d93236`, OPEN / DRAFT, with zero check-runs and commit status pending. Latest workflow records for #2443 and #2448 report `startup_failure` with zero jobs; the cause is not diagnosed. Do not carry the earlier 5/37 count forward as current-head evidence. #2443 contains the newer A3/vision composition but is not merged/released; avoid duplicate edits.
