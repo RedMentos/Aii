@@ -485,7 +485,10 @@ def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path
 
 
 
-def _signed_receipt_for_request(transport, action_id, nonce, *, status="DISPATCHED_UNVERIFIED"):
+def _signed_receipt_for_request(
+    transport, action_id, nonce, *, status="DISPATCHED_UNVERIFIED",
+    issued_at=None, expires_at=None,
+):
     request = transport.submitted[-1]
     body = {
         **BODY,
@@ -495,6 +498,10 @@ def _signed_receipt_for_request(transport, action_id, nonce, *, status="DISPATCH
         "status": status,
         "local_consent": status != "USER_DENIED",
     }
+    if issued_at is not None:
+        body["issued_at"] = issued_at
+    if expires_at is not None:
+        body["expires_at"] = expires_at
     return {
         "body": body,
         "key_id": KEY_ID,
@@ -536,7 +543,12 @@ def test_claimed_receipt_retries_after_restart_without_redispatch(tmp_path, monk
     controller.broker.close()
 
     monkeypatch.setattr(android_outcomes, "persist_companion_outcome", original_persist)
-    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    # The original dispatch TTL has elapsed. The companion can still return a
+    # fresh signed receipt for the already-claimed action; no new launch occurs.
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "8" * 32, issued_at=4999, expires_at=5030
+    )
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
     recovered = json.loads(restarted.poll(action_id))
     assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert recovered["observed"] is False
