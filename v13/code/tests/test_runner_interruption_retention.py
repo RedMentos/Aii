@@ -188,3 +188,35 @@ def test_retained_c3_runner_is_reused_by_pool_on_the_next_turn(tmp_path, monkeyp
     assert reused.proc.pid == pid_before
     assert reused.unload.call_count == 0
     assert "PRIVATE_DO_NOT_STORE" not in repr(first_metrics)
+
+
+
+def test_deadline_waits_until_every_slot_is_idle_before_retaining(tmp_path, monkeypatch):
+    runner = make_runner(tmp_path, monkeypatch)
+    responses = iter([
+        [
+            {"is_processing": False},
+            {"is_processing": True, "prompt": "PRIVATE_SLOT_PROMPT"},
+        ],
+        [
+            {"is_processing": False},
+            {"is_processing": False, "prompt": "PRIVATE_SLOT_PROMPT"},
+        ],
+    ])
+    calls = []
+
+    def slot_states(method, path, payload, deadline, timeout_cap=3.0):
+        calls.append((method, path))
+        return next(responses)
+
+    runner._json = slot_states
+    interrupt(runner, Limits("deadline"), time.monotonic() - 0.01)
+
+    assert calls == [("GET", "/slots"), ("GET", "/slots")]
+    assert runner.last_metrics["interruption_unload"] == {
+        "process_reaped": False,
+        "retained_warm": True,
+        "reason": "SERVER_IDLE",
+    }
+    assert runner.unload.call_count == 0
+    assert "PRIVATE_SLOT_PROMPT" not in repr(runner.last_metrics)
