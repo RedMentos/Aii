@@ -47,3 +47,18 @@ Until that provider change is merged and verified, the current provider remains 
 ## Next action
 
 Core owns the Android provider and runtime composer. Rebind the provider's signed-observation verifier to the optional session receipt, connect the bounded frame queue, and run the exact staged/integrated A5 tests. Then obtain an authenticated Redmi session receipt before changing the device status from REDMI_UNVERIFIED. PR #2463 and Core PR #2465 still have their own staged-composer integration work; this follow-up must be composed with those changes rather than treated as an independent release.
+
+## Run 12 — provider-side session receipt authentication contract (2026-11-24)
+
+A contract audit found that the prior Run 11 change bound the optional stable session receipt into the Python lease, verifier object, temporal registry key and packet, but the provider's **current-grant check, linearizable guard and revocation subscription did not receive that receipt**. The field could therefore be syntactically valid and echoed into temporal history without the provider lifecycle callbacks being required to authenticate/revoke that exact session lineage.
+
+The follow-up changes `a5_ui_admission_bridge.py` so:
+- legacy one-shot observations without the optional field retain the original seven-argument consent callbacks and five-argument revocation subscription;
+- when the stable session field is present, its exact value is appended to `consent_check` and `consent_guard` arguments and passed as `session_consent_receipt_ref=` to `revocation_subscribe`;
+- unsupported providers fail closed before the lease is yielded.
+
+Regression coverage verifies the session receipt reaches all three provider callbacks, a provider that lacks the new session-aware subscription is rejected, and legacy one-shot callback arity is unchanged.
+
+**Scope boundary:** this strengthens the Perception-side provider contract. It does not implement the Android companion's signed session receipt, nor does it prove that the current Core provider has been updated to issue or authenticate it. Core/QA must implement the matching callback signature and signed-receipt validation before multi-frame MediaProjection is enabled.
+
+**Local test status:** exact repository checkout unavailable in this environment; the focused project pytest is not claimed as locally run. Exact-source CI is required after this push. Redmi remains REDMI_UNVERIFIED; NOT_RELEASED; no updater/device/model/weight/permission/data action.
