@@ -133,6 +133,18 @@ def _latest_native_evidence(r):
             continue
         offers.append({"role": role, "rendered_quote_count": _count(item.get("rendered_quote_count"))})
 
+    native_prefill = _mapping(receipt.get("native_prompt_prefill"))
+    if not native_prefill and receipt.get("native_prompt_prefill_verified") is True:
+        # CausalStreamRunner proves the exact same-context token IDs instead of
+        # using llama.cpp's processed+cached timing counters.
+        prompt_count = _count(runner.get("prompt_tokens"))
+        native_prefill = {
+            "status": "VERIFIED",
+            "method": "EXACT_SAME_CAUSAL_PREFILL_TOKEN_IDS",
+            "tokenized_prompt_tokens": prompt_count,
+            "server_total_prompt_tokens": prompt_count,
+        }
+
     return {
         "turn_status": row.get("status"),
         "runner_role": runner.get("role"),
@@ -147,7 +159,21 @@ def _latest_native_evidence(r):
             "status": flow_status,
             "native_receipt_status": receipt.get("status"),
             "native_completion_http_200": receipt.get("native_completion_http_200") is True,
+            "native_completion_completed": (not synthetic) and (
+                receipt.get("native_completion_completed") is True
+                or (row.get("status") == "FINAL" and receipt.get("native_stream_completed") is True)),
             "native_prompt_prefill_verified": receipt.get("native_prompt_prefill_verified") is True,
+            "native_prompt_prefill": {
+                "status": native_prefill.get("status") if type(native_prefill.get("status")) is str else "UNVERIFIED",
+                "method": native_prefill.get("method") if type(native_prefill.get("method")) is str else None,
+                "verified": receipt.get("native_prompt_prefill_verified") is True,
+                "tokenized_prompt_tokens": _count(native_prefill.get("tokenized_prompt_tokens")),
+                "server_processed_prompt_tokens": _count(native_prefill.get("server_processed_prompt_tokens")),
+                "server_cached_prompt_tokens": _count(native_prefill.get("server_cached_prompt_tokens")),
+                "server_total_prompt_tokens": _count(native_prefill.get("server_total_prompt_tokens")),
+                "prompt_ms": _seconds(native_prefill.get("prompt_ms")),
+                "prompt_per_second": _seconds(native_prefill.get("prompt_per_second")),
+            },
             "native_stream_completed": receipt.get("native_stream_completed") is True,
             "native_template_submitted": native_submitted,
             "template_submitted": submitted,
