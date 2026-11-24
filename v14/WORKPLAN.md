@@ -12,7 +12,7 @@ The first active implementation lane remains DATA → BASE → PROBE. This is a 
 
 - **DATA:** parser, chronological split, strict missing-value rejection, horizon-aligned seasonal inputs, calendar features, dataset/config/split hashes, hash-gated test access and bounded NumPy batches are present in `v14/m1/`.
 - **DATA CI:** synthetic tests passed on Python 3.13 and 3.14 on the previous verified head `8d93236c753f0194224c19edc7411d8d7082b1d6` (GitHub Actions runs 45216218985 and 45216233106). This is synthetic CI evidence, not a real UCI cohort result.
-- **BASE:** Persistence, Seasonal Persistence, Train Mean, Train Median, Ridge-AR, LAD/L1-AR and streaming MAE evaluation were present with synthetic tests in the archived snapshot. Raw-Window-Probe (linear MAE readout) and Raw-Window-MLP (one-hidden-layer nonlinear control) have now been added to the clean branch with train-only fitting and synthetic tests; their exact CI result is pending.
+- **BASE:** Persistence, Seasonal Persistence, Train Mean, Train Median, Ridge-AR, LAD/L1-AR and streaming MAE evaluation were present with synthetic tests in the archived snapshot. Raw-Window-Probe (linear MAE readout), Raw-Window-MLP (one-hidden-layer nonlinear control) and paired temporal-block bootstrap are now added to the clean branch. Exact synthetic CI passed on Python 3.13 and 3.14 in run 45311246210 (head d72733c1d8e16860d70728cca240a8be945a227e).
 - **PROBE:** JEPA encoder/predictor training, direct-MAE control, frozen-representation probe, random-encoder probe and collapse metrics are not yet implemented in this active workspace.
 - **Real-data / test year:** no UCI cohort result or test-year evaluation is claimed. The test gate must remain closed until preregistration is fixed and hashed.
 
@@ -20,8 +20,7 @@ The code was selectively copied from the immutable pre-reset snapshot after insp
 
 ## Next implementation order
 
-1. Run and inspect the new Raw-Window-Probe/Raw-Window-MLP and paired block-bootstrap tests on Python 3.13 and 3.14. Fix any failures before treating the controls as verified. Check exact input parity, train-only fitting, deterministic seeds, bounded batches and parameter counts.
-2. Add the experiment runner and common metric/statistics layer: multi-output horizons 15/30/60, primary average MAE over 15–60, per-horizon/per-channel metrics, paired temporal block bootstrap over days/weeks, same blocks across models and seeds, seed variance reported separately.
+1. Raw-window and paired bootstrap synthetic tests passed on Python 3.13/3.14. Next add the experiment runner and common metric/statistics layer: multi-output horizons 15/30/60, primary average MAE over 15–60, per-horizon/per-channel metrics, paired temporal block bootstrap over days/weeks, same blocks across models and seeds, seed variance reported separately.
 3. Implement the direct-MAE model and JEPA representation path with the same data bundle, target horizon, training/validation protocol and probe capacity. Keep Random-Encoder-Probe and raw controls; include effective-rank/collapse telemetry.
 4. Complete M1a at T=1 first: backpropagation, baselines, collapse checks, reload/persistence and exact input parity. No test-year access before preregistration hash enforcement.
 5. Only after M1a, implement M1b recurrence sweep T=1/2/4 with shared-weight recurrence, unshared compute-matched depth controls and wider parameter/compute controls. Train each condition from scratch with its own seeds.
