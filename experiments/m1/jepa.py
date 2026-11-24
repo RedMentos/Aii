@@ -5,6 +5,7 @@ import copy
 import math
 from dataclasses import asdict, dataclass
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -82,6 +83,39 @@ def unpatchify(patches: torch.Tensor, patch_size: int, channels: int, length: in
     batch = patches.shape[0]
     values = patches.reshape(batch, patches.shape[1], patch_size, channels)
     return values.reshape(batch, -1, channels)[:, :length, :]
+
+
+class ChannelStandardizer(nn.Module):
+    """Per-channel z-score fitted only on the raw rows assigned to train."""
+
+    def __init__(self, channels: int):
+        super().__init__()
+        self.register_buffer("mean", torch.zeros(channels, dtype=torch.float32))
+        self.register_buffer("scale", torch.ones(channels, dtype=torch.float32))
+        self.register_buffer("fitted", torch.tensor(False, dtype=torch.bool))
+
+    @torch.no_grad()
+    def fit(self, dataset) -> None:
+        if self.mean.numel() != len(dataset.channels):
+            raise ValueError("standardizer channel count does not match dataset")
+        start, end = dataset.bounds["train"]
+        values = np.asarray(dataset.values[start:end], dtype=np.float64)
+        means = np.zeros(values.shape[1], dtype=np.float64)
+        scales = np.ones(values.shape[1], dtype=np.float64)
+        for channel in range(values.shape[1]):
+            finite = values[:, channel][np.isfinite(values[:, channel])]
+            if finite.size == 0:
+                raise ValueError(f"train split has no finite values for channel {channel}")
+            means[channel] = finite.mean()
+            std = finite.std()
+            scales[channel] = std if np.isfinite(std) and std > 1e-6 else 1.0
+        self.mean.copy_(torch.as_tensor(means, dtype=self.mean.dtype, device=self.mean.device))
+        self.scale.copy_(torch.as_tensor(scales, dtype=self.scale.dtype, device=self.scale.device))
+        self.fitted.fill_(True)
+
+    def transform(self, values: torch.Tensor) -> torch.Tensor:
+        return (values - self.mean) / self.scale
+
 
 
 class PatchTransformerEncoder(nn.Module):
@@ -169,6 +203,7 @@ class JEPAForecaster(nn.Module):
     def __init__(self, config: JEPAConfig):
         super().__init__()
         self.config = config
+        self.scaler = ChannelStandardizer(config.input_channels)
         self.context_encoder = PatchTransformerEncoder(config)
         self.target_encoder = copy.deepcopy(self.context_encoder)
         self.target_encoder.requires_grad_(False)
@@ -184,8 +219,8 @@ class JEPAForecaster(nn.Module):
     def predict_latents(
         self, x: torch.Tensor, seasonal: torch.Tensor, calendar: torch.Tensor
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        context = self.context_encoder(x)
-        queries = self.future_query_encoder(seasonal, calendar)
+        context = self.context_encoder(self.scaler.transform(x))
+        queries = self.future_query_encoder(self.scaler.transform(seasonal), calendar)
         prediction = self.predictor(queries, context)
         return prediction, context
 
@@ -202,7 +237,7 @@ class JEPAForecaster(nn.Module):
         target: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         prediction, context = self.predict_latents(x, seasonal, calendar)
-        target_latents = self.encode_target(target)
+        target_latents = self.encode_target(self.scaler.transform(target))
         if prediction.shape != target_latents.shape:
             raise ValueError(
                 f"predicted/target latent shapes differ: {prediction.shape} vs {target_latents.shape}"
@@ -296,6 +331,7 @@ class DirectMAEForecaster(nn.Module):
     def __init__(self, config: JEPAConfig):
         super().__init__()
         self.config = config
+        self.scaler = ChannelStandardizer(config.input_channels)
         self.context_encoder = PatchTransformerEncoder(config)
         self.future_query_encoder = FutureQueryEncoder(config)
         self.predictor = CrossAttentionPredictor(config)
@@ -306,8 +342,8 @@ class DirectMAEForecaster(nn.Module):
     def forward(
         self, x: torch.Tensor, seasonal: torch.Tensor, calendar: torch.Tensor
     ) -> torch.Tensor:
-        context = self.context_encoder(x)
-        queries = self.future_query_encoder(seasonal, calendar)
+        context = self.context_encoder(self.scaler.transform(x))
+        queries = self.future_query_encoder(self.scaler.transform(seasonal), calendar)
         predicted_latents = self.predictor(queries, context)
         patches = self.value_head(predicted_latents)
         return unpatchify(
@@ -353,8 +389,9 @@ class FrozenContextProbe(nn.Module):
     ) -> torch.Tensor:
         batch, horizon = seasonal.shape[:2]
         with torch.no_grad():
-            context = self.backbone.context_encoder(x)[:, -1, :]
+            context = self.backbone.context_encoder(self.backbone.scaler.transform(x))[:, -1, :]
         context = context.unsqueeze(1).expand(-1, horizon, -1)
+        seasonal = self.backbone.scaler.transform(seasonal)
         known = torch.cat((seasonal.reshape(batch, horizon, -1), calendar), dim=-1)
         step = torch.arange(horizon, device=x.device, dtype=x.dtype) / max(horizon, 1)
         angle = 2.0 * math.pi * step
