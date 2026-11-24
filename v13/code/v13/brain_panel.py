@@ -95,6 +95,50 @@ def _latest_native_evidence(r):
             c4_recorded = False
             c4_metrics = {}
 
+    # A synthetic runner may exercise the same receipt code with fake model
+    # and stream objects. Keep those checks useful, but never publish them as
+    # native execution or native prefill evidence.
+    synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
+    raw_native_submitted = receipt.get("native_template_submitted") is True
+    native_submitted = (not synthetic) and raw_native_submitted
+    synthetic_submitted = synthetic and (
+        receipt.get("synthetic_template_submitted") is True or raw_native_submitted
+    )
+    submitted = native_submitted or synthetic_submitted
+
+    raw_prefill_verified = receipt.get("native_prompt_prefill_verified") is True
+    raw_stream_completed = receipt.get("native_stream_completed") is True
+    raw_http_200 = receipt.get("native_completion_http_200") is True
+    native_prefill = _mapping(receipt.get("native_prompt_prefill"))
+    if not native_prefill and raw_prefill_verified:
+        # CausalStreamRunner proves the exact same-context token IDs instead of
+        # using llama.cpp's processed+cached timing counters.
+        prompt_count = _count(runner.get("prompt_tokens"))
+        native_prefill = {
+            "status": "VERIFIED",
+            "method": "EXACT_SAME_CAUSAL_PREFILL_TOKEN_IDS",
+            "tokenized_prompt_tokens": prompt_count,
+            "server_total_prompt_tokens": prompt_count,
+        }
+    raw_prefill_status = native_prefill.get("status")
+    if synthetic:
+        synthetic_prefill_verified = raw_prefill_verified and raw_prefill_status == "VERIFIED"
+        native_prefill_verified = False
+        if synthetic_prefill_verified:
+            prefill_status = "SYNTHETIC_VERIFIED"
+        elif raw_prefill_status == "MISMATCH":
+            prefill_status = "SYNTHETIC_MISMATCH"
+        else:
+            prefill_status = "SYNTHETIC_UNVERIFIED"
+    else:
+        native_prefill_verified = raw_prefill_verified and raw_prefill_status == "VERIFIED"
+        synthetic_prefill_verified = False
+        prefill_status = raw_prefill_status if raw_prefill_status in (
+            "VERIFIED", "MISMATCH", "UNVERIFIED"
+        ) else "UNVERIFIED"
+        if prefill_status == "VERIFIED" and not native_prefill_verified:
+            prefill_status = "UNVERIFIED"
+
     native_offers = receipt.get("offers") if type(receipt.get("offers")) is list else []
     native_ids = [x.get("packet_id") for x in native_offers
                   if type(x) is dict and type(x.get("packet_id")) is str]
@@ -104,16 +148,28 @@ def _latest_native_evidence(r):
     c4_ids = [x for x in c4_ids if type(x) is str]
     c4_accepted = bool(c4_recorded and c4_metrics.get("status") == "PASS"
                        and c4_metrics.get("role") == "C3_LANGUAGE")
-    ids_match = bool(c4_accepted and c4_ids and native_ids and set(c4_ids) == set(native_ids))
-
-    synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
-    native_submitted = receipt.get("native_template_submitted") is True
-    synthetic_submitted = synthetic and receipt.get("synthetic_template_submitted") is True
-    submitted = native_submitted or synthetic_submitted
+    id_lists_match = bool(
+        c4_accepted and c4_ids and native_ids
+        and len(c4_ids) == len(native_ids)
+        and len(set(c4_ids)) == len(c4_ids)
+        and len(set(native_ids)) == len(native_ids)
+        and set(c4_ids) == set(native_ids)
+    )
+    c4_native_ids_match = bool(
+        not synthetic and native_submitted and native_prefill_verified and id_lists_match
+    )
+    c4_synthetic_ids_match = bool(
+        synthetic and synthetic_submitted and synthetic_prefill_verified and id_lists_match
+    )
+    prefill_accepted = native_prefill_verified or synthetic_prefill_verified
     prefix = "SYNTHETIC_" if synthetic else "NATIVE_"
     if not receipt:
         flow_status = "OFFER_RECEIPT_UNAVAILABLE"
-    elif submitted and c4_recorded and ids_match:
+    elif submitted and c4_recorded and not c4_accepted:
+        flow_status = prefix + "TEMPLATE_SUBMITTED_C4_RECEIPT_NOT_ACCEPTED"
+    elif submitted and c4_recorded and not prefill_accepted:
+        flow_status = prefix + "TEMPLATE_SUBMITTED_PREFILL_UNVERIFIED"
+    elif submitted and c4_recorded and id_lists_match:
         flow_status = prefix + "TEMPLATE_SUBMITTED_MATCHED_C4"
     elif submitted and c4_recorded:
         flow_status = prefix + "TEMPLATE_SUBMITTED_C4_ID_MISMATCH"
@@ -133,17 +189,14 @@ def _latest_native_evidence(r):
             continue
         offers.append({"role": role, "rendered_quote_count": _count(item.get("rendered_quote_count"))})
 
-    native_prefill = _mapping(receipt.get("native_prompt_prefill"))
-    if not native_prefill and receipt.get("native_prompt_prefill_verified") is True:
-        # CausalStreamRunner proves the exact same-context token IDs instead of
-        # using llama.cpp's processed+cached timing counters.
-        prompt_count = _count(runner.get("prompt_tokens"))
-        native_prefill = {
-            "status": "VERIFIED",
-            "method": "EXACT_SAME_CAUSAL_PREFILL_TOKEN_IDS",
-            "tokenized_prompt_tokens": prompt_count,
-            "server_total_prompt_tokens": prompt_count,
-        }
+    native_completion_completed = (not synthetic) and (
+        receipt.get("native_completion_completed") is True
+        or (row.get("status") == "FINAL" and raw_stream_completed)
+    )
+    synthetic_completion_completed = synthetic and (
+        receipt.get("native_completion_completed") is True
+        or (row.get("status") == "FINAL" and raw_stream_completed)
+    )
 
     return {
         "turn_status": row.get("status"),
@@ -158,15 +211,17 @@ def _latest_native_evidence(r):
         "offer_flow": {
             "status": flow_status,
             "native_receipt_status": receipt.get("status"),
-            "native_completion_http_200": receipt.get("native_completion_http_200") is True,
-            "native_completion_completed": (not synthetic) and (
-                receipt.get("native_completion_completed") is True
-                or (row.get("status") == "FINAL" and receipt.get("native_stream_completed") is True)),
-            "native_prompt_prefill_verified": receipt.get("native_prompt_prefill_verified") is True,
+            "native_completion_http_200": (not synthetic) and raw_http_200,
+            "synthetic_completion_http_200": synthetic and raw_http_200,
+            "native_completion_completed": native_completion_completed,
+            "synthetic_completion_completed": synthetic_completion_completed,
+            "native_prompt_prefill_verified": native_prefill_verified,
+            "synthetic_prompt_prefill_verified": synthetic_prefill_verified,
             "native_prompt_prefill": {
-                "status": native_prefill.get("status") if type(native_prefill.get("status")) is str else "UNVERIFIED",
+                "status": prefill_status,
                 "method": native_prefill.get("method") if type(native_prefill.get("method")) is str else None,
-                "verified": receipt.get("native_prompt_prefill_verified") is True,
+                "verified": native_prefill_verified,
+                "synthetic_verified": synthetic_prefill_verified,
                 "tokenized_prompt_tokens": _count(native_prefill.get("tokenized_prompt_tokens")),
                 "server_processed_prompt_tokens": _count(native_prefill.get("server_processed_prompt_tokens")),
                 "server_cached_prompt_tokens": _count(native_prefill.get("server_cached_prompt_tokens")),
@@ -174,18 +229,20 @@ def _latest_native_evidence(r):
                 "prompt_ms": _seconds(native_prefill.get("prompt_ms")),
                 "prompt_per_second": _seconds(native_prefill.get("prompt_per_second")),
             },
-            "native_stream_completed": receipt.get("native_stream_completed") is True,
+            "native_stream_completed": (not synthetic) and raw_stream_completed,
+            "synthetic_stream_completed": synthetic and raw_stream_completed,
             "native_template_submitted": native_submitted,
+            "synthetic_template_submitted": synthetic_submitted,
             "template_submitted": submitted,
             "c4_receipt_status": c4_metrics.get("status") if c4_recorded else "NOT_RECORDED",
             "c4_selected_offer_count": _count(c4_metrics.get("count")) if c4_recorded else None,
             "native_prompt_offer_count": len(offers),
-            "c4_native_offer_ids_match": ids_match if c4_recorded else None,
+            "c4_native_offer_ids_match": c4_native_ids_match if c4_recorded else None,
+            "c4_synthetic_offer_ids_match": c4_synthetic_ids_match if c4_recorded else None,
             "offers": offers,
             "semantic_use_proven": False,
         },
     }
-
 
 
 def _entry(record):
