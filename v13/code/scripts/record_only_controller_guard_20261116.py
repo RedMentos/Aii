@@ -62,8 +62,9 @@ def apply_sources(code_dir, sources):
         raw = result.get(name)
         if raw is None:
             raw = path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() not in allowed:
-            raise ValueError('controller guard source changed: ' + name)
+        actual_sha = hashlib.sha256(raw).hexdigest()
+        if actual_sha not in allowed:
+            raise ValueError('controller guard source changed: ' + name + ' sha256=' + actual_sha)
         checked[name] = raw
 
     runtime = checked['v13/runtime.py']
