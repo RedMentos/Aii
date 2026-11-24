@@ -211,8 +211,11 @@ def test_same_causal_stream_receipt_requires_exact_native_prefill_binding(tmp_pa
     assert latest["evidence_environment"] == "SYNTHETIC"
     assert latest["offer_flow"]["status"] == "SYNTHETIC_TEMPLATE_SUBMITTED_MATCHED_C4"
     assert latest["offer_flow"]["native_prompt_prefill_verified"] is True
+    assert latest["offer_flow"]["native_prompt_prefill"]["status"] == "VERIFIED"
+    assert latest["offer_flow"]["native_prompt_prefill"]["method"] == "EXACT_SAME_CAUSAL_PREFILL_TOKEN_IDS"
     assert latest["offer_flow"]["native_stream_completed"] is True
     assert latest["offer_flow"]["native_completion_http_200"] is False
+    assert latest["offer_flow"]["native_completion_completed"] is False
     assert latest["offer_flow"]["semantic_use_proven"] is False
 
 
@@ -321,3 +324,11 @@ def test_brain_panel_exposes_sanitized_native_prefill_and_c4_join():
     assert flow["c4_native_offer_ids_match"] is True
     assert flow["semantic_use_proven"] is False
     assert SECRET not in json.dumps(latest)
+
+    mismatch_runtime = SimpleNamespace(
+        cfg={"learning_mode": "RECORD_ONLY"}, current=None,
+        store=EvidenceStore({"runner": metrics}, selected_ids=("b1", "not-b2")),
+    )
+    mismatch_flow = brain_status(mismatch_runtime)["latest_turn"]["offer_flow"]
+    assert mismatch_flow["native_prompt_prefill_verified"] is True
+    assert mismatch_flow["c4_native_offer_ids_match"] is False
