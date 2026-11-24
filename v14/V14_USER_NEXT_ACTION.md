@@ -1,4 +1,4 @@
-# Research & Perception — latest verified checkpoint (2026-11-24 17:47 UTC)
+# Research & Perception — latest verified checkpoint (2026-11-24 17:50 UTC)
 
 **No user action is required. No Termux command, model download/swap, permission change, or update request is needed for this checkpoint.**
 
@@ -10,6 +10,7 @@
 - Research: R-135 records SigLIP 2 (86M ViT-B) as a possible static A3 comparator. Official README says checkpoints/other materials are CC BY 4.0 while the Hugging Face model card says Apache-2.0; official issue #192 remained open. Keep it unadopted until clarified. No model or weights were downloaded.
 - Durable details: [Research & Perception handoff](handoffs/RESEARCH_PERCEPTION_A5_INTERVAL_ORDER_20261124_RUN14.md).
 
+- Parallel V14-018: PR #2433 latest head `acc68d6113eb320d283cfa0150230b40273d6e96` has focused A4 outcome, RAW EAR prosody, optional NumPy backend, FASTDIAR, consent-revocation and privacy CI PASS on Python 3.13/3.14. Staged/integrated consumers still fail because Core's `record_only_controller_guard_20261116.py` rejects the current `attention.py` SHA; its base `dfa3945` is stale against release-development `8d93236`. Core must rebind the guard and dependent stage/deployer pins, then rebase #2433. This is not Android microphone proof.
 **Next:** Core/Boss must finish the #2465 source-lifecycle and nested memory/world-builder pin chain without weakening hashes. After acceptance, rebase/integrate #2469 and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 task after source-composer integration is near-duplicate source grouping and source-level uncertainty for A3 projector training/holdout. No user decision is needed now.
 
 ---
