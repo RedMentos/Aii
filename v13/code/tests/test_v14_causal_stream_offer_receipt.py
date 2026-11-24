@@ -256,7 +256,12 @@ def test_brain_status_exposes_native_prompt_fingerprints_without_prompt_text():
         current=None,
         store=EvidenceStore({"runner": metrics}),
     )
+    runtime.store.message["metadata"] = json.dumps({
+        "runner": metrics, "model_revision": "test-model-revision"
+    })
     latest = brain_status(runtime)["latest_turn"]
+    assert latest["model_revision"] == "test-model-revision"
+    assert latest["offer_flow"]["model_revision"] == "test-model-revision"
     assert latest["offer_flow"]["status"] == (
         "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
     )
