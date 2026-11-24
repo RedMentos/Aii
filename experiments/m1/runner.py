@@ -352,7 +352,9 @@ def _fit_one(
     elif name == "train_median":
         predictor = TrainMedianBaseline().fit(dataset)
     elif name == "ridge_ar_l2":
-        predictor = RidgeARBaseline(alpha=config.ar_alpha, ar_lags=config.ar_lags).fit(train_view)
+        predictor = RidgeARBaseline(alpha=config.ar_alpha, ar_lags=config.ar_lags).fit(
+            train_view, batch_size=config.batch_size
+        )
         extra["n_train_windows"] = predictor.n_train_windows
         extra["selected_ar_lags"] = list(predictor.selected_ar_lags)
     elif name == "lad_ar_l1_l2penalty":
@@ -362,7 +364,7 @@ def _fit_one(
             epochs=config.epochs,
             learning_rate=config.learning_rate,
             seed=seed,
-        ).fit(train_view)
+        ).fit(train_view, batch_size=config.batch_size)
         history = [{"epoch": float(i + 1), "objective": float(value)}
                    for i, value in enumerate(predictor.epoch_losses)]
         extra["n_train_windows"] = predictor.n_train_windows
@@ -519,7 +521,7 @@ def run_validation_experiment(
         raise ValueError("pilot data config does not match loaded dataset config")
     if config.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
-    if "jepa" in config.models and config.batch_size < 2:
+    if "jepa_pretrain" in config.models and config.batch_size < 2:
         raise ValueError("JEPA anti-collapse training requires batch_size >= 2")
 
     repo_root = Path(__file__).resolve().parents[2]
@@ -537,7 +539,12 @@ def run_validation_experiment(
         raise ValueError("training window cap leaves no accepted training windows")
 
     model_config = config.model_config(dataset)
-    checkpoint_dir = Path(output_path).resolve().parent / "checkpoints"
+    destination = Path(output_path).resolve()
+    if destination.exists():
+        raise FileExistsError(f"result already exists; choose a new output path: {destination}")
+    checkpoint_dir = destination.parent / f"{destination.stem}.checkpoints"
+    if checkpoint_dir.exists():
+        raise FileExistsError(f"checkpoint directory already exists: {checkpoint_dir}")
     runs = []
     manifest = []
 
@@ -632,6 +639,8 @@ def run_uci_validation(
     source = Path(data_path)
     if not source.is_file():
         raise FileNotFoundError(source)
+    if source.resolve() == Path(output_path).resolve():
+        raise ValueError("result output must not overwrite the UCI source file")
     if config.validation_start is None or config.test_start is None:
         raise ValueError("real UCI runs require fixed validation_start and test_start dates")
     before = source.stat()
