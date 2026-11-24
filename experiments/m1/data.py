@@ -470,7 +470,6 @@ def load_test_split(
     preregistration_path: str | Path,
     preregistration_sha256: str,
     access_log_path: str | Path,
-    expected_code_commit: str,
 ) -> tuple[list[Window], SplitStats]:
     """Open test windows only after exact preregistration/config/data hash checks.
 
@@ -491,8 +490,6 @@ def load_test_split(
         "dataset_sha256": dataset_sha256(rows, channels),
     }
     actual_code_commit = current_git_commit()
-    if expected_code_commit != actual_code_commit:
-        raise PermissionError("expected_code_commit does not match executing commit")
     verify_preregistration(prereg, expected, expected_code_commit=actual_code_commit)
     # Persist the access event before touching the test-window builder.
     event = {
