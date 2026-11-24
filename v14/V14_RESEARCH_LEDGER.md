@@ -1595,3 +1595,20 @@ Chen Henry Wu, Thomas Zhang and Aditi Raghunathan, **Off-Policy Merging Beats On
 - Android/Redmi: REDMI_UNVERIFIED. No device-side A3 model training, frame capture, native embedding, memory or latency measurement is claimed.
 
 **Primary sources:** https://arxiv.org/abs/2605.19080 ; https://arxiv.org/abs/2610.05872 ; https://github.com/AR-FORUM/grafting
+
+## R-130 — RAW EAR separates speech, EOT and interrupt candidates (2026-11-24)
+
+**Implementation follow-up to R-128; no new paper is claimed as reviewed in this entry.**
+
+- `TemporalVoiceEvidence` now emits three distinct, source/generation/consent-scoped candidate signals: sustained speech, a new voiced-onset interrupt candidate, and a one-shot end-of-turn (EOT) candidate. EOT requires at least 400 ms of newly observed contiguous `SILENCE` after sustained voiced activity. Overlapping windows count only their newly covered suffix; source/generation/consent changes and long unobserved gaps reset the evidence; noise, impulses and uncertain windows do not count as silence.
+- The RAW EAR A4 result exposes these fields through its existing temporal evidence receipt; the C3 summary carries a compact `turn=sXeYiZ floor_transfer=UNVERIFIED` suffix. This is a candidate/evidence interface, not a trained endpoint model.
+- `floor_transfer_verified=False` remains explicit. No EOT candidate automatically cancels a response. Existing `duplex_mode=interrupt` still means a user-configured provider-voice-onset barge-in; it is not learned selective yielding or verified floor transfer.
+- The 400 ms threshold is a BOOT engineering default, not calibrated from MPTB or natural dialogue. Candidate-only status must remain until source/session-disjoint EOT/INT hard-negative evaluation, FPR/false-interruption analysis and Android latency tests exist.
+- No external code, dataset, checkpoint or model weights were imported or downloaded. No new dependency or license obligation.
+
+### Verification at this checkpoint
+- LOCAL_LINUX: isolated state-machine reproduction PASS for sustained onset, 400 ms EOT, short-burst negative, and noise/impulse negative. This is not a full repository test.
+- GitHub Actions: exact code head `677f73eaf7bf594ecbbf64ab2e99cca4398e0bc1` queued for the RAW EAR prosody/A4/C3 suite on Python 3.13 and 3.14; exact results pending at ledger authoring.
+- Full local Aii checkout remains blocked by unavailable GitHub DNS. Android microphone, AudioRecord, native VAD/model and Redmi timing remain `REDMI_UNVERIFIED`.
+
+**Research basis already recorded in R-128:** Patamia et al., arXiv:2611.19484 (https://arxiv.org/abs/2611.19484), and Mathur & Manocha, MultiPartyTurnBench, arXiv:2610.20172 (https://arxiv.org/abs/2610.20172). Both motivate separating candidate discovery, EOT and INT verification; neither calibrates this 400 ms heuristic.
