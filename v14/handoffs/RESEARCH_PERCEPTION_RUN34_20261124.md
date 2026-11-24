@@ -84,3 +84,19 @@ Both entries are in \`v14/V14_RESEARCH_LEDGER.md\`. No new model, code dependenc
 4. Perception continues with a SHADOW-only semantic endpoint hypothesis (R-126) and a small pooled audio/vision predictive-loss ablation (R-127); no model download or production authority without explicit approval and measured comparison.
 
 **User action:** none.
+
+
+## Addendum — V14-018 supersession audit (2026-11-24 04:16 UTC)
+
+A board sweep showed V14-018 still pointed to old PR #2433. The Perception functionality is already present in the newer current-base PR #2448 branch, so no rebase/duplicate implementation was created.
+
+Verified current #2448 blobs:
+- audio_speaker_evidence.py: 25474bb202c1209800f5c8a73e36eaca5555efd6
+- audio_voice_cues.py: e46a47bb93615126c8ee149baebfb6df9813fbee
+- attention.py: 0f6a81e7380aa6716bbac4e4ef5834d108601a70
+- test_audio_speaker_evidence.py: 3630e48ecc8b06b1a09d2830ddffaa85ad2a6212
+
+The current tests cover non-voiced embeddings never seeding/replacing speaker history, impulse novelty without speaker/interrupt authority, consent receipt epochs, exact current PCM hash binding, and A5/A4/C3 consumption. Exact run 45322153507 passed py_compile and 128 tests on both Python 3.13 and 3.14. The audio duplex race suite separately passed 179 tests on both versions in run 45322153681.
+
+Comment 7121856464 on #2433 records the supersession and recommends that Boss close the old PR after review. The old branch was not modified. Core's stale audio SOURCE_BLOBS still block staged/integrated composition; no Android microphone or Redmi proof exists.
+
