@@ -12,7 +12,7 @@ APPROVAL_PATH = "v13/native_probe_approval.py"
 
 SOURCE_PINS = {
     OPERATOR_PATH: "8d59efa1bfb7dea7bbb2fd1af2cf7d2e25adebc4",
-    APPROVAL_PATH: "564a3a3746605e41e45ccc8591445c4a93d046b7",
+    APPROVAL_PATH: "4ed93963094e1d482654741d1ca81cc6ae247eea",
 }
 
 HELP_OLD = b":callosum [status|shadow|active|degrade|promote <Richtung>]"
