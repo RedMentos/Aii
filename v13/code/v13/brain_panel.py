@@ -65,7 +65,7 @@ def _seconds(value):
 
 
 _ID = re.compile(
-    r"(?:[a-f0-9]{40}|[a-f0-9]{64}|(?:pkt|evt|gen|mem|src|upd|req|rule|fixed|chat|exp|consolidation)_[a-f0-9]{28,32})\\Z",
+    r"(?:[a-f0-9]{40}|[a-f0-9]{64}|(?:pkt|evt|gen|mem|src|upd|req|rule|fixed|chat|exp|consolidation)_[a-f0-9]{28,32})\Z",
     re.ASCII,
 )
 _BODY_ROLES = {"B1_DETAIL", "B2_GIST"}
@@ -112,9 +112,10 @@ def _body_offer_evidence(
         role = metrics.get("role")
         query_id = _identifier(metrics.get("query_packet_id"))
         kind = row.get("kind")
-        if role not in _BODY_ROLES or not query_id or kind not in {
-            "body_offer_attempt", "body_offer_delivered"
-        }:
+        if (type(role) is not str or role not in _BODY_ROLES or not query_id
+                or type(kind) is not str or kind not in {
+                    "body_offer_attempt", "body_offer_delivered"
+                }):
             continue
         packet_id = _identifier(metrics.get("packet_id")) if kind == "body_offer_delivered" else None
         if kind == "body_offer_delivered" and not packet_id:
@@ -123,6 +124,7 @@ def _body_offer_evidence(
             "role": role,
             "attempt_status": "UNAVAILABLE",
             "delivered": False,
+            "body_attempt_recorded": False,
             "prompt_tokens": None,
             "generated_tokens": None,
             "ttft_s": None,
@@ -142,7 +144,10 @@ def _body_offer_evidence(
         if kind == "body_offer_attempt":
             runner = _mapping(metrics.get("runner"))
             status = metrics.get("status")
-            item["attempt_status"] = status if status in _BODY_STATUSES else "UNKNOWN"
+            item["body_attempt_recorded"] = True
+            item["attempt_status"] = (
+                status if type(status) is str and status in _BODY_STATUSES else "UNKNOWN"
+            )
             item["prompt_tokens"] = _count(runner.get("prompt_tokens"))
             item["generated_tokens"] = _count(runner.get("generated_tokens"))
             item["ttft_s"] = _seconds(runner.get("ttft_s"))
@@ -174,10 +179,12 @@ def _body_offer_evidence(
                     if synthetic_prefill_verified and synthetic_completion_completed
                     else "SYNTHETIC_TEMPLATE_INCLUDED_ONLY"
                 )
+            elif not item["body_attempt_recorded"]:
+                state = "BODY_ATTEMPT_METRICS_UNAVAILABLE"
             elif native_prefill_verified and native_completion_completed:
-                state = "NATIVE_PREFILL_AND_GENERATION_VERIFIED"
+                state = "C4_SELECTED_C3_NATIVE_PREFILL_AND_GENERATION_VERIFIED"
             elif native_prefill_verified:
-                state = "NATIVE_PREFILL_VERIFIED_GENERATION_INCOMPLETE"
+                state = "C4_SELECTED_C3_NATIVE_PREFILL_VERIFIED_GENERATION_INCOMPLETE"
             else:
                 state = "TEMPLATE_INCLUDED_PREFILL_UNVERIFIED"
             item["consumption_state"] = state
