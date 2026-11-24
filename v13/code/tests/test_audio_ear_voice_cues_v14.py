@@ -14,6 +14,8 @@ import numpy as np
 from v13 import audio_voice_cues as audio_voice_cues_module
 from v13.audio_silero_vad import SileroVADStream
 from v13.audio_voice_cues import (
+    _anti_alias_decimate,
+    _anti_alias_decimate_numpy,
     consume_pcm16_voice_window,
     extract_voice_cues,
     reset_runtime_temporal_voice_states,
@@ -70,7 +72,7 @@ def make_runtime(tmp_path):
     store.ensure_generation_snapshot({}, {})
     session = store.new_session("RAW EAR voice cue test")
     event = store.event(session, "bounded synthetic acoustic fixture")
-    return SimpleNamespace(home=tmp_path, store=store), event
+    return SimpleNamespace(home=tmp_path, store=store, session=session), event
 
 
 def consent_ok(source_id, receipt):
@@ -178,6 +180,17 @@ def test_numpy_pitch_backend_matches_python_for_synthetic_controls(sample_rate):
         )
 
 
+@pytest.mark.parametrize("sample_rate", (8000, 12000, 16000, 44100, 48000))
+@pytest.mark.parametrize("sample_count", (1, 2, 3, 10, 11, 12, 13, 24, 25, 26, 100, 1000))
+def test_numpy_fir_decimator_matches_python_at_boundary_lengths(sample_rate, sample_count):
+    factor = max(1, int(sample_rate // 8000))
+    rng = random.Random(sample_rate * 10000 + sample_count)
+    samples = tuple(rng.randint(-32768, 32767) for _ in range(sample_count))
+    assert _anti_alias_decimate_numpy(
+        samples, sample_rate, factor, np
+    ) == _anti_alias_decimate(samples, sample_rate, factor)
+
+
 def test_numpy_backend_is_explicit_and_falls_back_without_changing_python(monkeypatch):
     pcm = tone(140)
     expected = extract_voice_cues(pcm, 16000, backend="python")
@@ -283,11 +296,18 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
+        assert segment["acoustic"]["temporal_voice"] == result["a4"]["temporal_voice"]
         assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
         assert result["a4"]["prosody_change_score"] == cues["prosody_change_score"]
         assert result["a4"]["learning_authority"] is False
         assert result["a4"]["action_authority"] is False
+        turn = result["a4"]["temporal_voice"]["turn_candidates"]
+        assert turn["speech_candidate"] is True
+        assert turn["interrupt_candidate"] is True
+        assert turn["eot_candidate"] is False
+        assert turn["floor_transfer_verified"] is False
+        assert turn["floor_transfer_status"] == "UNVERIFIED"
         assert result["c3_admission"].status == "ADMITTED"
         summary = result["c3_admission"].selected[0].summary
         assert "activity=VOICED" in summary and "f0_med_hz=" in summary
@@ -1157,5 +1177,146 @@ def test_outer_audio_lease_is_thread_bound_and_nonserializable(tmp_path):
             with pytest.raises(TypeError, match="ephemeral"):
                 pickle.dumps(lease)
             assert RECEIPT not in repr(lease)
+    finally:
+        runtime.store.close()
+
+
+
+def test_silero_recurrent_state_resets_when_consent_receipt_changes(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="c" * 64, model_revision="synthetic-consent-epoch",
+    )
+    renewed_receipt = "fixture:renewed-consent"
+    valid_receipts = {RECEIPT, renewed_receipt}
+
+    def check(source_id, receipt):
+        return source_id == SOURCE_ID and receipt in valid_receipts
+
+    guard = _guard_for(check)
+    try:
+        first = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=check, consent_guard=guard, vad_stream=vad,
+            finality="FINAL",
+        )
+        renewed = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=renewed_receipt,
+            consent_check=check, consent_guard=guard, vad_stream=vad,
+            finality="FINAL",
+        )
+        assert first["vad_evidence"]["state_reset_reason"] == "NEW_STREAM"
+        assert renewed["vad_evidence"]["state_reset_reason"] == "STREAM_CHANGED"
+        assert renewed["vad_evidence"]["first_frame_start_ms"] == 1100
+        assert renewed["a4"]["learning_authority"] is False
+        assert renewed["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+
+@pytest.mark.parametrize("bad_receipt", [None, "", "x" * 257])
+def test_invalid_audio_consent_receipt_fails_before_vad_or_store_side_effects(tmp_path, bad_receipt):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="d" * 64, model_revision="synthetic-invalid-receipt",
+    )
+    try:
+        with pytest.raises(PermissionError, match="bounded local audio consent receipt"):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=bad_receipt,
+                consent_check=lambda source, receipt: True,
+                consent_guard=_guard_for(lambda source, receipt: True),
+                vad_stream=vad, finality="FINAL",
+            )
+        assert session.calls == []
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+
+def test_sustained_silence_candidate_reaches_a4_and_c3_without_floor_transfer(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    silence_event = None
+    try:
+        voiced = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        assert voiced["a4"]["temporal_voice"]["turn_candidates"]["speech_candidate"] is True
+
+        silence_event = runtime.store.event(runtime.session, "synthetic silence window")
+        silent = consume_pcm16_voice_window(
+            runtime, bytes(2 * 16000), sample_rate=16000, start_ms=1100,
+            event_id=silence_event["event_id"],
+            generation_id=silence_event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        turn = silent["a4"]["temporal_voice"]["turn_candidates"]
+        assert turn["speech_candidate"] is False
+        assert turn["eot_candidate"] is True
+        assert turn["interrupt_candidate"] is False
+        assert turn["floor_transfer_verified"] is False
+        assert turn["floor_transfer_status"] == "UNVERIFIED"
+        assert turn["observed_silence_ms"] == 1000
+        assert silent["c3_admission"].status == "ADMITTED"
+        summary = silent["c3_admission"].selected[0].summary
+        assert "turn=s0e1i0" in summary
+        assert "floor_transfer=UNVERIFIED" in summary
+    finally:
+        runtime.store.close()
+
+
+
+def test_persistent_non_speech_noise_only_recruits_attention_once(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    state = TemporalVoiceEvidence()
+    observed = []
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal=None):
+            observed.append(dict(sal or {}))
+            return {"captured": True}
+
+    monkeypatch.setattr(
+        audio_voice_cues_module.attctl, "controller", lambda _runtime: CaptureAttention()
+    )
+    guard = _guard_for(consent_ok)
+    try:
+        results = []
+        for start_ms in (100, 140, 180):
+            results.append(consume_pcm16_voice_window(
+                runtime, white_noise(), sample_rate=16000, start_ms=start_ms,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=guard, finality="FINAL",
+                temporal_state=state,
+            ))
+        assert len(observed) == 3
+        assert observed[0]["novelty"] > observed[1]["novelty"] + 0.1
+        assert observed[1]["novelty"] == pytest.approx(observed[2]["novelty"])
+        # Non-speech novelty recruits perception, but never grants interruption.
+        assert observed[0]["external_interrupt"] == pytest.approx(observed[1]["external_interrupt"])
+        assert results[0]["a4"]["non_speech_event"]["kind"] == "UNVOICED_NOISE"
+        assert results[0]["a4"]["non_speech_event"]["onset"] is True
+        assert results[1]["a4"]["non_speech_event"]["onset"] is False
+        assert results[2]["a4"]["non_speech_event"]["active"] is True
+        assert all(result["a4"]["learning_authority"] is False for result in results)
+        assert all(result["a4"]["action_authority"] is False for result in results)
     finally:
         runtime.store.close()

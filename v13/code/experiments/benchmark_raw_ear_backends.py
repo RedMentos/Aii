@@ -9,6 +9,7 @@ Run from v13/code:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import platform
@@ -26,7 +27,11 @@ CODE_ROOT = Path(__file__).resolve().parents[1]
 if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
-from v13.audio_voice_cues import extract_voice_cues
+from v13.audio_voice_cues import (
+    _anti_alias_decimate,
+    _anti_alias_decimate_numpy,
+    extract_voice_cues,
+)
 from v13.audio_speaker_evidence import SCHEMA, SpeakerChangeEvidenceRegistry
 
 
@@ -91,6 +96,32 @@ def measure(function, iterations):
     }
 
 
+def benchmark_decimator(sample_rate, iterations):
+    """Compare the exact Python and optional NumPy FIR paths on synthetic PCM16 samples."""
+    import numpy as np
+
+    factor = max(1, int(sample_rate // 8000))
+    rng = random.Random(20261124 + sample_rate)
+    samples = [rng.randint(-32768, 32767) for _ in range(sample_rate)]
+    python_result = _anti_alias_decimate(samples, sample_rate, factor)
+    numpy_result = _anti_alias_decimate_numpy(samples, sample_rate, factor, np)
+    if numpy_result != python_result:
+        raise SystemExit(f"decimator parity failure at {sample_rate} Hz")
+
+    return {
+        "sample_rate_hz": sample_rate,
+        "decimation_factor": factor,
+        "sample_count": len(samples),
+        "python": measure(
+            lambda: _anti_alias_decimate(samples, sample_rate, factor), iterations
+        ),
+        "numpy": measure(
+            lambda: _anti_alias_decimate_numpy(samples, sample_rate, factor, np), iterations
+        ),
+        "outputs_equal": True,
+    }
+
+
 def web_rtc_fractions(pcm):
     try:
         import webrtcvad
@@ -120,6 +151,14 @@ def benchmark_speaker_tracker(iterations):
     batches = []
     for index in range(iterations):
         start_ms = 1000 + index * 1000
+        # Bind each synthetic embedding batch to an actual deterministic PCM16
+        # fixture, matching the runtime registry's source-integrity contract.
+        pcm = struct.pack(
+            "<" + "h" * 16000,
+            *(int(4000 * math.sin(2 * math.pi * 220 * sample / 16000 + index * 0.1))
+              for sample in range(16000)),
+        )
+        current_chunk_sha256 = hashlib.sha256(pcm).hexdigest()
         frames = [
             {"end_ms": start_ms + offset * 80, "vector": vectors[offset % len(vectors)]}
             for offset in range(1, 13)
@@ -128,9 +167,16 @@ def benchmark_speaker_tracker(iterations):
             "schema": SCHEMA,
             "source_id": "benchmark:raw-ear",
             "generation_id": "benchmark:generation",
+            "consent_receipt_ref": "benchmark:consent-epoch",
+            "current_chunk_sha256": current_chunk_sha256,
             "model_id": "synthetic:192d",
             "model_revision": "fixture-v1",
             "model_sha256": "a" * 64,
+            "model_license_id": "synthetic-only",
+            "model_language": "synthetic",
+            "encoder_id": "synthetic",
+            "encoder_revision": "fixture-v1",
+            "embedding_unit": "FRAME",
             "embedding_dim": 192,
             "frame_step_ms": 80,
             "lookback_frames": 10,
@@ -147,9 +193,11 @@ def benchmark_speaker_tracker(iterations):
         result = registry.update(
             source_id="benchmark:raw-ear",
             generation_id="benchmark:generation",
+            consent_receipt_ref="benchmark:consent-epoch",
             start_ms=start_ms,
             end_ms=start_ms + 1000,
             activity_hint="VOICED",
+            current_chunk_sha256=batches[index]["current_chunk_sha256"],
             embeddings=batches[index],
         )
         index += 1
@@ -188,6 +236,11 @@ def main():
     except ImportError:
         report["numpy_version"] = None
         raise SystemExit("NumPy is required for this opt-in benchmark")
+
+    report["decimator"] = {
+        str(rate): benchmark_decimator(rate, args.iterations)
+        for rate in (16000, 44100, 48000)
+    }
 
     for name, pcm in fixtures.items():
         python_result = extract_voice_cues(pcm, SAMPLE_RATE, backend="python")

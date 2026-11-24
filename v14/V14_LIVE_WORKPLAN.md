@@ -1,3 +1,28 @@
+
+
+### Run 35 integration-owner correction — 2026-11-24 (2026-11-24T06:11:40.528Z)
+
+- Rechecked the actual changed-file ownership. The stale audio composer and vision source-lifecycle pins are carried by Boss/Integrator PR #2443 (head `cdf6b64067ac426ba32194100d3764f6e74c105f`), not the fair-budget Core PR #2462. #2462 comment 7123452298 remains a cross-lane FYI; **#2443 is the primary integration owner**.
+- Exact #2443 composer blobs are older than current Perception candidates. Current #2448 audio blobs and SHA-256: voice cues `5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3` / `68faf1af043811201d2afa4abe109c14abd649ea16e01f44eda84ab38dac7f1f`; speaker evidence `14a6d8d79d361e6c89c3770d372a3f9824f13afb` / `405ff901e5dde05746c31b8f06b44acde147e252b0a4fc08cede320867a2c252`; temporal evidence `e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140` / `21a126fcd173c964d230e24cc3f8f8b099a7239cefa4fd45a6e8cfb49267c65c`.
+- Current #2463 `vision.py` is Git blob `5b7c92f0ffc1e89c4d71c0a3ab819e18722a23b2`, SHA-256 `0e08fdd20140f3e60f67305c930d3b1b5db273ebaa0e289925136c1378340877`; #2443 lifecycle candidate still pins the old `d204393a...` SHA-256.
+- Exact values and requested bottom-up recompose were posted to #2443 comment 7123664991. Perception will not edit the Boss-owned composer or lifecycle mapping. Keep all strict pins; stack/rebase current #2448/#2463 code, recompute, and rerun staged/integrated/same-turn/migration tests.
+
+## Research & Perception run 35 — 2026-11-24 (checkpoint 2026-11-24T06:05:32.755Z)
+
+- Perception PR #2448 advanced on its current release-development base `8d93236c753f0194224c19edc7411d8d7082b1d6` to code commit `825ecfbd1a530fdba3ba830b0087cd35933ef464`.
+- Fixed the A4 packet contract: `identity_authority=False` is now explicit alongside `learning_authority=False` and `action_authority=False`. This is a non-identity authority declaration, not speaker identification or floor-transfer proof.
+- Refreshed the Perception-owned RAW EAR/WebRTC comparator workflow to the exact new Git blob for `audio_voice_cues.py`: `5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3`. The workflow's exact-head comparison now passes.
+- Exact GitHub Actions on `825ecfbd`: audio duplex 189/189 PASS on Python 3.13 and 3.14 (run 45336790279); RAW EAR optional NumPy/speaker path 128/128 PASS on 3.13/3.14 (45336790251); WebRTC/libfvad comparator 72/72 PASS on 3.13/3.14 (45336790325); prosody-to-attention 72/72 PASS on 3.11/3.13 (45336790459); consent revocation, privacy scan and runtime-deployment integrity PASS (45336790416, 45336790269, 45336790259).
+- **Still FAIL:** staged/integrated run 45336790400 and Core same-turn run 45336790334 fail on both Python 3.13/3.14 at the Core-owned `integrated_audio_context_candidate_20261121.py` stale `audio_voice_cues.py` source pin. Staged matrix: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; migration subtests also report PARTIAL instead of UPDATED. Perception did not edit the Core composer. The primary composer owner is Boss/Integrator PR #2443; exact current audio Git blobs/SHA-256 and vision SHA-256 were posted in #2443 comment 7123664991. #2462 comment 7123452298 remains a cross-lane FYI.
+- LOCAL_LINUX full Aii checkout/test suite remains BLOCKED: no checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` fails because github.com DNS cannot resolve. An isolated local A4 authority-contract syntax/assertion reproduction passed; it is not a full module or repository test.
+- PR #2463 remains OPEN/DRAFT: focused vision source-lineage (29/29) and RAW EYE provider-frame ingress (39/39) pass on Python 3.13/3.14; staged/integrated still fails because Core's lifecycle composer rejects `vision.py`. No MediaProjection or Android device test.
+- Last authenticated phone receipt #832 reported base `8d93236` installed and auto-update enabled; it predates both open Perception PRs. No new UPDATE_REQUEST was sent. REDMI_UNVERIFIED for #2448/#2463; RELEASE NOT_RELEASED.
+- Research R-128 was appended: full-paper review of Patamia et al. (arXiv:2611.19484, 2026-11-14) and Mathur & Manocha (arXiv:2610.20172, 2026-10-14). Their main transferable point is to separate candidate discovery, floor-transfer verification and event localisation; speaker change/voice activity alone is not a floor transfer. MPTB code is MIT, dataset CC BY 4.0 / 2.46 GB and gated; nothing was downloaded.
+- Next: Core/Integrator must recompose audio pins against the current combined source set; Core/JEPA must add `vision.py` source-lifecycle/source-forget mapping. After one combined staged/integrated/same-turn pass, Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration. No user action is required.
+- Detailed handoff: `v14/handoffs/RESEARCH_PERCEPTION_RUN35_20261124.md`.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
@@ -1328,3 +1353,123 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+## Research & Perception checkpoint — 2026-11-23 23:00 CET (run 28)
+- V14-018 / A5→A4→C3: updated v13/code/v13/audio_speaker_evidence.py to schema v14.raw-ear-speaker-embeddings/3; every batch must match the active consent receipt and exact persisted PCM SHA-256. Only VOICED frames enter bounded history; non-voiced windows advance timestamp ordering but cannot seed speaker references. audio_voice_cues.py passes the current raw.source_ref.sha256 and lease receipt.
+- Negative controls: code suppresses non-voiced embeddings from speaker history; an impulse regression was added to check A4 novelty, interrupt suppression and C3 admission, but it has NOT been executed. Local PASS covers only the registry module; A4/C3 E2E is NOT_RUN. The packet path stores no embedding vectors. The hash binds the batch to the PCM chunk only; it does not attest the caller-supplied encoder.
+- Evidence: exact updated speaker-evidence module compiled and direct local tests passed for active-lease consent, PCM hash match/mismatch, non-voiced suppression, retained history, consent-epoch reset and reset API. Added repository regression tests in test_audio_speaker_evidence.py. Full repo pytest was not run locally because no checkout/runtime was available. GitHub Actions exact-head run 45277411451 ended startup_failure with no jobs; this is CI BLOCKED, not a test PASS/FAIL.
+- GitHub metadata: PR-body update and #2433 coordination comment were blocked by API 403 (verified email required); code, tests, board, workplan, ledger, next-action and handoff commits succeeded.
+- PR: #2448, base 8d93236; code/test state verified on a23366f4ab72feaf53b965c16de9cc9f818ed04d; handoff commit dc7afb20d24619de61944adadbab79916f052cee. DRAFT / NOT_RELEASED. No deployment or model swap.
+- Device/deployment: existing sanitized owner receipt #825 in #1904 confirms base SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 installed and auto-update enabled; separate diagnostics #826 report AI runtime STOPPED_BY_USER, autostart false and model process stopped. No CHAT_SEND, UPDATE_REQUEST, restart or LOG_PAGE was performed. PR #2448 is not merged/installed; its RAW EAR feature remains REDMI_UNVERIFIED. No Android microphone, AudioRecord, latency or RAM claim.
+- Next: Core/QA review the new schema/source pins and restore a runnable exact-head CI job; Perception then ports the still-separate transactional A4 outcome/N10 path from stale #2433 onto the current base. Calibrated speaker thresholds and learned EOT remain OFF/UNVERIFIED.
+
+
+## Research & Perception — Teacher Ear stream consumer correction — 2026-11-24 run 29
+
+- PR #2448 remains DRAFT / NOT_RELEASED on the current release base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Found and fixed a consumer-contract mismatch: the function annotation allowed `SherpaOnlineTeacherStream`, but the runtime type gate accepted only `SherpaOnlineTeacher`. The consumer now accepts the declared teacher and stream types while preserving both explicit opt-ins and live source/consent validation. Code commit `d0c0f4ca366b97dcc1334d0a20f21bea94f5b9b6`.
+- Found and fixed a streaming correction loss: a recognizer revision is represented by an empty delta plus a new cumulative hypothesis. With transcript admission explicitly opted in, C3 now receives `asr_revision_untrusted`; ordinary chunks remain delta-only. Code commit `2dd5c4990a84f88c9ad96dfcf37539bf25649df8`.
+- The three-window integration regression now checks contiguous source-bound PCM, delta extension, corrected cumulative hypothesis, C3 admission and final stream cleanup. Test commit `dd409b8e19960e62826a281cd4a85de5459cb44c`. It uses a fake recognizer, not a real model.
+- Exact branch head at code checkpoint: `dd409b8e19960e62826a281cd4a85de5459cb44c`. The new handoff is `v14/handoffs/RESEARCH_PERCEPTION_TEACHER_STREAM_C3_REVISION_20261124_RUN29.md`; R-122 records the optional sherpa-onnx 20M English candidate.
+- LOCAL_LINUX: full checkout unavailable; `git ls-remote` fails with GitHub DNS resolution. No local `py_compile` or pytest was run.
+- CI: exact-head push/PR runs `45294606645`, `45294614943`, `45294672434`, `45294666726` all ended `startup_failure` with zero jobs. No test job ran; no PASS is claimed.
+- Consumer effect after successful tests: optional contiguous Teacher Ear can enter A5/A4/C3 admission, send incremental text and explicit corrections only with the separate transcript-persistence/admission opt-in. It does not yet drive a full C3 generation or Android microphone.
+- Redmi: public blocker #1904 comment 7108089370 confirms base `8d93236` installed and auto-update enabled; Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false, model process stopped. Preserve the stopped state. PR #2448 is not installed; REDMI_UNVERIFIED.
+- Next: restore exact-head Actions, obtain independent QA/Boss review, then coordinate Core/QA's separate visible AudioRecord provider and revocation lifecycle. No model download/swap, restart, permission change or manual Termux action.
+- User action: NONE.
+
+
+## Research & Perception — source-bound A4 outcome → N10 feedback — 2026-11-24 run 30
+
+- Selectively ported the Perception-owned A4/N10 slice from stale PR #2433 onto current #2448; did not merge or copy the old speaker/Teacher/audio files. The current release base is a descendant of #2433's base and has no intervening changes to the three ported existing files.
+- `attention.py` now verifies granted AttentionRequest/Response lineage, exact source hash and persisted span before scoring A4 re-look coverage; it writes a durable exactly-once receipt. Runtime already calls `Attention.source_outcome(eid,text,output)` after C3 output.
+- `neuromod.py` now exposes `signal_in_transaction()`; A4 policy state, receipt and N10 ModulatorPacket share one Store transaction. Failed N10 insertion rolls back all three. Negative `reward_error` remains signed into next-event attention/caution.
+- Ported `test_attention_outcome_receipt_v14.py`, updated `test_attention.py` to canonical `path_id`, and added `.github/workflows/v14-attention-source-bound-outcomes.yml` for Python 3.13/3.14 compile + receipt/Attention/Neuromod tests.
+- Exact source blobs: `attention.py` ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb (SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e); `neuromod.py` fbb02147cbcfff10896736a20838fbce08d7409b (SHA-256 e01f541874f401bf2996603d79e0cf24463aa16ed5c3902534f37678c1c72ce0). Handoff: `v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md`.
+- LOCAL_LINUX: full checkout unavailable; no local compile/pytest. CI: current exact-head push/PR runs ended `startup_failure` with zero jobs; no tests executed and no PASS is claimed.
+- Integration blocker for Core: `record_only_controller_guard_20261116.py` still pins the old attention.py SHA-256 `0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739`. Core must rebind to the exact current SHA and recompute guard/recovery/stage/deployer pins bottom-up; no guard bypass or edit was made by Perception.
+- Product status: CODE_PRESENT / existing Runtime call site / synthetic Store tests ADDED_NOT_RUN. This is durable attention-policy/N10 feedback, **not** model-weight learning, trained JEPA, latent coupling or truth authority.
+- Redmi: public #1904 comment 7108089370 still reports installed base `8d93236`, auto-update enabled, Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false. PR #2448 remains DRAFT / NOT_RELEASED / not installed. Preserve the stopped state; REDMI_UNVERIFIED.
+- Next: Core pin-chain repair; restore runnable Actions; exact Python 3.13/3.14, staged/integrated, migration, privacy and revocation tests; then independent QA/Boss review. No user action, model download, permission change, restart or manual Termux command.
+
+
+### V14-018 speaker-history test inventory correction — 2026-11-24
+
+The current #2448 branch already contains the requested 1s/2s timestamp-invariance test and the negative controls; these are not a future coding task. Exact test blob: `7962ad24f29b4a4638e20d5449b9d9f2d2e3028d`.
+
+- `test_one_and_two_second_reference_timestamps_are_batch_length_invariant` (lookback_frames 10 and 20) compares a common frame timestamp in one-second and two-second incoming batches.
+- `test_missing_threshold_emits_score_without_a_decision` checks that missing calibration does not become a speaker-change decision.
+- `test_non_voiced_embeddings_never_seed_or_replace_speaker_history` and `test_three_regime_gate_defers_nonvoiced_low_similarity` check non-voiced suppression and fail-closed decision gating.
+- Status: PRESENT / NOT_RUN on current PR head. Restore exact-head Actions, then execute on Python 3.13 and 3.14 plus staged/integrated A5/A4/C3. No new code is required unless one of those tests fails.
+
+
+### P0 and cross-lane status refresh — 2026-11-24
+
+Latest sanitized public #1904 comment 7108089370: installed base `8d93236c753f0194224c19edc7411d8d7082b1d6`, 41/41 check-runs on that SHA, auto-update enabled, pipeline `CI_WAIT` / `PARTIAL` / no error. Separate DIAGNOSTICS: Runtime `STOPPED_BY_USER`, autostart false, model process stopped. Last stored turn remains incorrect (`2+2` returned `2`): 6.295 s total, TTFT 2.046 s, C3 prefill 3.1 s, 358 prompt / 7 generated; B1/B2 `TIME_BUDGET` 53.2 / 54.2 s. This is stored evidence, not a new run; no restart or new device command was made.
+
+Boss PR #2443 carries the newer A3/vision composition, but the same #1904 checkpoint reports it DRAFT / NOT_MERGED / NOT_RELEASED / NOT_INSTALLED with 5/37 checks complete, 2 in progress, 30 queued. Perception will not duplicate or overwrite those A3 sources. P0 C3 correctness and B1/B2 useful offers remain blocking across the product.
+
+
+### Cross-lane exact-head CI reconciliation — 2026-11-24
+
+The last sanitized #1904 owner receipt reported Boss #2443 at 5/37 checks complete on an earlier head `88ba1cc...`. Current GitHub PR API readback is head `cdf6b64067ac426ba32194100d3764f6e74c105f`, base `8d93236`, OPEN / DRAFT, with zero check-runs and commit status pending. Latest workflow records for #2443 and #2448 report `startup_failure` with zero jobs; the cause is not diagnosed. Do not carry the earlier 5/37 count forward as current-head evidence. #2443 contains the newer A3/vision composition but is not merged/released; avoid duplicate edits.
+
+
+### Run-31 ownership correction — A4/N10 remains in Boss #2443, not Perception #2448
+
+After the selective port, the current #2441 and #2443 branches were re-read. Boss #2443 already contains byte-identical A4/N10 files, the receipt tests, dedicated workflow and Core guard update. Its current branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean` has `attention.py` blob ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb, `neuromod.py` blob fbb02147cbcfff10896736a20838fbce08d7409b, receipt test blob 200085b88497af331beb49eaf061944ad30542de, workflow blob 05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57 and guard blob ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc. The guard contains the current attention SHA-256 allowlist.
+
+To avoid two competing owners, Perception reverted the duplicate A4/N10 files/workflow from #2448 to the exact current release-base bytes and deleted the duplicate new test/workflow. Revert commits: attention ee08a65644958780c64fd9f6fc1dfb7e972252d5; neuromod 214157e7d90ded915087d8e9d6e158ebe7a06b0b; test_attention 9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43; duplicate test deletion 1ddd5109596a3a42ee815e3a67baf7a46a5a7634; duplicate workflow deletion 3b0416862c75c780b0a3de46d73fce6db72bb010. The attempted-port handoff is explicitly marked SUPERSEDED.
+
+Current #2443 remains OPEN / DRAFT / NOT_MERGED; API readback has zero check-runs and pending commit status, while its latest workflow records are startup_failure/zero jobs. Do not call A4/N10 accepted or released. Perception #2448 remains focused on RAW EAR/Teacher Ear/duplex; the A4/N10 integration belongs to Boss #2443 until the exact combined head is reviewed and green.
+
+## Research & Perception — 2026-11-24 run 32
+
+- **Task / defect:** Teacher Ear manifest verification previously hashed a resolved pathname and returned that pathname; the native loader opened it later. A parent-directory or final-file rename/symlink swap between verification and native open could redirect the load.
+- **Implementation:** `v13/code/v13/audio_teacher_ear.py` now walks the canonical root and every relative parent with `openat`-style `os.open(..., dir_fd=..., O_DIRECTORY|O_NOFOLLOW)`, hashes the already-open file descriptor, checks `/proc/self/fd/<fd>` resolves to the same device/inode, and passes those pinned descriptor paths to `OnlineRecognizer.from_transducer`. `VerifiedModelFiles` retains descriptors until `SherpaOnlineTeacher.close()`; unavailable `dir_fd`, `O_NOFOLLOW`, `O_DIRECTORY`, or `/proc/self/fd` fails closed.
+- **Consumer / user effect:** This is connected to the actual optional Teacher Ear `_load()` path, not a standalone fixture. It protects model-path identity across the verify→native-open interval. It does not capture microphone audio, train weights, or change C3's rule that provisional audio is excluded until FINAL.
+- **Code/test commits:** initial descriptor pin `4563d9557dcde949356fe63b22a0e4ba5a1c88e0`; speaker-test contract sync `a20ff4393ea920fc34ab78d647f44668d50e8a1a`; Teacher Ear symlink contract `a3d4f24a6cfb7fd378676b43f6dc81cc85ecef2d`; provisional→FINAL C3 test correction `bf8b30f51ce786ec5fb2317e6d8e652a9e2dd0a0`; exact RAW EAR source-pin refresh `7ba3fec3f016e770f1280af5f190d1a9fa0def6a`.
+- **LOCAL_LINUX:** Python 3.13.5, Linux 6.18.57 x86_64. `py_compile` of an isolated reproduction of the exact descriptor-walk algorithm: PASS. Five isolated regression cases (file replacement, parent-directory symlink swap, final symlink rejection, size ceiling, fake native-loader path read): PASS 5/5. This is not the repository's full test suite.
+- **CI:** Previous exact PR head `345de43a5abc510e5827220e506812973c160fd9` exposed five stale failures: three speaker-test expectations, one Teacher Ear error-message regex, and one test incorrectly expecting PROVISIONAL hypotheses in C3. Those were corrected; comparison workflow source pins were refreshed to current exact blobs (`audio_voice_cues.py=e46a47bb93615126c8ee149baebfb6df9813fbee`, `audio_temporal_evidence.py=e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140`). New head `7ba3fec3f016e770f1280af5f190d1a9fa0def6a` has fresh checks queued; no PASS claim until they finish.
+- **TERMUX/REDMI:** REDMI_UNVERIFIED. No connected handset, no microphone capture, no sherpa native model load, no model download/swap, no permission change. `/proc/self/fd`, `dir_fd`, ARM ABI and RSS remain unmeasured on Android.
+- **Updater/device:** latest private V13OBS issue #115 (updated 2026-11-24 02:58 UTC) reports updater enabled/UP_TO_DATE at base `8d93236c753f0194224c19edc7411d8d7082b1d6`; this is not proof that PR #2448 is installed or that C3/B1/B2 work. The five-turn aggregate still reports B1/B2 native failures and zero valid offers; latest C3 turn generated 7 tokens with 1.87 s prefill-to-first-token. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #843–#845 have no receipt yet.
+- **Release:** PR #2448 remains OPEN/DRAFT; NOT_RELEASED. No UPDATE_REQUEST sent.
+- **Next:** finish exact-head Python 3.13/3.14 CI, then verify `/proc/self/fd` and `os.open(dir_fd=...)` on authorized Termux/Android before treating the Teacher Ear model path as Android-capable. Continue the 1 s/2 s speaker-history invariance regression; do not loosen uncalibrated speaker decisions.
+- **User action:** none; no model or device permission is requested.
+
+
+
+## Research & Perception checkpoint — 2026-11-24 04:09 UTC
+
+- Current Perception branch: \`research-perception/v14-audio-duplex-bridge-20261123-run21\`; pre-checkpoint head \`437c72b4c10fd5837aef64a984f61d7da86f627d\`; release-development base \`8d93236c753f0194224c19edc7411d8d7082b1d6\`.
+- PR #2448 remains OPEN / DRAFT / NOT_RELEASED. Code-tested snapshot \`c7db1809370fae5ae5a49287e76cba0deedf80e7\`; later branch commits through 437c72 are documentation/board/handoff updates, not audio code changes.
+- Rechecked the two Boss audio-duplex race findings. The exact source already has per-target first-writer protection in \`duplex.record\`, and the audio bridge serializes active-turn recheck → durable handoff commit → cancellation with the same per-Runtime lock used by \`duplex.handoff\` and rollback. Regressions cover sequential distinct receipts, concurrent distinct receipts, first-writer preservation, and commit/reader/cancel ordering.
+- Exact GitHub Actions on current branch head 437c72: audio duplex run **45322153681** PASS, **179/179 on Python 3.13 and 179/179 on Python 3.14**. Review response posted on #2448 (review 6033522645).
+- Exact remaining failures: staged/integrated run **45322153465** fails at the Core-owned audio composer with \`ValueError: audio source blob changed: v13/audio_voice_cues.py\` (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests); integrated regression has the same pin failure; Core same-turn run **45322153579** fails on both Python versions for the same composition issue. Current expected/actual blobs are recorded in the Run 33 handoff. Coordination comment posted on #2462 (comment 7121776477). Perception did not edit Core-owned pins.
+- PR #2463 remains OPEN / DRAFT. Focused vision source-lineage 29/29 and RAW EYE frame-ingress 39/39 pass on Python 3.13/3.14; staged/integrated still fails because the Core-owned lifecycle composer rejects \`vision.py\`. No bypass.
+- LOCAL_LINUX full repository checkout/tests remain BLOCKED: container has no Aii checkout and \`git ls-remote https://github.com/RedMentos/Aii.git\` fails because github.com DNS cannot resolve. This run did not claim local full-suite success. TERMUX/REDMI remains REDMI_UNVERIFIED for these candidates.
+- Research R-126 (FD-VAD) and R-127 (MJEPA) are now in the ledger. FD-VAD is a preprint with a 0.5B LLM + WavLM stack and A100-only latency; MJEPA supports the importance of explicit cross-modal prediction but uses a 1B ViT-g-scale training setup. Neither was downloaded, imported or treated as a Redmi candidate.
+- Next: Core/Integrator rebinds the three audio SOURCE_BLOBS and adds the reviewed \`vision.py\` lifecycle mapping + source-forget regression; then run one combined staged/integrated/same-turn candidate. After it is green, use the authorized updater path and obtain a separate installation receipt; do not issue manual Termux instructions or change models/permissions.
+
+
+
+
+## V14-018 supersession check — 2026-11-24 04:16 UTC
+
+- The current-base #2448 Perception line already contains the relevant #2433 behavior: batch-prestate speaker comparison, VOICED-only history admission, non-voiced suppression, consent-receipt epoch binding, exact PCM hash binding, and source-bound transactional A4 outcome.
+- Exact current branch run 45322153507: py_compile + 128/128 PASS on Python 3.13 and 128/128 PASS on Python 3.14. Audio duplex race run 45322153681: 179/179 on both versions.
+- #2433 is therefore superseded for its Perception code; do not rebase or duplicate it. A supersession note is posted at https://github.com/RedMentos/Aii/pull/2433#issuecomment-7121856464. Keep its historical branch untouched pending Boss closure/review.
+- Remaining work is not the old code patch: Core must rebind the three audio SOURCE_BLOBS and compose the current A5/A4/C3 path; then Perception can run source-disjoint A4 outcome/retention and model-bound speaker calibration experiments. No AudioRecord or Redmi proof.
+
+
+
+
+## Exact-head CI readback — 2026-11-24 04:20 UTC
+
+Perception branch head after the Run 34 documentation checkpoint: 086a2bc1d5f13dadfaa18faa8f866da8ea91c13d.
+
+- PASS: audio duplex 45325275479 (Python 3.13/3.14); RAW EAR optional NumPy/speaker path 45325275490 (Python 3.13/3.14); prosody-to-attention 45325275396 (Python 3.11/3.13); consent revocation 45325275190; privacy 45325275257; runtime deployment integrity 45325275898.
+- FAIL: staged/integrated 45325276067, exact Core-owned failure audio source blob changed: v13/audio_voice_cues.py (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests); Core same-turn 45325275254 Python 3.13 same failure, Python 3.14 still in progress at readback.
+- Core follow-up #2462 comment 7121937670; PR #2448 exact-head follow-up 7121938175.
+- No local full-suite, Android AudioRecord or Redmi proof. Candidate remains DRAFT / NOT_RELEASED.
+

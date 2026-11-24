@@ -1250,3 +1250,405 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Concrete V14 adaptation hypothesis (not yet implemented):** after the current source-verified temporal JEPA retrieval path is stable, train a small query-conditioned cue-utility head over existing numeric, provenance-safe cues: learned temporal latent distance, episode age/spacing, action-transition compatibility, outcome-profile compatibility and modality/event-type compatibility. For each training query, use a later committed T8 ActionOutcome to score how much each candidate episode improves a held-out temporal prediction relative to a query-only baseline; construct a future-aware soft target from current retrieval score + measured predictive utility, then train the future-blind cue scorer. Inference must never read the future outcome used for credit assignment. Keep the current latent-distance retriever as baseline and compare recency, random, shuffled-future-credit, single-cue and learned multi-cue variants at matched candidate/compute budgets. Split by session and source cohort; exclude query sources and all holdout windows; test delayed-outcome leakage, omission/censoring, temporal chunk diversity, retention, source forget, checkpoint/restart and rollback. A candidate may enter the B1/B2 SHADOW prompt only if its held-out utility beats the existing baseline; no action authority or native-body-weight change follows from retrieval.
 
 **Status:** FULL_ARXIV_HTML_REVIEWED / REPO_MAIN_REVISION_AND_CC_BY_NC_LICENSE_VERIFIED / SIMULATION_ONLY_PAPER_EVIDENCE / NO_REUSE / V14_CANDIDATE_PROPOSED / NO_ANDROID_PROOF. This entry does not claim FAR has been reproduced or that current V14 episodic recall already learns cue utility.
+
+
+## R-114 — Causal streaming endpointing and safe audio barge-in — 2026-11-23
+
+- **FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech**, arXiv:2609.35791, first submitted 2026-09-16. Primary record: https://arxiv.org/abs/2609.35791. **ABSTRACT_VERIFIED only** in this run; the arXiv full text could not be fetched, so no full-method review or reproduction is claimed.
+- The abstract describes causal bounded audio windows, an ASR-free Continue/Stop decision, a lightweight modality adapter, confidence-gated endpoint commitment and boundary-focused hard negatives. It reports 0.853 endpoint recall on TurnBench dev at FP<=0.10; this is the paper's reported benchmark result, not a V14 or mobile result.
+- Related primary records checked at abstract/metadata level: **FastTurn**, arXiv:2604.01897 (v7 dated 2026-10-15), combines streaming CTC semantics with acoustic cues and evaluates overlaps/backchannels/noise; **Next-Turn**, arXiv:2606.18094 (2026-06-16), predicts time-to-next-speech-onset from timestamps and reports a 25.9-point absolute endpoint-accuracy gain within 320 ms over its evaluated baseline. No full-text reproduction was performed.
+- **V14 decision:** keep the present RAW EAR onset as a low-latency *speech-start* cue only. It cannot infer interruption intent or semantic turn completion. Default `auto` must remain non-cancelling; cancellation stays behind the user's explicit `duplex_mode=interrupt`. The new persisted temporal receipt and one-use replay guard below are correctness prerequisites, not a learned endpoint detector.
+- **Next falsifiable experiment:** compare current acoustic onset, a causal 320-ms bounded endpoint head, and no-semantic baseline on a held-out overlap/backchannel/hesitation set. Report false interruptions/hour, barge-in delay, endpoint recall, and CPU/RAM. Boundary hard negatives and confidence gating are candidates only; no model, weights, data or dependency were imported.
+- **Licenses:** no upstream code, datasets or weights copied. Their specific code/weight/data licenses were not verified in this run. No Android/ARM feasibility or Redmi performance is established.
+
+## R-115 — Causal speech endpointing is distinct from speech onset (2026-11-23)
+
+**Primary paper reviewed in full:** Tristan Tsoi et al., *Next-Turn: Duration-Aware Streaming Endpoint Detection via Time-to-Next-Speech-Onset Prediction*, arXiv:2606.18094v1, 2026-06-16 (preprint; no peer-reviewed venue established here): https://arxiv.org/abs/2606.18094 . The full five-page PDF was read. The method derives a continuous time-to-next-speech-onset target from phoneme/speech timestamps, with zero during speech, the remaining gap during a mid-utterance pause, and a capped 2-second target after an utterance. A Whisper encoder is LoRA-adapted; binary endpoint classification can be trained jointly with regression or discretized duration bins. Random audio cut-off is used to reduce future-context leakage. Evaluation uses non-overlapping 160-ms chunks, normally one past chunk and zero future chunks.
+
+**Reported evidence and limits:** the study trains on 1,177 hours of in-house Chinese speech and manually evaluates 1,185 held-out utterances. The joint classification-plus-duration setup reports Early Interruption 5.0% and ACC320 86.7%; importantly, validation selects binary-only inference (fusion weight 1.0), so the auxiliary duration task improves the learned representation without requiring a second inference head. Whisper-tiny (8M) reports 12.3% Early Interruption / 73.2% ACC320 at 23 ms per chunk; Whisper-small (89M) reports 10.7% / 81.1% at 52 ms; Whisper-large-v3 (640M) reports 5.0% / 86.7% at 152 ms. These are paper measurements on the authors' evaluation setup, not Redmi/Android timing or multilingual generalization. The evaluation set is modest and manually labelled; the training corpus is in-house and Chinese.
+
+**FastTurn full-paper review:** Chengyou Wang et al., *FastTurn: Unifying Acoustic and Streaming Semantic Cues for Low-Latency and Robust Turn Detection*, arXiv:2604.01897v7 (2026-10-15; preprint): https://arxiv.org/abs/2604.01897 . The five-page PDF was read. It combines streaming CTC semantics, a 12-layer ~80M Conformer, Qwen3-0.6B, and acoustic/semantic fusion; the reported total is ~700M parameters and experiments use eight NVIDIA A6000 GPUs. Its test set contains 14,709 complete, 3,643 incomplete, 3,080 backchannel and 1,000 synthetic wait examples. FastTurn-Unified reports 120.1 ms average latency and 79.62% accuracy on its own test set. The English subset does not beat the cited Paraformer+Ten Turn baseline. The public ASLP-lab/FastTurn repository exposes the test set, not the model implementation or weights; a root LICENSE was not found during this review. This is a research benchmark, not a mobile dependency candidate.
+
+**FD-VAD source audit:** Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791 (2026-09-16), was verified only at abstract/metadata level; its full text was not available in this review. The official code repository fd-vad/fd-vad is MIT-licensed (LICENSE blob 66430db46e696ea2b258a4a4e0889402e233ae7e) and documents WavLM-base-plus + Qwen2.5-0.5B-Instruct with a 10.3M-parameter trainable adapter/LoRA (~120 MB). Its requirements include PyTorch, torchaudio, Transformers and PEFT; the pinned lock additionally includes CUDA-specific packages. The base models are fetched from Hugging Face unless separately staged. Model-weight license and a usable ARM/Termux dependency set were not verified. No code, weights, dataset or dependency was imported or downloaded.
+
+**V14 decision:** keep RAW EAR voice_onset as a speech-start observation, not a semantic endpoint. Do not infer turn completion from silence, VAD alone, or the current onset heuristic. Preserve default duplex_mode=auto as non-cancelling; explicit interrupt remains a user-controlled onset interrupt. A future causal endpoint experiment should train a small duration-aware head from source-bound timestamps, compare binary-only vs joint auxiliary-duration training, use source/session-disjoint conversational holdouts, and report Early Interruption, ACC160/320, false interruptions/hour, p50/p90 delay and Android RSS/CPU. Future context must be measured separately because the Next-Turn paper shows lower early interruption at the cost of added delay.
+
+**Status:** NEXT_TURN_FULL_PDF_REVIEWED / FASTTURN_FULL_PDF_REVIEWED / FD_VAD_ABSTRACT_AND_OSS_README_LICENSE_REVIEWED / NO_REUSE / NO_MODEL_OR_DEPENDENCY_DOWNLOAD / NO_ANDROID_PROOF / RESEARCH_ONLY.
+
+## R-116 — Intent-aware duplex turn state and the limits of learned endpoint heads (2026-11-23)
+
+### Primary papers reviewed in full
+
+**HiThink Turn: An Intent-Aware Turn-Taking Control Module for Full-Duplex Dialogue**, arXiv:2609.34096, first submitted 2026-09-28 (preprint; no peer-reviewed venue established in this review): https://arxiv.org/abs/2609.34096
+
+- Separates audio validity (noise / incomplete / complete), user intent (response / backchannel / interruption) and system playback state (speaking / listening). The same request can be a response while listening but an interruption while playback is active. Backchannel and interruption labels are valid only while the system is speaking.
+- Uses boundary-aware 240-ms chunk truncation and minimal intent-sufficient prefixes, rather than waiting for a full utterance. The model is Qwen3-ASR-1.7B with rank-32 LoRA, trained on 7,633 hours and 5.552 million annotated samples using eight H100 GPUs.
+- Reports 0.933 aggregate Full-Duplex-Bench rate score; the paper reports 160-ms model and 625-ms end-to-end response latency. Allowing an interruption prefix in addition to a complete response prefix increases interruption success from 89% to 98% and reduces mean successful-case stop latency from 3.380 s to 1.322 s. The aggregate score excludes latency. Non-target-speech resume averages 0.735; Talk-to-Other remains 0.870 versus Gemini Live's 0.990.
+- Limits: the model is far beyond the Redmi 6-GB-class budget as a separate turn classifier; training is large-scale and English/Chinese; no official implementation repository or model-weight license was located in this review. No model, weights, code or dataset were downloaded or reused.
+
+**Voice-Light: A Full-Duplex Cascaded Voice Agent with Causal Turn-Taking and Speculative Generation**, Bertil Braun, arXiv:2609.20995, first submitted 2026-09-17 (preprint): https://arxiv.org/abs/2609.20995 . Full paper and the official repository README were reviewed.
+
+- The architecture uses Silero for immediate acoustic onset, reversible playback duck/pause, a small (~183k-parameter) causal GRU adapter over a shared streaming Nemotron encoder plus playback state, private speculative text/PCM, generation/cancellation barriers, and browser playback acknowledgements. Only audio confirmed as rendered becomes durable assistant history.
+- The central negative result is important: synthetic completion AUROC 0.9260 transferred to 0.5646 on clean human validation; human fine-tuning raised this only to 0.5972. On a locked test of 1,673 silence candidates from 11 conversations (only 37 HOLD cases), the historical learned checkpoint achieved 12.53% end-of-turn recall at 2.70% false cutoffs, while the Silero timing policy achieved 95.60% recall at the same false-cutoff rate. Most learned-policy turns therefore fell back to an 800-ms timeout. The deployed checkpoint's 65.04% recall / 3.73% false cutoffs / 2.0-s p95 were validation, not locked-test evidence.
+- The 758-ms median endpoint-to-first-server-audio figure comes from 36 turns across three unscripted sessions run by one operator; it is a case study, not a population or controlled user result. The paper explicitly retains a hybrid policy rather than claiming the learned head replaces timing baselines.
+- Official repository: https://github.com/BertilBraun/Voice-Light . GitHub reports no repository license and the root has no LICENSE file; no code or model weights are reused. The 183k head is not a standalone mobile model: it consumes features from a large streaming encoder. The deployment also uses GPU-hosted ASR/LLM/TTS, so it is not an Android resource candidate.
+
+### V14 implications and falsifiable next experiment
+
+1. Keep RAW EAR `voice_onset` as a speech-start observation, never as semantic intent or endpoint evidence. Preserve `duplex_mode=auto` as non-cancelling. The existing explicit `interrupt` override remains intentionally coarse; do not silently reinterpret it as a calibrated intent detector.
+2. A future selective full-duplex policy needs separate source-bound fields for audio validity, intent, playback state and causal prefix time. It must distinguish BACKCHANNEL from INTERRUPTION and RESPONSE, and only apply playback-dependent labels when the assistant is actually audible. The current text Runtime has no speech effector or acknowledged-playback path, so this remains an open cross-organ requirement, not implemented behavior.
+3. Do not replace Silero/timing fallback with a small learned endpoint head on synthetic fit or AUROC alone. Compare the full causal policy on source/session-disjoint human holdouts: false cutoffs, EOT recall, backchannel resume, interruption success, p50/p95 delay, calibration, and no-target speech. Include boundary-truncation, zero/shuffle, source-revocation and restart controls. No private conversational audio may enter training without separate explicit local consent.
+4. The present audio duplex adapter still receives caller-supplied PCM and is not an Android AudioRecord provider or full audible duplex product. The thread-bound AudioConsentLease now has an explicit cross-thread negative regression; the real provider and audible playback acknowledgements remain Core/QA integration work.
+
+**Status:** HITHINK_TURN_FULL_ARXIV_HTML_REVIEWED / VOICE_LIGHT_FULL_ARXIV_HTML_AND_OFFICIAL_REPO_README_REVIEWED / VOICE_LIGHT_NO_LICENSE_NO_REUSE / NO_MODEL_DOWNLOAD / NO_ANDROID_PROOF / RESEARCH_AND_POLICY_GUIDANCE_ONLY.
+
+## R-117 — Optional local Teacher Ear adapter for RAW EAR (2026-11-23)
+
+**Primary implementation documentation reviewed:** k2-fsa/sherpa-onnx official repository and current sherpa-onnx 1.3 documentation, including the Python streaming API, online Zipformer model catalogue, and Android/embedded build scope:
+- https://github.com/k2-fsa/sherpa-onnx
+- https://k2-fsa.github.io/sherpa/onnx/python-api.html
+- https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/zipformer-transducer-models.html
+- https://k2-fsa.github.io/sherpa/onnx/index.html
+
+**Candidate model and rights:** csukuangfj/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17 is listed as English-only and trained on LibriSpeech. The official catalogue lists an int8 encoder of about 41 MB, decoder 527 KB and joiner 253 KB; it is not the previously assumed ~25 MB total. Its linked Hugging Face model card declares Apache-2.0 and reports 3.94 / 9.79 WER on LibriSpeech test-clean / test-other: https://huggingface.co/desh2608/icefall-asr-librispeech-pruned-transducer-stateless7-streaming-small . These are benchmark/model-card results, not conversational or Redmi results. The official sherpa-onnx repository declares Apache-2.0 and advertises Android/embedded support. The Python wrapper's Termux/Bionic ARM64 ABI remains unverified. The official online Zipformer catalogue did not list a comparably small German streaming model; the 20M English model must not be assumed suitable for German speech.
+
+**Implementation in this branch:** v13/code/v13/audio_teacher_ear.py adds a lazy CPU-only SherpaOnlineTeacher adapter. It consumes only caller-supplied PCM16; it does not open a microphone, fetch model files, train weights, or grant truth/learning/action authority. Its local manifest pins encoder/decoder/joiner/token SHA-256 values, rejects path traversal/symlinks and oversized bundles, and bounds the audio window, PCM bytes, thread count and decode loop. It returns a source/generation/consent-bound, window-timed untrusted hypothesis (not word-level timestamps). The sherpa dependency and model remain optional and are loaded only when explicitly configured.
+
+audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a live caller-held AudioConsentLease and separate teacher_asr_opt_in=True. A second transcript_persist_opt_in=True is required before the transcript is added to the persisted PerceptPacket or C3 admission summary. Otherwise the hypothesis is returned only in the ephemeral result; the persisted packet keeps asr_transcript=None. Acoustic/prosodic cues, non-speech classes, temporal evidence and duplex behavior remain primary and unchanged. The integration regression checks both persistence modes and rejection without opt-in.
+
+**Evidence and limits:** LOCAL_LINUX Python 3.13.5: py_compile PASS for the adapter, unit tests and Runtime-integration test source; isolated adapter suite **8/8 PASS** using a deterministic fake recognizer/NumPy-compatible fixture. The full Aii Runtime integration suite was not locally executable because this runner has no mounted Aii checkout and GitHub DNS is unavailable; exact-head GitHub Actions are pending. The CI integration test is synthetic wiring evidence, not actual ASR-model inference. sherpa_onnx is not installed in the local environment; no model, weights, dependencies or datasets were downloaded. No Android AudioRecord, microphone, audible playback, Termux/Redmi benchmark or device update was run. REDMI_UNVERIFIED; NOT_RELEASED.
+
+**Falsifiable next experiment:** after exact-head CI and independent QA/Boss review, obtain separate user approval before installing any sherpa runtime/model. Compare an English-only 20M candidate against acoustic-only RAW EAR on consented public speech fixtures and then, only with separate device permission, measure Android arm64/Bionic compatibility, RSS/PSS, model-load time, RTF/TTFT, WER/CER, partial-window stability, interruption false cuts and source-revocation latency. Keep German turns acoustic-only unless a rights-cleared, resource-appropriate German/multilingual candidate is verified. No production model swap is implied.
+
+**Status:** CODE_PRESENT / WIRED_SYNTHETIC_CONSUMER / LOCAL_ADAPTER_TEST_8_OF_8 / EXACT_HEAD_CI_PENDING / MODEL_NOT_INSTALLED / NO_ANDROID_PROOF / NO_DOWNLOAD_OR_WEIGHT_CHANGE.
+
+## R-118 — FD-VAD: causal semantic endpointing for full-duplex RAW EAR (2026-11-23)
+
+**Primary paper fully reviewed:** Puneet Mathur and Dinesh Manocha, “FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech,” arXiv:2609.35791, submitted 2026-09-16. The project page labels the venue “Submitted”; treat this as a preprint, not peer-reviewed evidence.
+- Paper: https://arxiv.org/abs/2609.35791
+- Project and reported method/results: https://fd-vad.github.io/
+- Official code: https://github.com/fd-vad/fd-vad
+- Model card/checkpoint: https://huggingface.co/puneetUMD/fd-vad
+
+**Architecture and measured evidence:** causal 2.56 s waveform window, updated every 320 ms; WavLM-base-plus features at 50 Hz are temporally downsampled by 4 to 12.5 Hz, projected through a two-layer MLP into Qwen2.5-0.5B-Instruct; LoRA rank 16 plus the modality adapter provide 10.3M trainable parameters (about 1.7%), while the WavLM and base LLM remain frozen. Training used the English Smart Turn v3.1 subset (63,386 clips / 156 h) for one epoch on two A100 GPUs. The held-out 1,000-clip result reports chunk F1 0.832 and 0.6% false-stop on incomplete-speech chunks; utterance-level accuracy is 0.972 complete / 0.969 incomplete. On TurnBench dev, zero-shot EOT recall is 0.853 at FP 0.097, with 1,019 ms median commit latency. A separate in-domain confidence-gated operating point (tau 0.9, K 1) reports 190 ms median endpoint delay and 2.0% false interruption. The paper also finds that 160 ms stride worsens near-boundary and complete-turn F1, while boundary-focused hard negatives within ±2 chunks improve near-boundary performance. These figures are from the authors' reported datasets and hardware; they are not V14 or Android measurements.
+
+**Code, weight and data rights:** official code repository declares MIT; the Hugging Face FD-VAD model card declares MIT for the adapter/checkpoint. The bundled base models are identified as WavLM MIT and Qwen2.5 Apache-2.0; Smart Turn v3.1 is BSD-2-Clause. Preserve each component's license and notices if any code/weights are ever reused. Repository requirements include PyTorch >=2.1, torchaudio >=2.1, Transformers >=4.44, PEFT >=0.11, soundfile, NumPy, PyYAML and Hugging Face Hub. The self-contained bundle is reported as ~1.5 GB on disk, including a ~119 MB adapter/LoRA checkpoint and both base models; this is storage size, not peak RAM.
+
+**Limits relevant to V14:** English-only training/data; the main speed claim (45.8 ms per 2.56 s window, p90 46.8 ms) is on one NVIDIA A100, not ARM64/Bionic/Redmi. No Android build, mobile RSS/PSS, CPU real-time factor, battery or microphone-lifecycle evidence is reported. The PyTorch/torchaudio/Transformers/PEFT stack and 0.5B Qwen + WavLM bundle are not a direct Redmi candidate; do not download, install or swap them. A frozen base encoder/LLM is a research baseline, not an acceptable permanent V14 learning architecture.
+
+**Testable V14 adaptation (research proposal, not implemented):**
+1. Keep A0/A1 acoustic speech-onset and A5 provenance independent from semantic turn completion. voice_onset means speech began; it must never be treated as “user finished” or intent to interrupt.
+2. Add a separate A4 causal Continue/Stop endpoint head over bounded RAW EAR/teacher features, with explicit confidence and consecutive-commit count K. It may only influence interruption after the source-bound consent and playback-state gates; backchannels and no-target speech must be negative controls.
+3. Train a small adapter/head on rights-cleared public conversational data with boundary-focused hard negatives. Preserve the long-term trainable local adapter/weight-learning path rather than importing the 0.5B frozen-teacher bundle as the product.
+4. Compare acoustic-only, transcript-assisted and audio-latent heads on source/session-disjoint human holdouts. Report false interruptions, EOT recall, p50/p95 commit delay, calibration, backchannel resume, playback overlap, memory and CPU RTF; include boundary-shift, silence-only, shuffled-prefix, zero-head and restart/revocation controls.
+
+**Status:** PAPER_FULL_TEXT_REVIEWED / PREPRINT_NOT_PEER_REVIEWED / CODE_AND_MODEL_LICENSES_CHECKED / RESEARCH_PROPOSAL_ONLY / NOT_IMPLEMENTED / NO_DOWNLOAD / NO_ANDROID_PROOF.
+
+## R-119 — Consent-receipt epochs for ephemeral RAW EAR state (2026-11-23)
+
+**Classification:** implementation audit finding, not a paper or an empirical speech-model result.
+
+**Observed contract gap:** the `AudioConsentLease` binds Runtime, source, generation and receipt, but three stateful Perception consumers previously keyed state only by source/generation: `TemporalVoiceEvidence`, `TemporalVoiceEvidenceRegistry`, `SpeakerChangeEvidenceRegistry`, and the Silero stream ID supplied by `consume_pcm16_voice_window`. Reusing the same source/generation labels with a renewed receipt could therefore carry voice-activity evidence, speaker-similarity history or recurrent VAD state into a new consent epoch. This is a provenance/privacy boundary mismatch; it does not imply that the provider itself failed to revoke access.
+
+**Code response on the Perception audio branch:** temporal filters now reset when their receipt changes; the bounded temporal registry keys by `(source_id, generation_id, consent_receipt_ref)` and removes superseded state for the same source; speaker embedding schema is bumped to `v14.raw-ear-speaker-embeddings/2` and requires an exact receipt match; the speaker-history registry includes the receipt epoch; the Silero stream key is a SHA-256 of source, generation and receipt (the opaque receipt itself is not exposed in the recurrent-state key); invalid/oversized receipts are rejected before VAD, packet persistence or A4 attention.
+
+**Regression coverage added:** explicit-state and registry receipt renewal; speaker history reset and mismatched/missing receipt rejection; exact receipt propagation through the Runtime consumer; Silero recurrent-state reset on receipt change; invalid receipt no-side-effect controls. The focused GitHub Actions workflow now compiles and runs the temporal, speaker and A4/C3 consumer tests on Python 3.13 and 3.14.
+
+**Evidence boundary:** LOCAL_LINUX CPython 3.13.5 isolated contract reproduction: 3/3 PASS for explicit temporal reset, registry reset and opaque VAD stream-key change. This harness is not the repository suite. Exact-head GitHub Actions had prior `startup_failure` runs with no jobs allocated; latest code-head workflow result is pending/awaiting a fresh runner. Full Aii checkout/pytest remains BLOCKED locally because no checkout is mounted and GitHub DNS resolution fails. No AudioRecord, microphone, Android/Termux or Redmi test; REDMI_UNVERIFIED. No model, weight, permission or device data change.
+
+**Next falsifiable integration:** run the exact branch workflow on a healthy runner; then compose with the current Core/QA audio-provider lifecycle. Verify that provider revocation invokes `reset_runtime_temporal_voice_states()` for the revoked source/generation, that a renewed receipt begins with empty temporal/speaker/VAD state, and that same-turn C3 continues to use only the currently leased source. Do not claim Android audio capture or semantic endpointing from these tests.
+
+### R-120 — Speech end-of-turn: acoustic + prosodic evidence beats continuous text fusion
+- **Primary source:** Rini Sharon et al., “Less can be More: What Aspects of Speech Drive End-of-Turn Detection”, arXiv:2609.11066 (2026-09-10); Interspeech 2026 proceedings, DOI https://doi.org/10.21437/Interspeech.2026-1705. Full paper reviewed, not abstract-only.
+- **Experiment:** proprietary 8-kHz English telephone speech; 10k/2k/5k train/dev/test examples; single-speaker floor segments, overlap excluded. A+P (acoustic + prosody) reports F1 0.930, 7.8% false alarms, 5.2% misses, 400-ms median latency. APT (acoustic + prosody + text) reports F1 0.909 and 10.7% false alarms; continuous text fusion increases false alarms in this setup. The paper's A+P path uses a 70M Zipformer2 acoustic encoder, 35-D prosodic features and a small causal head; this is not the same as V14's current handcrafted RAW EAR baseline.
+- **Limits / reuse:** results are corpus- and language-specific; proprietary corpus, no public training data or maintained implementation/weight license verified. No Android RSS/TTFT or low-memory measurement. No model download or code reuse.
+- **V14 consequence:** keep RAW EAR acoustic/prosodic evidence first-class and ASR optional; never use a continuous transcript as the sole end-of-turn authority. A future A+P end-of-turn head should expose only a calibrated candidate, be tested on pauses/overlap/noise and remain action-inert until false-alarm/latency calibration. Current V14 does not yet implement a learned EOT head.
+
+### R-121 — Multilingual end-of-turn transfer with frozen speech encoders
+- **Primary source:** “Towards Multilingual End-of-Turn Detection using Frozen Speech Encoders”, arXiv:2610.39755 (2026-10-29), preprint; no peer-reviewed proceedings acceptance verified. Full paper reviewed.
+- **Experiment:** CALLHOME telephone conversations across English, German, Spanish, Mandarin and Japanese; 660 conversations / 59.5 hours, 8-kHz audio. A frozen Whisper-small encoder supplies 768-D features at 50 Hz to a small logistic head, using causal 160-ms chunks. Reported cross-language transfer gap is 0.017 AUC; about five hours of target-language adaptation brings results within roughly 0.004 of in-language performance. Threshold-transfer false-alarm rates are reported around 3.5–6.5%, with median latency varying by language.
+- **Label/evaluation caveats:** labels are automatically derived from diarization; same-speaker pauses up to 0.5 s are merged, while same-speaker returns after longer pauses count as turn ends. Overlapping speech is excluded, so this is not a full-duplex overlap result. No public EOT code, EOT weights or dataset license verified. No on-device memory/latency results.
+- **V14 consequence:** useful as a multilingual offline baseline for English/German evaluation, not as a Redmi model recommendation. Frozen Whisper-small is a research comparator only, not a permanent teacher or an unmeasured device download. Preserve trainable local adapters and test with consented, locally held audio.
+
+### Run 28 implementation evidence — source-bound speaker history
+- audio_speaker_evidence.py now uses schema v14.raw-ear-speaker-embeddings/3: each embedding batch must match both the active consent receipt supplied by the caller and the exact current RAW EAR PCM SHA-256. This binds the batch to the persisted chunk but does not attest the encoder, weights or recurrent state.
+- Only activity_hint == VOICED frames enter bounded speaker history. SILENCE, UNVOICED_NOISE, IMPULSIVE and UNCERTAIN frames advance the monotonic input clock but are suppressed from speaker history. RAW EAR/A4 novelty remains available; no speaker identity or calibrated speaker-change decision is emitted.
+- audio_voice_cues.py supplies the current persisted PCM source hash and active consent receipt to the registry. Vectors remain process-local and are not written into PerceptPacket; evidence carries hashes/metadata only.
+- Focused local exact-module compile + direct checks: PASS for active-lease receipt requirement, exact PCM match/mismatch, non-voiced suppression, history retention, consent-epoch reset and explicit reset. Full repository pytest and CI remain unverified in this run; see run-28 handoff.
+
+## R-119 — Acoustic/prosodic versus text cues for end-of-turn detection (2026-11-23)
+
+**Evidence level: ABSTRACT + SECONDARY AI REVIEW ONLY. NOT A FULL PRIMARY-PAPER REVIEW.**
+
+**Primary source:** Rini Sharon, Manickavela A, Kadri Hacioglu and Andreas Stolcke, *Less can be More: What Aspects of Speech Drive End-of-Turn Detection*, arXiv:2609.11066, first posted 2026-09-10: https://arxiv.org/abs/2609.11066 . It is an arXiv preprint; no peer-reviewed venue was verified in this pass. The abstract reports acoustic+prosodic streaming EOT at utterance F1 0.93, 7.8% false alarms and 400 ms median latency; adding text increased premature detections without improving F1. These are the abstract's reported results, not a V14 reproduction.
+
+**Secondary caveats, not independently verified against the full primary text:** the Pith paper page (AI-generated review; explicitly not a human review) describes a controlled seven-subset ablation, a Zipformer2 acoustic encoder, five prosodic features and cached MiniLM text embeddings. It flags important threats: EOT labels require 1.3 s of VAD-validated silence after a boundary (favoring acoustic/prosodic signals), text embeddings are fused at every frame and may fire on mid-turn syntactic completions, only one training seed is reported, and the corpus is proprietary. Treat these as audit leads, not primary-source-verified facts: https://pith.science/paper/2609.11066 . No official code repository or model weights were located in this search. A secondary metadata page reports CC BY 4.0 for the paper, but the original arXiv license was not verified here; code/weight licenses remain UNKNOWN.
+
+**V14 implication (hypothesis, not a result):** retain RAW EAR acoustic/prosodic evidence as the primary real-time timing path. Keep optional Teacher Ear transcript source-bound, separately opted-in and outside the current duplex interrupt decision. Do not let cached ASR text independently trigger barge-in. If a trainable A4 endpoint head is later evaluated, compare acoustic-only, prosody-only, acoustic+prosody and text-fused variants at matched capacity and latency, with explicit false-interruption costs, German/English, hesitation, backchannels, overlap, noise and non-silent turn transitions. Use session/source-separated consented holdouts and multiple seeds; report both early-interrupt and late-response tails, not only aggregate F1. No model, code, dataset or dependency was imported or downloaded.
+
+**Status:** ABSTRACT_ONLY / SECONDARY_AI_AUDIT_ONLY / PREPRINT / REUSE_NOT_APPROVED / NO_REPRODUCTION / NO_ANDROID_PROOF.
+
+## Research & OSS update — 2026-11-24
+
+### R-122 — sherpa-onnx small streaming English Teacher Ear candidate
+
+- **Sources checked:** official sherpa-onnx small-model catalogue and Zipformer model documentation (retrieved 2026-11-24); upstream repository/license; official Python wheel platform page; the linked Hugging Face model card.
+  - https://k2-fsa.github.io/sherpa/onnx/pretrained_models/small-online-models.html
+  - https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/zipformer-transducer-models.html
+  - https://github.com/k2-fsa/sherpa-onnx
+  - https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE
+  - https://k2-fsa.github.io/sherpa/onnx/python/install.html
+  - https://huggingface.co/desh2608/icefall-asr-librispeech-pruned-transducer-stateless7-streaming-small
+- **Evidence:** OSS/model-card verification, not a peer-reviewed paper and not a V14 reproduction. sherpa-onnx is Apache-2.0; its upstream project was updated 2026-11-23 and advertises Android/embedded support. The official Python wheel page lists Linux aarch64, but does not list Android/Bionic Termux.
+- **Candidate facts:** the official docs list `csukuangfj/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17` as a small English streaming model. Its documented int8 files are approximately 41 MB encoder + 527 KB decoder + 253 KB joiner, plus tokens. The linked model card declares Apache-2.0 and reports LibriSpeech test-clean/test-other WER 3.94/9.79 with greedy search (3.88/9.53 with modified beam search).
+- **What is not shown:** these corpus WER figures are not conversational/noisy/overlap accuracy; the example RTF is not a Redmi measurement; Linux aarch64 wheels do not establish Android/Bionic compatibility; the model is English-only and dates to 2023. No Termux build, runtime RSS, TTFT, thermals, microphone path or privacy lifecycle was tested.
+- **V14 use:** optional, separate Teacher Ear ASR hypothesis only. RAW EAR acoustic/prosodic/non-speech signals remain primary. Keep model loading OFF unless a later explicit experimental download approval is given; productive swap would require a separate approval and rollback plan. No package/model/weight was downloaded or changed.
+- **Minimal falsifiable test:** on an authorized Android build, compare the pinned int8 model against no-teacher RAW EAR on consented synthetic/volunteer speech with exact ABI, cold/warm TTFT, RTF, peak RSS/PSS, CPU threads, battery/thermal behavior, WER by noise/overlap class, and explicit opt-in/revocation/zeroization. Reject if it starves B1/B2/C3 or adds unacceptable latency/RAM.
+- **Decision:** CANDIDATE_PROPOSED / NOT_ADOPTED / NOT_DOWNLOADED. Follow-up owner: Research & Perception + QA & Android.
+
+## R-123 — Teacher Ear descriptor-pinned model loading (2026-11-24)
+
+**Finding.** The previous manifest path performed `lstat`/`resolve`/SHA-256 checks and returned a pathname. The native loader opened that pathname later, leaving a verify→open interval in which a parent directory or final file could be replaced by a symlink or renamed target.
+
+**V14 change.** `audio_teacher_ear.py` now traverses the canonical model root and relative parents using directory file descriptors with `O_DIRECTORY|O_NOFOLLOW`, opens the final file relative to the pinned parent, hashes that open descriptor, verifies `/proc/self/fd/<fd>` identifies the same device/inode, and passes the descriptor-backed paths into the existing `OnlineRecognizer.from_transducer` consumer. `VerifiedModelFiles` retains the descriptors for the recognizer lifetime; `SherpaOnlineTeacher.close()` releases them. The code fails closed if required dir-fd flags/support or `/proc/self/fd` are unavailable.
+
+**Primary-source check.** Python's `os.open` supports `dir_fd` on Unix platforms that expose it; `O_NOFOLLOW` and `O_DIRECTORY` are platform-specific and therefore explicitly gated. Upstream `k2-fsa/sherpa-onnx` was checked at `6e24506004105319393a3cd9954a375068ef44dd`; its Python `OnlineRecognizer.from_transducer` accepts filename arguments and its C API constructs the recognizer from that file configuration. Upstream license: Apache-2.0. No upstream code or model weights were copied/downloaded; this is an API-contract and license check only.
+
+**Evidence.** LOCAL_LINUX isolated reproduction on Python 3.13.5 / Linux 6.18.57 x86_64: `py_compile` PASS; five regression cases PASS (final-file replacement, parent-directory symlink swap, final symlink rejection, bundle-size ceiling, and fake native-loader path read). This is not a full repository test run and not a real sherpa native load. Exact PR head `345de43...` had five CI failures: three stale speaker schema/expectation tests, one Teacher Ear regex mismatch, and one test that incorrectly expected PROVISIONAL transcript text in C3. Those were corrected in commits `a20ff439`, `a3d4f24`, and `bf8b30f`; the comparison workflow's exact source pins were refreshed in `7ba3fec`. CI on `7ba3fec...` was queued and must finish before acceptance.
+
+**Limitations / next.** Open descriptors pin inode identity against rename/symlink replacement; they do not prevent a same-user process from modifying the same inode in place. `/proc/self/fd`, `dir_fd`, ARM ABI compatibility, memory overhead, and actual sherpa loading remain TERMUX/REDMI_UNVERIFIED. Next: complete exact-head Python 3.13/3.14 CI, then test procfs/dir-fd support on authorized Termux/Android. No new paper or model alternative was needed for this security defect; no model download or swap is proposed.
+
+
+## R-124 — On-device speaker-embedding candidates and CAM++ length-phase failure (2026-11-24)
+
+**Question.** Can the current RAW EAR speaker-change path replace caller-supplied 192-D vectors with a real, licensed, Android-capable embedding producer without confusing model output with calibrated speaker identity?
+
+**Primary-source findings.**
+
+- Upstream `k2-fsa/sherpa-onnx` exposes `SpeakerEmbeddingExtractor` (create stream, accept waveform, input-finish, readiness check, compute embedding) and documents Java/Python/native APIs. Its official speaker-diarization APK list includes `arm64-v8a`; the runtime code is Apache-2.0. This proves upstream API/platform support, not that a Python wheel, JNI binding, or the current Termux environment is installed/compatible.
+- Upstream issue [#4201](https://github.com/k2-fsa/sherpa-onnx/issues/4201), opened 2026-11-14, reports a concrete CAM++ length-phase defect on sherpa-onnx 2.0.1 / Python / macOS x86_64 / CPU / four threads: embeddings changed sharply with total audio length modulo 2.0 s; 2.0 s vs 2.3 s digital silence had cosine 0.14. The same report found WeSpeaker ResNet34-LM and 3D-Speaker ERes2Net stable in that sweep. The report is an external reproduction, not our own benchmark.
+- Upstream commit [1d9d23a](https://github.com/k2-fsa/sherpa-onnx/commit/1d9d23a937dc17876a4a9e1cc0b172fc4ff06f25), dated 2026-11-19, patches the 3D-Speaker CAM++ ONNX export to use `count_include_pad=False`. The release assets were also updated on 2026-11-19, but exact asset-to-exporter provenance and byte-level parity were not verified; do not assume every cached CAM++ file is fixed.
+- The current official release lists `wespeaker_en_voxceleb_resnet34_LM.onnx` at 26,530,550 bytes (~26.5 MB). WeSpeaker documents that VoxCeleb pretrained weights follow the dataset's CC-BY-4.0 license; the WeSpeaker code is Apache-2.0. Its LM variant is described as intended to improve longer-audio performance (>3 s). A 3D-Speaker ERes2Net base ONNX asset is ~39.6 MB, but its exact weight license still needs a separate check before adoption.
+
+**V14 interpretation.** The current `SpeakerChangeEvidenceRegistry` accepts caller-supplied frame embeddings and checks that their declared `current_chunk_sha256` matches the current PCM chunk. It explicitly reports `CURRENT_PCM_SHA256_MATCH_ENCODER_UNATTESTED`; that hash does not prove the named encoder actually generated those vectors. Keep similarity diagnostic, uncalibrated, RAM-only, and without identity/learning/action authority. The sherpa extractor's documented example computes one utterance-level embedding; it is not automatically interchangeable with the existing 80-ms frame-vector contract. A future adapter must define a separate chunk-level or genuinely streaming frame contract, bind the actual PCM bytes and model revision, and prove reset/retention behavior before connecting to A4/C3.
+
+**Next experiment (not run here).** On an explicitly approved local model only, compare same-speaker and different-speaker clips, silence/noise negatives, and identical-prefix lengths around 2-s boundaries (1.9, 2.0, 2.02, 2.3, 3.9, 4.2 s); report cosine drift, model inference time, peak RSS, and ARM64 native compatibility. Prefer ResNet34-LM as the first candidate over an unverified CAM++ export; do not download or swap it automatically.
+
+**Evidence boundary.** No paper was newly read for this note; this is a primary OSS/API and issue/commit audit. No model was downloaded, no user audio was used, no embedding model was loaded, and no Termux/Redmi benchmark was run. Android/Redmi remains UNVERIFIED.
+
+
+## R-125 — MobileCLIP2 vs TinyViT for A3 visual features (2026-11-24)
+
+**Paper read.** Faghri et al., *MobileCLIP2: Improving Multi-Modal Reinforced Training*, arXiv:2508.20691 v1 (submitted 2025-08-28), featured TMLR 2025. Full HTML paper sections on reinforced training, architecture and experiments were inspected; this is not an abstract-only note.
+
+**MobileCLIP2 evidence and caveats.**
+- The paper's MobileCLIP2-S0 uses an 11.4M-parameter image encoder plus a 63.4M-parameter text encoder, 256px input, and reports 1.5 ms image-encoder + 3.3 ms text-encoder latency on iPhone 12 Pro Max; ImageNet-1k zero-shot top-1 is 71.5%. These are Apple test-device figures, not Redmi/ARM64 measurements.
+- The method's improvements are not just a tiny encoder: the training recipe uses DFN-2B/DFNDR-2B reinforcement, CLIP teacher ensembles, synthetic captions, and large-scale training (13B seen samples in the reported MobileCLIP2-S0 row). It is a useful reference for teacher/student training, but not a drop-in JEPA or online-learning system.
+- The official repo's code license is MIT, but `LICENSE_MODELS` explicitly limits the trained weights and derivatives to non-commercial scientific research and excludes product development/use in a commercial product/service. Therefore do **not** adopt MobileCLIP2 weights in the V14 product path absent a separate legal determination; code license does not override model-weight terms. The official model card also marks `apple-amlr`.
+
+**More permissive small-backbone candidate.**
+- Kornia's `kornia/tiny_vit` model card lists MIT and offers 5M, 11M and 21M parameter TinyViT checkpoints. The 5M variant is the smallest candidate; the card describes ImageNet-22K distillation and an ImageNet-1K 224px fine-tuned option.
+- Kornia's export-support matrix reports TinyViT-5M ONNX export and execution parity as supported in its tested configuration. This is an exportability signal only, not evidence of Android NNAPI/CPU latency or memory on Redmi.
+- TinyViT is an image-classification/backbone model, not a shared image-text encoder. For V14 it could supply compact A3 visual features to a separately trainable projector/JEPA student; it must not replace source/temporal provenance, A4 salience, or the existing A3 learning contract. The model-card MIT label is useful, but ImageNet-22K data provenance/terms still deserve review before redistribution.
+
+**V14 experiment proposal (not run).**
+1. Keep current A3 path as baseline; add TinyViT-5M only as an opt-in teacher feature source, not as a replacement.
+2. Compare 224px and 256px crops, global vs tile features, source-forget invalidation, repeated-frame invariance, and scene-change/negative controls.
+3. Export ONNX and measure file size, peak RSS, cold/warm latency, CPU vs NNAPI, and thermal drift on authorized ARM64 hardware; report teacher feature quality separately from projector/JEPA weight updates.
+4. Do not download, install, or switch weights until the user separately approves an experimental download and a later productive swap.
+
+**Evidence boundary.** No model was downloaded or loaded. No Android/Redmi test was run. The iPhone latency and model-card/export claims are external source measurements only; V14 performance remains unmeasured.
+
+**Primary sources:** [MobileCLIP2 paper](https://arxiv.org/abs/2508.20691); [official MobileCLIP repo](https://github.com/apple-aiml-research/ml-mobileclip); [model-weight license](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS); [TinyViT model card](https://huggingface.co/kornia/tiny_vit); [Kornia export support](https://kornia.readthedocs.io/en/latest/get-started/export-support.html); [Kornia TinyViT implementation](https://github.com/kornia/kornia/blob/main/kornia/models/tiny_vit.py).
+
+
+
+## R-126 — FD-VAD: causal semantic endpointing for full-duplex audio (2026-11-24)
+
+**Full paper read:** Puneet Mathur and Dinesh Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791, submitted 2026-09-16. The project page labels the work “Submitted”; treat it as a preprint, not peer-reviewed evidence.
+
+**Method inspected.**
+- Frozen WavLM-base-plus produces 50-Hz frame features; a two-layer modality adapter downsamples by 4 and maps into Qwen2.5-0.5B-Instruct embeddings; LoRA + adapter provide 10.3M trainable parameters (1.7% of total).
+- Causal window: at most 2.56 s; decisions every 320 ms; loss is applied only to the terminal chunk. The model predicts semantic CONTINUE/STOP directly from audio, without a generated transcript.
+- The paper combines confidence-gated endpoint commitment (threshold τ and K consecutive decisions) with boundary-focused hard negatives within ±2 chunks of the annotated endpoint.
+
+**Reported evidence and conditions.**
+- Smart-Turn v3.1 English subset: 63,386 train clips / 156 h, 1,000 held-out clips; one training epoch, effective batch 64, bf16, two A100 GPUs.
+- Held-out chunk F1 0.832 and 0.6% false-stop rate on incomplete speech; utterance accuracy 0.972 complete / 0.969 incomplete.
+- TurnBench dev zero-shot: EOT recall 0.853 at FP 0.097, but median commit latency 1,019 ms. A separate operating point (τ=0.9, K=1) reports 190 ms median endpoint delay with 2.0% false interruption. Do not combine these operating points into one claim.
+- Per-window 45.8 ms (p90 46.8 ms) is measured on one NVIDIA A100 for a 2.56-s window, not on ARM/Android.
+
+**OSS and license audit.**
+- Official code: https://github.com/fd-vad/fd-vad — MIT.
+- The repo says the adapter/LoRA checkpoint is about 120 MB and does not ship base weights. It uses WavLM (MIT) and Qwen2.5 (Apache-2.0); the cited Smart-Turn v3.1 dataset is BSD-2-Clause. The base encoder/LLM can be auto-downloaded unless separately cached. No code, model, checkpoint or dataset was imported.
+- The 0.5B language backbone, WavLM encoder, PyTorch/torchaudio runtime and separate checkpoint make this a research candidate, not an assumed Redmi fit. No ARM64/Termux package or resource benchmark was verified.
+
+**V14 mapping / experiment hypothesis.**
+- Keep RAW EAR acoustic activity, prosody, non-speech and temporal evidence as first-class signals. Add a separate optional semantic endpoint signal to the audio/duplex path; acoustic silence/VAD alone is not semantic turn completion.
+- Prototype in SHADOW first: causal bounded windows, calibrated P(STOP), τ/K commitment, boundary-focused hard negatives, and explicit early-stop vs late-stop cost. Only a later independent evaluation may authorize a user-visible turn-state policy.
+- Compare acoustic-only, semantic-only, and acoustic-gated semantic endpointing; report false interruption, endpoint delay, incomplete-turn false stops, per-window latency and peak RSS. Keep the no-transcript claim separate from speaker/prosody/nonverbal perception.
+- Do not download or activate FD-VAD weights without a separately approved experiment. No user audio was used.
+
+**Limitations.** The reported benchmark is English and the main inference latency is A100-only. The 1,019-ms TurnBench median is not a low-latency guarantee; the faster 190-ms point trades against a 2% false-interruption rate. The architecture uses a 0.5B LLM and does not establish on-device performance, persistent learning, speaker identity calibration, or Android microphone integration.
+
+**Primary sources:** https://arxiv.org/abs/2609.35791 ; https://fd-vad.github.io/ ; https://github.com/fd-vad/fd-vad ; https://huggingface.co/puneetUMD/fd-vad
+
+## R-127 — MJEPA: cross-modal predictive alignment (2026-11-24)
+
+**Paper and official repository read:** Revant Teotia, Adrien Bardes, Michael Rabbat, Sumit Chopra, Matthew J. Muckley and Nicolas Ballas, *MJEPA: A Simple and Scalable Joint-Embedding Predictive Architecture for Audio-Visual Learning*, arXiv:2606.25225, submitted 2026-06-23. The paper is an arXiv preprint; no peer-reviewed venue is listed in the inspected record.
+
+**Method inspected.**
+- One shared encoder receives modality-specific audio/video projections. Within-modality masked prediction and cross-modal pooled prediction use a common L1 latent prediction objective.
+- Target representations come from an EMA copy of the encoder with stop-gradient. Cross-modal source features are pooled before prediction because audio/video tokens have no natural one-to-one alignment.
+- The full objective sums three within-mode and six cross-modal directions across audio, video and audio-video modes.
+
+**Reported evidence and limits.**
+- AudioSet-20K frozen attentive-probe evaluation: MJEPA ViT-g + data scaling reports 45.44 mAP audio-video versus 38.60 for the prior frozen EquiAV baseline; audio-only 40.97 mAP and video-only 29.82 mAP.
+- The controlled ablation is more informative than the headline: sharing the encoder without cross-modal prediction drops audio mAP 30.87→28.70 and video 19.84→17.90; adding cross-modal alignment raises audio to 33.52 and audio-video to 36.34 at that ablation stage.
+- The frozen 45.44 result is not a universal win: the cited fully fine-tuned EquiAV result is 46.60. Later MJEPA gains mix joint encoding, data scaling and model scaling; the paper reports no controlled mobile/runtime/compute comparison.
+- The ViT-g configuration is about 1B parameters; training is described through SLURM and large heterogeneous datasets. This is not a Redmi model recommendation.
+
+**OSS and license audit.**
+- Official training/evaluation code: https://github.com/facebookresearch/MJEPA — MIT. Three retained third-party files are Apache-2.0 and keep their original headers.
+- The repository describes training code/configs and does not provide a downloadable pretrained checkpoint in the inspected README. No weights or training data were downloaded or imported.
+
+**V14 mapping / experiment hypothesis.**
+- The useful transferable principle is that a shared or aligned latent space does not become useful merely by sharing dimensions: cross-modal prediction itself must be tested, and no-alignment is an essential negative control.
+- For V14, preserve independent modality/organ encoders and the distinct B1/B2 end goal. A later low-dimensional event-level experiment can use separate audio and vision adapters, pooled temporally bound targets, EMA target copies and cross-modal predictive loss; it must not force one shared B1/B2 model or claim native cross-model hidden-state exchange.
+- Compare unimodal baselines, shared-projection-without-cross-loss, cross-modal prediction, shuffled/mismatched timestamps, missing-modality and source-forget controls. Require held-out utility and numeric parameter/gradient/retention evidence before calling this learned coupling.
+- No implementation or weight update is claimed in this checkpoint.
+
+**Primary sources:** https://arxiv.org/abs/2606.25225 ; https://github.com/facebookresearch/MJEPA
+
+
+
+## R-128 — Separate candidate discovery from floor-transfer verification (2026-11-24)
+
+### Primary paper 1 — full paper read
+Rutherford A. Patamia, Ming Liu, Wei Luo, Favour Ekong, Rehan Mohammed, Gang Liu and Akan Cosgun, **“Leveraging Dual-Process Theory for Multimodal Multiparty Turn-Taking Prediction,”** arXiv:2611.19484v1, submitted 2026-11-14 (preprint; no peer-reviewed venue verified in the arXiv record). Full 13-page PDF inspected, including methods, results, ablations and limitations.
+
+- The paper separates three tasks that should not be collapsed: (A) SHIFT/HOLD at supplied decision points, (B) verification of automatically generated candidates, and (C) continuous candidate discovery + verification + temporal localisation.
+- System 1 is recall-oriented candidate discovery (WavLM representation, 4.0 s candidate-centred windows, 0.10 s hop). System 2 is invoked only for candidates and combines acoustic, linguistic, speaker, future-activity and local-ranking evidence. Future activity is a training target, not a test-time oracle.
+- On VoxConverse Task C, the reported event F1 is 0.552 at ±0.50 s (precision 0.536, recall 0.569); candidate coverage is 0.96 and the system generates 30.63 candidates/minute, reducing verifier calls by 94.9% versus dense 10-Hz verification. Reported proposer RTF 0.232 and temporal-verifier cost 0.0113 ms/candidate exclude the expensive diarization, ASR, embedding and language components; the executed pipeline uses offline-precomputed diarization/ASR/embeddings and bounded post-candidate look-ahead. It is **not** a strict causal end-to-end streaming latency result.
+- Multi-TPC's original group-disjoint held-out Task C F1 is 0.445 at ±1.0 s. In the post-hoc seven-group analysis no paired method comparison survives Holm correction; modality contributions are descriptive and group-dependent.
+- VoxConverse turn labels are derived from diarization rather than native turn-action annotations. A 300-clip audit agrees on fine-grained actions 75.3% (226/300) and on coarse transfer/non-transfer 86.0%; event timing was not independently audited. Incoming-speaker identification uses post-boundary query speech and is not pre-transition next-speaker prediction.
+- The paper cites a project repository at https://github.com/Ruddy202/DualTurn, but that exact repository was not retrievable in this search; no code license, checkpoint or weight license was verified. No code or weights were reused.
+
+### Primary paper 2 — full paper read
+Puneet Mathur and Dinesh Manocha, **“MultiPartyTurnBench: Benchmarking Floor Control in Multi-Party Spoken Dialogue,”** arXiv:2610.20172v1, submitted 2026-10-14 (preprint). Full 31-page PDF and official project/repository/dataset documentation inspected.
+
+- MPTB contains 240 synthetic channel-separated conversations, 2–5 speakers, six interaction styles, 6.89 h, with 48 development and 192 test conversations and disjoint TTS voice inventories. It defines separate End-of-Turn (EOT) and Interruption (INT) tasks; hard negatives include mid-turn holds, backchannels and non-content vocalizations.
+- EOT and INT are materially asymmetric. At qualified operating points the paper reports 82.5–92.6% EOT recall at 4.3–11.8% FPR, while the strongest INT detector reaches only 56.2% recall. VAD systems can show high recall only with prohibitive FPR (e.g. Silero 97.2% EOT recall / 93.5% FPR and 85.4% INT recall / 89.2% FPR).
+- In five full-duplex agents, turn-entry balanced accuracy is 86.1–95.8%, but selective STOP/yield balanced accuracy is only 46.9–54.7%. The paper's barge-in instrumentation shows that one agent's apparent yielding is provider-VAD cancellation rather than model discrimination; this is exactly why V14 must distinguish provider-triggered cancellation from model-verified floor transfer.
+- The corpus is synthetic TTS with controlled event orchestration, not natural conversational ground truth; 24 voices are split between dev/test. It is a diagnostic benchmark, not evidence of safe or natural floor-control behavior.
+- Official benchmark code license: MIT. Dataset card declares CC BY 4.0 and requires gated Hugging Face access; archive size is about 2.46 GB. No dataset or code was downloaded or imported.
+
+### V14 implementation mapping (hypothesis, not a demonstrated learned policy)
+- Keep A5/A4 speaker-change, VAD, prosody and non-speech evidence as candidate/evidence signals. Do not treat speaker change, voice onset or ASR sentence completion as proof that the conversational floor changed.
+- Preserve separate outputs for candidate discovery, EOT/hold evidence, successful floor-transfer verification and event localisation. C/duplex may consume a verified floor-transfer signal only after a separately evaluated policy; the current explicit `duplex_mode=interrupt` remains a provider-voice-onset barge-in option and must be reported as such, not as learned selective yielding.
+- Add event-level EOT/INT hard-negative evaluation after the current audio + vision lifecycle integration is composed. Candidate baselines: acoustic/prosodic-only, candidate-only, candidate+speaker evidence, candidate+temporal/semantic verifier, and no-verifier negative control. Freeze thresholds on development data; report FPR, false interruptions, missed true interruptions and signed latency separately.
+- The present A4 `identity_authority=False` fix is only an explicit authority boundary. It does not implement floor-transfer verification, speaker identity calibration, cross-organ latent learning or a trained turn-taking head.
+- Follow-up: source-bound, session-disjoint event dataset and replay; include same-speaker holds, backchannels, laughter, brief interjections, overlap, successful/unsuccessful claims and non-speech negatives. Keep any new model in SHADOW until held-out utility, latency, retention, restart and Android resource tests pass.
+
+**Status:** FULL_PAPER_READ (both papers) / PREPRINT / OSS_LICENSE_VERIFIED_ONLY_FOR_MPTB_CODE_AND_DATA / NO_REUSE / NO_DATA_DOWNLOAD / NO_ANDROID_PROOF.
+
+**Primary sources:**
+- https://arxiv.org/abs/2611.19484
+- https://arxiv.org/pdf/2611.19484
+- https://arxiv.org/abs/2610.20172
+- https://arxiv.org/pdf/2610.20172
+- https://multiparty-turnbench.github.io/
+- https://github.com/multiparty-turnbench/multiparty-turnbench
+- https://huggingface.co/datasets/multiparty-turnbench/MultiPartyTurnBench
+
+
+
+## R-129 — Replay-gated A3 projector updates (2026-11-24)
+
+### Primary paper 1 — main paper, method, results and limitations read
+**MANGO: Meta-Adaptive Network Gradient Optimization for Online Continual Learning**, arXiv:2605.19080, submitted 2026-05-18 (preprint; no peer-reviewed venue or official code repository verified).
+
+- MANGO gates each parameter gradient by a sigmoid of the parameter magnitude normalized by its layer's parameter standard deviation, then uses a virtual update on replay samples to meta-update six layer-wise stability coefficients. Replay is therefore a feedback signal for the effect of a proposed update, not only a source of training examples.
+- Evaluation: ResNet-18, Split CIFAR-100 (20 tasks), Split Tiny-ImageNet (10 tasks) and CLEAR-10 (10 domains); single pass, three glances per minibatch, online/replay batches 32/64, replay buffers 2k/4k, five seeds, PyTorch/CUDA.
+- Reported 2k-buffer results: CIFAR-100 Acc 19.72±1.01%, AAA 31.53±0.37%, WC-Acc 12.69±0.55%; Tiny-ImageNet Acc 25.15±1.32%, AAA 23.45±1.13%, WC-Acc 17.44±0.84%; CLEAR-10 Acc 66.91±1.20%, AAA 66.35±1.05%, WC-Acc 55.0±1.1%, BWT +15.12±3.3%.
+- Ablation: removing meta-learned lambda lowers CIFAR-100 accuracy 19.72→18.79 and Tiny-ImageNet 25.46→18.50; replay-only ER is materially weaker. Important caveat: reported CIL BWT remains negative (e.g. -38.17 CIFAR-100 at 2k), even while the paper prioritizes anytime/worst-case accuracy. The paper explicitly assumes well-defined task/domain boundaries and lists task-free/blurry-boundary learning as future work.
+- No official code, checkpoint or weight license was found in the inspected paper record. No code or weights reused.
+
+### Primary paper 2 — full paper and official implementation inspected
+Chen Henry Wu, Thomas Zhang and Aditi Raghunathan, **Off-Policy Merging Beats On-Policy Self-Distillation for Continual Learning**, arXiv:2610.05872, submitted 2026-10-05 (preprint; no peer-reviewed venue verified).
+
+- Grafting trains a delta on an earlier donor checkpoint, then applies a scaled delta to a post-trained model; an optional diagonal/KFAC Fisher projection removes the most retention-sensitive directions. The paper tests expert traces, STaR, Pedagogical RL and synthetic knowledge injection.
+- Models/evidence: Qwen3-1.7B/8B and OLMo-3-7B; held-out hard math plus AIME 2024/2025 and HMMT 2025 retention suites. Grafting generally dominates direct SFT and OPSD on the reported old/new task frontier. The authors report that sampling is about 90% of an OPSD step and grafting is about 10× faster in their Qwen3-8B setup. Knowledge injection uses a synthetic closed world (200 invented entities, 1,125 facts, 9,000 QA phrasings), not an open-world knowledge benchmark.
+- Official reference implementation: https://github.com/AR-FORUM/grafting — MIT. The repository requires Torch, Transformers, Safetensors, Pandas, PyArrow and math-verify; optional training/evaluation dependencies include verl, flash-attn, vLLM and datasets. This is a GPU/Hugging-Face training stack, not a plausible direct Redmi/Termux dependency.
+- Qwen3/OLMo model weights and training datasets have separate rights; they were not imported or downloaded. No implementation code or weights reused. The transferable idea here is measuring/scaling a parameter delta, not importing the full donor/Fisher pipeline.
+
+### V14 implementation mapping — A3 replay gate, not a reproduction
+- The existing A3 vision.Projector and tile projector were replaced by a newly fitted ridge artifact on every :image train / :image train_tiles call, without comparing the candidate against the prior projector's learned source/caption set. That could silently overwrite useful A3 behaviour.
+- On research-perception/v14-vision-current-20261124-run33, PR #2463 now reconstructs the previous projector's exact replay set from its immutable image-region source references and stored caption targets. It compares old and candidate retrieval on the same encoder space, then searches affine parameter-delta scales {1, 0.5, 0.25, 0.125, 0.0625}. The largest scale is accepted only if replay top-1 stays within 0.02 and mean cosine within 0.015 of the old projector. Missing/invalid replay, encoder changes, insufficient source groups and dimension mismatches fail closed; rejected candidates do not replace the active artifact.
+- The same gate is applied to global and tile projectors. Tile training now persists its exact tile-caption replay labels so later updates can be evaluated against the same source-bound targets. status() exposes the gate result. The artifact remains LAB_SHADOW_ONLY; this is not a B1/B2 update, native JEPA, a gradient-trained neural adapter, or MANGO's meta-learned predictor.
+- This is a deliberately small A3-specific step toward the V14 update-effect predictor: a directly measured replay effect and affine delta scale search. It should later be compared against no gate, full candidate replacement and a learned predictor on source-disjoint new data plus replay, with restart/forget/rollback tests. Do not promote without independent review.
+
+### Verification and limitations
+- LOCAL_LINUX/SYNTHETIC: isolated NumPy test exercised affine endpoints (scale 0 reproduces old; scale 1 reproduces candidate), a replay-preserving scaled update, full-scale no-regression and a destructive-update rejection; PASS. This was not a full local Aii checkout.
+- CI on PR #2463 head 8a541d06a45d13401969a983c8bc2174607e3722: py_compile plus tests/test_vision.py and tests/test_vision_source_lineage.py passed on Python 3.13 (31 passed) and 3.14 (31 passed); frame-ingress tests passed on both (39 passed each). Integrated-regression and staged-runtime subsequently FAILED on the same pre-existing integration dependency: scripts/source_lifecycle_lock_integration_candidate.py rejects the current vision.py with `unsupported lifecycle source: vision.py`. The integrated-regression job failed at staging; the broader staged-runtime suite reported 19 failed, 234 passed, 10 skipped, 2 errors and 41 subtests, with the failures cascading from that pin mismatch (including two-checkout migration reporting PARTIAL instead of UPDATED). This is not a failure of the targeted A3/vision tests, but the PR is NOT integration-complete. Core/Integrator must rebind the exact vision.py SHA and rerun the staged and integrated suites.
+- The CI run reports vision.py SHA-256 bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f; Core/Integrator must rebind the exact source-lifecycle pin before integration.
+- Android/Redmi: REDMI_UNVERIFIED. No device-side A3 model training, frame capture, native embedding, memory or latency measurement is claimed.
+
+**Primary sources:** https://arxiv.org/abs/2605.19080 ; https://arxiv.org/abs/2610.05872 ; https://github.com/AR-FORUM/grafting
+
+## R-130 — RAW EAR separates speech, EOT and interrupt candidates (2026-11-24)
+
+**Implementation follow-up to R-128; no new paper is claimed as reviewed in this entry.**
+
+- `TemporalVoiceEvidence` now emits three distinct, source/generation/consent-scoped candidate signals: sustained speech, a new voiced-onset interrupt candidate, and a one-shot end-of-turn (EOT) candidate. EOT requires at least 400 ms of newly observed contiguous `SILENCE` after sustained voiced activity. Overlapping windows count only their newly covered suffix; source/generation/consent changes and long unobserved gaps reset the evidence; noise, impulses and uncertain windows do not count as silence.
+- The RAW EAR producer now persists the full temporal evidence (including the candidate triad) inside `PerceptPacket.segments[0].acoustic.temporal_voice` for both duplex and non-duplex callers. The duplex bridge checks equality across the persisted packet, A4 result and one-use temporal receipt before dispatch. The C3 summary carries a compact `turn=sXeYiZ floor_transfer=UNVERIFIED` suffix. This is a source-bound candidate/evidence interface, not a trained endpoint model.
+- `floor_transfer_verified=False` remains explicit. No EOT candidate automatically cancels a response. Existing `duplex_mode=interrupt` still means a user-configured provider-voice-onset barge-in; it is not learned selective yielding or verified floor transfer.
+- The 400 ms threshold is a BOOT engineering default, not calibrated from MPTB or natural dialogue. Candidate-only status must remain until source/session-disjoint EOT/INT hard-negative evaluation, FPR/false-interruption analysis and Android latency tests exist.
+- No external code, dataset, checkpoint or model weights were imported or downloaded. No new dependency or license obligation.
+
+### Verification at this checkpoint
+- LOCAL_LINUX: isolated state-machine reproduction PASS for sustained onset, 400 ms EOT, short-burst negative, and noise/impulse negative. This is not a full repository test.
+- GitHub Actions: initial exact head `677f73eaf7bf594ecbbf64ab2e99cca4398e0bc1` exposed a test-fixture `KeyError` (`event` has no `session_id`) and stale VAD-comparison blob pins. Both were repaired: the fixture now retains the created session, and the comparison workflow pins the new Git blobs. The expanded exact head `1c472abd672ab8e2838db48f80b5a252b6336aae` is queued on Python 3.13/3.14; final conclusions are pending.
+- Full local Aii checkout remains blocked by unavailable GitHub DNS. Android microphone, AudioRecord, native VAD/model and Redmi timing remain `REDMI_UNVERIFIED`.
+
+**Research basis already recorded in R-128:** Patamia et al., arXiv:2611.19484 (https://arxiv.org/abs/2611.19484), and Mathur & Manocha, MultiPartyTurnBench, arXiv:2610.20172 (https://arxiv.org/abs/2610.20172). Both motivate separating candidate discovery, EOT and INT verification; neither calibrates this 400 ms heuristic.
+
+
+## R-131 — Temporal onset gating for non-speech A4 salience (2026-11-24)
+
+### Product hypothesis and change
+The previous A4 path used the absolute activity_score on every UNVOICED_NOISE / IMPULSIVE window and allowed absolute ZCR/RMS to dominate salience. With overlapping windows, a continuous noise bed could repeatedly recruit attention even though no new event had occurred. This was a salience bug, not a speech-recognition or semantic-classification problem.
+
+- TemporalVoiceEvidence now keeps a bounded non-speech episode state: active kind, score, onset and offset. State is isolated by the existing source/generation/consent key; short gaps decay it, long unobserved gaps reset it, SILENCE/VOICED end an episode, and UNCERTAIN decays it.
+- A4 receives non-speech novelty only on a new episode or a kind transition. Absolute RMS/ZCR remain available as raw cues but are low-gain BOOT background inputs (0.15 multiplier); sustained noise no longer repeatedly dominates novelty.
+- Non-speech novelty is deliberately not passed into external_interrupt. It can attract perception without authorizing barge-in or response cancellation.
+- A4 exposes a small non_speech_event record (kind/active/onset/offset/novelty). No semantic event label is inferred.
+
+### Verification
+- LOCAL_LINUX isolated temporal-state harness: 4/4 PASS (persistent noise emits one onset; silence rearms an impulse; uncertain/gap decay rearms; source/consent boundary resets). This harness exercises the algorithm, not a full repository checkout.
+- Exact GitHub Actions on the current code/test lineage: raw-ear-prosody 81 passed on Python 3.13 and 81 passed on Python 3.14; raw-ear-fastpath PASS on 3.13 and 3.14; compare PASS on 3.13 and 3.14 after refreshing the exact source blob pin; offline 3.11/3.14, privacy, consent-revocation, same-repository integration and offline-bridge-security PASS.
+- At the last poll, staged-runtime and consumer (3.13) failed because the Boss-owned integrated_audio_context_candidate_20261121.py still pins the older audio_voice_cues.py blob; integrated-regression and some consumer/audio-duplex jobs were still running. This is an explicit integration dependency, not a reason to relax hash verification.
+- Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN; no mounted checkout and git ls-remote failed because GitHub DNS was unavailable. Android/Redmi: REDMI_UNVERIFIED.
+
+### Scope and acceptance boundary
+This is a source-bound, synthetic A4 salience improvement (WIRED_SYNTHETIC), not a learned event detector, calibrated VAD, model inference, real microphone capture, full-duplex floor transfer, or accepted voice path. No external code, model weights or dataset were imported; no new runtime dependency or license obligation was introduced.
+
+Code/test lineage: PR #2448, code/test commit 6d650a7d0a1fbf4d6ab43e32a272f31919a976ec; comparator pin correction a5294d08aa4ffbe9da5fbc4c697019fa31ad56ab. PR remains DRAFT / NOT_RELEASED.
+
+## R-132 — Duration-aware endpoint and progressive acoustic-event research (2026-11-24)
+
+### Next-Turn — abstract-only
+Tristan Tsoi et al., Next-Turn: Duration-Aware Streaming Endpoint Detection via Time-to-Next-Speech-Onset Prediction, arXiv:2606.18094, v1 dated 2026-06-16. The arXiv abstract reports a time-to-next-speech-onset objective derived from speech timestamps and a 25.9 percentage-point absolute improvement in endpoint accuracy within 320 ms over the strongest baseline, with gains from joint duration-aware and binary objectives as pause counts increase.
+
+- Evidence status: abstract/metadata only in this run; the full paper and official proceedings were not inspected. DBLP indexes an Interspeech 2026 record, but that is not treated here as independent proceedings verification.
+- V14 relevance: candidate future auxiliary head for time-to-next-onset, separate from the current RAW EAR acoustic EOT heuristic. Targets can be generated from consented, source-bound aligned speech timestamps; evaluation must be source/session-disjoint and report early-interruption rate, endpoint accuracy and added latency.
+- Limits: no cross-language or Redmi result verified here; the arXiv abstract does not establish mobile runtime cost. No code, dataset or weights reused; no model download.
+
+### PCL-AED — abstract-only
+Chen & Huang, PCL-AED: progressive acoustic event detection based on contrastive learning, Journal on Audio, Speech, and Music Processing, published 2026-02-23, DOI 10.1186/s13636-026-00447-4. The accessible abstract describes LTSRR spectral augmentation, segment-level progressive classification and temporal contrastive loss, evaluated on DCASE2018 and DCASE2021 Task 4.
+
+- Evidence status: publisher abstract/metadata only; full text could not be retrieved in this run. Official code, checkpoint and weight license were not verified.
+- V14 relevance: a candidate for a later non-speech event-boundary learner; it does not justify semantic sound labels in the present heuristic.
+- Limits: no Android/RAM/latency evidence; no code or weights reused.
+
+Primary records: https://arxiv.org/abs/2606.18094 ; https://doi.org/10.1186/s13636-026-00447-4

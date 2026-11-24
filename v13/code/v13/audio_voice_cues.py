@@ -1,14 +1,17 @@
 """Additive timed RAW EAR voice/prosody cue adapter for A5, A4 and C3.
 
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
-caller-supplied PCM16 only; it never opens a microphone, stores raw PCM, runs
-ASR, assigns speaker identity, or grants learning/action authority. An optional
-caller-supplied frame-embedding batch may produce only a source-bound change-or-
-overlap hint; no model is loaded here. Acoustic classes and prosody scores remain
-deterministic heuristics, not a trained VAD, speech classifier, or calibrated probability.
+caller-supplied PCM16 only and never opens a microphone or stores raw PCM.
+Acoustic/prosodic cues remain primary. Optional Sherpa ASR and a local
+speaker-embedding extractor each require separate explicit opt-in and a live
+source-bound lease; model files must already exist locally and be hash-pinned.
+ASR hypotheses remain untrusted, and transcript persistence requires a second
+explicit opt-in. No model load, learning or action authority is enabled by
+default. Acoustic classes remain deterministic heuristics.
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import struct
 from contextlib import contextmanager
@@ -18,7 +21,9 @@ from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
+from .audio_teacher_ear import SherpaOnlineTeacher, SherpaOnlineTeacherStream
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_speaker_model import SherpaSpeakerEmbeddingEncoder, SpeakerModelError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -221,6 +226,62 @@ def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[f
         output.append(filtered)
     return output, sample_rate / factor
 
+
+def _anti_alias_decimate_numpy(samples, sample_rate: int, factor: int, numpy_module) -> tuple[list[float], float]:
+    """Vectorized equivalent of the bounded Python FIR decimator.
+
+    The outer loop retains the reference filter's exact symmetric-pair summation
+    order; NumPy only vectorizes independent output samples. Endpoint reflection
+    and output length match _anti_alias_decimate, including short-window edges.
+    This path is opt-in through backend="numpy"; it adds no mandatory dependency.
+    """
+    if type(factor) is not int or factor < 1:
+        raise ValueError("RAW EAR decimation factor must be a positive integer")
+    values = numpy_module.asarray(samples, dtype=numpy_module.float64)
+    if factor == 1:
+        return values.tolist(), float(sample_rate)
+    coefficients = _voice_decimator_coefficients(sample_rate, factor)
+    half = len(coefficients) // 2
+    sample_count = int(values.size)
+    centers = numpy_module.arange(sample_count // factor, dtype=numpy_module.int64) * factor
+    filtered = numpy_module.zeros(centers.shape, dtype=numpy_module.float64)
+
+    def reflected(indices):
+        result = numpy_module.empty(indices.shape, dtype=numpy_module.float64)
+        inside = (indices >= 0) & (indices < sample_count)
+        if numpy_module.any(inside):
+            result[inside] = values[indices[inside]]
+        outside = ~inside
+        if numpy_module.any(outside):
+            outside_indices = indices[outside]
+            if sample_count <= half:
+                result[outside] = numpy_module.where(
+                    outside_indices < 0, values[0], values[-1]
+                )
+            else:
+                edge_values = numpy_module.empty(
+                    outside_indices.shape, dtype=numpy_module.float64
+                )
+                left = outside_indices < 0
+                if numpy_module.any(left):
+                    edge_values[left] = (
+                        2.0 * values[0] - values[-outside_indices[left]]
+                    )
+                right = ~left
+                if numpy_module.any(right):
+                    mirror = 2 * sample_count - 2 - outside_indices[right]
+                    edge_values[right] = 2.0 * values[-1] - values[mirror]
+                result[outside] = edge_values
+        return result
+
+    for offset in range(1, half + 1):
+        left_values = reflected(centers - offset)
+        right_values = reflected(centers + offset)
+        filtered += coefficients[half - offset] * (left_values + right_values)
+    filtered += coefficients[half] * values[centers]
+    return filtered.tolist(), sample_rate / factor
+
+
 def _percentile(values: list[float], fraction: float) -> float | None:
     """Return a linearly interpolated percentile for a small bounded frame list."""
     if not values:
@@ -314,7 +375,12 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
     # pitch band. Keep RAW EAR self-contained and bounded with a small cached
     # centered FIR before integer decimation. This is not a model resampler.
     factor = max(1, int(sample_rate // 8000))
-    low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
+    if numpy_module is None:
+        low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
+    else:
+        low_rate, effective_rate = _anti_alias_decimate_numpy(
+            samples, sample_rate, factor, numpy_module
+        )
     frame_ms, hop_ms = 40, 20
     frame_size = max(32, int(round(effective_rate * frame_ms / 1000.0)))
     hop_size = max(1, int(round(effective_rate * hop_ms / 1000.0)))
@@ -687,12 +753,50 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                                speaker_embeddings: dict | None = None,
+                                speaker_encoder: SherpaSpeakerEmbeddingEncoder | None = None,
+                                speaker_model_opt_in: bool = False,
+                                teacher_ear: SherpaOnlineTeacher | SherpaOnlineTeacherStream | None = None,
+                                teacher_asr_opt_in: bool = False,
+                                transcript_persist_opt_in: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if type(teacher_asr_opt_in) is not bool or type(transcript_persist_opt_in) is not bool:
+        raise ValueError("Teacher Ear opt-in flags must be booleans")
+    if type(speaker_model_opt_in) is not bool:
+        raise ValueError("speaker_model_opt_in must be a boolean")
+    if speaker_encoder is not None and not isinstance(
+        speaker_encoder, SherpaSpeakerEmbeddingEncoder
+    ):
+        raise TypeError("speaker_encoder must be a SherpaSpeakerEmbeddingEncoder")
+    if speaker_encoder is not None and not speaker_model_opt_in:
+        raise PermissionError("speaker model inference requires explicit opt-in")
+    if speaker_model_opt_in and speaker_encoder is None:
+        raise ValueError("speaker_model_opt_in requires a configured local speaker encoder")
+    if speaker_model_opt_in and consent_lease is None:
+        raise PermissionError("speaker model inference requires an explicit caller-held AudioConsentLease")
+    if speaker_encoder is not None and speaker_embeddings is not None:
+        raise ValueError("provide either speaker_encoder or caller-supplied speaker_embeddings, not both")
+    if (type(consent_receipt) is not str or not consent_receipt.strip()
+            or len(consent_receipt) > 256):
+        raise PermissionError("a bounded local audio consent receipt is required")
+    if transcript_persist_opt_in and not teacher_asr_opt_in:
+        raise PermissionError("transcript persistence requires separate Teacher Ear ASR opt-in")
+    if teacher_ear is not None and not isinstance(
+        teacher_ear, (SherpaOnlineTeacher, SherpaOnlineTeacherStream)
+    ):
+        raise TypeError(
+            "teacher_ear must be a SherpaOnlineTeacher or SherpaOnlineTeacherStream"
+        )
+    if teacher_ear is not None and not teacher_asr_opt_in:
+        raise PermissionError("teacher_ear supplied without explicit opt-in")
+    if teacher_asr_opt_in and teacher_ear is None:
+        raise ValueError("teacher_asr_opt_in requires a configured local teacher")
+    if teacher_asr_opt_in and consent_lease is None:
+        raise PermissionError("Teacher Ear requires an explicit caller-held AudioConsentLease")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -706,9 +810,14 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
         if vad_stream is not None:
+            # The recurrent Silero state is scoped to the exact consent epoch,
+            # not merely the reusable source/generation labels.
+            stream_id = hashlib.sha256(
+                f"{source_id}\0{generation_id}\0{consent_receipt}".encode("utf-8")
+            ).hexdigest()
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
-                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+                stream_id=stream_id, start_ms=start_ms,
             )
             cues["vad"] = validate_vad_evidence(vad_evidence)
             cues = validate_voice_cues(cues)
@@ -726,12 +835,35 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        if speaker_encoder is not None:
+            try:
+                speaker_embeddings = speaker_encoder.encode_window(
+                    pcm,
+                    sample_rate=sample_rate,
+                    runtime=runtime,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    consent_receipt_ref=consent_receipt,
+                    consent_lease=consent_lease,
+                    start_ms=audio_segment["start_ms"],
+                    end_ms=audio_segment["end_ms"],
+                    expected_pcm_sha256=raw["source_ref"]["sha256"],
+                    temporal_state=temporal_state,
+                    vad_stream=vad_stream,
+                )
+            except SpeakerModelError as exc:
+                runtime.store.log(
+                    "speaker_model_unavailable", event_id, {"error": type(exc).__name__}
+                )
+                speaker_embeddings = None
         speaker_evidence = None
         if speaker_embeddings is not None:
             try:
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
+                    consent_receipt_ref=consent_receipt,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    current_chunk_sha256=raw["source_ref"]["sha256"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                 )
             except SpeakerEvidenceError as exc:
@@ -763,6 +895,59 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
             audio_segment["unmeasured"].append("prosody")
 
+        teacher_result = None
+        if teacher_asr_opt_in:
+            teacher_result = teacher_ear.transcribe_pcm16(
+                pcm,
+                sample_rate=sample_rate,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                runtime=runtime,
+                source_id=source_id,
+                generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
+                consent_lease=consent_lease,
+                temporal_state=temporal_state,
+                vad_stream=vad_stream,
+                finality=finality,
+                teacher_asr_opt_in=True,
+            )
+            teacher_source = teacher_result.get("source_ref", {})
+            if (teacher_source.get("source_id") != source_id
+                    or teacher_source.get("generation_id") != generation_id
+                    or teacher_source.get("consent_receipt_ref") != consent_receipt
+                    or teacher_source.get("source_sha256") != audio_packet["source_ref"]["sha256"]):
+                raise ValueError("Teacher Ear hypothesis is not bound to this exact audio source")
+            stream_ref = teacher_result.get("stream_ref")
+            if stream_ref is not None:
+                stream_sha = stream_ref.get("rolling_sha256")
+                stream_id = stream_ref.get("stream_id")
+                if (
+                    type(stream_ref) is not dict
+                    or stream_ref.get("source_id") != source_id
+                    or stream_ref.get("generation_id") != generation_id
+                    or stream_ref.get("consent_receipt_ref") != consent_receipt
+                    or type(stream_ref.get("start_ms")) is not int
+                    or stream_ref.get("start_ms") > audio_segment["start_ms"]
+                    or stream_ref.get("end_ms") != audio_segment["end_ms"]
+                    or type(stream_ref.get("chunk_count")) is not int
+                    or not 1 <= stream_ref.get("chunk_count") <= 2400
+                    or stream_ref.get("chunk_index") != stream_ref.get("chunk_count")
+                    or type(stream_sha) is not str
+                    or len(stream_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in stream_sha)
+                    or type(stream_id) is not str
+                    or len(stream_id) != 64
+                    or any(ch not in "0123456789abcdef" for ch in stream_id)
+                ):
+                    raise ValueError("Teacher Ear stream provenance is not bound to this audio packet")
+            if teacher_result.get("status") == "MEASURED":
+                audio_segment["unmeasured"] = [
+                    item for item in audio_segment["unmeasured"] if item != "ASR"
+                ]
+            if transcript_persist_opt_in:
+                audio_segment["acoustic"]["teacher_ear"] = teacher_result
+
         expected_source_id, expected_receipt = source_id, consent_receipt
         source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
             runtime, event_id, audio_packet
@@ -773,14 +958,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             )
             raise PermissionError("audio packet binding does not match active consent lease")
 
-        _persist_audio_packet_under_consent_lease(
-            runtime, audio_packet, lease_active=lease_active,
-        )
-
         if temporal_state is None:
             temporal_voice = _runtime_temporal_voice_registry(runtime).update(
                 source_id=source_id,
                 generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
@@ -791,10 +973,17 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             temporal_voice = temporal_state.update(
                 source_id=source_id,
                 generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
+        # Persist the source-bound temporal evidence with the PerceptPacket for
+        # every caller, not only callers that also invoke the duplex bridge.
+        audio_segment["acoustic"]["temporal_voice"] = temporal_voice
+        _persist_audio_packet_under_consent_lease(
+            runtime, audio_packet, lease_active=lease_active,
+        )
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
@@ -807,10 +996,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     or speaker_evidence.get("change_score")
                     or 0.0
                 )
+        non_speech_novelty = temporal_voice["non_speech_novelty"]
         voice_novelty = max(
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
+            0.35 * non_speech_novelty,
         )
         prosody_interrupt = (0.25 * cues["prosody_change_score"]
                              if temporal_voice["voice_active"] else 0.0)
@@ -819,13 +1010,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
         vad_interrupt = 0.25 * vad_speech_fraction
         voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
-        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
-            # Preserve non-speech events as their own salience channel.
-            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
         attention = attctl.controller(runtime)
         attention_result = attention.modulate(event_id, sal={
-            "novelty": min(1.0, max(zcr, voice_novelty)),
-            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
+            # BOOT: absolute RMS/ZCR remain low-gain background cues; a new
+            # non-speech episode, not a sustained noise bed, drives A4 novelty.
+            "novelty": min(1.0, max(0.15 * zcr, voice_novelty)),
+            "external_interrupt": min(1.0, max(
+                0.15 * rms, prosody_interrupt, onset_interrupt,
+                vad_interrupt, speaker_interrupt,
+            )),
         })
         a4 = {
             "packet_id": audio_packet["packet_id"],
@@ -835,9 +1028,17 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "non_speech_event": {
+                "kind": temporal_voice["non_speech_kind"],
+                "active": temporal_voice["non_speech_active"],
+                "onset": temporal_voice["non_speech_onset"],
+                "offset": temporal_voice["non_speech_offset"],
+                "novelty": non_speech_novelty,
+            },
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
+            "identity_authority": False,
             "learning_authority": False,
             "action_authority": False,
         }
@@ -877,9 +1078,31 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
                     else " spk_cal=UNAVAILABLE"
                 )
+        # A teacher hypothesis is user speech, not truth. It reaches C3 only
+        # when the separate transcript-persistence/admission opt-in is active.
+        if (transcript_persist_opt_in and teacher_result is not None
+                and teacher_result.get("status") == "MEASURED"):
+            teacher_segment = teacher_result["segments"][0]
+            if teacher_segment.get("revision") is True:
+                # A revised streaming hypothesis replaces the earlier cumulative
+                # text; an empty delta alone would hide the correction from C3.
+                teacher_text = teacher_result.get("cumulative_hypothesis", "")
+                if teacher_text:
+                    summary += " asr_revision_untrusted=" + teacher_text[:64]
+            else:
+                teacher_text = teacher_segment.get("text", "")
+                if teacher_text:
+                    summary += " asr_hypothesis_untrusted=" + teacher_text[:64]
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
-        decision_suffix = f" spk_dec={speaker_change_decision}"
+        turn_candidates = temporal_voice["turn_candidates"]
+        turn_suffix = (
+            f" turn=s{int(turn_candidates['speech_candidate'])}"
+            f"e{int(turn_candidates['eot_candidate'])}"
+            f"i{int(turn_candidates['interrupt_candidate'])}"
+            f" floor_transfer={turn_candidates['floor_transfer_status']}"
+        )
+        decision_suffix = turn_suffix + f" spk_dec={speaker_change_decision}"
         summary = summary[:256-len(decision_suffix)] + decision_suffix
         candidate = Percept(
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
@@ -899,4 +1122,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         }
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
+        if teacher_result is not None:
+            result["teacher_ear"] = teacher_result
+            result["teacher_transcript_persisted"] = transcript_persist_opt_in
         return result
