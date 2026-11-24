@@ -324,6 +324,52 @@ class DirectMAEForecaster(nn.Module):
 
 
 
+class FrozenContextProbe(nn.Module):
+    """Shared linear forecast readout over a frozen context representation and known covariates."""
+
+    def __init__(self, backbone: JEPAForecaster, config: JEPAConfig):
+        super().__init__()
+        if backbone.config != config:
+            raise ValueError("probe config must match frozen backbone config")
+        self.config = config
+        self.backbone = backbone
+        self.backbone.requires_grad_(False)
+        self.backbone.eval()
+        feature_width = (
+            config.d_model
+            + config.seasonal_lags * config.input_channels
+            + config.calendar_features
+            + 4
+        )
+        self.readout = nn.Linear(feature_width, config.input_channels)
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        self.backbone.eval()
+        return self
+
+    def forward(
+        self, x: torch.Tensor, seasonal: torch.Tensor, calendar: torch.Tensor
+    ) -> torch.Tensor:
+        batch, horizon = seasonal.shape[:2]
+        with torch.no_grad():
+            context = self.backbone.context_encoder(x)[:, -1, :]
+        context = context.unsqueeze(1).expand(-1, horizon, -1)
+        known = torch.cat((seasonal.reshape(batch, horizon, -1), calendar), dim=-1)
+        step = torch.arange(horizon, device=x.device, dtype=x.dtype) / max(horizon, 1)
+        angle = 2.0 * math.pi * step
+        position = torch.stack(
+            (torch.sin(angle), torch.cos(angle), torch.sin(2 * angle), torch.cos(2 * angle)),
+            dim=-1,
+        ).unsqueeze(0).expand(batch, -1, -1)
+        return self.readout(torch.cat((context, known, position), dim=-1))
+
+    def loss(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if prediction.shape != target.shape:
+            raise ValueError("frozen-context probe prediction and target shapes differ")
+        return F.l1_loss(prediction, target)
+
+
 class FrozenLatentProbe(nn.Module):
     """Linear value decoder over a frozen JEPA or randomly initialized backbone."""
 
