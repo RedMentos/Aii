@@ -16,6 +16,7 @@ import tempfile
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 UCI_ARCHIVE_URL = (
@@ -98,6 +99,8 @@ def extract_dataset_archive(
         )
     if not archive.is_file():
         raise FileNotFoundError(archive)
+    if archive.stat().st_size > MAX_ARCHIVE_BYTES:
+        raise ValueError("ZIP archive exceeds the configured size limit")
 
     with zipfile.ZipFile(archive, "r") as bundle:
         infos = bundle.infolist()
@@ -191,6 +194,9 @@ def download_dataset(
     timeout_seconds: int = 45,
 ) -> dict:
     """Download the official archive to a temporary file, verify it, then extract."""
+    parsed_url = urlsplit(source_url)
+    if parsed_url.scheme != "https" or parsed_url.hostname != "archive.ics.uci.edu":
+        raise ValueError("dataset download must use HTTPS on archive.ics.uci.edu")
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=True)
     destination = directory / EXPECTED_MEMBER
@@ -211,6 +217,9 @@ def download_dataset(
     total = 0
     try:
         with os.fdopen(fd, "wb") as output, urlopen(request, timeout=timeout_seconds) as response:
+            final_url = urlsplit(response.geturl())
+            if final_url.scheme != "https" or final_url.hostname != "archive.ics.uci.edu":
+                raise ValueError("UCI download redirected outside the official HTTPS host")
             length = response.headers.get("Content-Length")
             if length is not None and int(length) > MAX_ARCHIVE_BYTES:
                 raise ValueError("UCI archive Content-Length exceeds the configured download limit")
