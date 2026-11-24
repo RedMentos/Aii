@@ -63,3 +63,35 @@ The first exact staged Runtime run on the previous code head exposed three failu
 - Independent Boss/QA review is pending. Next: review/integrate #2451, then recompose the stale fair B1/B2 pre-answer scheduler on current release HEAD while preserving both bodies, C3 reserve and source-bound C4/C3 consumption.
 
 **User action: none.**
+
+
+## Run 4 — bounded native receiver pair matrix (2026-11-24)
+
+### Implementation
+
+- Added `v13/native_probe_matrix.py` and `test_native_latent_receiver_matrix.py`.
+- The matrix is fixed to four sequential pairs: `B1_DETAIL→B2_GIST`, `B1_DETAIL→C3_LANGUAGE`, `B2_GIST→B1_DETAIL`, `B2_GIST→C3_LANGUAGE`.
+- One real local-TTY approval binds the exact FINAL text SourceRef, session/generation, all three installed model revisions, SHA-256 values, selected paths and file identities. It shares the existing one-shot approval state so a single-pair and matrix approval cannot be pending concurrently.
+- Before consuming approval, it checks known managed process census and MemAvailable headroom for each of the three installed model files. It runs serially under one exclusive Runtime lease, with a fixed 240-second total cap and 60-second per-pair deadline. It unloads the managed body pool after every pair.
+- The matrix persists only role-pair status and numeric/control evidence; it does not store source text. It refuses model tamper, changed source, changed role set, altered time limits, insufficient headroom, expired approval, or a second consume. Matrix revoke does not revoke a pending single-pair approval.
+- The staged overlay now pins and dispatches the matrix module. The final stage/deployer chain was rebound and read back:
+  - matrix module Git blob: `5fd7f6b4dc83001ef8948bb8d0c52d07c02e31fb`
+  - overlay Git blob: `57c81ed44ade07dcaee98f80b5584cf477ef5c8b`
+  - stage-builder Git blob: `898c6a7d0974273538e5825602de5b0f62953d80`
+  - RuntimeDeploy `STAGER_SHA256`: `88f164586dc9199f3aace3dd7a6d59effc250964baa74cd02631c77d62395bb8`
+- The workflow compiles the new module/test, checks the matrix source pin, runs the matrix/overlay regressions, and retains the pinned Linux native build plus Android ARM64 cross-compile.
+
+### Exact status
+
+- PR #2451 current head at this checkpoint: `07a6180a0b9fe340970dd9151fa363b17667809b`; base `8d93236c753f0194224c19edc7411d8d7082b1d6`; DRAFT / NOT_RELEASED.
+- Exact-head workflows were queued at the latest readback, including the updated native receiver staged-runtime workflow. The earlier green run on `9e28234` does **not** verify the new matrix module/tests. No PASS claim for the new pair matrix until the current head completes.
+- **LOCAL_LINUX_FULL_REPOSITORY:** BLOCKED / NOT_RUN; no Aii checkout is mounted and GitHub DNS is unavailable.
+- **REDMI:** REDMI_UNVERIFIED. The matrix was not armed or executed; no local probe, model download, swap, weight update, permission change, Termux command or device mutation occurred.
+
+### Claim boundary and next research question
+
+This is a native diagnostic matrix, not trained cross-model latent alignment, semantic utility, production B3, or a gradient path. It can expose input-dimension incompatibility and whether a receiver's native logits change relative to zero/shuffle/row-shuffle/repeat controls. The next research question is whether a learned, source-disjoint projection is required for dimension-mismatched B1/B2/C3 pairs, and whether it improves held-out task utility over SOURCE_EXACT and NO_MESSAGE baselines. Do not train or activate that projection from this diagnostic alone.
+
+**Next executable action:** verify exact-head CI for `07a6180`, fix any failures, request independent Boss/QA review, then coordinate with JEPA/Integrator on the current receiver/JEPA pin chain. A physical matrix run requires a separate explicit user decision after reviewed integration and a verified normal updater path.
+
+**User action: NONE** for the repository-only work recorded here.
