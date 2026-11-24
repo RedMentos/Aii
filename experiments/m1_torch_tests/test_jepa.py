@@ -85,6 +85,17 @@ class JEPAModelTests(unittest.TestCase):
         torch.testing.assert_close(out1["prediction"], out2["prediction"], rtol=0, atol=0)
         self.assertFalse(torch.equal(out1["target"], out2["target"]))
 
+    def test_channel_standardizer_uses_train_rows_only(self):
+        model = JEPAForecaster(self.config)
+        model.scaler.fit(self.dataset)
+        start, end = self.dataset.bounds["train"]
+        expected_mean = np.nanmean(self.dataset.values[start:end], axis=0)
+        expected_scale = np.nanstd(self.dataset.values[start:end], axis=0)
+        expected_scale[expected_scale <= 1e-6] = 1.0
+        np.testing.assert_allclose(model.scaler.mean.cpu().numpy(), expected_mean, rtol=1e-6)
+        np.testing.assert_allclose(model.scaler.scale.cpu().numpy(), expected_scale, rtol=1e-6)
+        self.assertTrue(bool(model.scaler.fitted))
+
     def test_jepa_loss_and_collapse_telemetry_are_finite(self):
         model = JEPAForecaster(self.config)
         batch = next(self.dataset.iter_batches("train", batch_size=8))
