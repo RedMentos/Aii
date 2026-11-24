@@ -47,7 +47,7 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
 ## Next gates
 1. Get the current core and torch CI green on Python 3.12/3.13/3.14.
-2. Finish the baseline/statistical review and run a synthetic end-to-end smoke experiment.
+2. Finish the baseline/statistical review and confirm the synthetic end-to-end training/validation test passes.
 3. Lock patch size/stride, model dimensions, EMA schedule, anti-collapse weights, optimizer, epochs, seeds and promotion thresholds.
 4. Run train/validation only on the real UCI data; benchmark ingestion and batch throughput.
 5. Hash-lock the preregistration and executing commit before any test access.
