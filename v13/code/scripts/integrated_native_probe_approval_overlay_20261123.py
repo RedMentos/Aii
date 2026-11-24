@@ -14,7 +14,7 @@ MATRIX_PATH = "v13/native_probe_matrix.py"
 SOURCE_PINS = {
     OPERATOR_PATH: "8d59efa1bfb7dea7bbb2fd1af2cf7d2e25adebc4",
     APPROVAL_PATH: "c52c4d5bf21b34ab691eb6633504b67254bdf098",
-    MATRIX_PATH: "22b7abee5fc9794aa40db3bdb783b3c07415f698",
+    MATRIX_PATH: "629efe5ef69df93d926c5f4f8b1832c61509c12d",
 }
 
 HELP_OLD = b":callosum [status|shadow|active|degrade|promote <Richtung>]"
