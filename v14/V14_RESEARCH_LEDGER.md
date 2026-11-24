@@ -1278,3 +1278,42 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Acceptance boundary:** this is an Android API feasibility finding, not a built provider or Redmi proof. Android 13 supports the API, but actual target behavior, frame rate, RSS/PSS, thermal impact, dropped-frame behavior, consent UX, cancellation and restart still require authorized Redmi testing. No continuous capture, background capture or additional permission was enabled.
 
 **Status:** OFFICIAL_PLATFORM_DOC_REVIEWED / API_FEASIBLE / PROVIDER_ONE_SHOT_TODAY / NO_ANDROID_DEVICE_TEST / NO_PERMISSION_OR_CAPTURE_CHANGE.
+
+
+## R-130 — DLER: dual-logit replay and memory selection (full-text + repository audit, 2026-11-24)
+
+**Primary source:** Huiwei Lin, Shanshan Feng and Kong Aik Lee, *DLER: Dual-Logit Experience Replay for Online Continual Learning*, arXiv:2611.04885, submitted 2026-11-03 (preprint; no peer-reviewed venue established). Full HTML reviewed: https://arxiv.org/abs/2611.04885 .
+
+**Method:** DLER separates cosine-logit learning on incoming samples from dot-product-logit rehearsal on old samples, adds supervised contrastive compactness, and allocates/replaces memory by the positive probability advantage of dot-product over cosine prediction for the correct class. It uses class-balanced quotas and scores both retained and incoming examples after the update. This is a learned classifier/replay method, not a source-bound projector or a cross-organ latent interface.
+
+**Evidence / conditions:** Split CIFAR-100 and Mini-ImageNet use 10 stages of 10 classes; Tiny-ImageNet uses 20 stages of 10 classes. The backbone is a randomly initialized reduced ResNet18 (nf=20), SGD at 0.1, 10 current plus 10 replay samples per step, validation-selected alpha/contrastive weight, and 10 runs with 95% confidence intervals. Buffer sizes span 100–4,000 depending on dataset. The paper reports DLER as the highest mean final accuracy in its 12 tested dataset/buffer settings. These are image-classification experiments, not mobile or language-model evidence.
+
+**OSS / license / resource audit:** The paper links https://github.com/FelixHuiweiLin/UER . Its current README identifies DLER and DLMU implementations, but no LICENSE file was present at the inspected default branch path (GitHub contents API returned 404). requirements.txt pins torch 1.7.1, torchvision 0.8.2, matplotlib 3.2.1, scipy 1.4.1, scikit-learn 0.23.0, pandas 1.0.5, kornia 0.4.1 and other legacy dependencies. No code, dependency or weight was imported. Do not reuse until the repository's license and current maintenance status are independently established; the dependency stack is not a suitable direct Android/CPython-3.14 import.
+
+**V14 implication:** Keep dual stability/plasticity signals as a candidate for a future trainable classifier/replay organ, not a patch to A3 ridge. A later experiment would need separate old/new class or source cohorts, balanced vs unbalanced buffers, cosine-only/dot-only/dual-logit ablations, no-update and uniform-replay controls, parameter-diff/retention evidence, and matched compute. Current A3 instead uses source-disjoint data utility plus exact old-projector replay retention; DLER does not validate that mechanism.
+
+**Status:** FULL_HTML_REVIEWED / PREPRINT / REPOSITORY_README_VERIFIED / NO_LICENSE_FOUND / LEGACY_DEPENDENCIES / NO_IMPORT / NO_ANDROID_PROOF.
+
+## R-131 — SPHERE: spatially coherent replay-risk estimation (full-text, 2026-11-24)
+
+**Primary source:** Haixiang Sun et al., *Reliable Replay through Spatial Coherence in Online Continual Learning*, arXiv:2609.33725, submitted 2026-09-27 (preprint; no peer-reviewed venue established). Full HTML reviewed: https://arxiv.org/abs/2609.33725 .
+
+**Method:** SPHERE computes signed prospective loss changes for stored examples, smooths them over a representation-distance kernel, then allocates replay mass with entropy-regularized transport. A uniform component is retained. Its key caveat is explicit: neighborhood averaging helps only when nearby examples' responses are coherent enough that variance reduction outweighs geometric bias; isolated loss spikes may be noisy labels or bad rewards rather than genuine forgetting.
+
+**Evidence / conditions:** Experiments span noisy-label vision, continual language-model instruction tuning and code-generation RL with incomplete visible-test rewards. The vision protocol uses 10 tasks and buffers of 2,000 (CIFAR-100) / 4,000 (Tiny-ImageNet), with 0–60% symmetric label noise. The code-RL experiment adapts Qwen2.5-Coder-1.5B-Instruct using rank-16 LoRA over 120 updates and evaluates on disjoint full-test suites unavailable to replay selection. The authors note pairwise-distance and transport overhead grows with the scored memory set and propose sparse approximations as future work. No official public code repository or software/weight license was found in the reviewed paper.
+
+**V14 implication:** The useful transferable principle is to avoid treating one isolated prediction/loss delta as reliable learning credit; corroborate across source/representation neighborhoods and retain a uniform baseline. This is a future JEPA/World/Memory replay hypothesis, not an A3 implementation recipe: current Perception lacks the calibrated prospective loss signals, learned latent neighborhoods and bounded transport solver needed to justify SPHERE. No code or weights were imported.
+
+**Status:** FULL_HTML_REVIEWED / PREPRINT / EXPERIMENTAL_EVIDENCE / NO_OFFICIAL_REPO_FOUND / NO_LICENSE_FOUND / NO_IMPORT / NO_ANDROID_PROOF.
+
+## R-132 — CARES: coverage-aware replay exemplars (full-text, 2026-11-24)
+
+**Primary source:** Arundhati S. Shanbhag et al., *CARES: Coverage-Aware Replay Exemplar Selection for Continual Learning*, arXiv:2610.32799, submitted 2026-10-23 (preprint; no peer-reviewed venue established). Full HTML reviewed: https://arxiv.org/abs/2610.32799 .
+
+**Method:** CARES decouples replay-buffer construction from the learner by using a frozen pretrained feature encoder, class-aware budget allocation, density weighting and within-class feature-space coverage. A bounded staging pool is combined with the previous replay buffer before the fixed budget is reconstructed. It requires no learner gradients or auxiliary optimization during selection.
+
+**Evidence / conditions:** Protocols cover Split CIFAR-100 and Tiny-ImageNet. The TIL protocol uses 20 tasks and capacities K=100/200; CIL uses a single pass with blurred task boundaries and K=200/500/2,000. The paper reports 2.3–8.8× faster selection than several coreset baselines on Tiny-ImageNet and strong results under class imbalance/noisy labels. Its own limitations section says the advantage is less consistent with very small replay budgets, it assumes a suitable frozen pretrained encoder, and the staging pool consumes temporary memory. The authors state that code will be released upon publication; no repository or code/weight license was found in the reviewed paper.
+
+**V14 implication:** Consider only as a future, bounded memory-selection baseline if a stable, already-available embedding space exists. Compare uniform/reservoir, class-balanced, coverage-only and density-weighted selection at equal bytes and compute. The small Android budget, lack of a verified compatible frozen encoder, and staging-pool RAM make direct adoption premature. It does not justify freezing any V14 organ as a permanent teacher.
+
+**Status:** FULL_HTML_REVIEWED / PREPRINT / CODE_NOT_YET_RELEASED / NO_LICENSE_FOUND / NO_IMPORT / NO_ANDROID_PROOF.
