@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import re
 import time
 from pathlib import Path
@@ -17,12 +18,13 @@ from .android_control import AndroidControlBroker, ControlDenied
 from .android_companion_transport import AndroidCompanionTransport, CompanionTransportError
 from .android_companion_ecdsa import ECDSAReceiptVerifier
 from .android_outcomes import accept_and_persist_companion_receipt
+from .contracts import packet
 from .common import atomic_write, dumps
 
 
 _HELP = (
     ":android status|capabilities|pair|trust <key-id> --confirm|"
-    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|stop"
+    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|stop"
 )
 
 
@@ -68,6 +70,26 @@ class AndroidCompanionController:
                 or trust.get("public_key_sec1_base64") != info["public_key_sec1_base64"]):
             raise ControlDenied("companion key changed; explicit re-pairing required")
         return trust, point, info
+
+    def _trusted_public_key_for_recovery(self):
+        """Load only the explicit local trust pin; recovery must work offline."""
+        try:
+            trust = json.loads(self.trust_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ControlDenied("public key not pinned for receipt recovery") from exc
+        if (type(trust) is not dict
+                or trust.get("schema") != "v14.android-companion-trust/1"
+                or type(trust.get("key_id")) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", trust["key_id"]) is None
+                or type(trust.get("public_key_sec1_base64")) is not str):
+            raise ControlDenied("invalid pinned key for receipt recovery")
+        try:
+            point = base64.b64decode(trust["public_key_sec1_base64"], validate=True)
+        except Exception as exc:
+            raise ControlDenied("pinned recovery key encoding invalid") from exc
+        if len(point) != 65 or point[0] != 4 or hashlib.sha256(point).hexdigest() != trust["key_id"]:
+            raise ControlDenied("pinned recovery key fingerprint mismatch")
+        return trust, point
 
     def status(self):
         trust = None
@@ -141,6 +163,17 @@ class AndroidCompanionController:
             "launch_app", {"package": package}, ttl=30,
             event_id=event["event_id"], source_ref=event["source_ref"],
         )
+        try:
+            intent = packet(
+                "ActionIntent", "C5_ANDROID_COMPANION", event["event_id"],
+                event["brain_generation_id"], [event["source_ref"]],
+                action_id=proposal.action_id, action_type="launch_app",
+                permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
+            )
+            self.runtime.store.add_packet("ActionIntent", intent)
+        except Exception:
+            self.broker.cancel(proposal.action_id)
+            raise
         self.broker.approve(proposal.action_id, confirmed_by_local_ui=True)
         envelope = self.broker.dispatch_approved(proposal.action_id)
         try:
@@ -178,9 +211,190 @@ class AndroidCompanionController:
             "next": ":android poll " + proposal.action_id,
         })
 
+    def _stored_receipt_outcome(self, action_id):
+        """Validate a previously committed receipt so a crash cannot force a remote retry."""
+        proposal = self.broker.consumed.get(action_id)
+        if proposal is None:
+            raise ControlDenied("receipt-consumed action has no recoverable local proposal")
+        intent_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.event_id AS packet_event_id,e.packet AS event_packet,e.session_id "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionIntent' AND json_extract(p.payload,'$.action_id')=?",
+            (action_id,),
+        )
+        outcome_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.event_id AS packet_event_id,e.packet AS event_packet,e.session_id "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionOutcome' AND json_extract(p.payload,'$.action_id')=?",
+            (action_id,),
+        )
+        if not outcome_rows:
+            return None
+        if len(intent_rows) != 1 or len(outcome_rows) != 1:
+            raise ControlDenied("stored receipt recovery has ambiguous intent/outcome records")
+        intent_row, outcome_row = intent_rows[0], outcome_rows[0]
+        if (intent_row["session_id"] != self.runtime.session
+                or outcome_row["session_id"] != self.runtime.session):
+            raise ControlDenied("stored receipt recovery crossed the active session")
+        try:
+            intent = json.loads(intent_row["payload"])
+            event = json.loads(intent_row["event_packet"])
+            outcome = json.loads(outcome_row["payload"])
+            outcome_event = json.loads(outcome_row["event_packet"])
+        except (TypeError, ValueError) as exc:
+            raise ControlDenied("stored receipt recovery record is malformed") from exc
+        if (not isinstance(intent, dict) or not isinstance(event, dict)
+                or not isinstance(outcome, dict) or not isinstance(outcome_event, dict)):
+            raise ControlDenied("stored receipt recovery record has an invalid packet shape")
+        event_id = intent_row["packet_event_id"]
+        generation_id = event.get("brain_generation_id")
+        source_ref = event.get("source_ref")
+        if (not isinstance(source_ref, dict)
+                or not isinstance(source_ref.get("source_id"), str)
+                or not source_ref["source_id"]
+                or event != outcome_event
+                or outcome_row["packet_event_id"] != event_id
+                or event.get("event_id") != event_id
+                or not isinstance(generation_id, str)
+                or proposal.event_id != event_id
+                or proposal.source_ref != source_ref
+                or proposal.capability != "launch_app"):
+            raise ControlDenied("stored receipt recovery source/event binding changed")
+        if (intent.get("producer_component") != "C5_ANDROID_COMPANION"
+                or intent.get("event_id") != event_id
+                or intent.get("brain_generation_id") != generation_id
+                or intent.get("provenance") != [source_ref]
+                or intent.get("action_id") != action_id
+                or intent.get("action_type") != "launch_app"
+                or intent.get("permission") != "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"):
+            raise ControlDenied("stored receipt recovery intent binding changed")
+        actual = outcome.get("actual") if isinstance(outcome, dict) else None
+        status_map = {
+            "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED": (
+                "DISPATCHED_UNVERIFIED", True, "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+            ),
+            "COMPANION_USER_DENIED": (
+                "USER_DENIED", False, "ANDROID_COMPANION_USER_DENIAL"
+            ),
+            "COMPANION_DISPATCH_FAILED": (
+                "FAILED_TO_DISPATCH", True, "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+            ),
+            "COMPANION_OUTCOME_UNKNOWN": (
+                "OUTCOME_UNKNOWN", True, "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+            ),
+        }
+        expected = status_map.get(outcome.get("status")) if isinstance(outcome, dict) else None
+        if (outcome.get("producer_component") != "C5_ANDROID_COMPANION"
+                or outcome.get("action_id") != action_id
+                or outcome.get("event_id") != event_id
+                or outcome.get("brain_generation_id") != generation_id
+                or outcome.get("provenance") != [source_ref]
+                or expected is None
+                or not isinstance(actual, dict)
+                or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+                or actual.get("capability") != proposal.capability
+                or type(actual.get("digest")) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", actual["digest"]) is None
+                or actual["digest"] != proposal.digest
+                or type(actual.get("receipt_nonce")) is not str
+                or re.fullmatch(r"[0-9a-f]{32}", actual["receipt_nonce"]) is None
+                or actual.get("receipt_schema") != "v14.android-companion-receipt/1"
+                or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+                or actual.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+                or actual.get("key_storage_status") not in {
+                    "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
+                }
+                or actual.get("receipt_status") != expected[0]
+                or actual.get("companion_local_consent_claim") is not expected[1]
+                or actual.get("local_approval_evidence") != expected[2]
+                or actual.get("observed") is not False
+                or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
+                or actual.get("t8_authoritative") is not False
+                or actual.get("world_learning_eligible") is not False
+                or actual.get("trusted_transition_eligible") is not False):
+            raise ControlDenied("stored receipt recovery failed its receipt-only authority checks")
+
+        signed_receipt = actual.get("signed_receipt")
+        verified_at = actual.get("receipt_verified_at")
+        if (type(signed_receipt) is not dict
+                or set(signed_receipt) != {"body", "key_id", "signature"}
+                or type(signed_receipt.get("body")) is not dict
+                or type(signed_receipt.get("signature")) is not str
+                or not signed_receipt["signature"]
+                or len(signed_receipt["signature"]) > 256
+                or type(verified_at) not in (int, float)
+                or (type(verified_at) is float and not math.isfinite(verified_at))):
+            raise ControlDenied("stored receipt recovery is missing its signed envelope")
+        signed_body = signed_receipt["body"]
+        issued_at = signed_body.get("issued_at")
+        expires_at = signed_body.get("expires_at")
+        if (type(issued_at) not in (int, float)
+                or type(expires_at) not in (int, float)
+                or (type(issued_at) is float and not math.isfinite(issued_at))
+                or (type(expires_at) is float and not math.isfinite(expires_at))
+                or expires_at < issued_at
+                or expires_at - issued_at > 60
+                or not issued_at <= float(verified_at) <= expires_at):
+            raise ControlDenied("stored receipt verification time is outside its signed validity window")
+
+        trust, public_key = self._trusted_public_key_for_recovery()
+        verifier = ECDSAReceiptVerifier(
+            self.verifier_path, public_key, trust["key_id"],
+            clock=lambda: float(verified_at),
+        )
+        verifier.start()
+        try:
+            attestation = verifier.verify(
+                {
+                    "action_id": action_id,
+                    "capability": proposal.capability,
+                    "digest": proposal.digest,
+                },
+                signed_receipt,
+                consume_nonce=False,
+            )
+        except Exception as exc:
+            raise ControlDenied("stored receipt signature revalidation failed") from exc
+        finally:
+            verifier.close()
+        if (
+            attestation.get("status") != outcome.get("status")
+            or attestation.get("schema") != actual.get("receipt_schema")
+            or attestation.get("auth_scheme") != actual.get("auth_scheme")
+            or attestation.get("nonce") != actual.get("receipt_nonce")
+            or attestation.get("receipt_status") != actual.get("receipt_status")
+            or attestation.get("companion_local_consent_claim") is not actual.get("companion_local_consent_claim")
+            or attestation.get("local_approval_evidence") != actual.get("local_approval_evidence")
+            or attestation.get("android_os_permission_status") != actual.get("android_os_permission_status")
+            or attestation.get("key_storage_status") != actual.get("key_storage_status")
+            or attestation.get("observed") is not False
+            or attestation.get("t8_authoritative") is not False
+        ):
+            raise ControlDenied("stored receipt signature does not authenticate the persisted outcome")
+        return outcome
+
     def poll(self, action_id):
         self.runtime.require_idle()
+        if type(action_id) is not str or re.fullmatch(r"[0-9a-f]{32}", action_id) is None:
+            raise ControlDenied("invalid action identifier")
         state = self.broker.action_state(action_id)
+        if state == "RECEIPT_CONSUMED":
+            stored = self._stored_receipt_outcome(action_id)
+            if stored is not None:
+                actual = stored["actual"]
+                self.broker.start()
+                self.broker.record_companion_receipt(
+                    action_id, actual["digest"], verified=True
+                )
+                return dumps({
+                    "status": stored["status"],
+                    "packet_id": stored["packet_id"],
+                    "observed": actual["observed"],
+                    "t8_authoritative": actual["t8_authoritative"],
+                    "world_learning_eligible": actual["world_learning_eligible"],
+                    "receipt_status": actual["receipt_status"],
+                    "recovered_from_store": True,
+                })
         if state in {"RECEIPT_VERIFIED", "RECEIPT_REJECTED", "CANCELLED", "EXPIRED", "DROPPED_ON_RESTART"}:
             return dumps({"status": "ALREADY_FINAL", "action_id": action_id, "action_state": state})
         trust, public_key, _ = self._pinned_key()
@@ -202,7 +416,8 @@ class AndroidCompanionController:
         verifier.start()
         try:
             outcome, packet = accept_and_persist_companion_receipt(
-                self.runtime.store, self.broker, verifier, action_id, receipt
+                self.runtime.store, self.broker, verifier, action_id, receipt,
+                clock=self.clock,
             )
         finally:
             verifier.close()
@@ -241,6 +456,137 @@ class AndroidCompanionController:
 
     def pending(self):
         return dumps(self.transport.pending())
+
+    def history(self, limit=20):
+        """Read-only current-session C5 journal with exact event/source joins."""
+        if type(limit) is not int or isinstance(limit, bool) or not 1 <= limit <= 50:
+            raise ValueError("history limit must be an integer from 1 to 50")
+        session = self.runtime.session
+        if not session:
+            return dumps({"status": "OK", "session_scoped": True, "count": 0, "actions": []})
+        intent_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,e.packet AS event_packet "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionIntent' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
+            (session, limit),
+        )
+        outcome_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,e.packet AS event_packet "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionOutcome' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
+            (session, limit * 4),
+        )
+        actions = {}
+        bindings = {}
+        for row in intent_rows:
+            try:
+                value = json.loads(row["payload"])
+                event = json.loads(row["event_packet"])
+            except (TypeError, ValueError):
+                continue
+            if value.get("producer_component") != "C5_ANDROID_COMPANION":
+                continue
+            action_id = value.get("action_id")
+            if (type(action_id) is not str or len(action_id) != 32
+                    or any(ch not in "0123456789abcdef" for ch in action_id)):
+                continue
+            event_id = row["packet_event_id"]
+            generation_id = event.get("brain_generation_id")
+            source_ref = event.get("source_ref")
+            provenance = value.get("provenance")
+            if (type(event_id) is not str or type(generation_id) is not str
+                    or value.get("event_id") != event_id
+                    or value.get("brain_generation_id") != generation_id
+                    or event.get("event_id") != event_id
+                    or event.get("brain_generation_id") != generation_id
+                    or not isinstance(source_ref, dict)
+                    or not isinstance(source_ref.get("source_id"), str)
+                    or provenance != [source_ref]
+                    or value.get("action_type") != "launch_app"
+                    or value.get("permission") != "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"
+                    or action_id in actions):
+                continue
+            try:
+                action_state = self.broker.action_state(action_id)
+            except Exception:
+                action_state = None
+            bindings[action_id] = {
+                "event_id": event_id,
+                "brain_generation_id": generation_id,
+                "source_ref": source_ref,
+                "provenance": provenance,
+                "action_type": value["action_type"],
+            }
+            actions[action_id] = {
+                "action_id": action_id,
+                "event_id": event_id,
+                "action_type": value["action_type"],
+                "permission": value["permission"],
+                "action_state": action_state or "UNKNOWN",
+                "outcome_status": None,
+                "observed": False,
+                "evidence_level": "NO_COMPANION_RECEIPT",
+                "t8_authoritative": False,
+                "world_learning_eligible": False,
+                "created": row["created"],
+            }
+        allowed_statuses = {
+            "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+            "COMPANION_USER_DENIED",
+            "COMPANION_DISPATCH_FAILED",
+            "COMPANION_OUTCOME_UNKNOWN",
+        }
+        for row in outcome_rows:
+            try:
+                value = json.loads(row["payload"])
+                event = json.loads(row["event_packet"])
+            except (TypeError, ValueError):
+                continue
+            actual = value.get("actual")
+            if (value.get("producer_component") != "C5_ANDROID_COMPANION"
+                    or not isinstance(actual, dict)
+                    or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+                    or actual.get("observed") is not False
+                    or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
+                    or actual.get("t8_authoritative") is not False
+                    or actual.get("world_learning_eligible") is not False
+                    or actual.get("trusted_transition_eligible") is not False
+                    or value.get("status") not in allowed_statuses
+                    or type(value.get("action_id")) is not str):
+                continue
+            action_id = value["action_id"]
+            entry = actions.get(action_id)
+            binding = bindings.get(action_id)
+            if entry is None or binding is None:
+                continue
+            event_id = row["packet_event_id"]
+            generation_id = event.get("brain_generation_id")
+            if (value.get("event_id") != event_id
+                    or value.get("brain_generation_id") != generation_id
+                    or event.get("event_id") != event_id
+                    or event.get("brain_generation_id") != generation_id
+                    or event_id != binding["event_id"]
+                    or generation_id != binding["brain_generation_id"]
+                    or event.get("source_ref") != binding["source_ref"]
+                    or value.get("provenance") != binding["provenance"]
+                    or value.get("provenance") != [event.get("source_ref")]
+                    or actual.get("capability") != binding["action_type"]):
+                continue
+            entry.update(
+                outcome_status=value["status"],
+                observed=False,
+                evidence_level="COMPANION_RECEIPT_ONLY",
+                t8_authoritative=False,
+                world_learning_eligible=False,
+            )
+        ordered = sorted(actions.values(), key=lambda item: item.get("created", 0), reverse=True)[:limit]
+        return dumps({
+            "status": "OK",
+            "session_scoped": True,
+            "count": len(ordered),
+            "actions": ordered,
+            "claim_limit": "Companion receipts attest dispatch/consent only; they are not device observation or T8 learning evidence.",
+        })
 
     def stop(self):
         remote = {"status": "UNAVAILABLE"}
@@ -315,6 +661,12 @@ def operator_command(runtime, args):
         return controller.cancel(args[1])
     if command == "pending" and len(args) == 1:
         return controller.pending()
+    if command == "history" and len(args) in (1, 2):
+        try:
+            limit = int(args[1]) if len(args) == 2 else 20
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError(_HELP) from None
+        return controller.history(limit)
     if command == "stop" and len(args) == 1:
         return controller.stop()
     raise ValueError(_HELP)

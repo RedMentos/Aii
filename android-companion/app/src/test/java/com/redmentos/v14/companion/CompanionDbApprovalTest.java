@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 
+import org.json.JSONObject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +64,50 @@ public final class CompanionDbApprovalTest {
     private void insertPending(String actionId, long expiresAt) {
         assertTrue(first.insertPending(actionId, "{\"capability\":\"launch_app\"}",
                 "com.example.app", expiresAt));
+    }
+
+    private static final String TEST_RECEIPT_KEY_ID = "b".repeat(64);
+
+    private static final class FakeReceiptSigner implements ReceiptFactory.Signer {
+        @Override public JSONObject publicKeyInfo() throws Exception {
+            return new JSONObject()
+                    .put("key_id", TEST_RECEIPT_KEY_ID)
+                    .put("key_storage_status", "ANDROID_KEYSTORE_SOFTWARE_BACKED");
+        }
+
+        @Override public JSONObject sign(JSONObject body) throws Exception {
+            return new JSONObject()
+                    .put("body", body)
+                    .put("key_id", TEST_RECEIPT_KEY_ID)
+                    .put("signature", "test-only");
+        }
+    }
+
+    private void insertValidPending(String actionId, long expiresAt) throws Exception {
+        String packageName = "com.example.app";
+        String digest = Canonical.requestDigest("launch_app", packageName);
+        JSONObject args = new JSONObject().put("package", packageName);
+        JSONObject request = new JSONObject()
+                .put("schema", "v14.android-action-request/1")
+                .put("action_id", actionId)
+                .put("capability", "launch_app")
+                .put("args", args)
+                .put("digest", digest)
+                .put("expires_at", expiresAt / 1000.0)
+                .put("companion_local_consent_required", true)
+                .put("android_os_permission_required", false)
+                .put("permission_bypass", false)
+                .put("model_authority", false)
+                .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
+        assertTrue(first.insertPending(actionId, request.toString(), packageName, expiresAt));
+    }
+
+    private static CompanionProvider.ReceiptIssuer receiptIssuer(AtomicInteger issued) {
+        ReceiptFactory.Signer signer = new FakeReceiptSigner();
+        return (action, status, localConsent, nowMillis) -> {
+            issued.incrementAndGet();
+            return ReceiptFactory.create(action, signer, status, localConsent, nowMillis).toString();
+        };
     }
 
     @Test public void concurrentApproveAndDenyHaveExactlyOneWinner() throws Exception {
@@ -438,6 +484,100 @@ public final class CompanionDbApprovalTest {
         assertFalse(hasApprovalNotification(manager, ACTION_ID));
     }
 
+
+    @Test public void executingReceiptRetriesAfterSqliteCommitFailureAndRestartWithoutRedispatch() throws Exception {
+        insertValidPending(ACTION_ID, NOW + 10_000L);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        AtomicInteger dispatches = new AtomicInteger();
+        assertEquals("DISPATCHED", CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, dispatches::incrementAndGet));
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = receiptIssuer(issued);
+
+        first.getWritableDatabase().execSQL(
+                "CREATE TRIGGER fail_exec_receipt BEFORE UPDATE OF status ON actions "
+                        + "WHEN NEW.action_id='" + ACTION_ID + "' AND NEW.status='OUTCOME_UNKNOWN' "
+                        + "BEGIN SELECT RAISE(ABORT, 'simulated SQLite receipt commit failure'); END");
+        assertFalse(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals("EXECUTING", first.get(ACTION_ID).status);
+        assertNull(first.get(ACTION_ID).receiptJson);
+        assertEquals(1, issued.get());
+        assertEquals(1, dispatches.get());
+
+        // Process-death boundary: the claimed state survives, but the runtime
+        // starts OFF. Startup recovery may only create the unknown receipt.
+        first.close();
+        CompanionProvider.resetProcessStateForProviderStartup(context);
+        first = new CompanionDb(context);
+        first.getWritableDatabase().execSQL("DROP TRIGGER IF EXISTS fail_exec_receipt");
+        assertEquals(1, CompanionProvider.recoverClaimedActions(context, first, NOW, issuer));
+
+        CompanionDb.Action recovered = first.get(ACTION_ID);
+        assertEquals("OUTCOME_UNKNOWN", recovered.status);
+        JSONObject envelope = new JSONObject(recovered.receiptJson);
+        JSONObject body = envelope.getJSONObject("body");
+        assertEquals("OUTCOME_UNKNOWN", body.getString("status"));
+        assertTrue(body.getBoolean("local_consent"));
+        assertFalse(body.getBoolean("observed"));
+        assertEquals(ACTION_ID, body.getString("action_id"));
+        assertEquals(Canonical.requestDigest("launch_app", "com.example.app"), body.getString("digest"));
+        assertEquals(TEST_RECEIPT_KEY_ID, body.getString("key_id"));
+        assertEquals("test-only", envelope.getString("signature"));
+        assertEquals(2, issued.get());
+
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        assertEquals("NOT_CLAIMED", CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, dispatches::incrementAndGet));
+        assertEquals("a recovered action must never be dispatched a second time", 1, dispatches.get());
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals("a durable receipt is returned idempotently, not re-signed", 2, issued.get());
+        CompanionProvider.setEnabled(context, false);
+    }
+
+    @Test public void denialReceiptRetriesAfterSqliteCommitFailureAndRestartWithoutConsent() throws Exception {
+        insertValidPending(ACTION_ID, NOW + 10_000L);
+        assertTrue(first.claimForDenial(ACTION_ID, NOW));
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = receiptIssuer(issued);
+
+        first.getWritableDatabase().execSQL(
+                "CREATE TRIGGER fail_denial_receipt BEFORE UPDATE OF status ON actions "
+                        + "WHEN NEW.action_id='" + ACTION_ID + "' AND NEW.status='USER_DENIED' "
+                        + "BEGIN SELECT RAISE(ABORT, 'simulated SQLite denial receipt commit failure'); END");
+        assertFalse(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals("DENYING", first.get(ACTION_ID).status);
+        assertNull(first.get(ACTION_ID).receiptJson);
+        assertEquals(1, issued.get());
+
+        first.close();
+        CompanionProvider.resetProcessStateForProviderStartup(context);
+        first = new CompanionDb(context);
+        first.getWritableDatabase().execSQL("DROP TRIGGER IF EXISTS fail_denial_receipt");
+        assertEquals(1, CompanionProvider.recoverClaimedActions(context, first, NOW, issuer));
+
+        CompanionDb.Action recovered = first.get(ACTION_ID);
+        assertEquals("USER_DENIED", recovered.status);
+        JSONObject envelope = new JSONObject(recovered.receiptJson);
+        JSONObject body = envelope.getJSONObject("body");
+        assertEquals("USER_DENIED", body.getString("status"));
+        assertFalse(body.getBoolean("local_consent"));
+        assertFalse(body.getBoolean("observed"));
+        assertEquals(ACTION_ID, body.getString("action_id"));
+        assertEquals(TEST_RECEIPT_KEY_ID, body.getString("key_id"));
+        assertEquals("test-only", envelope.getString("signature"));
+        assertEquals(2, issued.get());
+
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+        assertFalse(first.claimForDenial(ACTION_ID, NOW));
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        AtomicInteger dispatches = new AtomicInteger();
+        assertEquals("NOT_CLAIMED", CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, dispatches::incrementAndGet));
+        assertEquals(0, dispatches.get());
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals("a durable denial is not signed again", 2, issued.get());
+        CompanionProvider.setEnabled(context, false);
+    }
 
     @Test public void notificationReconciliationRemovesCommittedReceiptAndPreservesLiveApproval() {
         String liveId = "b".repeat(32);

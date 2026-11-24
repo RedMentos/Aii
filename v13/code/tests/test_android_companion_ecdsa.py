@@ -210,6 +210,8 @@ def test_keystore_receipt_persists_source_bound_non_authoritative_outcome(tmp_pa
     assert actual["t8_authoritative"] is False
     assert actual["world_learning_eligible"] is False
     assert actual["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert actual["receipt_verified_at"] == 1000.0
+    assert actual["signed_receipt"]["body"]["issued_at"] == 999
 
     store.close()
     broker.close()

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 from typing import Callable, Mapping
+import math
 import time
 
 from .android_control import AndroidControlBroker, ControlDenied
@@ -109,32 +110,44 @@ def accept_companion_receipt(
     except Exception:
         broker.record_companion_receipt(action_id, proposal.digest, verified=False)
         raise
+    verified_at = float(clock())
+    details = {
+        "digest": proposal.digest,
+        "receipt_schema": attestation["schema"],
+        "auth_scheme": attestation["auth_scheme"],
+        "receipt_nonce": attestation["nonce"],
+        "companion_local_consent_claim": attestation.get("companion_local_consent_claim", True),
+        "receipt_status": attestation.get("receipt_status", "EXECUTED"),
+        "local_approval_evidence": attestation.get(
+            "local_approval_evidence", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+        ),
+        "android_os_permission_status": attestation.get(
+            "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
+        ),
+        "key_storage_status": attestation["key_storage_status"],
+        "t8_authoritative": False,
+        "world_learning_eligible": False,
+        "event_id": proposal.event_id,
+        "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
+    }
+    if attestation["auth_scheme"] == "ECDSA_P256_SHA256_ANDROID_KEYSTORE":
+        # Keep the exact authenticated envelope with the derived ActionOutcome.
+        # Recovery can then re-check the signature without asking the companion
+        # to redispatch or trusting mutable status fields in SQLite.
+        details["signed_receipt"] = {
+            "body": dict(receipt["body"]),
+            "key_id": receipt["key_id"],
+            "signature": receipt["signature"],
+        }
+        details["receipt_verified_at"] = verified_at
     outcome = ActionOutcome(
         action_id=proposal.action_id,
         capability=proposal.capability,
         status=attestation["status"],
         observed=False,
         evidence_level="COMPANION_RECEIPT_ONLY",
-        timestamp=float(clock()),
-        details={
-            "digest": proposal.digest,
-            "receipt_schema": attestation["schema"],
-            "auth_scheme": attestation["auth_scheme"],
-            "receipt_nonce": attestation["nonce"],
-            "companion_local_consent_claim": attestation.get("companion_local_consent_claim", True),
-            "receipt_status": attestation.get("receipt_status", "EXECUTED"),
-            "local_approval_evidence": attestation.get(
-                "local_approval_evidence", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
-            ),
-            "android_os_permission_status": attestation.get(
-                "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
-            ),
-            "key_storage_status": attestation["key_storage_status"],
-            "t8_authoritative": False,
-            "world_learning_eligible": False,
-            "event_id": proposal.event_id,
-            "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
-        },
+        timestamp=verified_at,
+        details=details,
     )
     if finalize_broker:
         broker.record_companion_receipt(action_id, proposal.digest, verified=True)
@@ -222,7 +235,57 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
             )
         )
     )
-    if common_invalid or legacy_hmac_invalid or android_keystore_invalid or auth_scheme not in {
+    ecdsa_envelope_invalid = False
+    signed_receipt = outcome.details.get("signed_receipt")
+    receipt_verified_at = outcome.details.get("receipt_verified_at")
+    if auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE":
+        if (type(signed_receipt) is not dict
+                or set(signed_receipt) != {"body", "key_id", "signature"}):
+            ecdsa_envelope_invalid = True
+        else:
+            body = signed_receipt.get("body")
+            if (type(body) is not dict
+                    or set(body) != {
+                        "schema", "nonce", "action_id", "capability", "digest",
+                        "issued_at", "expires_at", "status", "local_consent",
+                        "observed", "os_permission_status", "key_storage_status", "key_id",
+                    }):
+                ecdsa_envelope_invalid = True
+            else:
+                issued_at = body.get("issued_at")
+                expires_at = body.get("expires_at")
+                numeric_times = (
+                    type(issued_at) in (int, float)
+                    and type(expires_at) in (int, float)
+                    and type(receipt_verified_at) in (int, float)
+                    and (type(issued_at) is int or math.isfinite(issued_at))
+                    and (type(expires_at) is int or math.isfinite(expires_at))
+                    and (type(receipt_verified_at) is int or math.isfinite(receipt_verified_at))
+                )
+                ecdsa_envelope_invalid = (
+                    not numeric_times
+                    or type(signed_receipt.get("key_id")) is not str
+                    or signed_receipt.get("key_id") != body.get("key_id")
+                    or type(signed_receipt.get("signature")) is not str
+                    or not signed_receipt.get("signature")
+                    or len(signed_receipt.get("signature", "")) > 256
+                    or body.get("schema") != "v14.android-companion-receipt/1"
+                    or body.get("nonce") != nonce
+                    or body.get("action_id") != outcome.action_id
+                    or body.get("capability") != outcome.capability
+                    or body.get("digest") != digest
+                    or body.get("status") != receipt_status
+                    or body.get("local_consent") is not consent_claim
+                    or body.get("observed") is not False
+                    or body.get("os_permission_status") != outcome.details.get("android_os_permission_status")
+                    or body.get("key_storage_status") != outcome.details.get("key_storage_status")
+                    or (numeric_times and (
+                        expires_at < issued_at
+                        or expires_at - issued_at > 60
+                        or not issued_at <= receipt_verified_at <= expires_at
+                    ))
+                )
+    if common_invalid or legacy_hmac_invalid or android_keystore_invalid or ecdsa_envelope_invalid or auth_scheme not in {
         "HMAC_SHA256_PER_INSTALL", "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
     }:
         raise InvalidOutcome("companion receipt metadata is incomplete")
@@ -252,6 +315,9 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "world_learning_eligible": False,
         "trusted_transition_eligible": False,
     }
+    if auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE":
+        actual["signed_receipt"] = signed_receipt
+        actual["receipt_verified_at"] = float(receipt_verified_at)
     p = packet(
         "ActionOutcome", "C5_ANDROID_COMPANION", event_id,
         event["brain_generation_id"], [source_ref],
@@ -296,9 +362,17 @@ def accept_and_persist_companion_receipt(
     receipt: dict,
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
-    clock: Callable[[], float] = time.time,
+    clock: Callable[[], float] | None = None,
 ):
-    """One C5 receipt-consumer call: authenticate, persist, then notify downstream."""
+    """One C5 receipt-consumer call: authenticate, persist, then notify downstream.
+
+    When the caller does not supply a clock, reuse the verifier's clock so
+    signature validity and the persisted verification timestamp share one
+    time source (important for deterministic clocks and bounded receipt windows).
+    """
+    if clock is None:
+        verifier_clock = getattr(verifier, "clock", None)
+        clock = verifier_clock if callable(verifier_clock) else time.time
     outcome = accept_companion_receipt(
         broker, verifier, action_id, receipt, on_outcome=None, clock=clock,
         finalize_broker=False,

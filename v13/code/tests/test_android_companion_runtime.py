@@ -1,9 +1,11 @@
 import base64
+import hashlib
 import json
 
 import pytest
 
-from v13 import android_control
+from v13 import android_control, android_outcomes
+from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
 from v13.operator import Operator
@@ -41,6 +43,25 @@ SUCCESS_RECEIPT = {
     "key_id": KEY_ID,
     "signature": "MEUCIQCj6DaMCL0/ofDX/AxaFXbnT+ItjasEn7c0HNpRmsW28AIgQ6UwgRkmD46+1dAyhr1NOR6tBMlnER7j/f6Lz9RiKBI=",
 }
+def _sign_test_body(body):
+    """Sign a test-only receipt with private scalar 1 (fixture public key is P-256 G)."""
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    order = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
+    generator_x = 0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296
+    r = generator_x
+    s = (int.from_bytes(hashlib.sha256(raw).digest(), "big") + r) % order
+    if s == 0:
+        raise AssertionError("test fixture produced an invalid ECDSA scalar")
+
+    def der_integer(value):
+        encoded = value.to_bytes((value.bit_length() + 7) // 8, "big")
+        if encoded[0] & 0x80:
+            encoded = bytes([0]) + encoded
+        return bytes([2, len(encoded)]) + encoded
+
+    payload = der_integer(r) + der_integer(s)
+    signature = bytes([0x30, len(payload)]) + payload
+    return base64.b64encode(signature).decode("ascii")
 DENIAL_BODY = {**BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False}
 DENIAL_RECEIPT = {
     "body": DENIAL_BODY,
@@ -282,3 +303,530 @@ def test_mismatched_submit_ack_cancels_local_and_remote_action(tmp_path, monkeyp
     assert controller.broker.action_state(action_id) == "CANCELLED"
     runtime.store.close()
     controller.broker.close()
+
+
+def test_action_intent_history_is_session_scoped_restartable_and_non_authoritative(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport(SUCCESS_RECEIPT)
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    pending = json.loads(controller.launch("com.example.private_app", True))
+    action_id = pending["action_id"]
+    # Bind the signed fixture to this exact request. Reusing SUCCESS_RECEIPT
+    # would correctly fail because its digest belongs to com.example.app.
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": "7" * 32,
+    }
+    transport.receipt = {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+    intent_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionIntent' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    intent = json.loads(intent_row["payload"])
+    assert intent["producer_component"] == "C5_ANDROID_COMPANION"
+    assert intent["action_id"] == action_id
+    assert intent["action_type"] == "launch_app"
+    assert intent["permission"] == "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"
+
+    other_session = runtime.store.new_session()
+    other_event = runtime.store.event(other_session, "other session action")
+    other_intent = packet(
+        "ActionIntent", "C5_ANDROID_COMPANION", other_event["event_id"],
+        other_event["brain_generation_id"], [other_event["source_ref"]],
+        action_id="9" * 32, action_type="launch_app",
+        permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
+    )
+    runtime.store.add_packet("ActionIntent", other_intent)
+
+    before_restart = json.loads(controller.history())
+    assert before_restart["session_scoped"] is True
+    assert before_restart["count"] == 1
+    assert before_restart["actions"][0]["action_id"] == action_id
+    assert before_restart["actions"][0]["action_state"] == "DISPATCHED"
+    assert "com.example.private_app" not in json.dumps(before_restart)
+    assert "9" * 32 not in json.dumps(before_restart)
+
+    controller.broker.close()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    after_restart = json.loads(controller.history())
+    assert after_restart["actions"][0]["action_state"] == "DISPATCHED"
+
+    receipt = json.loads(controller.poll(action_id))
+    assert receipt["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert receipt["observed"] is False
+    assert "signed_receipt" not in json.dumps(receipt)
+    assert transport.receipt["signature"] not in json.dumps(receipt)
+    assert receipt["t8_authoritative"] is False
+    assert receipt["world_learning_eligible"] is False
+
+    history = json.loads(controller.history())
+    assert "signed_receipt" not in json.dumps(history)
+    assert "receipt_nonce" not in json.dumps(history)
+    assert transport.receipt["signature"] not in json.dumps(history)
+    item = history["actions"][0]
+    assert item["action_id"] == action_id
+    assert item["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert item["observed"] is False
+    assert item["evidence_level"] == "COMPANION_RECEIPT_ONLY"
+    assert item["t8_authoritative"] is False
+    assert item["world_learning_eligible"] is False
+    assert "com.example.private_app" not in json.dumps(history)
+    assert runtime.store.one("SELECT 1 FROM actions WHERE event_id=?", (pending["source_event_id"],)) is None
+
+    # The ordinary local operator route exposes the read-only history; model-origin calls remain blocked.
+    # A matching action_id alone must never join another event or elevate receipt authority.
+    stored_outcome = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    valid_outcome = json.loads(stored_outcome["payload"])
+    unrelated = runtime.store.event(runtime.session, "unrelated same-session event")
+    forged_actual = {
+        **valid_outcome["actual"],
+        "observed": True,
+        "t8_authoritative": True,
+        "world_learning_eligible": True,
+        "trusted_transition_eligible": True,
+    }
+    mismatched = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", unrelated["event_id"],
+        unrelated["brain_generation_id"], [unrelated["source_ref"]],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
+    )
+    runtime.store.add_packet("ActionOutcome", mismatched)
+    authority_forgery = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", valid_outcome["event_id"],
+        valid_outcome["brain_generation_id"], valid_outcome["provenance"],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
+    )
+    runtime.store.add_packet("ActionOutcome", authority_forgery)
+    after_forgery = json.loads(controller.history())
+    assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert after_forgery["actions"][0]["observed"] is False
+    assert after_forgery["actions"][0]["t8_authoritative"] is False
+    assert after_forgery["actions"][0]["world_learning_eligible"] is False
+
+    tty_history = json.loads(Operator(runtime).run(":android history"))
+    assert tty_history["count"] == 1
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        Operator(runtime).run(":android history", origin="MODEL")
+
+    runtime._android_companion_controller.broker.close()
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_unknown_companion_recovery_receipt_is_persisted_without_device_or_learning_authority(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "6" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": "8" * 32,
+        "status": "OUTCOME_UNKNOWN",
+        "local_consent": True,
+    }
+    transport.receipt = {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+
+    recovered = json.loads(controller.poll(action_id))
+    assert recovered["status"] == "COMPANION_OUTCOME_UNKNOWN"
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert recovered["receipt_status"] == "OUTCOME_UNKNOWN"
+
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    outcome = json.loads(row["payload"])
+    actual = outcome["actual"]
+    assert outcome["status"] == "COMPANION_OUTCOME_UNKNOWN"
+    assert actual["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert actual["observed"] is False
+    assert actual["t8_authoritative"] is False
+    assert actual["world_learning_eligible"] is False
+    assert json.loads(controller.poll(action_id))["status"] == "ALREADY_FINAL"
+
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path):
+    runtime = make_runtime(tmp_path)
+    controller = AndroidCompanionController(runtime, transport=FakeTransport())
+    for invalid in (0, 51, True, 1.5, "5"):
+        with pytest.raises(ValueError, match="history limit"):
+            controller.history(invalid)
+    controller.broker.close()
+    runtime.store.close()
+
+
+
+def _signed_receipt_for_request(
+    transport, action_id, nonce, *, status="DISPATCHED_UNVERIFIED",
+    issued_at=None, expires_at=None,
+):
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": nonce,
+        "status": status,
+        "local_consent": status != "USER_DENIED",
+    }
+    if issued_at is not None:
+        body["issued_at"] = issued_at
+    if expires_at is not None:
+        body["expires_at"] = expires_at
+    return {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+
+
+def test_claimed_receipt_retries_after_restart_without_redispatch(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(transport, action_id, "7" * 32)
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_persist = android_outcomes.persist_companion_outcome
+
+    def crash_before_store_commit(*args, **kwargs):
+        raise OSError("simulated process death after receipt claim")
+
+    monkeypatch.setattr(android_outcomes, "persist_companion_outcome", crash_before_store_commit)
+    with pytest.raises(OSError, match="simulated process death"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert runtime.store.one(
+        "SELECT 1 FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ) is None
+    assert len(outcome_calls) == 1
+    controller.broker.close()
+
+    monkeypatch.setattr(android_outcomes, "persist_companion_outcome", original_persist)
+    # The original dispatch TTL has elapsed. The companion can still return a
+    # fresh signed receipt for the already-claimed action; no new launch occurs.
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "8" * 32, issued_at=4999, expires_at=5030
+    )
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert len(outcome_calls) == 2
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    restarted.broker.close()
+    runtime.store.close()
+
+
+def test_committed_receipt_recovers_locally_after_broker_finalize_crash(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "3" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(transport, action_id, "8" * 32)
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert runtime.store.one(
+        "SELECT 1 FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ) is not None
+    assert len(outcome_calls) == 1
+    stored_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    )
+    stored = json.loads(stored_row["payload"])
+    assert stored["actual"]["signed_receipt"]["body"]["action_id"] == action_id
+    controller.broker.close()
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["recovered_from_store"] is True
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    restarted.broker.close()
+    runtime.store.close()
+
+
+def test_committed_receipt_recovery_rejects_tampered_store_digest_without_remote_retry(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "4" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(transport, action_id, "9" * 32)
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    controller.broker.close()
+
+    with runtime.store.mutex:
+        row = runtime.store.db.execute(
+            "SELECT id,payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row["payload"])
+        payload["actual"]["digest"] = "f" * 64
+        runtime.store.db.execute(
+            "UPDATE packets SET payload=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True), row["id"]),
+        )
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    with pytest.raises(android_control.ControlDenied, match="receipt-only authority checks"):
+        restarted.poll(action_id)
+    assert restarted.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    restarted.broker.close()
+    runtime.store.close()
+
+def test_action_intent_persistence_failure_cancels_before_dispatch(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "5" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    original_add_packet = runtime.store.add_packet
+
+    def fail_intent_persistence(kind, value):
+        if kind == "ActionIntent":
+            raise OSError("intent persistence unavailable")
+        return original_add_packet(kind, value)
+
+    monkeypatch.setattr(runtime.store, "add_packet", fail_intent_persistence)
+    try:
+        with pytest.raises(OSError, match="intent persistence unavailable"):
+            controller.launch("com.example.app", True)
+
+        action_id = "5" * 32
+        assert controller.broker.action_state(action_id) == "CANCELLED"
+        assert transport.submitted == []
+        assert runtime.store.one(
+            "SELECT 1 FROM packets WHERE kind='ActionIntent' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ) is None
+    finally:
+        controller.broker.close()
+        runtime.store.close()
+
+
+@pytest.mark.parametrize(
+    ("signed_status", "forged_status"),
+    [
+        ("DISPATCHED_UNVERIFIED", "USER_DENIED"),
+        ("USER_DENIED", "DISPATCHED_UNVERIFIED"),
+    ],
+)
+def test_committed_receipt_recovery_rejects_signed_status_forgery_without_remote_retry(
+    tmp_path, monkeypatch, signed_status, forged_status
+):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "5" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "a" * 32, status=signed_status
+    )
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    controller.broker.close()
+
+    with runtime.store.mutex:
+        row = runtime.store.db.execute(
+            "SELECT id,payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row["payload"])
+        actual = payload["actual"]
+        assert actual["signed_receipt"]["body"]["status"] == signed_status
+        if forged_status == "USER_DENIED":
+            payload["status"] = "COMPANION_USER_DENIED"
+            actual["receipt_status"] = "USER_DENIED"
+            actual["companion_local_consent_claim"] = False
+            actual["local_approval_evidence"] = "ANDROID_COMPANION_USER_DENIAL"
+        else:
+            payload["status"] = "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+            actual["receipt_status"] = "DISPATCHED_UNVERIFIED"
+            actual["companion_local_consent_claim"] = True
+            actual["local_approval_evidence"] = "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+        runtime.store.db.execute(
+            "UPDATE packets SET payload=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True), row["id"]),
+        )
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    with pytest.raises(android_control.ControlDenied, match="signature does not authenticate"):
+        restarted.poll(action_id)
+    assert restarted.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    restarted.broker.close()
+    runtime.store.close()
+
+
+
+def test_committed_receipt_recovery_rejects_tampered_signature_without_remote_retry(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "6" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "b" * 32, status="DISPATCHED_UNVERIFIED"
+    )
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    controller.broker.close()
+
+    with runtime.store.mutex:
+        row = runtime.store.db.execute(
+            "SELECT id,payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row["payload"])
+        signature = payload["actual"]["signed_receipt"]["signature"]
+        payload["actual"]["signed_receipt"]["signature"] = "0" * len(signature)
+        runtime.store.db.execute(
+            "UPDATE packets SET payload=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True), row["id"]),
+        )
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    with pytest.raises(android_control.ControlDenied, match="signature revalidation failed"):
+        restarted.poll(action_id)
+    assert restarted.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    restarted.broker.close()
+    runtime.store.close()
