@@ -4,14 +4,6 @@ on:
     paths:
       - "experiments/m1/**"
       - ".github/workflows/m1-clean-room.yml"
-  pull_request:
-    paths:
-      - "experiments/m1/**"
-      - ".github/workflows/m1-clean-room.yml"
-concurrency:
-  group: m1-clean-room-${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: true
-
 jobs:
   tests:
     strategy:
