@@ -1384,4 +1384,15 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 
 **Code and test evidence:** v14/experiments/vision_counterfactual_probe.py, probe_vision_counterfactual.py, probe_a3_projector_integration.py and workflow .github/workflows/v14-vision-counterfactual-probe.yml. LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5: py_compile PASS; six focused synthetic unit/negative tests PASS. The synthetic shared-change control gives kappa >0.90 and held-out change-probe accuracy >0.95; aligned framewise reversal gives r_d <1e-10; shuffled labels give kappa <0.03. The real v13.vision.Projector integration test is included for CI but was not run locally because no full Aii checkout is available. No real A3 video features have been audited yet.
 
-**Status:** FULL_PREPRINT_REVIEWED / OSS_LICENSE_AUDITED / PROBE_IMPLEMENTED / WIRED_SYNTHETIC / LOCAL_LINUX_6_OF_6 / A3_REAL_FEATURE_AUDIT_PENDING / CI_PENDING / REDMI_UNVERIFIED / NOT_RELEASED.
+**Status:** FULL_PREPRINT_REVIEWED / OSS_LICENSE_AUDITED / PROBE_IMPLEMENTED / WIRED_SYNTHETIC / LOCAL_LINUX_6_OF_6 / GITHUB_CI_7_OF_7_ON_PYTHON_3_13_AND_3_14 / A3_REAL_FEATURE_AUDIT_PENDING / A5_UI_LEASE_UPSTREAM_BLOCKED / REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Final exact-head CI checkpoint — 2026-11-24 17:23 UTC
+
+- Final code head: 10cce2f519222e07dd1e25d84b803931260948d7.
+- The dedicated probe workflow passes 7/7 on Python 3.13.18 and 7/7 on Python 3.14.10. Both include the integration test importing the repository's actual v13.vision.Projector.
+- The first head's generic model-lab job exposed a test-discovery collision: test_*.py files were imported by a repository-wide discovery job that does not install NumPy. Renaming the explicitly invoked modules to probe_*.py fixed that unrelated collision; model-lab is PASS on the final head.
+- Final PR checks at this checkpoint: 12 SUCCESS / 2 FAILURE. The two failures are a5-ui-lease on Python 3.13 and 3.14. Both fail only in tests/test_v14_store_source_blob_serialization.py::test_staged_store_read_open_is_linearized_with_revocation because the Core-owned source_lifecycle_lock_integration_candidate.py:172 raises “unsupported lifecycle source: vision.py”. The dedicated probe, frame-ingress, model-lab, privacy, offline-bridge-security and latent-cache checks pass.
+- Core PR #2465 exact head e8044b7da1c900591c1dd92211a5134a385b3b4a has materialized-vision-lifecycle PASS on Python 3.13/3.14, but staged-runtime, integrated-regression, lab-age-e2e and old-phone-to-new-runtime still FAIL. Staged runtime reports 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; the nested chain reaches integrated_feedback_bootstrap_candidate_20261111.py:34 and raises “memory/world builder source changed”. The old-phone migration tests report PARTIAL rather than UPDATED. Do not relax or bypass source pins; Core/JEPA must reconcile the nested builder lineage.
+- PR #2470 remains DRAFT / OPEN / NOT_RELEASED and stacked on #2469. No production runtime consumer changed and no device update was requested.
+
