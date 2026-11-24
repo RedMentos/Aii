@@ -173,6 +173,10 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert recorded["jef_space"]["trained_latent"] is False
     assert recorded["jef_space"]["t8_authoritative"] is False
     assert recorded["jef_space"]["world_learning_eligible"] is False
+    # A second process must revalidate the stored receipt from SQLite even
+    # though the verified one-shot proposal was removed from the in-memory map.
+    controller.broker.close()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
     repeated = json.loads(controller.poll(pending["action_id"]))
     assert repeated["status"] == "ALREADY_FINAL"
     assert repeated["jef_space"]["status"] == "ALREADY_PRESENT"
