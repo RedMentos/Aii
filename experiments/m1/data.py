@@ -17,6 +17,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
+from .provenance import current_git_commit
+
 UCI_TIMESTAMP_FORMAT = "%d/%m/%Y %H:%M:%S"
 def _parse_measurement(token: str | None, *, context: str) -> float | None:
     """Parse one measurement; missing markers become None, non-finite values fail closed."""
@@ -488,7 +490,10 @@ def load_test_split(
         "split_boundaries_sha256": split_boundaries_sha256(rows, config),
         "dataset_sha256": dataset_sha256(rows, channels),
     }
-    verify_preregistration(prereg, expected, expected_code_commit=expected_code_commit)
+    actual_code_commit = current_git_commit()
+    if expected_code_commit != actual_code_commit:
+        raise PermissionError("expected_code_commit does not match executing commit")
+    verify_preregistration(prereg, expected, expected_code_commit=actual_code_commit)
     # Persist the access event before touching the test-window builder.
     event = {
         "event": "TEST_SPLIT_OPENED",
