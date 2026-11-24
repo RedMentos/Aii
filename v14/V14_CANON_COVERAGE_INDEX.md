@@ -9,7 +9,7 @@
 
 ## Current P0 evidence overlay — Core fair B1/B2 recovery (2026-11-24)
 
-- PR #2462 / head `d0a30b18cc629d7498373e01985f89df00fa7461` adds fair sequential B1/B2 slices plus two corrections to late-watch: post-answer work is not charged to the pre-answer budget, and a closed status is counted once.
+- PR #2462 / latest branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3` (code head `d0a30b18cc629d7498373e01985f89df00fa7461`) adds fair sequential B1/B2 slices plus two corrections to late-watch: post-answer work is not charged to the pre-answer budget, and a closed status is counted once.
 - Status remains **P0 FAIL / NOT_ACCEPTED**. Exact staged, integrated, same-turn and owner-read acceptance is blocked by stale Runtime pins/anchors in the source-composition chain. The candidate is not released.
 - LOCAL_LINUX evidence is limited to an isolated CPython 3.13.5 contract test (2/2 PASS); full repository tests are NOT_RUN. No native Linux model or Redmi benchmark was performed.
 - Latest private device observation: runtime STOPPED_BY_USER, autostart OFF, and no valid B1/B2 offers in the last diagnostic. The branch has no installation receipt.
