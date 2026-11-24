@@ -11,6 +11,7 @@ from pathlib import Path
 from experiments.m1.download_uci import (
     DATASET_LICENSE,
     EXPECTED_MEMBER,
+    download_dataset,
     extract_dataset_archive,
 )
 
@@ -84,6 +85,11 @@ class UciDownloaderTests(unittest.TestCase):
             self._archive(archive, {EXPECTED_MEMBER: b"second"})
             extract_dataset_archive(archive, destination, force=True)
             self.assertEqual(destination.read_bytes(), b"second")
+
+    def test_download_rejects_non_uci_host_before_network_access(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "archive.ics.uci.edu"):
+                download_dataset(directory, source_url="https://example.com/data.zip")
 
     def test_rejects_non_zip_and_missing_dataset_member(self):
         with tempfile.TemporaryDirectory() as directory:
