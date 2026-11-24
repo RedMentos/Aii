@@ -215,7 +215,9 @@ class AndroidCompanionController:
         """Validate a previously committed receipt so a crash cannot force a remote retry."""
         proposal = self.broker.consumed.get(action_id)
         if proposal is None:
-            raise ControlDenied("receipt-consumed action has no recoverable local proposal")
+            # RECEIPT_VERIFIED removes the one-shot consumed map entry. Recover
+            # only its durable source/digest binding for read-only signature checks.
+            proposal = self.broker.receipt_proposal(action_id)
         intent_rows = self.runtime.store.rows(
             "SELECT p.payload,p.event_id AS packet_event_id,e.packet AS event_packet,e.session_id "
             "FROM packets p JOIN events e ON e.id=p.event_id "
