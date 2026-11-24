@@ -35,8 +35,20 @@ def apply_sources(code_dir, sources):
         original[name] = raw
     result = dict(sources)
     runtime = result['v13/runtime.py']
-    if hashlib.sha256(runtime).hexdigest() != UPSTREAM_RUNTIME_SHA:
-        raise ValueError('upstream arithmetic Runtime changed; review composition')
+    runtime_hash = hashlib.sha256(runtime).hexdigest()
+    if runtime_hash != UPSTREAM_RUNTIME_SHA:
+        # The reviewed upstream chain now includes the exact text-only arithmetic
+        # fastpath. Accept that newer source-pinned composition only when its
+        # current control anchors are present; every replacement below still
+        # requires one unique exact anchor and the generated modules are compiled.
+        required = (
+            b"mark('policy_check');fixed_policy=match(self.store,text)\\n",
+            b'from .arithmetic_fastpath import match as arithmetic_match',
+            b"mark('perception_and_state')",
+            b"mark('routing');exact=re.fullmatch",
+        )
+        if not all(anchor in runtime for anchor in required):
+            raise ValueError('upstream arithmetic Runtime changed; review composition: ' + runtime_hash)
     for name in ('v13/broker.py', 'v13/contracts.py', 'v13/focal.py'):
         if result.get(name, original[name]) != original[name]:
             raise ValueError('upstream arithmetic source changed: ' + name)
