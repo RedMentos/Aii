@@ -6,7 +6,6 @@ no production B3 routing, learned alignment, weight update or model swap.
 """
 from __future__ import annotations
 
-import json
 import time
 
 from .common import dumps
@@ -159,6 +158,28 @@ def consume_matrix(runtime, event, source_ref, *, now=None, lease_token=None):
     }
 
 
+def revoke_matrix(runtime, *, now=None):
+    """Revoke only a pending matrix approval; never revoke a single-pair approval."""
+    approval._require_local_tty()
+    runtime.require_idle()
+    clock = approval._clock(now)
+    record, version = runtime.store.state(approval.KEY, None)
+    if (
+        not isinstance(record, dict)
+        or record.get("schema") != MATRIX_SCHEMA
+        or record.get("status") != "PENDING"
+    ):
+        return {"status": "NO_PENDING_MATRIX_APPROVAL"}
+    revoked = dict(record)
+    revoked.update({"status": "REVOKED", "revoked_at": clock})
+    runtime.store.set_state(approval.KEY, revoked, expected=version)
+    return {
+        "status": "REVOKED",
+        "approval_id": str(record.get("nonce", ""))[:12],
+        "matrix": True,
+    }
+
+
 def _packet_summary(packet_value, sender, receiver):
     from .native_latent_receiver import validate_packet
 
@@ -278,7 +299,7 @@ def operator_command(runtime, args):
     if args == ["native-probe-matrix", "--last-source", "--confirm"]:
         return run_matrix(runtime)
     if args == ["revoke-probe-matrix"]:
-        return dumps(approval.revoke(runtime))
+        return dumps(revoke_matrix(runtime))
     raise ValueError(
         ":callosum [arm-probe-matrix --last-source --confirm|"
         "native-probe-matrix --last-source --confirm|revoke-probe-matrix]"
