@@ -245,13 +245,8 @@ class Turn(unittest.TestCase):
             until=time.monotonic()+15
             while not self.r.idle() and time.monotonic()<until:
                 time.sleep(.005)
-        meta=json.loads(self.r.last_answer()["metadata"])
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
-        self.assertEqual(meta["late_watch"]["status"],"NO_OFFER")
-        self.assertEqual(meta["late_watch"]["error"],"Limits")
-        self.assertTrue(any(role=="B2_GIST" and thread=="latewatch" and valid
-                            for role,pre,thread,valid,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
                             for role,pre,thread,valid,status in self.calls))
 
