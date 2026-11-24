@@ -1881,3 +1881,12 @@ No change to the user decision: no manual command, model download/swap, device u
 ### Run 35 — source-lifecycle owner correction (2026-11-24)
 
 The exact integration owner is **Boss/Integrator PR #2443**, because it carries `integrated_audio_context_candidate_20261121.py` and `source_lifecycle_lock_integration_candidate.py`. Core PR #2462 is not the owner of those two files; its comment 7123452298 is only cross-lane context. Exact current audio and vision hashes were posted to #2443 comment 7123664991. The next internal action is to stack/rebase current Perception PRs #2448 and #2463 into #2443's integration candidate and recompute strict source pins bottom-up. Do not weaken hash checks. No user action is required; no device update or manual command is requested.
+
+### Research & Perception — run 36 — 2026-11-24
+
+- PR #2448 remains OPEN/DRAFT/NOT_RELEASED on `research-perception/v14-audio-duplex-bridge-20261123-run21`; exact code/test checkpoint `677f73eaf7bf594ecbbf64ab2e99cca4398e0bc1`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- RAW EAR now separates sustained speech, new voiced-onset interrupt candidate and one-shot EOT candidate after 400 ms of newly observed contiguous silence. Noise, impulses, uncertain windows, overlapping-window duplication, source/generation/consent changes and long gaps are handled as negative/reset conditions. A4 carries the temporal candidate object; C3 receives a compact `turn=sXeYiZ floor_transfer=UNVERIFIED` suffix. This is candidate-only; no EOT auto-cancel or verified floor transfer.
+- Added temporal negative controls and a synthetic A5→A4→C3 consumer test. LOCAL_LINUX isolated temporal-state reproduction PASS. Exact-head CI was queued at checkpoint on Python 3.13/3.14; no CI PASS is claimed until the run completes. Full local Aii checkout remains blocked by GitHub DNS.
+- Boss/Integrator PR #2443 owns the source-lifecycle composer. New audio source blobs are `audio_temporal_evidence.py=888122f6c7e229f94ae1792616e3a353f89136b9` and `audio_voice_cues.py=efa83d1705ef8262bb83dcc6f9d087d085647eda`; publish exact SHA-256 after CI and rebind the strict composer pins there. Current #2463 vision integration remains separately blocked by the same composer ownership.
+- Redmi/Termux: REDMI_UNVERIFIED for this candidate. Last known phone receipt #832 predates this branch; no update request, microphone permission, model download/swap or manual command was made.
+- **User action: none required.** No manual Termux command, device update, model change or permission change.
