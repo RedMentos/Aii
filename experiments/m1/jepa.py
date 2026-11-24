@@ -363,7 +363,7 @@ class DirectMAEForecaster(nn.Module):
 class FrozenContextProbe(nn.Module):
     """Linear readout over a frozen context encoder plus known future covariates."""
 
-    def __init__(self, backbone: JEPAForecaster, config: JEPAConfig):
+    def __init__(self, backbone: JEPAForecaster, config: JEPAConfig, *, readout_seed: int = 17):
         super().__init__()
         if backbone.config != config:
             raise ValueError("probe config must match frozen backbone config")
@@ -377,7 +377,11 @@ class FrozenContextProbe(nn.Module):
             + config.calendar_features
             + 4
         )
-        self.readout = nn.Linear(feature_width, config.input_channels)
+        if type(readout_seed) is not int:
+            raise ValueError("readout_seed must be an integer")
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(readout_seed)
+            self.readout = nn.Linear(feature_width, config.input_channels)
 
     def train(self, mode: bool = True):
         super().train(mode)
@@ -414,7 +418,7 @@ def make_random_context_probe(config: JEPAConfig, seed: int) -> FrozenContextPro
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
         random_backbone = JEPAForecaster(config)
-    return FrozenContextProbe(random_backbone, config)
+    return FrozenContextProbe(random_backbone, config, readout_seed=seed)
 
 
 def trainable_parameter_count(model: nn.Module) -> int:
