@@ -667,6 +667,154 @@ def test_operator_keyboard_interrupt_cancels_receiver_before_releasing_lease(tmp
 
 
 
+
+def test_runtime_close_cancels_and_joins_probe_before_store_teardown(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    started = threading.Event()
+    finished = threading.Event()
+    store_closed = threading.Event()
+    original_store_close = runtime.store.close
+
+    def checked_store_close():
+        assert runtime.current is None
+        assert runtime.paused is False
+        assert runtime._native_probe_active is False
+        assert runtime._native_probe_done.is_set()
+        store_closed.set()
+        return original_store_close()
+
+    runtime.store.close = checked_store_close
+
+    def blocking_native_receive(sender, receiver, current_event, source_ref, deadline):
+        started.set()
+        while not runtime.cancel_event.is_set():
+            time.sleep(0.01)
+        finished.set()
+        raise InterruptedError("cancelled by Runtime close")
+
+    runtime.cognition.native_receive = blocking_native_receive
+    operator = Operator(runtime)
+    errors = []
+    probe_thread = None
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+
+        def run_probe():
+            try:
+                operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+            except BaseException as exc:
+                errors.append(exc)
+
+        probe_thread = threading.Thread(target=run_probe, name="test-native-probe-command")
+        probe_thread.start()
+        assert started.wait(1.0)
+        runtime.close()
+        probe_thread.join(2.0)
+
+        assert not probe_thread.is_alive()
+        assert finished.is_set()
+        assert store_closed.is_set()
+        assert runtime.closed is True
+        assert runtime.current is None
+        assert len(errors) == 1 and isinstance(errors[0], InterruptedError)
+    finally:
+        if probe_thread is not None and probe_thread.is_alive():
+            runtime.cancel_event.set()
+            probe_thread.join(2.0)
+        if not runtime.closed:
+            runtime.close()
+
+
+def test_runtime_close_timeout_keeps_store_open_until_probe_lease_releases(tmp_path, monkeypatch):
+    monkeypatch.setattr(approval, "PROBE_CLOSE_WAIT_SECONDS", 0.02)
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    started = threading.Event()
+    release = threading.Event()
+    store_closed = threading.Event()
+    original_store_close = runtime.store.close
+
+    def checked_store_close():
+        store_closed.set()
+        return original_store_close()
+
+    runtime.store.close = checked_store_close
+
+    def slow_native_receive(sender, receiver, current_event, source_ref, deadline):
+        started.set()
+        release.wait(2.0)
+        return {
+            "status": "NATIVE_INPUT_EFFECT",
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+
+    runtime.cognition.native_receive = slow_native_receive
+    operator = Operator(runtime)
+    errors = []
+    probe_thread = None
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+
+        def run_probe():
+            try:
+                operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+            except BaseException as exc:
+                errors.append(exc)
+
+        probe_thread = threading.Thread(target=run_probe, name="test-native-probe-command")
+        probe_thread.start()
+        assert started.wait(1.0)
+        with pytest.raises(RuntimeError, match="Store remains open"):
+            runtime.close()
+
+        assert runtime.closed is False
+        assert not store_closed.is_set()
+        assert runtime.store.one("SELECT 1 AS ok")["ok"] == 1
+
+        release.set()
+        probe_thread.join(2.0)
+        assert not probe_thread.is_alive()
+        assert len(errors) == 1 and isinstance(errors[0], InterruptedError)
+        assert runtime.current is None
+        assert runtime._native_probe_active is False
+
+        runtime.close()
+        assert runtime.closed is True
+        assert store_closed.is_set()
+    finally:
+        release.set()
+        if probe_thread is not None and probe_thread.is_alive():
+            probe_thread.join(2.0)
+        if not runtime.closed:
+            runtime.close()
+
+
+def test_runtime_close_from_probe_owner_fails_closed_until_lease_exit(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        with approval.runtime_probe_lease(runtime):
+            with pytest.raises(RuntimeError, match="inside active native probe"):
+                runtime.close()
+            assert runtime.closed is False
+            assert runtime.current == "probe"
+            assert runtime._native_probe_active is True
+        assert runtime.current is None
+        assert runtime._native_probe_done.is_set()
+        runtime.close()
+        assert runtime.closed is True
+    finally:
+        if not runtime.closed:
+            runtime.close()
+
+
 def test_operator_rejects_empty_native_receiver_result(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     _set_empty_native_census(runtime)
