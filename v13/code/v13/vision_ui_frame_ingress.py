@@ -711,7 +711,8 @@ def consume_projected_frame(
         session_consent_receipt_ref = observation.get(
             "session_consent_receipt_ref", observation["consent_receipt_ref"],
         )
-        temporal_visual = _runtime_temporal_visual_registry(runtime).update(
+        temporal_registry = _runtime_temporal_visual_registry(runtime)
+        temporal_update = temporal_registry.prepare_update(
             capture_session_id=observation["capture_session_id"],
             generation_id=generation_id,
             consent_receipt_ref=observation["consent_receipt_ref"],
@@ -721,6 +722,7 @@ def consume_projected_frame(
             tile_luminance=tile_luminance,
             tile_features=tile_features,
         )
+        temporal_visual = temporal_update.result
         attention_novelty = float(temporal_visual["attention_novelty"])
         temporal_visual_packet = dict(temporal_visual)
         temporal_visual_packet["attention_novelty"] = round(attention_novelty, 6)
@@ -751,37 +753,8 @@ def consume_projected_frame(
                 segment["temporal_multichannel_change"] = multichannel_delta
                 segment["temporal_multichannel_method"] = temporal_visual["method"]
 
-        attention = attention_module.controller(runtime)
         temporal_modulation = None
-        if temporal_visual["status"] == "MEASURED" and attention_novelty > 0.0:
-            temporal_modulation = attention.modulate(
-                event["event_id"], sal={"novelty": attention_novelty},
-            )
-        a4 = attention.perceive(
-            event["event_id"], segments, goal=goal, file_requests=False
-        )
-        a4["temporal_visual_evidence"] = {
-            "status": temporal_visual["status"],
-            "change_score": temporal_visual["change_score"],
-            "temporal_activity_score": temporal_visual.get("temporal_activity_score", 0.0),
-            "global_luminance_shift": temporal_visual.get("global_luminance_shift", 0.0),
-            "global_change_score": temporal_visual.get("global_change_score", 0.0),
-            "multichannel_status": temporal_visual.get("multichannel_status", "UNAVAILABLE"),
-            "multichannel_change_score": temporal_visual.get("multichannel_change_score", 0.0),
-            "global_appearance_shift": temporal_visual.get("global_appearance_shift", 0.0),
-            "global_structure_shift": temporal_visual.get("global_structure_shift", 0.0),
-            "local_appearance_change_score": temporal_visual.get("local_appearance_change_score", 0.0),
-            "local_structure_change_score": temporal_visual.get("local_structure_change_score", 0.0),
-            "multichannel_changed_tile_ids": list(temporal_visual.get("multichannel_changed_tile_ids", [])),
-            "local_change_score": temporal_visual.get("local_change_score", 0.0),
-            "local_temporal_activity_score": temporal_visual.get("local_temporal_activity_score", 0.0),
-            "attention_novelty": round(attention_novelty, 6),
-            "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
-            "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
-            "source_ref": dict(frame_ref),
-            "truth_authority": 0,
-        }
-        a4["temporal_visual_modulation"] = temporal_modulation
+        a4 = None
         admission = admit(percepts, token_budget, max_items=12)
         context_items = [
             A5Item(
@@ -831,10 +804,58 @@ def consume_projected_frame(
         cache[observation["source_id"]] = percept_packet
         while len(cache) > 64:
             cache.pop(next(iter(cache)))
-        context_packets = adapter.context(event["event_id"], consent_lease)
-        if observation["finality"] == "FINAL" and percept_packet not in context_packets:
+        try:
+            context_packets = adapter.context(event["event_id"], consent_lease)
+            if observation["finality"] == "FINAL" and percept_packet not in context_packets:
+                raise RuntimeError("final RAW EYE packet did not reach the active UI context consumer")
+            if not consent_lease.active_for(runtime, generation_id):
+                raise PermissionError("UI observation was revoked before temporal commit")
+            if not temporal_registry.commit_update(temporal_update):
+                raise RuntimeError("RAW EYE temporal state changed during frame admission; retry the frame")
+        except Exception:
             cache.pop(observation["source_id"], None)
-            raise RuntimeError("final RAW EYE packet did not reach the active UI context consumer")
+            raise
+
+        if not consent_lease.active_for(runtime, generation_id):
+            cache.pop(observation["source_id"], None)
+            reset_temporal_visual_evidence(
+                runtime, capture_session_id=observation["capture_session_id"],
+            )
+            raise PermissionError("UI observation was revoked before A4 attention")
+
+        # A4 writes attention requests and gain state. Defer those side effects
+        # until the source-bound packet has passed validation and reached the
+        # active context consumer; failed frames must not train/prime attention.
+        attention = attention_module.controller(runtime)
+        if temporal_visual["status"] == "MEASURED" and attention_novelty > 0.0:
+            temporal_modulation = attention.modulate(
+                event["event_id"], sal={"novelty": attention_novelty},
+            )
+        a4 = attention.perceive(
+            event["event_id"], segments, goal=goal, file_requests=False
+        )
+        a4["temporal_visual_evidence"] = {
+            "status": temporal_visual["status"],
+            "change_score": temporal_visual["change_score"],
+            "temporal_activity_score": temporal_visual.get("temporal_activity_score", 0.0),
+            "global_luminance_shift": temporal_visual.get("global_luminance_shift", 0.0),
+            "global_change_score": temporal_visual.get("global_change_score", 0.0),
+            "multichannel_status": temporal_visual.get("multichannel_status", "UNAVAILABLE"),
+            "multichannel_change_score": temporal_visual.get("multichannel_change_score", 0.0),
+            "global_appearance_shift": temporal_visual.get("global_appearance_shift", 0.0),
+            "global_structure_shift": temporal_visual.get("global_structure_shift", 0.0),
+            "local_appearance_change_score": temporal_visual.get("local_appearance_change_score", 0.0),
+            "local_structure_change_score": temporal_visual.get("local_structure_change_score", 0.0),
+            "multichannel_changed_tile_ids": list(temporal_visual.get("multichannel_changed_tile_ids", [])),
+            "local_change_score": temporal_visual.get("local_change_score", 0.0),
+            "local_temporal_activity_score": temporal_visual.get("local_temporal_activity_score", 0.0),
+            "attention_novelty": round(attention_novelty, 6),
+            "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
+            "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
+            "source_ref": dict(frame_ref),
+            "truth_authority": 0,
+        }
+        a4["temporal_visual_modulation"] = temporal_modulation
 
         return {
             "status": "WIRED_SYNTHETIC",

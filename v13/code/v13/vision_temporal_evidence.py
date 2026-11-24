@@ -9,6 +9,7 @@ No frame bytes, images, text, or persistent model state are stored.
 from __future__ import annotations
 
 from collections import OrderedDict
+import copy
 import math
 import threading
 
@@ -283,8 +284,28 @@ class TemporalVisualEvidence:
         }
 
 
+class _PreparedTemporalVisualUpdate:
+    """Private speculative state; only its issuing registry may commit it."""
+
+    __slots__ = ("owner", "session", "key", "epoch", "version", "state", "result")
+
+    def __init__(self, owner, session, key, epoch, version, state, result):
+        self.owner = owner
+        self.session = session
+        self.key = key
+        self.epoch = epoch
+        self.version = version
+        self.state = state
+        self.result = result
+
+
 class TemporalVisualEvidenceRegistry:
-    """Bounded process-local streams isolated by capture session, generation and receipt."""
+    """Bounded process-local streams isolated by capture session, generation and receipt.
+
+    prepare_update() computes against a private copy. The caller commits only
+    after the resulting PerceptPacket has passed validation and the active A5
+    context consumer has accepted it. Concurrent/stale tickets fail closed.
+    """
 
     def __init__(self, *, max_streams: int = 8, **state_options) -> None:
         if type(max_streams) is not int or not 1 <= max_streams <= 64:
@@ -292,12 +313,14 @@ class TemporalVisualEvidenceRegistry:
         self.max_streams = max_streams
         self._state_options = dict(state_options)
         self._states = OrderedDict()
+        self._session_versions = {}
+        self._epoch = 0
         self._lock = threading.RLock()
 
-    def update(self, *, capture_session_id: str, generation_id: str,
-               consent_receipt_ref: str, start_ms: int, end_ms: int,
-               tile_luminance: dict, tile_features: dict | None = None,
-               session_consent_receipt_ref: str | None = None) -> dict:
+    def prepare_update(self, *, capture_session_id: str, generation_id: str,
+                       consent_receipt_ref: str, start_ms: int, end_ms: int,
+                       tile_luminance: dict, tile_features: dict | None = None,
+                       session_consent_receipt_ref: str | None = None):
         session = _identity(capture_session_id, "capture_session_id")
         generation = _identity(generation_id, "generation_id")
         receipt = _identity(consent_receipt_ref, "consent_receipt_ref")
@@ -307,24 +330,54 @@ class TemporalVisualEvidenceRegistry:
         )
         key = (session, generation, session_receipt)
         with self._lock:
-            # A session must not carry history into a new generation or
-            # session-level consent lineage, even when the opaque session ID is reused.
-            # Per-frame receipts may rotate inside one verified session lineage.
+            epoch = self._epoch
+            version = self._session_versions.get(session, 0)
+            current = self._states.get(key)
+            state = copy.deepcopy(current) if current is not None else TemporalVisualEvidence(**self._state_options)
+        result = state.update(
+            start_ms=start_ms, end_ms=end_ms, tile_luminance=tile_luminance,
+            tile_features=tile_features,
+        )
+        return _PreparedTemporalVisualUpdate(
+            self, session, key, epoch, version, state, result,
+        )
+
+    def commit_update(self, ticket) -> bool:
+        if not isinstance(ticket, _PreparedTemporalVisualUpdate) or ticket.owner is not self:
+            raise ValueError("temporal visual update ticket belongs to another registry")
+        with self._lock:
+            if (ticket.epoch != self._epoch
+                    or ticket.version != self._session_versions.get(ticket.session, 0)):
+                return False
+            # A reused session ID with a new generation or session-consent
+            # receipt starts from a fresh stream and invalidates the old one.
             for old_key in tuple(self._states):
-                if old_key[0] == session and old_key != key:
+                if old_key[0] == ticket.session and old_key != ticket.key:
                     del self._states[old_key]
-            state = self._states.get(key)
-            if state is None:
-                state = TemporalVisualEvidence(**self._state_options)
-            result = state.update(
-                start_ms=start_ms, end_ms=end_ms, tile_luminance=tile_luminance,
-                tile_features=tile_features,
-            )
-            self._states.pop(key, None)
-            self._states[key] = state
+            self._states.pop(ticket.key, None)
+            self._states[ticket.key] = ticket.state
+            self._session_versions[ticket.session] = ticket.version + 1
             while len(self._states) > self.max_streams:
-                self._states.popitem(last=False)
-            return result
+                evicted_key, _ = self._states.popitem(last=False)
+                self._session_versions.pop(evicted_key[0], None)
+                # Invalidate speculative tickets that may have been prepared
+                # before the LRU eviction removed their baseline.
+                self._epoch += 1
+            return True
+
+    def update(self, *, capture_session_id: str, generation_id: str,
+               consent_receipt_ref: str, start_ms: int, end_ms: int,
+               tile_luminance: dict, tile_features: dict | None = None,
+               session_consent_receipt_ref: str | None = None) -> dict:
+        ticket = self.prepare_update(
+            capture_session_id=capture_session_id, generation_id=generation_id,
+            consent_receipt_ref=consent_receipt_ref, start_ms=start_ms, end_ms=end_ms,
+            tile_luminance=tile_luminance, tile_features=tile_features,
+            session_consent_receipt_ref=session_consent_receipt_ref,
+        )
+        if not self.commit_update(ticket):
+            raise TemporalVisualEvidenceError("concurrent temporal update; retry the frame")
+        return ticket.result
 
     def reset(self, *, capture_session_id: str) -> int:
         capture_session_id = _identity(capture_session_id, "capture_session_id")
@@ -332,6 +385,10 @@ class TemporalVisualEvidenceRegistry:
             keys = [key for key in self._states if key[0] == capture_session_id]
             for key in keys:
                 del self._states[key]
+            self._session_versions.pop(capture_session_id, None)
+            # Revocation also invalidates a prepared first frame for which no
+            # committed stream exists yet.
+            self._epoch += 1
             return len(keys)
 
     def __len__(self) -> int:

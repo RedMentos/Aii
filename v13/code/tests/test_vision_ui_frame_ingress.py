@@ -1150,6 +1150,75 @@ def test_temporal_visual_registry_keeps_history_only_for_stable_session_receipt(
     assert len(registry) == 0
 
 
+def test_temporal_visual_registry_prepare_is_non_mutating_and_stale_ticket_fails_closed():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-atomic", generation_id="generation-a",
+        consent_receipt_ref="frame-a", start_ms=1000, end_ms=1033,
+        tile_luminance=base,
+    )
+
+    first = registry.prepare_update(**common)
+    stale = registry.prepare_update(**common)
+    assert first.result["status"] == "WARMUP"
+    assert len(registry) == 0  # prepare never mutates committed history
+    assert registry.commit_update(first) is True
+    assert registry.commit_update(stale) is False  # same-session stale ticket cannot overwrite
+
+    next_frame = registry.prepare_update(**dict(
+        common, consent_receipt_ref="frame-b", start_ms=1033, end_ms=1066,
+        tile_luminance=changed,
+    ))
+    assert next_frame.result["status"] == "MEASURED"
+    assert registry.commit_update(next_frame) is True
+
+
+def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    first_obs = observation(
+        source_id="ui-frame-source-failed", receipt_ref="frame-receipt-failed",
+        session_receipt_ref="session-consent-atomic", start_ms=1000, end_ms=1033,
+    )
+    first_frame = image_buffer()
+
+    def fail_context(_adapter, *_args, **_kwargs):
+        raise RuntimeError("injected A5 context delivery failure")
+
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", fail_context)
+    with lease_for(runtime, first_obs) as lease:
+        with pytest.raises(RuntimeError, match="injected A5 context delivery failure"):
+            consume_with_provider_verifier(
+                runtime, first_obs, first_frame, consent_lease=lease,
+                current_source="Observe this screen session.",
+            )
+
+    assert len(runtime._a5_temporal_visual_registry) == 0
+    assert first_obs["source_id"] not in runtime._a5_ui_context_cache
+    assert getattr(runtime, "attention", None) is None
+    assert not any(first_frame)
+
+    monkeypatch.undo()
+    second_obs = observation(
+        source_id="ui-frame-source-after-failure", receipt_ref="frame-receipt-after-failure",
+        session_receipt_ref="session-consent-atomic", start_ms=1033, end_ms=1066,
+    )
+    second_frame = image_buffer_variant()
+    with lease_for(runtime, second_obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, second_obs, second_frame, consent_lease=lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert result["temporal_visual_modulation"] is None
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(second_frame)
+
+
 def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
     from v13.vision_temporal_evidence import (
         TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
