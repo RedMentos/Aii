@@ -10,11 +10,12 @@ Status: working draft. This package is an independent copy of selected M1 experi
 - Test access requires exact data/config/split hashes, complete preregistration fields, an exact match to the executing commit hash, and an fsync-backed access event before unlocking.
 
 ## Modules
-- data.py / array_data.py: reference and bounded-memory NumPy data paths.
+- data.py / array_data.py: reference and bounded-memory NumPy data paths. ArrayDataset exposes train rows through train_values(); the full matrix is private internal state. The in-process gate is a methodological API guard, not a security sandbox against code deliberately accessing private attributes.
 - baselines.py: persistence, seasonal persistence, train mean/median, Ridge-AR and LAD-AR.
 - raw_probes.py: linear raw-window and nonlinear raw-window MLP controls.
 - bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks.
 - metrics.py: common prefix-horizon and primary MAE metrics, per-window errors, paired multi-model/seed validation and atomic result persistence.
+- jepa.py / gru.py / training.py: EMA JEPA, Direct-MAE, frozen-context linear probe, Raw-GRU, train-only channel scaling, streaming collapse telemetry and atomic checkpoints.
 
 ## Verification status
 GitHub Actions run 45316419035 passed 55 tests on Python 3.12, 3.13 and 3.14 at commit 5760ca1f2a0853357affc00c1e66a3cc5cf6911e. This is synthetic CI evidence only. No real UCI evaluation or test-year access is claimed.
