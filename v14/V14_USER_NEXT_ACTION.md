@@ -1914,3 +1914,24 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+---
+
+## Core Run24 checkpoint — 2026-11-24 20:54 UTC
+
+**User action required: NONE.** No Termux command, model download/swap, permission change or device action is requested.
+
+- **Primary runtime PR #2478**, head `93173a839c3142a42a94e3666d5127957a75f148`: fair B1/B2 pre-answer path. Fixed the reviewed feedback-shadow ActionLearn source-pin mismatch without removing the RecordOnly `updates_allowed` guard. Fixed body-attempt telemetry so a stale runner `FINAL` cannot mask a real deadline; postcommit retry now skips deadline/cancelled/interrupted body attempts. Exact CI: 27 checks registered, 1 skipped and 26 queued at last readback; no pass claimed yet.
+- **Evidence PR #2480**, head `0b5e2fe5fee5d05589ebab57fae6fe9e12b352c7`: `brain_panel.status` exposes sanitized B1/B2 prompt/generated tokens, TTFT, duration, sampled PSS, packet delivery, C4 selection and C3 prompt inclusion. It does not claim semantic use or learned latent coupling. An overlong test-fixture packet ID was corrected after the first exact CI run; new 3.13/3.14 CI is queued.
+- **Android ActionOutcome PR #2481**, head `95dd586a84dff5700b79ba6871d7e8615d23764f`: QA's Espresso/ActivityScenario process-death test is ported onto the Core companion stack. Android build, Core Python 3.13/3.14 and offline-security checks pass; the Android emulator process-death job is still running. The old UIAutomator hierarchy timeout remains a historical failure, not a pass.
+
+**Environment and release status**
+- Local isolated helper tests: CPython 3.13.5, 5/5 PASS.
+- Full local Aii checkout/tests: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS failure).
+- Redmi: REDMI_UNVERIFIED. Last shared record says AI `STOPPED_BY_USER`; no private relay or device command was sent.
+- Updater/deployment: not invoked or verified. All three PRs are draft and NOT_RELEASED.
+
+**Next concrete step:** poll exact-head CI for #2478 and #2480, plus the Android emulator job for #2481; repair any failures, then obtain independent review and integrate against the newest compatible branch. Use the new per-role measurements to calibrate fair B1/B2 slices while retaining both bodies and the C3 reserve.
+
+**Research/model choice:** no model alternative or swap is justified until native per-role TTFT, token, PSS and output-quality comparisons exist. No user action is needed now.
