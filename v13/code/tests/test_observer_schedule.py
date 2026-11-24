@@ -220,6 +220,8 @@ class Turn(unittest.TestCase):
 
     def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
         self.calls.clear()
+        notices=[]
+        self.r.notify=notices.append
         original_decide=self.r.learner.decide
         def deterministic_decide(kind,*args,**kwargs):
             if kind=="wake":return {"learned":False,"action":"both"}
@@ -266,14 +268,14 @@ class Turn(unittest.TestCase):
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
         self.assertEqual(self.r.last_answer()["status"],"FINAL",
-                         msg=f"calls={self.calls!r}; notices={self.r.notices!r}; late_watch={meta.get('late_watch')!r}")
+                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}")
         self.assertEqual(meta["late_watch"].get("offered"),"B2_GIST")
         self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER")
         self.assertFalse(meta["late_watch"].get("offer_id"))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
                             for role,pre,thread,valid,status in self.calls),
-                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; notices={self.r.notices!r}")
-        c3_input="\\n".join(message.get("content","") for message in self.c3_messages)
+                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; notices={notices!r}")
+        c3_input=" ".join(message.get("content","") for message in self.c3_messages)
         self.assertIn("B1_DETAIL",c3_input)
         self.assertIn("Compare plan A and plan B",c3_input)
 
