@@ -1795,3 +1795,12 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Next: Core rebinds the three pins and reruns staged/integrated CI; then Research & Perception builds a separate opt-in chunk-level speaker-embedding adapter. No model download or production swap without separate explicit approval.
 
 **User action required: NONE.** No device, model, permission, data, or installed-app change is requested.
+
+
+### Visual follow-up — PR #2442 current-base gap (2026-11-24)
+
+- Perception PR #2442 remains OPEN/DRAFT on branch `research-perception/v14-vision-lifecycle-current-20261123-run19`, based on `fb563d771fe2d493c4ec25abe94280981d24ef5c`; current release-development HEAD is `8d93236c753f0194224c19edc7411d8d7082b1d6`. Compare shows 25 commits ahead / 10 behind; the intervening base changes do not overlap its 12 code/workflow files.
+- Focused CI on #2442 passed: vision source-lineage 29/29 and MediaProjection RAW EYE frame ingress 39/39. Its staged-runtime fails 19/234 passed/10 skipped/2 errors; integrated subset fails because Core's `source_lifecycle_lock_integration_candidate.py` rejects `vision.py` with `ValueError: unsupported lifecycle source: vision.py`.
+- This is a Core/JEPA source-lifecycle integration gap, not a reason to bypass A3 source-forget protections. The exact failure was posted to Core PR #2462 (comment 7121367604). No cross-owner composer edit was made, and #2442 was not transplanted/rebased in this checkpoint.
+- Next visual step: after Core adds a reviewed `vision.py` lifecycle source contract and source-forget regression, cleanly rebase the 12 Perception code/workflow files from #2442 onto the current release head, then rerun focused, staged and integrated CI. No MediaProjection/Redmi hardware proof exists.
+
