@@ -13,4 +13,4 @@ Status: working draft. This package is an independent copy of selected M1 experi
 The data pipeline, NumPy array path, baselines, paired block bootstrap, and raw-window probes were copied as starting material and moved under this package namespace. Copying is not validation.
 
 ## Evidence status
-GitHub Actions run 45316188997 passed all 54 tests on Python 3.12, 3.13 and 3.14 at commit 22437d56ca2462c03ce6b87bc466c4c636b87873. The run is CI evidence for the synthetic suite only; no real UCI evaluation has been run here. Preregistration must carry the exact executing commit SHA supplied independently by the trusted runner.
+GitHub Actions run 45316419035 passed all 55 tests on Python 3.12, 3.13 and 3.14 at commit 5760ca1f2a0853357affc00c1e66a3cc5cf6911e. The run is CI evidence for the synthetic suite only; no real UCI evaluation has been run here. Preregistration must carry the exact executing commit SHA supplied independently by the trusted runner.
