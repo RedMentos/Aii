@@ -105,6 +105,36 @@ class LlamaRunner:
         if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
         self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         return {"before":before,"process_reaped":True}
+    def _retain_after_deadline(self):
+        """Retain a warm child only after its local llama-server slots report idle."""
+        proc=self.proc
+        if proc is None or proc.poll() is not None:
+            result=self.unload()
+            return result | {"retained_warm":False,"reason":"PROCESS_NOT_ALIVE"}
+        try:
+            if self._loaded_stamp is None or self._loaded_stamp!=self._lifecycle_stamp():
+                raise ValueError("runner lifecycle changed")
+            end=time.monotonic()+.35
+            while time.monotonic()<end:
+                remaining=end-time.monotonic()
+                slots=self._json("GET","/slots",None,end,timeout_cap=min(.12,remaining))
+                if not isinstance(slots,list) or not slots:
+                    raise ValueError("runner slots state unavailable")
+                states=[]
+                for slot in slots:
+                    if not isinstance(slot,dict) or type(slot.get("is_processing")) is not bool:
+                        raise ValueError("runner slot state malformed")
+                    states.append(slot["is_processing"])
+                if not any(states):
+                    if (self.proc is proc and proc.poll() is None
+                            and self._loaded_stamp==self._lifecycle_stamp()):
+                        # Never persist the /slots response: it can contain prompt text.
+                        return {"process_reaped":False,"retained_warm":True,"reason":"SERVER_IDLE"}
+                time.sleep(min(.05,max(0.,end-time.monotonic())))
+        except Exception:
+            pass
+        result=self.unload()
+        return result | {"retained_warm":False,"reason":"SERVER_NOT_IDLE_OR_UNVERIFIED"}
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
         remaining=deadline-time.monotonic()
         if remaining<=0:raise Limits('Zeitbudget erreicht')
@@ -394,7 +424,10 @@ class LlamaRunner:
                     observed=self._audit_finish_window(status)
                     if observed is not None:self.last_metrics['native_memory_firing']=observed
                 finally:self._audit_lock.release()
-            if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
+            if status!='FINAL':
+                recovery=self._retain_after_deadline() if status=='DEADLINE' else self.unload()
+                self.last_metrics['interruption_unload']=recovery
+                self.last_metrics['warm_process_retained']=recovery.get('retained_warm') is True
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
         self.load(cancel,deadline);check(cancel,deadline)
@@ -402,7 +435,8 @@ class LlamaRunner:
         def watchdog():
             while not done.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # Closing the request is the first cancellation attempt. The
+                    # outer generate() keeps the child only if /slots confirms idle.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
@@ -415,7 +449,7 @@ class LlamaRunner:
             if result.get('error'):raise Unavailable('Native output step failed')
             return result
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable('Native output step interrupted')
+            check(cancel,deadline);raise Unavailable('Native output step interrupted')
         finally:done.set();conn.close();watcher.join(.2)
     def _generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
@@ -449,7 +483,8 @@ class LlamaRunner:
         def watchdog():
             while not stop_watch.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # Closing the request is the first cancellation attempt. The
+                    # outer generate() keeps the child only if /slots confirms idle.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
@@ -482,7 +517,7 @@ class LlamaRunner:
             if not native_stop:
                 raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
+            check(cancel,deadline);raise Unavailable("Native Inferenz unterbrochen")
         finally:
             stop_watch.set();conn.close();watcher.join(timeout=2);end=time.monotonic();mem=process_memory(self.proc.pid) if self.proc and self.proc.poll() is None else {}
             rss_values=[v for v in (peak,mem.get('rss_bytes')) if v is not None]
