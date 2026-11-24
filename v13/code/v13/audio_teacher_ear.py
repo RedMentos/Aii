@@ -29,6 +29,40 @@ class TeacherEarError(ValueError):
     """Invalid teacher configuration, input, or model output."""
 
 
+class VerifiedModelFiles(dict[str, Path]):
+    """Keep hash-checked model inodes open while a native loader uses /proc/self/fd paths."""
+
+    def __init__(self, values: Mapping[str, Path], file_descriptors: list[int]):
+        super().__init__(values)
+        self._file_descriptors = list(file_descriptors)
+        self._closed = False
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        for descriptor in reversed(self._file_descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+        self._file_descriptors.clear()
+
+    def __enter__(self):
+        if self._closed:
+            raise TeacherEarError("verified model file handles are closed")
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @dataclass(frozen=True)
 class TeacherEarManifest:
     model_id: str
@@ -71,8 +105,14 @@ class TeacherEarManifest:
             if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
                 raise TeacherEarError(f"{key} path must be relative and contained")
 
-    def verified_files(self) -> dict[str, Path]:
-        """Hash exact local files; reject symlinks, path escape and oversized bundles."""
+    def verified_files(self) -> VerifiedModelFiles:
+        """Hash files through directory FDs and pin their inodes for native loading.
+
+        The returned paths are /proc/self/fd entries backed by still-open read-only
+        descriptors. This prevents a rename/symlink swap between hash verification
+        and sherpa-onnx opening the model paths. Call close() after the recognizer
+        has been destroyed.
+        """
         raw_root = Path(self.model_root).expanduser()
         if raw_root.is_symlink():
             raise TeacherEarError("model root must not be a symlink")
@@ -82,50 +122,104 @@ class TeacherEarManifest:
             raise TeacherEarError("model root is unavailable") from exc
         if not root.is_dir():
             raise TeacherEarError("model root must be a directory")
-        verified: dict[str, Path] = {}
-        total = 0
-        for key in _REQUIRED_FILES:
-            parts = PurePosixPath(getattr(self, key)).parts
-            candidate = root
-            for index, part in enumerate(parts):
-                candidate = candidate / part
+        if not hasattr(os, "O_DIRECTORY") or not hasattr(os, "O_NOFOLLOW"):
+            raise TeacherEarError("secure model loading requires O_DIRECTORY and O_NOFOLLOW")
+        proc_fd_root = Path("/proc/self/fd")
+        if not proc_fd_root.is_dir():
+            raise TeacherEarError("stable model loading requires /proc/self/fd")
+
+        directory_flags = (
+            os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+            | getattr(os, "O_CLOEXEC", 0)
+        )
+        file_flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+        root_anchor = None
+        root_handle = None
+        file_descriptors: list[int] = []
+        try:
+            # Walk the canonical absolute root without following a component
+            # that was replaced by a symlink after Path.resolve().
+            root_anchor = os.open("/", directory_flags)
+            root_handle = root_anchor
+            for part in root.parts[1:]:
+                next_handle = os.open(part, directory_flags, dir_fd=root_handle)
+                if root_handle != root_anchor:
+                    os.close(root_handle)
+                root_handle = next_handle
+
+            verified: dict[str, Path] = {}
+            total = 0
+            for key in _REQUIRED_FILES:
+                parts = PurePosixPath(getattr(self, key)).parts
+                parent_fd = os.dup(root_handle)
+                file_fd = None
                 try:
-                    info = candidate.lstat()
-                except OSError as exc:
-                    raise TeacherEarError(f"{key} file is unavailable") from exc
-                if stat.S_ISLNK(info.st_mode):
-                    raise TeacherEarError(f"{key} path must not contain symlinks")
-                if index < len(parts) - 1 and not stat.S_ISDIR(info.st_mode):
-                    raise TeacherEarError(f"{key} parent path is not a directory")
-            if not stat.S_ISREG(info.st_mode):
-                raise TeacherEarError(f"{key} must be a regular file")
-            try:
-                resolved = candidate.resolve(strict=True)
-                resolved.relative_to(root)
-            except (OSError, ValueError) as exc:
-                raise TeacherEarError(f"{key} path escapes model root") from exc
-            flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-            try:
-                fd = os.open(candidate, flags)
-                with os.fdopen(fd, "rb") as handle:
-                    opened = os.fstat(handle.fileno())
+                    for part in parts[:-1]:
+                        try:
+                            next_fd = os.open(part, directory_flags, dir_fd=parent_fd)
+                        except OSError as exc:
+                            raise TeacherEarError(
+                                f"{key} parent path is unavailable or contains a symlink"
+                            ) from exc
+                        os.close(parent_fd)
+                        parent_fd = next_fd
+                    try:
+                        file_fd = os.open(parts[-1], file_flags, dir_fd=parent_fd)
+                    except OSError as exc:
+                        raise TeacherEarError(
+                            f"{key} file is unavailable or contains a symlink"
+                        ) from exc
+                finally:
+                    os.close(parent_fd)
+
+                try:
+                    opened = os.fstat(file_fd)
                     if not stat.S_ISREG(opened.st_mode):
-                        raise TeacherEarError(f"{key} is not a regular file")
+                        raise TeacherEarError(f"{key} must be a regular file")
                     total += opened.st_size
                     if total > self.max_total_bytes:
                         raise TeacherEarError("model bundle exceeds configured size ceiling")
                     digest = hashlib.sha256()
-                    while True:
-                        chunk = handle.read(1024 * 1024)
-                        if not chunk:
-                            break
-                        digest.update(chunk)
-            except OSError as exc:
-                raise TeacherEarError(f"cannot safely open {key} file") from exc
-            if digest.hexdigest() != self.file_sha256[key]:
-                raise TeacherEarError(f"{key} SHA-256 mismatch")
-            verified[key] = resolved
-        return verified
+                    with os.fdopen(os.dup(file_fd), "rb") as handle:
+                        while True:
+                            chunk = handle.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            digest.update(chunk)
+                    if digest.hexdigest() != self.file_sha256[key]:
+                        raise TeacherEarError(f"{key} SHA-256 mismatch")
+
+                    fd_path = Path(f"/proc/self/fd/{file_fd}")
+                    pinned = os.stat(fd_path)
+                    if (pinned.st_dev, pinned.st_ino) != (opened.st_dev, opened.st_ino):
+                        raise TeacherEarError(f"{key} descriptor path does not identify the verified file")
+                    file_descriptors.append(file_fd)
+                    verified[key] = fd_path
+                    file_fd = None
+                finally:
+                    if file_fd is not None:
+                        os.close(file_fd)
+
+            return VerifiedModelFiles(verified, file_descriptors)
+        except TeacherEarError:
+            for descriptor in reversed(file_descriptors):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+            raise
+        except OSError as exc:
+            for descriptor in reversed(file_descriptors):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+            raise TeacherEarError("cannot safely open model bundle") from exc
+        finally:
+            if root_handle is not None and root_handle != root_anchor:
+                os.close(root_handle)
+            if root_anchor is not None:
+                os.close(root_anchor)
 
 
 def _clean_hypothesis(value: str) -> str:
@@ -169,23 +263,40 @@ class SherpaOnlineTeacher:
             import numpy as np
             import sherpa_onnx
         except ImportError as exc:
+            files.close()
             raise RuntimeError("optional sherpa-onnx and NumPy are not installed") from exc
+        try:
+            recognizer = sherpa_onnx.OnlineRecognizer.from_transducer(
+                encoder=str(files["encoder"]),
+                decoder=str(files["decoder"]),
+                joiner=str(files["joiner"]),
+                tokens=str(files["tokens"]),
+                num_threads=self.manifest.num_threads,
+                sample_rate=self.manifest.sample_rate,
+                feature_dim=80,
+                decoding_method="greedy_search",
+                provider="cpu",
+                enable_endpoint_detection=False,
+                debug=False,
+            )
+        except Exception:
+            files.close()
+            raise
         self._np = np
         self._verified = files
-        self._recognizer = sherpa_onnx.OnlineRecognizer.from_transducer(
-            encoder=str(files["encoder"]),
-            decoder=str(files["decoder"]),
-            joiner=str(files["joiner"]),
-            tokens=str(files["tokens"]),
-            num_threads=self.manifest.num_threads,
-            sample_rate=self.manifest.sample_rate,
-            feature_dim=80,
-            decoding_method="greedy_search",
-            provider="cpu",
-            enable_endpoint_detection=False,
-            debug=False,
-        )
+        self._recognizer = recognizer
         return self._recognizer
+
+    def close(self) -> None:
+        """Release the recognizer and its pinned model descriptors when idle."""
+        with self._lock:
+            if self._active_streams:
+                raise TeacherEarError("cannot close Teacher Ear while a stream is active")
+            self._recognizer = None
+            verified = self._verified
+            self._verified = None
+            if verified is not None:
+                verified.close()
 
     @staticmethod
     def _lease_matches(lease, runtime, source_id, generation_id, receipt,
