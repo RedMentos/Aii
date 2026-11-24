@@ -8,6 +8,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - UCI minute-resolution household power data; strict continuity and finite-value validation.
 - Production UCI ingestion requires explicit calendar boundaries: validation starts 2008-12-01 00:00; test starts 2009-12-01 00:00.
 - The 10,140-row gap is cut from the end of the preceding split, not inserted after the next split begins.
+- Candidate origins begin at max_candidate_input_length - 1, not the current L, so candidate denominators remain identical across input-length variants.
 - Fraction-based splits remain available only for explicit synthetic/parser fixtures.
 - ArrayDataset exposes train rows through train_values(); the full matrix is private internal state. The in-process gate is a methodological API guard, not a security sandbox against code deliberately accessing private attributes.
 - Test windows require exact data/config/split hashes, complete preregistration fields, exact executing commit SHA, and a durable audit event before iteration.
