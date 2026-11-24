@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:46:32.318+01:00",
+  "updated_at": "2026-11-24T18:48:47.240+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6. V14-006 records Perception #2469 A5 interval-ordering follow-up; code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862 passed focused CI, but the PR remains stacked/not released. Latest available private V13OBS #115 snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled/UP_TO_DATE at 8d93236, AI STOPPED_BY_USER, no B1/B2 offers; no fresh relay receipt for this run.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -407,18 +407,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "CI exact head #2433 acc68d6113eb320d283cfa0150230b40273d6e96: focused A4/RAW EAR/consent/privacy suites PASS on Python 3.13/3.14; staged/integrated FAIL at Core-owned controller guard; local isolated SQLite contract reproduction PASS; full local Aii suite BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Core/Boss must rebind record_only_controller_guard_20261116.py and dependent recovery/stager/deployer pins to the exact current attention.py bytes, then complete the nested source-lifecycle chain. Do not weaken hash checks. After that, rebase #2433 from its stale base dfa3945 onto the current release-development branch gpt6 HEAD 8d93236 (or the then-current accepted release head), rerun Python 3.13/3.14 focused A4/RAW EAR/consent/privacy, staged/integrated, migration and runtime deployment. Perception then runs the source-disjoint A4 outcome/retention ablation; no microphone/Android claim before authorized device proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-24T18:48:47.240+01:00",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2433,
+        "head_sha": "acc68d6113eb320d283cfa0150230b40273d6e96",
+        "base_sha": "dfa3945b2bbfdb65d932db74e02f402435494e84",
+        "base_branch": "gpt6/v13-private-remote-bridge-20261111",
+        "ci": "A4_SOURCE_BOUND_OUTCOMES_PASS_PY313_PY314; RAW_EAR_PROSODY_PASS; OPTIONAL_NUMPY_BACKEND_PASS; FASTDIAR_ADAPTER_PASS; CONSENT_REVOCATION_PASS; PRIVACY_SCAN_PASS; STAGED_AND_INTEGRATED_FAIL_CONTROLLER_GUARD_SOURCE_CHANGED_ATTENTION_PY",
+        "local": "ISOLATED_SQLITE_ATOMICITY_REPRO_PASS; FULL_AII_SUITE_BLOCKED_NO_CHECKOUT_DNS",
+        "device": "REDMI_UNVERIFIED; LATEST_AVAILABLE_PRIVATE_V13OBS_2026-11-24_09:28Z_INSTALLED_8d93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_ZERO_B1_B2_OFFERS; NO_FRESH_RECEIPT",
+        "state": "DRAFT_OPEN_NOT_RELEASED_REBASE_REQUIRED"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "proof": "Latest exact PR #2433 head acc68d6113eb320d283cfa0150230b40273d6e96 (42 commits, 18 files) has A4 source-bound attention outcomes, RAW EAR prosody-to-attention, optional NumPy backend, FASTDIAR adapter, consent-revocation and privacy-scan workflows PASS; the A4 outcomes job passed on Python 3.13 and 3.14. The earlier path vs path_id assertion failures are no longer present at this head. Staged consumer and integrated regression still fail before the consumers run because the Core-owned record_only_controller_guard_20261116.py rejects the exact v13/attention.py SHA (controller guard source changed). The PR base snapshot dfa3945 is stale relative to current release-development HEAD 8d93236, so rebase is required after Core accepts the guard/dependency chain. Isolated SQLite atomicity reproduction PASS; full local repository suite NOT_RUN (no checkout/DNS). No AudioRecord provider, microphone capture, native diarization inference, trained latent exchange or Redmi proof."
     },
     {
       "id": "V14-019",
