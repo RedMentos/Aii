@@ -293,10 +293,21 @@ class ArrayDataset:
             target=target,
         )
 
-    def iter_batches(self, split: str, *, batch_size: int = 256) -> Iterator[WindowBatch]:
-        """Yield only valid windows; peak window memory is bounded by batch_size."""
+    def iter_batches(
+        self, split: str, *, batch_size: int = 256,
+        shuffle: bool = False, seed: int = 17,
+    ) -> Iterator[WindowBatch]:
+        """Yield valid windows in order or a reproducibly shuffled bounded batch stream.
+
+        Shuffling materializes only the candidate-origin index vector, not window
+        tensors. The window payload itself remains bounded by batch_size.
+        """
         if type(batch_size) is not int or batch_size < 1 or batch_size > 8192:
             raise ValueError("batch_size must be an integer in [1, 8192]")
+        if type(shuffle) is not bool:
+            raise ValueError("shuffle must be a boolean")
+        if type(seed) is not int:
+            raise ValueError("seed must be an integer")
         c = len(self.channels)
         elements_per_window = (
             self.config.input_length * c
@@ -311,8 +322,19 @@ class ArrayDataset:
                 f"limit is {MAX_WINDOW_BATCH_BYTES}"
             )
         origins_range = self._candidate_origins(split)
-        for offset in range(origins_range.start, origins_range.stop, batch_size):
-            origins = np.arange(offset, min(offset + batch_size, origins_range.stop), dtype=np.int64)
+        if shuffle:
+            candidate_origins = np.arange(origins_range.start, origins_range.stop, dtype=np.int64)
+            np.random.default_rng(seed).shuffle(candidate_origins)
+            batches = (
+                candidate_origins[offset:offset + batch_size]
+                for offset in range(0, len(candidate_origins), batch_size)
+            )
+        else:
+            batches = (
+                np.arange(offset, min(offset + batch_size, origins_range.stop), dtype=np.int64)
+                for offset in range(origins_range.start, origins_range.stop, batch_size)
+            )
+        for origins in batches:
             valid, sources = self._valid_mask(origins)
             if not valid.any():
                 continue
