@@ -54,9 +54,9 @@
 - User action required: none. No manual Termux command or update request.
 
 
-## Follow-up — 2026-11-24T04:38:22Z
+## Follow-up — 2026-11-24T04:49:05Z
 
-- Exact branch head: `d0a30b18cc629d7498373e01985f89df00fa7461` (PR #2462, OPEN / NOT_RELEASED).
+- Latest branch HEAD: `ca269493a380232ef88ffa095ab5b82eaec7fce3` (PR #2462, DRAFT / OPEN / NOT_RELEASED). Code changes are at `d0a30b18cc629d7498373e01985f89df00fa7461`; later commits update V14 handoff/board only.
 - `latewatch.py`: post-answer-start offers pass `preanswer_budgeted=False`; `_record_once` prevents duplicate status counts from `check()` + `finish()`.
 - Tests: added `test_latewatch_offer_is_not_charged_to_preanswer_recovery_window`; updated the `test_effort.py` Runtime double to accept `preanswer_budgeted`. LOCAL_LINUX / CPython 3.13.5 isolated `py_compile` + 2/2 contract assertions PASS. Full local repository suite NOT_RUN (no checkout; GitHub DNS failure).
 - Exact-head CI remains blocked: same-turn, staged/integrated, owner-read bootstrap FAIL due stale shared Runtime source pins/anchors; six other workflows SUCCESS, one SKIPPED. No source pin was weakened.
