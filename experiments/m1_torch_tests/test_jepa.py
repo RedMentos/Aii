@@ -13,6 +13,7 @@ from experiments.m1.array_data import ArrayDataset
 from experiments.m1.data import DataConfig, MinuteRow
 from experiments.m1.jepa import (
     DirectMAEForecaster,
+    FrozenLatentProbe,
     JEPAConfig,
     JEPAForecaster,
     collapse_metrics,
@@ -25,6 +26,7 @@ from experiments.m1.training import (
     load_checkpoint,
     save_checkpoint_atomic,
     train_direct_mae,
+    train_frozen_probe,
     train_jepa,
 )
 
@@ -137,6 +139,20 @@ class JEPAModelTests(unittest.TestCase):
                 model.predict_latents(x, s, cal)[0],
                 restored.predict_latents(x, s, cal)[0],
             )
+
+    def test_frozen_and_random_encoder_probes_train_only_linear_readout(self):
+        backbone = JEPAForecaster(self.config)
+        probe = FrozenLatentProbe(backbone, self.config)
+        frozen_before = [p.detach().clone() for p in probe.backbone.parameters()]
+        readout_before = probe.value_head.weight.detach().clone()
+        history = train_frozen_probe(
+            probe, self.dataset, epochs=1, batch_size=32, seed=12
+        )
+        self.assertTrue(np.isfinite(history[0]["mae"]))
+        self.assertFalse(torch.equal(readout_before, probe.value_head.weight.detach()))
+        for before, after in zip(frozen_before, probe.backbone.parameters()):
+            torch.testing.assert_close(before, after)
+        self.assertTrue(all(not p.requires_grad for p in probe.backbone.parameters()))
 
     def test_checkpoint_rejects_code_commit_drift(self):
         model = JEPAForecaster(self.config)
