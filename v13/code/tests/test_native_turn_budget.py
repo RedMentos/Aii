@@ -274,10 +274,11 @@ class NativeTurnBudgetTests(unittest.TestCase):
 
     def test_invalid_c3_duration_is_ignored_for_reserve_estimation(self):
         rows=[
+            turn(),
             turn("FINAL",generated=5,phase="stream",duration_s=float("nan")),
+            turn(),
             turn("FINAL",generated=5,phase="stream",duration_s=0),
-            turn("FINAL",generated=5,phase="stream",duration_s=10**1000),
-            turn(),turn()]
+            turn("FINAL",generated=5,phase="stream",duration_s=10**1000)]
         d=budget.plan(100,130,100,recent=rows)
         self.assertTrue(d["recovery"])
         self.assertEqual(d["c3_reserve_source"],"FALLBACK_DEFAULT")
