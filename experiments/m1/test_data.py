@@ -180,7 +180,6 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256="0" * 64,
                     access_log_path=log_path,
-                expected_code_commit="a" * 40,
                     expected_code_commit="a" * 40,
                 )
             windows, stats = load_test_split(
@@ -215,6 +214,7 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=log_directory,
+                    expected_code_commit="a" * 40,
                 )
 
     def test_test_loader_rejects_config_drift_even_with_valid_file_hash(self):
@@ -250,6 +250,25 @@ class WindowTests(unittest.TestCase):
             second = write_manifest(manifest, path)
             self.assertEqual(first, second)
             self.assertEqual(len(first), 64)
+
+
+class CalendarBoundaryTests(unittest.TestCase):
+    def test_uci_calendar_boundaries_are_date_based_and_l_independent(self):
+        from experiments.m1.data import uci_calendar_config
+        start = datetime(2006, 12, 16)
+        n_rows = int((datetime(2010, 11, 27) - start).total_seconds() // 60)
+        first = start
+        cfg_a = uci_calendar_config(input_length=60)
+        cfg_b = uci_calendar_config(input_length=600)
+        a = build_chronological_boundaries(n_rows, cfg_a, first)
+        b = build_chronological_boundaries(n_rows, cfg_b, first)
+        self.assertEqual(a, b)
+        gap = cfg_a.effective_gap
+        validation_start = int((datetime(2008, 12, 1) - first).total_seconds() // 60)
+        test_start = int((datetime(2009, 12, 1) - first).total_seconds() // 60)
+        self.assertEqual(a["train"], (0, validation_start - gap))
+        self.assertEqual(a["validation"], (validation_start, test_start - gap))
+        self.assertEqual(a["test"], (test_start, n_rows))
 
 
 class UCIParserTests(unittest.TestCase):
