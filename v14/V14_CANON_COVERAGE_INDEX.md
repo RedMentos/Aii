@@ -2358,3 +2358,21 @@ This overlay records the QA fast-forward integrations and current device boundar
 | M1 DATA / Raw-Window-Probe (#2452/#2453) | #2452 head `2104f72` M1 test workflow fails; #2453 head `f7f7520` DATA workflow passes only. | M1 remains [ENTWURF]; no real UCI cohort, test unlock, training, weight update or Redmi evidence. Preserve full baseline/control list. |
 
 No result in this late poll changes the Redmi boundary: private #840/#841/#842 still confirm release 8d93236 installed, auto-update on, AI STOPPED_BY_USER, B1/B2 TIME_BUDGET, correctness unproven and no candidate installation. Full LOCAL_LINUX Aii suite remains BLOCKED / NOT_RUN.
+
+
+## Candidate evidence overlay — Core & Harness run 22 — 2026-11-24
+
+This is a dated evidence overlay, not a change to the 1,255-heading historical inventory and not a promotion of any Canon family to COMPLETE.
+
+| Canon family / contract | Current candidate path | Exact evidence | Remaining acceptance boundary |
+|---|---|---|---|
+| F10 runtime residency / cancellation | `v13/code/v13/runners.py`, `test_runner_interruption_retention.py`, PR #2464 head `97ffc6db` | 31/32 check-runs SUCCESS, 1 SKIPPED. Deadline retention only when all local slots are idle and the lifecycle stamp is unchanged; cancellation/error/malformed slots unload. Prompt-bearing `/slots` data is not persisted. | CI only. No local full suite or Redmi PSS/thermal/TTFT proof. |
+| C3 native input / same-causal prefill | `v13/code/v13/native_offer_prompt_receipt.py`, `v13/code/v13/brain_panel.py`, PR #2464 | Exact same-context token-ID binding and live native handle/context-revision receipt. | Prompt inclusion is not semantic attention. No trained C3/B1/B2 latent coupling or native Redmi receipt. |
+| C4 → C3 source-bound offer consumption | Same PR #2464; same-turn C4/C3 and phone-offer receipt workflows | C4 selected packet IDs and source quotes match the actual rendered C3 template; exact same-turn consumer workflow passes on the candidate head. | Does not establish that the model semantically used the offer or that both B1 and B2 supplied useful native offers on Redmi. |
+| Fastpath / C5 output action | `v13/code/v13/fast_greeting.py`, staged greeting candidate, PR #2464 | Exact standalone greeting path passes; ordinary TEXT_REPORT ActionIntent/ActionOutcome and bounded self/world outcome receipts remain; no external tool intent or trainable ExperienceRecord. | CI only; no Redmi latency/quality result. Nontrivial requests must continue through the deeper graph. |
+| B1_DETAIL + B2_GIST fair same-turn delivery | PR #2462 head `2f2c69c3` | 12/29 check-runs SUCCESS, 16 FAILURE, 1 SKIPPED. | NOT_ACCEPTED. Source pins, consumer, runtime, staged and integrated checks remain red; no valid Redmi offer delivery. |
+| B3 / Enlightened-Space native receiver | PR #2451 head `89a7e904` | 21/22 check-runs SUCCESS, 1 SKIPPED; staged native receiver and same-turn consumer workflows pass. | Guarded local probe code only. No native model probe, gradient/utility/retention or Redmi proof. Production B3 remains OFF. |
+| Android ActionIntent / ActionOutcome | PR #2450 head `523c04eb`; QA harness PR #2427 head `ae56dd1e` | Core recovery candidate 11/12 checks SUCCESS; receipt-only EXECUTING/DENYING and SQLite restart tests present. QA process-death harness separately 5/5 SUCCESS. | Combined exact stack still fails process restart; harness must be ported/rebased into #2450. No APK install, Redmi action or OS-provider proof. |
+| Voice output contract | `v13/code/v13/speech_intent.py`, `speech_output.py` | Existing explicit TTY-only Termux system-TTS fallback remains source-bound and does not auto-play or capture audio. | Not a trainable speech decoder/vocoder, not full duplex, no microphone capture or Redmi voice proof. |
+
+**Platform boundary:** last authenticated private metadata still reports release 8d932 installed, auto-update enabled, AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE and B1/B2 TIME_BUDGET. Fresh read-only refresh had NO_LIVE_RECEIPT. Full LOCAL_LINUX repository suite NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. All PRs above remain draft/candidate; none is a release or proof of complete V14/V13 behavior.

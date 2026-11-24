@@ -1,3 +1,37 @@
+## Core & Harness run 22 — 2026-11-24 19:24 UTC
+
+**Base:** release-development `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`. This is a candidate checkpoint, not a release.
+
+### Implemented and tested on the exact Core branch
+
+- PR #2464, `core/v14-native-prefill-receipt-20261124-run1 @ 97ffc6db08f9cdeb630bff33341436ded6030f21`: 31/32 exact-head check-runs SUCCESS, 1 SKIPPED, 0 failures.
+- The C3 causal path now emits an exact same-context token-ID prefill receipt bound to the context revision and live native handle. The C4 receipt is checked against the actual rendered C3 template, including source-bound offer packet IDs and quote spans. This establishes prompt inclusion/consumption at the input boundary, not semantic attention or trained latent coupling.
+- A DEADLINE no longer necessarily unloads the C3 runner: the same process may be retained only when every local llama-server slot is idle and the lifecycle stamp is unchanged. CANCELLED, native error, malformed/unavailable slots or lifecycle change still unload. The raw `/slots` response is never persisted because it may contain prompt text.
+- Exact standalone greeting fastpath skips native work but preserves the ordinary TEXT_REPORT intent/outcome and bounded self/world outcome records. It suppresses external tool calls and trainable ExperienceRecord capture. Regression tests distinguish those receipt types.
+- Exact CI includes greeting fastpath, interrupted-runner retention, native receiver staged runtime, same-turn B1/B2→C4→C3 consumer, audio/arithmetic, phone offer receipt, staged context/integrated regression, native stream integrity and deploy integrity.
+
+### Adjacent Core tasks and integration blockers
+
+- PR #2462 fair B1/B2 pre-answer candidate at `2f2c69c3b70bbca9a06708c65d43e62208d29507`: 12/29 check-runs SUCCESS, 16 FAILURE, 1 SKIPPED. The consumer, source-contract, Python runtime, staged startup/audio and integrated chain remain red. Recompose its source-pin/deployer chain against exact release 8d932 using reviewed changes; do not blindly cherry-pick from #2464.
+- PR #2451 native receiver probe at `89a7e90441c69841f4580c8f5db7ce2d6a5fdfea`: 21/22 SUCCESS, 1 SKIPPED. This is guarded local-probe software/CI only; no native model execution occurred. Production B3 remains OFF.
+- PR #2450 Android action journal at `523c04eb1e96d0e01e1cdda0c9832632360de044`: 11/12 SUCCESS; only Android process-restart fails. Receipt-only EXECUTING/DENYING recovery and SQLite-failure/restart-without-redispatch tests are present. QA #2427's 5/5-green ActivityScenario harness is on a separate branch and must be ported/rebased into the exact combined #2450 stack.
+- Boss review and exact combined consumer integration remain pending. None of these draft PRs is RELEASED.
+
+### Environment and device boundary
+
+- LOCAL_LINUX full Aii checkout/suite: BLOCKED / NOT_RUN; no checkout is mounted and `git ls-remote` failed DNS resolution.
+- Latest authenticated phone metadata remains private #840/#841/#842: installed SHA 8d932, auto-update enabled, AI STOPPED_BY_USER, autostart=false, model process STOPPED, native residency UNAVAILABLE. B1/B2 remain TIME_BUDGET and correctness is UNKNOWN. Fresh read-only refresh returned NO_LIVE_RECEIPT.
+- No CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, restart, model/weight/permission/data mutation or device probe. No Redmi proof; all candidates remain NOT_RELEASED.
+
+### Next executable sequence
+
+1. Reconcile #2462 source pins and rerun its exact consumer/staged/integrated matrix while preserving B1+B2 eligibility, source-bound OfferPackets and C3 reserve.
+2. Obtain independent Boss review of #2464 and #2451; integrate only after the exact combined consumer matrix passes.
+3. Port QA #2427's process-death harness into #2450 and rerun with receipt-only recovery present.
+4. Continue the next unblocked whole-Canon path; keep production B3 and Android providers OFF until their own consented native acceptance tests.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
