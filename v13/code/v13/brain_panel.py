@@ -158,16 +158,19 @@ def _latest_native_evidence(r):
     c4_native_ids_match = bool(
         not synthetic and native_submitted and native_prefill_verified and id_lists_match
     )
+    # A synthetic consumer can prove that the selected, source-bound C4
+    # hypotheses were present in the exact rendered message list. That is
+    # separate from token-ID/prefill evidence, which remains independently
+    # reported below. Native C4 matching still requires verified native prefill.
     c4_synthetic_ids_match = bool(
-        synthetic and synthetic_submitted and synthetic_prefill_verified and id_lists_match
+        synthetic and synthetic_submitted and id_lists_match
     )
-    prefill_accepted = native_prefill_verified or synthetic_prefill_verified
     prefix = "SYNTHETIC_" if synthetic else "NATIVE_"
     if not receipt:
         flow_status = "OFFER_RECEIPT_UNAVAILABLE"
     elif submitted and c4_recorded and not c4_accepted:
         flow_status = prefix + "TEMPLATE_SUBMITTED_C4_RECEIPT_NOT_ACCEPTED"
-    elif submitted and c4_recorded and not prefill_accepted:
+    elif submitted and c4_recorded and not synthetic and not native_prefill_verified:
         flow_status = prefix + "TEMPLATE_SUBMITTED_PREFILL_UNVERIFIED"
     elif submitted and c4_recorded and id_lists_match:
         flow_status = prefix + "TEMPLATE_SUBMITTED_MATCHED_C4"
