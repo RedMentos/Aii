@@ -140,3 +140,15 @@ Next: Boss/Integrator recompose the four pinned Runtime consumers and downstream
 4. Continue the next unblocked Core integration path after the checkpoint; do not treat this scheduler fix as whole-system acceptance.
 
 **User action required:** none. No model alternative is recommended without a measured comparison; no model, weight, permission, updater or device setting should be changed.
+
+
+## Run checkpoint — 2026-11-24 15:18 UTC
+
+- Added a monotonic-clock boundary correction in `v13/code/v13/native_turn_budget.py`: the configured 50 s recovery limit now tolerates only 1 microsecond of floating-point subtraction error. A deadline genuinely beyond 50 s remains outside the recovery policy.
+- Added `test_exact_recovery_deadline_accepts_only_float_roundoff` with a large monotonic origin that previously produced `50.00000000372529` seconds. This covers both the accepted round-off boundary and a 50.01 s negative control.
+- The exact Core consumer job on the previous head completed with **100 passed, 7 subtests passed** before the downstream stage step. The stage step exposed the expected pinned-composer dependency chain; updated exact pins for the fair-budget composer, recovery-12, recovery-21, integrated stager and runtime deployer. No source was force-pushed.
+- Latest branch head after pin readbacks: `7456f372dc51de02f68d7843871d3bb1c4877e7e`. New exact-head workflows are queued/in progress; no green claim until their final results are read.
+- LOCAL_LINUX project suite: **BLOCKED / NOT_RUN** — no Aii checkout is mounted and GitHub DNS resolution failed on `git clone`. The environment is Python 3.13.5 / Linux x86_64, but that is not a project test.
+- Redmi: **REDMI_UNVERIFIED**. Private owner-read requests #857 PIPELINE_STATUS and #858 DIAGNOSTICS were issued; no receipt/comment had arrived at this checkpoint. No device command, model change, or permission change was performed.
+- Known non-Core staged failures from the prior exact-head run remain separate: online-world composer source mismatch and QA record-only controller guard/runtime anchor mismatch. They are not waived by the Core unit pass.
+- Next: verify the exact-head CI on `7456f372`; if the fair-budget stage is still red, repair only the Core-owned pin chain and leave JEPA/QA source ownership intact. Then continue with the next unblocked Android/runtime integration package. Boss/Integrator must fold this checkpoint into shared `V14_USER_NEXT_ACTION.md` and `V14_WORK_BOARD.json` because the Perception lane is concurrently editing those shared files.
