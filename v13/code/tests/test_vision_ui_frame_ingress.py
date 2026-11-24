@@ -93,25 +93,31 @@ def make_runtime(monkeypatch, with_store=False):
     return runtime
 
 
-def observation(finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE"):
+def observation(
+    finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE",
+    *, source_id="ui-frame-source-0001", receipt_ref="receipt-frame-0001",
+    session_receipt_ref=None, start_ms=1000, end_ms=1033,
+):
     value = {
         "schema": "v14.a5.ui-observation/1",
         "modality": "ui",
-        "source_id": "ui-frame-source-0001",
+        "source_id": source_id,
         "capture_session_id": "ui-frame-session-0001",
-        "consent_receipt_ref": "receipt-frame-0001",
+        "consent_receipt_ref": receipt_ref,
         "capture_method": method,
         "capture_scope": "FULL_DISPLAY" if method == "MEDIA_PROJECTION" else "ACCESSIBILITY_TREE",
         "api_level": 34,
         "clock": "ELAPSED_REALTIME",
         "event_kind": event_kind,
-        "start_ms": 1000,
-        "end_ms": 1033,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
         "finality": finality,
         "action_authority": False,
         "learning_authority": False,
         "raw_capture_persisted": False,
     }
+    if session_receipt_ref is not None:
+        value["session_consent_receipt_ref"] = session_receipt_ref
     if method == "ACCESSIBILITY_ASSISTIVE":
         value["accessibility_purpose"] = "DISABILITY_ASSISTANCE"
     return value
@@ -725,6 +731,23 @@ def test_provider_verifier_is_bound_to_session_and_one_shot(monkeypatch):
         assert calls == []
 
 
+
+def test_provider_verifier_binds_the_stable_session_consent_receipt(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    frame = image_buffer()
+    frame_sha = hashlib.sha256(frame).hexdigest()
+    with lease_for(runtime, obs) as lease:
+        verifier = provider_verifier(lease, obs, frame)
+        forged = dict(obs, session_consent_receipt_ref="session-consent-forged")
+        assert verifier.verify(runtime, lease, forged, frame_sha, len(frame)) is False
+        assert verifier.verify(runtime, lease, obs, frame_sha, len(frame)) is False
+
+    from v13.a5_ui_admission_bridge import validate_ui_observation
+    with pytest.raises(PermissionError, match="session-level"):
+        validate_ui_observation(dict(obs, session_consent_receipt_ref="not a receipt"))
+
+
 def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
     if not hasattr(os, "mkfifo"):
         pytest.skip("POSIX FIFO support is unavailable")
@@ -961,6 +984,48 @@ def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypa
     assert not any(first) and not any(second)
 
 
+
+def test_temporal_visual_evidence_accumulates_across_frame_receipts_under_one_session_consent(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    session_receipt = "session-consent-0001"
+    first_obs = observation(
+        source_id="ui-frame-source-0001", receipt_ref="frame-receipt-0001",
+        session_receipt_ref=session_receipt, start_ms=1000, end_ms=1033,
+    )
+    second_obs = observation(
+        source_id="ui-frame-source-0002", receipt_ref="frame-receipt-0002",
+        session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
+    )
+    first, second = image_buffer(), image_buffer_variant()
+
+    with lease_for(runtime, first_obs) as first_lease:
+        first_result = consume_with_provider_verifier(
+            runtime, first_obs, first, consent_lease=first_lease,
+            current_source="Observe this screen session.",
+        )
+    with lease_for(runtime, second_obs) as second_lease:
+        second_result = consume_with_provider_verifier(
+            runtime, second_obs, second, consent_lease=second_lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert first_result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert second_result["temporal_visual_evidence"]["status"] == "MEASURED"
+    assert second_result["packet"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["packet"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["temporal_visual_evidence"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["source_ref"]["source_id"].startswith("ui_frame_")
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(first) and not any(second)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(second_obs["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
 def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
     from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
 
@@ -976,6 +1041,32 @@ def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
     assert registry.update(**dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed))["status"] == "MEASURED"
     # A new consent receipt cannot inherit the previous frame.
     assert registry.update(**dict(common, consent_receipt_ref="receipt-b", start_ms=1066, end_ms=1099))["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="session-a") == 1
+    assert len(registry) == 0
+
+
+
+def test_temporal_visual_registry_keeps_history_only_for_stable_session_receipt():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-a", generation_id="gen-a",
+        session_consent_receipt_ref="session-consent-a",
+        start_ms=1000, end_ms=1033, tile_luminance=base,
+    )
+    assert registry.update(consent_receipt_ref="frame-a", **common)["status"] == "WARMUP"
+    next_frame = dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed)
+    assert registry.update(consent_receipt_ref="frame-b", **next_frame)["status"] == "MEASURED"
+
+    # A changed session-level receipt is a new authority lineage and must warm up.
+    next_session = dict(
+        common, session_consent_receipt_ref="session-consent-b",
+        start_ms=1066, end_ms=1099,
+    )
+    assert registry.update(consent_receipt_ref="frame-c", **next_session)["status"] == "WARMUP"
     assert registry.reset(capture_session_id="session-a") == 1
     assert len(registry) == 0
 
