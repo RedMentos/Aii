@@ -22,7 +22,7 @@ HELP_NEW = (
     b":callosum [status|shadow|active|degrade|promote <Richtung>|"
     b"arm-probe <sender> <receiver> --last-source --confirm|"
     b"native-probe <sender> <receiver> --last-source --confirm|revoke-probe|"
-  b"arm-probe-matrix --last-source --confirm|native-probe-matrix --last-source --confirm|revoke-probe-matrix]"
+    b"arm-probe-matrix --last-source --confirm|native-probe-matrix --last-source --confirm|revoke-probe-matrix]"
 )
 
 DISPATCH_OLD = (
@@ -31,6 +31,9 @@ DISPATCH_OLD = (
     b"            return operator_command(r,args)\n"
 )
 DISPATCH_NEW = (
+    b"        if cmd=='callosum' and args and args[0] in {'arm-probe-matrix','native-probe-matrix','revoke-probe-matrix'}:\n"
+    b"            from .native_probe_matrix import operator_command as matrix_operator_command\n"
+    b"            return matrix_operator_command(r,args)\n"
     b"        if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}:\n"
     b"            from .native_probe_approval import operator_command as probe_operator_command\n"
     b"            return probe_operator_command(r,args)\n"
