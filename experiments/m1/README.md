@@ -89,7 +89,7 @@ python -m experiments.m1.recurrence \
   --steps 1,2,4
 ```
 
-The comparison reports JEPA latent loss/collapse telemetry, frozen-JEPA probe MAE, a matched random-recurrent probe, recurrent Direct-MAE, parameter counts, fit time and paired temporal-block validation intervals. It never opens the test split. Defaults remain exploratory, not preregistered or promoted.
+The comparison reports JEPA latent loss/collapse telemetry, frozen-JEPA probe MAE, a matched random-recurrent probe, recurrent Direct-MAE, parameter counts, exact recurrent-block call counts, fit time and paired temporal-block validation intervals. It never opens the test split. Defaults remain exploratory, not preregistered or promoted.
 
 The recurrence design follows the weight-shared depth idea in [Universal Transformers (Dehghani et al., ICLR 2019)](https://arxiv.org/abs/1807.03819). The archived Tensor2Tensor reference implementation is Apache-2.0; no upstream source was copied into M1. The M1 implementation is a PyTorch adaptation with a fixed T=1/2/4 sweep and no adaptive-computation/halting mechanism.
 
