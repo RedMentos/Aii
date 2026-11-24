@@ -367,7 +367,7 @@ def build_dataset(
     for name in ("train", "validation"):
         datasets[name], stats[name] = make_split(rows, channels, config, name, bounds[name])
     manifest: dict[str, object] = {
-        "schema": "v14.m1.data-manifest.v1",
+        "schema": "m1.clean-room.data-manifest.v1",
         "channels": list(channels),
         "row_count": len(rows),
         "first_timestamp": rows[0].timestamp.isoformat(),
