@@ -964,6 +964,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
+            "identity_authority": False,
             "learning_authority": False,
             "action_authority": False,
         }
