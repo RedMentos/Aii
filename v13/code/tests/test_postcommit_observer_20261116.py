@@ -39,8 +39,9 @@ class PinValidation(unittest.TestCase):
         raw = (CODE / 'v13/runtime.py').read_bytes()
         sources = (raw, world.build_sources(CODE)['v13/runtime.py'],
                    termux.build_sources(CODE, include_postcommit=False)['v13/runtime.py'])
-        self.assertTrue({hashlib.sha256(x).hexdigest() for x in sources}
-                        <= patch.SOURCE_SHA256)
+        source_hashes = {hashlib.sha256(x).hexdigest() for x in sources}
+        missing = source_hashes - patch.SOURCE_SHA256
+        self.assertFalse(missing, 'postcommit observer source pins missing: ' + ','.join(sorted(missing)))
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
