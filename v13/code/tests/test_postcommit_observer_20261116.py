@@ -141,10 +141,12 @@ class RuntimePostcommit(unittest.TestCase):
             "SELECT metrics FROM telemetry WHERE event_id=? AND kind='body_offer_attempt'", (event,))]
         b1_attempt = next(row for row in attempts if row.get('role') == 'B1_DETAIL')
         self.assertEqual(b1_attempt.get('status'), 'DEADLINE')
-        self.assertEqual(meta['selected_offer_ids'], [])
         offers = [json.loads(r['payload']) for r in self.runtime.store.rows(
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
+        # The fair B2 offer is allowed to reach C4 and be selected; it must not
+        # be re-run after C3 has committed the answer.
+        self.assertEqual(meta['selected_offer_ids'], [offers[0]['packet_id']])
         postcommit = self.runtime.store.rows(
             "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
         self.assertEqual(postcommit, [])
