@@ -409,6 +409,50 @@ class Vision(unittest.TestCase):
             vision.train_tiles, 'tile_projector', 'tiles-'
         )
 
+    def _assert_training_commit_rejected_after_caption_change(self, trainer, state_key, artifact_prefix, regions):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5 + i, 5, 30 + i, 30)))
+            for region in regions:
+                vision.describe(self.rt, rec, region, teacher)
+            records.append(rec)
+
+        original_cv = vision.source_disjoint_crossval
+        changed = {'done': False}
+
+        def update_caption_during_validation(*args, **kwargs):
+            if not changed['done']:
+                vision.describe(self.rt, records[0], regions[0], OppositeTeacher())
+                changed['done'] = True
+            return original_cv(*args, **kwargs)
+
+        with patch.object(vision, 'source_disjoint_crossval', update_caption_during_validation):
+            with self.assertRaisesRegex(ValueError, 'Stale state write'):
+                trainer(self.rt, encoder)
+
+        self.assertTrue(changed['done'])
+        current = vision.load(self.store)
+        updated_caption = next(
+            item for item in current['images'][records[0]['ref']['source_id']]['captions']
+            if item['source_ref']['region_id'] == regions[0]
+        )
+        self.assertIn('blue', updated_caption['text'])
+        self.assertIsNone(current.get(state_key))
+        self.assertEqual(list((self.home / 'data/vision').glob(artifact_prefix + '*.npz')), [])
+
+    def test_global_projector_training_cannot_publish_stale_caption_snapshot(self):
+        self._assert_training_commit_rejected_after_caption_change(
+            vision.train, 'projector', 'projector-', ('g',)
+        )
+
+    def test_tile_projector_training_cannot_publish_stale_caption_snapshot(self):
+        self._assert_training_commit_rejected_after_caption_change(
+            vision.train_tiles, 'tile_projector', 'tiles-', ('g', 'qtl', 'qtr')
+        )
+
     def test_reingest_serializes_with_last_source_blob_cleanup(self):
         data = png((220, 20, 20))
         original = vision.ingest(self.store, data)
