@@ -134,6 +134,7 @@ class JEPAModelTests(unittest.TestCase):
         )
         self.assertEqual(len(history), 2)
         self.assertTrue(all(np.isfinite(row["total"]) for row in history))
+        self.assertAlmostEqual(history[-1]["ema_tau"], self.config.ema_end)
         self.assertFalse(torch.equal(initial, next(model.context_encoder.parameters()).detach()))
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "jepa.pt"
