@@ -1426,3 +1426,13 @@ Current #2443 remains OPEN / DRAFT / NOT_MERGED; API readback has zero check-run
 - Research R-126 (FD-VAD) and R-127 (MJEPA) are now in the ledger. FD-VAD is a preprint with a 0.5B LLM + WavLM stack and A100-only latency; MJEPA supports the importance of explicit cross-modal prediction but uses a 1B ViT-g-scale training setup. Neither was downloaded, imported or treated as a Redmi candidate.
 - Next: Core/Integrator rebinds the three audio SOURCE_BLOBS and adds the reviewed \`vision.py\` lifecycle mapping + source-forget regression; then run one combined staged/integrated/same-turn candidate. After it is green, use the authorized updater path and obtain a separate installation receipt; do not issue manual Termux instructions or change models/permissions.
 
+
+
+
+## V14-018 supersession check — 2026-11-24 04:16 UTC
+
+- The current-base #2448 Perception line already contains the relevant #2433 behavior: batch-prestate speaker comparison, VOICED-only history admission, non-voiced suppression, consent-receipt epoch binding, exact PCM hash binding, and source-bound transactional A4 outcome.
+- Exact current branch run 45322153507: py_compile + 128/128 PASS on Python 3.13 and 128/128 PASS on Python 3.14. Audio duplex race run 45322153681: 179/179 on both versions.
+- #2433 is therefore superseded for its Perception code; do not rebase or duplicate it. A supersession note is posted at https://github.com/RedMentos/Aii/pull/2433#issuecomment-7121856464. Keep its historical branch untouched pending Boss closure/review.
+- Remaining work is not the old code patch: Core must rebind the three audio SOURCE_BLOBS and compose the current A5/A4/C3 path; then Perception can run source-disjoint A4 outcome/retention and model-bound speaker calibration experiments. No AudioRecord or Redmi proof.
+
