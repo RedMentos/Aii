@@ -8,10 +8,11 @@ from v13.common import Limits
 from v13 import native_turn_budget as budget
 
 
-def turn(status="DEADLINE", *, generated=0, phase="prefill", role="C3_LANGUAGE"):
+def turn(status="DEADLINE", *, generated=0, phase="prefill", role="C3_LANGUAGE",
+         duration_s=29.1):
     return {"status":status,"metadata":json.dumps({
         "runner":{"role":role,"generated_tokens":generated,
-                  "last_phase":phase,"duration_s":29.1},
+                  "last_phase":phase,"duration_s":duration_s},
         "raw_user_prompt":"PRIVATE NEVER SELECT OR RETURN",
     })}
 
@@ -29,14 +30,16 @@ class DummyStore:
 
 class NativeTurnBudgetTests(unittest.TestCase):
     def test_two_observed_c3_zero_token_deadlines_reserve_c3_time(self):
-        rows=[turn(),turn(),turn("FINAL",generated=21,phase="stream")]
+        rows=[turn(),turn(),turn("FINAL",generated=21,phase="stream",duration_s=6.5)]
         d=budget.plan(100,130,104.2,recent=rows,background_enabled=True)
         self.assertTrue(d["recovery"])
         self.assertEqual(d["reason"],"RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS")
-        self.assertLessEqual(d["preanswer_end_monotonic"],104)
-        self.assertGreaterEqual(d["c3_reserved_seconds"],25)
-        self.assertEqual(d["preanswer_seconds_available"],0)
-        self.assertTrue(d["postcommit_body_eligible"])
+        self.assertAlmostEqual(d["c3_reserve_estimate_seconds"],9.775)
+        self.assertAlmostEqual(d["c3_reserved_seconds"],9.775)
+        self.assertEqual(d["c3_reserve_source"],"RECENT_SUCCESS_MAX")
+        self.assertLess(d["c3_reserved_seconds"],15)
+        self.assertAlmostEqual(d["preanswer_seconds_available"],15.025)
+        self.assertFalse(d["postcommit_body_eligible"])
         self.assertFalse(d["age_changed"])
         self.assertFalse(d["memory_or_native_weights_changed"])
 
@@ -124,8 +127,10 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertEqual(store.logs[0][0],"native_body_budgeted_for_c3")
         self.assertEqual(store.logs[0][2]["role"],"B1_DETAIL")
         self.assertEqual(store.logs[0][2]["status"],"PREANSWER_BUDGETED")
-        self.assertGreaterEqual(store.logs[0][2]["preanswer_seconds_available"],1.0)
-        self.assertGreaterEqual(store.logs[0][2]["c3_reserved_seconds"],26.0)
+        self.assertGreaterEqual(store.logs[0][2]["preanswer_seconds_available"],2.0)
+        self.assertEqual(store.logs[0][2]["c3_reserved_seconds"],10.0)
+        self.assertEqual(store.logs[0][2]["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(store.logs[0][2]["minimum_role_slice_s"],2.0)
 
         # The same organ remains eligible after the outward answer; the
         # background caller omits valid_until and is not treated as pre-answer.
@@ -181,8 +186,10 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertAlmostEqual(d["preanswer_end_monotonic"],104.0)
         self.assertAlmostEqual(d["body_preanswer_end_monotonic"],103.0)
         self.assertEqual(d["focal_reserved_seconds"],1.0)
-        self.assertEqual(d["preanswer_seconds_available"],3.0)
-        self.assertGreaterEqual(d["c3_reserved_seconds"],26.0)
+        self.assertEqual(d["preanswer_seconds_available"],19.0)
+        self.assertEqual(d["c3_reserved_seconds"],10.0)
+        self.assertEqual(d["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(d["minimum_role_slice_s"],2.0)
 
     def test_observer_deadline_caps_a_role_slice_without_releasing_c3_reserve(self):
         d=budget.plan(100,130,100,recent=[turn(),turn()],
@@ -190,9 +197,9 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertTrue(d["recovery"])
         self.assertAlmostEqual(d["preanswer_seconds_available"],1.5)
         self.assertEqual(d["focal_reserved_seconds"],1.0)
-        self.assertGreaterEqual(d["c3_reserved_seconds"],26.0)
-        self.assertFalse(d["postcommit_body_eligible"])
-        self.assertEqual(d["minimum_role_slice_s"],1.0)
+        self.assertEqual(d["c3_reserved_seconds"],10.0)
+        self.assertTrue(d["postcommit_body_eligible"])
+        self.assertEqual(d["minimum_role_slice_s"],2.0)
 
         exhausted=budget.plan(100,130,103.9,recent=[turn(),turn()],
                               observer_deadline=103.8)
@@ -213,17 +220,23 @@ class NativeTurnBudgetTests(unittest.TestCase):
             "kind": "native_turn_budget_plan",
             "preanswer_seconds_available": 1.25,
             "focal_reserved_seconds": 1.0,
-            "c3_reserved_seconds": 26.1,
+            "c3_reserved_seconds": 10.0,
             "recent_real_prefill_failures": 2,
-            "minimum_role_slice_s": 1.0,
+            "minimum_role_slice_s": 2.0,
+            "c3_reserve_estimate_seconds": 9.775,
+            "c3_reserve_source": "RECENT_SUCCESS_MAX",
+            "c3_reserve_capped": False,
             "status": "PREANSWER_BUDGETED",
         })
         self.assertEqual(metrics["kind"], "native_turn_budget_plan")
         self.assertEqual(metrics["preanswer_seconds_available"], 1.25)
         self.assertEqual(metrics["focal_reserved_seconds"], 1.0)
-        self.assertEqual(metrics["c3_reserved_seconds"], 26.1)
+        self.assertEqual(metrics["c3_reserved_seconds"], 10.0)
         self.assertEqual(metrics["recent_real_prefill_failures"], 2)
-        self.assertEqual(metrics["minimum_role_slice_s"], 1.0)
+        self.assertEqual(metrics["minimum_role_slice_s"], 2.0)
+        self.assertEqual(metrics["c3_reserve_estimate_seconds"], 9.775)
+        self.assertEqual(metrics["c3_reserve_source"], "RECENT_SUCCESS_MAX")
+        self.assertFalse(metrics["c3_reserve_capped"])
         self.assertEqual(metrics["status"], "PREANSWER_BUDGETED")
 
     def test_bound_monotonic_inputs_and_conflicting_clock_rejected(self):
@@ -233,6 +246,41 @@ class NativeTurnBudgetTests(unittest.TestCase):
             budget.plan(100,99,100)
         with self.assertRaises(ValueError):
             budget.plan(100,130,100,observer_deadline=float("nan"))
+
+
+    def test_recovery_falls_back_to_ten_seconds_without_recent_c3_success(self):
+        d=budget.plan(100,130,100,recent=[turn(),turn()])
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(d["c3_reserve_estimate_seconds"],10.0)
+        self.assertEqual(d["c3_reserved_seconds"],10.0)
+        self.assertEqual(d["preanswer_seconds_available"],19.0)
+
+    def test_recovery_caps_slow_c3_estimate_to_preserve_two_body_slices(self):
+        d=budget.plan(100,130,100,recent=[
+            turn("FINAL",generated=8,phase="stream",duration_s=100),
+            turn(),turn()])
+        self.assertTrue(d["recovery"])
+        self.assertTrue(d["c3_reserve_capped"])
+        self.assertEqual(d["c3_reserved_seconds"],21.0)
+        self.assertEqual(d["preanswer_seconds_available"],8.0)
+        self.assertEqual(d["minimum_role_slice_s"],2.0)
+
+    def test_short_turn_does_not_enter_recovery_without_two_body_slices(self):
+        d=budget.plan(100,110,100,recent=[turn(),turn()])
+        self.assertFalse(d["recovery"])
+        self.assertEqual(d["reason"],"NORMAL_COGNITIVE_PREANSWER")
+        self.assertAlmostEqual(d["preanswer_end_monotonic"],104.5)
+
+    def test_invalid_c3_duration_is_ignored_for_reserve_estimation(self):
+        rows=[
+            turn("FINAL",generated=5,phase="stream",duration_s=float("nan")),
+            turn("FINAL",generated=5,phase="stream",duration_s=0),
+            turn(),turn()]
+        d=budget.plan(100,130,100,recent=rows)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(d["c3_reserved_seconds"],10.0)
 
 
 if __name__=="__main__":
