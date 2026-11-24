@@ -103,6 +103,11 @@ public final class CompanionProvider extends ContentProvider {
                 CompanionDb.Action action = db.get(actionId);
                 if (action == null) return false;
                 if (action.receiptJson != null) {
+                    // A receipt is terminal only when the matching terminal state
+                    // is durable. A stray receipt on EXECUTING/DENYING is not proof.
+                    if (action.receiptJson.isEmpty()
+                            || !("OUTCOME_UNKNOWN".equals(action.status)
+                            || "USER_DENIED".equals(action.status))) return false;
                     if (context != null) cancelApprovalNotification(context, actionId);
                     return true;
                 }
@@ -116,9 +121,14 @@ public final class CompanionProvider extends ContentProvider {
                 } else return false;
                 String receipt = issuer.issue(action, terminalStatus, localConsent, nowMillis);
                 if (receipt == null || receipt.isEmpty()) return false;
+                // The conditional write may lose a race to another finalizer.
+                // Accept only an exact readback of this terminal state and receipt;
+                // a different durable receipt is not interchangeable.
                 db.finishClaimed(actionId, expectedStatus, terminalStatus, receipt);
                 CompanionDb.Action completed = db.get(actionId);
-                if (completed == null || completed.receiptJson == null) return false;
+                if (completed == null
+                        || !terminalStatus.equals(completed.status)
+                        || !receipt.equals(completed.receiptJson)) return false;
                 if (context != null) cancelApprovalNotification(context, actionId);
                 return true;
             } catch (Exception ignored) {

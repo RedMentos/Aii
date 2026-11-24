@@ -193,6 +193,57 @@ public final class CompanionProviderRecoveryTest {
         restarted.close();
     }
 
+    @Test public void recoveryDoesNotAcceptDifferentDurableReceiptFromAnotherFinalizer() {
+        long now = System.currentTimeMillis();
+        String id = actionId('e');
+        CompanionDb db = new CompanionDb(context);
+        insertPending(db, id, now);
+        postApprovalNotification(id);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        AtomicInteger externalDispatches = new AtomicInteger();
+        assertEquals("DISPATCHED", CompanionProvider.claimAndDispatch(
+                context, db, id, () -> now, externalDispatches::incrementAndGet));
+        String otherReceipt = "{\\"fixture_receipt\\":\\"other-finalizer\\"}";
+        String issuedReceipt = "{\\"fixture_receipt\\":\\"this-finalizer\\"}";
+        assertFalse(CompanionProvider.recoverClaimedAction(
+                context, db, id, now,
+                (action, status, localConsent, issuedAt) -> {
+                    assertEquals("EXECUTING", action.status);
+                    assertEquals("OUTCOME_UNKNOWN", status);
+                    assertTrue(localConsent);
+                    assertTrue(db.finishClaimed(id, "EXECUTING", "OUTCOME_UNKNOWN", otherReceipt));
+                    return issuedReceipt;
+                }));
+        assertEquals("OUTCOME_UNKNOWN", db.get(id).status);
+        assertEquals(otherReceipt, db.get(id).receiptJson);
+        assertEquals("a mismatched durable receipt must not be treated as this recovery",
+                1, externalDispatches.get());
+        assertTrue("the approval surface remains until this recovery verifies its own receipt",
+                hasApprovalNotification(id));
+        db.close();
+    }
+
+    @Test public void recoveryDoesNotTreatReceiptOnNonterminalClaimAsCompleted() {
+        long now = System.currentTimeMillis();
+        String id = actionId('f');
+        CompanionDb db = new CompanionDb(context);
+        insertPending(db, id, now);
+        postApprovalNotification(id);
+        assertTrue(db.claimForExecution(id, now));
+        String strayReceipt = "{\\"fixture_receipt\\":\\"nonterminal\\"}";
+        db.finish(id, "EXECUTING", "EXECUTING", strayReceipt);
+        assertFalse(CompanionProvider.recoverClaimedAction(
+                context, db, id, now,
+                (action, status, localConsent, issuedAt) -> {
+                    fail("a nonterminal row with a receipt must not be re-finalized");
+                    return "";
+                }));
+        assertEquals("EXECUTING", db.get(id).status);
+        assertEquals(strayReceipt, db.get(id).receiptJson);
+        assertTrue(hasApprovalNotification(id));
+        db.close();
+    }
+
     @Test public void sqliteReceiptWriteFailureRecoversAfterRestartWithoutRedispatch() {
         long now = System.currentTimeMillis();
         String executingId = actionId('c');
