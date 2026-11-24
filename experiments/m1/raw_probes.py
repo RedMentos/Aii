@@ -147,7 +147,7 @@ class _RawWindowModel:
         for _epoch in range(self.epochs):
             abs_sum = 0.0
             element_count = 0
-            for batch in dataset.iter_batches("train", batch_size=self.batch_size):
+            for batch in dataset.iter_batches("train", batch_size=self.batch_size, shuffle=True, seed=self.seed + _epoch):
                 raw = batch.inputs.flatten().astype(np.float32, copy=False)
                 x = (raw - self.feature_mean) / self.feature_scale
                 prediction, activations, preactivations = self._forward(x)
