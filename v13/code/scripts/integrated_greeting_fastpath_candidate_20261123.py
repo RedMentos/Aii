@@ -310,11 +310,11 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     )
     runtime = _replace_once(
         runtime,
-        b"                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\n",
+        b"                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=arithmetic_answer is None\n",
         b"                committed=txctl.commit_output(self.store,mid,eid,meta)\n"
         b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK' and (committed is not True or not txctl.has_output_commit(self.store,mid,eid)):\n"
         b"                    raise Unavailable('Greeting output commit was not durably recorded')\n"
-        b"                meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\n",
+        b"                meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=arithmetic_answer is None\n",
         "durable direct-output commit guard",
     )
     runtime = _replace_once(
