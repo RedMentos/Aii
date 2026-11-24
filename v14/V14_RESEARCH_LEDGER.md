@@ -1460,3 +1460,63 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 **Evidence boundary.** No model was downloaded or loaded. No Android/Redmi test was run. The iPhone latency and model-card/export claims are external source measurements only; V14 performance remains unmeasured.
 
 **Primary sources:** [MobileCLIP2 paper](https://arxiv.org/abs/2508.20691); [official MobileCLIP repo](https://github.com/apple-aiml-research/ml-mobileclip); [model-weight license](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS); [TinyViT model card](https://huggingface.co/kornia/tiny_vit); [Kornia export support](https://kornia.readthedocs.io/en/latest/get-started/export-support.html); [Kornia TinyViT implementation](https://github.com/kornia/kornia/blob/main/kornia/models/tiny_vit.py).
+
+
+
+## R-126 — FD-VAD: causal semantic endpointing for full-duplex audio (2026-11-24)
+
+**Full paper read:** Puneet Mathur and Dinesh Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791, submitted 2026-09-16. The project page labels the work “Submitted”; treat it as a preprint, not peer-reviewed evidence.
+
+**Method inspected.**
+- Frozen WavLM-base-plus produces 50-Hz frame features; a two-layer modality adapter downsamples by 4 and maps into Qwen2.5-0.5B-Instruct embeddings; LoRA + adapter provide 10.3M trainable parameters (1.7% of total).
+- Causal window: at most 2.56 s; decisions every 320 ms; loss is applied only to the terminal chunk. The model predicts semantic CONTINUE/STOP directly from audio, without a generated transcript.
+- The paper combines confidence-gated endpoint commitment (threshold τ and K consecutive decisions) with boundary-focused hard negatives within ±2 chunks of the annotated endpoint.
+
+**Reported evidence and conditions.**
+- Smart-Turn v3.1 English subset: 63,386 train clips / 156 h, 1,000 held-out clips; one training epoch, effective batch 64, bf16, two A100 GPUs.
+- Held-out chunk F1 0.832 and 0.6% false-stop rate on incomplete speech; utterance accuracy 0.972 complete / 0.969 incomplete.
+- TurnBench dev zero-shot: EOT recall 0.853 at FP 0.097, but median commit latency 1,019 ms. A separate operating point (τ=0.9, K=1) reports 190 ms median endpoint delay with 2.0% false interruption. Do not combine these operating points into one claim.
+- Per-window 45.8 ms (p90 46.8 ms) is measured on one NVIDIA A100 for a 2.56-s window, not on ARM/Android.
+
+**OSS and license audit.**
+- Official code: https://github.com/fd-vad/fd-vad — MIT.
+- The repo says the adapter/LoRA checkpoint is about 120 MB and does not ship base weights. It uses WavLM (MIT) and Qwen2.5 (Apache-2.0); the cited Smart-Turn v3.1 dataset is BSD-2-Clause. The base encoder/LLM can be auto-downloaded unless separately cached. No code, model, checkpoint or dataset was imported.
+- The 0.5B language backbone, WavLM encoder, PyTorch/torchaudio runtime and separate checkpoint make this a research candidate, not an assumed Redmi fit. No ARM64/Termux package or resource benchmark was verified.
+
+**V14 mapping / experiment hypothesis.**
+- Keep RAW EAR acoustic activity, prosody, non-speech and temporal evidence as first-class signals. Add a separate optional semantic endpoint signal to the audio/duplex path; acoustic silence/VAD alone is not semantic turn completion.
+- Prototype in SHADOW first: causal bounded windows, calibrated P(STOP), τ/K commitment, boundary-focused hard negatives, and explicit early-stop vs late-stop cost. Only a later independent evaluation may authorize a user-visible turn-state policy.
+- Compare acoustic-only, semantic-only, and acoustic-gated semantic endpointing; report false interruption, endpoint delay, incomplete-turn false stops, per-window latency and peak RSS. Keep the no-transcript claim separate from speaker/prosody/nonverbal perception.
+- Do not download or activate FD-VAD weights without a separately approved experiment. No user audio was used.
+
+**Limitations.** The reported benchmark is English and the main inference latency is A100-only. The 1,019-ms TurnBench median is not a low-latency guarantee; the faster 190-ms point trades against a 2% false-interruption rate. The architecture uses a 0.5B LLM and does not establish on-device performance, persistent learning, speaker identity calibration, or Android microphone integration.
+
+**Primary sources:** https://arxiv.org/abs/2609.35791 ; https://fd-vad.github.io/ ; https://github.com/fd-vad/fd-vad ; https://huggingface.co/puneetUMD/fd-vad
+
+## R-127 — MJEPA: cross-modal predictive alignment (2026-11-24)
+
+**Paper and official repository read:** Revant Teotia, Adrien Bardes, Michael Rabbat, Sumit Chopra, Matthew J. Muckley and Nicolas Ballas, *MJEPA: A Simple and Scalable Joint-Embedding Predictive Architecture for Audio-Visual Learning*, arXiv:2606.25225, submitted 2026-06-23. The paper is an arXiv preprint; no peer-reviewed venue is listed in the inspected record.
+
+**Method inspected.**
+- One shared encoder receives modality-specific audio/video projections. Within-modality masked prediction and cross-modal pooled prediction use a common L1 latent prediction objective.
+- Target representations come from an EMA copy of the encoder with stop-gradient. Cross-modal source features are pooled before prediction because audio/video tokens have no natural one-to-one alignment.
+- The full objective sums three within-mode and six cross-modal directions across audio, video and audio-video modes.
+
+**Reported evidence and limits.**
+- AudioSet-20K frozen attentive-probe evaluation: MJEPA ViT-g + data scaling reports 45.44 mAP audio-video versus 38.60 for the prior frozen EquiAV baseline; audio-only 40.97 mAP and video-only 29.82 mAP.
+- The controlled ablation is more informative than the headline: sharing the encoder without cross-modal prediction drops audio mAP 30.87→28.70 and video 19.84→17.90; adding cross-modal alignment raises audio to 33.52 and audio-video to 36.34 at that ablation stage.
+- The frozen 45.44 result is not a universal win: the cited fully fine-tuned EquiAV result is 46.60. Later MJEPA gains mix joint encoding, data scaling and model scaling; the paper reports no controlled mobile/runtime/compute comparison.
+- The ViT-g configuration is about 1B parameters; training is described through SLURM and large heterogeneous datasets. This is not a Redmi model recommendation.
+
+**OSS and license audit.**
+- Official training/evaluation code: https://github.com/facebookresearch/MJEPA — MIT. Three retained third-party files are Apache-2.0 and keep their original headers.
+- The repository describes training code/configs and does not provide a downloadable pretrained checkpoint in the inspected README. No weights or training data were downloaded or imported.
+
+**V14 mapping / experiment hypothesis.**
+- The useful transferable principle is that a shared or aligned latent space does not become useful merely by sharing dimensions: cross-modal prediction itself must be tested, and no-alignment is an essential negative control.
+- For V14, preserve independent modality/organ encoders and the distinct B1/B2 end goal. A later low-dimensional event-level experiment can use separate audio and vision adapters, pooled temporally bound targets, EMA target copies and cross-modal predictive loss; it must not force one shared B1/B2 model or claim native cross-model hidden-state exchange.
+- Compare unimodal baselines, shared-projection-without-cross-loss, cross-modal prediction, shuffled/mismatched timestamps, missing-modality and source-forget controls. Require held-out utility and numeric parameter/gradient/retention evidence before calling this learned coupling.
+- No implementation or weight update is claimed in this checkpoint.
+
+**Primary sources:** https://arxiv.org/abs/2606.25225 ; https://github.com/facebookresearch/MJEPA
+
