@@ -55,3 +55,60 @@ Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex
 
 **User action: none required.**
 **Run start time: UNKNOWN. Checkpoint timestamp: 2026-11-24T18:38:34.128Z.**
+
+
+# Research & Perception — one-lease audio generation scope (2026-11-24, run 18)
+
+## Current source and implementation
+
+- Repo: RedMentos/Aii.
+- Release-development base: gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
+- Perception branch: research-perception/v14-a4-audio-source-outcomes-current-20261124-run16; PR #2472, OPEN / DRAFT / NOT_RELEASED.
+- Code commit: b08238d53a441aeb2aa650b97c0ac8cbda39b5f8; test commit: 4b036157337debaa2a6db2cb70e9cc5f142dcdef.
+- Readback blobs: audio_voice_cues.py=5d47c48467025199d77ba82974bb2ecea8c65b3d; test_audio_speaker_evidence.py=1eef34083aa39785d0ef06608f9352e9c987ee39.
+
+## Concrete integration gap
+
+The current Core PR #2478 branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2 has runtime.py blob 7a803bae06e3bca606ffb7cd3103b74148c8cbf8. At line 651 it directly iterates runner.generate(messages, ...); the file contains no audio_consent_generation_scope import/call. The current Core branch therefore does not hold the Perception lease through the normal Runtime's B1/B2/C4 context construction and complete C3 iterator.
+
+## Implemented API
+
+audio_consent_generation_scope(...) now provides a context manager that:
+
+1. Opens the provider's linearizable audio_consent_lease for the source, generation and opaque consent receipt.
+2. Calls consume_pcm16_voice_window(..., consent_lease=lease), so RAW EAR, temporal/prosody/speaker evidence, A4 attention and bounded C3 admission use that same lease rather than reacquiring consent at each internal stage.
+3. Calls a Runtime-provided messages_factory(audio_result) while the lease is still held. Core can compose source-bound B1/B2/C4 context and the fixed Context OS header here.
+4. Creates the runner iterator and yields (audio_result, iterator) to the caller while still inside the lease. The iterator is closed on normal context exit, early close/cancel, or exception; then the provider lease is released.
+
+Required Core integration shape:
+
+    with audio_consent_generation_scope(...) as (audio_result, token_stream):
+        meta["audio_percept"] = audio_result
+        for token in token_stream:
+            # existing normal Runtime output commit/append/latewatch logic
+            ...
+
+Do not persist raw PCM or pass the opaque lease into model prompts. The messages factory must preserve the packet/source refs and can add only the bounded admission summary; the lease is a Runtime capability object, not model-visible content.
+
+## Tests
+
+- LOCAL_LINUX isolated harness: **PASS** — python -m py_compile /tmp/test_audio_generation_scope.py; two concurrency assertions passed (revocation blocked through full iterator; early iterator close exits the scope and releases the lock).
+- This harness stubs Store/RAW EAR internals. It is not the exact project test and does not prove Android behavior.
+- Exact repository regression added: test_audio_generation_scope_holds_provider_lease_through_full_runner_iterator. It exercises the real audio_consent_generation_scope and consume_pcm16_voice_window with the test Store, synthetic PCM and a fake runner. It is not locally run because no Aii checkout is mounted.
+- Exact #2472 head workflows after the new commits were **QUEUED** at readback; no pass is claimed.
+- Full LOCAL_LINUX suite: **BLOCKED / NOT_RUN** (no checkout mounted; git ls-remote failed due DNS/network resolution).
+- TERMUX/REDMI: **REDMI_UNVERIFIED**; no device was connected or queried.
+
+## CI and ownership
+
+The previous #2472 exact-head controller guard and staged/integrated jobs failed before feature assertions because the Recovery Builder still expected the previous controller-guard SHA. This is Core/QA-owned. Rebind the guard in the Recovery Builder and recompute dependent stage/deployer pins bottom-up; do not weaken or bypass integrity checks.
+
+## Research
+
+- R-108 addendum: full text of FD-VAD arXiv:2609.35791v1 reviewed. It uses 2.56 s causal windows at 320 ms stride, WavLM-base-plus plus Qwen2.5-0.5B and 10.3M trainable adapter/LoRA parameters. Reported 0.832 chunk F1 and 0.6% false-stop; A100 latency is not Redmi latency. The official repo is MIT, HF adapter card MIT, WavLM MIT, Qwen2.5 Apache-2.0, Smart Turn data BSD-2-Clause; ~1.5 GB bundle and CUDA-oriented dependencies make it research-only for this device.
+- R-109: full text of HiThink Turn arXiv:2609.34096v1 reviewed. Its state separation (audio validity, user intent, playback state) and 240 ms chunk supervision are useful future duplex design references. It fine-tunes Qwen3-ASR-1.7B with LoRA on 7,633 h using eight H100s; upstream base model is Apache-2.0, but the paper-specific fine-tune license/release was not found. No model/code imported.
+
+## User impact and next action
+
+No user-visible Runtime behavior changes until Core integrates this API. No release SHA; PR #2472 is not released. The existing updater was not invoked and no device mutation occurred. Next step is Core wiring plus exact-head staged/integrated tests. **User action: none required.**
+**Run start:** 2026-11-24 21:37:30 Europe/Berlin. **Checkpoint:** pending final readback.
