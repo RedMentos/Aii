@@ -377,7 +377,9 @@ class AndroidCompanionController:
         """Expose a receipt-only ActionOutcome to JEF/shared space, never to learning."""
         try:
             from . import jefbridge as jefctl
-            result = jefctl.controller(self.runtime).publish_android_action_outcome(packet_id)
+            result = jefctl.controller(self.runtime).publish_android_action_outcome(
+                packet_id, expected_session=self.runtime.session,
+            )
             return {
                 "status": result.get("status", "UNKNOWN"),
                 "message_id": result.get("message_id"),
@@ -414,6 +416,13 @@ class AndroidCompanionController:
         self.runtime.require_idle()
         if type(action_id) is not str or re.fullmatch(r"[0-9a-f]{32}", action_id) is None:
             raise ControlDenied("invalid action identifier")
+        intent_rows = self.runtime.store.rows(
+            "SELECT e.session_id FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionIntent' AND json_extract(p.payload,'$.action_id')=?",
+            (action_id,),
+        )
+        if len(intent_rows) != 1 or intent_rows[0]["session_id"] != self.runtime.session:
+            raise ControlDenied("Android action does not belong to the active session")
         state = self.broker.action_state(action_id)
         if state == "RECEIPT_CONSUMED":
             stored = self._stored_receipt_outcome(action_id)
