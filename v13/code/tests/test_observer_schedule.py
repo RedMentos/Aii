@@ -174,9 +174,9 @@ class Turn(unittest.TestCase):
         self.assertEqual(json.loads(Operator(self.r).run(':resources modes'))['mode'],self.r.guard.mode)
 
     def test_short_c3_recovery_preserves_both_preanswer_body_slices(self):
-        # 50 s gives this Runtime integration fixture a deterministic 10 s
-        # pre-answer window while still reserving 40 s for C3. The 30 s
-        # subminimum case is covered by the controlled scheduler regression.
+        # 50 s gives a 39 s initial-body window, a 1 s focal reserve and
+        # a labeled 10 s fallback C3 reserve. Per-role observer_seconds and
+        # the whole-turn deadline still cap the native attempts.
         self.r.cfg["deadline_seconds"]=50
         original_rows=self.r.store.rows
         failure={"status":"DEADLINE","metadata":json.dumps({
@@ -208,11 +208,11 @@ class Turn(unittest.TestCase):
         self.assertGreaterEqual(len(pre),2)
         self.assertEqual([x[0] for x in pre[:2]],BOTH)
         for _,role_deadline,turn_deadline,called_at in pre[:2]:
-            self.assertLessEqual(role_deadline,turn_deadline-41.0,
+            self.assertLessEqual(role_deadline,turn_deadline-11.0,
                 msg=repr({'role':_,'role_deadline':role_deadline,'turn_deadline':turn_deadline,
                           'called_at':called_at,'deadline_seconds':self.r.cfg['deadline_seconds'],
                           'budget_logs':[(kind,metrics) for kind,metrics in logs if kind=='native_turn_budget_plan']}))
-            self.assertGreaterEqual(role_deadline-called_at,.99)
+            self.assertGreaterEqual(role_deadline-called_at,1.99)
         decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
         decision=json.loads(decision_row['payload'])
         self.assertEqual(decision['wake'],'both')
@@ -220,7 +220,9 @@ class Turn(unittest.TestCase):
         plan_logs=[m for k,m in logs if k=="native_turn_budget_plan"]
         self.assertTrue(plan_logs)
         self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
-        self.assertGreaterEqual(plan_logs[0]["c3_reserved_seconds"],40.0)
+        self.assertEqual(plan_logs[0]["c3_reserved_seconds"],10.0)
+        self.assertEqual(plan_logs[0]["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(plan_logs[0]["minimum_role_slice_s"],2.0)
         self.assertEqual(plan_logs[0]["focal_reserved_seconds"],1.0)
 
     def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
