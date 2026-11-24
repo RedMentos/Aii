@@ -67,10 +67,11 @@ class TrainConstantBaseline:
         steps = np.arange(1, dataset.config.horizon + 1, dtype=np.int64)
         for batch in dataset.iter_batches("train", batch_size=batch_size):
             target_rows[batch.origin_indices[:, None] + steps[None, :]] = True
-        selected = dataset.values[target_rows]
+        train_start, train_end = dataset.bounds["train"]
+        selected = dataset.train_values()[target_rows[train_start:train_end]]
         if selected.size == 0 or not np.isfinite(selected).all():
             raise ValueError("no finite accepted training target rows")
-        self.n_unique_target_rows = int(target_rows.sum())
+        self.n_unique_target_rows = int(target_rows[train_start:train_end].sum())
         if self.statistic == "mean":
             self.values = selected.astype(np.float64).mean(axis=0)
         else:
@@ -279,6 +280,6 @@ def evaluate_mae(
         "split": split,
         "n_windows": n_windows,
         "mae": total_abs / total_elements,
-        "per_horizon_mae": (horizon_abs / (n_windows * dataset.values.shape[1])).tolist(),
+        "per_horizon_mae": (horizon_abs / (n_windows * len(dataset.channels))).tolist(),
         "per_channel_mae": (channel_abs / (n_windows * dataset.config.horizon)).tolist(),
     }
