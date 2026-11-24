@@ -956,7 +956,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "novelty": min(1.0, max(0.15 * zcr, voice_novelty)),
             "external_interrupt": min(1.0, max(
                 0.15 * rms, prosody_interrupt, onset_interrupt,
-                vad_interrupt, speaker_interrupt, 0.25 * non_speech_novelty,
+                vad_interrupt, speaker_interrupt,
             )),
         })
         a4 = {

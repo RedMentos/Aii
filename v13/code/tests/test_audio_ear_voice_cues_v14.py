@@ -1297,7 +1297,8 @@ def test_persistent_non_speech_noise_only_recruits_attention_once(tmp_path, monk
         assert len(observed) == 3
         assert observed[0]["novelty"] > observed[1]["novelty"] + 0.1
         assert observed[1]["novelty"] == pytest.approx(observed[2]["novelty"])
-        assert observed[0]["external_interrupt"] > observed[1]["external_interrupt"]
+        # Non-speech novelty recruits perception, but never grants interruption.
+        assert observed[0]["external_interrupt"] == pytest.approx(observed[1]["external_interrupt"])
         assert results[0]["a4"]["non_speech_event"]["kind"] == "UNVOICED_NOISE"
         assert results[0]["a4"]["non_speech_event"]["onset"] is True
         assert results[1]["a4"]["non_speech_event"]["onset"] is False
