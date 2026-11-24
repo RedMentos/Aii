@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:48:47.240+01:00",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6. V14-006 records Perception #2469 A5 interval-ordering follow-up; code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862 passed focused CI, but the PR remains stacked/not released. Latest available private V13OBS #115 snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled/UP_TO_DATE at 8d93236, AI STOPPED_BY_USER, no B1/B2 offers; no fresh relay receipt for this run.",
+  "updated_at": "2026-11-24T18:50:21.690+01:00",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6. V14-006 records Perception #2469 A5 interval-ordering follow-up (focused code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862 PASS; PR remains stacked/not released). V14-018 records #2433 RAW EAR/A4 focused CI PASS with staged/integrated blocked by Core attention.py controller guard and stale base. Latest available private V13OBS #115 snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled/UP_TO_DATE at 8d93236, AI STOPPED_BY_USER, zero valid B1/B2 offers; no fresh relay receipt.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -199,7 +199,7 @@
       "proof_environment": "LOCAL_LINUX minimal timestamp-order reproduction PASS; exact CI frame-ingress and vision-source-lineage PASS on Python 3.13/3.14; A5 lease/staged/integrated BLOCKED by Core source-lifecycle chain; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
       "next_step": "Core/Boss must finish PR #2465's source-lifecycle and nested memory/world builder pin chain without weakening hashes. #2465 head e8044b7 advances past the vision pin but staged-runtime still fails at integrated_feedback_bootstrap_candidate_20261111.py:34 (memory/world builder source changed) plus a nested SHA mismatch. After Core acceptance, rebase/integrate #2469 on that accepted head and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 implementation after integration is near-duplicate source grouping and source-level uncertainty for A3 projector train/holdout.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T18:46:32.318+01:00",
+      "last_checkpoint": "2026-11-24T18:50:21.690+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -226,9 +226,9 @@
         "next_action": "Wait for Core #2465 source-lifecycle and nested memory/world builder pin chain; then rebase #2469 and rerun full matrix.",
         "tested_code_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
         "docs_board_sync_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d",
-        "branch_head_before_board_sync_sha": "69e83a2ccb5a230f336ab2cfbfde1b78c500afcc",
         "code_test_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
-        "docs_handoff_ledger_next_action_and_board_are_committed_in_same_pr": true
+        "docs_handoff_ledger_next_action_and_board_are_committed_in_same_pr": true,
+        "branch_head_before_latest_board_sync_sha": "2d07f8b8d267ae2731f20ef047bc3ac8d35e7c65"
       }
     },
     {
@@ -410,7 +410,7 @@
       "proof_environment": "CI exact head #2433 acc68d6113eb320d283cfa0150230b40273d6e96: focused A4/RAW EAR/consent/privacy suites PASS on Python 3.13/3.14; staged/integrated FAIL at Core-owned controller guard; local isolated SQLite contract reproduction PASS; full local Aii suite BLOCKED; REDMI_UNVERIFIED",
       "next_step": "Core/Boss must rebind record_only_controller_guard_20261116.py and dependent recovery/stager/deployer pins to the exact current attention.py bytes, then complete the nested source-lifecycle chain. Do not weaken hash checks. After that, rebase #2433 from its stale base dfa3945 onto the current release-development branch gpt6 HEAD 8d93236 (or the then-current accepted release head), rerun Python 3.13/3.14 focused A4/RAW EAR/consent/privacy, staged/integrated, migration and runtime deployment. Perception then runs the source-disjoint A4 outcome/retention ablation; no microphone/Android claim before authorized device proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T18:48:47.240+01:00",
+      "last_checkpoint": "2026-11-24T18:50:21.690+01:00",
       "latest_candidate_pr": {
         "pr": 2433,
         "head_sha": "acc68d6113eb320d283cfa0150230b40273d6e96",
