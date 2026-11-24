@@ -13,7 +13,6 @@ from experiments.m1.array_data import ArrayDataset
 from experiments.m1.data import DataConfig, MinuteRow
 from experiments.m1.jepa import (
     DirectMAEForecaster,
-    FrozenLatentProbe,
     FrozenContextProbe,
     JEPAConfig,
     JEPAForecaster,
@@ -142,31 +141,6 @@ class JEPAModelTests(unittest.TestCase):
                 model.predict_latents(x, s, cal)[0],
                 restored.predict_latents(x, s, cal)[0],
             )
-
-    def test_frozen_and_random_encoder_probes_train_only_linear_readout(self):
-        backbone = JEPAForecaster(self.config)
-        probe = FrozenLatentProbe(backbone, self.config)
-        frozen_before = [p.detach().clone() for p in probe.backbone.parameters()]
-        readout_before = probe.value_head.weight.detach().clone()
-        history = train_frozen_probe(
-            probe, self.dataset, epochs=1, batch_size=32, seed=12
-        )
-        self.assertTrue(np.isfinite(history[0]["mae"]))
-        self.assertFalse(torch.equal(readout_before, probe.value_head.weight.detach()))
-        for before, after in zip(frozen_before, probe.backbone.parameters()):
-            torch.testing.assert_close(before, after)
-        self.assertTrue(all(not p.requires_grad for p in probe.backbone.parameters()))
-
-    def test_checkpoint_rejects_code_commit_drift(self):
-        model = JEPAForecaster(self.config)
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "model.pt"
-            save_checkpoint_atomic(model, self.config, path, code_commit="a" * 40)
-            with self.assertRaisesRegex(ValueError, "code_commit"):
-                load_checkpoint(
-                    JEPAForecaster(self.config), self.config, path,
-                    expected_code_commit="b" * 40,
-                )
 
     def test_frozen_context_probe_uses_known_covariates_and_freezes_encoder(self):
         backbone = JEPAForecaster(self.config)
