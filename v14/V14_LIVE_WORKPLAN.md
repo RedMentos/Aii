@@ -1436,3 +1436,15 @@ Current #2443 remains OPEN / DRAFT / NOT_MERGED; API readback has zero check-run
 - #2433 is therefore superseded for its Perception code; do not rebase or duplicate it. A supersession note is posted at https://github.com/RedMentos/Aii/pull/2433#issuecomment-7121856464. Keep its historical branch untouched pending Boss closure/review.
 - Remaining work is not the old code patch: Core must rebind the three audio SOURCE_BLOBS and compose the current A5/A4/C3 path; then Perception can run source-disjoint A4 outcome/retention and model-bound speaker calibration experiments. No AudioRecord or Redmi proof.
 
+
+
+
+## Exact-head CI readback — 2026-11-24 04:20 UTC
+
+Perception branch head after the Run 34 documentation checkpoint: 086a2bc1d5f13dadfaa18faa8f866da8ea91c13d.
+
+- PASS: audio duplex 45325275479 (Python 3.13/3.14); RAW EAR optional NumPy/speaker path 45325275490 (Python 3.13/3.14); prosody-to-attention 45325275396 (Python 3.11/3.13); consent revocation 45325275190; privacy 45325275257; runtime deployment integrity 45325275898.
+- FAIL: staged/integrated 45325276067, exact Core-owned failure audio source blob changed: v13/audio_voice_cues.py (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests); Core same-turn 45325275254 Python 3.13 same failure, Python 3.14 still in progress at readback.
+- Core follow-up #2462 comment 7121937670; PR #2448 exact-head follow-up 7121938175.
+- No local full-suite, Android AudioRecord or Redmi proof. Candidate remains DRAFT / NOT_RELEASED.
+
