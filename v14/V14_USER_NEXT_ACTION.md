@@ -1772,3 +1772,29 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Perception run 11 — 2026-11-24 08:27 Europe/Berlin
+
+**Verified release/device boundary**
+- Release-development branch read-back: gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
+- Private V13OBS issue #115 read-back updated 2026-11-24 07:39:27 UTC: installed Runtime and Dashboard are UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; auto-update is enabled; last updater error is NONE.
+- The same receipt says AI runtime STOPPED_BY_USER, autostart=false, model process STOPPED, and no managed native model processes. Native residency accounting is unavailable. Do not restart the runtime, send a test prompt, request an update, or change model/device state while it remains user-stopped.
+- Latest stored turn is not a new test: 6.295 s total, 2.046 s TTFT, 358 admitted C3 prompt tokens, 7 generated tokens. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; five-turn metadata reports 0 valid offers and no source-bound offer delivery in the final C3 report. Semantic use and native latent exchange remain unproven. The updater being UP_TO_DATE does not imply a useful brain loop.
+
+**Perception implementation / exact evidence**
+- PR #2463 branch research-perception/v14-vision-current-20261124-run33; code/test head 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c; docs/handoff head before this append 166d4d01bdf638e7da602090f30fe8870647c975.
+- A3 global and tile training now read captions/source refs from one Store-bound versioned snapshot and publish against that same CAS version. A concurrent teacher-caption update causes Stale state write, removes the candidate artifact, and preserves the newer caption.
+- Exact vision.py SHA-256: 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae (Git blob edd901ed9e7d750773ccaa63f24c04257f83cc12).
+- GitHub CI: vision tests 33 passed on Python 3.13 and 3.14; RAW EYE frame-ingress tests 39 passed on both; Perception privacy scan PASS.
+- Staged Runtime still FAILS: 19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests. Root: source_lifecycle_lock_integration_candidate.py:172 rejects the current vision.py pin. Updating only the pin is insufficient because the old VISION_OLD / VISION_FORGET_OLD / VISION_STATE_OLD anchors target obsolete code. Core/Boss/QA must recompose the lifecycle builder and include the current Perception lineage/validation/UI-ingress modules.
+- Full local Aii checkout is unavailable in this run; full local suite NOT_RUN/BLOCKED. Redmi-native A3, MediaProjection, native embeddings, RSS/PSS and TTFT tests NOT_RUN. PR #2463 remains DRAFT / NOT_RELEASED; no deployment occurred.
+
+**Research note**
+- R-108 in V14_RESEARCH_LEDGER reviews CAMR (arXiv:2610.36734, 2026-10-27) in full. Its compatibility-aware Add/Merge/Ignore plus bounded replay and independent retention probes are a useful future learning-governor hypothesis, but its evidence is Qwen3-8B/14B and no official code/license was identified. No reuse, download or model change.
+
+**Next executable action**
+- Core/Boss/QA: recompose the source-lifecycle/staged builder against the exact Perception vision.py above, then rerun staged, integrated, migration, source-forget/restart and RAW EYE consumer tests on one combined SHA. Keep source pins fail-closed.
+- After that, only with the user's runtime/device re-enabled and explicit test consent, verify the installed path. Do not send an update request or manual Termux command now.
+
+User action: **keine Aktion nötig**. Device remains STOPPED_BY_USER; no state change requested.
