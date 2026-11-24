@@ -12,6 +12,7 @@ from v13.contracts import validate
 from v13.operator import Operator
 from v13.speech_intent import final_text_intent, verify_intent
 from v13.speech_output import TermuxTtsAdapter, operator_command
+from v13.runtime import Runtime as LiveRuntime
 
 
 class Store:
@@ -140,3 +141,52 @@ def test_operator_command_is_tty_only(tmp_path):
     runtime = Runtime(tmp_path)
     with pytest.raises(ValueError):
         Operator(runtime).run(":voice on", origin="WEBVIEW")
+
+
+def test_real_runtime_sqlite_speech_action_path(tmp_path, monkeypatch):
+    """Exercise the real Runtime/Store/Operator path with a fake local TTS CLI."""
+    home = tmp_path / "live-home"
+    runtime = LiveRuntime(home)
+    try:
+        event = runtime.store.event(runtime.session, "speech-output integration fixture")
+        message_id = runtime.store.message(
+            runtime.session, event["event_id"], "assistant",
+            "A local answer.", "DRAFT", {},
+        )
+        runtime.store.finish_message(message_id, "FINAL", {})
+
+        bin_dir = tmp_path / "live-bin"
+        bin_dir.mkdir()
+        capture = tmp_path / "live-captured.txt"
+        script = bin_dir / "termux-tts-speak"
+        fake_tts(
+            script,
+            "import os,sys\\nopen(os.environ['CAPTURE_FILE'],'w').write(sys.stdin.read())\\n",
+        )
+        monkeypatch.setenv("PATH", str(bin_dir) + os.pathsep + os.environ.get("PATH", ""))
+        monkeypatch.setenv("CAPTURE_FILE", str(capture))
+
+        operator = Operator(runtime)
+        operator.run(":voice on", origin="TTY")
+        assert not capture.exists()
+        assert runtime.store.rows(
+            "SELECT kind FROM packets WHERE event_id=?", (event["event_id"],)
+        ) == []
+
+        result = json.loads(operator.run(":voice speak", origin="TTY"))
+        assert result["outcome"]["status"] == "CLI_COMPLETED"
+        assert result["automatic_playback"] is False
+        assert result["audibility_verified"] is False
+        assert capture.read_text(encoding="utf-8") == "A local answer."
+
+        rows = runtime.store.rows(
+            "SELECT kind,payload FROM packets WHERE event_id=? ORDER BY rowid",
+            (event["event_id"],),
+        )
+        assert [row["kind"] for row in rows] == ["ActionIntent", "ActionOutcome"]
+        outcome = json.loads(rows[1]["payload"])
+        assert outcome["action_id"] == json.loads(rows[0]["payload"])["action_id"]
+        assert outcome["actual"]["audibility_verified"] is False
+        assert "A local answer." not in rows[1]["payload"]
+    finally:
+        runtime.close()
