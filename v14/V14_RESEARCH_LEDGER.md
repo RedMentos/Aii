@@ -1435,3 +1435,28 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 **Next experiment (not run here).** On an explicitly approved local model only, compare same-speaker and different-speaker clips, silence/noise negatives, and identical-prefix lengths around 2-s boundaries (1.9, 2.0, 2.02, 2.3, 3.9, 4.2 s); report cosine drift, model inference time, peak RSS, and ARM64 native compatibility. Prefer ResNet34-LM as the first candidate over an unverified CAM++ export; do not download or swap it automatically.
 
 **Evidence boundary.** No paper was newly read for this note; this is a primary OSS/API and issue/commit audit. No model was downloaded, no user audio was used, no embedding model was loaded, and no Termux/Redmi benchmark was run. Android/Redmi remains UNVERIFIED.
+
+
+## R-125 — MobileCLIP2 vs TinyViT for A3 visual features (2026-11-24)
+
+**Paper read.** Faghri et al., *MobileCLIP2: Improving Multi-Modal Reinforced Training*, arXiv:2508.20691 v1 (submitted 2025-08-28), featured TMLR 2025. Full HTML paper sections on reinforced training, architecture and experiments were inspected; this is not an abstract-only note.
+
+**MobileCLIP2 evidence and caveats.**
+- The paper's MobileCLIP2-S0 uses an 11.4M-parameter image encoder plus a 63.4M-parameter text encoder, 256px input, and reports 1.5 ms image-encoder + 3.3 ms text-encoder latency on iPhone 12 Pro Max; ImageNet-1k zero-shot top-1 is 71.5%. These are Apple test-device figures, not Redmi/ARM64 measurements.
+- The method's improvements are not just a tiny encoder: the training recipe uses DFN-2B/DFNDR-2B reinforcement, CLIP teacher ensembles, synthetic captions, and large-scale training (13B seen samples in the reported MobileCLIP2-S0 row). It is a useful reference for teacher/student training, but not a drop-in JEPA or online-learning system.
+- The official repo's code license is MIT, but `LICENSE_MODELS` explicitly limits the trained weights and derivatives to non-commercial scientific research and excludes product development/use in a commercial product/service. Therefore do **not** adopt MobileCLIP2 weights in the V14 product path absent a separate legal determination; code license does not override model-weight terms. The official model card also marks `apple-amlr`.
+
+**More permissive small-backbone candidate.**
+- Kornia's `kornia/tiny_vit` model card lists MIT and offers 5M, 11M and 21M parameter TinyViT checkpoints. The 5M variant is the smallest candidate; the card describes ImageNet-22K distillation and an ImageNet-1K 224px fine-tuned option.
+- Kornia's export-support matrix reports TinyViT-5M ONNX export and execution parity as supported in its tested configuration. This is an exportability signal only, not evidence of Android NNAPI/CPU latency or memory on Redmi.
+- TinyViT is an image-classification/backbone model, not a shared image-text encoder. For V14 it could supply compact A3 visual features to a separately trainable projector/JEPA student; it must not replace source/temporal provenance, A4 salience, or the existing A3 learning contract. The model-card MIT label is useful, but ImageNet-22K data provenance/terms still deserve review before redistribution.
+
+**V14 experiment proposal (not run).**
+1. Keep current A3 path as baseline; add TinyViT-5M only as an opt-in teacher feature source, not as a replacement.
+2. Compare 224px and 256px crops, global vs tile features, source-forget invalidation, repeated-frame invariance, and scene-change/negative controls.
+3. Export ONNX and measure file size, peak RSS, cold/warm latency, CPU vs NNAPI, and thermal drift on authorized ARM64 hardware; report teacher feature quality separately from projector/JEPA weight updates.
+4. Do not download, install, or switch weights until the user separately approves an experimental download and a later productive swap.
+
+**Evidence boundary.** No model was downloaded or loaded. No Android/Redmi test was run. The iPhone latency and model-card/export claims are external source measurements only; V14 performance remains unmeasured.
+
+**Primary sources:** [MobileCLIP2 paper](https://arxiv.org/abs/2508.20691); [official MobileCLIP repo](https://github.com/apple-aiml-research/ml-mobileclip); [model-weight license](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS); [TinyViT model card](https://huggingface.co/kornia/tiny_vit); [Kornia export support](https://kornia.readthedocs.io/en/latest/get-started/export-support.html); [Kornia TinyViT implementation](https://github.com/kornia/kornia/blob/main/kornia/models/tiny_vit.py).
