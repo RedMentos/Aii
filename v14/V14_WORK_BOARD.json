@@ -1538,16 +1538,34 @@
       "b1_s": 53.2,
       "b2_s": 54.2
     },
-    "boss_candidate_pr2433": {
+    "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE. Preserve STOPPED_BY_USER. Do not treat CI or auto-update-enabled as installation or correctness proof.",
+    "boss_candidate_pr2443": {
       "number": 2443,
-      "head_sha": "88ba1cc5096ffbd10d3300dffe7134d6be098415",
-      "status": "DRAFT_NOT_GREEN_NOT_MERGED_NOT_RELEASED_NOT_INSTALLED",
-      "checks": {
-        "completed_success": 5,
-        "in_progress": 2,
-        "queued": 30
-      }
+      "current_head_sha": "cdf6b64067ac426ba32194100d3764f6e74c105f",
+      "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+      "state": "OPEN_DRAFT_NOT_MERGED",
+      "check_runs": 0,
+      "commit_status": "PENDING",
+      "latest_workflow_runs": "startup_failure_zero_jobs",
+      "prior_owner_receipt": {
+        "head_sha": "88ba1cc5096ffbd10d3300dffe7134d6be098415",
+        "reported_checks": {
+          "completed_success": 5,
+          "in_progress": 2,
+          "queued": 30
+        }
+      },
+      "scope": "A3/vision composition candidate; not accepted or installed"
     },
-    "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE. Preserve STOPPED_BY_USER. Do not treat CI or auto-update-enabled as installation or correctness proof."
+    "perception_pr2448_current_head": {
+      "head_sha": "38f7830dea60970272919d93cd7e9665ae5564af",
+      "state": "OPEN_DRAFT_NOT_RELEASED",
+      "latest_workflow_runs": [
+        45296154291,
+        45296146552
+      ],
+      "result": "startup_failure_zero_jobs",
+      "cause": "UNDIGNOSED"
+    }
   }
 }
