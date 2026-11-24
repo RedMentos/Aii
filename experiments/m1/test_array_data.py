@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from experiments.m1.array_data import ArrayDataset
+from experiments.m1.provenance import current_git_commit
+
 from experiments.m1.data import (
     DataConfig,
     MinuteRow,
@@ -36,7 +38,7 @@ def rows_for(n: int, missing=()):
 
 
 PREREG_PARAMS = {
-    "code_commit": "a" * 40, "tau": 0.1, "r_eff_min": 3.0,
+    "code_commit": current_git_commit(), "tau": 0.1, "r_eff_min": 3.0,
     "bootstrap_block_len": 10080, "min_effect": 0.01, "trial_budget": 20,
 }
 
@@ -276,7 +278,7 @@ class ArrayWindowTests(unittest.TestCase):
                 preregistration_path=path,
                 preregistration_sha256=digest,
                 access_log_path=root / "access.jsonl",
-                expected_code_commit="a" * 40,
+                expected_code_commit=current_git_commit(),
             )
             self.assertEqual(stats.split, "test")
             batches = list(self.dataset.iter_batches("test", batch_size=32))
@@ -302,7 +304,7 @@ class ArrayWindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=log_directory,
-                    expected_code_commit="a" * 40,
+                    expected_code_commit=current_git_commit(),
                 )
             with self.assertRaises(PermissionError):
                 next(self.dataset.iter_batches("test", batch_size=8))
@@ -344,7 +346,7 @@ class ArrayWindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=root / "access.jsonl",
-                expected_code_commit="a" * 40,
+                expected_code_commit=current_git_commit(),
                 )
             self.assertFalse((root / "access.jsonl").exists())
 
