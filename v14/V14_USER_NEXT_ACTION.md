@@ -1772,3 +1772,32 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+---
+
+## Core & Harness checkpoint — 2026-11-24 17:44 UTC
+
+This is a branch-scoped engineering checkpoint, not a release or device-install claim.
+
+### Verified code candidates
+
+- **PR #2464 — C3 native prefill receipt and fail-closed deadline warm retention.** Branch `core/v14-native-prefill-receipt-20261124-run1`; code/test checkpoint `525e8944d0855b1bddfb3d7173208475843e70fa`; base `8d93236c753f0194224c19edc7411d8d7082b1d6`. Added tests that exercise the actual `RunnerPool` consumer: after a deadline, a retained C3 process is returned for the next turn with the same PID; a multi-slot response is retained only after every slot becomes idle. The previous exact code head `27aec17b57abde002de7625c588fc4d8412059bb` passed the dedicated Python 3.13/3.14 workflow [45451187762](https://github.com/RedMentos/Aii/actions/runs/45451187762). The two newer tests at `525e894` do not yet have an exact-head warm-retention run returned; mark **CI_PENDING**, not PASS. Local isolated RunnerPool lifecycle reproduction passed, but it is not the repository pytest suite.
+- **PR #2451 — staged native receiver and local one-shot probe approval.** Exact head `9e28234d19a677e9dd44dc4a1ecf54964791b2d7`; observed exact-head native Python 3.13/3.14, pinned Linux C++ build/selftest, Android ARM64 cross-compile, staged Runtime and integrated regression workflows all SUCCESS. It remains a diagnostic-only candidate; production B3 is OFF and no trained cross-model latent utility is established.
+- **PR #2450 — Android ActionIntent/ActionOutcome journal and signed-receipt recovery.** Exact head `523c04eb1e96d0e01e1cdda0c9832632360de044`, stacked on QA #2356 head `6dab323f1b59663682d0af65ffbd75c5de489578`. Core outcome, Android outcome contract, broker, and staged/integrated workflows PASS; the Android companion process-restart workflow FAILS on the older System-UI/ANR harness. Separate QA PR #2427 reports emulator process-death SUCCESS on another QA stack, but that test infrastructure is not yet integrated into #2450. Neither PR is released.
+
+### Environment and product effect
+
+- **LOCAL_LINUX:** CPython 3.13.5 is available. No Aii checkout is mounted and GitHub DNS resolution fails, so the full exact repository suite was NOT_RUN. Only the explicitly labelled isolated RunnerPool behavior reproduction passed.
+- **CI:** distinguish each exact head above; a green older head does not verify later commits.
+- **TERMUX/REDMI:** **REDMI_UNVERIFIED** for all new candidates. No APK install, pairing, device action, update request, model download/swap, weight edit, permission change or user-data mutation was performed.
+- **Deployment:** no new release. A GitHub push/PR is not deployment; the installed runtime has not been updated by this work.
+
+### Next executable actions
+
+1. Obtain exact-head Python 3.13/3.14 CI for PR #2464 commit `525e894`, then request independent Boss/QA review.
+2. QA/Integrator should reconcile the passing ActivityScenario process-death harness from #2427 with the current #2356 companion base; Core can then rebase the signed ActionIntent/ActionOutcome journal and rerun the full exact-head matrix.
+3. Recompose the native receiver/probe pin chain against the current JEPA/Stage/RuntimeDeploy owners, then add bounded pair-matrix and consumed-signal evidence. Keep production B3 OFF until held-out utility and negative controls pass.
+4. After a reviewed integration and verified normal updater path, ask separately before any physical Redmi probe or companion installation. No user decision is needed for the repository-only work recorded here.
+
+**User action required: NONE.** No manual Termux command, device permission, model download or productive model swap is requested.
