@@ -205,12 +205,12 @@ def pair_taps(cognition, sender_packet, receiver_packet,
         "native_receiver_authority": 0,
         "production_route": False,
     }
-    binding = {
+    binding_value = {
         "event_id": sender_packet["event_id"],
         "brain_generation_id": sender_packet["brain_generation_id"],
         **payload,
     }
-    payload["pair_sha256"] = hashlib.sha256(dumps(binding).encode("utf-8")).hexdigest()
+    payload["pair_sha256"] = hashlib.sha256(dumps(_binding(binding_value)).encode("utf-8")).hexdigest()
     result = packet(
         "LatentTapPairPacket", "B3_NATIVE_TAP_PAIR",
         sender_packet["event_id"], sender_packet["brain_generation_id"],
