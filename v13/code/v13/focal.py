@@ -370,9 +370,10 @@ class FocalLoop:
     def _candidates(self,e,goal,offers,memories,retained,sig,version):
         fresh=[p for p in offers if offer_is_fresh(p,e['event_id'],e['brain_generation_id'],version)];cands=[]
         for p in fresh:
+            refs=list({dumps(r):r for r in list(p.get('provenance') or [])+list(p.get('evidence_refs') or [])}.values())
             text=p['offer'].get('summary','')+' '+' '.join(self.s.read_source(r) for r in p['evidence_refs'])
             need=sig.get('detail_need' if p['role']=='B1_DETAIL' else 'gist_need',.5)
-            cands.append(item(p['role'],p['packet_id'],p['evidence_refs'] or p['provenance'][:1],p['offer'].get('summary',''),e['event_id'],
+            cands.append(item(p['role'],p['packet_id'],refs,p['offer'].get('summary',''),e['event_id'],
                 uncertainty=offer_uncertainty(p),salience=sig.get('salience',0.),goal=clip(3*relevance(goal,text)),utility=self._utility(p,max(.3,need),goal),sq=source_quality(p),goal_ids=[e['event_id']],
                 created=p['created_wall_time'],bounds=boundary(self.s,p['evidence_refs'] or p['provenance'][:1])))
         for m in memories:
@@ -564,7 +565,36 @@ class ActionGate:
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
     def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
-        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
+        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition)
+        # C5 lineage includes every source admitted to the current C4 coalition,
+        # not only the current user event. Validate before learned selection or
+        # packet publication so stale/foreign context cannot silently influence it.
+        try:self.s.read_source(e['source_ref'])
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError) as exc:raise ValueError('ActionSelection event source invalid') from exc
+        event_row=self.s.one('SELECT session_id,source_id FROM events WHERE id=?',(e['event_id'],))
+        if event_row and event_row['source_id']!=e['source_ref'].get('source_id'):raise ValueError('ActionSelection event/source binding mismatch')
+        action_refs=[e['source_ref']]
+        for item in coalition:
+            if not isinstance(item,dict):raise ValueError('ActionSelection coalition item invalid')
+            item_refs=[]
+            for key in ('source_refs','exact_fallback_refs'):
+                values=item.get(key) or []
+                if not isinstance(values,(list,tuple)):raise ValueError('ActionSelection source refs invalid')
+                item_refs.extend(values)
+            if not item_refs:continue
+            if not event_row:raise ValueError('ActionSelection context event missing')
+            origin=item.get('origin_event_id')
+            if not isinstance(origin,str):raise ValueError('ActionSelection context origin missing')
+            origin_row=self.s.one('SELECT session_id FROM events WHERE id=?',(origin,))
+            if not origin_row or origin_row['session_id']!=event_row['session_id']:raise ValueError('ActionSelection context crosses session boundary')
+            for ref in item_refs:
+                if not isinstance(ref,dict):raise ValueError('ActionSelection SourceRef shape invalid')
+                try:self.s.read_source(ref)
+                except (ValueError,TypeError,KeyError,OSError,UnicodeError) as exc:raise ValueError('ActionSelection context SourceRef invalid') from exc
+                action_refs.append(ref)
+        action_refs=list({dumps(ref):ref for ref in action_refs}.values())
+        if len(action_refs)>256:raise ValueError('ActionSelection context source limit exceeded')
+        cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
             if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
@@ -583,7 +613,7 @@ class ActionGate:
             learning,_=learned_c5(self.s,cands,route,effort)  # WP-N4: learned promote/suppress pathways (scores shift only in ACTIVE)
         live=sorted((c for c in cands if 'suppressed' not in c),key=lambda c:(-c['score'],c['action_id']))
         chosen=live[0];alternates=[c['action_id'] for c in live[1:]]
-        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],[e['source_ref']],selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
+        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],action_refs,selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
                  candidates=[{k:c[k] for k in ('action_id','action_type','score','expected_utility','expected_cost','focal_support','permission_class')} for c in cands],
                  suppressed=[{'action_id':c['action_id'],'reason':c['suppressed']} for c in suppressed],permission_class=chosen['permission_class'],
                  alternates=alternates,route_prior=self.PRIOR.get(route),stage='PREDICTION' if predicted else 'COMMIT',parameter_status='BOOT_REPRODUCES_ROUTE_TABLE',learning=learning,route_hint=route,action_gain=round(g_act,6),clarify=clarify)
