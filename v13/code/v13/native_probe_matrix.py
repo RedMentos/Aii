@@ -6,6 +6,7 @@ no production B3 routing, learned alignment, weight update or model swap.
 """
 from __future__ import annotations
 
+import math
 import time
 
 from .common import dumps
@@ -112,7 +113,8 @@ def consume_matrix(runtime, event, source_ref, *, now=None, lease_token=None):
     if (
         isinstance(expires, bool)
         or not isinstance(expires, (int, float))
-        or not clock < expires
+        or not math.isfinite(expires)
+        or clock >= expires
     ):
         raise PermissionError("native pair-matrix local approval expired")
     if record.get("pairs") != _pairs_json():
