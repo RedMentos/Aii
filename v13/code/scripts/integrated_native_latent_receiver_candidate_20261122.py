@@ -16,7 +16,7 @@ BASE_PINS = {
 }
 NATIVE_FILES = {
     "v13/native_latent_receiver.py": "6ec80446feec4a0f709992db15e0b1b9986f4b4f5fe1f85106e95c0dbb203056",
-    "v13/native_latent_pairing.py": "1a21a3e85eed4c069caf809a7cc5155722bb4ba692fb1e24414aad616bfe8336",
+    "v13/native_latent_pairing.py": "4653934703780f42d2a5c2434d557599180224d8533c5e5e80a00e4447047175",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "4aafc21483d156f122b2edcd3eb2990cdecb744538aa6b783e6556604e6fbc08",
     "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0"
@@ -27,7 +27,7 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         from .models import model_key
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
-        from .native_latent_pairing import pair_taps
+        from .native_latent_pairing import PAIR_ALLOWED, pair_taps
         register_packet_contract()
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
@@ -92,20 +92,23 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
             raise ValueError("Receiver model manifest hash is missing")
         pair_packet=None
-        if sender_role=="B1_DETAIL" and receiver_role=="C3_LANGUAGE":
-            try:
-                now=__import__("time").monotonic()
-                pair_deadline=min(deadline-20.0,now+45.0)
-                if pair_deadline>now:
-                    receiver_tap=self.tap(receiver_role,e,source_ref,pair_deadline)
+        if (sender_role,receiver_role) in PAIR_ALLOWED:
+            if not isinstance(tap.get("tokenizer_revision"),str) or not tap["tokenizer_revision"]:
+                self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"sender_tokenizer","error":"UNKNOWN_TOKENIZER_REVISION"})
+            else:
+                try:
+                    now=__import__("time").monotonic()
+                    pair_deadline=min(deadline-20.0,now+45.0)
+                    if pair_deadline>now:
+                        receiver_tap=self.tap(receiver_role,e,source_ref,pair_deadline)
+                        self.r.pool.unload()
+                        pair_packet=pair_taps(self,tap,receiver_tap,sender_model_sha256,main["sha256"])
+                    else:
+                        self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"budget_reserve","error":"INSUFFICIENT_REMAINING_BUDGET"})
+                except (ValueError,RuntimeError,OSError,TypeError) as exc:
+                    self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"receiver_tap_pair","error":type(exc).__name__})
+                finally:
                     self.r.pool.unload()
-                    pair_packet=pair_taps(self,tap,receiver_tap,sender_model_sha256,main["sha256"])
-                else:
-                    self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"budget_reserve","error":"INSUFFICIENT_REMAINING_BUDGET"})
-            except (ValueError,RuntimeError,OSError,TypeError) as exc:
-                self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"receiver_tap_pair","error":type(exc).__name__})
-            finally:
-                self.r.pool.unload()
         receipt=native_probe(
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
@@ -146,7 +149,7 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
                 from .native_latent_pairing import validate_pair_packet
                 pair=validate_pair_packet(json.loads(pair_row['payload']))
                 pair_summary={k:pair.get(k) for k in ('packet_id','status','alignment','sender_role','receiver_role',
-                    'sender_model_revision','receiver_model_revision','sender_shape','receiver_shape',
+                    'sender_model_revision','receiver_model_revision','tokenizer_revision','sender_shape','receiver_shape',
                     'token_count','pair_sha256','training_authority','native_receiver_authority','production_route')}
             return {k:q.get(k) for k in ('sender_role','receiver_role','sender_tap_packet_id','sender_tap_id',
                 'sender_model_revision','sender_model_sha256','tokenizer_revision',
@@ -174,7 +177,7 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
             pair=validate_pair_packet(json.loads(row['payload']))
             return {k:pair.get(k) for k in ('packet_id','event_id','source_ref','status','alignment',
                 'sender_role','receiver_role','sender_model_revision','receiver_model_revision',
-                'sender_shape','receiver_shape','token_count','pair_sha256',
+                'sender_shape','receiver_shape','token_count','tokenizer_revision','pair_sha256',
                 'training_authority','native_receiver_authority','production_route')}
         except (ValueError,TypeError,KeyError,RuntimeError):
             return {'status':'INVALID_STORED_PAIR'}
