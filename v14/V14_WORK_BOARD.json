@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:40:00Z",
+  "updated_at": "2026-11-24T03:41:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -202,9 +202,9 @@
       "last_checkpoint": "2026-11-24T03:40:00Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "2a8451112d2cdc771f64055fc42e12cd195dfa77",
+        "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_NOT_RELEASED",
+        "state": "OPEN_DRAFT_NOT_RELEASED_CODE_TESTED_AT_C7DB",
         "scope": "Teacher Ear descriptor-pinned native model loading; source-bound audio stream; no Android microphone provider"
       },
       "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof.",
@@ -392,9 +392,9 @@
       "last_checkpoint": "2026-11-24T03:40:00Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "2a8451112d2cdc771f64055fc42e12cd195dfa77",
+        "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_NOT_RELEASED",
+        "state": "OPEN_DRAFT_NOT_RELEASED_CODE_TESTED_AT_C7DB",
         "ci": "Previous 345de43: 5 failures; corrected; new 7ba3fec checks queued"
       },
       "proof": "Current code has voiced-only, bounded, process-local history; current PCM hash binding is explicit but reports CURRENT_PCM_SHA256_MATCH_ENCODER_UNATTESTED. Tests include 1-s/2-s reference timestamp invariance (lookback 10/20 frames), non-voiced negative controls, consent receipt epoch reset, and no vector persistence. Exact c7db CI: 128/128 focused tests on Python 3.13 and 3.14; benchmark now passes after b85b60a. The benchmark measures only synthetic registry update, not speaker-model inference. No actual speaker model loaded, no calibration, no Redmi proof.",
