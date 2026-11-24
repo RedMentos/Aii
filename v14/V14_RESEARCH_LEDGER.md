@@ -1340,3 +1340,21 @@ The implementation audit found an important distinction: `losses.py` implements 
 **Testable V14 adaptation (research hypothesis only):** implement the loss independently on a tiny synthetic B1 router and a separate B2 router. Compare `λ=0` vs several bounded λ values; record router-probability drift, top-1 switch rate, actual expert cache hits/misses and bytes loaded, p50/p95 token latency, task quality, load balance, OOD behavior and old-task retention. Add semantic-boundary reset/relaxation, shuffled-span and fixed-router negative controls so locality does not become harmful stickiness across topic or skill changes. Run separate B1 and B2 experiments first; do not use a shared router or interpret the result as cross-body latent communication. Keep SHADOW until quality, retention and hardware benefit are measured.
 
 **Status:** PAPER_ABSTRACT_AND_METHOD_REVIEWED / UPSTREAM_README_MODEL_AND_LOSS_AUDITED / README_CLAIMS_MIT_LICENSE_FILE_MISSING / NO_CODE_REUSE / NO_ARM_OR_REDMI_BENCHMARK / V14_LAB_HYPOTHESIS_ONLY.
+
+
+## R-115 — llama.cpp native prompt accounting and idle-slot retention — 2026-11-24
+
+**Primary source:** official `ggml-org/llama.cpp` server documentation, read at upstream commit `dfdfca22bce36f66b4cfa3e6c96f0c4d92dac0fe` (2026-11-24 19:02:39 UTC): https://github.com/ggml-org/llama.cpp/blob/dfdfca22bce36f66b4cfa3e6c96f0c4d92dac0fe/tools/server/README.md
+
+**Relevant documented behavior:**
+
+- The server's timing receipt exposes `prompt_n`, `cache_n`, `prompt_ms`, `prompt_per_second`, `predicted_n` and related counters. `prompt_n + cache_n` is useful for checking how much prompt work was processed versus served from cache; it is accounting evidence, not proof that a model attended to or semantically used every token.
+- `GET /slots` reports `is_processing`, but the debugging response can also contain the slot's prompt text. Treat the endpoint as sensitive even when it is loopback-only. Never persist, log, export or put the raw response into telemetry.
+- The current Core runner-retention candidate reads the slot state in-process after a DEADLINE and stores only a redacted decision. It retains the existing runner only if **every** slot is idle and the runner lifecycle stamp is unchanged; malformed/unavailable slot data, a changed lifecycle, user cancellation or native error fail closed to unload. Regression tests inject `PRIVATE_DO_NOT_STORE` / `PRIVATE_SLOT_PROMPT` sentinels and assert they never appear in metrics.
+- The current CausalStreamRunner path uses exact same-context token-ID binding and native handle/context-revision checks rather than inferring prefill from aggregate timings. The WebView receipt keeps prompt inclusion, token accounting, stream completion and semantic-attention proof as distinct fields.
+
+**V14 mapping:** supports F10 runtime residency and C3 input-evidence observability, and reduces unnecessary cold reloads after a timed-out but idle request. It does not prove semantic attention, B1/B2 utility, native Redmi behavior, trained B3 coupling or model-weight learning. The current #2464 implementation remains DRAFT / NOT_RELEASED and Redmi-unverified.
+
+**Safety and reuse:** no upstream source code, model weights or datasets were copied. Keep `/slots` bound to the local authenticated runner; do not expose it through the dashboard, remote maintenance bridge or public diagnostics. Revalidate the exact pinned llama.cpp revision before relying on any upstream endpoint detail.
+
+**Status:** PRIMARY_DOC_REVIEWED_AT_EXACT_UPSTREAM_COMMIT / CODE_PATH_PRESENT_IN_DRAFT_PR_2464 / EXACT_CI_31_OF_32_SUCCESS_1_SKIPPED / NO_LOCAL_FULL_SUITE / NO_NATIVE_MODEL_RUN / NO_REDMI_PROOF.
