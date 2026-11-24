@@ -17,7 +17,7 @@
 **Next internal action:** Core integrates the lease scope in the actual Runtime around A4/A5 packet consumption, B1/B2/C4 context composition and full C3 iterator; then run the exact audio lease test plus staged/integrated regression on one head. Perception will handle any failure in its own files; Core/QA owns the recovery/stage/deployer source-pin repair.
 
 **User action:** none required.
-**Run started:** 2026-11-24 21:37:30 Europe/Berlin. **Completed:** 2026-11-24 21:45:50 Europe/Berlin.
+**Run started:** 2026-11-24 21:37:30 Europe/Berlin. **Completed:** 2026-11-24 21:48:05 Europe/Berlin.
 ---
 
 # Research & Perception — latest combined checkpoint (2026-11-24, run 17)
