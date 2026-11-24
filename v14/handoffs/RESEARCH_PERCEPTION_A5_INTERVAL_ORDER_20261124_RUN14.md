@@ -23,8 +23,8 @@ Added `test_temporal_visual_evidence_rejects_backward_start_when_end_advances` t
 - Branch: `research-perception/v14-ui-session-temporal-20261124-run11`
 - PR: [#2469](https://github.com/RedMentos/Aii/pull/2469)
 - Code commit: `b09f731224f71da0fdb19e81f511540329b6c2cf`
-- Test commit / current branch HEAD: `9844efaf66c13b1e5562397ae1bc62ed7926c862`
-- GitHub readback confirmed the new state field, monotonic-start guard and regression test on the branch.
+- Regression-test commit / exact code-test head: `9844efaf66c13b1e5562397ae1bc62ed7926c862`
+- GitHub readback confirmed the new state field, monotonic-start guard and regression test on the branch. Subsequent handoff/ledger/Next Action/board commits are documentation-only; the exact current branch head is the live PR #2469 head, not the CI-tested code SHA.
 
 **LOCAL_LINUX**
 - CPython 3.13.5 minimal timestamp-order reproduction: PASS, 4 assertions. This is a focused invariant reproduction, not the full repository source/test suite.
