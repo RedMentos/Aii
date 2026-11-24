@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T06:05:32.755Z",
+  "updated_at": "2026-11-24T06:11:40.528Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,9 +197,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "GitHub Actions exact Perception head 825ecfbd: audio duplex 189/189 PASS on Python 3.13/3.14; RAW EAR optional NumPy/speaker path 128/128 PASS on both; WebRTC/libfvad comparator 72/72 PASS on both; prosody-to-attention 72/72 PASS on Python 3.11/3.13; consent revocation, public privacy scan and deployment integrity PASS. Staged/integrated run 45336790400 and Core same-turn run 45336790334 FAIL on both Python 3.13/3.14 at the Core-owned stale audio_voice_cues.py source pin. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; isolated local A4 contract reproduction PASS only. TERMUX/REDMI_UNVERIFIED.",
-      "next_step": "Core/Integrator: recompose the audio composer against the exact current Perception blobs (voice cues 5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3; speaker evidence 14a6d8d79d361e6c89c3770d372a3f9824f13afb; temporal evidence e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140). Core/JEPA: add the reviewed vision.py source-lifecycle mapping and source-forget regression from #2463. Then rerun one combined staged/integrated/same-turn candidate. After integration, Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration; R-128 adds separate candidate discovery vs EOT/INT verification. No user action or manual device command.",
+      "next_step": "Boss/Integrator PR #2443 is the actual owner of integrated_audio_context_candidate_20261121.py and source_lifecycle_lock_integration_candidate.py. Stack/rebase current Perception #2448 and #2463 sources into the integration candidate, then recompute strict Git-blob and SHA-256 pins bottom-up: audio voice cues 5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3, speaker evidence 14a6d8d79d361e6c89c3770d372a3f9824f13afb, temporal evidence e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140, vision.py SHA-256 0e08fdd20140f3e60f67305c930d3b1b5db273ebaa0e289925136c1378340877. Handoff comment #2443/7123664991. Then rerun combined staged/integrated/same-turn/migration CI. Do not weaken or bypass pins. Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration after integration. No user action.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T06:05:32.755Z",
+      "last_checkpoint": "2026-11-24T06:11:40.528Z",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "b73ec8a7c7d3d87f0f5d19e41046b62d11496381",
@@ -418,9 +418,9 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 fixture PASS; GitHub CI exact head c7db: 128/128 focused RAW EAR tests on Python 3.13+3.14; audio-duplex 179/179 on Python 3.13+3.14; synthetic speaker-registry benchmark 5 iterations (3.13 median 0.9579 ms / p95 0.9940 ms; 3.14 median 0.9118 ms / p95 0.9259 ms); no model inference; staged/integrated BLOCKED by stale source pins; TERMUX/REDMI_UNVERIFIED",
-      "next_step": "Core/Integrator must rebind the exact audio SOURCE_BLOBS; Core/JEPA must add the reviewed vision.py lifecycle/source-forget mapping. After combined staged/integrated/same-turn CI is green, Perception's next experiment is source/session-disjoint A4 outcome/retention plus a model-bound speaker embedding producer and calibration. R-128 requires separate candidate discovery, EOT and successful INT evaluation; current explicit interrupt mode remains provider-voice-onset barge-in, not learned selective yielding. No Redmi proof or user action.",
+      "next_step": "Boss/Integrator PR #2443 owns the source-lifecycle composer. Current #2448 audio and #2463 vision blobs are newer than #2443's pinned sources; exact Git blobs and SHA-256 values were posted in #2443 comment 7123664991. Stack/rebase both Perception candidates, recompute the strict audio and vision pins bottom-up, and run combined staged/integrated/same-turn/migration tests. After green, Perception's next experiment is source/session-disjoint A4 outcome/retention plus model-bound speaker embedding calibration. R-128 requires separate candidate discovery, EOT and successful INT evaluation; current explicit interrupt mode remains provider-voice-onset barge-in, not learned selective yielding. No Redmi proof or user action.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T06:05:32.755Z",
+      "last_checkpoint": "2026-11-24T06:11:40.528Z",
       "latest_candidate_pr": {
         "pr": 2448,
         "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",

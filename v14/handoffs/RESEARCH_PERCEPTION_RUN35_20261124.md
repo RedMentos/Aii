@@ -77,3 +77,8 @@ Two complete primary papers were read and added to `v14/V14_RESEARCH_LEDGER.md`:
 4. Perception proceeds with source/session-disjoint A4 outcome/retention and model-bound speaker embedding calibration, then a causal EOT/INT event benchmark with backchannel/hold/laughter/overlap hard negatives.
 
 **User action:** none.
+
+
+## Addendum — correct source-lifecycle integration owner
+
+A changed-file ownership recheck shows that Boss/Integrator PR #2443, not Core fair-budget PR #2462, owns the stale `integrated_audio_context_candidate_20261121.py` and `source_lifecycle_lock_integration_candidate.py` composers. Current #2443 head at review: `cdf6b64067ac426ba32194100d3764f6e74c105f`. Current exact Perception audio blobs and SHA-256 plus current #2463 `vision.py` blob/SHA-256 are in #2443 comment 7123664991. The current #2443 composer branch still pins older Perception bytes. Perception did not edit Boss-owned files; it handed the exact hashes to the owner and requested a strict bottom-up recompose with #2448 and #2463 stacked/rebased. The earlier #2462 comment 7123452298 remains an FYI, not the primary owner handoff.

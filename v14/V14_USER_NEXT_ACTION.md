@@ -1876,3 +1876,8 @@ No change to the user decision: no manual command, model download/swap, device u
 
 **Next internal action:** Core/Integrator rebinds the exact audio source pins; Core/JEPA adds the reviewed `vision.py` lifecycle/source-forget mapping. After one combined staged/integrated/same-turn pass, Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration. No user action is required.
 
+
+
+### Run 35 — source-lifecycle owner correction (2026-11-24)
+
+The exact integration owner is **Boss/Integrator PR #2443**, because it carries `integrated_audio_context_candidate_20261121.py` and `source_lifecycle_lock_integration_candidate.py`. Core PR #2462 is not the owner of those two files; its comment 7123452298 is only cross-lane context. Exact current audio and vision hashes were posted to #2443 comment 7123664991. The next internal action is to stack/rebase current Perception PRs #2448 and #2463 into #2443's integration candidate and recompute strict source pins bottom-up. Do not weaken hash checks. No user action is required; no device update or manual command is requested.
