@@ -197,18 +197,18 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "next_step": "Perception: PR #2463 now binds A3 global/tile dataset construction, source lineage and final CAS publication to one Store-bound versioned snapshot; concurrent teacher-caption updates reject stale candidate artifacts. Focused CI: 33 vision tests PASS on Python 3.13/3.14; RAW EYE frame-ingress 39 PASS on both; privacy PASS. Staged Runtime still fails because source_lifecycle_lock_integration_candidate.py rejects current vision.py SHA-256 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae. Core/Boss/QA must recompose the source-lifecycle builder (remove obsolete VISION_* anchors and include current lineage/validation/UI-ingress modules), then rerun staged/integrated/migration. Keep Android capture and model/weight changes OFF until separately authorized.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-24T08:27:00+01:00",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2463,
+        "head_sha": "f947b3edd8a812bd5212033de02b2e4db69d0cf1",
+        "tested_code_sha": "776dee972b92f0ac76afcdf4e9b0be7e408b1f5c",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "state": "OPEN_DRAFT_PARTIAL_CI_FAIL",
+        "ci": "VISION_33_PASS_PY313_33_PASS_PY314; FRAME_39_PASS_BOTH; PRIVACY_PASS; STAGED_FAIL_SOURCE_LIFECYCLE_PIN"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. A3 snapshot-consistency regression added in #2463: both global and tile training use one versioned Store snapshot; interleaved caption-update tests prove stale candidate publication fails and preserves the newer caption. Exact CI code head 776dee9: vision 33/33 on Python 3.13 and 3.14, frame ingress 39/39 on both, privacy PASS. Current staged integration fails at the source-lifecycle composer pin; no local full Aii checkout and no Redmi proof. R-108 CAMR full-text research note added; Qwen3-8B/14B evidence only, no official code/license found."
     },
     {
       "id": "V14-007",
@@ -252,8 +252,8 @@
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
       "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
+      "last_checkpoint": "2026-11-24T08:27:00+01:00",
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Perception PR #2463 adds a consent/source-bound RAW EYE UI-frame consumer and local A3 tile-projector path; exact frame-ingress CI passes 39 tests on Python 3.13 and 39 on 3.14. This is synthetic consumer CI only; Android MediaProjection provider/capture, APK, Redmi lifecycle and actual UI observation/action remain NOT_VERIFIED. The full staged chain still fails at the Perception vision.py source-lifecycle pin."
     },
     {
       "id": "V14-010",
