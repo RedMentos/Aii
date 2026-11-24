@@ -1,14 +1,23 @@
-# Research & Perception — latest combined checkpoint (2026-11-24 18:23 UTC)
+# Research & Perception — latest combined checkpoint (2026-11-24, run 17)
 
-Two separate current-base Perception changes are open; neither is released or installed.
+**Current base:** release-development `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 
-1. **PR #2471** — RAW EAR temporal interval ordering: reject backward start_ms even if end_ms advances; equal-start cumulative windows and partial overlap remain valid. Dedicated exact CI run #2 passed py_compile and 13/13 tests on Python 3.13 (0.15 s) and 13/13 on Python 3.14 (0.10 s). Local isolated CPython 3.13.5 stress passed 5,000 monotonic/overlap/gap intervals plus 4,750 backward-start negative controls. Full local Aii suite remains BLOCKED / NOT_RUN; no Redmi test.
+**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, exact head `8df6a16fd5dced71a2643eae141f9f204fc66855`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`. This remains OPEN / DRAFT / NOT_RELEASED.
 
-2. **PR #2472** — current-base rebase of A4 source-bound outcomes and RAW EAR speaker/prosody evidence from stale #2433. The RECORD_ONLY guard now pins exact attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e while preserving the old pin. Exact current-base CI is pending; prior #2433 passes are historical and not inherited. Old #2433 remains open temporarily and must not be merged; close it only after #2472 is green and reviewed.
+- A4 source-bound outcome and RAW EAR speaker/prosody work remain on #2472. The exact attention.py SHA-256 is pinned in the RECORD_ONLY guard while the previous pin is preserved.
+- The RAW EAR temporal filter now also rejects backwards interval starts, not just non-advancing ends. Equal-start cumulative windows and ordinary overlap remain valid. Rejected input leaves the previous ordering baseline unchanged. Source blob: `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`; regression test blob: `6f16afa97a04d4f0da9ab37a95cad38a25413fce`; comparator workflow is pinned to that exact blob.
+- Commits: source `c5a68bafed30365eec7719c56f190b76f9061ea9`; test `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`; workflow/readback head `8df6a16fd5dced71a2643eae141f9f204fc66855`.
+- **LOCAL_LINUX isolated reproduction:** 5 assertions PASS. **Full local Aii suite:** BLOCKED / NOT_RUN (no checkout mounted; previous GitHub DNS resolution failed).
+- **Exact #2472 head CI:** queued/pending at last readback (deployment 2178, controller guard 631, privacy 1544, staged/integrated 4678, release-event integration 3001). Do not inherit #2471's focused PASS as proof for this new #2472 head.
+- Earlier #2471 temporal regression workflow passed on Python 3.13 and 3.14; its interval change is now ported into #2472. Keep #2471 open until #2472 exact-head CI is green and independently reviewed, then close it as superseded. Do not merge stale #2433.
 
-Latest available consented private V13OBS #115 receipt: 2026-11-24 09:28:11 UTC. Auto-update enabled; Runtime/Dashboard UP_TO_DATE at 8d93236. AI STOPPED_BY_USER and model process STOPPED. B1/B2 still TIME_BUDGET 53.2/54.2 s with zero valid offers. This receipt predates both PRs and does not prove installation. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation.
+**Device/deployment:** latest available consented private V13OBS #115 snapshot is historical (2026-11-24 09:28:11 UTC): auto-update enabled and Runtime/Dashboard UP_TO_DATE at `8d93236`, but AI STOPPED_BY_USER/model STOPPED and zero valid B1/B2 offers. No new receipt was obtained. This PR is not installed; REDMI_UNVERIFIED / NOT_RELEASED. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation was performed.
 
-Neither PR adds Android microphone capture. AudioRecord remains OFF pending QA's signed companion verifier, lifecycle, consent revocation and zeroization tests. No model download/swap is proposed. No user action is required.
+**Research:** R-108 records FD-VAD as a separate semantic end-of-turn research candidate. Only the arXiv abstract, official project site, MIT code repository and HF model card were reviewed; full paper text was not retrieved. Its 0.5B + WavLM stack, ~1.5 GB bundle and CUDA/A100-only reported latency are not a Redmi recommendation. No download or import.
+
+**Next:** inspect exact #2472 CI and logs; fix Perception-owned failures only. Core owns staged composer and dependent source-pin rebinding. After #2472 is green and independently reviewed, close #2433 and #2471 as superseded. Keep AudioRecord OFF until QA's signed companion, lifecycle, revocation and zeroization gates pass.
+
+**User action required: NONE.** No manual Termux command or device update is needed.
 
 ---
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
