@@ -74,7 +74,15 @@ class Store(unittest.TestCase):
             self.assertEqual(suppressed['B2_GIST'],'BODY_INTERNAL_OFFER_ONLY')
             self.assertEqual(gate.select(self.e,route=route,direct=False,resource_state='PRESSURE')['role'],'C3_LANGUAGE')
         self.assertEqual(gate.select(self.e,route='detail',direct=True,resource_state='NORMAL')['role'],'SOURCE_COPY')
-        strong_b1=[dict(cand('o'),priority=1.)]
+        strong_offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],[self.e['source_ref']],
+            role='B1_DETAIL',based_on_state_version=1,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+            evidence_refs=[],offer={'summary':'Strong detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+            confidence=.8,rejected_quotes=0,model_revision='test')
+        self.s.add_packet('OfferPacket',strong_offer)
+        strong_b1=focal.item('B1_DETAIL',strong_offer['packet_id'],[self.e['source_ref']],
+            'Strong detail evidence',self.e['event_id'],uncertainty=.1,salience=0.,goal=.5,utility=.5,sq=1.,cost=.05)
+        strong_b1['priority']=1.
+        strong_b1=[strong_b1]
         sel=gate.select(self.e,route='simple',direct=False,resource_state='NORMAL',coalition=strong_b1,view={'uncertainty':.9,'conflict':.9})
         self.assertEqual(sel['role'],'C3_LANGUAGE')  # focal support stays inside the BOOT margin
         reasons={x['action_id']:x['reason'] for x in sel['suppressed']}
@@ -284,6 +292,10 @@ class Store(unittest.TestCase):
 class FocalRuntime(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name);self.r=Runtime(self.home);self.calls=[]
+        # These tests exercise deep focal/re-entry behavior, not the production
+        # 30-second native deadline. Keep enough synthetic time for the whole
+        # pre-answer cognition path under slower CI runners.
+        self.r.cfg['deadline_seconds']=60
 
     def tearDown(self):
         self.r.close();self.tmp.cleanup()
