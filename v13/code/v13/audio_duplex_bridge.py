@@ -139,8 +139,12 @@ def _validate_audio_result(runtime, audio_result, consent_lease, *, temporal_sta
             or temporal_receipt.get("end_ms") != segment.get("end_ms")):
         raise ValueError("temporal receipt is not bound to this audio packet/source/lease")
     evidence = temporal_receipt.get("evidence")
-    if type(evidence) is not dict or temporal != evidence:
-        raise ValueError("A4 temporal voice result differs from persisted temporal receipt")
+    packet_temporal = acoustic.get("temporal_voice")
+    if (type(packet_temporal) is not dict or packet_temporal != temporal
+            or type(evidence) is not dict or temporal != evidence):
+        raise ValueError(
+            "A4 temporal voice result differs from persisted temporal receipt or PerceptPacket"
+        )
     if (a4.get("temporal_receipt_id") != receipt_id
             or audio_result.get("temporal_receipt_id") != receipt_id):
         raise ValueError("A4 temporal receipt id differs from persisted PerceptPacket")
@@ -205,6 +209,9 @@ def _persist_temporal_voice_receipt(runtime, audio_result, consent_lease, *, tem
     cues = acoustic.get("voice_cues")
     if type(cues) is not dict or a4.get("voice_cues") != cues:
         raise ValueError("A4 voice cues do not match the persisted packet")
+    packet_temporal = acoustic.get("temporal_voice")
+    if type(packet_temporal) is not dict or packet_temporal != temporal:
+        raise ValueError("A4 temporal evidence does not match the persisted PerceptPacket")
     if (a4.get("packet_id") != packet_id or a4.get("source_id") != source_id
             or a4.get("finality") != segment.get("finality")):
         raise ValueError("A4 metadata does not match the persisted packet")
