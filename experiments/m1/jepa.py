@@ -361,16 +361,16 @@ class DirectMAEForecaster(nn.Module):
 
 
 class FrozenContextProbe(nn.Module):
-    """Shared linear forecast readout over a frozen context representation and known covariates."""
+    """Linear readout over a frozen context encoder plus known future covariates."""
 
     def __init__(self, backbone: JEPAForecaster, config: JEPAConfig):
         super().__init__()
         if backbone.config != config:
             raise ValueError("probe config must match frozen backbone config")
         self.config = config
-        self.backbone = backbone
-        self.backbone.requires_grad_(False)
-        self.backbone.eval()
+        self.encoder = backbone.context_encoder
+        self.scaler = backbone.scaler
+        self.encoder.requires_grad_(False)
         feature_width = (
             config.d_model
             + config.seasonal_lags * config.input_channels
@@ -381,7 +381,7 @@ class FrozenContextProbe(nn.Module):
 
     def train(self, mode: bool = True):
         super().train(mode)
-        self.backbone.eval()
+        self.encoder.eval()
         return self
 
     def forward(
@@ -389,9 +389,9 @@ class FrozenContextProbe(nn.Module):
     ) -> torch.Tensor:
         batch, horizon = seasonal.shape[:2]
         with torch.no_grad():
-            context = self.backbone.context_encoder(self.backbone.scaler.transform(x))[:, -1, :]
+            context = self.encoder(self.scaler.transform(x))[:, -1, :]
         context = context.unsqueeze(1).expand(-1, horizon, -1)
-        seasonal = self.backbone.scaler.transform(seasonal)
+        seasonal = self.scaler.transform(seasonal)
         known = torch.cat((seasonal.reshape(batch, horizon, -1), calendar), dim=-1)
         step = torch.arange(horizon, device=x.device, dtype=x.dtype) / max(horizon, 1)
         angle = 2.0 * math.pi * step
@@ -405,6 +405,16 @@ class FrozenContextProbe(nn.Module):
         if prediction.shape != target.shape:
             raise ValueError("frozen-context probe prediction and target shapes differ")
         return F.l1_loss(prediction, target)
+
+
+def make_random_context_probe(config: JEPAConfig, seed: int) -> FrozenContextProbe:
+    """Build the same frozen linear probe over a reproducibly random encoder."""
+    if type(seed) is not int:
+        raise ValueError("seed must be an integer")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        random_backbone = JEPAForecaster(config)
+    return FrozenContextProbe(random_backbone, config)
 
 
 def trainable_parameter_count(model: nn.Module) -> int:
