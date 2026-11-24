@@ -23,6 +23,7 @@ class TemporalVoiceEvidence:
         onset_threshold: float = 0.55,
         offset_threshold: float = 0.22,
         reset_gap_ms: int = 1000,
+        eot_silence_ms: int = 400,
     ) -> None:
         for name, value in (("attack_tau_ms", attack_tau_ms), ("release_tau_ms", release_tau_ms)):
             if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
@@ -35,6 +36,9 @@ class TemporalVoiceEvidence:
             raise ValueError("offset_threshold must be in [0, onset_threshold)")
         if type(reset_gap_ms) is not int or reset_gap_ms < 0:
             raise ValueError("reset_gap_ms must be a nonnegative integer")
+        if type(eot_silence_ms) is not int or not 80 <= eot_silence_ms <= 2000:
+            raise ValueError("eot_silence_ms must be an integer in [80, 2000]")
+        self.eot_silence_ms = eot_silence_ms
         self.attack_tau_ms = float(attack_tau_ms)
         self.release_tau_ms = float(release_tau_ms)
         self.onset_threshold = float(onset_threshold)
@@ -49,6 +53,9 @@ class TemporalVoiceEvidence:
         self._last_end_ms: int | None = None
         self._evidence = 0.0
         self._active = False
+        self._silence_ms = 0
+        self._speech_seen = False
+        self._eot_emitted = False
 
     def update(
         self,
@@ -150,6 +157,29 @@ class TemporalVoiceEvidence:
             active = active_after_gap
         offset = gap_offset or window_offset
 
+        # Turn candidates are deliberately separate from floor-transfer truth.
+        # Only newly observed, contiguous SILENCE after sustained voiced activity
+        # can produce one EOT candidate; noise, uncertainty and unobserved gaps
+        # never count as silence. This is a BOOT heuristic, not a learned verifier.
+        if hint == "VOICED":
+            self._silence_ms = 0
+            if onset or active:
+                self._speech_seen = True
+                self._eot_emitted = False
+        elif hint == "SILENCE":
+            if self._speech_seen:
+                self._silence_ms += observed_ms
+        else:
+            self._silence_ms = 0
+
+        eot_candidate = (
+            self._speech_seen and not active and not self._eot_emitted
+            and self._silence_ms >= self.eot_silence_ms
+        )
+        if eot_candidate:
+            self._speech_seen = False
+            self._eot_emitted = True
+
         self._source_id = source_id
         self._generation_id = generation_id
         self._consent_receipt_ref = consent_receipt_ref
@@ -163,6 +193,16 @@ class TemporalVoiceEvidence:
             "voice_onset": onset,
             "voice_offset": offset,
             "gap_offset": gap_offset,
+            "turn_candidates": {
+                "method": "RAW_EAR_TURN_CANDIDATES_V1",
+                "speech_candidate": bool(self._active),
+                "eot_candidate": bool(eot_candidate),
+                "interrupt_candidate": bool(onset),
+                "floor_transfer_verified": False,
+                "floor_transfer_status": "UNVERIFIED",
+                "observed_silence_ms": self._silence_ms,
+                "minimum_silence_ms": self.eot_silence_ms,
+            },
             "gap_ms": gap_ms,
             "gap_decay_ms": gap_decay_ms,
             "observed_ms": observed_ms,
