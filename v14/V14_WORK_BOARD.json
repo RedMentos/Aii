@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:24:00.420Z",
+  "updated_at": "2026-11-24T03:37:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,18 +196,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated algorithm reproduction 5/5; exact PR CI queued; TERMUX/REDMI_UNVERIFIED",
-      "next_step": "QA/Boss: review PR #2448 and finish exact-head Python 3.13/3.14 checks. After CI, verify dir_fd and /proc/self/fd on authorized Termux/Android; only then connect the permissioned PCM provider. Keep provisional audio out of C3 until FINAL.",
+      "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 hash fixture PASS; GitHub CI: audio duplex 179/179 on Python 3.13+3.14, RAW EAR optional NumPy 128/128 on 3.13+3.14, prosody 3.11+3.13, consent-revocation, deploy-integrity and comparison workflows PASS; staged/integrated BLOCKED by three stale Core-owned source pins; TERMUX/REDMI_UNVERIFIED",
+      "next_step": "Core/Integrator: rebind SOURCE_BLOBS in v13/code/scripts/integrated_audio_context_candidate_20261121.py to the reviewed current blobs (voice_cues=e46a47bb93615126c8ee149baebfb6df9813fbee; speaker_evidence=25474bb202c1209800f5c8a73e36aeca5555efd6; temporal_evidence=e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140), then rerun exact staged/integrated workflows. Research/Perception: after the pin repair, verify descriptor support on authorized Termux; no microphone provider or model download.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:24:00.420Z",
+      "last_checkpoint": "2026-11-24T03:37:00Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "7ba3fec3f016e770f1280af5f190d1a9fa0def6a",
+        "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_CI_PENDING",
+        "state": "OPEN_DRAFT_NOT_RELEASED",
         "scope": "Teacher Ear descriptor-pinned native model loading; source-bound audio stream; no Android microphone provider"
       },
-      "proof": "Teacher Ear _load now passes hash-verified /proc/self/fd paths backed by open O_NOFOLLOW descriptors; openat-style dir_fd traversal blocks parent/final symlink swaps; explicit close releases descriptors. Exact-head 345de43 CI exposed stale speaker/Teacher Ear/C3 expectations; corrected in a20ff439, a3d4f24, bf8b30f and source pins 7ba3fec. Isolated Linux reproduction 5/5 PASS; full repo suite pending. No microphone capture, native sherpa model, weight learning or Android proof."
+      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof."
     },
     {
       "id": "V14-007",
@@ -385,18 +385,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI pending; no Android timing",
-      "next_step": "Finish the exact 7ba3fec Python 3.13/3.14 speaker regressions, including 1 s/2 s invariance and non-voiced negative controls; preserve the uncalibrated DEFER behavior and keep vectors RAM-only. Android proof remains separate.",
+      "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 fixture PASS; GitHub CI exact head c7db: 128/128 focused RAW EAR tests on Python 3.13+3.14; audio-duplex 179/179 on Python 3.13+3.14; synthetic speaker-registry benchmark 5 iterations (3.13 median 0.9579 ms / p95 0.9940 ms; 3.14 median 0.9118 ms / p95 0.9259 ms); no model inference; staged/integrated BLOCKED by stale source pins; TERMUX/REDMI_UNVERIFIED",
+      "next_step": "Core/Integrator must rebind the three audio SOURCE_BLOBS and rerun staged/integrated CI. Then continue toward a separate opt-in chunk-level sherpa SpeakerEmbeddingExtractor adapter; do not feed one utterance embedding into the existing 80-ms frame contract. Candidate research: WeSpeaker ResNet34-LM ONNX 26.5 MB (VoxCeleb CC-BY-4.0 weights), no download or swap without explicit approval; maintain uncalibrated DEFER and no identity/learning/action authority.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:24:00.420Z",
+      "last_checkpoint": "2026-11-24T03:37:00Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "7ba3fec3f016e770f1280af5f190d1a9fa0def6a",
+        "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_CI_PENDING",
+        "state": "OPEN_DRAFT_NOT_RELEASED",
         "ci": "Previous 345de43: 5 failures; corrected; new 7ba3fec checks queued"
       },
-      "proof": "The schema-v3 speaker path is consent-epoch and current-PCM-hash bound, with voiced-only reference history and no persistent vectors. The exact 345de43 CI surfaced stale expected interpretation/state-key/schema assertions; updated in a20ff439. 1 s/2 s invariance remains unverified on Android; no speaker identity or calibrated decision claim."
+      "proof": "Current code has voiced-only, bounded, process-local history; current PCM hash binding is explicit but reports CURRENT_PCM_SHA256_MATCH_ENCODER_UNATTESTED. Tests include 1-s/2-s reference timestamp invariance (lookback 10/20 frames), non-voiced negative controls, consent receipt epoch reset, and no vector persistence. Exact c7db CI: 128/128 focused tests on Python 3.13 and 3.14; benchmark now passes after b85b60a. The benchmark measures only synthetic registry update, not speaker-model inference. No actual speaker model loaded, no calibration, no Redmi proof."
     },
     {
       "id": "V14-019",
