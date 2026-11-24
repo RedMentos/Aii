@@ -193,6 +193,50 @@ def test_stop_preserves_uncertain_dispatch_and_consumed_receipt_across_restart(t
     retry.close()
 
 
+def test_unconsumed_dispatch_still_expires_after_restart(tmp_path):
+    db_path = tmp_path / "expired-dispatch.sqlite"
+    first = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    first.start()
+    proposal = first.propose("launch_app", {"package": "com.example.app"}, ttl=30)
+    first.approve(proposal.action_id, confirmed_by_local_ui=True)
+    first.dispatch_approved(proposal.action_id)
+    first.close()
+
+    resumed = AndroidControlBroker(db_path, clock=lambda: 2000.0)
+    resumed.start()
+    assert resumed.action_state(proposal.action_id) == "EXPIRED"
+    with pytest.raises(ControlDenied, match="dispatched action unavailable"):
+        resumed.consume_dispatched(proposal.action_id)
+    resumed.close()
+
+
+def test_consumed_sensitive_receipt_survives_expiry_without_restoring_raw_args(tmp_path):
+    db_path = tmp_path / "consumed-sensitive-receipt.sqlite"
+    first = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    first.start()
+    proposal = first.propose("type_text", {"text": "private text"}, ttl=30)
+    first.approve(proposal.action_id, confirmed_by_local_ui=True)
+    first.dispatch_approved(proposal.action_id)
+    consumed = first.consume_dispatched(proposal.action_id)
+    assert consumed.args == {"text": "private text"}
+    args_json = first.db.execute(
+        "SELECT args_json FROM control_actions WHERE action_id=?", (proposal.action_id,)
+    ).fetchone()[0]
+    assert args_json is None
+    first.close()
+
+    resumed = AndroidControlBroker(db_path, clock=lambda: 5000.0)
+    resumed.start()
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_CONSUMED"
+    restored = resumed.consume_dispatched(proposal.action_id)
+    assert restored.digest == proposal.digest
+    assert restored.args == {}
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_CONSUMED"
+    resumed.record_companion_receipt(proposal.action_id, proposal.digest, verified=True)
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_VERIFIED"
+    resumed.close()
+
+
 def test_cancel_revokes_local_dispatch_and_type_text_is_not_persisted(tmp_path):
     db_path = tmp_path / "cancel-broker.sqlite"
     broker = AndroidControlBroker(db_path, clock=lambda: 1000.0)
