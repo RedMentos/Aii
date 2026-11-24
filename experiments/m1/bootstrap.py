@@ -65,7 +65,7 @@ def paired_block_bootstrap(
     series: Sequence[WindowErrorSeries],
     *,
     reference_model: str,
-    block_days: int = 7,
+    block_len_minutes: int = 10080,
     n_resamples: int = 2000,
     confidence: float = 0.95,
     seed: int = 17,
@@ -79,8 +79,8 @@ def paired_block_bootstrap(
     """
     if not series:
         raise ValueError("at least one model series is required")
-    if type(block_days) is not int or block_days < 1:
-        raise ValueError("block_days must be a positive integer")
+    if type(block_len_minutes) is not int or block_len_minutes < 1:
+        raise ValueError("block_len_minutes must be a positive integer")
     if type(n_resamples) is not int or n_resamples < 1:
         raise ValueError("n_resamples must be a positive integer")
     if type(seed) is not int:
@@ -111,8 +111,8 @@ def paired_block_bootstrap(
                 raise ValueError("errors must be finite and origins strictly increasing")
             if reference_origins is None:
                 reference_origins = origins
-                day_ids = origins // 1440
-                block_ids = day_ids // block_days
+                block_anchor_minute_id = int(origins[0])
+                block_ids = (origins - block_anchor_minute_id) // block_len_minutes
                 unique_blocks = np.unique(block_ids)
                 block_sums = np.empty((len(models), len(seed_ids), len(unique_blocks)), dtype=np.float64)
                 block_counts = np.asarray([(block_ids == block).sum() for block in unique_blocks], dtype=np.int64)
@@ -156,7 +156,8 @@ def paired_block_bootstrap(
         }
     return {
         "reference_model": reference_model,
-        "block_days": block_days,
+        "block_len_minutes": block_len_minutes,
+        "block_anchor_minute_id": block_anchor_minute_id,
         "n_blocks": int(len(unique_blocks)),
         "n_resamples": n_resamples,
         "confidence": confidence,
