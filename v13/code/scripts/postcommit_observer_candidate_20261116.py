@@ -12,6 +12,7 @@ from pathlib import Path
 SOURCE_SHA256 = {
     # Exact release, reviewed World builder, and reviewed Termux builder output.
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',

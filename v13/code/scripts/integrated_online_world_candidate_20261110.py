@@ -11,7 +11,7 @@ import tempfile
 
 HEAD = '95aea15a046e73acf82c67ccf934cebda651ef87'
 FILES = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    'v13/runtime.py': '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
     'v13/operator.py': 'b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186',
     'v13/agi/__init__.py': '75333b385dbc2d581e8fc028b433b0a93847dc80b64f83d9aedf104cc45c8661',
     'v13/online_world.py': 'ebd6044651ccd031c947a2e8d0d188232c2bab2da79b19ea6c513c433d59e8c8',
