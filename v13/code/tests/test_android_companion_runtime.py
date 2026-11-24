@@ -4,7 +4,8 @@ import json
 
 import pytest
 
-from v13 import android_control, android_outcomes
+from v13 import android_control, android_outcomes, jefbridge
+from v13.enlightened_space import EnlightenedSpace
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
@@ -75,6 +76,7 @@ class RuntimeStub:
         self.home = home
         self.store = Store(home)
         self.session = self.store.new_session()
+        self.cfg = {}
         self.idle_checks = 0
 
     def require_idle(self):
@@ -166,7 +168,31 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert recorded["observed"] is False
     assert recorded["t8_authoritative"] is False
     assert recorded["world_learning_eligible"] is False
-    assert json.loads(controller.poll(pending["action_id"]))["status"] == "ALREADY_FINAL"
+    assert recorded["jef_space"]["status"] == "PUBLISHED"
+    assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert recorded["jef_space"]["trained_latent"] is False
+    assert recorded["jef_space"]["t8_authoritative"] is False
+    repeated = json.loads(controller.poll(pending["action_id"]))
+    assert repeated["status"] == "ALREADY_FINAL"
+    assert repeated["jef_space"]["status"] == "ALREADY_PRESENT"
+
+    event_row = runtime.store.one(
+        "SELECT session_id,packet FROM events WHERE id=?", (pending["source_event_id"],))
+    event_packet = json.loads(event_row["packet"])
+    space = EnlightenedSpace(runtime.store, event_row["session_id"])
+    followup = runtime.store.event(runtime.session, "Did the Android app launch?")
+    view = space.consume(followup, "C3_LANGUAGE", query="Did the Android app launch?")
+    assert view["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert view["trained_latent"] is False
+    assert any(
+        item["from"] == "C5_ACTION" and item["authority"] == "CONTROL_ONLY"
+        and "not independently observed" in item["semantic_cue_not_fact"]
+        for item in view["messages"]
+    )
+    jef_view = jefbridge.controller(runtime).publish_android_action_outcome(
+        recorded["packet_id"], expected_session=runtime.session)
+    assert jef_view["status"] == "ALREADY_PRESENT"
+    assert any(item["from"] == "C5_ACTION" for item in jef_view["jef_view"]["messages"])
 
     packet = runtime.store.one("SELECT kind,payload FROM packets WHERE id=?", (recorded["packet_id"],))
     assert packet["kind"] == "ActionOutcome"
@@ -191,6 +217,8 @@ def test_signed_denial_is_persisted_and_stop_cancels_pending_requests(tmp_path, 
     assert result["status"] == "COMPANION_USER_DENIED"
     assert result["observed"] is False
     assert result["t8_authoritative"] is False
+    assert result["jef_space"]["status"] == "PUBLISHED"
+    assert result["jef_space"]["t8_authoritative"] is False
 
     second = json.loads(controller.launch("com.example.other", True))
     stopped = json.loads(controller.stop())
@@ -347,6 +375,8 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
     )
     runtime.store.add_packet("ActionIntent", other_intent)
+    with pytest.raises(android_control.ControlDenied, match="active session"):
+        controller.poll("9" * 32)
 
     before_restart = json.loads(controller.history())
     assert before_restart["session_scoped"] is True
@@ -410,6 +440,9 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
     )
     runtime.store.add_packet("ActionOutcome", authority_forgery)
+    with pytest.raises(ValueError, match="NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            authority_forgery["packet_id"], expected_session=runtime.session)
     after_forgery = json.loads(controller.history())
     assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert after_forgery["actions"][0]["observed"] is False
