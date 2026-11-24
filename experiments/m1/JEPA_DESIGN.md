@@ -54,7 +54,7 @@ Do not infer collapse-free behavior from a finite loss alone. A collapse gate ne
 - Fixed calendar split and 10,140-row gap are defined in data.py.
 - Fit channel scaling and model weights only on train. Select hyperparameters/checkpoints on validation. The scaler is serialized with the checkpoint and may not be fitted on validation or test.
 - Compare all models on identical accepted forecast origins.
-- Bootstrap paired per-origin primary MAE by non-overlapping temporal blocks; use the same sampled blocks for every model and seed. Aggregate block sums/counts so short edge blocks do not receive the same weight as full blocks.
+- Bootstrap paired per-origin primary MAE by non-overlapping temporal blocks; use the same sampled blocks for every model and seed. The preregistered bootstrap_block_len is in minute rows; current default is 10,080 (7 days), anchored to the first accepted origin. Aggregate block sums/counts so short edge blocks do not receive the same weight as full blocks.
 - Report seed variance separately from temporal uncertainty.
 - Test-year access remains gated by exact config/split/data hashes, complete preregistration and exact executing commit SHA, plus a durable access event.
 
@@ -66,6 +66,7 @@ Do not infer collapse-free behavior from a finite loss alone. A collapse gate ne
 - Exact anti-collapse objective and coefficients.
 - Direct-MAE decoder capacity and parameter-matching rule.
 - Probe readout capacity.
+- Bootstrap block length in minute rows.
 - Optimizer, schedule, epochs, batch size, seeds and training-step budget.
 - Numeric collapse thresholds and M1a promotion criteria.
 
