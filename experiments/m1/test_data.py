@@ -182,14 +182,12 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256="0" * 64,
                     access_log_path=log_path,
-                    expected_code_commit=current_git_commit(),
                 )
             windows, stats = load_test_split(
                 self.rows, self.channels, self.cfg,
                 preregistration_path=prereg_path,
                 preregistration_sha256=digest,
                 access_log_path=log_path,
-                expected_code_commit=current_git_commit(),
             )
             self.assertTrue(windows)
             self.assertEqual(stats.split, "test")
@@ -216,7 +214,6 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=log_directory,
-                    expected_code_commit=current_git_commit(),
                 )
 
     def test_test_loader_rejects_config_drift_even_with_valid_file_hash(self):
@@ -241,7 +238,6 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=digest,
                     access_log_path=root / "log.jsonl",
-                    expected_code_commit=current_git_commit(),
                 )
 
     def test_manifest_hash_is_stable(self):
