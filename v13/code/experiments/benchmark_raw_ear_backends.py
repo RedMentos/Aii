@@ -9,6 +9,7 @@ Run from v13/code:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import platform
@@ -120,6 +121,14 @@ def benchmark_speaker_tracker(iterations):
     batches = []
     for index in range(iterations):
         start_ms = 1000 + index * 1000
+        # Bind each synthetic embedding batch to an actual deterministic PCM16
+        # fixture, matching the runtime registry's source-integrity contract.
+        pcm = struct.pack(
+            "<" + "h" * 16000,
+            *(int(4000 * math.sin(2 * math.pi * 220 * sample / 16000 + index * 0.1))
+              for sample in range(16000)),
+        )
+        current_chunk_sha256 = hashlib.sha256(pcm).hexdigest()
         frames = [
             {"end_ms": start_ms + offset * 80, "vector": vectors[offset % len(vectors)]}
             for offset in range(1, 13)
@@ -129,6 +138,7 @@ def benchmark_speaker_tracker(iterations):
             "source_id": "benchmark:raw-ear",
             "generation_id": "benchmark:generation",
             "consent_receipt_ref": "benchmark:consent-epoch",
+            "current_chunk_sha256": current_chunk_sha256,
             "model_id": "synthetic:192d",
             "model_revision": "fixture-v1",
             "model_sha256": "a" * 64,
@@ -152,6 +162,7 @@ def benchmark_speaker_tracker(iterations):
             start_ms=start_ms,
             end_ms=start_ms + 1000,
             activity_hint="VOICED",
+            current_chunk_sha256=batches[index]["current_chunk_sha256"],
             embeddings=batches[index],
         )
         index += 1
