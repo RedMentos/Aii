@@ -1,9 +1,10 @@
-"""Ephemeral, consent-lease-scoped temporal RAW EYE luminance evidence.
+"""Ephemeral, consent-lease-scoped temporal RAW EYE feature evidence.
 
-This is a deterministic frame-difference diagnostic, not optical flow, OCR,
-object recognition, a calibrated probability, or a learned temporal model.
-Only 4x4 luminance summaries per tile are retained in bounded process memory;
-no frame bytes, images, text, or persistent model state are stored.
+This deterministic diagnostic compares the existing 37-value tile descriptor
+(RGB/hue/edge/orientation/4x4 luminance). It is not optical flow, OCR, object
+recognition, a calibrated probability, or a learned temporal model. Only the
+previous numeric tile descriptors are retained in bounded process memory.
+No frame bytes, images, text, or persistent model state are stored.
 """
 from __future__ import annotations
 
@@ -14,12 +15,17 @@ import threading
 from .vision_temporal_adaptation import (
     compute_attention_novelty,
     decompose_temporal_change,
+    decompose_temporal_feature_change,
     weighted_tile_score,
 )
 
 TILE_IDS = tuple(f"r{row}{col}" for row in range(4) for col in range(4))
 LUMINANCE_VALUES_PER_TILE = 16
-METHOD = "RAW_EYE_TEMPORAL_LUMINANCE_DELTA_V1"
+LUMINANCE_METHOD = "RAW_EYE_TEMPORAL_LUMINANCE_DELTA_V1"
+METHOD = "RAW_EYE_TEMPORAL_MULTICHANNEL_DELTA_V2"
+FEATURE_METHOD = "RAW_EYE_TILE_FEATURES_V1"
+FEATURE_VALUES_PER_TILE = 37
+MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
 DEFAULT_SURFACE_WINDOW_MS = 50
 
@@ -51,6 +57,28 @@ def _validate_luminance(value) -> dict[str, tuple[float, ...]]:
     return result
 
 
+def _validate_features(value, luminance) -> dict[str, tuple[float, ...]] | None:
+    if value is None:
+        return None
+    if type(value) is not dict or set(value) != set(TILE_IDS):
+        raise TemporalVisualEvidenceError("temporal visual feature tile set must be the complete 4x4 grid")
+    result = {}
+    for tile_id in TILE_IDS:
+        row = value[tile_id]
+        if type(row) not in (list, tuple) or len(row) != FEATURE_VALUES_PER_TILE:
+            raise TemporalVisualEvidenceError("temporal visual tile features must contain 37 values")
+        values = []
+        for item in row:
+            if type(item) not in (int, float) or not math.isfinite(float(item)) or not 0.0 <= float(item) <= 2.0:
+                raise TemporalVisualEvidenceError("temporal visual features must be finite in [0,2]")
+            values.append(float(item))
+        if any(abs(values[-LUMINANCE_VALUES_PER_TILE + i] - luminance[tile_id][i]) > 1e-6
+               for i in range(LUMINANCE_VALUES_PER_TILE)):
+            raise TemporalVisualEvidenceError("temporal visual features must match the bound luminance tile")
+        result[tile_id] = tuple(values)
+    return result
+
+
 class TemporalVisualEvidence:
     """One-stream, one-frame-history temporal delta accumulator."""
 
@@ -71,6 +99,7 @@ class TemporalVisualEvidence:
         self.window_ms = window_ms
         self._last_end_ms = None
         self._previous = None
+        self._previous_features = None
         self._on_surface = {tile: 0.0 for tile in TILE_IDS}
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
         self._local_surface = {tile: 0.0 for tile in TILE_IDS}
@@ -79,15 +108,18 @@ class TemporalVisualEvidence:
     def reset(self) -> None:
         self._last_end_ms = None
         self._previous = None
+        self._previous_features = None
         self._on_surface = {tile: 0.0 for tile in TILE_IDS}
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
         self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         self._last_activity_ms = None
 
-    def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict) -> dict:
+    def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict,
+               tile_features: dict | None = None) -> dict:
         if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms:
             raise TemporalVisualEvidenceError("temporal visual interval must be positive monotonic milliseconds")
         current = _validate_luminance(tile_luminance)
+        current_features = _validate_features(tile_features, current)
         reset_reason = None
         gap_ms = 0
         if self._last_end_ms is not None:
@@ -100,9 +132,18 @@ class TemporalVisualEvidence:
 
         if self._previous is None:
             self._previous = current
+            self._previous_features = current_features
             self._last_end_ms = end_ms
             return {
-                "method": METHOD, "status": "WARMUP", "change_score": 0.0,
+                "method": METHOD if current_features is not None else LUMINANCE_METHOD,
+                "feature_method": FEATURE_METHOD if current_features is not None else None,
+                "multichannel_status": "WARMUP" if current_features is not None else "UNAVAILABLE",
+                "multichannel_tile_delta": {}, "multichannel_changed_tile_ids": [],
+                "multichannel_change_score": 0.0, "global_appearance_shift": 0.0,
+                "global_structure_shift": 0.0, "local_appearance_change_score": 0.0,
+                "local_structure_change_score": 0.0,
+                "multichannel_threshold": min(self.changed_tile_threshold, MULTICHANNEL_TILE_THRESHOLD),
+                "change_score": 0.0,
                 "mean_change": 0.0, "peak_change": 0.0, "changed_tile_ids": [],
                 "tile_delta": {}, "polarity_delta_by_tile": {}, "polarity_activity_by_tile": {},
                 "temporal_activity_score": 0.0, "on_activity": 0.0, "off_activity": 0.0,
@@ -155,15 +196,72 @@ class TemporalVisualEvidence:
         local_change_score = weighted_tile_score(local_tile_delta.values())
         local_temporal_activity_score = weighted_tile_score(self._local_surface.values())
         global_change_score = min(1.0, abs(common_mode_delta))
-        attention_novelty = compute_attention_novelty(
+
+        multichannel_threshold = min(self.changed_tile_threshold, MULTICHANNEL_TILE_THRESHOLD)
+        multichannel_status = "UNAVAILABLE"
+        multichannel_tile_delta = {}
+        multichannel_changed_tile_ids = []
+        multichannel_change_score = 0.0
+        global_appearance_shift = 0.0
+        global_structure_shift = 0.0
+        local_appearance_change_score = 0.0
+        local_structure_change_score = 0.0
+        if current_features is not None and self._previous_features is not None:
+            feature_global, feature_local = decompose_temporal_feature_change(
+                self._previous_features, current_features, TILE_IDS, FEATURE_VALUES_PER_TILE,
+            )
+            appearance_by_tile = feature_local["appearance"]
+            structure_by_tile = feature_local["structure"]
+            luminance_by_tile = feature_local["luminance"]
+            multichannel_tile_delta = {
+                tile: max(appearance_by_tile[tile], structure_by_tile[tile], luminance_by_tile[tile])
+                for tile in TILE_IDS
+            }
+            multichannel_changed_tile_ids = [
+                tile for tile in TILE_IDS if multichannel_tile_delta[tile] >= multichannel_threshold
+            ]
+            multichannel_change_score = weighted_tile_score(
+                multichannel_tile_delta[tile] for tile in multichannel_changed_tile_ids
+            )
+            local_appearance_change_score = weighted_tile_score(
+                value for value in appearance_by_tile.values() if value >= multichannel_threshold
+            )
+            local_structure_change_score = weighted_tile_score(
+                value for value in structure_by_tile.values() if value >= multichannel_threshold
+            )
+            global_appearance_shift = feature_global["appearance"]
+            global_structure_shift = feature_global["structure"]
+            multichannel_status = "MEASURED"
+        elif current_features is not None:
+            multichannel_status = "WARMUP"
+
+        base_attention_novelty = compute_attention_novelty(
             local_change_score, local_temporal_activity_score, global_change_score,
         )
+        attention_novelty = round(max(
+            base_attention_novelty,
+            multichannel_change_score,
+            0.15 * global_appearance_shift,
+            0.15 * global_structure_shift,
+        ), 6)
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
         changed = [tile for tile in TILE_IDS if tile_delta[tile] >= self.changed_tile_threshold]
         self._previous, self._last_end_ms = current, end_ms
+        self._previous_features = current_features
         return {
-            "method": METHOD, "status": "MEASURED",
+            "method": METHOD if current_features is not None else LUMINANCE_METHOD,
+            "feature_method": FEATURE_METHOD if current_features is not None else None,
+            "multichannel_status": multichannel_status,
+            "multichannel_tile_delta": {k: round(v, 6) for k, v in multichannel_tile_delta.items()},
+            "multichannel_changed_tile_ids": multichannel_changed_tile_ids,
+            "multichannel_change_score": round(multichannel_change_score, 6),
+            "global_appearance_shift": round(global_appearance_shift, 6),
+            "global_structure_shift": round(global_structure_shift, 6),
+            "local_appearance_change_score": round(local_appearance_change_score, 6),
+            "local_structure_change_score": round(local_structure_change_score, 6),
+            "multichannel_threshold": round(multichannel_threshold, 6),
+            "status": "MEASURED",
             "change_score": round(change_score, 6), "mean_change": round(mean_change, 6),
             "peak_change": round(max(ordered), 6), "changed_tile_ids": changed,
             "tile_delta": {k: round(v, 6) for k, v in tile_delta.items()},
@@ -197,7 +295,7 @@ class TemporalVisualEvidenceRegistry:
 
     def update(self, *, capture_session_id: str, generation_id: str,
                consent_receipt_ref: str, start_ms: int, end_ms: int,
-               tile_luminance: dict) -> dict:
+               tile_luminance: dict, tile_features: dict | None = None) -> dict:
         session = _identity(capture_session_id, "capture_session_id")
         generation = _identity(generation_id, "generation_id")
         receipt = _identity(consent_receipt_ref, "consent_receipt_ref")
@@ -211,7 +309,10 @@ class TemporalVisualEvidenceRegistry:
             state = self._states.get(key)
             if state is None:
                 state = TemporalVisualEvidence(**self._state_options)
-            result = state.update(start_ms=start_ms, end_ms=end_ms, tile_luminance=tile_luminance)
+            result = state.update(
+                start_ms=start_ms, end_ms=end_ms, tile_luminance=tile_luminance,
+                tile_features=tile_features,
+            )
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:

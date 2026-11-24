@@ -695,6 +695,11 @@ def consume_projected_frame(
             for region, _box, features, _salience in region_records
             if region["region_id"].startswith("r")
         }
+        tile_features = {
+            region["region_id"]: tuple(float(value) for value in features)
+            for region, _box, features, _salience in region_records
+            if region["region_id"].startswith("r")
+        }
         temporal_visual = _runtime_temporal_visual_registry(runtime).update(
             capture_session_id=observation["capture_session_id"],
             generation_id=generation_id,
@@ -702,6 +707,7 @@ def consume_projected_frame(
             start_ms=observation["start_ms"],
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
+            tile_features=tile_features,
         )
         attention_novelty = float(temporal_visual["attention_novelty"])
         temporal_visual_packet = dict(temporal_visual)
@@ -727,6 +733,10 @@ def consume_projected_frame(
             segment["text"] = text_value[:max(0, MAX_SUMMARY_CHARS - len(suffix))] + suffix
             segment["temporal_change"] = delta
             segment["temporal_change_method"] = temporal_visual["method"]
+            multichannel_delta = temporal_visual.get("multichannel_tile_delta", {}).get(region_id)
+            if multichannel_delta is not None:
+                segment["temporal_multichannel_change"] = multichannel_delta
+                segment["temporal_multichannel_method"] = temporal_visual["method"]
 
         attention = attention_module.controller(runtime)
         temporal_modulation = None
@@ -743,6 +753,13 @@ def consume_projected_frame(
             "temporal_activity_score": temporal_visual.get("temporal_activity_score", 0.0),
             "global_luminance_shift": temporal_visual.get("global_luminance_shift", 0.0),
             "global_change_score": temporal_visual.get("global_change_score", 0.0),
+            "multichannel_status": temporal_visual.get("multichannel_status", "UNAVAILABLE"),
+            "multichannel_change_score": temporal_visual.get("multichannel_change_score", 0.0),
+            "global_appearance_shift": temporal_visual.get("global_appearance_shift", 0.0),
+            "global_structure_shift": temporal_visual.get("global_structure_shift", 0.0),
+            "local_appearance_change_score": temporal_visual.get("local_appearance_change_score", 0.0),
+            "local_structure_change_score": temporal_visual.get("local_structure_change_score", 0.0),
+            "multichannel_changed_tile_ids": list(temporal_visual.get("multichannel_changed_tile_ids", [])),
             "local_change_score": temporal_visual.get("local_change_score", 0.0),
             "local_temporal_activity_score": temporal_visual.get("local_temporal_activity_score", 0.0),
             "attention_novelty": round(attention_novelty, 6),

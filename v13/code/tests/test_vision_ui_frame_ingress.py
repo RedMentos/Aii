@@ -851,11 +851,19 @@ def test_provider_revocation_erases_temporal_history(monkeypatch):
     first, second = image_buffer(), image_buffer_variant()
     cleanup = temporal_visual_revocation_callback(runtime, capture_session_id=obs["capture_session_id"])
     with lease_for(runtime, obs, callbacks=callbacks, revoke_callback=cleanup) as lease:
-        consume_with_provider_verifier(runtime, obs, first, consent_lease=lease,
-                                       current_source="Observe the screen change.")
+        first_result = consume_with_provider_verifier(
+            runtime, obs, first, consent_lease=lease,
+            current_source="Observe the screen change.",
+        )
         next_obs = dict(obs, start_ms=1033, end_ms=1066)
-        consume_with_provider_verifier(runtime, next_obs, second, consent_lease=lease,
-                                       current_source="Observe the screen change.")
+        second_result = consume_with_provider_verifier(
+            runtime, next_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.",
+        )
+        assert first_result["temporal_visual_evidence"]["multichannel_status"] == "WARMUP"
+        assert second_result["temporal_visual_evidence"]["multichannel_status"] == "MEASURED"
+        assert second_result["temporal_visual_evidence"]["feature_method"] == "RAW_EYE_TILE_FEATURES_V1"
+        assert second_result["a4"]["temporal_visual_evidence"]["multichannel_status"] == "MEASURED"
         assert len(runtime._a5_temporal_visual_registry) == 1
     on_revoked = callbacks[obs["source_id"]][1]
     result = on_revoked()
@@ -1006,3 +1014,108 @@ def test_end_of_stream_erases_temporal_visual_history(monkeypatch):
             assert len(runtime._a5_temporal_visual_registry) == 1
         assert len(runtime._a5_temporal_visual_registry) == 0
     assert not any(frame)
+
+
+def _temporal_tile_feature(rgb=(0.2, 0.3, 0.4), hue=None, edge=0.1, orientation=None, luminance=0.5):
+    hue = [0.0] * 8 if hue is None else list(hue)
+    orientation = [0.25] * 4 if orientation is None else list(orientation)
+    return tuple(
+        list(rgb) + [0.0, 0.0, 0.0] + hue + [0.5, 0.5, edge]
+        + orientation + [luminance] * 16
+    )
+
+
+def test_temporal_visual_multichannel_detects_chroma_and_edge_changes_at_constant_luminance():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    baseline = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    color_changed = dict(baseline)
+    color_changed["r00"] = _temporal_tile_feature(
+        rgb=(0.8, 0.1, 0.1), hue=[1.0] + [0.0] * 7,
+    )
+    state = TemporalVisualEvidence()
+    warmup = state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline,
+    )
+    result = state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=color_changed,
+    )
+    assert warmup["multichannel_status"] == "WARMUP"
+    assert result["tile_delta"]["r00"] == 0.0
+    assert result["multichannel_changed_tile_ids"] == ["r00"]
+    assert result["multichannel_change_score"] > 0.08
+    assert result["attention_novelty"] == pytest.approx(result["multichannel_change_score"])
+
+    edge_changed = dict(baseline)
+    edge_changed["r23"] = _temporal_tile_feature(
+        edge=0.7, orientation=[1.0, 0.0, 0.0, 0.0],
+    )
+    edge_state = TemporalVisualEvidence()
+    edge_state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline,
+    )
+    edge_result = edge_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=edge_changed,
+    )
+    assert edge_result["multichannel_changed_tile_ids"] == ["r23"]
+    assert edge_result["multichannel_change_score"] > 0.2
+
+
+def test_temporal_visual_multichannel_discounts_global_appearance_shift():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    baseline = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    shifted = {
+        tile: _temporal_tile_feature(
+            rgb=(0.4, 0.3, 0.2),
+            hue=[0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
+        for tile in TILE_IDS
+    }
+    state = TemporalVisualEvidence()
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline)
+    result = state.update(start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=shifted)
+    assert result["multichannel_changed_tile_ids"] == []
+    assert result["multichannel_change_score"] == 0.0
+    assert result["global_appearance_shift"] > 0.0
+    assert result["attention_novelty"] == pytest.approx(0.15 * result["global_appearance_shift"])
+
+
+def test_temporal_visual_multichannel_rejects_mismatched_and_malformed_features():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    features = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    state = TemporalVisualEvidence()
+    with pytest.raises(TemporalVisualEvidenceError, match="37 values"):
+        state.update(
+            start_ms=1000, end_ms=1033, tile_luminance=luminance,
+            tile_features=dict(features, r00=(0.0,) * 36),
+        )
+    mismatch = dict(features)
+    mismatch["r00"] = _temporal_tile_feature(luminance=0.6)
+    with pytest.raises(TemporalVisualEvidenceError, match="match the bound luminance"):
+        state.update(
+            start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=mismatch,
+        )
+    # A rejected feature packet must not warm or replace the prior valid history.
+    warmup = state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=features,
+    )
+    assert warmup["multichannel_status"] == "WARMUP"
+
+
+def test_temporal_visual_legacy_luminance_only_remains_supported():
+    from v13.vision_temporal_evidence import TILE_IDS, LUMINANCE_METHOD, TemporalVisualEvidence
+
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    state = TemporalVisualEvidence()
+    first = state.update(start_ms=1000, end_ms=1033, tile_luminance=luminance)
+    second = state.update(start_ms=1033, end_ms=1066, tile_luminance=luminance)
+    assert first["method"] == LUMINANCE_METHOD
+    assert second["multichannel_status"] == "UNAVAILABLE"
+    assert second["attention_novelty"] == 0.0
