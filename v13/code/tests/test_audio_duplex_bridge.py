@@ -134,6 +134,7 @@ def test_provisional_raw_ear_onset_interrupts_only_in_explicit_interrupt_mode(tm
                 (result["packet"]["packet_id"],),
             )
             persisted_packet = json.loads(persisted["payload"])
+            assert persisted_packet["segments"][0]["acoustic"]["temporal_voice"] == result["a4"]["temporal_voice"]
             assert persisted_packet["segments"][0]["acoustic"]["temporal_voice_receipt"]["evidence"] == result["a4"]["temporal_voice"]
             assert result["a4"]["temporal_receipt_id"] == result["temporal_receipt_id"]
             assert result["duplex"]["decision"] == "INTERRUPT"
