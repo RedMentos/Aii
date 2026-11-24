@@ -148,7 +148,7 @@ class WindowTests(unittest.TestCase):
         )
 
     def test_manifest_contains_fixed_split_and_rejection_statistics(self):
-        _, stats, manifest = build_dataset(self.rows, self.channels, self.cfg)
+        _, stats, manifest = build_dataset(self.rows, self.channels, self.cfg, allow_fractional_split=True)
         self.assertEqual(manifest["effective_gap"], self.cfg.effective_gap)
         self.assertEqual(set(manifest["split_stats"]), {"train", "validation"})
         self.assertEqual(manifest["test_access"], "LOCKED_REQUIRES_HASH_BOUND_PREREGISTRATION")
@@ -253,6 +253,15 @@ class WindowTests(unittest.TestCase):
 
 
 class CalendarBoundaryTests(unittest.TestCase):
+    def test_reference_builder_rejects_fractional_split_without_fixture_override(self):
+        rows = synthetic_rows(1000)
+        config = DataConfig(
+            input_length=8, horizon=2, max_candidate_input_length=8,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        with self.assertRaisesRegex(ValueError, "fixed calendar split dates"):
+            build_dataset(rows, ("Global_active_power", "Voltage"), config)
+
     def test_calendar_boundaries_reject_timezone_offsets(self):
         with self.assertRaisesRegex(ValueError, "naive"):
             DataConfig(
@@ -273,8 +282,8 @@ class CalendarBoundaryTests(unittest.TestCase):
             input_length=8, horizon=2, max_candidate_input_length=8,
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
-        _, short_stats, _ = build_dataset(rows, channels, short)
-        _, long_stats, _ = build_dataset(rows, channels, long)
+        _, short_stats, _ = build_dataset(rows, channels, short, allow_fractional_split=True)
+        _, long_stats, _ = build_dataset(rows, channels, long, allow_fractional_split=True)
         self.assertEqual(
             short_stats["train"].candidate_windows,
             long_stats["train"].candidate_windows,
