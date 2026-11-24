@@ -407,18 +407,34 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "LOCAL_LINUX isolated temporal assertions; CI focused FASTDIAR/A4/NumPy/consent/privacy PASS; controller recovery pin FAIL; staged/integrated blocked; no Android microphone",
+      "next_step": "Core/QA: rebind the exact record_only_controller_guard_20261116.py SHA in termux_runtime_recovery_candidate_20261112.py and dependent stage/deployer pins; Core/Boss: rebind audio_temporal_evidence.py in the audio composer chain. Rerun controller guard, staged/integrated and migration without relaxing hashes. Keep AudioRecord OFF until companion verifier, consent/revocation and zeroization pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-24T20:07:47Z",
       "latest_candidate_pr": {
+        "pr": 2472,
+        "head_sha": "d77b06bc23837c52c52cffa98a4c61b2bf5b4ae9",
+        "tested_code_sha": "8df6a16fd5dced71a2643eae141f9f204fc66855",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_CONTROLLER_AND_STAGED_PIN_BLOCKED",
+        "ci": "FASTDIAR_PY313_92_OF_92_PY314_92_OF_92; A4_SOURCE_BOUND_PASS; RAW_EAR_NUMPY_PASS; CONSENT_REVOCATION_PASS; PRIVACY_CLEAN; CONTROLLER_GUARD_FAIL_RECOVERY_PIN_MISMATCH; STAGED_INTEGRATED_BLOCKED",
+        "scope": "A4 source-bound attention outcomes plus RAW EAR speaker-change/prosody evidence and monotonic audio interval-start ordering; caller-supplied PCM only"
+      },
+      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence.\n\nCurrent Perception PR #2472 exact-head checkpoint: code SHA 8df6a16fd5dced71a2643eae141f9f204fc66855, PR head d77b06bc23837c52c52cffa98a4c61b2bf5b4ae9, base 8d93236c753f0194224c19edc7411d8d7082b1d6. FASTDIAR diagnostic 92/92 on Python 3.13 and 92/92 on Python 3.14; A4 source-bound outcomes, RAW EAR NumPy, consent-revocation and privacy scan pass. Controller record-only guard fails before feature tests because recovery builder expects guard SHA 86ad7838d15eb9a038fec629c340936edde78d65 but current guard is 9c901c4e5e3d3fd17c113a8e9458bcb32a30646593483202f1f472763435fa96. Audio temporal composer still needs exact pin rebind. No microphone capture, no device update, no Redmi proof.",
+      "previous_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
         "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "related_prs": [
+        1984,
+        2433,
+        2443,
+        2462,
+        2472
+      ]
     },
     {
       "id": "V14-019",
