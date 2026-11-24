@@ -99,7 +99,7 @@ class ChannelStandardizer(nn.Module):
         if self.mean.numel() != len(dataset.channels):
             raise ValueError("standardizer channel count does not match dataset")
         start, end = dataset.bounds["train"]
-        values = np.asarray(dataset.values[start:end], dtype=np.float64)
+        values = np.asarray(dataset.train_values(), dtype=np.float64)
         means = np.zeros(values.shape[1], dtype=np.float64)
         scales = np.ones(values.shape[1], dtype=np.float64)
         for channel in range(values.shape[1]):
