@@ -15,7 +15,7 @@ Every deployed predictor receives X, S and C_future. Y is visible only to the tr
 
 The first experiment fixes H=60 and reports prefix MAE at 15/30/60 plus the primary mean MAE over steps 15..60, all selected channels.
 
-## 2. JEPA path (T=1)
+## 2. M1a JEPA path (stacked encoder)
 
 1. Fit per-channel mean/std on train rows only; apply that scaler to X and S. Patch normalized X along time; project each multichannel patch to d-dimensional tokens.
 2. Online context encoder maps X patches to context latents Z_context.
@@ -57,7 +57,7 @@ Do not infer collapse-free behavior from a finite loss alone. A collapse gate ne
 ## 5. Split, optimization and evaluation
 
 - Fixed calendar split and 10,140-row gap are defined in data.py.
-- Fit channel scaling and model weights only on train. Select hyperparameters/checkpoints on validation. The scaler is serialized with the checkpoint and may not be fitted on validation or test.
+- Fit neural channel scaling on raw train rows and raw/AR feature scaling on all accepted train windows. The optional exploratory cap applies only to optimizer/linear-fit windows. Select hyperparameters/checkpoints on validation. The scaler is serialized with the checkpoint and may not be fitted on validation or test.
 - Compare all models on identical accepted forecast origins.
 - Bootstrap paired per-origin primary MAE by non-overlapping temporal blocks; use the same sampled blocks for every model and seed. The preregistered bootstrap_block_len is in minute rows; current default is 10,080 (7 days), anchored to the first accepted origin. Aggregate block sums/counts so short edge blocks do not receive the same weight as full blocks.
 - Report seed variance separately from temporal uncertainty.
@@ -100,3 +100,17 @@ The original DLinear and NLinear implementations consume historical X only. M1 a
 `experiments.m1.runner` treats `jepa_pretrain` as a training dependency and telemetry source, not an entry in the raw-unit forecast leaderboard. If `frozen_context_probe` is selected, JEPA is trained first for that seed, then the frozen encoder/readout is trained on train windows and evaluated in the common MAE suite. The random-context probe uses the same readout geometry without JEPA pretraining.
 
 The runner records each model's trainable and total parameter counts, training history, train-window cap, fit time and checkpoint hash. It records the exact clean Git HEAD and both raw-file and parsed-data hashes. It only iterates `train` and `validation`; it does not call the test-split gate. Existing result/checkpoint destinations are refused rather than overwritten.
+
+
+## 10. M1b shared-weight recurrence ablation
+
+M1a's stacked encoder is preserved as the baseline. M1b adds a separate context encoder with one `TransformerEncoderLayer` shared across recurrent depth. For T in {1, 2, 4}, the same block is applied T times with deterministic sinusoidal step embeddings. There are no T-specific trainable parameters, so trainable and total parameter counts remain constant across T; compute depth and wall time change.
+
+Each T variant is trained in two paths:
+- JEPA: recurrent online context encoder, same-architecture EMA target encoder over future Y, future-query predictor, latent loss and context/target collapse telemetry; utility is measured with a trained frozen linear probe.
+- Direct-MAE: same recurrent context encoder and future-query path, trained directly against raw-unit Y.
+- Random recurrent probe: same recurrent architecture and frozen linear readout, but no JEPA pretraining.
+
+All variants use the same fixed train/validation split, full-train scalers, fit-window cap, seeds and full validation-origin set. The runner reports paired temporal-block intervals against persistence and records per-variant parameter counts, fit time, training history and checkpoint hashes. It does not open the test split. M1b remains exploratory until real UCI train/validation evidence and a separate preregistration exist.
+
+The weight-shared depth idea is based on Universal Transformers (Dehghani et al., ICLR 2019, arXiv:1807.03819). The archived Tensor2Tensor reference implementation is Apache-2.0; no source code was copied. This M1 implementation is an independent PyTorch adaptation and does not include Adaptive Computation Time.
