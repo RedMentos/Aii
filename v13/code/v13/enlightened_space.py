@@ -17,6 +17,7 @@ import hashlib
 import json
 import math
 import re
+import sqlite3
 
 from .common import safe_text
 
@@ -215,6 +216,9 @@ class EnlightenedSpace:
                 or not isinstance(candidate.get("packet_id"), str)
                 or not candidate.get("packet_id")):
             return None
+        message_id = candidate.get("message_id")
+        if not isinstance(message_id, str) or not message_id:
+            return None
         try:
             packet_row = self.store.one(
                 "SELECT kind,event_id,payload FROM packets WHERE id=?",
@@ -224,7 +228,9 @@ class EnlightenedSpace:
                     or packet_row["event_id"] != candidate["event_id"]):
                 return None
             payload = json.loads(packet_row["payload"])
-            actual = payload.get("actual") if isinstance(payload, dict) else None
+            if not isinstance(payload, dict):
+                return None
+            actual = payload.get("actual")
             allowed_status = {
                 "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
                 "COMPANION_USER_DENIED",
@@ -236,9 +242,13 @@ class EnlightenedSpace:
                 or payload.get("producer_component") != "C5_ANDROID_COMPANION"
                 or payload.get("event_id") != candidate["event_id"]
                 or payload.get("brain_generation_id") != candidate.get("generation")
+                or payload.get("provenance") != candidate.get("source_refs")
                 or payload.get("status") not in allowed_status
                 or not isinstance(actual, dict)
                 or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+                or actual.get("capability") != "launch_app"
+                or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+                or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
                 or actual.get("observed") is not False
                 or actual.get("t8_authoritative") is not False
                 or actual.get("world_learning_eligible") is not False
@@ -258,8 +268,8 @@ class EnlightenedSpace:
                     or current["session_id"] != self.session
                     or current["event_order"] != prior["event_order"] + 1):
                 return None
-            return candidate.get("message_id")
-        except Exception:
+            return message_id
+        except (sqlite3.Error, KeyError, TypeError, ValueError, OSError, RuntimeError):
             # This is optional context. Any missing, malformed or unavailable
             # binding fails closed and cannot grant authority.
             return None
