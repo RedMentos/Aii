@@ -1339,3 +1339,12 @@ Exact CI on this head: vision/source-lineage 39/39 on Python 3.13 and 3.14; RAW 
 Local Linux Python 3.13.5 isolated helper harness: 3/3 PASS. Full Aii checkout/suite not run locally; GitHub DNS/clone access unavailable. This is a synthetic Store/CI result, not a neural JEPA update, trained latent transfer, Android capture or Redmi test. The latest private V13OBS #115 snapshot still says STOPPED_BY_USER and model process STOPPED; auto-update is enabled on installed base `8d93236`, but candidate #2463 is not installed. No device command or update request.
 
 Next: Boss/Integrator rebind the current exact source hashes and include the full imported dependency closure, then rerun staged/integrated/consumer/migration. Perception then measures near-duplicate source grouping and source-level uncertainty. User action: NONE.
+
+
+### Research & Perception — run 21 (2026-11-25)
+
+- **A3 source-stat runtime change:** PR #2484 exact code/test commit `8d0861188a61290366cd2aa377edcfac0c625610`. Existing as well as newly created `data/` and `data/vision/` directories are now owner-checked and hardened to 0700 using descriptor-relative `fchmod`; source-stat artifacts remain 0600. Runtime consumer remains `vision.train()` / `train_tiles()` → `build_source_statistics()`.
+- **Local evidence:** CPython 3.13.5 LOCAL_LINUX isolated helper harness PASS 4/4 (fresh create, legacy 0755 hardening, both symlink levels rejected). Full Aii pytest/py_compile NOT_RUN; no local checkout is mounted.
+- **CI evidence:** exact head observed with four workflows IN_PROGRESS (run IDs 45506945163, 45506945574, 45506945185, 45506945923). No PASS/merge/release claim until they complete.
+- **Stack:** #2484 → #2477 → Core #2465 → Perception base; Core/QA still must include `vision_projector_stats.py` in the materialized source closure and rebind exact source pins before staged/integrated/consumer/migration acceptance.
+- **Research:** R-144 full preprint on replay-compatible representational drift; R-145 full FlyGCL preprint + MIT OSS audit. Neither justifies frozen teachers or direct Android port. Redmi remains REDMI_UNVERIFIED.
