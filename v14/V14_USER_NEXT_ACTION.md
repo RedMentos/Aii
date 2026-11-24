@@ -1862,6 +1862,7 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - Redmi/Termux: REDMI_UNVERIFIED. No device receipt, updater call, model/weight change, permission change or user-data action was made. No release/deployment is claimed.
 - User action: **none**. No model download/swap or manual Termux command is requested.
 - Next internal action: read back exact-head CI, then coordinate Core/QA's composer dependency closure and rerun staged/integrated/migration tests.
+- Follow-up research: the full-read 2026-09-15 Information paper on multilevel near-duplicate diagram detection and a local shared-template dHash stress probe show hash-only source grouping is unsafe (threshold 2: TPR 0.704 / FPR 0.53; threshold 5: TPR 0.922 / FPR 0.92). Do not automatically merge A3 source IDs from perceptual hashes; next step is a calibrated multi-signal candidate signal with hard-negative tests.
 
 ## RAW EAR / A4 checkpoint — 2026-11-24
 
