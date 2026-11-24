@@ -278,7 +278,6 @@ class ArrayWindowTests(unittest.TestCase):
                 preregistration_path=path,
                 preregistration_sha256=digest,
                 access_log_path=root / "access.jsonl",
-                expected_code_commit=current_git_commit(),
             )
             self.assertEqual(stats.split, "test")
             batches = list(self.dataset.iter_batches("test", batch_size=32))
@@ -304,7 +303,6 @@ class ArrayWindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=log_directory,
-                    expected_code_commit=current_git_commit(),
                 )
             with self.assertRaises(PermissionError):
                 next(self.dataset.iter_batches("test", batch_size=8))
@@ -326,7 +324,6 @@ class ArrayWindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=root / "access.jsonl",
-                    expected_code_commit="b" * 40,
                 )
             self.assertFalse((root / "access.jsonl").exists())
 
@@ -346,7 +343,6 @@ class ArrayWindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=root / "access.jsonl",
-                expected_code_commit=current_git_commit(),
                 )
             self.assertFalse((root / "access.jsonl").exists())
 
