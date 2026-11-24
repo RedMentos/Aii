@@ -1261,7 +1261,6 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 - **Next falsifiable experiment:** compare current acoustic onset, a causal 320-ms bounded endpoint head, and no-semantic baseline on a held-out overlap/backchannel/hesitation set. Report false interruptions/hour, barge-in delay, endpoint recall, and CPU/RAM. Boundary hard negatives and confidence gating are candidates only; no model, weights, data or dependency were imported.
 - **Licenses:** no upstream code, datasets or weights copied. Their specific code/weight/data licenses were not verified in this run. No Android/ARM feasibility or Redmi performance is established.
 
-
 ## R-115 — Causal speech endpointing is distinct from speech onset (2026-11-23)
 
 **Primary paper reviewed in full:** Tristan Tsoi et al., *Next-Turn: Duration-Aware Streaming Endpoint Detection via Time-to-Next-Speech-Onset Prediction*, arXiv:2606.18094v1, 2026-06-16 (preprint; no peer-reviewed venue established here): https://arxiv.org/abs/2606.18094 . The full five-page PDF was read. The method derives a continuous time-to-next-speech-onset target from phoneme/speech timestamps, with zero during speech, the remaining gap during a mid-utterance pause, and a capped 2-second target after an utterance. A Whisper encoder is LoRA-adapted; binary endpoint classification can be trained jointly with regression or discretized duration bins. Random audio cut-off is used to reduce future-context leakage. Evaluation uses non-overlapping 160-ms chunks, normally one past chunk and zero future chunks.
@@ -1275,7 +1274,6 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **V14 decision:** keep RAW EAR voice_onset as a speech-start observation, not a semantic endpoint. Do not infer turn completion from silence, VAD alone, or the current onset heuristic. Preserve default duplex_mode=auto as non-cancelling; explicit interrupt remains a user-controlled onset interrupt. A future causal endpoint experiment should train a small duration-aware head from source-bound timestamps, compare binary-only vs joint auxiliary-duration training, use source/session-disjoint conversational holdouts, and report Early Interruption, ACC160/320, false interruptions/hour, p50/p90 delay and Android RSS/CPU. Future context must be measured separately because the Next-Turn paper shows lower early interruption at the cost of added delay.
 
 **Status:** NEXT_TURN_FULL_PDF_REVIEWED / FASTTURN_FULL_PDF_REVIEWED / FD_VAD_ABSTRACT_AND_OSS_README_LICENSE_REVIEWED / NO_REUSE / NO_MODEL_OR_DEPENDENCY_DOWNLOAD / NO_ANDROID_PROOF / RESEARCH_ONLY.
-
 
 ## R-116 — Intent-aware duplex turn state and the limits of learned endpoint heads (2026-11-23)
 
@@ -1303,7 +1301,6 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 4. The present audio duplex adapter still receives caller-supplied PCM and is not an Android AudioRecord provider or full audible duplex product. The thread-bound AudioConsentLease now has an explicit cross-thread negative regression; the real provider and audible playback acknowledgements remain Core/QA integration work.
 
 **Status:** HITHINK_TURN_FULL_ARXIV_HTML_REVIEWED / VOICE_LIGHT_FULL_ARXIV_HTML_AND_OFFICIAL_REPO_README_REVIEWED / VOICE_LIGHT_NO_LICENSE_NO_REUSE / NO_MODEL_DOWNLOAD / NO_ANDROID_PROOF / RESEARCH_AND_POLICY_GUIDANCE_ONLY.
-
 
 ## R-117 — Optional local Teacher Ear adapter for RAW EAR (2026-11-23)
 
@@ -1379,7 +1376,6 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 - audio_voice_cues.py supplies the current persisted PCM source hash and active consent receipt to the registry. Vectors remain process-local and are not written into PerceptPacket; evidence carries hashes/metadata only.
 - Focused local exact-module compile + direct checks: PASS for active-lease receipt requirement, exact PCM match/mismatch, non-voiced suppression, history retention, consent-epoch reset and explicit reset. Full repository pytest and CI remain unverified in this run; see run-28 handoff.
 
-
 ## R-119 — Acoustic/prosodic versus text cues for end-of-turn detection (2026-11-23)
 
 **Evidence level: ABSTRACT + SECONDARY AI REVIEW ONLY. NOT A FULL PRIMARY-PAPER REVIEW.**
@@ -1391,7 +1387,6 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 **V14 implication (hypothesis, not a result):** retain RAW EAR acoustic/prosodic evidence as the primary real-time timing path. Keep optional Teacher Ear transcript source-bound, separately opted-in and outside the current duplex interrupt decision. Do not let cached ASR text independently trigger barge-in. If a trainable A4 endpoint head is later evaluated, compare acoustic-only, prosody-only, acoustic+prosody and text-fused variants at matched capacity and latency, with explicit false-interruption costs, German/English, hesitation, backchannels, overlap, noise and non-silent turn transitions. Use session/source-separated consented holdouts and multiple seeds; report both early-interrupt and late-response tails, not only aggregate F1. No model, code, dataset or dependency was imported or downloaded.
 
 **Status:** ABSTRACT_ONLY / SECONDARY_AI_AUDIT_ONLY / PREPRINT / REUSE_NOT_APPROVED / NO_REPRODUCTION / NO_ANDROID_PROOF.
-
 
 ## Research & OSS update — 2026-11-24
 
@@ -1410,3 +1405,15 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 - **V14 use:** optional, separate Teacher Ear ASR hypothesis only. RAW EAR acoustic/prosodic/non-speech signals remain primary. Keep model loading OFF unless a later explicit experimental download approval is given; productive swap would require a separate approval and rollback plan. No package/model/weight was downloaded or changed.
 - **Minimal falsifiable test:** on an authorized Android build, compare the pinned int8 model against no-teacher RAW EAR on consented synthetic/volunteer speech with exact ABI, cold/warm TTFT, RTF, peak RSS/PSS, CPU threads, battery/thermal behavior, WER by noise/overlap class, and explicit opt-in/revocation/zeroization. Reject if it starves B1/B2/C3 or adds unacceptable latency/RAM.
 - **Decision:** CANDIDATE_PROPOSED / NOT_ADOPTED / NOT_DOWNLOADED. Follow-up owner: Research & Perception + QA & Android.
+
+## R-123 — Teacher Ear descriptor-pinned model loading (2026-11-24)
+
+**Finding.** The previous manifest path performed `lstat`/`resolve`/SHA-256 checks and returned a pathname. The native loader opened that pathname later, leaving a verify→open interval in which a parent directory or final file could be replaced by a symlink or renamed target.
+
+**V14 change.** `audio_teacher_ear.py` now traverses the canonical model root and relative parents using directory file descriptors with `O_DIRECTORY|O_NOFOLLOW`, opens the final file relative to the pinned parent, hashes that open descriptor, verifies `/proc/self/fd/<fd>` identifies the same device/inode, and passes the descriptor-backed paths into the existing `OnlineRecognizer.from_transducer` consumer. `VerifiedModelFiles` retains the descriptors for the recognizer lifetime; `SherpaOnlineTeacher.close()` releases them. The code fails closed if required dir-fd flags/support or `/proc/self/fd` are unavailable.
+
+**Primary-source check.** Python's `os.open` supports `dir_fd` on Unix platforms that expose it; `O_NOFOLLOW` and `O_DIRECTORY` are platform-specific and therefore explicitly gated. Upstream `k2-fsa/sherpa-onnx` was checked at `6e24506004105319393a3cd9954a375068ef44dd`; its Python `OnlineRecognizer.from_transducer` accepts filename arguments and its C API constructs the recognizer from that file configuration. Upstream license: Apache-2.0. No upstream code or model weights were copied/downloaded; this is an API-contract and license check only.
+
+**Evidence.** LOCAL_LINUX isolated reproduction on Python 3.13.5 / Linux 6.18.57 x86_64: `py_compile` PASS; five regression cases PASS (final-file replacement, parent-directory symlink swap, final symlink rejection, bundle-size ceiling, and fake native-loader path read). This is not a full repository test run and not a real sherpa native load. Exact PR head `345de43...` had five CI failures: three stale speaker schema/expectation tests, one Teacher Ear regex mismatch, and one test that incorrectly expected PROVISIONAL transcript text in C3. Those were corrected in commits `a20ff439`, `a3d4f24`, and `bf8b30f`; the comparison workflow's exact source pins were refreshed in `7ba3fec`. CI on `7ba3fec...` was queued and must finish before acceptance.
+
+**Limitations / next.** Open descriptors pin inode identity against rename/symlink replacement; they do not prevent a same-user process from modifying the same inode in place. `/proc/self/fd`, `dir_fd`, ARM ABI compatibility, memory overhead, and actual sherpa loading remain TERMUX/REDMI_UNVERIFIED. Next: complete exact-head Python 3.13/3.14 CI, then test procfs/dir-fd support on authorized Termux/Android. No new paper or model alternative was needed for this security defect; no model download or swap is proposed.
