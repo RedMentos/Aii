@@ -32,7 +32,8 @@ import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
 from .vision_source_lineage import source_lineage, projector_uses_source, unlink_projector_artifact, unlink_source_blob
-from .vision_projector_stats import (SOURCE_STATS_MODE, MAX_SOURCE_STATS, build_source_statistics,
+from .vision_projector_stats import (SOURCE_STATS_MODE, MAX_SOURCE_STATS, MAX_FEATURE_DIM,
+                                     MAX_TARGET_DIM, MAX_ROWS_PER_SOURCE, build_source_statistics,
                                      rebuild_without_source, remove_source_statistics)
 from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
@@ -761,6 +762,32 @@ def dataset(store,cfg=DEFAULTS,*,state=None):
             ids.append(sid+':'+cap['source_ref'].get('region_id','g'))
     return np.asarray(X),caps,np.asarray(T),ids
 
+
+def _build_exact_source_stats(home,prefix,X,Y,keys,training_sources,feature_schema,encoder,ridge,update_gate):
+    """Only persist deletion statistics when the published projector is the exact full ridge fit."""
+    scale=update_gate.get('scale') if type(update_gate) is dict else None
+    if (type(update_gate) is not dict or update_gate.get('status') not in ('INITIAL','APPLIED')
+            or type(scale) not in (int,float) or float(scale)!=1.0):
+        return [],'UNAVAILABLE_SCALED_UPDATE'
+    if X.ndim!=2 or Y.ndim!=2 or X.shape[0]!=Y.shape[0]:
+        return [],'UNAVAILABLE_SHAPE'
+    if X.shape[1]>MAX_FEATURE_DIM or Y.shape[1]>MAX_TARGET_DIM:
+        return [],'UNAVAILABLE_DIMENSION_CAP'
+    if len(training_sources)>MAX_SOURCE_STATS:
+        return [],'SOURCE_CAP_EXCEEDED'
+    counts={}
+    for key in keys:
+        if type(key) is not str or ':' not in key:
+            return [],'UNAVAILABLE_SOURCE_BINDING'
+        source_id=key.split(':',1)[0]
+        counts[source_id]=counts.get(source_id,0)+1
+    if any(count>MAX_ROWS_PER_SOURCE for count in counts.values()):
+        return [],'UNAVAILABLE_ROW_CAP'
+    return build_source_statistics(
+        home,prefix,X,Y,keys,training_sources,feature_schema,encoder,ridge)
+
+
+
 def train(runtime,encoder=None,cfg=DEFAULTS):
     # One versioned snapshot binds every feature row, caption and source digest.
     st=load(runtime.store)
@@ -785,8 +812,8 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
         return st['projector']
 
     feature_schema=REVISION+':global'
-    source_stats,stats_mode=build_source_statistics(
-        runtime.home,'projector',X,Y,ids,training_sources,feature_schema,name,cfg['ridge'])
+    source_stats,stats_mode=_build_exact_source_stats(
+        runtime.home,'projector',X,Y,ids,training_sources,feature_schema,name,cfg['ridge'],gate)
     path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz')
     try:
         sha=p.save(path)
@@ -873,8 +900,8 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
         return st['tile_projector']
 
     feature_schema=REVISION+':tiles'
-    source_stats,stats_mode=build_source_statistics(
-        runtime.home,'tiles',X,Y,keys,training_sources,feature_schema,name,cfg['ridge'])
+    source_stats,stats_mode=_build_exact_source_stats(
+        runtime.home,'tiles',X,Y,keys,training_sources,feature_schema,name,cfg['ridge'],gate)
     path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz')
     try:
         sha=p.save(path)
