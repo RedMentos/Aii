@@ -1431,3 +1431,11 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Evidence and limits:** Split-MNIST class-incremental accuracy 72.65% and weighted accuracy 76.31%; the paper reports about 8× lower inference memory than a full-precision counterpart (3.02 MiB vs 24.53 MiB for the evaluated model). CORe50 and Split-CIFAR results are materially weaker; the authors state that the model struggles with complex RGB diversity and explicitly leave edge-device benchmarking for future work. The 3.02 MiB is a model inference footprint, not measured Android PSS/RSS or power. This is a small supervised BNN classifier, not an LFM/MoE world model.
 
 **V14 implication:** consider only the mechanism, not the backbone: a small context-conditioned sparse gate over adapter/plasticity eligibility, paired with a metaplastic consolidation state, may complement eligibility×error×modulator×plasticity. First reproduce on a tiny local adapter with task-free sequential streams, explicit replay budget, ACC/wACC/FWT/BWT/REM, real gradient/parameter diffs and restart retention. Do not binarize B1/B2 or import AGPL code without a deliberate product-license decision. No engramBNN code or weights were copied or downloaded in this run.
+
+### R-136 verification follow-up — exact head 0711ef8 (2026-11-24)
+
+- GitHub Actions `frame-ingress`: 54/54 PASS on CPython 3.13 and 54/54 PASS on CPython 3.14, including the identical-third-frame no-change control.
+- `privacy` and `offline-bridge-security`: PASS.
+- `a5-ui-lease`: FAIL on CPython 3.13 and 3.14 (17 passed, 5 skipped, 1 failed). The failing test is `test_staged_store_read_open_is_linearized_with_revocation`; Core's `source_lifecycle_lock_integration_candidate.py:172` rejects `vision.py` because the #2469 base still pins 758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5 while Core PR #2465 has the updated 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728. This is a stacked Core dependency; #2470 remains draft until the source-lifecycle stack is integrated and retested.
+- Source-lineage 39/39 on Python 3.13 and 39/39 on 3.14 passed on parent checkpoint 9b69aa5; no source-lineage code changed afterward.
+- LOCAL_LINUX project tests NOT_RUN/BLOCKED (no checkout and GitHub DNS failure); REDMI_UNVERIFIED; NOT_RELEASED.

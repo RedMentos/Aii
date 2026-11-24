@@ -41,3 +41,12 @@ This is a diagnostic over the existing trained ridge projector, not a JEPA tempo
 
 - MotionJEPA/DISReg full paper reviewed (arXiv:2609.23881v1, 2026-09-20, CC BY 4.0). Its dynamic-difference prediction is a training-only anti-feature-suppression objective; its ViT-Tiny/10M-episode CUDA training is not an Android implementation. The root OSS repo has no license; only its separate planning submodule is MIT.
 - engramBNN full APL Machine Learning paper reviewed (published 2026-11-06, CC BY 4.0). Sparse context-dependent stochastic gates plus metaplastic updates are a promising small-adapter experiment, not a direct B1/B2 replacement. The author code is AGPL-3.0 and stale relative to the 2026 paper; no code or weights were reused.
+
+## Current-head CI and integration blocker (0711ef81de25d72f7a45864c66c77a51e6c10e2b)
+
+- `frame-ingress`: 54/54 PASS on CPython 3.13 and 54/54 PASS on CPython 3.14. This includes the identical-third-frame no-change control, which returns zero A3 projected delta after a changed frame.
+- `privacy`: PASS; `offline-bridge-security`: PASS.
+- `a5-ui-lease`: FAIL on both Python versions (17 passed, 5 skipped, 1 failed). The failure is `test_staged_store_read_open_is_linearized_with_revocation` → `source_lifecycle_lock_integration_candidate.py:172` → `unsupported lifecycle source: vision.py`. The #2469 base carries the old `PINS['vision.py']` SHA-256 758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5; Core PR #2465 carries the updated pin 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728. This is a missing stacked Core dependency; no pin bypass is requested. Commented on #2465 and #2470 for coordinated integration.
+- A separate #2472 blocker remains: the recovery builder expects guard SHA-256 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9 while #2472 changes the guard source. Core/Integrator coordination was posted on #2465 and #2472.
+- Source-lineage tests 39/39 passed on Python 3.13 and 39/39 on 3.14 at parent checkpoint 9b69aa5; those files were not changed in the no-change-control follow-up.
+- LOCAL_LINUX full project tests NOT_RUN/BLOCKED; no repository checkout and github.com DNS unavailable. CI is not local evidence. REDMI_UNVERIFIED; NOT_RELEASED.
