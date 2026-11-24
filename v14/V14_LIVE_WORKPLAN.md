@@ -1337,3 +1337,18 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - PR: #2448, base 8d93236; code/test state verified on a23366f4ab72feaf53b965c16de9cc9f818ed04d; handoff commit dc7afb20d24619de61944adadbab79916f052cee. DRAFT / NOT_RELEASED. No deployment or model swap.
 - Device/deployment: existing sanitized owner receipt #825 in #1904 confirms base SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 installed and auto-update enabled; separate diagnostics #826 report AI runtime STOPPED_BY_USER, autostart false and model process stopped. No CHAT_SEND, UPDATE_REQUEST, restart or LOG_PAGE was performed. PR #2448 is not merged/installed; its RAW EAR feature remains REDMI_UNVERIFIED. No Android microphone, AudioRecord, latency or RAM claim.
 - Next: Core/QA review the new schema/source pins and restore a runnable exact-head CI job; Perception then ports the still-separate transactional A4 outcome/N10 path from stale #2433 onto the current base. Calibrated speaker thresholds and learned EOT remain OFF/UNVERIFIED.
+
+
+## Research & Perception — Teacher Ear stream consumer correction — 2026-11-24 run 29
+
+- PR #2448 remains DRAFT / NOT_RELEASED on the current release base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Found and fixed a consumer-contract mismatch: the function annotation allowed `SherpaOnlineTeacherStream`, but the runtime type gate accepted only `SherpaOnlineTeacher`. The consumer now accepts the declared teacher and stream types while preserving both explicit opt-ins and live source/consent validation. Code commit `d0c0f4ca366b97dcc1334d0a20f21bea94f5b9b6`.
+- Found and fixed a streaming correction loss: a recognizer revision is represented by an empty delta plus a new cumulative hypothesis. With transcript admission explicitly opted in, C3 now receives `asr_revision_untrusted`; ordinary chunks remain delta-only. Code commit `2dd5c4990a84f88c9ad96dfcf37539bf25649df8`.
+- The three-window integration regression now checks contiguous source-bound PCM, delta extension, corrected cumulative hypothesis, C3 admission and final stream cleanup. Test commit `dd409b8e19960e62826a281cd4a85de5459cb44c`. It uses a fake recognizer, not a real model.
+- Exact branch head at code checkpoint: `dd409b8e19960e62826a281cd4a85de5459cb44c`. The new handoff is `v14/handoffs/RESEARCH_PERCEPTION_TEACHER_STREAM_C3_REVISION_20261124_RUN29.md`; R-122 records the optional sherpa-onnx 20M English candidate.
+- LOCAL_LINUX: full checkout unavailable; `git ls-remote` fails with GitHub DNS resolution. No local `py_compile` or pytest was run.
+- CI: exact-head push/PR runs `45294606645`, `45294614943`, `45294672434`, `45294666726` all ended `startup_failure` with zero jobs. No test job ran; no PASS is claimed.
+- Consumer effect after successful tests: optional contiguous Teacher Ear can enter A5/A4/C3 admission, send incremental text and explicit corrections only with the separate transcript-persistence/admission opt-in. It does not yet drive a full C3 generation or Android microphone.
+- Redmi: public blocker #1904 comment 7108089370 confirms base `8d93236` installed and auto-update enabled; Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false, model process stopped. Preserve the stopped state. PR #2448 is not installed; REDMI_UNVERIFIED.
+- Next: restore exact-head Actions, obtain independent QA/Boss review, then coordinate Core/QA's separate visible AudioRecord provider and revocation lifecycle. No model download/swap, restart, permission change or manual Termux action.
+- User action: NONE.
