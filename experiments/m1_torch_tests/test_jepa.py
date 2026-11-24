@@ -15,6 +15,7 @@ from experiments.m1.gru import RawGRUForecaster
 from experiments.m1.jepa import (
     DirectMAEForecaster,
     FrozenContextProbe,
+    make_random_context_probe,
     JEPAConfig,
     JEPAForecaster,
     collapse_metrics,
@@ -158,14 +159,14 @@ class JEPAModelTests(unittest.TestCase):
     def test_frozen_context_probe_uses_known_covariates_and_freezes_encoder(self):
         backbone = JEPAForecaster(self.config)
         probe = FrozenContextProbe(backbone, self.config)
-        frozen_before = [p.detach().clone() for p in probe.backbone.parameters()]
+        frozen_before = [p.detach().clone() for p in probe.encoder.parameters()]
         readout_before = probe.readout.weight.detach().clone()
         history = train_frozen_probe(
             probe, self.dataset, epochs=1, batch_size=32, seed=19
         )
         self.assertTrue(np.isfinite(history[0]["mae"]))
         self.assertFalse(torch.equal(readout_before, probe.readout.weight.detach()))
-        for before, after in zip(frozen_before, probe.backbone.parameters()):
+        for before, after in zip(frozen_before, probe.encoder.parameters()):
             torch.testing.assert_close(before, after)
         batch = next(self.dataset.iter_batches("validation", batch_size=8))
         prediction = probe(
@@ -174,6 +175,16 @@ class JEPAModelTests(unittest.TestCase):
             torch.as_tensor(batch.inputs.calendar),
         )
         self.assertEqual(prediction.shape, batch.target.shape)
+
+    def test_random_context_probe_is_seed_reproducible(self):
+        first = make_random_context_probe(self.config, seed=42)
+        second = make_random_context_probe(self.config, seed=42)
+        third = make_random_context_probe(self.config, seed=43)
+        for left, right in zip(first.encoder.parameters(), second.encoder.parameters()):
+            torch.testing.assert_close(left, right, rtol=0, atol=0)
+        self.assertFalse(torch.equal(
+            next(first.encoder.parameters()), next(third.encoder.parameters())
+        ))
 
     def test_streaming_validation_collapse_telemetry(self):
         model = JEPAForecaster(self.config)
