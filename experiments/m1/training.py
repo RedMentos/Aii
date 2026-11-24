@@ -167,6 +167,12 @@ def train_direct_mae(
     return history
 
 
+def train_raw_gru(model, dataset: ArrayDataset, **kwargs) -> list[dict[str, float]]:
+    """Train the Raw-GRU control with the same raw-unit MAE loop as Direct-MAE."""
+    return train_direct_mae(model, dataset, **kwargs)
+
+
+
 def train_frozen_probe(
     model,
     dataset: ArrayDataset,
