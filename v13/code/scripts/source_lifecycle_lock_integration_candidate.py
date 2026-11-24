@@ -8,7 +8,7 @@ PINS = {
     'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
-    'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
+    'vision.py': '350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
@@ -103,45 +103,52 @@ MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?
 MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
             cleanup_unreferenced(self.s,sid)
 '''
-VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
-    im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
-    for rec in st['images'].values():
-        if rec['ref']['sha256']==sha:return rec
-    if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
-    path=store.home/'data/blobs'/sha
-    if not path.exists():atomic_write(path,data)
-    sid=uid('src')
-    with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
-    ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
-    rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
-    st['images'][sid]=rec;save(store,st);return rec
+VISION_BLOB_OLD = b'''def _verify_or_create_blob(path, data, sha):
+    if path.is_symlink() or path.parent.is_symlink() or path.parent.parent.is_symlink():
+        raise ValueError('image blob path or parent is a symlink')
+    if not path.parent.is_dir():
+        raise ValueError('image blob directory is unavailable')
+    if path.exists():
+        if not path.is_file() or digest(path.read_bytes()) != sha:
+            raise ValueError('existing image blob does not match its content hash')
+    else:
+        atomic_write(path, data)
 '''
-VISION_NEW = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    from .source_lifecycle_candidate import vision_ingest
-    return vision_ingest(store,data,cfg,label)
+VISION_BLOB_NEW = b'''def _verify_or_create_blob(path, data, sha):
+    # Caller holds the Store write transaction covering blob publication and
+    # the IMAGE source row. Use the shared no-clobber, digest-verified writer.
+    from .source_lifecycle_candidate import verify_or_create_blob
+    return verify_or_create_blob(path, data, sha)
 '''
-VISION_FORGET_OLD = b'''def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
-    save(store,st)
-    with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
+
+VISION_CLEANUP_OLD = b'''    # Check references and unlink while holding the same Store write lock used
+    # by ingest. A concurrent re-ingest can only run before or after this block.
+    with store.tx() as conn:
+        shared = conn.execute(
+            "SELECT id FROM sources WHERE hash=? AND kind='IMAGE' AND deleted=0 LIMIT 1",
+            (sha,),
+        ).fetchone()
+        blob_retained_shared = bool(shared)
+        blob_deleted = False
+        if not shared:
+            blob_deleted = unlink_source_blob(store.home, sha)
 '''
-VISION_FORGET_NEW = b'''def forget(store,rec):
-    from .source_lifecycle_candidate import vision_forget
-    return vision_forget(store,rec)
+VISION_CLEANUP_NEW = b'''    # Recheck every live source reference under the shared Store lock. The
+    # lifecycle helper removes plain, archived, and crash-pending blob names.
+    from .source_lifecycle_candidate import cleanup_unreferenced
+    cleanup_status = cleanup_unreferenced(store, sid)
+    if cleanup_status not in ('REMOVED', 'PRESERVED_LIVE'):
+        raise ValueError('unexpected image blob cleanup result')
+    blob_retained_shared = cleanup_status == 'PRESERVED_LIVE'
+    blob_deleted = cleanup_status == 'REMOVED'
 '''
-VISION_STATE_OLD = b'''def load(store):return store.state(KEY,None)[0] or {'revision':REVISION,'images':{},'projector':None,'last':None}
-def save(store,st):store.set_state(KEY,st)
+VISION_CLEANUP_FAILED_OLD = b'''    cleanup_failed = []
+    if not shared and not blob_deleted:
+        cleanup_failed.append('image_blob')
 '''
-VISION_STATE_NEW = b'''def load(store):
-    from .source_lifecycle_candidate import load_vision_state
-    return load_vision_state(store)
-def save(store,st):
-    from .source_lifecycle_candidate import save_vision_state
-    save_vision_state(store,st)
+VISION_CLEANUP_FAILED_NEW = b'''    cleanup_failed = []
+    if not blob_retained_shared and not blob_deleted:
+        cleanup_failed.append('image_blob')
 '''
 RESTORE_OLD = '''def restore(store,h):
     p=_dir(store)/h;zp=p.with_name(h+'.z')
@@ -186,9 +193,9 @@ def build_sources(source_dir):
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
-            ('vision.py', VISION_OLD, VISION_NEW),
-            ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
-            ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
+            ('vision.py', VISION_BLOB_OLD, VISION_BLOB_NEW),
+            ('vision.py', VISION_CLEANUP_OLD, VISION_CLEANUP_NEW),
+            ('vision.py', VISION_CLEANUP_FAILED_OLD, VISION_CLEANUP_FAILED_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
