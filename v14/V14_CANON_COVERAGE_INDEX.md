@@ -15,6 +15,12 @@
 - Downstream recovery/stage/deployer pins are rebound bottom-up. Exact-head PR #2478 has 58 check-runs registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Staged-runtime/integrated-regression and all required consumers are pending; do not promote the prior c39d42 loader failure or queued status to acceptance.
 - LOCAL_LINUX full suite **BLOCKED / NOT_RUN** (no checkout; DNS failure). Redmi **REDMI_UNVERIFIED**, last shared receipt AI STOPPED_BY_USER; no device action. Correct native B1/B2 offers, consumed C4/C3 contribution and 20-turn acceptance remain OPEN.
 
+## Voice I/O evidence overlay — run 23 (2026-11-24T20:26:03.098Z)
+
+- Existing code: `v13/speech_intent.py` binds FINAL C3 text to message/event identity and a SHA-256; `v13/speech_output.py` uses a serialized Termux system-TTS fallback and persists typed `ActionIntent`/`ActionOutcome`; `v13/operator.py` exposes TTY-only `:voice` commands. Playback requires both `:voice on` and explicit `:voice speak`; no automatic playback, microphone access or trainable vocoder is claimed.
+- Existing `test_speech_output.py` uses a fake CLI and stub Runtime/Store. PR #2479 adds a real Runtime/SQLite/Operator test with a fake local TTS executable; exact head `bcc99e8f9620c7162aae218324a611e2fdf7730c` has 5/5 checks QUEUED at last poll.
+- Status: **WIRED_SYNTHETIC / NOT_NATIVE_VERIFIED**. Redmi audibility, separate trainable speech decoder/vocoder, raw acoustic learning, full-duplex/barging-in and retention/restart remain OPEN. No device command or APK install was performed.
+
 ## Historische Quellblöcke
 
 - HISTORICAL: **1** Überschriften
