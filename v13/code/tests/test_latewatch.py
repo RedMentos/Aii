@@ -34,6 +34,16 @@ class Pure(unittest.TestCase):
         self.assertEqual(lw.disagreement(off,'The result is 1,300, because I added them',src),'RESULT_CONFLICT')
         self.assertIsNone(lw.disagreement(OFFER,'The answer is 10',  'What is 46 plus 62?'))  # number still streaming
         self.assertIsNone(lw.disagreement(OFFER,'Well, the answer to it is 10','What is 46 plus 62?'))
+    def test_postcommit_retry_only_skips_delivered_or_still_running_late_offer(self):
+        failed={'late_watch':{'offered':'B2_GIST','status':'NO_OFFER','error':'Limits'}}
+        delivered={'late_watch':{'offered':'B2_GIST','status':'AFTER_OUTPUT','offer_id':'pkt_b2'}}
+        running={'late_watch':{'offered':'B2_GIST','status':'STILL_RUNNING'}}
+        self.assertFalse(lw.postcommit_consumed(failed,'B2_GIST'))
+        self.assertTrue(lw.postcommit_consumed(delivered,'B2_GIST'))
+        self.assertTrue(lw.postcommit_consumed(running,'B2_GIST'))
+        self.assertFalse(lw.postcommit_consumed(failed,'B1_DETAIL'))
+        self.assertFalse(lw.postcommit_consumed({},'B2_GIST'))
+
     def test_residency_never_evicts_c3(self):
         def r(experts,resident,budget=1800,guard='NORMAL',decode='server',enabled=True):
             box=SimpleNamespace(load=lambda:({'experts':experts,'resident':resident,'budget_mb':budget},0))

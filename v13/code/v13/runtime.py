@@ -749,7 +749,7 @@ class Runtime:
             background_roles=[role for role in background_roles if role not in already_offered_roles]
             background_roles=rmodes.cap_roles(background_roles,self.guard.mode,'background_observers')  # §97.2 YELLOW: one post-commit body
             for role in background_roles:
-                if role==(meta.get('late_watch') or {}).get('offered'):continue  # WP-U3: this body already ran during the output
+                if latewatch.postcommit_consumed(meta,role):continue  # WP-U3: retry failed late-watch offers; avoid duplicate or concurrent body work
                 if self.guard.update(self.resources())!='NORMAL' or not rmodes.policy(self.guard.mode)['background_observers']:break
                 if not self.jobs.empty() or self.cancel_event.is_set():break
                 try:
