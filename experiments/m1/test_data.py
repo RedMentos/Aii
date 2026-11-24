@@ -261,6 +261,24 @@ class CalendarBoundaryTests(unittest.TestCase):
                 test_start="2009-12-01",
             )
 
+    def test_candidate_window_universe_is_independent_of_input_length(self):
+        from experiments.m1.data import build_dataset
+        rows = self.rows
+        short = DataConfig(
+            input_length=3, horizon=2, max_candidate_input_length=8,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        long = DataConfig(
+            input_length=8, horizon=2, max_candidate_input_length=8,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        _, short_stats, _ = build_dataset(rows, self.channels, short)
+        _, long_stats, _ = build_dataset(rows, self.channels, long)
+        self.assertEqual(
+            short_stats["train"].candidate_windows,
+            long_stats["train"].candidate_windows,
+        )
+
     def test_uci_calendar_boundaries_are_date_based_and_l_independent(self):
         from experiments.m1.data import uci_calendar_config
         start = datetime(2006, 12, 16, 17, 24)
