@@ -71,8 +71,8 @@ class DirectUCIArrayTests(unittest.TestCase):
             self.assertEqual(dataset.channels, channels)
             self.assertEqual(dataset.dataset_sha256, dataset_sha256(rows, channels))
             self.assertEqual(dataset.split_sha256, split_boundaries_sha256(rows, config))
-            self.assertEqual(dataset.values.shape, (1000, 2))
-            self.assertTrue(np.isnan(dataset.values[12, 0]))
+            self.assertEqual((dataset.n_rows, len(dataset.channels)), (1000, 2))
+            self.assertTrue(np.isnan(dataset.train_values()[12, 0]))
             batch = next(dataset.iter_batches("train", batch_size=16))
             # The missing row at index 12 rejects origins 10..16; only 9 of the first 16 candidates survive.
             self.assertEqual(batch.inputs.x.shape, (9, 5, 2))
@@ -222,6 +222,12 @@ class ArrayWindowTests(unittest.TestCase):
             list(self.dataset.iter_batches("train", batch_size=8193))
         for batch in self.dataset.iter_batches("train", batch_size=17):
             self.assertLessEqual(len(batch.origin_indices), 17)
+
+    def test_public_values_api_exposes_only_train_rows(self):
+        self.assertFalse(hasattr(self.dataset, "values"))
+        train = self.dataset.train_values()
+        self.assertEqual(len(train), self.dataset.bounds["train"][1])
+        self.assertFalse(train.flags.writeable)
 
     def test_test_split_requires_exact_hash_bound_preregistration(self):
         with tempfile.TemporaryDirectory() as directory:
