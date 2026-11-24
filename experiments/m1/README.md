@@ -2,7 +2,7 @@
 
 Status: implementation draft; no model has been trained on the real UCI dataset.
 
-This workspace is independent of V13/V14 development. It copies selected M1 data/experiment code into a separate package and keeps the previous branches and directories untouched.
+This is a standalone, clean-room forecasting experiment under `experiments/m1/`. It does not modify the installed Android runtime, model files, permissions or device state.
 
 ## Data contract
 - UCI minute-resolution household power data; strict continuity and finite-value validation.
@@ -30,6 +30,7 @@ No real UCI file was available in this execution environment: the Library search
 - dlinear.py: matched-information DLinear and NLinear controls; DLinear uses replicate-edge trend/residual decomposition, while NLinear centers X on its last value. Both include a future-known S/calendar branch and bind look-back length at construction.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
+- runner.py: validation-only multi-model pilot; applies a per-epoch train-window cap only to fitting, evaluates every model on the full shared validation origins, saves model checkpoints and writes one provenance-bound result JSON. JEPA pretraining is recorded separately from raw-unit forecast predictors.
 
 ## Model contract
 - JEPA context encoder sees standardized historical X.
@@ -45,6 +46,27 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
     python -m pip install -r experiments/m1/requirements.txt
     python -m pip install -r experiments/m1/requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
+
+
+
+## Validation-only runner
+
+The runner turns the model modules into one repeatable experiment. It does not download data automatically and never opens the test year.
+
+1. Download the official UCI file from the [UCI dataset page](https://archive.ics.uci.edu/dataset/235/individual%2Bhousehold%2Belectric%2Bpower%2Bconsumption) and keep `household_power_consumption.txt` under the ignored `experiments/datasets/` directory.
+2. Run from a clean Git checkout so the runner can record the exact executing HEAD:
+
+```bash
+python -m experiments.m1.runner \
+  --data experiments/datasets/household_power_consumption.txt \
+  --output experiments/results/m1-validation-pilot.json
+```
+
+The default is an **exploratory pilot**, not a locked experiment: one seed, one epoch, and at most 4,096 accepted training windows per epoch for models that learn weights. Train-only scaling still uses the complete train rows; Train Mean/Median use all accepted train target timestamps. Every forecast model is evaluated on the full validation split and identical accepted origins. Increase seeds, epochs and the training-window cap through a JSON `PilotConfig` override only after reviewing the compute budget.
+
+The runner writes the canonical result JSON and a separate `*.checkpoints/` directory beside it. It refuses to overwrite an existing result or checkpoint directory. The result records the raw-file and parsed-data hashes, split statistics, code SHA, model parameter counts, training histories, checkpoint hashes, per-origin paired block-bootstrap intervals and the explicit `test_split_accessed=false` gate.
+
+JEPA is a latent pretraining objective, not a raw-unit forecast head. Its latent loss and collapse telemetry are recorded separately; forecast MAE is measured through the trained frozen-context probe, Direct-MAE, DLinear/NLinear, Raw-GRU and the other raw/baseline controls. Do not rank the JEPA latent loss against forecast MAE.
 
 ## Verification status
 - **Current core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `3a118e1ba27f59a10ce52483fbc822d9148781cf` (GitHub Actions run `45331033269`). Includes calendar splits, preregistration gates, NumPy/list parity with missing rows/NaNs, baselines, bootstrap and data integrity.
