@@ -1,3 +1,16 @@
+# Research & Perception — latest combined checkpoint (2026-11-24 18:23 UTC)
+
+Two separate current-base Perception changes are open; neither is released or installed.
+
+1. **PR #2471** — RAW EAR temporal interval ordering: reject backward start_ms even if end_ms advances; equal-start cumulative windows and partial overlap remain valid. Dedicated exact CI run #2 passed py_compile and 13/13 tests on Python 3.13 (0.15 s) and 13/13 on Python 3.14 (0.10 s). Local isolated CPython 3.13.5 stress passed 5,000 monotonic/overlap/gap intervals plus 4,750 backward-start negative controls. Full local Aii suite remains BLOCKED / NOT_RUN; no Redmi test.
+
+2. **PR #2472** — current-base rebase of A4 source-bound outcomes and RAW EAR speaker/prosody evidence from stale #2433. The RECORD_ONLY guard now pins exact attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e while preserving the old pin. Exact current-base CI is pending; prior #2433 passes are historical and not inherited. Old #2433 remains open temporarily and must not be merged; close it only after #2472 is green and reviewed.
+
+Latest available consented private V13OBS #115 receipt: 2026-11-24 09:28:11 UTC. Auto-update enabled; Runtime/Dashboard UP_TO_DATE at 8d93236. AI STOPPED_BY_USER and model process STOPPED. B1/B2 still TIME_BUDGET 53.2/54.2 s with zero valid offers. This receipt predates both PRs and does not prove installation. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation.
+
+Neither PR adds Android microphone capture. AudioRecord remains OFF pending QA's signed companion verifier, lifecycle, consent revocation and zeroization tests. No model download/swap is proposed. No user action is required.
+
+---
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
