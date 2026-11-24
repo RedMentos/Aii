@@ -2,11 +2,12 @@
 
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
 caller-supplied PCM16 only and never opens a microphone or stores raw PCM.
-Acoustic/prosodic cues remain primary. Optional Sherpa ASR runs only with a
-separate teacher_asr_opt_in and live source-bound lease; its hypothesis is
-untrusted and is persisted or admitted to C3 only with a second explicit
-transcript_persist_opt_in. No ASR, model load, learning or action authority is
-enabled by default. Acoustic classes remain deterministic heuristics.
+Acoustic/prosodic cues remain primary. Optional Sherpa ASR and a local
+speaker-embedding extractor each require separate explicit opt-in and a live
+source-bound lease; model files must already exist locally and be hash-pinned.
+ASR hypotheses remain untrusted, and transcript persistence requires a second
+explicit opt-in. No model load, learning or action authority is enabled by
+default. Acoustic classes remain deterministic heuristics.
 """
 from __future__ import annotations
 
