@@ -6,8 +6,9 @@ import threading
 import time
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from v13 import observer_schedule as obs
+from v13 import latewatch as lw
 from v13 import resource_modes as rm
 from v13 import effort
 from v13.common import Cancelled, Limits
@@ -219,25 +220,39 @@ class Turn(unittest.TestCase):
 
     def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
         self.calls.clear()
+        original_decide=self.r.learner.decide
+        def deterministic_decide(kind,*args,**kwargs):
+            if kind=="wake":return {"learned":False,"action":"both"}
+            return original_decide(kind,*args,**kwargs)
+        self.r.learner.decide=deterministic_decide
         def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
             status=self.r.store.one(
                 "SELECT status FROM messages WHERE event_id=? AND role='assistant'",
                 (e["event_id"],)
             )["status"]
-            self.calls.append((role,valid_until is not None,status))
-            if role=="B2_GIST" and valid_until is not None:
-                raise Limits("pre-answer B2 slice expired")
+            preanswer=kw.get("preanswer_budgeted") is True
+            thread=threading.current_thread().name
+            valid_until_present=valid_until is not None
+            self.calls.append((role,preanswer,thread,valid_until_present,status))
+            if role=="B2_GIST" and valid_until_present:
+                raise Limits("pre-answer/late-watch B2 attempt expired")
             return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
         Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
-        self.r.submit("Compare plan A and plan B in detail")
-        until=time.monotonic()+15
-        while not self.r.idle() and time.monotonic()<until:
-            time.sleep(.005)
-        self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_ in self.calls))
-        self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_ in self.calls))
-        self.assertTrue(any(role=="B2_GIST" and not pre and status=="FINAL"
-                            for role,pre,status in self.calls))
+        with patch.object(lw,"residency",return_value=None):
+            self.r.submit("Compare plan A and plan B in detail")
+            until=time.monotonic()+15
+            while not self.r.idle() and time.monotonic()<until:
+                time.sleep(.005)
+        meta=json.loads(self.r.last_answer()["metadata"])
+        self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
+        self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
+        self.assertEqual(meta["late_watch"]["status"],"NO_OFFER")
+        self.assertEqual(meta["late_watch"]["error"],"Limits")
+        self.assertTrue(any(role=="B2_GIST" and thread=="latewatch" and valid
+                            for role,pre,thread,valid,_ in self.calls))
+        self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
+                            for role,pre,thread,valid,status in self.calls))
 
 if __name__=='__main__':unittest.main()
