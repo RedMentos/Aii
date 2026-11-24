@@ -23,6 +23,7 @@ _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _MAX_WINDOW_MS = 1000
 _MAX_PCM_BYTES = 96_000  # 48 kHz mono PCM16, one second
 _MAX_TEXT_CHARS = 512
+_HAS_OPEN_DIR_FD = os.open in getattr(os, "supports_dir_fd", set())
 
 
 class TeacherEarError(ValueError):
@@ -123,7 +124,7 @@ class TeacherEarManifest:
         if not root.is_dir():
             raise TeacherEarError("model root must be a directory")
         if (not hasattr(os, "O_DIRECTORY") or not hasattr(os, "O_NOFOLLOW")
-                or os.open not in getattr(os, "supports_dir_fd", set())):
+                or not _HAS_OPEN_DIR_FD):
             raise TeacherEarError("secure model loading requires O_DIRECTORY, O_NOFOLLOW and dir_fd support")
         proc_fd_root = Path("/proc/self/fd")
         if not proc_fd_root.is_dir():
