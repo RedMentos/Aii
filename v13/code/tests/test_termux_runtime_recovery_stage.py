@@ -154,8 +154,30 @@ try:
         (event_id,),
     )
     assert broker_row and json.loads(broker_row['payload'])['committed'] is True
-    for kind in ('ActionIntent', 'ActionOutcome', 'PredictionOutcome',
-                 'ExperienceRecord', 'WorldTransition', 'CorollaryCopy'):
+    # The visible TEXT_REPORT is itself a C5 output action. Keep its
+    # source-bound intent, self-prediction and final outcome; the fastpath
+    # must suppress external tool transactions and experience learning, not
+    # erase the ordinary output audit trail.
+    intents = [json.loads(x['payload']) for x in r.store.rows(
+        "SELECT payload FROM packets WHERE event_id=? AND kind='ActionIntent'",
+        (event_id,),
+    )]
+    assert len(intents) == 1
+    assert intents[0]['action_type'] == 'TEXT_REPORT'
+    assert intents[0]['permission'] == 'local_text_only'
+    assert not any(str(x.get('action_type', '')).startswith('TOOL_CALL:')
+                   for x in intents)
+    outcomes = [json.loads(x['payload']) for x in r.store.rows(
+        "SELECT payload FROM packets WHERE event_id=? AND kind='ActionOutcome'",
+        (event_id,),
+    )]
+    assert len(outcomes) == 1 and outcomes[0]['status'] == 'FINAL'
+    copies = [json.loads(x['payload']) for x in r.store.rows(
+        "SELECT payload FROM packets WHERE event_id=? AND kind='CorollaryCopy'",
+        (event_id,),
+    )]
+    assert len(copies) == 1 and copies[0]['expected']['type'] == 'TEXT_REPORT'
+    for kind in ('PredictionOutcome', 'ExperienceRecord', 'WorldTransition'):
         assert r.store.one(
             'SELECT id FROM packets WHERE event_id=? AND kind=?', (event_id, kind)
         ) is None, kind
