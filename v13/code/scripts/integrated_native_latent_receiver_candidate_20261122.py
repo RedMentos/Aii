@@ -121,11 +121,18 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
         try:
             from .native_latent_receiver import validate_packet
             q=validate_packet(json.loads(row['payload']))
-            return {k:q.get(k) for k in ('sender_role','receiver_role','sender_model_sha256',
-                'tokenizer_revision','receiver_model_revision','receiver_model_sha256','status',
-                'input_rows','input_dim','position_ids','position_mode','receiver_input_dim',
-                'output_dim','decode_status','row_shuffle_control_applicable',
-                'row_shuffle_control_cosine','native_input_consumed','input_effect_detected')} | {
+            return {k:q.get(k) for k in ('sender_role','receiver_role','sender_tap_packet_id','sender_tap_id',
+                'sender_model_revision','sender_model_sha256','tokenizer_revision',
+                'receiver_model_revision','receiver_model_sha256','runner_revision','llama_version',
+                'status','input_rows','input_dim','input_sha256','position_ids','position_mode',
+                'receiver_input_dim','output_dim','receiver_vocab_size','decode_status',
+                'receiver_next_token_id','zero_control_next_token_id','shuffle_control_next_token_id',
+                'row_shuffle_control_next_token_id','repeat_next_token_id','receiver_next_token_margin',
+                'logit_effect_rms','logit_cosine','next_token_effect_detected',
+                'next_token_changed_vs_zero','next_token_changed_vs_shuffle',
+                'next_token_changed_vs_row_shuffle','repeat_next_token_stable',
+                'row_shuffle_control_applicable','row_shuffle_control_cosine',
+                'native_input_consumed','input_effect_detected')} | {
                 'production_route':False,'semantic_use_proven':False,
                 'training_authority':0,'native_receiver_authority':0}
         except (ValueError,TypeError,KeyError,RuntimeError):

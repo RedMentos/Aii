@@ -152,6 +152,12 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert stored == packet
     status = controller(runtime).report(runtime.cfg)
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
+    assert status["native_receiver_probe"]["sender_tap_packet_id"] == "tap-packet-1"
+    assert status["native_receiver_probe"]["input_rows"] == 2
+    assert status["native_receiver_probe"]["receiver_next_token_id"] == 42
+    assert status["native_receiver_probe"]["logit_effect_rms"] == 0.5
+    assert status["native_receiver_probe"]["next_token_effect_detected"] is True
+    assert status["native_receiver_probe"]["next_token_changed_vs_zero"] is True
     assert status["native_receiver_probe"]["production_route"] is False
     assert "LATENT blocked" in status["gate"]
 
