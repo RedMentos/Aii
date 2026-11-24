@@ -6,6 +6,7 @@ import json
 import math
 import random
 import struct
+import threading
 from types import SimpleNamespace
 
 import pytest
@@ -20,6 +21,7 @@ from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
     _speaker_change_decision,
+    audio_consent_generation_scope,
     consume_pcm16_voice_window,
     reset_runtime_temporal_voice_states,
 )
@@ -1171,4 +1173,87 @@ def test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt(tm
         assert "activity=IMPULSIVE" in result["c3_admission"].selected[0].summary
         assert '"vector"' not in json.dumps(result["packet"])
     finally:
+        runtime.store.close()
+
+
+
+def test_audio_generation_scope_holds_provider_lease_through_full_runner_iterator(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    gate = threading.Lock()
+    revoked = threading.Event()
+    revoke_attempted = threading.Event()
+    revoke_completed = threading.Event()
+
+    def consent_check(source_id, receipt):
+        with gate:
+            return source_id == SOURCE and receipt == RECEIPT and not revoked.is_set()
+
+    @contextmanager
+    def consent_guard(source_id, receipt):
+        with gate:
+            yield source_id == SOURCE and receipt == RECEIPT and not revoked.is_set()
+
+    class Runner:
+        def __init__(self):
+            self.closed = False
+
+        def generate(self, messages, cancel, deadline):
+            assert gate.locked()
+            assert messages == [{"role": "system", "content": "audio-scope-consumer"}]
+            try:
+                yield "token-1"
+                assert gate.locked()
+                yield "token-2"
+            finally:
+                self.closed = True
+
+    runner = Runner()
+
+    def messages_factory(audio_result):
+        assert gate.locked()
+        assert audio_result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
+        assert audio_result["packet"]["modality"] == "audio"
+        assert audio_result["a4"]["learning_authority"] is False
+        return [{"role": "system", "content": "audio-scope-consumer"}]
+
+    def revoke():
+        revoke_attempted.set()
+        with gate:
+            revoked.set()
+            revoke_completed.set()
+
+    revoker = threading.Thread(target=revoke, daemon=True)
+    try:
+        with audio_consent_generation_scope(
+            runtime, tone(seconds=0.5),
+            runner=runner,
+            messages_factory=messages_factory,
+            cancel=None,
+            deadline=1_000_000_000.0,
+            sample_rate=16000,
+            start_ms=0,
+            event_id=event,
+            generation_id=runtime.store.generation_id,
+            source_id=SOURCE,
+            consent_receipt=RECEIPT,
+            consent_check=consent_check,
+            consent_guard=consent_guard,
+            finality="FINAL",
+        ) as (audio_result, token_stream):
+            assert audio_result["packet"]["source_ref"]["source_id"] == SOURCE
+            revoker.start()
+            assert revoke_attempted.wait(1.0)
+            assert not revoke_completed.wait(0.05)
+            assert list(token_stream) == ["token-1", "token-2"]
+            # Exhausting C3 does not release consent before the Runtime scope exits.
+            assert not revoke_completed.wait(0.05)
+
+        assert revoke_completed.wait(1.0)
+        revoker.join(1.0)
+        assert not revoker.is_alive()
+        assert revoked.is_set()
+        assert runner.closed
+    finally:
+        if revoker.is_alive():
+            revoker.join(1.0)
         runtime.store.close()
