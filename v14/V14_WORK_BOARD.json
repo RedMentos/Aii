@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:41:00Z",
+  "updated_at": "2026-11-24T03:44:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,9 +197,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 hash fixture PASS; GitHub CI: audio duplex 179/179 on Python 3.13+3.14, RAW EAR optional NumPy 128/128 on 3.13+3.14, prosody 3.11+3.13, consent-revocation, deploy-integrity and comparison workflows PASS; staged/integrated BLOCKED by three stale Core-owned source pins; TERMUX/REDMI_UNVERIFIED",
-      "next_step": "Core/Integrator: rebind SOURCE_BLOBS in v13/code/scripts/integrated_audio_context_candidate_20261121.py to the reviewed current blobs (voice_cues=e46a47bb93615126c8ee149baebfb6df9813fbee; speaker_evidence=25474bb202c1209800f5c8a73e36aeca5555efd6; temporal_evidence=e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140), then rerun exact staged/integrated workflows. Research/Perception: after the pin repair, verify descriptor support on authorized Termux; no microphone provider or model download.",
+      "next_step": "Core/Integrator: rebind the three audio SOURCE_BLOBS in integrated_audio_context_candidate_20261121.py and rerun staged/integrated. Core/JEPA: add the reviewed vision.py source-lifecycle mapping and forget regression required by #2442. Then cleanly rebase the 12 A3/RAW EYE visual code/workflow files onto current release HEAD and rerun focused/staged/integrated CI. After integration is green, verify descriptor and permissioned MediaProjection/audio ingress only on authorized Android; no model download or device capture before consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:40:00Z",
+      "last_checkpoint": "2026-11-24T03:44:00Z",
       "latest_candidate_pr": {
         "pr": 2448,
         "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
@@ -207,8 +207,12 @@
         "state": "OPEN_DRAFT_NOT_RELEASED_CODE_TESTED_AT_C7DB",
         "scope": "Teacher Ear descriptor-pinned native model loading; source-bound audio stream; no Android microphone provider"
       },
-      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof.",
-      "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_RUN33_20261124.md"
+      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof. Visual cross-check: #2442 focused CI passed vision-source-lineage 29/29 and MediaProjection RAW EYE frame-ingress 39/39, but staged/integrated failed because the Core-owned source-lifecycle composer rejects vision.py (19 failed, 234 passed, 10 skipped, 2 errors). Branch is 25 ahead/10 behind current release head; no overlapping changed files in the intervening base commits. Core blocker posted to #2462; no composer bypass or Redmi proof.",
+      "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_RUN33_20261124.md",
+      "related_prs": [
+        2448,
+        2442
+      ]
     },
     {
       "id": "V14-007",
