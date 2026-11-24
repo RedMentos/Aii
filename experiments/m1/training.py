@@ -82,6 +82,7 @@ def train_jepa(
     for epoch in range(epochs):
         totals = {"total": 0.0, "latent_mse": 0.0, "variance": 0.0, "covariance": 0.0}
         batches = 0
+        windows = 0
         for batch in dataset.iter_batches(
             "train", batch_size=batch_size, shuffle=True, seed=seed + epoch
         ):
@@ -99,16 +100,19 @@ def train_jepa(
             optimizer.step()
             global_step += 1
             tau = model.update_target_encoder(global_step, total_steps)
+            count = len(batch.origin_indices)
             for key in totals:
-                totals[key] += float(components[key])
+                totals[key] += float(components[key]) * count
+            windows += count
             batches += 1
         if batches == 0:
             raise ValueError("no accepted train batches in epoch")
         history.append({
             "epoch": float(epoch + 1),
-            **{key: value / batches for key, value in totals.items()},
+            **{key: value / windows for key, value in totals.items()},
             "ema_tau": float(tau),
             "steps": float(batches),
+            "windows": float(windows),
         })
     return history
 
@@ -222,7 +226,7 @@ def train_frozen_probe(
 
 
 def evaluate_direct_mae(
-    model: DirectMAEForecaster,
+    model,
     dataset: ArrayDataset,
     split: str = "validation",
     *,
@@ -242,6 +246,101 @@ def evaluate_direct_mae(
     if elements == 0:
         raise ValueError(f"no accepted windows in split {split}")
     return absolute_sum / elements
+
+
+
+def _collapse_moments():
+    return {"n": 0, "sum": None, "cross": None}
+
+
+def _update_collapse_moments(state: dict, latents: torch.Tensor) -> None:
+    pooled = latents.detach().mean(dim=1).to(torch.float64).cpu().numpy()
+    if state["sum"] is None:
+        width = pooled.shape[1]
+        state["sum"] = np.zeros(width, dtype=np.float64)
+        state["cross"] = np.zeros((width, width), dtype=np.float64)
+    state["sum"] += pooled.sum(axis=0)
+    state["cross"] += pooled.T @ pooled
+    state["n"] += pooled.shape[0]
+
+
+def _finish_collapse_moments(state: dict) -> dict[str, float]:
+    n = state["n"]
+    if n < 2:
+        raise ValueError("collapse telemetry requires at least two validation windows")
+    mean = state["sum"] / n
+    covariance = (state["cross"] - n * np.outer(mean, mean)) / (n - 1)
+    covariance = 0.5 * (covariance + covariance.T)
+    std = np.sqrt(np.maximum(np.diag(covariance), 0.0))
+    eigenvalues = np.maximum(np.linalg.eigvalsh(covariance), 0.0)
+    total = float(eigenvalues.sum())
+    if total <= 0.0:
+        effective_rank = 0.0
+    else:
+        probabilities = eigenvalues[eigenvalues > 0] / total
+        effective_rank = float(np.exp(-(probabilities * np.log(probabilities)).sum()))
+    return {
+        "stdZ": float(std.mean()),
+        "std_min": float(std.min()),
+        "std_median": float(np.median(std)),
+        "std_max": float(std.max()),
+        "effective_rank": effective_rank,
+    }
+
+
+@torch.no_grad()
+def evaluate_jepa(
+    model: JEPAForecaster,
+    dataset: ArrayDataset,
+    split: str = "validation",
+    *,
+    batch_size: int = 256,
+    device: str = "cpu",
+) -> dict:
+    """Stream latent loss and context/target collapse telemetry without storing all embeddings."""
+    _validate_model_dataset(model.config, dataset)
+    model.to(device)
+    model.eval()
+    squared_error = 0.0
+    elements = 0
+    windows = 0
+    context_state = _collapse_moments()
+    target_state = _collapse_moments()
+    for batch in dataset.iter_batches(split, batch_size=batch_size):
+        x, seasonal, calendar, target = _batch_tensors(batch, device)
+        outputs = model.forward_pretrain(x, seasonal, calendar, target)
+        squared_error += float(torch.square(outputs["prediction"] - outputs["target"]).sum())
+        elements += outputs["target"].numel()
+        windows += len(batch.origin_indices)
+        _update_collapse_moments(context_state, outputs["context"])
+        _update_collapse_moments(target_state, outputs["target"])
+    if not elements:
+        raise ValueError(f"no accepted windows in split {split}")
+    return {
+        "split": split,
+        "n_windows": windows,
+        "latent_mse": squared_error / elements,
+        "context_collapse": _finish_collapse_moments(context_state),
+        "target_collapse": _finish_collapse_moments(target_state),
+    }
+
+
+class TorchBatchPredictor:
+    """Adapter so trained torch forecasters can use the common NumPy metric suite."""
+
+    def __init__(self, model, *, name: str, device: str = "cpu"):
+        self.model = model
+        self.name = name
+        self.device = device
+        self.model.to(device)
+        self.model.eval()
+
+    @torch.no_grad()
+    def predict(self, batch):
+        self.model.eval()
+        x, seasonal, calendar, _ = _batch_tensors(batch, self.device)
+        return self.model(x, seasonal, calendar).detach().cpu().numpy()
+
 
 
 def save_checkpoint_atomic(
