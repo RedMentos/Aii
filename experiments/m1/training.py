@@ -168,8 +168,6 @@ def train_direct_mae(
     return history
 
 
-@torch.no_grad()
-
 def train_frozen_probe(
     model,
     dataset: ArrayDataset,
@@ -231,6 +229,7 @@ def train_frozen_probe(
 
 
 
+@torch.no_grad()
 def evaluate_direct_mae(
     model,
     dataset: ArrayDataset,
