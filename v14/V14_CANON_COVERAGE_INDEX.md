@@ -2281,3 +2281,14 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+## Research & Perception run 36 overlay — 2026-11-24
+
+| Canon family | New evidence | Current classification | Still not accepted |
+|---|---|---|---|
+| A5 RAW EAR / A4 attention | Source/generation/consent-scoped temporal turn candidates: sustained speech, new voiced-onset interrupt candidate, one-shot EOT candidate after 400 ms of newly observed contiguous silence. Negative controls exclude noise, impulses, uncertain windows, duplicated overlap coverage and reset-boundary carryover. | WIRED_SYNTHETIC candidate path in the existing A5→A4→C3 consumer; exact code head 677f73eaf7bf594ecbbf64ab2e99cca4398e0bc1; focused CI queued at checkpoint. | No learned EOT/INT verifier, no calibrated floor-transfer decision, no native microphone/AudioRecord, no Redmi latency/RAM/permission proof. |
+| C3 language admission | Compact `turn=sXeYiZ floor_transfer=UNVERIFIED` summary accompanies the existing source-bound acoustic context. | WIRED_SYNTHETIC consumer evidence; candidate fields remain untrusted observations. | No proof that C3 uses these cues correctly on natural speech; no full-duplex learned selective yielding. |
+| Duplex / action | Existing user-configured `duplex_mode=interrupt` remains the only audio-onset cancellation path; EOT candidate does not cancel. | Explicit-policy-only; no new action authority. | No model-verified turn transfer or automatic EOT stop. |
+| Whole-system integration | Current Perception PR #2448 still requires Boss/Integrator PR #2443 to rebind strict audio/vision source pins and run combined staged/integrated/same-turn/migration checks. | NOT_RELEASED / INTEGRATION_BLOCKED. | No release SHA or phone installation receipt for this candidate. |
+
+This overlay does not change any whole-system acceptance state. One synthetic A4/C3 path is not evidence that the whole Canon, native voice loop, learned turn-taking, or Android target is complete.
