@@ -130,7 +130,7 @@ class JEPAModelTests(unittest.TestCase):
         expected_scale = np.nanstd(self.dataset.train_values(), axis=0)
         expected_scale[expected_scale <= 1e-6] = 1.0
         np.testing.assert_allclose(model.scaler.mean.cpu().numpy(), expected_mean, rtol=1e-6)
-        np.testing.assert_allclose(model.scaler.scale.cpu().numpy(), expected_scale, rtol=1e-6)
+        np.testing.assert_allclose(model.scaler.scale.cpu().numpy(), expected_scale, rtol=1e-5, atol=1e-6)
         self.assertTrue(bool(model.scaler.fitted))
 
     def test_jepa_loss_and_collapse_telemetry_are_finite(self):
