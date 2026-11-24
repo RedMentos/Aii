@@ -8,6 +8,10 @@ on:
     paths:
       - "experiments/m1/**"
       - ".github/workflows/m1-clean-room.yml"
+concurrency:
+  group: m1-clean-room-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     strategy:
