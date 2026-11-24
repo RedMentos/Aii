@@ -183,8 +183,8 @@ class NativeTurnBudgetTests(unittest.TestCase):
     def test_recovery_reserves_focal_selection_after_body_passes(self):
         d=budget.plan(100,130,100,recent=[turn(),turn()])
         self.assertTrue(d["recovery"])
-        self.assertAlmostEqual(d["preanswer_end_monotonic"],104.0)
-        self.assertAlmostEqual(d["body_preanswer_end_monotonic"],103.0)
+        self.assertAlmostEqual(d["preanswer_end_monotonic"],120.0)
+        self.assertAlmostEqual(d["body_preanswer_end_monotonic"],119.0)
         self.assertEqual(d["focal_reserved_seconds"],1.0)
         self.assertEqual(d["preanswer_seconds_available"],19.0)
         self.assertEqual(d["c3_reserved_seconds"],10.0)
@@ -276,6 +276,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         rows=[
             turn("FINAL",generated=5,phase="stream",duration_s=float("nan")),
             turn("FINAL",generated=5,phase="stream",duration_s=0),
+            turn("FINAL",generated=5,phase="stream",duration_s=10**1000),
             turn(),turn()]
         d=budget.plan(100,130,100,recent=rows)
         self.assertTrue(d["recovery"])
