@@ -1,3 +1,50 @@
+# Core & Harness — deferred late-watch completion and source-revocation safety
+
+**Checkpoint:** 2026-11-24T13:24:14Z  
+**Repository:** `RedMentos/Aii`  
+**Branch:** `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`  
+**PR:** [#2462](https://github.com/RedMentos/Aii/pull/2462) — OPEN / NOT_RELEASED  
+**Base:** `8d93236c753f0194224c19edc7411d8d7082b1d6`  
+**Exact code head:** `85fda5fbc0997da5d495a023967d0ce7eadc44ff`
+
+## New executable behavior
+
+1. When a late-watch body is still running at the point C3 output commits, `Watcher.finish()` now starts a bounded-lifecycle waiter. If the original B1/B2 body later returns an OfferPacket, it is delivered once through the existing gated `selfmodel.late_offer(event_id, offer, output)` path.
+2. The already committed C3 answer is not revised or appended to. This is a post-answer self-model offer, not a second user-facing completion.
+3. Before deferred delivery, the exact original `source_ref` is re-read. If the source was revoked or is unavailable, the offer is dropped and the status is `DEFERRED_SOURCE_UNAVAILABLE`; no self-model delivery occurs.
+4. Added deterministic regressions for (a) a delayed offer arriving after `finish()` returns and (b) source revocation before deferred delivery.
+
+## Exact evidence
+
+- Changed source: `v13/code/v13/latewatch.py` Git blob `4b73149628a64553c267ae748bfe91c6c8197b5d`.
+- Changed tests: `v13/code/tests/test_latewatch.py` Git blob `c301b21b0dfe8aa67d3939e2583a0de8df4c0662`.
+- CI Core regression job on Python 3.13: **99 passed, 7 subtests passed**; exact-source compile PASS.
+- CI Core regression job on Python 3.14: **99 passed, 7 subtests passed**; exact-source compile PASS.
+- Direct same-turn Runtime B1/B2→C4→C3 consumer: **3 passed on Python 3.13 and 3 passed on Python 3.14**. These use synthetic model/consumer fixtures, not native weights.
+- The final staged fair-budget composition step fails on both Python versions (3 failed, 2 passed). Separate staged-runtime run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression: one selected stage test failed.
+- Root cause is an unchanged shared source-pin mismatch, not a failed direct consumer: current Runtime SHA-256 `7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186`; four consumers still expect `a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38`. The failing consumers include `integrated_online_world_candidate_20261110.py`, `observer_fair_budget_candidate_20261116.py`, `postcommit_observer_candidate_20261116.py`, and `record_only_online_guard_candidate_20261116.py`. All hash gates remain intact.
+- Other exact-head checks PASS: runtime deployment integrity, combined online JEPA, JEPA Runtime transactional update, JEPA receipt integrity, native tap provenance, Core native stream integrity and release-event integration. Safe-additive validation was policy-skipped.
+- LOCAL_LINUX full repository: BLOCKED / NOT_RUN; no checkout is mounted and `git ls-remote` fails GitHub DNS resolution.
+- Cross-lane coordination: Boss #2443 comment 7132621604; QA #2455 comment 7132622370. Core did not edit their owned builder/pin files.
+
+## Product and device boundary
+
+- E2E effect is limited to late B1/B2 offer retention after C3 returns. It does not prove native B1/B2 offers, correct C3 answers, trained latent transfer or a user-visible Redmi improvement.
+- Redmi remains **REDMI_UNVERIFIED**. Last stored private observation was STOPPED_BY_USER / autostart OFF; no fresh receipt or device action occurred.
+- No manual Termux command, UPDATE_REQUEST, service restart, APK install, model/weight change, permission change or user-data mutation.
+- GitHub push is not deployment. PR #2462 is NOT_RELEASED.
+
+## Next executable actions
+
+1. Boss/Integrator recompose the four current Runtime consumers and downstream recovery/stage/deployer chain against exact reviewed bytes; do not weaken or bypass pins.
+2. QA reruns Python 3.13/3.14 staged, integrated, same-turn, owner-read and two-checkout migration checks on the composed candidate.
+3. Core then continues the native receiver B1↔B2 and B1/B2→C3 pair-matrix/consumed-signal work, and reviews the Android ActionIntent/ActionOutcome companion path after QA's emulator process-restart test is stable.
+4. Keep native/Redmi claims OFF until real installed models and authorized hardware receipts prove them.
+
+**User action required:** none.
+
+---
+
 ## Latest exact-head CI follow-up - 2026-11-24T05:16:34Z
 
 - Direct same-turn Runtime B1/B2-to-C4-to-C3 consumer step: **PASS on Python 3.13 and 3.14**. Both runs verify both selected body summaries in the synthetic C3 system context, C4/template OfferPacket ID equality and tamper rejection.

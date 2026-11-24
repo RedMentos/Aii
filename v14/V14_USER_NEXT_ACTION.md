@@ -1,3 +1,17 @@
+# Latest Core & Harness checkpoint — 2026-11-24T13:24:14Z
+
+- PR #2462, branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact code head `85fda5fbc0997da5d495a023967d0ce7eadc44ff`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`; OPEN / NOT_RELEASED.
+- New behavior: a B1/B2 late-watch OfferPacket that finishes after C3 returns is delivered once to the existing gated `selfmodel.late_offer` path; the already committed C3 answer is never rewritten. If the original source_ref is revoked/unavailable before delivery, the offer is dropped and recorded as `DEFERRED_SOURCE_UNAVAILABLE`.
+- Exact CI Python 3.13 and 3.14: Core regression step **99 passed, 7 subtests passed** on each; direct same-turn B1/B2→C4→C3 consumer **3 passed** on each.
+- Overall staged/integrated remains FAIL, not a product pass: final staged fair-budget step 3 failed / 2 passed; separate staged-runtime 23 failed / 146 passed / 1 skipped / 2 errors / 33 subtests; integrated regression and phone-offer receipt checks fail at the same immutable Runtime source pin.
+- Runtime SHA-256 is `7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186`; four shared consumers still expect `a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38`. No hash gate was relaxed. Boss/Integrator and QA were notified in #2443 comment 7132621604 and #2455 comment 7132622370.
+- LOCAL_LINUX full Aii suite remains BLOCKED (no checkout mounted; GitHub DNS failure). Redmi remains REDMI_UNVERIFIED; last stored private observation was STOPPED_BY_USER/autostart OFF. No fresh device read, update, shell, APK install, model/weight/permission or data change occurred.
+- Next internal step: Boss/Integrator recompose the four Runtime consumers and downstream stage/deployer chain; QA reruns Python 3.13/3.14 staged/integrated/owner-read/migration. Core then continues native receiver pair-matrix and Android ActionIntent/ActionOutcome integration. No model alternative is recommended without real Redmi TTFT/prefill/PSS/quality comparisons.
+
+**User action: none required.** Do not restart the user-stopped service or run a manual Termux command.
+
+---
+
 ## Core #2462 exact-head follow-up - 2026-11-24T05:16:34Z
 
 - The direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step now PASSes on both Python 3.13 and 3.14. Each run confirms both body summaries reach the synthetic C3 context, C4-selected IDs match the template receipt, and tampered IDs are rejected.

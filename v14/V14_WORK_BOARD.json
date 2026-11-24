@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T05:16:34Z",
+  "updated_at": "2026-11-24T13:24:14Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core PR #2462 is DRAFT / OPEN / NOT_RELEASED at latest branch HEAD ca269493a380232ef88ffa095ab5b82eaec7fce3 (code head d0a30b18cc629d7498373e01985f89df00fa7461; later commits are documentation-only). Fair B1/B2 slices plus late-watch budget/idempotent telemetry fixes exist; exact staged/same-turn/owner-read CI remains blocked by stale Runtime composition pins. Full local Aii suite NOT_RUN; Redmi branch proof unavailable and phone runtime is STOPPED_BY_USER.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "LOCAL_LINUX_ISOLATED_CONTRACT_PASS; CI_PY313_AND_PY314_DIRECT_RUNTIME_SAME_TURN_PASS; STAGED_RUNTIME_FAIL_SOURCE_PINS; INTEGRATED_FAIL_SOURCE_PIN; OWNER_READ_PASS; PY314_INSTALLER_STAGE_FAIL; REDMI_UNVERIFIED",
-      "next_step": "Boss/Integrator: recompose integrated_online_world, postcommit_observer, record_only_online_guard and integrated_observer_fair_budget against the exact Core Runtime bytes, then rebind downstream recovery/stage/deployer inputs without relaxing hashes. QA: rerun exact Python 3.13/3.14 staged, integrated, owner-read and two-checkout migration. Do not trigger Redmi tests while the user-stopped service remains OFF.",
+      "proof_environment": "CI_PY313_AND_PY314_CORE_99_PASS_AND_DIRECT_SAME_TURN_3_PASS; STAGED_RUNTIME_FAIL_SOURCE_PINS; INTEGRATED_FAIL_SOURCE_PINS; LOCAL_FULL_REPO_BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Boss/Integrator: recompose integrated_online_world, observer_fair_budget, postcommit_observer and record_only_online_guard against the exact current Runtime bytes, then rebind downstream recovery/stage/deployer without weakening pins. QA: rerun exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and two-checkout migration matrix. Core: after shared chain is current, continue native receiver pair-matrix/consumed-signal validation and Android ActionIntent/ActionOutcome integration; do not claim native latent learning or Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T05:16:34Z",
-      "proof": "PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the C4 c4_offer_context_ready receipt before C3 context assembly. Direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step PASS on Python 3.13 and 3.14: both summaries reach synthetic C3 context, C4 IDs match template receipt, tamper negative control rejects. Overall same-turn workflows FAIL at final staged composition. Staged-runtime 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests; integrated-regression one selected stage test fails at the same integrated_online_world Runtime pin. Owner-read test job PASS; Python 3.14 staged installer self-test FAILs at the same pin. Runtime SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186; consumers still expect a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No hash gate relaxed. Full local suite blocked by no checkout/DNS. Last stored device observation STOPPED_BY_USER/autostart OFF; no fresh read/action; REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-24T13:24:14Z",
+      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -1514,5 +1514,44 @@
     "primary_runtime_docs_checkpoint": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
     "primary_runtime_test_checkpoint": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
     "supersedes_pr": 2458
+  },
+  "core_run21_checkpoint": {
+    "date": "2026-11-24T13:19:13Z",
+    "owner": "Core & Harness",
+    "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+    "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "code_commit": "85fda5fbc0997da5d495a023967d0ce7eadc44ff",
+    "pull_request": 2462,
+    "status": "OPEN_NOT_RELEASED_CI_PARTIAL_SOURCE_PIN_BLOCKED",
+    "changes": [
+      "Late B1/B2 OfferPacket completion after C3 return is consumed once through selfmodel.late_offer; committed C3 output is not rewritten.",
+      "Deferred offer is dropped if the original source_ref is revoked or unavailable before completion.",
+      "Added deterministic delayed-completion and source-revocation regressions in test_latewatch.py."
+    ],
+    "tests": {
+      "local_linux_full_repository": "BLOCKED: no checkout mounted; git ls-remote GitHub DNS failure; full pytest/compile/integration not run locally.",
+      "ci_py313_core": "PASS: 99 passed, 7 subtests passed; compile exact source PASS.",
+      "ci_py314_core": "PASS: 99 passed, 7 subtests passed; compile exact source PASS.",
+      "ci_py313_same_turn": "PASS: 3 passed; direct Runtime B1/B2->C4->C3 synthetic consumer.",
+      "ci_py314_same_turn": "PASS: 3 passed; direct Runtime B1/B2->C4->C3 synthetic consumer.",
+      "ci_staged_composition": "FAIL: 3 failed, 2 passed at final staged fair-budget composition; exact Runtime source pin mismatch.",
+      "ci_staged_runtime": "FAIL: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; shared integrated_online_world Runtime pin mismatch.",
+      "ci_integrated_regression": "FAIL: one selected staged regression at the same Runtime pin.",
+      "ci_phone_offer_receipt": "FAIL: same integrated_online_world Runtime pin mismatch.",
+      "ci_coordinated_source_contracts": "FAIL: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; same Runtime pin.",
+      "ci_owner_read_bootstrap": "FAIL: stage bootstrap fails closed at same Runtime pin.",
+      "other_ci": "PASS: runtime deployment integrity, combined online JEPA, JEPA Runtime transactional update, JEPA receipt integrity, native tap provenance, Core native stream integrity, release-event integration. Safe-additive workflow policy-skipped."
+    },
+    "runtime_sha256": "7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186",
+    "expected_runtime_sha256": "a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38",
+    "coordination": {
+      "boss_pr": 2443,
+      "boss_comment": 7132621604,
+      "qa_pr": 2455,
+      "qa_comment": 7132622370
+    },
+    "device": "REDMI_UNVERIFIED; last stored private observation STOPPED_BY_USER/autostart OFF; no fresh receipt or device action.",
+    "next_action": "Boss/Integrator recompose four Runtime consumers and downstream recovery/stage/deployer; QA reruns exact Python 3.13/3.14 matrix; Core then proceeds to native receiver pair-matrix and Android action/outcome integration.",
+    "user_action_required": false
   }
 }
