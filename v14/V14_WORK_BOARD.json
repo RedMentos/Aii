@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T00:21:00Z",
+  "updated_at": "2026-11-24T03:24:00.420Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,111 +196,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "A4/N10 source-bound outcome code is owned by Boss PR #2443, not Perception PR #2448. Boss branch contains exact attention/neuromod/receipt-test/workflow bytes and Core guard allowlist; PR #2443 OPEN/DRAFT, current API zero check-runs, pending status, startup_failure/zero jobs. No local full checkout; no Redmi proof.",
-      "next_step": "Boss/QA: run and review the A4/N10 source-bound receipt + transactional N10 path on exact #2443 head, with Core guard/recovery/stage/deployer pins and privacy/migration. Perception has reverted the duplicate A4/N10 files from #2448; do not duplicate. Keep #2448 focused on RAW EAR/Teacher Ear/duplex; after Actions is runnable, execute the audio and speaker-history regression matrix on Python 3.13/3.14. No microphone/model load until provider consent and Android tests.",
+      "proof_environment": "LOCAL_LINUX isolated algorithm reproduction 5/5; exact PR CI queued; TERMUX/REDMI_UNVERIFIED",
+      "next_step": "QA/Boss: review PR #2448 and finish exact-head Python 3.13/3.14 checks. After CI, verify dir_fd and /proc/self/fd on authorized Termux/Android; only then connect the permissioned PCM provider. Keep provisional audio out of C3 until FINAL.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T00:21:00Z",
+      "last_checkpoint": "2026-11-24T03:24:00.420Z",
       "latest_candidate_pr": {
-        "owner_pr": 2443,
-        "owner_branch": "boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean",
-        "owner_head_sha": "cdf6b64067ac426ba32194100d3764f6e74c105f",
-        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "attention_blob_sha": "ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb",
-        "neuromod_blob_sha": "fbb02147cbcfff10896736a20838fbce08d7409b",
-        "receipt_test_blob_sha": "200085b88497af331beb49eaf061944ad30542de",
-        "workflow_blob_sha": "05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57",
-        "core_guard_blob_sha": "ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc",
-        "ci": "STARTUP_FAILURE_ZERO_JOBS",
-        "local_test": "NOT_RUN",
-        "release": "NOT_RELEASED"
-      },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n\n2026-11-24 Perception checkpoint on PR #2448 (branch research-perception/v14-audio-duplex-bridge-20261123-run21, head 61a8b9d40a82f9aa647d9ea8a8653b499de5eb36; release base 8d93236c753f0194224c19edc7411d8d7082b1d6): duplex.handoff now prepares prior-event/message/packet and partial-output SourceRef before CAS-consuming the pending row; read/parse/source failures leave it retryable. Regression tests cover missing event, missing user message, malformed packet, source-write failure plus successful retry and one-use success. Workflow now includes duplex.py in path filters and explicit compile. LOCAL_LINUX isolated fake-Store state-machine reproduction: old code lost pending in 3/3 injected failures; new ordering preserved 3/3; simulated one-time CAS conflict retried and source was published once. This is not full repository pytest. Exact-head Actions run 45291585143 (code/test/workflow checkpoint) and later handoff run 45291932247 both ended startup_failure with no jobs; GitHub refused retry (403). No new CI PASS. Full local Aii checkout/pytest BLOCKED: no mounted checkout and github.com DNS unavailable. Latest #1904 receipt comment 7108089370: installed base 8d93236, auto-update enabled, AI runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate is NOT_DEPLOYED / REDMI_UNVERIFIED; no restart, UPDATE_REQUEST, CHAT_SEND, microphone permission or model/weight change.",
-      "run30_checkpoint": {
-        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
         "pr": 2448,
-        "code_head": "c708f7970d1757889435516e27370003ae83a6d6",
+        "head_sha": "7ba3fec3f016e770f1280af5f190d1a9fa0def6a",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "ported_from_pr": 2433,
-        "reason": "PR #2433 was 42 ahead/82 behind; current base had no intervening changes to attention.py, neuromod.py or test_attention.py, so only the A4/N10-owned files were ported.",
-        "runtime_consumer": "runtime.py calls attctl.controller(self).source_outcome(eid,text,output) after C3 output.",
-        "changes": [
-          "A4 source-outcome validates granted request/response lineage, source hash and stored source span, then writes an exactly-once receipt",
-          "N10 ModulatorPacket and A4 policy/receipt commit in one Store transaction",
-          "Negative reward_error stays signed into next-event attention/caution",
-          "Added restart, concurrent duplicate, transaction rollback, tampered source, omission/negative error and positive-control tests",
-          "Dedicated Python 3.13/3.14 workflow added"
-        ],
-        "tests": [
-          {
-            "name": "LOCAL_LINUX full checkout/compile/pytest",
-            "environment": "LOCAL_LINUX",
-            "result": "BLOCKED",
-            "reason": "No checkout; GitHub DNS unavailable"
-          },
-          {
-            "name": "A4/N10 focused workflow",
-            "environment": "CI",
-            "result": "BLOCKED",
-            "reason": "Exact-head Actions startup_failure with zero jobs"
-          },
-          {
-            "name": "source-bound A4→N10 Store regression",
-            "environment": "SYNTHETIC_TEST_CODE",
-            "result": "ADDED_NOT_RUN",
-            "reason": "Tests added but no runner/local checkout"
-          }
-        ],
-        "core_pin_blocker": {
-          "file": "v13/code/scripts/record_only_controller_guard_20261116.py",
-          "old_attention_sha256": "0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739",
-          "new_attention_sha256": "58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e",
-          "owner": "Core & Integration",
-          "action": "Update exact allowlist then recompute guard/recovery/stage/deployer hashes bottom-up; do not weaken checks"
-        },
-        "device": "Base 8d93236 installed per #1904 comment 7108089370; auto-update enabled; Runtime CI_WAIT; separate diagnostics STOPPED_BY_USER/autostart false",
-        "release": "NOT_RELEASED",
-        "next_action": "Core pin-chain repair; restore Actions; exact Python 3.13/3.14, staged/integrated/migration/privacy/revocation; independent QA/Boss review",
-        "user_action_required": false,
-        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md",
-        "status": "SUPERSEDED_DUPLICATE_REVERTED_FROM_PR2448",
-        "current_owner_pr": 2443,
-        "current_owner_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
-        "current_owner_guard_blob": "ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc",
-        "reverted_from_pr2448": [
-          "attention.py restored ee08a65644958780c64fd9f6fc1dfb7e972252d5",
-          "neuromod.py restored 214157e7d90ded915087d8e9d6e158ebe7a06b0b",
-          "test_attention.py restored 9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43",
-          "test_attention_outcome_receipt_v14.py deleted 1ddd5109596a3a42ee815e3a67baf7a46a5a7634",
-          "v14-attention-source-bound-outcomes.yml deleted 3b0416862c75c780b0a3de46d73fce6db72bb010"
-        ]
+        "state": "OPEN_DRAFT_CI_PENDING",
+        "scope": "Teacher Ear descriptor-pinned native model loading; source-bound audio stream; no Android microphone provider"
       },
-      "run31_checkpoint": {
-        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
-        "reason": "Current Boss PR #2443 already contains byte-identical A4/N10 implementation, tests, workflow and Core guard pin. Perception removed the duplicate from #2448 to keep one owner.",
-        "owner_pr": 2443,
-        "owner_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
-        "owner_status": "OPEN_DRAFT_NOT_MERGED",
-        "owner_ci": "ZERO_CHECK_RUNS; COMMIT_STATUS_PENDING; LATEST_WORKFLOW_STARTUP_FAILURE_ZERO_JOBS",
-        "perception_pr": 2448,
-        "perception_scope": "RAW EAR / speaker evidence / Teacher Ear / audio duplex only",
-        "perception_code_preserved": [
-          "d0c0f4ca366b97dcc1334d0a20f21bea94f5b9b6",
-          "2dd5c4990a84f88c9ad96dfcf37539bf25649df8",
-          "dd409b8e19960e62826a281cd4a85de5459cb44c"
-        ],
-        "reverted_duplicate_commits": [
-          "ee08a65644958780c64fd9f6fc1dfb7e972252d5",
-          "214157e7d90ded915087d8e9d6e158ebe7a06b0b",
-          "9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43",
-          "1ddd5109596a3a42ee815e3a67baf7a46a5a7634",
-          "3b0416862c75c780b0a3de46d73fce6db72bb010"
-        ],
-        "tests": "A4/N10 tests remain in #2443 and are NOT_RUN; audio tests remain in #2448 and are NOT_RUN",
-        "device": "Base 8d93236 installed; auto-update enabled; Runtime CI_WAIT/PARTIAL; STOPPED_BY_USER/autostart false; 2+2 returned 2; B1/B2 TIME_BUDGET 53.2/54.2 s",
-        "release": "NOT_RELEASED",
-        "user_action_required": false,
-        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md"
-      }
+      "proof": "Teacher Ear _load now passes hash-verified /proc/self/fd paths backed by open O_NOFOLLOW descriptors; openat-style dir_fd traversal blocks parent/final symlink swaps; explicit close releases descriptors. Exact-head 345de43 CI exposed stale speaker/Teacher Ear/C3 expectations; corrected in a20ff439, a3d4f24, bf8b30f and source pins 7ba3fec. Isolated Linux reproduction 5/5 PASS; full repo suite pending. No microphone capture, native sherpa model, weight learning or Android proof."
     },
     {
       "id": "V14-007",
@@ -342,10 +249,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF. Perception follow-up: obtain successful exact-head CI for PR #2448, then independent QA/Boss review of the first-writer/commit-before-cancel races and retryable handoff; microphone provider remains OFF until Core/QA provider consent and revocation wiring is composed.",
+      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T23:52:27.945Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.\n\n2026-11-24 Perception checkpoint on PR #2448 (branch research-perception/v14-audio-duplex-bridge-20261123-run21, head 61a8b9d40a82f9aa647d9ea8a8653b499de5eb36; release base 8d93236c753f0194224c19edc7411d8d7082b1d6): duplex.handoff now prepares prior-event/message/packet and partial-output SourceRef before CAS-consuming the pending row; read/parse/source failures leave it retryable. Regression tests cover missing event, missing user message, malformed packet, source-write failure plus successful retry and one-use success. Workflow now includes duplex.py in path filters and explicit compile. LOCAL_LINUX isolated fake-Store state-machine reproduction: old code lost pending in 3/3 injected failures; new ordering preserved 3/3; simulated one-time CAS conflict retried and source was published once. This is not full repository pytest. Exact-head Actions run 45291585143 (code/test/workflow checkpoint) and later handoff run 45291932247 both ended startup_failure with no jobs; GitHub refused retry (403). No new CI PASS. Full local Aii checkout/pytest BLOCKED: no mounted checkout and github.com DNS unavailable. Latest #1904 receipt comment 7108089370: installed base 8d93236, auto-update enabled, AI runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate is NOT_DEPLOYED / REDMI_UNVERIFIED; no restart, UPDATE_REQUEST, CHAT_SEND, microphone permission or model/weight change."
+      "last_checkpoint": "2026-11-22T11:38:04.785Z",
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
     },
     {
       "id": "V14-010",
@@ -478,135 +385,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "Test code now includes 1s/2s timestamp invariance (10/20-frame lookback), missing-threshold and unvoiced/non-voiced negative controls; NOT_RUN on current head because exact-head CI has startup_failure/zero jobs. LOCAL_LINUX full checkout BLOCKED; no Redmi proof.",
-      "next_step": "Restore exact-head CI and run test_one_and_two_second_reference_timestamps_are_batch_length_invariant plus missing-threshold, non-voiced, 3-regime, RAW EAR/A4/C3 and duplex/Teacher Ear regressions on Python 3.13/3.14. Then independent QA/Boss review and Core attention.py guard/pin-chain repair. Keep AudioRecord/model OFF and preserve STOPPED_BY_USER.",
+      "proof_environment": "LOCAL_LINUX isolated + CI pending; no Android timing",
+      "next_step": "Finish the exact 7ba3fec Python 3.13/3.14 speaker regressions, including 1 s/2 s invariance and non-voiced negative controls; preserve the uncalibrated DEFER behavior and keep vectors RAM-only. Android proof remains separate.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T00:15:12Z",
+      "last_checkpoint": "2026-11-24T03:24:00.420Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "dd409b8e19960e62826a281cd4a85de5459cb44c",
+        "head_sha": "7ba3fec3f016e770f1280af5f190d1a9fa0def6a",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "code_sha": "2dd5c4990a84f88c9ad96dfcf37539bf25649df8",
-        "regression_sha": "dd409b8e19960e62826a281cd4a85de5459cb44c",
-        "consumer_blob_sha": "e46a47bb93615126c8ee149baebfb6df9813fbee",
-        "test_blob_sha": "4aa78e52f4848aba1d4ec9b1492e7c4b6e8ee696",
-        "ci": "STARTUP_FAILURE_NO_JOBS_45294672434_45294666726",
-        "local_test": "BLOCKED_NO_CHECKOUT_DNS",
-        "tested_code_sha": null
+        "state": "OPEN_DRAFT_CI_PENDING",
+        "ci": "Previous 345de43: 5 failures; corrected; new 7ba3fec checks queued"
       },
-      "proof": "PR #2448 remains DRAFT / NOT_RELEASED. Code commit d0c0f4ca fixes the declared Teacher Ear stream type gate; 2dd5c499 forwards revised cumulative hypotheses to C3 only when transcript admission is explicitly opted in. Regression commit dd409b8 expands the streaming consumer test to three contiguous windows (delta + correction), exact source hashes, C3 admission and stream cleanup. This regression uses a fake recognizer and has NOT_RUN. Exact-head push/PR Actions runs 45294606645, 45294614943, 45294672434, 45294666726 ended startup_failure with zero jobs. No local py_compile/pytest. The latest sanitized device receipt is #1904 comment 7108089370: base 8d93236 installed, auto-update enabled, Runtime CI_WAIT; diagnostics show STOPPED_BY_USER/autostart false. Candidate not installed; REDMI_UNVERIFIED. R-122 records sherpa-onnx English 20M as optional, not downloaded, candidate. Existing speaker-history regression code also contains the 1s/2s batch-length-invariance test (10/20-frame lookback), threshold-absent control, and non-voiced/three-regime negative controls; test blob 7962ad24f29b4a4638e20d5449b9d9f2d2e3028d. These are present, not executed on this head.",
-      "run28_checkpoint": {
-        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
-        "pr": 2448,
-        "branch_head_at_board_update": "f0e428feff7e6c90c07ac699bebd4a6e71901753",
-        "code_test_sha": "a23366f4ab72feaf53b965c16de9cc9f818ed04d",
-        "handoff_commit_sha": "83057babeb8e90fbab44e0f6a703eda191842de2",
-        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md",
-        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "code_paths": [
-          "v13/code/v13/audio_speaker_evidence.py",
-          "v13/code/v13/audio_voice_cues.py",
-          "v13/code/tests/test_audio_speaker_evidence.py"
-        ],
-        "tests": [
-          {
-            "name": "exact updated module compile",
-            "environment": "LOCAL_LINUX",
-            "result": "PASS"
-          },
-          {
-            "name": "direct registry invariants: active lease, PCM hash, non-voiced suppression, history, consent epoch, reset",
-            "environment": "LOCAL_LINUX",
-            "result": "PASS"
-          },
-          {
-            "name": "full repository pytest",
-            "environment": "LOCAL_LINUX",
-            "result": "BLOCKED",
-            "reason": "No local checkout/runtime"
-          },
-          {
-            "name": "GitHub Actions exact-head",
-            "environment": "CI",
-            "result": "BLOCKED",
-            "reason": "startup_failure; zero jobs"
-          },
-          {
-            "name": "synthetic A5-A4-C3 impulse integration regression",
-            "environment": "LOCAL_LINUX / CI",
-            "result": "NOT_RUN",
-            "reason": "Full repository pytest unavailable; exact-head Actions startup_failure with zero jobs"
-          }
-        ],
-        "e2e_scope": "Synthetic PCM16 impulse A5->A4->C3 regression is ADDED_NOT_RUN; local PASS covers only the speaker registry module, not a real consumer turn.",
-        "device": "Base SHA 8d93236 installed per sanitized owner receipt #825; AI runtime STOPPED_BY_USER per diagnostics #826; PR #2448 feature REDMI_UNVERIFIED",
-        "release": "NOT_RELEASED",
-        "updater": "Auto-update enabled for installed base per #825; no update request/deployment for PR #2448; runtime stop respected",
-        "next_action": "Core/QA CI and source-pin review; Perception 1-s/2-s invariance, then current-base A4 outcome/N10 integration",
-        "github_metadata_blocker": "403: connected GitHub account has no verified email; PR body and #2433 comment not updated",
-        "p0_issue_1904": {
-          "status": "OPEN_BLOCKING",
-          "installed_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-          "receipts": [
-            "#825 installed base / auto-update enabled",
-            "#826 AI runtime STOPPED_BY_USER / autostart false"
-          ],
-          "last_reported_acceptance": "3/20 live sample before current base: greeting FINAL; 2+2 incorrect; ambiguous follow-up repeated prior answer; B1/B2 TIME_BUDGET and zero valid offers",
-          "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE"
-        }
-      },
-      "run29_checkpoint": {
-        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
-        "pr": 2448,
-        "branch_head": "dd409b8e19960e62826a281cd4a85de5459cb44c",
-        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "changes": [
-          "Accept SherpaOnlineTeacherStream at the existing caller-supplied PCM consumer gate",
-          "Send corrected cumulative streaming hypotheses to C3 as asr_revision_untrusted only under explicit transcript admission",
-          "Three-window synthetic integration regression covers delta, revision, source binding and stream closure"
-        ],
-        "tests": [
-          {
-            "name": "LOCAL_LINUX full Aii checkout",
-            "environment": "LOCAL_LINUX",
-            "result": "BLOCKED",
-            "reason": "No checkout; git ls-remote failed because github.com DNS did not resolve"
-          },
-          {
-            "name": "py_compile / repository pytest",
-            "environment": "LOCAL_LINUX",
-            "result": "NOT_RUN",
-            "reason": "No local checkout"
-          },
-          {
-            "name": "exact-head GitHub Actions",
-            "environment": "CI",
-            "result": "BLOCKED",
-            "reason": "Runs 45294606645, 45294614943, 45294672434, 45294666726 ended startup_failure with zero jobs"
-          },
-          {
-            "name": "three-window Teacher Ear A5/A4/C3 integration regression",
-            "environment": "SYNTHETIC_TEST_CODE",
-            "result": "ADDED_NOT_RUN",
-            "reason": "Fake recognizer; exact CI startup failure and no local checkout"
-          }
-        ],
-        "e2e_scope": "Caller-supplied PCM → RAW EAR/A5 → A4 → C3 admission only; not full C3 generation, real sherpa model inference, Android microphone or Redmi",
-        "device": "Base 8d93236 installed per public #1904 comment 7108089370; auto-update enabled; Runtime CI_WAIT; separate diagnostics STOPPED_BY_USER/autostart false",
-        "release": "NOT_RELEASED",
-        "updater": "Existing updater enabled for base; PR candidate not installed; no UPDATE_REQUEST or manual command",
-        "research": "R-122 optional sherpa-onnx English Zipformer 20M; Apache-2.0 model card/library; Linux aarch64 wheel is not Android/Bionic proof; no download",
-        "user_action_required": false,
-        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_TEACHER_STREAM_C3_REVISION_20261124_RUN29.md"
-      },
-      "speaker_invariance_test_blob_sha": "7962ad24f29b4a4638e20d5449b9d9f2d2e3028d",
-      "speaker_invariance_test_names": [
-        "test_one_and_two_second_reference_timestamps_are_batch_length_invariant",
-        "test_missing_threshold_emits_score_without_a_decision",
-        "test_non_voiced_embeddings_never_seed_or_replace_speaker_history",
-        "test_three_regime_gate_defers_nonvoiced_low_similarity"
-      ],
-      "speaker_invariance_test_status": "PRESENT_NOT_RUN"
+      "proof": "The schema-v3 speaker path is consent-epoch and current-PCM-hash bound, with voiced-only reference history and no persistent vectors. The exact 345de43 CI surfaced stale expected interpretation/state-key/schema assertions; updated in a20ff439. 1 s/2 s invariance remains unverified on Android; no speaker identity or calibrated decision claim."
     },
     {
       "id": "V14-019",
@@ -1555,47 +1345,5 @@
     "user_action_required": "NONE. Do not run a manual Termux command. Existing updater is enabled; #519 is already queued. No model/weight/permission/microphone change or device action requested.",
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
-  },
-  "p0_issue_1904": {
-    "status": "OPEN_BLOCKING",
-    "latest_sanitized_receipt": "public issue #1904 comment 7108089370",
-    "installed_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-    "auto_update": "ENABLED",
-    "pipeline": "runtime=CI_WAIT; last_result=PARTIAL; last_error=NONE",
-    "runtime_state": "STOPPED_BY_USER; autostart=false; model_process=STOPPED",
-    "last_stored_turn": {
-      "result": "2+2 returned 2 (incorrect)",
-      "total_s": 6.295,
-      "ttft_s": 2.046,
-      "c3_prefill_s": 3.1,
-      "prompt_tokens": 358,
-      "generated_tokens": 7
-    },
-    "b1_b2": {
-      "status": "TIME_BUDGET",
-      "b1_s": 53.2,
-      "b2_s": 54.2
-    },
-    "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE. Preserve STOPPED_BY_USER. Do not treat CI or auto-update-enabled as installation or correctness proof.",
-    "boss_candidate_pr2443": {
-      "number": 2443,
-      "current_head_sha": "cdf6b64067ac426ba32194100d3764f6e74c105f",
-      "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-      "state": "OPEN_DRAFT_NOT_MERGED",
-      "check_runs": 0,
-      "commit_status": "PENDING",
-      "latest_workflow_runs": "startup_failure_zero_jobs",
-      "scope": "A3/vision + A4/N10 integration candidate; not accepted or installed"
-    },
-    "perception_pr2448_current_head": {
-      "head_sha": "38f7830dea60970272919d93cd7e9665ae5564af",
-      "state": "OPEN_DRAFT_NOT_RELEASED",
-      "latest_workflow_runs": [
-        45296154291,
-        45296146552
-      ],
-      "result": "startup_failure_zero_jobs",
-      "cause": "UNDIGNOSED"
-    }
   }
 }
