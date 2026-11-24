@@ -58,7 +58,7 @@ class DLinearTests(unittest.TestCase):
 
     def test_forward_uses_x_seasonal_and_calendar(self):
         model = build_seeded_model(
-            MatchedDLinearForecaster, self.config, seed=31, kernel_size=5
+            MatchedDLinearForecaster, self.config, seed=31, input_length=self.dataset.config.input_length, kernel_size=5
         )
         model.scaler.fit(self.dataset)
         batch = next(self.dataset.iter_batches("validation", batch_size=8))
@@ -83,7 +83,7 @@ class DLinearTests(unittest.TestCase):
 
     def test_shared_channel_variant_and_shape_guards(self):
         model = MatchedDLinearForecaster(
-            self.config, kernel_size=3, individual=False
+            self.config, input_length=self.dataset.config.input_length, kernel_size=3, individual=False
         )
         model.scaler.fit(self.dataset)
         batch = next(self.dataset.iter_batches("validation", batch_size=4))
@@ -97,7 +97,7 @@ class DLinearTests(unittest.TestCase):
 
     def test_training_changes_parameters_and_predicts_finite_values(self):
         model = build_seeded_model(
-            MatchedDLinearForecaster, self.config, seed=41, kernel_size=5
+            MatchedDLinearForecaster, self.config, seed=41, input_length=self.dataset.config.input_length, kernel_size=5
         )
         before = [parameter.detach().clone() for parameter in model.parameters()]
         history = train_direct_mae(

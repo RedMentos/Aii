@@ -83,7 +83,7 @@ class EndToEndTests(unittest.TestCase):
         )
         self.assertTrue(np.isfinite(direct_history[0]["mae"]))
 
-        dlinear = build_seeded_model(MatchedDLinearForecaster, config, seed, kernel_size=5)
+        dlinear = build_seeded_model(MatchedDLinearForecaster, config, seed, input_length=dataset.config.input_length, kernel_size=5)
         dlinear_history = train_direct_mae(
             dlinear, dataset, epochs=1, batch_size=32, seed=seed
         )

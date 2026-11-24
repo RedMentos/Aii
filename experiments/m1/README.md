@@ -21,7 +21,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks. The block-length field is expressed in minute rows; 10,080 minutes (7 days) is only the current default.
 - metrics.py: prefix-horizon and primary MAE, per-origin errors, paired multi-model/seed evaluation and atomic result persistence.
 - jepa.py: EMA JEPA, Direct-MAE, frozen-context linear probe, random-context probe factory, train-only channel standardization and collapse telemetry.
-- dlinear.py: matched-information DLinear control with replicate-edge moving-average decomposition and an explicit future-known S/calendar branch.
+- dlinear.py: matched-information DLinear control with replicate-edge moving-average decomposition, an explicit future-known S/calendar branch, and a look-back length bound at model construction.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
 

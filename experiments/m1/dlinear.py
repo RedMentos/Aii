@@ -51,13 +51,18 @@ class MatchedDLinearForecaster(nn.Module):
         self,
         config: JEPAConfig,
         *,
+        *,
+        input_length: int,
         kernel_size: int = 25,
         individual: bool = True,
     ):
         super().__init__()
         if type(individual) is not bool:
             raise ValueError("individual must be a boolean")
+        if type(input_length) is not int or input_length < 1:
+            raise ValueError("input_length must be a positive integer")
         self.config = config
+        self.input_length = input_length
         self.individual = individual
         self.decomposition = MovingAverageDecomposition(kernel_size)
         self.scaler = ChannelStandardizer(config.input_channels)
@@ -65,7 +70,7 @@ class MatchedDLinearForecaster(nn.Module):
         channels = config.input_channels
         if individual:
             self.seasonal_linear = nn.ModuleList(
-                nn.Linear(config.input_length, config.horizon) for _ in range(channels)
+                nn.Linear(input_length, config.horizon) for _ in range(channels)
             )
             self.trend_linear = nn.ModuleList(
                 nn.Linear(config.input_length, config.horizon) for _ in range(channels)
@@ -97,7 +102,7 @@ class MatchedDLinearForecaster(nn.Module):
         calendar: torch.Tensor,
     ) -> torch.Tensor:
         cfg = self.config
-        if x.ndim != 3 or x.shape[1:] != (cfg.input_length, cfg.input_channels):
+        if x.ndim != 3 or x.shape[1:] != (self.input_length, cfg.input_channels):
             raise ValueError("X shape does not match the configured [L, C] contract")
         batch = x.shape[0]
         if seasonal.shape != (
