@@ -7,8 +7,8 @@
 - Repo: RedMentos/Aii.
 - Development base: Core branch `core/v14-vision-source-lifecycle-current-20261124-run2`, base SHA `c2fdfab67983cf58c96c89a653122f521eb69429`.
 - Perception PR: [#2477](https://github.com/RedMentos/Aii/pull/2477), DRAFT / OPEN / NOT_RELEASED; branch `research-perception/v14-a3-exact-source-forget-core-stack-20261124-run19`.
-- Branch head before this handoff commit: `93712a1373bc44d33aab1c52a3c46d36cd9ecc8a`.
-- Code-bearing commits: vision runtime `0ea5653125babb39f8715963983001ee4ec39b34`; helper `3b16ad1f4f2bcee4e00fa8861be44e76704e0048`; focused tests `0acc44dca3df4436b24120756ff178ec4f8a4ad2`; Runtime integration tests `8e75fbdcc7260ddf8569187330c21f328d2c69c7`; existing source-lineage workflow extension `70a7321d4d56f1b49ae08e6d886c1814c49cec81`.
+- Branch head before this handoff update: `20fb384b7f370b4c73c0a3e2e25eaf21a668ce9e`.
+- Code-bearing commits: vision runtime `0ea5653125babb39f8715963983001ee4ec39b34`; helper `3b16ad1f4f2bcee4e00fa8861be44e76704e0048`; focused tests `0acc44dca3df4436b24120756ff178ec4f8a4ad2`; Runtime integration tests `8e75fbdcc7260ddf8569187330c21f328d2c69c7`; legacy-no-stats fallback test `20fb384b7f370b4c73c0a3e2e25eaf21a668ce9e`; existing source-lineage workflow extension `70a7321d4d56f1b49ae08e6d886c1814c49cec81`.
 - Exact current source hashes: `vision.py` Git blob `53c3b5067a1198eeecea833e7f8347a22c4b4c7b`, SHA-256 `e51e409a2fa2145e2cb9b9b1a3c80c5f5a67cc69d98054f8e46bd21f16f1b71e`; `vision_projector_stats.py` Git blob `137d60dc78278031a2918ef6babc1862759d5d65`, SHA-256 `ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a`.
 - Earlier wrong-base PR #2475 was closed as superseded; no merge or release.
 
@@ -26,7 +26,7 @@
 - LOCAL_LINUX method reproduction: CPython 3.13.5 / NumPy 2.3.5; 750 synthetic delete/rebuild comparisons at feature dimensions 37/117 and target dimensions 256/768, including zero-variance features. Maximum absolute mean error 2.78e-16, maximum absolute std error 6.66e-16, maximum relative parameter error 2.84e-10 against fresh standardized ridge fits.
 - This was an algebra reproduction, not a full Aii repository test.
 - Full local Aii checkout: BLOCKED / NOT_RUN. No checkout is mounted; `git ls-remote https://github.com/RedMentos/Aii.git` failed because github.com DNS could not resolve.
-- Exact-head GitHub Actions for code commit `190e9356dae8893d4ccb5ea9be40bab842a9ef25`: queued at last readback. Source-lineage run `45480359189`, jobs `138751511342` (Python 3.13) and `138751512073` (Python 3.14) were both QUEUED. Other queued runs: staged/integrated `45480359187`, RAW EYE frame ingress `45480359178`, Core lifecycle composition `45480359190`, runtime deployment integrity `45480359184`. No CI PASS is claimed yet.
+- Exact-head GitHub Actions for code commit `190e9356dae8893d4ccb5ea9be40bab842a9ef25`: queued at last readback. Source-lineage run `45480359189`, jobs `138751511342` (Python 3.13) and `138751512073` (Python 3.14) were both QUEUED. Other queued runs: staged/integrated `45480359187`, RAW EYE frame ingress `45480359178`, Core lifecycle composition `45480359190`, runtime deployment integrity `45480359184`. A runtime negative control was added after the initial queue: a pre-stats projector with valid lineage but no stats falls back to invalidation. No CI PASS is claimed yet.
 - The existing source-lineage workflow was extended to compile/run the new helper and Runtime regressions and print both exact SHA-256 values. A redundant new workflow was removed.
 
 ## Cross-agent integration required
