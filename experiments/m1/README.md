@@ -91,6 +91,8 @@ python -m experiments.m1.recurrence \
 
 The comparison reports JEPA latent loss/collapse telemetry, frozen-JEPA probe MAE, a matched random-recurrent probe, recurrent Direct-MAE, parameter counts, exact recurrent-block call counts, fit time and paired temporal-block validation intervals. It never opens the test split. Defaults remain exploratory, not preregistered or promoted.
 
+- **M1b synthetic CI (24 Nov 2026):** all 6 recurrence-specific tests, including the T=1/2/4 end-to-end runner with real numeric training, EMA updates, checkpoint writes, validation evaluation and paired bootstrap, pass on Python 3.12/3.13/3.14 at code/test head `a3da0edac12e96fe5d42d22915dd4c0da82818d0` (run [45413023062](https://github.com/RedMentos/Aii/actions/runs/45413023062)); the 76-test clean-room suite passes on all three versions at `423fea5a1713063aa29c00d41a8bfb5d647fb778` (run [45413026386](https://github.com/RedMentos/Aii/actions/runs/45413026386)). This is synthetic software evidence only; real UCI data was not downloaded or evaluated.
+
 The recurrence design follows the weight-shared depth idea in [Universal Transformers (Dehghani et al., ICLR 2019)](https://arxiv.org/abs/1807.03819). The archived Tensor2Tensor reference implementation is Apache-2.0; no upstream source was copied into M1. The M1 implementation is a PyTorch adaptation with a fixed T=1/2/4 sweep and no adaptive-computation/halting mechanism.
 
 ## Verification status
