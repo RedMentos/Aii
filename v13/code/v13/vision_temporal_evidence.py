@@ -137,6 +137,7 @@ class TemporalVisualEvidence:
             return {
                 "method": METHOD if current_features is not None else LUMINANCE_METHOD,
                 "feature_method": FEATURE_METHOD if current_features is not None else None,
+                "status": "WARMUP",
                 "multichannel_status": "WARMUP" if current_features is not None else "UNAVAILABLE",
                 "multichannel_tile_delta": {}, "multichannel_changed_tile_ids": [],
                 "multichannel_change_score": 0.0, "global_appearance_shift": 0.0,
