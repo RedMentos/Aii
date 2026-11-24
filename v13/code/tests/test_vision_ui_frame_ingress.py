@@ -1185,6 +1185,8 @@ def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatc
     )
     first_frame = image_buffer()
 
+    original_context = A5UIRuntimeAdapter.context
+
     def fail_context(_adapter, *_args, **_kwargs):
         raise RuntimeError("injected A5 context delivery failure")
 
@@ -1201,7 +1203,7 @@ def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatc
     assert getattr(runtime, "attention", None) is None
     assert not any(first_frame)
 
-    monkeypatch.undo()
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", original_context)
     second_obs = observation(
         source_id="ui-frame-source-after-failure", receipt_ref="frame-receipt-after-failure",
         session_receipt_ref="session-consent-atomic", start_ms=1033, end_ms=1066,
