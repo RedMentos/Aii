@@ -1837,3 +1837,15 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Research ledger now contains R-126 FD-VAD (semantic endpointing, preprint, MIT code, WavLM/Qwen stack; no model download) and R-127 MJEPA (cross-modal JEPA prediction, MIT code + Apache-2.0 third-party files; 1B-scale research, no weights imported). Neither is a tested Redmi model candidate.
 - **Next internal action:** Core/Integrator repairs the three audio source pins and Core/JEPA adds the reviewed vision lifecycle mapping/source-forget regression; then rerun combined staged/integrated/same-turn CI. After that, QA/Boss may use the existing authorized updater and obtain a separate installation receipt. No manual command is needed from the user.
 
+
+
+
+### Follow-up — V14-018 current-base supersession (2026-11-24 04:16 UTC)
+
+- The old speaker-history PR #2433 is **superseded for its Perception-owned functionality** by the newer current-base line in PR #2448. Do not rebase or duplicate #2433. The old branch remains intact pending Boss closure/review.
+- Current #2448 source already implements batch-prestate comparison, VOICED-only speaker history, non-voiced ordering without embedding retention, consent-receipt epoch binding, exact PCM SHA binding, and source-bound transactional A4 outcome.
+- Exact CI run 45322153507: py_compile plus 128/128 tests PASS on Python 3.13 and 128/128 PASS on Python 3.14. The suite includes non-voiced suppression, impulse novelty without false interrupt, consent epoch rejection and exact current PCM binding. Audio duplex race suite remains 179/179 on both Python versions (run 45322153681).
+- The remaining blocker is integration: Core must rebind the three audio SOURCE_BLOBS; no Perception bypass. No model-bound speaker encoder/calibration, AudioRecord provider or Redmi proof exists.
+- Supersession coordination comment: https://github.com/RedMentos/Aii/pull/2433#issuecomment-7121856464.
+- **No user action is required.** No model download, device update, permission change or manual Termux command.
+
