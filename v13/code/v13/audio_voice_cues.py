@@ -29,6 +29,17 @@ from .common import dumps, now
 from .contracts import validate
 
 
+def _load_teacher_ear_validator():
+    """Load the optional ASR teacher only when a source-bound result is supplied."""
+    try:
+        from .audio_teacher_ear import validate_teacher_ear_result
+    except ModuleNotFoundError as exc:
+        if exc.name not in {f"{__package__}.audio_teacher_ear", "audio_teacher_ear"}:
+            raise
+        return None
+    return validate_teacher_ear_result
+
+
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
 
 def _speaker_change_decision(evidence, cues):
@@ -687,10 +698,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                                speaker_embeddings: dict | None = None,
+                                teacher_result: dict | None = None,
+                                teacher_opt_in: bool = False,
+                                teacher_transcript_consent: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
+    if type(teacher_opt_in) is not bool or type(teacher_transcript_consent) is not bool:
+        raise ValueError("teacher opt-in flags must be literal booleans")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
@@ -725,6 +741,34 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             consent_receipt=consent_receipt,
         )
         audio_segment = audio_packet["segments"][0]
+        teacher_ear = None
+        teacher_ear_status = "NOT_SUPPLIED"
+        if teacher_result is not None:
+            # Preserve the teacher-specific consent checks even if the optional
+            # validator package is absent; absence must never weaken permission.
+            if lease_active is not True:
+                raise PermissionError("current audio consent lease is required for teacher output")
+            if teacher_opt_in is not True or teacher_transcript_consent is not True:
+                raise PermissionError("local teacher use and transcript use require separate opt-ins")
+            teacher_validator = _load_teacher_ear_validator()
+            if teacher_validator is None:
+                # The teacher is an optional add-on. Keep the acoustic path alive,
+                # but never admit unvalidated teacher text when its validator is absent.
+                teacher_ear_status = "UNAVAILABLE_MODULE"
+            else:
+                teacher_ear = teacher_validator(
+                    teacher_result,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=segment["start_ms"],
+                    end_ms=segment["end_ms"],
+                    finality=finality,
+                    consent_active=lease_active,
+                    teacher_opt_in=teacher_opt_in,
+                    transcript_consent=teacher_transcript_consent,
+                )
+                teacher_ear_status = teacher_ear["status"]
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
         if speaker_embeddings is not None:
@@ -732,6 +776,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    current_chunk_sha256=raw["source_ref"]["sha256"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                 )
             except SpeakerEvidenceError as exc:
@@ -837,6 +882,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
+            "teacher_ear_status": teacher_ear_status,
+            "teacher_ear_authority": teacher_ear["authority"] if teacher_ear else "NONE",
+            "teacher_ear_word_count": teacher_ear["word_count"] if teacher_ear else 0,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -885,7 +933,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
             summary, candidate.consent, candidate.final, candidate.priority,
         )
-        c3 = admit((candidate,), token_budget)
+        percepts = [candidate]
+        if teacher_ear is not None:
+            percepts.append(Percept(
+                teacher_ear["teacher_source_id"], "audio",
+                teacher_ear["start_ms"], teacher_ear["end_ms"],
+                teacher_ear["summary"], True, teacher_ear["finality"] == "FINAL",
+                candidate.priority,
+            ))
+        c3 = admit(tuple(percepts), token_budget)
         result = {
             "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
             "packet": audio_packet,
@@ -893,6 +949,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
+            "teacher_ear": teacher_ear,
+            "teacher_ear_status": teacher_ear_status,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
