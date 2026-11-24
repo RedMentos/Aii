@@ -170,7 +170,7 @@ class Vision(unittest.TestCase):
             vision.describe(self.rt, rec, 'g', OppositeTeacher())
         second = vision.train(self.rt, encoder)
         gate = second['update_gate']
-        self.assertIn(gate['status'], ('APPLIED', 'REJECTED_RETENTION_REGRESSION'))
+        self.assertIn(gate['status'], ('APPLIED', 'REJECTED_RETENTION_REGRESSION'), gate)
         self.assertGreaterEqual(gate['replay_n'], 6)
         self.assertGreaterEqual(gate['replay_sources'], 6)
         self.assertGreaterEqual(
@@ -266,7 +266,7 @@ class Vision(unittest.TestCase):
             vision.describe(self.rt, rec, 'g', teacher)
         state = vision.load(self.store)
         X, captions, _, ids = vision.dataset(self.store, state=state)
-        Y = encoder(captions)
+        Y = encoder[1](captions)
         groups = [key.split(':', 1)[0] for key in ids]
         changed = [old_record['captions'].get(key) != caption for key, caption in zip(ids, captions)]
         cv = vision.source_disjoint_crossval(
@@ -334,8 +334,8 @@ class Vision(unittest.TestCase):
         replay_X, replay_labels, replay_keys = vision._replay_dataset(self.store, vision.load(self.store), tp, vision.DEFAULTS, tile=True)
         self.assertEqual(len(replay_X), tp['n']); self.assertEqual(len(replay_labels), tp['n']); self.assertEqual(len(replay_keys), tp['n'])
         tp_again = vision.train_tiles(self.rt, enc)
-        self.assertEqual(tp_again['update_gate']['status'], 'APPLIED')
-        self.assertEqual(tp_again['update_gate']['scale'], 1.0)
+        self.assertEqual(tp_again['update_gate']['status'], 'NO_NEW_OR_CHANGED_CAPTIONS')
+        self.assertEqual(tp_again['sha256'], tp['sha256'])
         self.assertEqual(tp_again['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(tp_again['metrics']['status'], 'MEASURED')
         self.assertEqual(vision.status(self.rt)['tile_projector']['metrics']['split'], 'SOURCE_DISJOINT')
         self.assertEqual(vision.operator_command(self.rt, ['teacher', 'off']), {'teacher': 'removed'})
