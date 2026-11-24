@@ -24,6 +24,7 @@ SCHEMA = "v14.native-probe-approval/1"
 TTL_SECONDS = 120
 MIN_EXTRA_HEADROOM_BYTES = 256 * 1024 * 1024
 MIN_MODEL_HEADROOM_RATIO = 0.20
+PROBE_CLOSE_WAIT_SECONDS = 5.0
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 RECEIVER_ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 
@@ -252,9 +253,44 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
 
 
 
+def _install_runtime_close_guard(runtime):
+    """Make Runtime.close wait for the whole probe lease, not only its child process."""
+    lock = getattr(runtime, "lock", None)
+    if lock is None:
+        raise ValueError("native probe cannot install Runtime close guard")
+    with lock:
+        if getattr(runtime, "_native_probe_close_guard_installed", False):
+            return
+        original_close = runtime.close
+        close_lock = threading.RLock()
+
+        def guarded_close():
+            with close_lock:
+                with lock:
+                    active = bool(getattr(runtime, "_native_probe_active", False))
+                    done = getattr(runtime, "_native_probe_done", None)
+                    owner = getattr(runtime, "_native_probe_owner_thread", None)
+                    if active:
+                        if owner is threading.current_thread():
+                            raise RuntimeError(
+                                "Cannot close Runtime from inside active native probe; Store remains open"
+                            )
+                        runtime.cancel_event.set()
+                if active and (done is None or not done.wait(PROBE_CLOSE_WAIT_SECONDS)):
+                    raise RuntimeError(
+                        "Native probe did not exit after cancellation; Store remains open"
+                    )
+                return original_close()
+
+        runtime.close = guarded_close
+        runtime._native_probe_close_guard_installed = True
+        runtime._native_probe_close_lock = close_lock
+
+
 @contextmanager
 def runtime_probe_lease(runtime):
     """Exclusively reserve the idle Runtime while one approved native probe runs."""
+    _install_runtime_close_guard(runtime)
     lock = getattr(runtime, "lock", None)
     if lock is None:
         raise ValueError("native probe cannot acquire the Runtime lock")
@@ -267,8 +303,13 @@ def runtime_probe_lease(runtime):
             raise ValueError("native probe requires an idle Runtime with no queued work")
         if runtime.paused or runtime.store.queue_paused():
             raise ValueError("native probe cannot override a paused Runtime")
-        if getattr(runtime, "_native_probe_lease_nonce", None):
+        if (getattr(runtime, "_native_probe_lease_nonce", None)
+                or getattr(runtime, "_native_probe_active", False)):
             raise ValueError("another native probe Runtime lease is already active")
+        done = threading.Event()
+        runtime._native_probe_active = True
+        runtime._native_probe_done = done
+        runtime._native_probe_owner_thread = threading.current_thread()
         runtime.current = "probe"
         runtime.paused = True
         runtime.status = "probe"
@@ -288,6 +329,9 @@ def runtime_probe_lease(runtime):
                 if runtime.current is None:
                     runtime.status = "Beendet" if runtime.stop.is_set() else ("Pausiert" if runtime.paused else "Bereit")
                 runtime.wake.set()
+                runtime._native_probe_active = False
+                runtime._native_probe_owner_thread = None
+                done.set()
 
 
 def _require_runtime_probe_lease(runtime, lease_token):
@@ -492,6 +536,8 @@ def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, 
     error = outcome.get("error")
     if error is not None:
         raise error
+    if runtime.cancel_event.is_set():
+        raise InterruptedError("Native probe cancelled by Runtime shutdown")
     packet = outcome.get("packet")
     if not isinstance(packet, dict):
         raise RuntimeError("Native receiver returned no result packet")
