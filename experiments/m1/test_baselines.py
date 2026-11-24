@@ -57,7 +57,7 @@ class BaselineTests(unittest.TestCase):
         steps = np.arange(1, self.config.horizon + 1)
         for batch in self.dataset.iter_batches("train", batch_size=64):
             target_rows[batch.origin_indices[:, None] + steps[None, :]] = True
-        expected = self.dataset.values[target_rows].astype(np.float64)
+        expected = self.dataset.train_values()[target_rows[self.dataset.bounds['train'][0]:self.dataset.bounds['train'][1]]].astype(np.float64)
         mean = TrainMeanBaseline().fit(self.dataset, batch_size=64)
         median = TrainMedianBaseline().fit(self.dataset, batch_size=64)
         np.testing.assert_allclose(mean.values, expected.mean(axis=0))
