@@ -110,7 +110,7 @@ class DLinearTests(unittest.TestCase):
         seasonal = torch.as_tensor(batch.inputs.seasonal, dtype=torch.float32)
         calendar = torch.as_tensor(batch.inputs.calendar, dtype=torch.float32)
         with torch.no_grad():
-            layers = list(model.linear) if isinstance(model.linear, nn.ModuleList) else [model.linear]
+            layers = list(model.linear) if isinstance(model.linear, torch.nn.ModuleList) else [model.linear]
             for layer in layers:
                 layer.weight.zero_()
                 layer.bias.zero_()
@@ -130,7 +130,7 @@ class DLinearTests(unittest.TestCase):
         seasonal = torch.as_tensor(batch.inputs.seasonal, dtype=torch.float32)
         calendar = torch.as_tensor(batch.inputs.calendar, dtype=torch.float32)
         with torch.no_grad():
-            layers = list(model.linear) if isinstance(model.linear, nn.ModuleList) else [model.linear]
+            layers = list(model.linear) if isinstance(model.linear, torch.nn.ModuleList) else [model.linear]
             for layer in layers:
                 layer.weight.fill_(0.02)
                 layer.bias.zero_()
