@@ -1,4 +1,4 @@
-"""Bounded-memory NumPy window batches for the V14 M1 forecasting experiment.
+"""Bounded-memory NumPy window batches for the M1 clean-room forecasting experiment.
 
 The list-based helpers in data.py remain useful for tiny fixtures. Real UCI runs
 must use ArrayDataset: it stores one dense value matrix and creates only one
