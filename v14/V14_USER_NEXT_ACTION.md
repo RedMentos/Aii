@@ -1,6 +1,6 @@
 # Core & Harness — fair B1/B2 recovery follow-up (2026-11-24 04:38 UTC)
 
-**PR #2462** remains OPEN / NOT_RELEASED on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact head `d0a30b18cc629d7498373e01985f89df00fa7461`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+**PR #2462** remains DRAFT / OPEN / NOT_RELEASED on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, latest branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3` (documentation/handoff only after code head `d0a30b18cc629d7498373e01985f89df00fa7461`), based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 
 ## New code on this head
 
@@ -12,7 +12,7 @@
 
 - **LOCAL_LINUX / CPython 3.13.5:** isolated contract script `py_compile` PASS; 2/2 behavior assertions PASS. This is an isolated contract check, not the full Aii suite.
 - **Full local Aii suite:** NOT_RUN / BLOCKED. `git ls-remote` still fails DNS resolution for GitHub; no full checkout is available.
-- **Exact-head CI:** same-turn consumer FAIL, staged/integrated regression FAIL, private owner-read bootstrap FAIL. Six other workflows SUCCESS and one is SKIPPED. The remaining failures are the shared staged-source chain: `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard` still reject the Core Runtime bytes/anchors. Runtime deployment and two-checkout migration consequently fail at staging. Do not weaken any hash gate.
+- **Exact code-head CI (`d0a30b18cc629d7498373e01985f89df00fa7461`; later commits are documentation-only): same-turn consumer FAIL, staged/integrated regression FAIL, private owner-read bootstrap FAIL. Six other workflows SUCCESS and one is SKIPPED. The remaining failures are the shared staged-source chain: `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard` still reject the Core Runtime bytes/anchors. Runtime deployment and two-checkout migration consequently fail at staging. Do not weaken any hash gate.
 - The shared source-composition finding is posted on Boss PR #2443 (comment 7122336075); Core has not edited Boss/QA lifecycle or audio composer files. The #2462 PR also records the exact state in its own discussion (comment 7122338229).
 
 ## Redmi / deployment
