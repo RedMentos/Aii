@@ -153,6 +153,8 @@ class ArrayDataset:
         cls, path: str | Path, config: DataConfig, *, allow_fractional_split: bool = False
     ) -> "ArrayDataset":
         """Two-pass UCI ingestion; production use requires explicit calendar boundaries."""
+        if type(allow_fractional_split) is not bool:
+            raise ValueError("allow_fractional_split must be a boolean")
         if config.validation_start is None and not allow_fractional_split:
             raise ValueError(
                 "UCI ingestion requires fixed calendar split dates; "
@@ -446,6 +448,11 @@ class ArrayDataset:
             handle.write(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
+        directory_fd = os.open(log_path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
         # Authorize only after the audit event is durably written.
         self._test_authorized = True
         self._test_preregistration_sha256 = actual_hash
