@@ -253,6 +253,14 @@ class WindowTests(unittest.TestCase):
 
 
 class CalendarBoundaryTests(unittest.TestCase):
+    def test_calendar_boundaries_reject_timezone_offsets(self):
+        with self.assertRaisesRegex(ValueError, "naive"):
+            DataConfig(
+                input_length=60,
+                validation_start="2008-12-01T00:00:00+00:00",
+                test_start="2009-12-01",
+            )
+
     def test_uci_calendar_boundaries_are_date_based_and_l_independent(self):
         from experiments.m1.data import uci_calendar_config
         start = datetime(2006, 12, 16, 17, 24)
