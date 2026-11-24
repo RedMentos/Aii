@@ -4,7 +4,7 @@
 
 - Repository: `RedMentos/Aii`
 - Release-development base: `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`
-- Core P0 PR: #2462, branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1 @ d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`, DRAFT / NOT_RELEASED.
+- Core P0 PR: #2478, branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2 @ 4fb95610c5593803419b5dbaaa82fc6e709d6543`, DRAFT / NOT_RELEASED.
 - Boss documentation base: `core/v14-handoff-run22-20261124 @ 288c3a6c642f070a2266f5365982ce0a9e6e4e5a`.
 
 ## Code work
@@ -19,7 +19,7 @@
 
 - Earlier diagnostic head `6747a26`: controller-guard CI exposed the exact composed Runtime SHA above; the hash was added as a specific reviewed pin.
 - Intermediate head `c39d42a`: verify job failed because the recovery loader still expected the prior guard SHA `38584…`. The loader diagnostic and exact pin rebind were added afterward; that result is stale relative to the current tree.
-- Current head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: no exact PR check-runs had appeared at last readback. Push-only consumer Python 3.13/3.14 and offline-bridge-security checks were queued on the identical tree before the final empty checkpoint commit. Exact staged/integrated/owner-read/migration acceptance remains PENDING / NOT_VERIFIED.
+- Current head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: exact-head PR #2478 has 58 check-runs registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. The full staged-runtime/integrated-regression/consumer/owner-read/metadata/migration/Android arm64 matrix is pending. A new loader regression covers expected/actual hash reporting and symlink rejection.
 - LOCAL_LINUX full repository suite: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS resolution failed).
 - Redmi: REDMI_UNVERIFIED; last shared authenticated receipt says release 8d932 installed, AI STOPPED_BY_USER, autostart OFF. No fresh private receipt, chat, shell, update, restart, permission, model, weight or data action occurred.
 
