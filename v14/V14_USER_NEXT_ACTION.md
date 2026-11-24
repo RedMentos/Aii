@@ -2,7 +2,7 @@
 
 - **Repository:** `RedMentos/Aii`
 - **Release base:** `gpt6/v13-private-remote-bridge-20261111` @ `8d93236c753f0194224c19edc7411d8d7082b1d6`
-- **Core P0 PR:** [#2462](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, current head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`, DRAFT / NOT_RELEASED.
+- **Core P0 PR:** [#2478](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2`, current head `4fb95610c5593803419b5dbaaa82fc6e709d6543`, DRAFT / NOT_RELEASED.
 - **New stacked repair:** the branch was recomposed in-place with exact source hashes; the prior temporary repair PR #2474 is superseded by the fast-forwarded #2462 branch.
 
 ## Code changes now present on #2462
@@ -17,7 +17,7 @@
 
 - Diagnostic PR run on earlier head `6747a26`: FAIL at controller guard, and it exposed the exact composed Runtime SHA above.
 - Intermediate PR run on `c39d42a`: its verify job failed at the recovery loader because the expected guard hash was stale (`38584…)); the loader now prints both hashes and its pin has been rebound to the current exact guard bytes. This run is stale relative to the current tree.
-- Current code head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: no PR check-runs had appeared at the last readback. Push-only checks on the identical tree at `5a838dd` were queued (consumer Python 3.13/3.14 and offline-bridge-security); the earlier staged/integrated PR run `45478352959` was still running on the stale `c39d42a` head. Exact current staged/integrated acceptance is therefore **PENDING / NOT_VERIFIED**.
+- Current code head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: 58 exact-head check-runs were registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at the last poll. Push-only checks on the identical tree at `5a838dd` were queued (consumer Python 3.13/3.14 and offline-bridge-security); the earlier staged/integrated PR run `45478352959` was still running on the stale `c39d42a` head. Exact current staged/integrated acceptance is therefore **PENDING / NOT_VERIFIED**.
 - LOCAL_LINUX full repository suite: **BLOCKED / NOT_RUN**; no checkout is mounted and `git ls-remote` failed DNS resolution.
 - Redmi: **REDMI_UNVERIFIED**. The latest shared receipt remains AI `STOPPED_BY_USER`, autostart OFF, release `8d93236` installed; no fresh private receipt was obtained and no device action was taken.
 - Release: **NOT_RELEASED**. A GitHub push is not deployment.
