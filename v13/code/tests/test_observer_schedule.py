@@ -248,6 +248,7 @@ class Turn(unittest.TestCase):
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
-                            for role,pre,thread,valid,status in self.calls))
+                            for role,pre,thread,valid,status in self.calls),
+                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; status={self.r.last_answer()['status']!r}; route={meta.get('route')!r}; observer_mode={self.r.cfg.get('observer_mode')!r}; guard={self.r.guard.mode!r}")
 
 if __name__=='__main__':unittest.main()
