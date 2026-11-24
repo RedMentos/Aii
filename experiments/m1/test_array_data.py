@@ -97,7 +97,7 @@ class DirectUCIArrayTests(unittest.TestCase):
                 seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
             )
             with self.assertRaisesRegex(ValueError, "non-finite"):
-                ArrayDataset.from_uci(path, config)
+                ArrayDataset.from_uci(path, config, allow_fractional_split=True)
 
     def test_two_pass_array_loader_rejects_truncated_rows(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -112,7 +112,7 @@ class DirectUCIArrayTests(unittest.TestCase):
                 seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
             )
             with self.assertRaisesRegex(ValueError, "truncated"):
-                ArrayDataset.from_uci(path, config)
+                ArrayDataset.from_uci(path, config, allow_fractional_split=True)
 
     def test_two_pass_array_loader_rejects_off_grid_timestamps(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -123,7 +123,7 @@ class DirectUCIArrayTests(unittest.TestCase):
                 seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
             )
             with self.assertRaisesRegex(ValueError, "whole minute"):
-                ArrayDataset.from_uci(path, config)
+                ArrayDataset.from_uci(path, config, allow_fractional_split=True)
 
 
 class ArrayWindowTests(unittest.TestCase):
