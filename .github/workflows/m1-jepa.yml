@@ -1,0 +1,29 @@
+name: M1 JEPA torch tests
+on:
+  push:
+    paths:
+      - "experiments/m1/jepa.py"
+      - "experiments/m1/training.py"
+      - "experiments/m1_torch_tests/**"
+      - ".github/workflows/m1-jepa.yml"
+  pull_request:
+    paths:
+      - "experiments/m1/jepa.py"
+      - "experiments/m1/training.py"
+      - "experiments/m1_torch_tests/**"
+      - ".github/workflows/m1-jepa.yml"
+jobs:
+  torch-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip numpy
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m unittest discover -s experiments/m1_torch_tests -p "test_*.py" -v
