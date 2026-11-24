@@ -706,8 +706,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise PermissionError("a bounded local audio consent receipt is required")
     if transcript_persist_opt_in and not teacher_asr_opt_in:
         raise PermissionError("transcript persistence requires separate Teacher Ear ASR opt-in")
-    if teacher_ear is not None and not isinstance(teacher_ear, SherpaOnlineTeacher):
-        raise TypeError("teacher_ear must be a SherpaOnlineTeacher")
+    if teacher_ear is not None and not isinstance(
+        teacher_ear, (SherpaOnlineTeacher, SherpaOnlineTeacherStream)
+    ):
+        raise TypeError(
+            "teacher_ear must be a SherpaOnlineTeacher or SherpaOnlineTeacherStream"
+        )
     if teacher_ear is not None and not teacher_asr_opt_in:
         raise PermissionError("teacher_ear supplied without explicit opt-in")
     if teacher_asr_opt_in and teacher_ear is None:
