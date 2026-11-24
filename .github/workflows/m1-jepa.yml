@@ -13,7 +13,7 @@ on:
       - "experiments/m1_torch_tests/**"
       - ".github/workflows/m1-jepa.yml"
 concurrency:
-  group: m1-jepa-${{ github.ref }}
+  group: m1-jepa-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
