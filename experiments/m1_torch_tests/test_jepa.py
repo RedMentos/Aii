@@ -27,6 +27,8 @@ from experiments.m1.training import (
     save_checkpoint_atomic,
     train_direct_mae,
     train_frozen_probe,
+    evaluate_jepa,
+    TorchBatchPredictor,
     train_jepa,
 )
 
@@ -164,6 +166,22 @@ class JEPAModelTests(unittest.TestCase):
                     JEPAForecaster(self.config), self.config, path,
                     expected_code_commit="b" * 40,
                 )
+
+    def test_streaming_validation_collapse_telemetry(self):
+        model = JEPAForecaster(self.config)
+        result = evaluate_jepa(model, self.dataset, batch_size=64)
+        self.assertGreater(result["n_windows"], 0)
+        self.assertTrue(np.isfinite(result["latent_mse"]))
+        self.assertGreaterEqual(result["context_collapse"]["effective_rank"], 0.0)
+        self.assertGreaterEqual(result["target_collapse"]["effective_rank"], 0.0)
+
+    def test_torch_batch_adapter_returns_numpy_forecasts(self):
+        model = DirectMAEForecaster(self.config)
+        predictor = TorchBatchPredictor(model, name="direct_mae")
+        batch = next(self.dataset.iter_batches("validation", batch_size=8))
+        prediction = predictor.predict(batch)
+        self.assertEqual(prediction.shape, batch.target.shape)
+        self.assertTrue(np.isfinite(prediction).all())
 
     def test_direct_mae_training_and_forecast_shape(self):
         model = DirectMAEForecaster(self.config)
