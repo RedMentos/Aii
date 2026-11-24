@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T22:39:40Z",
+  "updated_at": "2026-11-24T22:44:29Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -199,7 +199,7 @@
       "proof_environment": "LOCAL_LINUX isolated CPython 3.13.5 dir-fd harness PASS; exact #2477 PR CI FAIL: 4/49 on Python 3.13 and 4/49 on Python 3.14. PR #2484 exact-head PR workflow readback returned no runs; no CI PASS. Full local Aii suite BLOCKED/NOT_RUN (no checkout; GitHub DNS unavailable). Redmi current HEAD UNVERIFIED.",
       "next_step": "Owner/Boss: trigger or obtain exact PR #2484 head CI for Python 3.13/3.14; if Actions are suppressed for API-authored commits, use an authorized normal push or equivalent owner-triggered workflow without changing code. Perception: inspect exact test results and fix any remaining failures. Core/QA: include vision_projector_stats.py in the materialized source closure, rebind exact vision.py/helper pins, rerun staged/integrated/consumer/migration. Do not merge or release while checks are absent/red.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T22:39:40Z",
+      "last_checkpoint": "2026-11-24T22:44:29Z",
       "latest_candidate_pr": {
         "pr": 2477,
         "head_sha": "dd7e841a4047072dd9bc7dc33d7ad34bb94bf867",
@@ -236,10 +236,10 @@
       "next_research": "After Core composer integration: near-duplicate source grouping for A3 source-disjoint validation. Full-read paper: Information 17(9), 897 (2026-09-15), DOI 10.3390/info17090897. Local synthetic dHash probe: threshold 2 TPR 0.704 / FPR 0.53; threshold 5 TPR 0.922 / FPR 0.92 on shared-template hard negatives. Do not auto-group from hashes; add hard-negative challenge and treat perceptual similarity as uncertainty/candidate only.",
       "latest_followup_pr": {
         "pr": 2484,
-        "head_sha": "3ef4471603831103717631bf2b12a24b96307cac",
+        "head_sha": "84a8f18a2f5e95db72de912dab10724a5c7f9790",
         "base_sha": "dd7e841a4047072dd9bc7dc33d7ad34bb94bf867",
         "state": "OPEN_DRAFT_NO_PR_WORKFLOW_RUN_RETURNED_FOR_EXACT_HEAD",
-        "ci": "No PR-triggered workflow run returned for exact head 3ef4471603831103717631bf2b12a24b96307cac after adding helper/test paths to pull_request filter. No CI PASS claimed; owner-triggered Actions run or normal push evidence still required.",
+        "ci": "No PR-triggered workflow run returned for exact head 84a8f18a2f5e95db72de912dab10724a5c7f9790 after the helper/test pull_request path filter was added. No CI PASS claimed; authorized owner-triggered Actions run required.",
         "scope": "secure first-use A3 stats directory creation + fresh-root regression + status privacy negative control + exact PR trigger coverage",
         "handoff": "v14/handoffs/RESEARCH_PERCEPTION_A3_SOURCE_STATS_DIRECTORY_BOOTSTRAP_20261124_RUN20.md",
         "local_linux": "CPython 3.13.5 isolated dir-fd harness PASS for create/open/fsync/0700/0600/symlink rejection; status privacy negative control added but not executed; full Aii tests NOT_RUN",
