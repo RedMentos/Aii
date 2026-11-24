@@ -316,6 +316,10 @@ class Cognition:
                 metrics={'role':role,
                          'preanswer_seconds_available':round(available,3),
                          'c3_reserved_seconds':budget['c3_reserved_seconds'],
+                         'c3_reserve_estimate_seconds':budget['c3_reserve_estimate_seconds'],
+                         'c3_reserve_source':budget['c3_reserve_source'],
+                         'c3_reserve_capped':budget['c3_reserve_capped'],
+                         'minimum_role_slice_s':budget['minimum_role_slice_s'],
                          'recent_real_prefill_failures':budget['recent_real_prefill_failures']}
                 if available < budget['minimum_role_slice_s']:
                     self.s.log('native_body_deferred_for_c3',e['event_id'],
