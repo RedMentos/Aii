@@ -32,6 +32,7 @@ from experiments.m1.training import (
     train_raw_gru,
     evaluate_jepa,
     TorchBatchPredictor,
+    build_seeded_model,
     train_jepa,
 )
 
@@ -65,6 +66,17 @@ class JEPAModelTests(unittest.TestCase):
         torch.manual_seed(3)
         self.dataset = fixture_dataset()
         self.config = model_config()
+
+    def test_seeded_model_factory_controls_initial_weights(self):
+        first = build_seeded_model(JEPAForecaster, self.config, seed=71)
+        second = build_seeded_model(JEPAForecaster, self.config, seed=71)
+        third = build_seeded_model(JEPAForecaster, self.config, seed=72)
+        for left, right in zip(first.context_encoder.parameters(), second.context_encoder.parameters()):
+            torch.testing.assert_close(left, right, rtol=0, atol=0)
+        self.assertFalse(torch.equal(
+            next(first.context_encoder.parameters()),
+            next(third.context_encoder.parameters()),
+        ))
 
     def test_patchify_and_unpatch_padding(self):
         x = torch.arange(15, dtype=torch.float32).reshape(1, 5, 3)
@@ -183,6 +195,7 @@ class JEPAModelTests(unittest.TestCase):
         third = make_random_context_probe(self.config, seed=43)
         for left, right in zip(first.encoder.parameters(), second.encoder.parameters()):
             torch.testing.assert_close(left, right, rtol=0, atol=0)
+        torch.testing.assert_close(first.readout.weight, second.readout.weight, rtol=0, atol=0)
         self.assertFalse(torch.equal(
             next(first.encoder.parameters()), next(third.encoder.parameters())
         ))
