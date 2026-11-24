@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:11:32Z",
+  "updated_at": "2026-11-24T18:14:30Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -220,9 +220,15 @@
         "full_repo_test": "BLOCKED_NO_CHECKOUT_DNS",
         "device": "REDMI_UNVERIFIED",
         "workflow": ".github/workflows/v14-audio-temporal-evidence.yml",
-        "ci": "WORKFLOW_ADDED_AWAITING_RUN",
+        "ci": "QUEUED_RUN_2_PYTHON_3.13_AND_3.14",
         "tested_code_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
-        "workflow_commit_sha": "5991977aed9dea7b429df1e6af78ac661e990f54"
+        "workflow_commit_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
+        "workflow_run_id": 45457019323,
+        "workflow_run_number": 2,
+        "workflow_jobs": {
+          "python_3_13": "QUEUED",
+          "python_3_14": "QUEUED"
+        }
       }
     },
     {
