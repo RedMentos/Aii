@@ -1899,3 +1899,8 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - Latest private device metadata snapshot (2026-11-24 09:28:11Z): LOCAL_METADATA_ONLY, 5 turns, 0 valid B1/B2 offers, 2 B1 and 2 B2 native attempts failed, no semantic-use proof and no native latent exchange. Two later C3 prefill phases were 33–37 seconds. No raw transcript is copied.
 - Last authenticated PIPELINE_STATUS (2026-11-23 14:24Z) said auto-update enabled and runtime/dashboard UP_TO_DATE at installed SHA fb563d771fe2d493c4ec25abe94280981d24ef5c. Current release-development HEAD is 8d93236c753f0194224c19edc7411d8d7082b1d6, so current-head installation is unverified. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests expired without a device_status reply: NO_LIVE_RECEIPT.
 - No UPDATE_REQUEST, shell, LOG_PAGE, chat send, model/weight/permission change, user-data mutation or deployment was performed. No user action is needed.
+
+
+### PR head reconciliation
+
+- PR #2484 latest exact metadata readback: head dbf9221e1abc579ab298441020fdc28a24cfa737, DRAFT and mergeable. Last functional code commit is 621f42db8953acf7a512d8a4164341bc9bbc7683; subsequent commits only updated handoff/board evidence. No PR-triggered workflow runs are returned for the exact PR head, so CI remains unverified.
