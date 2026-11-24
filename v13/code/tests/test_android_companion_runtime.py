@@ -222,6 +222,61 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     controller.broker.close()
 
 
+def test_immediate_android_receipt_context_rejects_tampered_provenance_and_observation(tmp_path):
+    runtime = make_runtime(tmp_path)
+    event = runtime.store.event(runtime.session, "Launch the calculator app.")
+    outcome = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION",
+        event["event_id"], event["brain_generation_id"], [event["source_ref"]],
+        status="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+        actual={
+            "outcome_kind": "ANDROID_COMPANION_RECEIPT",
+            "capability": "launch_app",
+            "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
+            "evidence_level": "COMPANION_RECEIPT_ONLY",
+            "observed": False,
+            "t8_authoritative": False,
+            "world_learning_eligible": False,
+            "trusted_transition_eligible": False,
+        },
+    )
+    runtime.store.add_packet("ActionOutcome", outcome)
+    space = EnlightenedSpace(runtime.store, runtime.session)
+    space.publish(
+        event, "C5_ACTION", "CONTROL",
+        summary=("Android companion launch_app receipt: "
+                 "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED; "
+                 "device outcome not independently observed; T8/world learning disabled."),
+        source_refs=[event["source_ref"]],
+        authority="CONTROL_ONLY",
+        packet_id=outcome["packet_id"],
+    )
+    followup = runtime.store.event(runtime.session, "Did it work?")
+    valid = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
+    assert any(item["from"] == "C5_ACTION" for item in valid["messages"])
+
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE id=?", (outcome["packet_id"],))
+    tampered = json.loads(row["payload"])
+    tampered["provenance"] = []
+    with runtime.store.tx() as tx:
+        tx.execute("UPDATE packets SET payload=? WHERE id=?",
+                   (json.dumps(tampered), outcome["packet_id"]))
+    wrong_source = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in wrong_source["messages"])
+
+    tampered["provenance"] = [event["source_ref"]]
+    tampered["actual"]["observed"] = True
+    with runtime.store.tx() as tx:
+        tx.execute("UPDATE packets SET payload=? WHERE id=?",
+                   (json.dumps(tampered), outcome["packet_id"]))
+    false_observation = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in false_observation["messages"])
+    runtime.store.close()
+
+
 def test_signed_denial_is_persisted_and_stop_cancels_pending_requests(tmp_path, monkeypatch):
     ids = iter(["2" * 32, "5" * 32])
     monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: next(ids))
