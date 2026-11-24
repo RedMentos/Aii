@@ -170,6 +170,8 @@ def run_recurrence_ablation(
                 "fit_seconds": jepa_fit_seconds,
                 "train_windows_per_epoch": train_windows_per_epoch,
                 "train_steps_per_epoch": shared_steps,
+                "encoder_block_calls_per_epoch": 2 * shared_steps * recurrence_steps,
+                "encoder_block_calls_total": 2 * shared_steps * recurrence_steps * config.epochs,
                 "training_window_cap": config.max_train_windows,
             })
 
@@ -227,6 +229,8 @@ def run_recurrence_ablation(
                 "fit_seconds": frozen_fit_seconds,
                 "train_windows_per_epoch": train_windows_per_epoch,
                 "train_steps_per_epoch": shared_steps,
+                "encoder_block_calls_per_epoch": shared_steps * recurrence_steps,
+                "encoder_block_calls_total": shared_steps * recurrence_steps * config.epochs,
                 "training_window_cap": config.max_train_windows,
             })
 
@@ -284,6 +288,8 @@ def run_recurrence_ablation(
                 "fit_seconds": random_fit_seconds,
                 "train_windows_per_epoch": train_windows_per_epoch,
                 "train_steps_per_epoch": shared_steps,
+                "encoder_block_calls_per_epoch": shared_steps * recurrence_steps,
+                "encoder_block_calls_total": shared_steps * recurrence_steps * config.epochs,
                 "training_window_cap": config.max_train_windows,
             })
 
@@ -341,8 +347,29 @@ def run_recurrence_ablation(
                 "fit_seconds": direct_fit_seconds,
                 "train_windows_per_epoch": train_windows_per_epoch,
                 "train_steps_per_epoch": shared_steps,
+                "encoder_block_calls_per_epoch": shared_steps * recurrence_steps,
+                "encoder_block_calls_total": shared_steps * recurrence_steps * config.epochs,
                 "training_window_cap": config.max_train_windows,
             })
+
+    role_prefixes = (
+        "jepa_pretrain_t",
+        "jepa_frozen_probe_t",
+        "random_recurrent_probe_t",
+        "recurrent_direct_mae_t",
+    )
+    for role_prefix in role_prefixes:
+        role_rows = [
+            row for row in training_manifest
+            if row["model"].startswith(role_prefix)
+        ]
+        expected_rows = len(steps) * len(config.seeds)
+        if len(role_rows) != expected_rows:
+            raise RuntimeError(f"incomplete recurrence manifest for {role_prefix}")
+        if len({row["shared_block_parameter_count"] for row in role_rows}) != 1:
+            raise RuntimeError(f"shared block parameter count changed across T for {role_prefix}")
+        if len({row["total_parameter_count"] for row in role_rows}) != 1:
+            raise RuntimeError(f"total parameter count changed across T for {role_prefix}")
 
     result = evaluate_suite(
         runs,
@@ -375,6 +402,7 @@ def run_recurrence_ablation(
         "notes": [
             "M1a's stacked encoder remains unchanged.",
             "M1b reuses one TransformerEncoderLayer T times with deterministic step embeddings.",
+            "The runner asserts equal shared-block and total parameter counts across T within each model role.",
             "The M1a PilotConfig.models tuple is not used; M1b always runs the same four-role comparison per seed.",
             "JEPA latent loss and collapse telemetry are not ranked as raw-unit forecast MAE.",
             "The optional training-window cap limits fit batches only; all validation origins are evaluated.",
