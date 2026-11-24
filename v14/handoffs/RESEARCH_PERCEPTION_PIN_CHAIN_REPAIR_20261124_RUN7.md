@@ -33,3 +33,12 @@ All three complete files were read back from GitHub and matched the intended con
 ## Next
 
 Run exact controller-guard, staged/integrated, Python 3.13/3.14 Core same-turn and privacy checks on this combined tree. Fix any subsequent source-pin or semantic failures without weakening hash verification; then request Core/Boss review and rebase Perception PR #2472 if its integration base advances.
+
+
+## 2026-11-24 second-stage integration finding and repair
+
+After the first hash-chain repair, CI progressed past the guard-file digest check and exposed a second deterministic failure in `record_only_controller_guard_20261116.py`: the generic import rewrite expected `from .common import dumps\\n`, but the pinned current `v13/attention.py` imports `from .common import dumps, digest\\n`. The exact current attention source remains in the guard's allowlist (SHA-256 `58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e`); this was an anchor mismatch, not an unreviewed source change.
+
+The guard now uses a separate exact byte anchor for the attention module and retains the original exact anchor for the other modules. No regex, fuzzy replacement, wildcard pin or relaxed verification was added. The downstream recovery-builder, wrapper and stage pins were recomputed from the new complete file bytes. Exact GitHub readback follows this commit; new CI is pending.
+
+Evidence: PR #2482 staged/integrated run 45497547640 failed at `controller guard anchor changed: v13/attention.py import` (19 failed, 234 passed, 10 skipped, 2 errors, 44 subtests); its integrated regression run had the same anchor failure. The independent Lab Age suite had 21 tests pass and one staged-consumer error at the same anchor. The two-checkout migration remained PARTIAL instead of UPDATED and is a separate Core/updater blocker, not fixed here.
