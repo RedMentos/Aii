@@ -1251,6 +1251,25 @@ def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
     assert result["change_score"] == 0.0
 
 
+def test_temporal_visual_evidence_rejects_backward_start_when_end_advances():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    state.update(start_ms=100, end_ms=133, tile_luminance=frame)
+    # Equal starts remain valid for overlapping/cumulative observation windows.
+    state.update(start_ms=100, end_ms=166, tile_luminance=frame)
+    with pytest.raises(TemporalVisualEvidenceError, match="start timestamps"):
+        # The old end-only monotonicity check accepted this reordered interval.
+        state.update(start_ms=90, end_ms=199, tile_luminance=frame)
+    # Rejection must not replace the last valid baseline.
+    result = state.update(start_ms=166, end_ms=199, tile_luminance=frame)
+    assert result["status"] == "MEASURED"
+    assert result["change_score"] == 0.0
+
+
 def test_end_of_stream_erases_temporal_visual_history(monkeypatch):
     runtime = make_runtime(monkeypatch)
     obs = observation()
