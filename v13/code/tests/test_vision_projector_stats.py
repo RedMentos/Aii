@@ -32,6 +32,20 @@ def _build(home, X, Y, keys, lineage, feature="vision.features.v1", encoder="has
     return build_source_statistics(home, "projector", X, Y, keys, lineage, feature, encoder, 1.)
 
 
+def test_first_use_creates_private_stats_directories_without_following_symlinks(tmp_path):
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    assert not (tmp_path/"data").exists()
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == 4
+    data_dir = tmp_path/"data"
+    vision_dir = data_dir/"vision"
+    assert data_dir.is_dir() and vision_dir.is_dir()
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path/item["path"]).stat().st_mode & 0o777 == 0o600 for item in records)
+
+
 def test_delete_rebuild_matches_fresh_production_ridge_fit(tmp_path):
     home = _home(tmp_path)
     X, Y, keys, lineage, images = _fixture()
