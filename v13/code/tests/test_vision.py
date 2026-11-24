@@ -187,6 +187,47 @@ class Vision(unittest.TestCase):
             self.assertTrue(numpy.allclose(first_weights, retained.W))
         self.assertEqual(vision.status(self.rt)['projector']['update_gate']['status'], gate['status'])
 
+    def test_source_disjoint_update_validation_requires_complete_positive_evidence(self):
+        good = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
+                'source_groups': 4, 'folds_used': 4, 'folds_requested': 4,
+                'held_out_top1': 0.75, 'chance': 0.25, 'held_out_gain_over_chance': 0.5,
+                'utility_status': 'ABOVE_CHANCE'}
+        self.assertEqual(vision._source_disjoint_update_validation(good)['status'], 'PASS')
+        partial = dict(good, status='PARTIAL', folds_used=3)
+        self.assertEqual(vision._source_disjoint_update_validation(partial)['status'],
+                         'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
+        nonfinite = dict(good, held_out_gain_over_chance=float('nan'))
+        self.assertEqual(vision._source_disjoint_update_validation(nonfinite)['status'],
+                         'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
+        no_gain = dict(good, held_out_top1=0.25, chance=0.25,
+                       held_out_gain_over_chance=0.0, utility_status='AT_OR_BELOW_CHANCE')
+        self.assertEqual(vision._source_disjoint_update_validation(no_gain)['status'],
+                         'NO_HELDOUT_UTILITY_GAIN')
+
+    def test_retraining_without_source_disjoint_utility_keeps_previous_artifact(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        old_path = self.home / first['path']
+        self.assertTrue(old_path.is_file())
+        rec = vision.ingest(self.store, png((20, 20, 220), box=(18, 8, 44, 34)))
+        vision.describe(self.rt, rec, 'g', teacher)
+        no_gain = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
+                   'n': 10, 'source_groups': 10, 'folds_used': 4, 'folds_requested': 4,
+                   'held_out_top1': 0.1, 'chance': 0.1, 'held_out_gain_over_chance': 0.0,
+                   'utility_status': 'AT_OR_BELOW_CHANCE'}
+        with patch('v13.vision.source_disjoint_crossval', return_value=no_gain):
+            second = vision.train(self.rt, encoder)
+        self.assertEqual(second['update_gate']['status'], 'NO_HELDOUT_UTILITY_GAIN')
+        self.assertEqual(second['update_gate']['validation']['held_out_gain_over_chance'], 0.0)
+        self.assertEqual(second['sha256'], first['sha256'])
+        self.assertTrue(old_path.is_file())
+        retained = vision.Projector.load(old_path, first['sha256'])
+        self.assertEqual(retained.W.shape, vision.Projector.load(old_path, second['sha256']).W.shape)
+
     def test_retraining_with_changed_encoder_fails_closed_and_keeps_old_artifact(self):
         teacher = FakeTeacher()
         encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
