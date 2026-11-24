@@ -112,6 +112,89 @@ class JEFBridge:
         p=self.s.add_packet('JEFBroadcastCache',packet('JEFBroadcastCache','C1_EXEC',e['event_id'],e['brain_generation_id'],broadcast['source_refs'][:8],
             state_version=broadcast['state_version'],cache=jbc,broadcast_packet_id=broadcast['packet_id'],size_bytes=len(dumps(jbc))))
         return p
+    def publish_android_action_outcome(self, packet_id):
+        """Publish a verified Android receipt as a control-only shared-space signal.
+
+        A companion receipt is not an independent device observation, reward,
+        World-JEPA transition, or trained latent. It is made visible to C1_JEF
+        and the existing B1/B2/C3 shared-space readers without changing weights.
+        """
+        if type(packet_id) is not str or not packet_id:
+            raise ValueError("ANDROID_ACTION_OUTCOME_PACKET_ID_REQUIRED")
+        row = self.s.one(
+            "SELECT kind,event_id,payload FROM packets WHERE id=?", (packet_id,))
+        if row is None or row["kind"] != "ActionOutcome":
+            raise ValueError("ANDROID_ACTION_OUTCOME_PACKET_REQUIRED")
+        try:
+            payload = json.loads(row["payload"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("ANDROID_ACTION_OUTCOME_PACKET_MALFORMED") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("ANDROID_ACTION_OUTCOME_PACKET_MALFORMED")
+        event_id = row["event_id"]
+        event_row = self.s.one(
+            "SELECT session_id,packet FROM events WHERE id=?", (event_id,))
+        if event_row is None:
+            raise ValueError("ANDROID_ACTION_OUTCOME_EVENT_MISSING")
+        try:
+            event_packet = json.loads(event_row["packet"])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("ANDROID_ACTION_OUTCOME_EVENT_MALFORMED") from exc
+        if not isinstance(event_packet, dict):
+            raise ValueError("ANDROID_ACTION_OUTCOME_EVENT_MALFORMED")
+        generation = event_packet.get("brain_generation_id")
+        source_ref = event_packet.get("source_ref")
+        actual = payload.get("actual")
+        allowed_status = {
+            "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+            "COMPANION_USER_DENIED",
+            "COMPANION_DISPATCH_FAILED",
+            "COMPANION_OUTCOME_UNKNOWN",
+        }
+        if (
+            payload.get("packet_id") != packet_id
+            or payload.get("producer_component") != "C5_ANDROID_COMPANION"
+            or payload.get("event_id") != event_id
+            or payload.get("brain_generation_id") != generation
+            or payload.get("provenance") != [source_ref]
+            or event_packet.get("event_id") != event_id
+            or not isinstance(generation, str)
+            or not isinstance(source_ref, dict)
+            or payload.get("status") not in allowed_status
+            or not isinstance(actual, dict)
+            or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+            or actual.get("capability") != "launch_app"
+            or actual.get("observed") is not False
+            or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
+            or actual.get("t8_authoritative") is not False
+            or actual.get("world_learning_eligible") is not False
+            or actual.get("trusted_transition_eligible") is not False
+        ):
+            raise ValueError("ANDROID_ACTION_OUTCOME_NOT_RECEIPT_ONLY")
+        from .enlightened_space import EnlightenedSpace
+        event = {"event_id": event_id, "brain_generation_id": generation}
+        space = EnlightenedSpace(self.s, event_row["session_id"])
+        summary = (
+            "Android companion launch_app receipt: " + payload["status"] +
+            "; device outcome not independently observed; T8/world learning disabled."
+        )
+        published = space.publish(
+            event, "C5_ACTION", "CONTROL", summary=summary,
+            source_refs=[source_ref], authority="CONTROL_ONLY", packet_id=packet_id,
+        )
+        jef_view = space.consume(
+            event, "C1_JEF", query=summary, max_messages=1, max_chars=280,
+        )
+        return {
+            "status": published["status"],
+            "message_id": published.get("message_id"),
+            "representation": "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+            "trained_latent": False,
+            "t8_authoritative": False,
+            "world_learning_eligible": False,
+            "jef_view": jef_view,
+        }
+
     def bridge_view(self,role,e,version):
         """Extra JBC fields for one body's query. SHADOW -> {} (B keeps today's executive_broadcast)."""
         st,_=self._load()
