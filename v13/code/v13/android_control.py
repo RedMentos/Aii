@@ -106,16 +106,23 @@ class AndroidControlBroker:
             "FROM control_actions WHERE state IN ('PROPOSED','APPROVED','DISPATCHED','SUBMIT_UNCERTAIN','RECEIPT_CONSUMED')"
         ))
         for action_id, capability, args_json, expires_at, digest, event_id, source_json, state in rows:
-            if expires_at < self.clock():
+            # A dispatched-but-unconsumed action still expires normally. Once a
+            # receipt has been consumed, its only remaining authority is
+            # receipt finalization; action TTL must not erase that recovery path.
+            if expires_at < self.clock() and state != "RECEIPT_CONSUMED":
                 self.db.execute("UPDATE control_actions SET state='EXPIRED' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "expired_on_restore", digest)
                 continue
-            if args_json is None:
+            if args_json is None and state != "RECEIPT_CONSUMED":
                 self.db.execute("UPDATE control_actions SET state='DROPPED_ON_RESTART' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "sensitive_args_dropped_on_restart", digest)
                 continue
             try:
-                args = json.loads(args_json)
+                # Sensitive arguments (for example typed text) are not restored.
+                # A consumed receipt needs only its persisted digest/capability.
+                args = json.loads(args_json) if args_json is not None else {}
+                if args_json is None:
+                    self._audit(action_id, "sensitive_args_not_restored_for_receipt", digest)
                 source_ref = json.loads(source_json) if source_json else None
                 proposal = Proposal(action_id, capability, args, float(expires_at), digest, event_id, source_ref)
             except Exception:
@@ -277,22 +284,31 @@ class AndroidControlBroker:
             return True
 
     def consume_dispatched(self, action_id):
-        """Consume a dispatched or uncertain request once before verifying its receipt."""
+        """Consume a dispatch once; an already-consumed receipt remains recoverable after TTL."""
         with self.lock:
-            p = self.consumed.get(action_id) or self.dispatched.get(action_id)
+            consumed = self.consumed.get(action_id)
+            if consumed is not None:
+                if self.stopped:
+                    self._audit(action_id, "companion_receipt_denied")
+                    raise ControlDenied("dispatched action unavailable")
+                # Expiry prevents a new dispatch, not finalization of an action
+                # whose one-shot dispatch was already consumed.
+                self._audit(action_id, "companion_receipt_pending", consumed.digest)
+                return consumed
+
+            p = self.dispatched.get(action_id)
             if p is None or self.stopped or self.clock() > p.expires_at:
                 self._audit(action_id, "companion_receipt_denied")
                 raise ControlDenied("dispatched action unavailable")
-            if action_id in self.dispatched:
-                row = self.db.execute(
-                    "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
-                ).fetchone()
-                expected = row[0] if row and row[0] in ("DISPATCHED", "SUBMIT_UNCERTAIN") else None
-                if expected is None:
-                    raise ControlDenied("dispatch state cannot be consumed")
-                self.dispatched.pop(action_id, None)
-                self._set_state(action_id, "RECEIPT_CONSUMED", expected=expected)
-                self.consumed[action_id] = p
+            row = self.db.execute(
+                "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
+            ).fetchone()
+            expected = row[0] if row and row[0] in ("DISPATCHED", "SUBMIT_UNCERTAIN") else None
+            if expected is None:
+                raise ControlDenied("dispatch state cannot be consumed")
+            self.dispatched.pop(action_id, None)
+            self._set_state(action_id, "RECEIPT_CONSUMED", expected=expected)
+            self.consumed[action_id] = p
             self._audit(action_id, "companion_receipt_pending", p.digest)
             return p
 
