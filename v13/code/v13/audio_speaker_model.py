@@ -202,8 +202,9 @@ class SherpaSpeakerEmbeddingEncoder:
         dimension = getattr(extractor, "dim", None)
         if type(dimension) is not int or not 2 <= dimension <= 512:
             raise SpeakerModelError("speaker extractor dimension is invalid")
-        if not all(callable(getattr(numpy_module, name, None))
-                   for name in ("frombuffer", "asarray", "ascontiguousarray", "isfinite", "linalg")):
+        if (not all(callable(getattr(numpy_module, name, None))
+                    for name in ("frombuffer", "asarray", "ascontiguousarray", "isfinite"))
+                or not callable(getattr(getattr(numpy_module, "linalg", None), "norm", None))):
             raise SpeakerModelError("NumPy-compatible array module is required")
         if type(encoder_revision) is not str or not encoder_revision.strip() or len(encoder_revision) > 128:
             raise SpeakerModelError("encoder_revision is invalid")
