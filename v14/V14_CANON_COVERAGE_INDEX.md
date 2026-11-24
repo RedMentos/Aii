@@ -7,6 +7,14 @@
 
 **Default pro Eintrag:** `CANON_REQUIREMENT / IMPLEMENTATION_UNVERIFIED / COVERAGE_REVIEW_PENDING`. Eine Zuordnung oder `DONE` verlangt konkrete Datei/Funktionspfad + Consumer + Test + Evidenz und kompatible Nutzerentscheidung. Ein Quellabschnitt kann mehrere atomare Anforderungen enthalten und später aufgeteilt werden.
 
+## Current P0 evidence overlay — Core fair B1/B2 recovery — run 23 (2026-11-24T20:18:58.353Z)
+
+- PR #2462 current branch head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`, based on release `8d93236c753f0194224c19edc7411d8d7082b1d6`; DRAFT / NOT_RELEASED.
+- Added the exact composed Runtime SHA `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65` to the fail-closed controller guard. The guard reports rejected hashes; the recovery loader reports expected/actual hash and symlink state. Exact guard file SHA-256: `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`.
+- Fixed the C4 focal overlay's stale arithmetic/C5 anchor and updated the fair-scheduler postcommit regression to verify B2's bounded pre-answer slice after B1 expiry, without duplicating a delivered offer.
+- Downstream recovery/stage/deployer pins are rebound bottom-up. Exact current PR staged/integrated CI is **PENDING / NOT_VERIFIED**; an intermediate c39d42 failure used the prior guard hash and is stale after the subsequent rebind. Do not promote old CI or the push-only queued consumer check to acceptance.
+- LOCAL_LINUX full suite **BLOCKED / NOT_RUN** (no checkout; DNS failure). Redmi **REDMI_UNVERIFIED**, last shared receipt AI STOPPED_BY_USER; no device action. Correct native B1/B2 offers, consumed C4/C3 contribution and 20-turn acceptance remain OPEN.
+
 ## Historische Quellblöcke
 
 - HISTORICAL: **1** Überschriften
