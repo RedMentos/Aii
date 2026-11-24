@@ -135,6 +135,110 @@ class Store(unittest.TestCase):
         for ref in (event_ref,observer_ref,evidence_ref):
             self.assertIn(ref,payload['provenance'])
 
+    def test_action_selection_binds_offer_query_context_and_survives_restart(self):
+        event_ref=self.e['source_ref']
+        memory_ref=self.s.source('Remembered fact source','MEMORY')
+        context_ref=self.s.source('Context OS source','CONTEXT_OS')
+        observer_ref=self.s.source('Observer-provided source','A4_OBSERVER')
+        enlightened_ref=self.s.source('Enlightened Space source','ENLIGHTENED_SPACE')
+        bodyview_ref=self.s.source('Body-view source','B2_BODYVIEW')
+
+        query=packet('QueryPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref],
+                     target_role='B1_DETAIL',goal='Compute the total budget',source_refs=[event_ref],
+                     based_on_state_version=7,context_source_refs=[context_ref,observer_ref],
+                     enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('QueryPacket',query)
+        b1=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],
+                  [event_ref,context_ref,observer_ref,enlightened_ref],
+                  role='B1_DETAIL',based_on_state_version=7,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+                  evidence_refs=[event_ref],offer={'summary':'Exact detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                  confidence=.5,rejected_quotes=0,model_revision='test',query_packet_id=query['packet_id'])
+        b1.update(context_source_refs=[context_ref,observer_ref],enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('OfferPacket',b1)
+        b2=packet('OfferPacket','B2_GIST',self.e['event_id'],self.e['brain_generation_id'],
+                  [event_ref,context_ref,enlightened_ref],
+                  role='B2_GIST',based_on_state_version=7,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+                  evidence_refs=[event_ref],offer={'summary':'Broad context','quotes':[],'uncertainty':'low','needs_reentry':False},
+                  confidence=.5,rejected_quotes=0,model_revision='test')
+        b2.update(context_source_refs=[context_ref],enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('OfferPacket',b2)
+        coalition=[
+            {'item_id':b1['packet_id'],'source_kind':'B1_DETAIL','source_refs':[event_ref],
+             'origin_event_id':self.e['event_id'],'priority':.8},
+            {'item_id':b2['packet_id'],'source_kind':'B2_GIST','source_refs':[event_ref],
+             'origin_event_id':self.e['event_id'],'priority':.7},
+            {'item_id':'memory-1','source_kind':'MEMORY','source_refs':[memory_ref],
+             'origin_event_id':self.e['event_id'],'priority':.4},
+        ]
+        focal.ActionGate(self.s).select(self.e,route='both',direct=False,resource_state='NORMAL',
+                                        coalition=coalition,view={'uncertainty':.2,'conflict':.1})
+        selection=json.loads(self.s.one(
+            "SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",
+            (self.e['event_id'],))['payload'])
+        validate('ActionSelection',selection)
+        expected={tuple(sorted(ref.items())) for ref in
+                  (event_ref,memory_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref)}
+        actual={tuple(sorted(ref.items())) for ref in selection['provenance']}
+        self.assertEqual(actual,expected)
+        from v13.world_jepa_store_authority import _selection_source_refs
+        consumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        self.assertEqual(set(consumed),{(r['source_id'],r['sha256'],r['char_start'],r['char_end'],r['modality'])
+                                        for r in (event_ref,memory_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref)})
+        serialized=json.dumps(selection)
+        for private_text in ('Remembered fact source','Context OS source','Observer-provided source',
+                             'Enlightened Space source','Body-view source'):
+            self.assertNotIn(private_text,serialized)
+
+        home=Path(self.tmp.name)
+        self.r.close()
+        self.r=Runtime(home);self.s=self.r.store
+        resumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        self.assertEqual(resumed,consumed)
+
+    def test_action_selection_rejects_unreadable_offer_context_before_commit(self):
+        event_ref=self.e['source_ref']
+        bad_ref=self.s.source('Revoked context source','CONTEXT_OS')|{'sha256':'0'*64}
+        offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,bad_ref],role='B1_DETAIL',based_on_state_version=1,
+                     deadline_monotonic_ns=int((time.monotonic()+30)*1e9),evidence_refs=[event_ref],
+                     offer={'summary':'Detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                     confidence=.5,rejected_quotes=0,model_revision='test',context_source_refs=[bad_ref])
+        self.s.add_packet('OfferPacket',offer)
+        coalition=[{'item_id':offer['packet_id'],'source_kind':'B1_DETAIL','source_refs':[event_ref],
+                    'origin_event_id':self.e['event_id'],'priority':.8}]
+        before=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                          (self.e['event_id'],))['n']
+        with self.assertRaises(ValueError):
+            focal.ActionGate(self.s).select(self.e,route='detail',direct=False,resource_state='NORMAL',
+                                            coalition=coalition,view={'uncertainty':0.,'conflict':0.})
+        after=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                         (self.e['event_id'],))['n']
+        self.assertEqual(after,before)
+
+    def test_action_selection_enforces_the_jepa_64_source_ref_limit(self):
+        event_ref=self.e['source_ref']
+        refs=[self.s.source('memory source %d'%i,'MEMORY') for i in range(63)]
+        item=focal.item('MEMORY','bounded-64',refs,'remembered context',self.e['event_id'],
+                        uncertainty=.1,salience=0.,goal=.5,utility=.5,sq=1.,cost=.05,
+                        state_type='EPISODIC_POINTER',status='MEMORY_SOURCE',self_generated=False)
+        gate=focal.ActionGate(self.s)
+        gate.select(self.e,route='both',direct=False,resource_state='NORMAL',coalition=[item])
+        from v13.world_jepa_store_authority import MAX_ACTION_SOURCE_REFS,_selection_source_refs
+        consumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        self.assertEqual(len(consumed),MAX_ACTION_SOURCE_REFS)
+        too_many=[self.s.source('overflow source %d'%i,'MEMORY') for i in range(64)]
+        overflow=focal.item('MEMORY','bounded-65',too_many,'overflow context',self.e['event_id'],
+                            uncertainty=.1,salience=0.,goal=.5,utility=.5,sq=1.,cost=.05,
+                            state_type='EPISODIC_POINTER',status='MEMORY_SOURCE',self_generated=False)
+        before=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                          (self.e['event_id'],))['n']
+        with self.assertRaisesRegex(ValueError,'source ref bound'):
+            gate.select(self.e,route='both',direct=False,resource_state='NORMAL',coalition=[overflow])
+        after=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                         (self.e['event_id'],))['n']
+        self.assertEqual(after,before)
+
     def test_inquisition_age0_forced_p1_p2_and_age2_modes(self):
         inq=focal.Inquisition(self.s)
         a,b=cand('a',text='The total budget is 391'),cand('b','B2_GIST',text='The total budget is 400',sq=.2)
