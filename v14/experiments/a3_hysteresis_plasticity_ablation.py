@@ -162,7 +162,7 @@ def run_experiment() -> dict:
         str(amplitude): {
             policy: _aggregate_noise([
                 run_noise_control(seed, amplitude, policy)
-                for seed in range(5)
+                for seed in range(1)
             ])
             for policy in ("ALWAYS", "ERROR_GATED", "ERROR_HYSTERESIS")
         }
@@ -185,6 +185,7 @@ def run_experiment() -> dict:
             "ERROR_HYSTERESIS": _aggregate(train_hysteresis),
         },
         "heldout": {policy: _aggregate(rows) for policy, rows in holdout.items()},
+        "noise_seeds": "0 (single-seed script smoke; separate five-seed sweep recorded in R-154)",
         "noise_control": noise_control,
         "authority": "SHADOW_ONLY",
         "weights_persisted": False,
