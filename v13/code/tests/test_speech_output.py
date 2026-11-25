@@ -167,13 +167,13 @@ def test_real_runtime_sqlite_speech_action_path(tmp_path, monkeypatch):
         monkeypatch.setenv("CAPTURE_FILE", str(capture))
 
         operator = Operator(runtime)
-        operator.run(":voice on", origin="TTY")
+        operator.run(":voice on", origin="OPERATOR_TTY")
         assert not capture.exists()
         assert runtime.store.rows(
             "SELECT kind FROM packets WHERE event_id=?", (event["event_id"],)
         ) == []
 
-        result = json.loads(operator.run(":voice speak", origin="TTY"))
+        result = json.loads(operator.run(":voice speak", origin="OPERATOR_TTY"))
         assert result["outcome"]["status"] == "CLI_COMPLETED"
         assert result["automatic_playback"] is False
         assert result["audibility_verified"] is False
