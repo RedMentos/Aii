@@ -1,5 +1,4 @@
 import hashlib
-import json
 import struct
 
 import pytest
@@ -20,10 +19,6 @@ def sha(value):
 def f32sha(rows):
     flat = [float(x) for row in rows for x in row]
     return sha(struct.pack("<" + "f" * len(flat), *flat))
-
-
-def jsonsha(value):
-    return sha(json.dumps(value, sort_keys=True, separators=(",", ":")).encode())
 
 
 def record(source_id, text, token_ids, candidate_rows, receiver_rows=None):
@@ -74,18 +69,13 @@ def inputs():
                 "receiver_model_sha256": "b" * 64, "receiver_tap_id": "C3_NATIVE_INPUT_EMBEDDING",
                 "tokenizer_revision": "c3-tok-r1", "extractor_receipt_sha256": "e" * 64,
                 "input_sha256": f32sha(baseline_rows)}
-    proof = {"schema": "v14.entity-substitution-proof/1", "original_source_sha256": main["source_ref"]["sha256"],
-             "alternate_source_sha256": entity["source_ref"]["sha256"],
-             "original_template_sha256": sha("The <ENTITY> sat."),
-             "alternate_template_sha256": sha("The <ENTITY> sat."),
-             "changed_token_positions": [1], "token_spans_sha256": jsonsha(main["receiver"]["token_spans"])}
     task = {"task_group_id": "task-main", "task_family": "ARITHMETIC", "session_id": "session-1",
-            "target_token_ids": [101, 102]}
+            "source_text": "The cat sat.", "target_token_ids": [101, 102]}
     ood_control = {"task_group_id": "task-ood", "task_family": "RELATION", "session_id": "session-1",
                   "record": ood, "candidate_packet": packet(ood, [[0.2, 0.1], [0.4, 0.3], [0.6, 0.5]])}
     entity_control = {"task_group_id": "task-entity", "task_family": "ARITHMETIC", "session_id": "session-1",
-                      "record": entity, "candidate_packet": packet(entity, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]]),
-                      "proof": proof}
+                      "record": entity, "source_text": "The dog sat.", "entity_byte_spans": [[4, 7]],
+                      "candidate_packet": packet(entity, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])}
     return task, main, baseline, packet(main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]), ood_control, entity_control
 
 
@@ -158,12 +148,15 @@ def test_rejects_wrong_ood_family_and_cross_session_control(monkeypatch):
             candidate_packet=candidate, ood_control=ood, entity_control=entity)
 
 
-def test_rejects_bad_entity_proof_and_bad_bos_binding(monkeypatch):
+def test_rejects_entity_text_changes_outside_declared_span_and_bad_bos_binding(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
     task, main, baseline, candidate, ood, entity = inputs()
-    entity["proof"]["alternate_template_sha256"] = "f" * 64
-    with pytest.raises(NativeReceiverConditionMatrixError, match="one template"):
+    bad_record = record("source-entity", "The dog sat?", [11, 44, 33], [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
+    entity["record"] = bad_record
+    entity["source_text"] = "The dog sat?"
+    entity["candidate_packet"] = packet(bad_record, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
+    with pytest.raises(NativeReceiverConditionMatrixError, match="outside declared spans"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
             candidate_packet=candidate, ood_control=ood, entity_control=entity)
     task, main, baseline, candidate, ood, entity = inputs()
