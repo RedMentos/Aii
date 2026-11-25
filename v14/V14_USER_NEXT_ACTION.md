@@ -2079,3 +2079,18 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Exact-head CI on `6ff1391`: queued at this checkpoint. Earlier head `27c4788` compiled on Python 3.13/3.14 and ran 18/19 focused tests; the only failure was a test comparing `Path` to `str`. Corrected in `6ff1391`; exact rerun still required.
 - LOCAL_LINUX full Aii checkout is BLOCKED: no checkout and `git ls-remote` failed DNS. No local repository pytest or native GGUF run. REDMI_UNVERIFIED; no device receipt, install, model swap, weight change or deployment.
 - Next: read exact #2512 CI, fix any remaining failures, then arrange an explicitly consented local native-GGUF probe on a reachable authorized environment. Do not promote B3 until task-level held-out utility beats exact/no-message/zero/shuffle/repeat/OOD controls and passes retention/restart/rollback.
+
+
+---
+
+## 2026-11-26 — Current verified handoff (Research & Perception Run 35)
+
+**No user action required.** No model download/swap, permission change, Termux command, UPDATE_REQUEST or device mutation was performed.
+
+- Perception PR [#2519](https://github.com/RedMentos/Aii/pull/2519), exact checkpoint SHA `bc954f358640388e45ca52c9aa47ac2f6b15bdfe`, adds an executable source-bound eight-condition receiver task-matrix bridge into Core's ephemeral collector. Focused matrix/bridge tests passed on Python 3.13 and 3.14 in CI.
+- The exact PR is **not green**: staged/runtime and integrated tests fail on inherited Core source-pin/consumer mismatches; the pinned native C++ build and Android arm64 cross-compile fail because `decode_embeddings()` references an undeclared `model`. The precise compile failure was posted to Core PR #2515. No merge or release.
+- The full local repository suite was not run: there is no checkout and GitHub DNS resolution failed. CI is not a local measurement.
+- The last private Redmi receipt (#115, 2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at `8d93236`, but also AI STOPPED_BY_USER; B1/B2 had TIME_BUDGET failures and no valid offers. C3's newest recorded turn generated 7 tokens with about 2.05 s TTFT. There is no newer authenticated receipt, so today's installed SHA and updater state are **not freshly verified**. Current status: REDMI_UNVERIFIED / NOT_RELEASED.
+- Research candidate: MobileMoE-S/M may inform the separate sparse B1/B2 model lab, but the FAIR Noncommercial Research License, custom ExecuTorch/fused-kernel path and lack of Redmi measurements make it a research candidate only. No weights were downloaded.
+- Next: Core fixes the exact parent compile/source-pin failures; Perception rebases #2519, reruns the full exact-head matrix and then runs a real pinned-GGUF holdout. B3 stays OFF pending utility, negative controls, retention and rollback.
+
