@@ -120,6 +120,7 @@ NATIVE_PREFIX_RECEIVE = r'''    def native_receive_prefix(self,sender_role,recei
         """Consume one source-bound event-pooled adapter through LATENT_PREFIX_V1."""
         from pathlib import Path
         import math
+        import time
         from .models import model_key
         from .common import file_hash
         from .latent_adapter import load_adapter, project_event
@@ -149,6 +150,13 @@ NATIVE_PREFIX_RECEIVE = r'''    def native_receive_prefix(self,sender_role,recei
                 or approval.get("sender_role")!=sender_role
                 or approval.get("receiver_role")!=receiver_role):
             raise PermissionError("Latent-prefix receiver lacks the consumed source-bound approval")
+        current,approval_version=self.s.state(KEY,None)
+        if current!=approval:
+            raise PermissionError("Latent-prefix approval changed before receiver entry")
+        executing=dict(approval)
+        executing.update({"status":"EXECUTING","prefix_started_at":time.time()})
+        self.s.set_state(KEY,executing,expected=approval_version)
+        approval=executing
         models={
             sender_role:_model_binding(self.r,sender_role),
             receiver_role:_model_binding(self.r,receiver_role),
@@ -239,6 +247,12 @@ NATIVE_PREFIX_RECEIVE = r'''    def native_receive_prefix(self,sender_role,recei
                  **receipt)
         validate_packet(p)
         self.s.add_packet("LatentReceiverPacket",p)
+        current,approval_version=self.s.state(KEY,None)
+        if current!=approval:
+            raise PermissionError("Latent-prefix approval changed before completion")
+        completed=dict(current)
+        completed.update({"status":"COMPLETED","prefix_completed_at":time.time()})
+        self.s.set_state(KEY,completed,expected=approval_version)
         self.s.log("native_latent_prefix_receiver_probe",e["event_id"],{
             "sender_role":sender_role,"receiver_role":receiver_role,"status":p["status"],
             "adapter_sha256":adapter["adapter_sha256"],"projection_scope":adapter["projection_scope"],
