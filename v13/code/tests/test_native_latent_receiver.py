@@ -333,7 +333,7 @@ def test_teacher_forced_target_scores_are_hash_bound_and_fixture_labeled(tmp_pat
 
 def test_target_score_rejects_mismatched_target_hash(tmp_path):
     home, model, binary, digest = fixture(tmp_path, target_hash_mismatch=True)
-    with pytest.raises(AssertionError):
+    with pytest.raises(NativeReceiverError, match="model probe failed"):
         probe(
             home=home, model_path=model, expected_model_sha256=digest,
             sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
