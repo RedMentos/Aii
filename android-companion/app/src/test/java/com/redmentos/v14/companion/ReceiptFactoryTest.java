@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 public final class ReceiptFactoryTest {
     private static final String ACTION_ID = "a".repeat(32);
     private static final String PACKAGE = "com.example.app";
+    private static final String URL = "https://example.com/path?q=1";
     private static final String KEY_ID = "b".repeat(64);
 
     private static final class FakeSigner implements ReceiptFactory.Signer {
@@ -54,6 +55,23 @@ public final class ReceiptFactoryTest {
                 ACTION_ID, requestJson, packageName, status, null, 2_000_000L);
     }
 
+    private static CompanionDb.Action openUrlAction(String status, String url) throws Exception {
+        String digest = Canonical.requestDigest("open_url", url);
+        String requestJson = "{"
+                + "\\"schema\\":\\"v14.android-action-request/1\\","
+                + "\\"action_id\\":\\"" + ACTION_ID + "\\","
+                + "\\"capability\\":\\"open_url\\","
+                + "\\"args\\":{\\"url\\":\\"" + url + "\\"},"
+                + "\\"digest\\":\\"" + digest + "\\","
+                + "\\"companion_local_consent_required\\":true,"
+                + "\\"android_os_permission_required\\":false,"
+                + "\\"permission_bypass\\":false,"
+                + "\\"model_authority\\":false,"
+                + "\\"local_approval\\":\\"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION\\""
+                + "}";
+        return new CompanionDb.Action(ACTION_ID, requestJson, url, status, null, 2_000_000L);
+    }
+
     @Test public void unknownReceiptIsApprovedButNotObserved() throws Exception {
         JSONObject body = ReceiptFactory.create(
                 action("EXECUTING", PACKAGE), new FakeSigner(),
@@ -66,6 +84,19 @@ public final class ReceiptFactoryTest {
         assertEquals(KEY_ID, body.getString("key_id"));
         assertEquals(1_060L, body.getLong("expires_at"));
         assertEquals(13, body.length());
+    }
+
+    @Test public void openUrlReceiptBindsOnlyHttpsTargetAndHasNoOsPermissionAuthority() throws Exception {
+        JSONObject body = ReceiptFactory.create(
+                openUrlAction("EXECUTING", URL), new FakeSigner(),
+                "DISPATCHED_UNVERIFIED", true, 1_000_000L).getJSONObject("body");
+        assertEquals("open_url", body.getString("capability"));
+        assertEquals(Canonical.requestDigest("open_url", URL), body.getString("digest"));
+        assertEquals("NOT_REQUIRED_FOR_OPEN_URL", body.getString("os_permission_status"));
+        assertFalse(body.getBoolean("observed"));
+        assertFalse(Canonical.isSafeHttpsUrl("http://example.com"));
+        assertFalse(Canonical.isSafeHttpsUrl("https://user:pass@example.com"));
+        assertFalse(Canonical.isSafeHttpsUrl("https://example.com:444"));
     }
 
     @Test public void denialReceiptRequiresDenyClaimAndNoConsent() throws Exception {
@@ -86,7 +117,7 @@ public final class ReceiptFactoryTest {
                     "OUTCOME_UNKNOWN", true, 1_000_000L);
             fail("package mismatch");
         } catch (IllegalArgumentException expected) {
-            assertEquals("action request digest or package mismatch", expected.getMessage());
+            assertEquals("action request digest or target mismatch", expected.getMessage());
         }
         try {
             ReceiptFactory.create(action("PENDING_USER_APPROVAL", PACKAGE), new FakeSigner(),
