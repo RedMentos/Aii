@@ -213,6 +213,7 @@ def build_native_tokenwise_pair_record(
         "model_revision": sender_model_revision,
         "model_sha256": sender_model_sha256,
         "tokenizer_revision": sender_tokenizer_revision,
+        "feature_sha256": sender_tap_packet["feature_sha256"],
         "token_ids": list(sender_tap["token_ids"]),
         "token_spans": [list(span) for span in sender_tap["token_spans"]],
         "prefill_positions": list(sender_tap["prefill_positions"]),
