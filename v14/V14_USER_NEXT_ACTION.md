@@ -31,7 +31,9 @@ R-150 audits MobileMoE-S-PTE (arXiv:2605.27358v1; official Meta PTE card). It of
 
 ### Next concrete action
 
-Core/Integrator must rebind the immutable source-lifecycle closure to the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and `vision_projector_stats.py` SHA-256 `bb987ff4b12f7c5622e3890a62a3afc145d82d7401f5a0518d9f04d2786ad10f`, include the helper in the materialized closure, then rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken pins. After that, continue the next independent RAW EAR/A-plane integration slice.
+1. **A3 source lifecycle:** Core/Integrator must rebind the immutable source-lifecycle closure to the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and `vision_projector_stats.py` SHA-256 `bb987ff4b12f7c5622e3890a62a3afc145d82d7401f5a0518d9f04d2786ad10f`, include the helper in the materialized closure, then rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken pins.
+2. **Audio RAW EAR consumer:** PR #2312 signed one-shot PCM16 consumer CI passes on Python 3.13/3.14 and integrated-regression passes, but the inherited two-checkout migration fails (`PARTIAL`, Runtime `ERROR`, `last_error=UPDATE`). Its old QA base and the current QA-final branch are diverged 81/73, so do not retarget blindly. The current QA-final Android tree still has no AudioRecord provider and its manifest has no RECORD_AUDIO permission. QA/Core must publish one current compatible base, repair migration, and implement the visible provider; then Perception can rebase the consumer and run the composed tests. No microphone or Redmi proof exists.
+3. After those gates, continue the next independent RAW EAR/A-plane integration slice.
 
 **User action: none.** No manual Termux command, model download/swap, restart, permission change or device action is needed for this blocked candidate.
 
