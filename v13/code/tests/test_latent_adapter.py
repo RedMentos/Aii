@@ -45,11 +45,14 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
             cursor += count
         source_groups = rebuilt
     result = []
-    for source_id, source_sha256, sender_rows, receiver_rows in source_groups:
-        result.extend(align_token_rows_by_char_span(
+    for group, (source_id, source_sha256, sender_rows, receiver_rows) in enumerate(source_groups):
+        aligned = align_token_rows_by_char_span(
             sender_rows, spans, receiver_rows, spans,
             source_id=source_id, source_sha256=source_sha256,
-        ))
+        )
+        for pair in aligned:
+            pair["session_id"] = f"{prefix}-session-{group // 2}"
+        result.extend(aligned)
     return result
 
 def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
