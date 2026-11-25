@@ -52,3 +52,40 @@ Full paper review recorded as R-143 in `v14/V14_RESEARCH_LEDGER.md`:
 2. Have the native tap producer emit verified tokenizer byte/character spans without storing source text; only then can real tokenwise paired fitting be exercised.
 3. Add a receiver-side task-utility evaluation using answer-disjoint/source-disjoint holdout, exact-forward parity, no-message, zero, shuffled, mis-source, position and OOD controls; keep event-pooled and tokenwise evidence separate.
 4. Coordinate with Core on the native receiver path. No production B3 promotion, weight changes, model swap or Android claim from this work.
+
+
+## Run 14b — CI repair, event-pool loss measurement and new research (2026-11-25)
+
+### Changes on this branch
+
+- Fixed the tokenwise test fixture to pass the list-shaped vectors required by the adapter contract; NumPy arrays in the fixture were the cause of the first focused-CI failure.
+- Corrected the source-hash leakage test so every token row belonging to the selected holdout source receives the same leaked hash and matching alignment binding. The previous fixture changed only one row and therefore correctly failed earlier at the within-source consistency guard instead of reaching the train/holdout leakage assertion.
+- Added _event_pool_discarded_energy_ratio() to the read-only latent_alignment_audit.py. For nonzero-position rows, it computes residual energy around the event mean divided by total activation energy. Cohort output reports median/p95 for sender and receiver. The field explicitly states that this is descriptive within-event variance, not semantic information loss or task utility.
+- Added tests for constant vs varying token rows and assertions that the persisted paired-tap audit reports the metric. The existing audit remains read-only and does not load models, export raw vectors, train adapters or change weights.
+- Added research-ledger entry R-144 after full review of Chen et al., arXiv:2606.13594v2 (v2 2026-10-05). See ledger for method, benchmark limits, CC BY 4.0 paper license, absent verified code release and model/data-license caveats.
+
+### Exact evidence
+
+- Local Python isolated formula reproduction: PASS. Constant nonzero-position rows produced 0.0 residual ratio; two orthogonal rows produced 0.5; the existing toy-tap pattern produced 0.1. This is not the full repository pytest suite.
+- GitHub focused workflow V14 latent token-span alignment, run #12, on code/test SHA 10b07cedd60db0b61dcbd7fdc493ceb6f6c48d84: PASS.
+- GitHub V13 runtime deployment integrity, run #2517, same code/test SHA: PASS.
+- GitHub V13 staged context and integrated regression, run #5060, was still IN_PROGRESS at the last poll; do not count as PASS until its final conclusion is read.
+- The branch head advanced after these code/test checks for the R-144 ledger append; the current branch HEAD and exact CI readback must be rechecked before merge.
+- Full repository local pytest was NOT_RUN: no repository checkout is mounted in this execution environment and the direct Git remote probe returned no checkout. The isolated Python check does not replace CI or repository-local tests.
+- No native GGUF model was loaded here; no native generated tokens, task accuracy, gradients, persistent parameter diff or retention/restart test. No Termux or Redmi run. REDMI_UNVERIFIED.
+- PR #2501 remains a draft stacked on #2496; NOT_RELEASED. GitHub push/CI is not a device deployment.
+
+### Cross-lane integration finding
+
+Core PR #2499 head df19e207b96df8d942f0499e29ffa7d21d6fcb9a has a failing exact workflow: V14 native latent receiver staged runtime, run #907 / run ID 45623391201. Its Python suite reports 82 passed / 1 failed. The failure is test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source: after the test's arm-probe call returns ARMED, the following native-probe reaches consume() with no PENDING record. Review comment #7164056126 was posted on PR #2499 with the stack and a request to trace the state/lease interaction without weakening local-TTY, one-shot, source/model-binding or exclusive-lease checks. Other CI on that Core SHA includes runtime deployment integrity #2512 and staged context regression #5055 as PASS; this does not cancel the dedicated receiver workflow failure.
+
+### Research consequence
+
+R-144 is not a drop-in Android design. Its positive results use 4B/8B/14B Qwen3 KV caches (plus a 7B cross-family case), dense per-layer/per-KV-group transforms, 30k reconstruction steps and 2k generation steps. The estimated cache payload is 27.2–30.2 MB/example and its FLOP estimates omit cache processing/transport. The present V14 LATENT_PREFIX_V1 path carries one event-mean vector with no source text, so it is context-unaware and much more compressed than the paper's method. Keep it diagnostic-only.
+
+### Next concrete actions
+
+1. Recheck current branch HEAD and all CI after the ledger/handoff append; fix any new failure before asking for review.
+2. Coordinate with Core on the #2499 PENDING-approval/lease failure; rerun its exact dedicated workflow after repair.
+3. Extend the real native tap producer to emit tokenizer byte/character spans without storing source text. Current persisted tap packets do not yet provide those offsets, so tokenwise fitting is not yet fed by real paired tap data.
+4. Build the next receiver-utility experiment on source-disjoint task data: compare event-mean vector, multiple span vectors and tokenwise receiver-compatible state under both context-aware and context-unaware settings, with exact-forward parity, no-message, zero, shuffled, row-shuffled, mis-source, position and OOD controls. Keep B3 OFF until task utility, not just input/logit effect, is shown.
