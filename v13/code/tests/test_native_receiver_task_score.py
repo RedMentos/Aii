@@ -6,7 +6,7 @@ import time
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
-from v13.native_receiver_task_score import NativeReceiverTaskScoreError, probe_native_receiver_task_score, _target_payload
+from v13.native_receiver_task_score import NativeReceiverTaskScoreError, probe_native_receiver_task_score, probe_anchor_preserving_candidate, _target_payload
 
 REV = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 MODEL_BYTES = b"fixture-model-no-weights"
@@ -157,3 +157,39 @@ def test_rejects_expired_deadline(tmp_path):
     home, model, binary = setup(tmp_path)
     with pytest.raises(TimeoutError, match="deadline expired"):
         call(home, model, binary, deadline=time.monotonic() - 1)
+
+
+def test_anchor_candidate_helper_consumes_exact_perception_output(tmp_path):
+    home, model, binary = setup(tmp_path)
+    input_sha = hashlib.sha256(struct.pack("<ffff", 0.1, 0.2, 0.3, 0.4)).hexdigest()
+    candidate = {
+        "schema": "v14.native-tokenwise-anchor-residual-input/1",
+        "input_strategy": "ANCHOR_PLUS_CAPPED_RESIDUAL_V1",
+        "vectors": [[0.1, 0.2], [0.3, 0.4]],
+        "input_sha256": input_sha,
+        "position_ids": [0, 1],
+        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "receiver_model_sha256": MODEL_SHA,
+        "receiver_model_revision": "receiver-r1",
+        "tokenizer_revision": "llama-server:b10964;gguf:" + MODEL_SHA,
+        "receiver_role": "C3_LANGUAGE",
+        "source_ref": SOURCE,
+        "session_id": "session-a",
+        "adapter_sha256": "d" * 64,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+        "anchor_rows_preserved_as_base": True,
+    }
+    result = probe_anchor_preserving_candidate(
+        candidate, home=home, model_path=model, target_token_ids=[5, 6],
+        task_group_id="task-anchor-1", task_family="ARITHMETIC",
+        context_sha256=SOURCE["sha256"], deadline=time.monotonic() + 10,
+        environment="SYNTHETIC", binary_path=binary,
+    )
+    assert result["task_score_receipt"]["status"] == "SCORED"
+    assert result["task_score_receipt"]["arguments"]["condition"] == "LATENT_CANDIDATE"
+    assert result["task_score_receipt"]["arguments"]["message_source_ref"] == SOURCE
+    assert result["task_score_receipt"]["arguments"]["input_sha256"] == input_sha
