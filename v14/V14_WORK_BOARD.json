@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T13:50:07+01:00",
+  "updated_at": "2026-11-25T04:24:00+00:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,9 +197,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
+      "next_step": "Boss/Integrator: compose the current #2465 vision.py source-lifecycle pin chain, then integrate/review #2470 -> #2486 and rerun staged/integrated/migration/consumer. Perception: after that gate, run the calibration on explicitly consented real visual sequences with source/session-disjoint holdouts and pixel/codec/brightness/camera controls. Do not change the A4 0.15 gain or persist a threshold from synthetic results. Keep near-duplicate source grouping as a subsequent task.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T13:50:07+01:00",
+      "last_checkpoint": "2026-11-25T04:24:00Z",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -213,7 +213,7 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
+      "proof": "Draft stacked PR #2486 on Perception #2470: RAW EYE visual start monotonicity guard plus source-disjoint A3 per-transition noise/shuffle calibration. Exact-head GitHub Actions: temporal-calibration 58/58 PASS on Python 3.13 and 3.14 (run 45546434809); MediaProjection frame-ingress 54/54 PASS on Python 3.13 and 3.14 (run 45546434620); source-lineage and offline runtime deployment checks PASS. Staged/integrated runs still pending at this checkpoint. LOCAL_LINUX full checkout NOT_RUN/BLOCKED; isolated harness 7/7 PASS. REDMI_UNVERIFIED; no release or device action."
     },
     {
       "id": "V14-007",
@@ -1187,6 +1187,13 @@
       "status": "PEER_REVIEWED_PAPER_REVIEWED / CUSTOM_NONCOMMERCIAL_CODE_LICENSE / NO_CODE_OR_DATA_IMPORT / FRAME_BASED_ABLATION_PROPOSED",
       "primary": "Assa et al., Nature Communications 17, 9951 (2026-08-20), DOI 10.1038/s41467-026-76878-6",
       "next": "Compare time-collapsed tile features against ordered timestamped frame deltas and A5 temporal surfaces on source/session-disjoint UI sequences; shuffled/reversed timestamp and flicker/scroll negatives. Do not transfer the event camera's 0.25 ms threshold to MediaProjection frames."
+    },
+    {
+      "id": "R-139",
+      "topic": "ThinkJEPA dual-temporal VLM guidance and A3 temporal calibration",
+      "status": "FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / CUSTOM_CODE_LICENSE / NO_REUSE",
+      "primary": "Zhang et al., arXiv:2603.22281v2 (2026-06-16); Hai-chao-Zhang/ThinkJEPA main 1f12d8c9e397a93ec6570ddc760d8a7e5eedddf9",
+      "next": "Use the dense-JEPA/sparse-semantic separation as architecture guidance only; no H200/Qwen3-VL-2B/V-JEPA2 weight import. Run source-disjoint calibration on explicitly consented real visual sequences before any A4 cap."
     }
   ],
   "current_evidence_overlay": {
@@ -1324,6 +1331,45 @@
       "exact_head_ci": "8_SUCCESS_4_FAILURE_1_POLICY_SKIPPED_0_PENDING",
       "pending": "NONE",
       "blockers": "STAGED_INTEGRATED_CONSUMER_ALL_FAIL_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY; TWO_CHECKOUT_MIGRATION_PARTIAL"
+    },
+    "perception_run26": {
+      "timestamp": "2026-11-25T04:24:00Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-a3-temporal-calibration-interval-guard-20261125-run26",
+      "pr": 2486,
+      "pr_state": "DRAFT_STACKED_ON_2470",
+      "code_commit": "092bdaeaae0d4be63c922901a15ad395b2d84533",
+      "latest_head_at_checkpoint": "0945a9c73609bb90c436efef50527f5df7e7ee70",
+      "behavior": "A5_VISUAL_INTERVAL_START_MONOTONICITY; A3_SOURCE_DISJOINT_PER_TRANSITION_FEATURE_NOISE_SHUFFLE_REVERSAL_DIAGNOSTIC; A3_TO_A4_RUNTIME_GAIN_UNCHANGED",
+      "exact_ci": {
+        "temporal_calibration": {
+          "run": 45546434809,
+          "python313": "58/58 PASS",
+          "python314": "58/58 PASS"
+        },
+        "frame_ingress": {
+          "run": 45546434620,
+          "python313": "54/54 PASS",
+          "python314": "54/54 PASS"
+        },
+        "source_lineage": {
+          "run": 45546434617,
+          "status": "SUCCESS"
+        },
+        "runtime_deployment": {
+          "run": 45546434652,
+          "status": "SUCCESS"
+        },
+        "staged_integrated": {
+          "run": 45546434683,
+          "status": "IN_PROGRESS_AT_CHECKPOINT"
+        }
+      },
+      "local_linux": "ISOLATED_HARNESS_7_OF_7_PASS_CP3135_NUMPY235_PYTEST90; FULL_REPO_CHECKOUT_BLOCKED_NO_MOUNT_AND_GITHUB_DNS_FAILURE",
+      "device": "PRIVATE_V13OBS_115_LAST_SNAPSHOT_2026-11-24T09:28Z_INSTALLED_8D93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_ZERO_B1_B2_OFFERS; NEW_DIAGNOSTICS_ISSUE_891_NO_REPLY; NO_LIVE_RECEIPT",
+      "release": "NOT_RELEASED",
+      "redmi": "REDMI_UNVERIFIED",
+      "next": "Core recompose #2465 vision.py pin; then integrate #2470/#2486. Perception needs consented real frames for calibration; no synthetic threshold promotion."
     }
   },
   "qa_latest_checkpoint": {
