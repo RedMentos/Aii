@@ -1907,3 +1907,11 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - PR #2509 returned to DRAFT. It remains stacked on #2494 and NOT_RELEASED. Code-tested SHA is 6523b8; subsequent commits, if any, are documentation/board only.
 
 No user action required. Core/Integrator owns the source-lifecycle rebind; Perception will not weaken the exact pin.
+
+
+## Cross-organ perception checkpoint — B3 and RAW EAR (2026-11-25)
+
+- [PR #2508](https://github.com/RedMentos/Aii/pull/2508) is READY_FOR_REVIEW / mergeable. Exact head `e333b5c3da2448ef6d188f2278672f7f692ac76e`: tokenwise adapter 83/83 on Python 3.13 and 3.14; staged 255 passed / 10 skipped / 47 subtests; integrated 424 passed / 3 skipped / 58 subtests. It closes session leakage in an offline PCA+ridge fitter only. No native GGUF hidden-state exchange, receiver utility, B1/B2 or Android proof. B3 remains OFF / NOT_ACCEPTED pending Core #2499 receiver and task-utility controls.
+- [PR #2498](https://github.com/RedMentos/Aii/pull/2498) RAW EAR already carries the 13-cue nonverbal voice vector, a non-identifying speaker-change decision, and activity/voicing/F0/energy/prosody into the final C3 admission summary under consent/finality gates. The generic legacy audio bridge is RMS/ZCR-only; the richer RAW EAR path is not. No duplicate bridge patch was made. Its staged source-lifecycle pin still needs Core recompose.
+- [PR #2509](https://github.com/RedMentos/Aii/pull/2509) remains DRAFT; focused A3/frame/source tests pass, staged/integrated blocked at the inherited Core `vision.py` pin. ERROR_GATED remains shadow-only because the synthetic update savings come with worse MAE/retention than ALWAYS.
+- Next: Core recompose #2494/#2509 vision and #2498 audio source-lifecycle pins; Core completes #2499 native receiver; Perception runs source/session-disjoint native-pair and task-utility controls after the receiver exists. User action: **keine Aktion nötig**.
