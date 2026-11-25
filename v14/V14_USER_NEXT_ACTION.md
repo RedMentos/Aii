@@ -1954,3 +1954,10 @@ R-116 audits the pinned upstream `llama.cpp` C API: `llama_batch.embd` is docume
 4. Continue whole-Canon work after the checkpoint: actual Redmi B1/B2 offer quality/latency, correct C3 output, native consumed-organ telemetry, and real learned latent/weight paths remain open.
 
 **User action required now: NONE.** A future local native-model probe requires a separate explicit approval after integration/installation.
+
+
+### Exact-head update — PR #2481 Android process-death result — 2026-11-25
+
+The previously pending #2481 emulator job has now completed. Head `545ec845a35a4567aeaf7487d6765edf2229176f` is **17/17 check-runs SUCCESS**. The Android API-33 x86_64 GitHub-hosted emulator test passed: Espresso verified the visible Stop control; after Activity teardown and provider restart, the new process remained STOPPED; PID/start identity changed from `2176@493104` to `2621@560711`. The test invokes the real button listener with `View.performClick()` after view-visibility checks; it does not claim physical touch injection.
+
+This is emulator/CI evidence only. It is not a Redmi install, Termux run, signer pairing, Accessibility/screen capture, real-device action or user-visible phone confirmation. #2481 remains DRAFT / NOT_RELEASED, stacked on #2450/#2356, and awaits independent QA/Boss review and safe rebase/compose.
