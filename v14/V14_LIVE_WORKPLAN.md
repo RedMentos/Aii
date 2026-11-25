@@ -1520,3 +1520,16 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - Exact-head CI on `6ff1391`: queued at this checkpoint. Earlier head `27c4788` compiled on Python 3.13/3.14 and ran 18/19 focused tests; the only failure was a test comparing `Path` to `str`. Corrected in `6ff1391`; exact rerun still required.
 - LOCAL_LINUX full Aii checkout is BLOCKED: no checkout and `git ls-remote` failed DNS. No local repository pytest or native GGUF run. REDMI_UNVERIFIED; no device receipt, install, model swap, weight change or deployment.
 - Next: read exact #2512 CI, fix any remaining failures, then arrange an explicitly consented local native-GGUF probe on a reachable authorized environment. Do not promote B3 until task-level held-out utility beats exact/no-message/zero/shuffle/repeat/OOD controls and passes retention/restart/rollback.
+
+
+---
+
+## Core & Harness — native target-score checkpoint (2026-11-25)
+
+- **PR #2513** (`core/v14-android-open-url-api-20261125-run2`, head `e2774a22c2f9d0a4acfee3c00d1024793b952f61`) adds a visible-consent HTTPS `ACTION_VIEW` capability. It remains stacked on #2481, DRAFT/NOT_RELEASED; no Android installation or Redmi test.
+- **PR #2515** (`core/v14-native-target-score-20261125-run1`, branch head `555e1ba2294dcd994436dff4c8dae8fc8b79fb68`; code commit `1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7`) adds teacher-forced target-token scoring to the pinned native receiver and an ephemeral 160-receipt task-score collector. It carries the Perception #2511 evaluator unchanged and is stacked on Core #2512. DRAFT/NOT_RELEASED.
+- C++ target scoring uses the same positive receiver embedding context and teacher-forces the target sequence; the receipt binds input/model/binary/target hashes, pinned llama.cpp revision/version, token count, log-probabilities, decode status and input-consumed evidence. Injected receivers are labeled SYNTHETIC_FIXTURE. No target IDs or text are persisted.
+- LOCAL_LINUX: isolated C++17 log-sum-exp helper compiled with strict warnings and passed the numeric/invalid-logit cases. Full Aii checkout/pytest and llama.cpp-linked native build were NOT_RUN locally (DNS failure; no checkout). Exact-head CI was not yet observed. No GGUF was downloaded or scored; REDMI_UNVERIFIED.
+- **Remaining gap:** only LATENT_CANDIDATE receipt production is wired. The seven other conditions and full held-out cohort are not implemented. Do not claim receiver utility or semantic correctness. No B3, training, model swap or production authority.
+- **Next:** build the eight-condition source/session-bound matrix; collect >=20 task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX and require candidate to beat every control. Then separately seek explicit device authorization and real Android receipts.
+

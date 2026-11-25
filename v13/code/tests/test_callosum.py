@@ -31,7 +31,7 @@ class GainTests(unittest.TestCase):
 class Base(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
-        self.c=C.Callosum(self.r.store,N.Neuromod(self.r.store))
+        self.c=C.controller(self.r)
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def teach(self,channel,util,n=C.MIN_N,d='B1_TO_B2'):
         def fn(st):
@@ -73,12 +73,16 @@ class UtilityTests(Base):
         self.assertEqual(blocked,{'scored':0,'status':'SKIPPED_RECORD_ONLY'})
         state_after,_=self.r.store.state(C.KEY,None)
         self.assertEqual(state_after,state_before)
+        blocked_rating=self.c.on_rating(eid,1.0)
+        self.assertEqual(blocked_rating,{'updated':0,'status':'SKIPPED_RECORD_ONLY'})
+        state_after_rating,_=self.r.store.state(C.KEY,None)
+        self.assertEqual(state_after_rating,state_before)
         self.r.cfg['learning_mode']='SHADOW_UPDATE'
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
         self.assertEqual(res['scored'],1)
         
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
-        self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
+        self.assertEqual(self.c.on_rating(eid,1.0)['updated'],1)
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))
         self.assertEqual(doc['experience_count'],2);self.assertIn('utility_vs_no_message',doc)
         self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')

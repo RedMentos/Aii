@@ -8,17 +8,18 @@ from pathlib import Path
 
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "abcda6f0e287122e19cffd2264a1c1fcc8f2eea4b811e731ceb24195101e2325",
+    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "2bb2cfc5baa4b02ec2989bd403dc45390a0c402325082230c5340d02038a1d15",
+    "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "3a78fc92fd74be85e0b91859fad23f5917a633f4e233376226e1082f80aed344",
-    "v13/native/latent_receiver/README.md": "568757eed361977c60e18764476c1687b1584a8ce001e7847176f92cd84eee08"
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "34fa864077f45453d6316c33895800be63371a24babf03160cb01307ab278a7a",
+    "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
+    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
@@ -132,12 +133,18 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
             return {'status':'INVALID_STORED_RECEIPT'}
 
 '''
+CALL0SUM_LEARNING_GUARD = r'''    def _learning_enabled(self):
+        runtime=getattr(self,"r",None)
+        cfg=getattr(runtime,"cfg",None)
+        return isinstance(cfg,dict) and cfg.get("learning_mode","RECORD_ONLY") in {"SHADOW_UPDATE","APPROVED_COMMIT"}
+
+'''
 REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),\n"""
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
-OPERATOR_HELP_OLD = '''    """:callosum status/shadow/active/degrade/promote plus local one-shot native taps."""\n'''
-OPERATOR_HELP_NEW = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm|arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|revoke-tokenwise-pair]"""\n'''
+OPERATOR_HELP_OLD = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
+OPERATOR_HELP_NEW = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
 OPERATOR_PREFIX_NEW = r"""    c=controller(r)
     if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
@@ -164,8 +171,8 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
                       'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
 """
 
-OPERATOR_ERROR_OLD = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')\n"""
-OPERATOR_ERROR_NEW = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe <sender> <receiver> --last-source --confirm|arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|revoke-tokenwise-pair]')\n"""
+OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
+OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -190,6 +197,9 @@ def apply_sources(code_dir,sources):
         raise ValueError("native receiver Callosum already patched or unavailable")
     callosum=_replace(callosum,b"import re\n",b"import re\nimport time\n","Callosum time import")
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
+    callosum=_replace(callosum,b"    def _load(self):\n",CALL0SUM_LEARNING_GUARD.encode("utf-8")+b"    def _load(self):\n","Callosum learning mode gate")
+    callosum=_replace(callosum,b"        st,_=self._load();msgs=st['pending'].get(event_id) or []\n",b"        if not self._learning_enabled():return {'scored':0,'status':'SKIPPED_RECORD_ONLY'}\n        st,_=self._load();msgs=st['pending'].get(event_id) or []\n","Callosum outcome RECORD_ONLY gate")
+    callosum=_replace(callosum,b"        u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)\n",b"        if not self._learning_enabled():return {'updated':0,'status':'SKIPPED_RECORD_ONLY'}\n        u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)\n","Callosum rating RECORD_ONLY gate")
     callosum=_replace(callosum,REPORT_PROBE_OLD.encode("utf-8"),REPORT_PROBE_NEW.encode("utf-8"),"Callosum report probe")
     callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
     callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")

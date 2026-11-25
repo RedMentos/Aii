@@ -29,6 +29,8 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
     assert "native_receiver_probe" in callosum
+    assert "def _learning_enabled(self):" in callosum
+    assert "SKIPPED_RECORD_ONLY" in callosum
     staged_budget = (destination / "v13/native_turn_budget.py").read_text(encoding="utf-8")
     staged_schedule = (destination / "v13/observer_schedule.py").read_text(encoding="utf-8")
     assert "minimum_role_slice_s" in staged_budget
