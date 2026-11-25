@@ -1,0 +1,584 @@
+"""Low-rank cross-organ activation adapter for the native B3 diagnostic receiver.
+
+The adapter maps paired sender activations into a receiver's input-embedding
+width. Training is an opt-in offline operation (NumPy is optional); projection
+uses only the Python standard library. Alignment metrics are NOT semantic
+utility: every result remains diagnostic, non-promoted and authority-zero.
+"""
+from __future__ import annotations
+
+from array import array
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import struct
+import sys
+import tempfile
+from typing import Mapping, Sequence
+
+SCHEMA = "v14.cross-organ-latent-adapter/1"
+_MAGIC = b"V14LAT1\0"
+_MAX_DIM = 8192
+_MAX_RANK = 64
+_MAX_PAIRS = 4096
+_MAX_FILE_BYTES = 64 * 1024 * 1024
+_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
+_RECEIVERS = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
+
+
+class LatentAdapterError(ValueError):
+    pass
+
+
+class LatentAdapterUnavailable(RuntimeError):
+    pass
+
+
+def _sha256_text(value: str, name: str) -> str:
+    if type(value) is not str or len(value) != 64 or any(c not in "0123456789abcdef" for c in value.lower()):
+        raise LatentAdapterError(name + " must be a SHA-256 hex digest")
+    return value.lower()
+
+
+def _finite_vector(value, name: str, expected_dim: int | None = None) -> list[float]:
+    if not isinstance(value, (list, tuple)) or not value or len(value) > _MAX_DIM:
+        raise LatentAdapterError(name + " has invalid vector geometry")
+    if expected_dim is not None and len(value) != expected_dim:
+        raise LatentAdapterError(name + " dimension mismatch")
+    out = []
+    for item in value:
+        if type(item) not in (int, float) or not math.isfinite(float(item)):
+            raise LatentAdapterError(name + " contains a non-finite or non-numeric value")
+        out.append(float(item))
+    return out
+
+
+def _validate_pairs(pairs, name: str):
+    if not isinstance(pairs, (list, tuple)) or not pairs or len(pairs) > _MAX_PAIRS:
+        raise LatentAdapterError(name + " must contain a bounded non-empty pair list")
+    pair_ids, source_ids, senders, receivers = set(), set(), [], []
+    source_dim = receiver_dim = None
+    for pair in pairs:
+        if not isinstance(pair, Mapping):
+            raise LatentAdapterError(name + " pair must be a mapping")
+        pair_id, source_id = pair.get("pair_id"), pair.get("source_id")
+        if type(pair_id) is not str or not pair_id or len(pair_id) > 128 or pair_id in pair_ids:
+            raise LatentAdapterError(name + " pair IDs must be unique non-empty strings")
+        if type(source_id) is not str or not source_id or len(source_id) > 128:
+            raise LatentAdapterError(name + " source IDs must be non-empty strings")
+        pair_ids.add(pair_id)
+        source_ids.add(source_id)
+        sender = _finite_vector(pair.get("sender_vector"), name + " sender_vector", source_dim)
+        receiver = _finite_vector(pair.get("receiver_vector"), name + " receiver_vector", receiver_dim)
+        source_dim = len(sender) if source_dim is None else source_dim
+        receiver_dim = len(receiver) if receiver_dim is None else receiver_dim
+        senders.append(sender)
+        receivers.append(receiver)
+    return pair_ids, source_ids, senders, receivers
+
+
+def _weight_values(adapter: Mapping) -> list[float]:
+    values = list(adapter["sender_mean"]) + list(adapter["receiver_mean"])
+    values.extend(value for row in adapter["sender_factor"] for value in row)
+    values.extend(value for row in adapter["receiver_factor"] for value in row)
+    return values
+
+
+def _serialize(adapter: Mapping) -> bytes:
+    values = _weight_values(adapter)
+    if not values or any(type(v) not in (int, float) or not math.isfinite(float(v)) for v in values):
+        raise LatentAdapterError("adapter weights are malformed")
+    packed = array("f", (float(v) for v in values))
+    if sys.byteorder != "little":
+        packed.byteswap()
+    weight_bytes = packed.tobytes()
+    header = {key: adapter[key] for key in (
+        "schema", "status", "sender_role", "receiver_role", "sender_tap_id", "receiver_tap_id",
+        "sender_model_revision", "receiver_model_revision", "sender_model_sha256",
+        "receiver_model_sha256", "sender_dim", "receiver_dim", "rank", "metrics",
+        "train_pairs", "holdout_pairs", "train_source_count", "holdout_source_count",
+        "training_method", "holdout_policy",
+        "production_route", "semantic_use_proven", "training_authority", "native_receiver_authority",
+    )}
+    header["weight_count"] = len(values)
+    header["weights_sha256"] = hashlib.sha256(weight_bytes).hexdigest()
+    header_bytes = json.dumps(header, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return _MAGIC + struct.pack("<I", len(header_bytes)) + header_bytes + weight_bytes
+
+
+def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> None:
+    if not isinstance(adapter, Mapping) or adapter.get("schema") != SCHEMA:
+        raise LatentAdapterError("unsupported latent adapter schema")
+    if adapter.get("status") not in {"ALIGNMENT_CANDIDATE", "REJECTED"}:
+        raise LatentAdapterError("invalid adapter status")
+    if require_candidate and adapter.get("status") != "ALIGNMENT_CANDIDATE":
+        raise LatentAdapterError("adapter did not pass its source-disjoint alignment gate")
+    if adapter.get("sender_role") not in _ROLES or adapter.get("receiver_role") not in _RECEIVERS or adapter.get("sender_role") == adapter.get("receiver_role"):
+        raise LatentAdapterError("invalid sender/receiver role binding")
+    _sha256_text(adapter.get("sender_model_sha256"), "sender_model_sha256")
+    _sha256_text(adapter.get("receiver_model_sha256"), "receiver_model_sha256")
+    for key in ("sender_tap_id", "receiver_tap_id", "sender_model_revision", "receiver_model_revision"):
+        if type(adapter.get(key)) is not str or not adapter[key] or len(adapter[key]) > 160:
+            raise LatentAdapterError("invalid adapter binding: " + key)
+    source_dim, receiver_dim, rank = adapter.get("sender_dim"), adapter.get("receiver_dim"), adapter.get("rank")
+    if type(source_dim) is not int or type(receiver_dim) is not int or type(rank) is not int:
+        raise LatentAdapterError("adapter dimensions must be integers")
+    if not (1 <= source_dim <= _MAX_DIM and 1 <= receiver_dim <= _MAX_DIM and 1 <= rank <= min(_MAX_RANK, source_dim, receiver_dim)):
+        raise LatentAdapterError("adapter dimensions are outside bounds")
+    if len(adapter.get("sender_mean", ())) != source_dim or len(adapter.get("receiver_mean", ())) != receiver_dim:
+        raise LatentAdapterError("adapter mean dimensions do not match metadata")
+    if len(adapter.get("sender_factor", ())) != source_dim or any(len(row) != rank for row in adapter["sender_factor"]):
+        raise LatentAdapterError("sender factor dimensions do not match metadata")
+    if len(adapter.get("receiver_factor", ())) != rank or any(len(row) != receiver_dim for row in adapter["receiver_factor"]):
+        raise LatentAdapterError("receiver factor dimensions do not match metadata")
+    if (adapter.get("production_route") is not False or adapter.get("semantic_use_proven") is not False
+            or adapter.get("training_authority") != 0 or adapter.get("native_receiver_authority") != 0):
+        raise LatentAdapterError("latent adapter cannot grant production or learning authority")
+    digest = hashlib.sha256(_serialize(adapter)).hexdigest()
+    if adapter.get("adapter_sha256") is not None and adapter["adapter_sha256"] != digest:
+        raise LatentAdapterError("adapter checkpoint digest mismatch")
+
+
+def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping], *,
+                sender_role: str, receiver_role: str, sender_tap_id: str, receiver_tap_id: str,
+                sender_model_revision: str, receiver_model_revision: str,
+                sender_model_sha256: str, receiver_model_sha256: str,
+                rank: int = 16, ridge: float = 1e-4,
+                min_relative_improvement: float = 0.02, seed: int = 7) -> dict:
+    """Fit a low-rank affine map on paired activations with source-disjoint holdout.
+
+    This is an alignment candidate only. The held-out MSE and shuffled control
+    are necessary diagnostics, not semantic/task-utility evidence.
+    """
+    if sender_role not in _ROLES or receiver_role not in _RECEIVERS or sender_role == receiver_role:
+        raise LatentAdapterError("unsupported or identical sender/receiver roles")
+    for key, value in (("sender_tap_id", sender_tap_id), ("receiver_tap_id", receiver_tap_id),
+                       ("sender_model_revision", sender_model_revision), ("receiver_model_revision", receiver_model_revision)):
+        if type(value) is not str or not value or len(value) > 160:
+            raise LatentAdapterError("invalid adapter binding: " + key)
+    sender_model_sha256 = _sha256_text(sender_model_sha256, "sender_model_sha256")
+    receiver_model_sha256 = _sha256_text(receiver_model_sha256, "receiver_model_sha256")
+    if type(rank) is not int or not 1 <= rank <= _MAX_RANK:
+        raise LatentAdapterError("rank must be between 1 and 64")
+    if type(ridge) not in (int, float) or not math.isfinite(float(ridge)) or not 0.0 < float(ridge) <= 1.0:
+        raise LatentAdapterError("ridge must be finite and in (0, 1]")
+    if type(min_relative_improvement) not in (int, float) or not math.isfinite(float(min_relative_improvement)) or not 0.0 <= float(min_relative_improvement) < 1.0:
+        raise LatentAdapterError("invalid minimum holdout improvement")
+    if type(seed) is not int:
+        raise LatentAdapterError("seed must be an integer")
+    train_ids, train_sources, x_train, y_train = _validate_pairs(train_pairs, "train_pairs")
+    holdout_ids, holdout_sources, x_holdout, y_holdout = _validate_pairs(holdout_pairs, "holdout_pairs")
+    if train_ids & holdout_ids:
+        raise LatentAdapterError("paired activation IDs cross train/holdout")
+    if train_sources & holdout_sources:
+        raise LatentAdapterError("source leakage: a source appears in train and holdout")
+    if len(train_pairs) < 8 or len(holdout_pairs) < 4 or len(train_sources) < 4 or len(holdout_sources) < 2:
+        raise LatentAdapterError("insufficient independent source groups for alignment holdout")
+    sender_dim, receiver_dim = len(x_train[0]), len(y_train[0])
+    if len(x_holdout[0]) != sender_dim or len(y_holdout[0]) != receiver_dim:
+        raise LatentAdapterError("train/holdout activation dimensions differ")
+    if rank > min(_MAX_RANK, sender_dim, receiver_dim, len(train_pairs) - 1):
+        raise LatentAdapterError("rank exceeds available geometry or training rows")
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise LatentAdapterUnavailable("NumPy is required only for offline adapter fitting") from exc
+
+    x = np.asarray(x_train, dtype=np.float64)
+    y = np.asarray(y_train, dtype=np.float64)
+    xh = np.asarray(x_holdout, dtype=np.float64)
+    yh = np.asarray(y_holdout, dtype=np.float64)
+    x_mean = x.mean(axis=0)
+    y_mean = y.mean(axis=0)
+    xc = x - x_mean
+    yc = y - y_mean
+    _, singular, vt = np.linalg.svd(xc, full_matrices=False)
+    tolerance = max(xc.shape) * (singular[0] if singular.size else 0.0) * np.finfo(np.float64).eps
+    effective_rank = min(rank, int(np.count_nonzero(singular > tolerance)))
+    if effective_rank < 1:
+        raise LatentAdapterError("sender activations have no trainable variance")
+    sender_factor = vt[:effective_rank].T.copy()
+    z = xc @ sender_factor
+    gram = z.T @ z + float(ridge) * np.eye(effective_rank, dtype=np.float64)
+    receiver_factor = np.linalg.solve(gram, z.T @ yc)
+
+    holdout_z = (xh - x_mean) @ sender_factor
+    prediction = holdout_z @ receiver_factor + y_mean
+    holdout_mse = float(np.mean((prediction - yh) ** 2))
+    baseline_mse = float(np.mean((yh - y_mean) ** 2))
+
+    rng = np.random.default_rng(seed)
+    shuffled_y = yc[rng.permutation(len(yc))]
+    shuffled_factor = np.linalg.solve(gram, z.T @ shuffled_y)
+    shuffled_prediction = holdout_z @ shuffled_factor + y_mean
+    shuffled_mse = float(np.mean((shuffled_prediction - yh) ** 2))
+    relative_improvement = 0.0 if baseline_mse <= 1e-12 else (baseline_mse - holdout_mse) / baseline_mse
+    shuffle_advantage = 0.0 if shuffled_mse <= 1e-12 else (shuffled_mse - holdout_mse) / shuffled_mse
+    candidate = (
+        relative_improvement >= float(min_relative_improvement)
+        and holdout_mse + 1e-12 < baseline_mse
+        and holdout_mse + 1e-12 < shuffled_mse
+    )
+    linear_map = sender_factor @ receiver_factor
+    affine_bias = y_mean - x_mean @ linear_map
+    linear_map_frobenius = float(np.linalg.norm(linear_map))
+    affine_bias_l2 = float(np.linalg.norm(affine_bias))
+    parameter_count = int(sender_dim + receiver_dim + sender_dim * effective_rank + effective_rank * receiver_dim)
+    adapter = {
+        "schema": SCHEMA,
+        "status": "ALIGNMENT_CANDIDATE" if candidate else "REJECTED",
+        "sender_role": sender_role,
+        "receiver_role": receiver_role,
+        "sender_tap_id": sender_tap_id,
+        "receiver_tap_id": receiver_tap_id,
+        "sender_model_revision": sender_model_revision,
+        "receiver_model_revision": receiver_model_revision,
+        "sender_model_sha256": sender_model_sha256,
+        "receiver_model_sha256": receiver_model_sha256,
+        "sender_dim": sender_dim,
+        "receiver_dim": receiver_dim,
+        "rank": effective_rank,
+        "sender_mean": x_mean.tolist(),
+        "receiver_mean": y_mean.tolist(),
+        "sender_factor": sender_factor.tolist(),
+        "receiver_factor": receiver_factor.tolist(),
+        "metrics": {
+            "holdout_mse": holdout_mse,
+            "mean_baseline_mse": baseline_mse,
+            "shuffled_train_mse": shuffled_mse,
+            "relative_improvement": relative_improvement,
+            "shuffle_advantage": shuffle_advantage,
+            "min_relative_improvement": float(min_relative_improvement),
+            "linear_map_frobenius": linear_map_frobenius,
+            "affine_bias_l2": affine_bias_l2,
+            "parameter_count": parameter_count,
+            "gradient_norm": None,
+            "gradient_based_training": False,
+            "old_task_retention_measured": False,
+        },
+        "train_pairs": len(train_pairs),
+        "holdout_pairs": len(holdout_pairs),
+        "train_source_count": len(train_sources),
+        "holdout_source_count": len(holdout_sources),
+        "training_method": "SOURCE_PCA_RIDGE_LOW_RANK_AFFINE",
+        "holdout_policy": "SOURCE_ID_DISJOINT",
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    adapter["adapter_sha256"] = hashlib.sha256(_serialize(adapter)).hexdigest()
+    _validate_adapter(adapter, require_candidate=False)
+    return adapter
+
+
+def _project_vector_validated(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
+                              receiver_model_sha256: str, sender_tap_id: str,
+                              receiver_tap_id: str) -> list[float]:
+    if (_sha256_text(sender_model_sha256, "sender_model_sha256") != adapter["sender_model_sha256"]
+            or _sha256_text(receiver_model_sha256, "receiver_model_sha256") != adapter["receiver_model_sha256"]
+            or sender_tap_id != adapter["sender_tap_id"] or receiver_tap_id != adapter["receiver_tap_id"]):
+        raise LatentAdapterError("adapter model revision/hash or tap binding mismatch")
+    vector = _finite_vector(sender_vector, "sender_vector", adapter["sender_dim"])
+    centered = [value - mean for value, mean in zip(vector, adapter["sender_mean"])]
+    latent = [sum(centered[i] * adapter["sender_factor"][i][j] for i in range(adapter["sender_dim"]))
+              for j in range(adapter["rank"])]
+    projected = [adapter["receiver_mean"][j] + sum(latent[k] * adapter["receiver_factor"][k][j]
+                 for k in range(adapter["rank"])) for j in range(adapter["receiver_dim"])]
+    if any(not math.isfinite(value) for value in projected):
+        raise LatentAdapterError("projected activation is non-finite")
+    return projected
+
+
+def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
+                   receiver_model_sha256: str, sender_tap_id: str, receiver_tap_id: str) -> list[float]:
+    """Apply the trained adapter without NumPy or other runtime dependencies."""
+    _validate_adapter(adapter)
+    return _project_vector_validated(
+        adapter, sender_vector, sender_model_sha256=sender_model_sha256,
+        receiver_model_sha256=receiver_model_sha256, sender_tap_id=sender_tap_id,
+        receiver_tap_id=receiver_tap_id,
+    )
+
+
+def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+    _validate_adapter(adapter)
+    if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
+        raise LatentAdapterError("sender tap must contain 1..64 activation rows")
+    return [_project_vector_validated(adapter, row, **bindings) for row in sender_vectors]
+
+
+def save_adapter(adapter: Mapping, path: str | os.PathLike) -> str:
+    """Atomically persist adapter parameters; returns the exact checkpoint SHA-256."""
+    _validate_adapter(adapter, require_candidate=False)
+    data = _serialize(adapter)
+    target = Path(path)
+    if target.exists() and target.is_symlink():
+        raise LatentAdapterError("adapter checkpoint symlink refused")
+    parent = target.parent.resolve(strict=True)
+    if target.parent.is_symlink() or not parent.is_dir():
+        raise LatentAdapterError("adapter checkpoint parent must be a real directory")
+    fd, temporary = tempfile.mkstemp(prefix="." + target.name + ".", dir=str(parent))
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, target)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except OSError:
+            pass
+        raise
+    return hashlib.sha256(data).hexdigest()
+
+
+def load_adapter(path: str | os.PathLike) -> dict:
+    target = Path(path)
+    if target.is_symlink() or not target.is_file():
+        raise LatentAdapterError("adapter checkpoint must be a regular non-symlink file")
+    if target.stat().st_size > _MAX_FILE_BYTES:
+        raise LatentAdapterError("adapter checkpoint exceeds size limit")
+    data = target.read_bytes()
+    if len(data) < len(_MAGIC) + 4 or data[:len(_MAGIC)] != _MAGIC:
+        raise LatentAdapterError("adapter checkpoint magic mismatch")
+    header_size = struct.unpack("<I", data[len(_MAGIC):len(_MAGIC) + 4])[0]
+    header_start = len(_MAGIC) + 4
+    header_end = header_start + header_size
+    if header_size > 65536 or header_end > len(data):
+        raise LatentAdapterError("adapter checkpoint header is invalid")
+    try:
+        header = json.loads(data[header_start:header_end].decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise LatentAdapterError("adapter checkpoint header cannot be decoded") from exc
+    payload = data[header_end:]
+    if hashlib.sha256(payload).hexdigest() != header.get("weights_sha256"):
+        raise LatentAdapterError("adapter checkpoint weight digest mismatch")
+    count = header.get("weight_count")
+    if type(count) is not int or count < 1 or count * 4 != len(payload):
+        raise LatentAdapterError("adapter checkpoint weight count mismatch")
+    weights = array("f")
+    weights.frombytes(payload)
+    if sys.byteorder != "little":
+        weights.byteswap()
+    if any(not math.isfinite(value) for value in weights):
+        raise LatentAdapterError("adapter checkpoint contains non-finite weights")
+    source_dim, receiver_dim, rank = header.get("sender_dim"), header.get("receiver_dim"), header.get("rank")
+    if (type(source_dim) is not int or type(receiver_dim) is not int or type(rank) is not int
+            or not 1 <= source_dim <= _MAX_DIM or not 1 <= receiver_dim <= _MAX_DIM
+            or not 1 <= rank <= min(_MAX_RANK, source_dim, receiver_dim)):
+        raise LatentAdapterError("adapter checkpoint dimensions are invalid")
+    expected_count = source_dim + receiver_dim + source_dim * rank + rank * receiver_dim
+    if expected_count != count:
+        raise LatentAdapterError("adapter checkpoint tensor geometry mismatch")
+    cursor = 0
+    sender_mean = list(weights[cursor:cursor + source_dim]); cursor += source_dim
+    receiver_mean = list(weights[cursor:cursor + receiver_dim]); cursor += receiver_dim
+    sender_flat = list(weights[cursor:cursor + source_dim * rank]); cursor += source_dim * rank
+    receiver_flat = list(weights[cursor:cursor + rank * receiver_dim])
+    header.pop("weight_count", None)
+    header.pop("weights_sha256", None)
+    adapter = dict(header)
+    adapter.update({
+        "sender_mean": sender_mean,
+        "receiver_mean": receiver_mean,
+        "sender_factor": [sender_flat[i * rank:(i + 1) * rank] for i in range(source_dim)],
+        "receiver_factor": [receiver_flat[i * receiver_dim:(i + 1) * receiver_dim] for i in range(rank)],
+        "adapter_sha256": hashlib.sha256(data).hexdigest(),
+    })
+    _validate_adapter(adapter, require_candidate=False)
+    return adapter
+
+def fit_from_tap_records(
+    home,
+    *,
+    sender_role: str,
+    receiver_role: str,
+    sender_model_revision: str,
+    receiver_model_revision: str,
+    sender_tap_id: str,
+    receiver_tap_id: str,
+    sender_model_sha256: str,
+    receiver_model_sha256: str,
+    min_pairs: int = 20,
+    max_pairs: int = 32,
+    holdout_fraction: float = 0.25,
+    split_seed: int = 17,
+    rank: int = 16,
+    ridge: float = 1e-4,
+    min_relative_improvement: float = 0.02,
+    fit_seed: int = 7,
+) -> dict:
+    """Fit from persisted, exact-paired B1/B2 tap packets without reading source text.
+
+    Pairing requires the same full SourceRef, event and generation. At most one
+    pair is retained per opaque source_id, so source groups cannot cross the
+    deterministic train/holdout split. Model hashes must be supplied by a
+    caller that has independently read the installed model manifest; tap
+    packets store revisions and tap IDs but not model-file hashes.
+
+    The returned adapter is a closed-form PCA+ridge alignment candidate. It is
+    not gradient-based JEPA learning, semantic transfer, or a production B3
+    route. The caller may persist an accepted adapter separately with
+    save_adapter(); this function never writes to Runtime or SQLite.
+    """
+    from .latent_alignment_audit import (
+        MAX_SAMPLES, _packet_order, _pool_without_position0, _read_tap_blob,
+        _validate_packet, load_tap_records,
+    )
+
+    if sender_role not in _ROLES or receiver_role not in _ROLES or sender_role == receiver_role:
+        raise LatentAdapterError("persisted tap fitting supports distinct B1/B2 roles only")
+    if type(min_pairs) is not int or min_pairs < 20:
+        raise LatentAdapterError("latent adapter fitting requires at least 20 source-disjoint pairs")
+    if type(max_pairs) is not int or not min_pairs <= max_pairs <= MAX_SAMPLES:
+        raise LatentAdapterError("max_pairs must cover min_pairs and stay within the audit bound")
+    if (type(holdout_fraction) not in (int, float)
+            or not math.isfinite(float(holdout_fraction))
+            or not 0.15 <= float(holdout_fraction) <= 0.40):
+        raise LatentAdapterError("holdout_fraction must be between 0.15 and 0.40")
+    if type(split_seed) is not int:
+        raise LatentAdapterError("split_seed must be an integer")
+    for key, value in (
+        ("sender_model_revision", sender_model_revision),
+        ("receiver_model_revision", receiver_model_revision),
+        ("sender_tap_id", sender_tap_id),
+        ("receiver_tap_id", receiver_tap_id),
+    ):
+        if type(value) is not str or not value or len(value) > 160:
+            raise LatentAdapterError("invalid tap/model binding: " + key)
+    sender_model_sha256 = _sha256_text(sender_model_sha256, "sender_model_sha256")
+    receiver_model_sha256 = _sha256_text(receiver_model_sha256, "receiver_model_sha256")
+
+    latest = {}
+    invalid_metadata = 0
+    for record in load_tap_records(Path(home)):
+        packet = record.get("payload") if isinstance(record, dict) else None
+        try:
+            source_key, role, revision, event_id, generation_id = _validate_packet(packet)
+            if role not in {sender_role, receiver_role}:
+                continue
+            order = _packet_order(record.get("created"))
+            key = (source_key, role, revision, event_id, generation_id)
+            if key not in latest or order > latest[key][0]:
+                latest[key] = (order, packet)
+        except (TypeError, KeyError, ValueError):
+            invalid_metadata += 1
+
+    by_event_source = {}
+    for (source_key, role, revision, event_id, generation_id), value in latest.items():
+        group = (source_key, event_id, generation_id)
+        by_event_source.setdefault(group, {}).setdefault(role, {})[revision] = value
+
+    # Source IDs, not spans, define the split unit. If a source has multiple
+    # spans/events/generations, only its newest exact-paired observation wins.
+    by_source = {}
+    for (source_key, event_id, generation_id), roles in by_event_source.items():
+        sender_value = roles.get(sender_role, {}).get(sender_model_revision)
+        receiver_value = roles.get(receiver_role, {}).get(receiver_model_revision)
+        if sender_value is None or receiver_value is None:
+            continue
+        pair_order = max(sender_value[0], receiver_value[0])
+        source_id = source_key[0]
+        existing = by_source.get(source_id)
+        if existing is None or pair_order > existing[0]:
+            by_source[source_id] = (
+                pair_order, source_key, event_id, generation_id,
+                sender_value[1], receiver_value[1],
+            )
+
+    if not by_source:
+        raise LatentAdapterError("no exact paired taps for the requested model revisions")
+
+    candidate_pairs = []
+    invalid_blobs = 0
+    for source_id, (_order, source_key, event_id, generation_id, sender_packet, receiver_packet) in by_source.items():
+        if sender_packet.get("tap_id") != sender_tap_id or receiver_packet.get("tap_id") != receiver_tap_id:
+            invalid_metadata += 1
+            continue
+        try:
+            sender_vectors, _ = _read_tap_blob(Path(home), sender_packet)
+            receiver_vectors, _ = _read_tap_blob(Path(home), receiver_packet)
+            sender_vector, _, _ = _pool_without_position0(sender_vectors)
+            receiver_vector, _, _ = _pool_without_position0(receiver_vectors)
+        except (OSError, TypeError, ValueError):
+            invalid_blobs += 1
+            continue
+        source_group = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        pair_material = json.dumps(
+            [source_key, event_id, generation_id], separators=(",", ":"), ensure_ascii=True,
+        ).encode("utf-8")
+        pair_id = hashlib.sha256(pair_material).hexdigest()
+        candidate_pairs.append({
+            "pair_id": pair_id,
+            "source_id": source_group,
+            "sender_vector": sender_vector,
+            "receiver_vector": receiver_vector,
+        })
+
+    if len(candidate_pairs) < min_pairs:
+        raise LatentAdapterError(
+            "insufficient valid source-disjoint pairs: "
+            + str(len(candidate_pairs)) + "/" + str(min_pairs)
+            + "; invalid_metadata=" + str(invalid_metadata)
+            + "; invalid_blobs=" + str(invalid_blobs)
+        )
+
+    rng = __import__("random").Random(split_seed)
+    candidate_pairs.sort(key=lambda item: item["pair_id"])
+    rng.shuffle(candidate_pairs)
+    selected = candidate_pairs[:max_pairs]
+    holdout_count = max(4, int(math.ceil(len(selected) * float(holdout_fraction))))
+    if len(selected) - holdout_count < 8:
+        raise LatentAdapterError("source-disjoint split leaves fewer than eight training pairs")
+    train_pairs = selected[:-holdout_count]
+    holdout_pairs = selected[-holdout_count:]
+
+    adapter = fit_adapter(
+        train_pairs, holdout_pairs,
+        sender_role=sender_role,
+        receiver_role=receiver_role,
+        sender_tap_id=sender_tap_id,
+        receiver_tap_id=receiver_tap_id,
+        sender_model_revision=sender_model_revision,
+        receiver_model_revision=receiver_model_revision,
+        sender_model_sha256=sender_model_sha256,
+        receiver_model_sha256=receiver_model_sha256,
+        rank=rank,
+        ridge=ridge,
+        min_relative_improvement=min_relative_improvement,
+        seed=fit_seed,
+    )
+    return {
+        "schema": "v14.latent-tap-adapter-fit/1",
+        "status": adapter["status"],
+        "adapter": adapter,
+        "paired_source_count": len(candidate_pairs),
+        "selected_pair_count": len(selected),
+        "train_source_count": len(train_pairs),
+        "holdout_source_count": len(holdout_pairs),
+        "split_seed": split_seed,
+        "split_policy": "ONE_PAIR_PER_SOURCE_ID;DETERMINISTIC_SOURCE_DISJOINT_HOLDOUT",
+        "invalid_metadata_or_tap_bindings": invalid_metadata,
+        "invalid_or_unreadable_blobs": invalid_blobs,
+        "model_hashes_supplied_by_caller": True,
+        "model_manifest_verified_here": False,
+        "model_weight_license_verified_by_this_tool": False,
+        "adapter_code_license": "project-owned; no third-party implementation imported",
+        "source_text_read": False,
+        "raw_activation_vectors_exported": False,
+        "sqlite_written": False,
+        "model_loaded": False,
+        "gradient_based_training": False,
+        "old_task_retention_measured": False,
+        "adapter_parameters_fitted": True,
+        "adapter_persisted": False,
+        "body_weights_modified": False,
+        "semantic_use_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }

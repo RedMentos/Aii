@@ -1772,3 +1772,42 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception — run 11, 2026-11-25
+
+**Verified code checkpoint:** Draft PR #2489, branch research-perception/latent-alignment-audit-20261125-run11, implementation commit 8ebc18b322745dfb96b524e25933408597ae92eb. It adds a read-only audit of persisted LatentTapPacket records and updates R-007 from abstract-only to full-text review. The PR is OPEN / DRAFT / NOT_RELEASED; documentation checkpoint f0dddf93166bd9949a1be88748e66b720a889afd; code implementation remains at 8ebc18b322745dfb96b524e25933408597ae92eb. CI on implementation commit 8ebc18b: staged context/integrated regression, privacy scan and integration workflow SUCCESS; safe-additive workflow SKIPPED. On docs commit 8818a88: staged-runtime, privacy scan, runtime-integrity and Core same-turn checks SUCCESS; integrated-regression was IN_PROGRESS at the first poll, then completed SUCCESS in workflow run 45559754665. The final docs-only head f0dddf9 has no workflow run visible. This is PARTIAL CI evidence, not a fully green final head.
+
+**Exact local evidence:** LOCAL_LINUX / CPython 3.13.5: py_compile PASS; focused tests 9/9 PASS; CLI help PASS. Synthetic SQLite/blob fixture uses the actual V13 packets table columns. DB file hash was unchanged by the audit. This is not a real tap cohort, native model run, full Aii suite, or Redmi test.
+
+**User-visible effect:** no new production Runtime behaviour yet. The tool can later read paired B1/B2 LatentTapPacket artifacts without reading source text, loading a model, writing the DB, exporting vectors, or changing weights. It reports alignment only; it does not establish causal transfer or meaning. Its tap writer dependency is Core draft PR #2488. The whole-canon blocker #1984 and real-chat failure #1904 remain OPEN.
+
+**Device/deployment boundary:** The latest available V14 Perception handoff records a V13OBS #115 snapshot at 2026-11-24 09:28:11 UTC: installed Runtime/Dashboard were reported UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6 and auto-update enabled, but AI runtime was STOPPED_BY_USER, autostart false, and model process STOPPED; B1/B2 still reported TIME_BUDGET. This run received no fresh private receipt. Therefore current Redmi installation, updater and runtime state are not freshly verified; keep REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight swap, permission change or device mutation was performed. GitHub push is not deployment.
+
+**Next internal action:** Core should preserve the LatentTapPacket fields used by #2489 while integrating #2488. After that, only when the user has explicitly resumed the local runtime and native probe consent is active, collect at least 20 paired B1/B2 source groups from matching event/generation receipts and run the read-only audit. Any projector training or receiver injection requires a separate pair-specific experiment and review. Boss/Integrator should reconcile this append-only note with the newer #2463/#2486 documentation branches and add the audit evidence tool to the shared board/workplan after review.
+
+**User action required: NONE.** No device action or model/permission change is needed.
+
+
+## Research & Perception correction — R-007 v2 source verification, 2026-11-25
+
+The full v2 HTML is now confirmed as arXiv:2608.16347v2, revised 2026-11-09 (not the August v1). It explicitly links Zenodo DOI 10.5281/zenodo.24088479 and states: code MIT; data/documentation CC BY 4.0; archive includes concept-pair sets, extraction/projection/injection scripts, all 180 end-to-end trial texts, logs, pre-registration, and a result-recomputation script. The paper itself is CC BY 4.0. The Zenodo record was inaccessible from this run, so no archive files were inspected or reused; do not infer its dependencies or model-weight licences.
+
+This strengthens the research gate but does not change the code claim: PR #2489 implements a bounded read-only kNN-overlap proxy, not the paper's exact MNN or causal injection. The paper itself reports only one modest positive causal pair and warns that activation-level transfer removes the human-readable audit surface. Future V14 latent exchange must remain explicitly authorized, source/age/consent-bound and control-plane-auditable.
+
+
+
+CI follow-up (2026-11-25): workflow run 45559754665 later completed with both staged-runtime and integrated-regression SUCCESS. The final docs-only head had no new workflow run visible; the code itself is unchanged from tested implementation commit 8ebc18b.
+
+
+Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-only on this branch. It now points to #2487 as the latest functional Perception candidate (focused 143/143 PASS; staged/integrated FAIL due the Core-owned stale recovery source pin; migration PARTIAL) and records #2489 as supporting read-only latent-audit evidence. V14-006 remains IN_PROGRESS_PARTIAL; the next step is Core pin rebinding and the signed RAW EAR/QA provider integration, not a claim of Android microphone proof.
+
+
+
+## Research & Perception — latent adapter bridge follow-up, 2026-11-25
+
+**Code:** PR #2489, branch `research-perception/latent-alignment-audit-20261125-run11`; latest code checkpoint `fdaee28e256b82e56059e475972ec62acd2b9d84` (adapter bridge), with subsequent exact-head CI still pending at this note. The PR now adds `latent_adapter.py` and a Store-backed `fit_from_tap_records()` path alongside the read-only alignment audit. It pairs exact source/event/generation receipts, uses one observation per source ID, requires at least 20 source groups, performs a deterministic source-disjoint split, fits a low-rank PCA+ridge adapter, and supports atomic hash-checked checkpoint save/load. Projection is standard-library; NumPy is lazy and offline-only.
+
+**Evidence boundary:** this is code and synthetic validation only. No real paired tap cohort exists in the current receipts, so no real adapter has been trained. No gradient-based learning, old-task retention, native receiver execution, task-level semantic utility, B1/B2/C3 body-weight change, or production B3 route is claimed. Model SHA values are caller-supplied and not verified against an installed manifest by this tool; model-weight licences remain unverified. Core's local-TTY/one-shot native-probe approval is not bypassed or invoked. The full Aii checkout is not mounted and container GitHub DNS fails, so exact repository pytest cannot run locally; only an isolated NumPy algorithm reproduction has been executed. Exact-head GitHub CI is pending.
+
+**User impact:** no production Runtime behaviour changes yet. The next useful step is to obtain >=20 real, source-disjoint B1/B2 tap pairs after Core's opt-in tap writer is integrated and the local Runtime is explicitly running. Then run audit + adapter fit, and only after held-out controls pass ask Core to wire projected rows through the existing local-TTY-approved native receiver. No model download/swap, permission change, updater request or device action is required. **User action: NONE.**
