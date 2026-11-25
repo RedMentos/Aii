@@ -1527,3 +1527,10 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - Direct code readback of #2512's `native_latent_receiver.py` confirms the current probe still returns decode status, output norm, input-effect RMS and zero/shuffle/repeat cosines only. It does **not** emit target-token log-probabilities or generated answers.
 - The latest Perception #2511 now additionally contains `native_receiver_utility.py`; the current #2512 branch snapshot does not yet contain that new module. Core was notified to refresh/rebase its Perception parent and add the target-score producer before claiming task utility.
 - #2512 exact-head CI at `93fa02a` was queued when checked (native input-embedding extractor, staged/integrated regression, deployment integrity); no result is claimed yet. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
+
+
+### CI readback after Run 23 checkpoint (2026-11-25)
+
+- Core PR #2512 exact head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`: native input-embedding extractor PASS (Python contract 3.13/3.14, Linux pinned API, Android ARM64 cross-compile); staged-runtime PASS; integrated-regression PASS; offline deployment integrity PASS (Python 3.11/3.14). These are GitHub-hosted CI/cross-compile results, not Redmi runtime evidence.
+- Perception PR #2511 exact head `9d864d66f6d66f1f5ead3284a85cf22814aa69d9`: staged-runtime PASS; offline deployment integrity PASS (Python 3.11/3.14); integrated-regression still IN_PROGRESS at last readback. The connector did not expose a new exact-head adapter-contract run for the appended task-score tests, so no CI PASS is claimed for those eight tests.
+- #2512 still does not contain the new `native_receiver_utility.py` evaluator; Core has been asked to refresh/rebase the Perception parent and add the native target-score producer. Its current green consumer CI only validates the input-effect probe path.
