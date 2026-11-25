@@ -1,3 +1,17 @@
+# Research & Perception — latest verified checkpoint (2026-11-25)
+
+A new RAW EAR temporal-prediction candidate is open as [PR #2498](https://github.com/RedMentos/Aii/pull/2498), stacked on #2496. It connects a tiny consent-scoped process-local predictor to A4 novelty; only FINAL windows update it, PROVISIONAL windows are ignored, and its novelty contribution is capped at 0.10. It does not change C3 output, interrupt decisions, packet contents, permissions, installed models, persistent model weights or user data.
+
+**Verified:** isolated local CPython 3.13.5 module tests 10/10 PASS; exact PR RAW EAR fastpath 126 tests PASS on Python 3.13 and 3.14; privacy scan and synthetic benchmark PASS. The VAD-comparison workflow's exact source pin was corrected after its first run failed on the changed audio_voice_cues.py blob; the retest and staged/integrated CI were pending at the last checkpoint. No full local Aii suite.
+
+**Device boundary:** no connected Redmi microphone test, AudioRecord provider, Termux measurement or release deployment was performed. REDMI_UNVERIFIED / NOT_RELEASED. No model, weight, permission or data change was made.
+
+**Next:** finish exact compare and staged/integrated CI, then test held-out acoustic prediction utility against persistence/no-predictor/shuffled controls. Connect to Android capture only after QA's explicit permission and receipt provider is available.
+
+**User action required: NONE.** No manual Termux command, model download, permission change or device action is requested.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
