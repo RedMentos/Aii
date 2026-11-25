@@ -2413,3 +2413,11 @@ No model/weight swap, permission change, private log access or user-data mutatio
 |---|---|---|
 | Android companion Stop/persisted-OFF/process-death | PR #2481 head `545ec845`, 17/17 exact checks SUCCESS. API-33 x86_64 GitHub emulator passed Espresso visible Stop, process teardown/restart, new PID/start identity `2176@493104 → 2621@560711`, provider state remained OFF. | Emulator only; no Redmi/Termux install, signer pairing, physical touch, Accessibility, screen capture or real-device action. Draft stack #2450/#2356 awaits independent review and integration. |
 | Android ActionOutcome → B1/B2/C3 | Same head: 64 tests on Python 3.13 and 64 on 3.14; CONTROL_ONLY receipt reaches B1/B2/C3 on the immediate next event and expires after that event. | Does not prove observation, reward, T8 learning, app visibility on real phone or model-weight updates. |
+
+
+## Candidate evidence overlay — exact arithmetic and voice output tests — 2026-11-25
+
+| Canon family / contract | Exact evidence | Remaining acceptance boundary |
+|---|---|---|
+| C5 deterministic arithmetic / correct obvious-answer path | #2488 staged Runtime test verifies `2+2`, `Was ist 2+2?`, `Wie viel ist 2+2?` → `4`; date-shaped inputs require explicit math cue; ActionSelection/C5/Broker/Egress/ExperienceRecord; no model load or normal B1/B2 route. | Manifest explicitly SHADOW_REVIEW_ONLY; no release or Redmi receipt. Does not yet prove the reported installed 2+2 defect is fixed. |
+| Voice output fallback | #2479 test-only PR head `dce46db`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED; 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. | Fake Termux TTS CLI only; no real audio/audibility/microphone/raw-ear learning/trainable decoder/full duplex/Redmi. TTS implementation already exists in release base; PR adds tests only. |
