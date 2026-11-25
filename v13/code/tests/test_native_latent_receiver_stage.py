@@ -18,6 +18,11 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
+    staged_receiver = (destination / "v13/native_latent_receiver.py").read_text(encoding="utf-8")
+    staged_native = (destination / "v13/native/latent_receiver/native_latent_receiver.cpp").read_text(encoding="utf-8")
+    assert 'LATENT_PREFIX_MODE = "LATENT_PREFIX_V1"' in staged_receiver
+    assert 'kLatentPrefixMode = "LATENT_PREFIX_V1"' in staged_native
+    assert '--position-mode MODE' in staged_native
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
