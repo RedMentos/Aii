@@ -45,9 +45,11 @@ hash, and token IDs; it receives no source text.
 - CPU-only model load (n_gpu_layers=0); one model at a time.
 - No tokenization, generation, training, persistence, network, or device
   control in the native executable.
-- The Python wrapper uses argv (never a shell), bounded execution time,
-  no-follow regular-file hashing, file identity checks, and no raw stderr in
-  exceptions.
+- The Python wrapper requires an explicit idle-guard callback before the
+  native process starts; the Runtime caller must confirm no active turn and
+  release the native model pool first. It uses argv (never a shell), bounded
+  execution time, no-follow regular-file hashing, file identity checks, and no
+  raw stderr in exceptions.
 - The returned vectors are ephemeral. This component does not write them to
   SQLite, a file, a checkpoint, or the public repository.
 - The API is explicitly STAGING_WIP; the extractor is not a production B3
