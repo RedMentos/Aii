@@ -22,7 +22,7 @@ import tempfile
 from typing import Mapping, Sequence
 
 SCHEMA = "v14.cross-organ-latent-adapter/2"
-TOKENWISE_SCHEMA = "v14.cross-organ-latent-adapter/3"
+TOKENWISE_SCHEMA = "v14.cross-organ-latent-adapter/4"
 _TOKEN_ALIGNMENT_METHOD = "CHAR_SPAN_OVERLAP_V1"
 _TOKEN_ALIGNMENT_BYTE_METHOD = "UTF8_BYTE_PIECE_OVERLAP_V1"
 _TOKEN_ALIGNMENT_METHODS = frozenset({_TOKEN_ALIGNMENT_METHOD, _TOKEN_ALIGNMENT_BYTE_METHOD})
@@ -414,6 +414,10 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
     by_source: dict[str, list[Mapping]] = {}
     for pair in pairs:
         source_id = pair["source_id"]
+        session_id = pair.get("session_id")
+        if (type(session_id) is not str or not 1 <= len(session_id) <= 128
+                or any(ord(ch) < 33 or ch.isspace() for ch in session_id)):
+            raise LatentAdapterError(name + " tokenwise pairs require a bounded session_id")
         position = pair.get("token_position")
         if type(position) is not int or not 0 <= position < 64:
             raise LatentAdapterError(name + " tokenwise pairs require bounded token_position metadata")
@@ -463,6 +467,7 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
         if len(positions) < 2 or positions != list(range(len(positions))):
             raise LatentAdapterError(name + " token positions must contain at least two contiguous rows from zero")
         first = ordered[0]
+        session_id = first["session_id"]
         method = first["alignment_method"]
         source_sha256 = first["source_sha256"]
         sender_spans = _validate_span_sequence(first["sender_spans"], name + " sender_spans")
@@ -472,7 +477,8 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
         source_length = first.get("source_length")
         source_span_unit = first["source_span_unit"]
         for item in ordered:
-            if (item["alignment_method"] != method or item["source_sha256"] != source_sha256
+            if (item["session_id"] != session_id
+                    or item["alignment_method"] != method or item["source_sha256"] != source_sha256
                     or item.get("alignment_id") != first["alignment_id"]
                     or item.get("sender_spans") != first["sender_spans"]
                     or item.get("source_length") != source_length
@@ -522,7 +528,7 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
 def _token_alignment_digest(pairs: Sequence[Mapping], *, method: str,
                             sender_tokenizer_revision: str, receiver_tokenizer_revision: str) -> str:
     rows = sorted((
-        pair["pair_id"], pair["source_id"], pair["source_sha256"], pair["token_position"],
+        pair["pair_id"], pair["source_id"], pair["source_sha256"], pair["session_id"], pair["token_position"],
         list(pair["source_span"]), pair["source_span_unit"], pair.get("source_length"),
         [list(span) for span in pair["sender_spans"]], pair["alignment_id"],
         float(pair["alignment_coverage"]), pair["sender_vector_sha256"],
@@ -591,6 +597,13 @@ def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> No
         for key in ("sender_tokenizer_revision", "receiver_tokenizer_revision"):
             if type(adapter.get(key)) is not str or not adapter[key] or len(adapter[key]) > 160:
                 raise LatentAdapterError("tokenwise adapter requires " + key)
+        metrics = adapter.get("metrics")
+        if (not isinstance(metrics, Mapping)
+                or metrics.get("session_disjoint") is not True
+                or type(metrics.get("train_session_count")) is not int or metrics["train_session_count"] < 2
+                or type(metrics.get("holdout_session_count")) is not int or metrics["holdout_session_count"] < 2
+                or adapter.get("holdout_policy") != "SOURCE_AND_SESSION_DISJOINT"):
+            raise LatentAdapterError("tokenwise adapter lacks a source/session-disjoint holdout receipt")
     elif adapter.get("schema") == TOKENWISE_SCHEMA:
         raise LatentAdapterError("v3 adapter must declare TOKENWISE projection scope")
     _sha256_text(adapter.get("sender_model_sha256"), "sender_model_sha256")
@@ -662,6 +675,12 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         holdout_method = _validate_tokenwise_pairs(holdout_pairs, "holdout_pairs")
         if train_method != holdout_method:
             raise LatentAdapterError("train/holdout token alignment methods differ")
+        train_sessions = {pair["session_id"] for pair in train_pairs}
+        holdout_sessions = {pair["session_id"] for pair in holdout_pairs}
+        if len(train_sessions) < 2 or len(holdout_sessions) < 2:
+            raise LatentAdapterError("tokenwise fitting requires at least two independent sessions in each split")
+        if train_sessions & holdout_sessions:
+            raise LatentAdapterError("session leakage: a session appears in train and holdout")
         train_source_hashes = {pair["source_sha256"] for pair in train_pairs}
         holdout_source_hashes = {pair["source_sha256"] for pair in holdout_pairs}
         if train_source_hashes & holdout_source_hashes:
@@ -771,13 +790,21 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
             "gradient_norm": None,
             "gradient_based_training": False,
             "old_task_retention_measured": False,
+            "session_disjoint": projection_scope == "TOKENWISE",
+            "train_session_count": len(train_sessions) if projection_scope == "TOKENWISE" else 0,
+            "holdout_session_count": len(holdout_sessions) if projection_scope == "TOKENWISE" else 0,
         },
         "train_pairs": len(train_pairs),
         "holdout_pairs": len(holdout_pairs),
         "train_source_count": len(train_sources),
         "holdout_source_count": len(holdout_sources),
-        "training_method": "SOURCE_PCA_RIDGE_LOW_RANK_AFFINE",
-        "holdout_policy": "SOURCE_ID_DISJOINT",
+        "training_method": (
+            "SOURCE_SESSION_DISJOINT_PCA_RIDGE_LOW_RANK_AFFINE"
+            if projection_scope == "TOKENWISE" else "SOURCE_PCA_RIDGE_LOW_RANK_AFFINE"
+        ),
+        "holdout_policy": (
+            "SOURCE_AND_SESSION_DISJOINT" if projection_scope == "TOKENWISE" else "SOURCE_ID_DISJOINT"
+        ),
         "production_route": False,
         "semantic_use_proven": False,
         "training_authority": 0,
