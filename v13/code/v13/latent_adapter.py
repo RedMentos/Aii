@@ -217,6 +217,60 @@ def token_piece_byte_spans(token_pieces, source_text: str) -> dict:
     }
 
 
+
+def build_tokenwise_tap_manifest(source_text: str, content_token_ids, content_token_pieces,
+                                 prefill_token_ids, activation_rows) -> dict:
+    """Bind source bytes and content-token spans to exact native prefill rows.
+
+    The caller obtains content_token_ids/pieces with add_special=false and
+    prefill_token_ids/activation_rows from the same raw source text with
+    add_special=true. No chat template or extra prompt text may be inserted.
+    A unique contiguous content-token subsequence is required; at most two
+    unmatched special-token rows (normally BOS) are tolerated.
+    """
+    def token_ids(value, name, *, minimum, maximum):
+        if not isinstance(value, (list, tuple)) or not minimum <= len(value) <= maximum:
+            raise LatentAdapterError(name + " has an invalid token count")
+        if any(type(token) is not int or not 0 <= token <= 2_147_483_647 for token in value):
+            raise LatentAdapterError(name + " contains an invalid native token ID")
+        return list(value)
+
+    content_ids = token_ids(content_token_ids, "content_token_ids", minimum=2, maximum=64)
+    prefill_ids = token_ids(
+        prefill_token_ids, "prefill_token_ids",
+        minimum=len(content_ids), maximum=len(content_ids) + 2,
+    )
+    piece_meta = token_piece_byte_spans(content_token_pieces, source_text)
+    if len(piece_meta["token_spans"]) != len(content_ids):
+        raise LatentAdapterError("content token IDs and token pieces have different row counts")
+    if not isinstance(activation_rows, (list, tuple)) or len(activation_rows) != len(prefill_ids):
+        raise LatentAdapterError("prefill activation rows do not match native prefill token IDs")
+    rows = [_finite_vector(row, "prefill activation row") for row in activation_rows]
+    dimension = len(rows[0])
+    if any(len(row) != dimension for row in rows):
+        raise LatentAdapterError("prefill activation row dimensions differ")
+
+    matches = [
+        start for start in range(len(prefill_ids) - len(content_ids) + 1)
+        if prefill_ids[start:start + len(content_ids)] == content_ids
+    ]
+    if len(matches) != 1:
+        raise LatentAdapterError("content token IDs must map to exactly one contiguous prefill-row span")
+    start = matches[0]
+    end = start + len(content_ids)
+    return {
+        "schema": "v14.source-bound-tokenwise-tap/1",
+        "source_sha256": piece_meta["source_sha256"],
+        "source_length": piece_meta["source_length"],
+        "token_ids": content_ids,
+        "token_spans": piece_meta["token_spans"],
+        "prefill_positions": list(range(start, end)),
+        "special_prefix_tokens": start,
+        "special_suffix_tokens": len(prefill_ids) - end,
+        "vectors": rows[start:end],
+    }
+
+
 def _align_token_rows_by_spans(sender_vectors, sender_spans, receiver_vectors, receiver_spans,
                                *, source_id: str, source_sha256: str, method: str,
                                source_span_unit: str, source_length: int | None = None,
