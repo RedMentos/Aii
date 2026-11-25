@@ -167,6 +167,7 @@ class TemporalVisualEvidence:
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
         self._a3_temporal_predictor = A3TemporalPredictor()
+        self._a3_error_gated_predictor = A3TemporalPredictor(update_policy="ERROR_GATED")
 
     def reset(self) -> None:
         self._last_start_ms = None
@@ -181,6 +182,7 @@ class TemporalVisualEvidence:
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
         self._a3_temporal_predictor.reset()
+        self._a3_error_gated_predictor.reset()
 
     def _update_a3_projected_change(self, *, tile_embeddings, projector_sha256,
                                     frame_source_ref, unavailable_reason):
@@ -258,16 +260,27 @@ class TemporalVisualEvidence:
         }
 
     def _update_a3_temporal_prediction(self, projected_change):
-        """Learn one bounded next-tile-delta step inside this consent-scoped stream."""
+        """Run the default LMS path plus a non-controlling error-gated ablation."""
         status = projected_change.get("status", "UNAVAILABLE")
         if status != "MEASURED":
             self._a3_temporal_predictor.reset()
-            return self._a3_temporal_predictor.unavailable(status)
+            self._a3_error_gated_predictor.reset()
+            prediction = self._a3_temporal_predictor.unavailable(status)
+            prediction["error_gated_shadow"] = self._a3_error_gated_predictor.unavailable(status)
+            return prediction
         tile_delta = projected_change.get("tile_delta")
         if type(tile_delta) is not dict or set(tile_delta) != set(TILE_IDS):
             self._a3_temporal_predictor.reset()
-            return self._a3_temporal_predictor.unavailable("MALFORMED_CHANGE")
-        return self._a3_temporal_predictor.update([tile_delta[tile] for tile in TILE_IDS])
+            self._a3_error_gated_predictor.reset()
+            prediction = self._a3_temporal_predictor.unavailable("MALFORMED_CHANGE")
+            prediction["error_gated_shadow"] = self._a3_error_gated_predictor.unavailable("MALFORMED_CHANGE")
+            return prediction
+        values = [tile_delta[tile] for tile in TILE_IDS]
+        prediction = self._a3_temporal_predictor.update(values)
+        # The shadow is observable for research but is deliberately excluded
+        # from _a3_predictive_attention_novelty() and all A4 control effects.
+        prediction["error_gated_shadow"] = self._a3_error_gated_predictor.update(values)
+        return prediction
 
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict,
                tile_features: dict | None = None,
