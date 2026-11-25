@@ -60,3 +60,10 @@ Next executable step: Core adds native target-score production and consumes this
 ## Cross-lane update — Core PR #2512
 
 Core PR #2512 was opened on head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, stacked on #2510 and carrying the earlier anchor-preserving helper. It connects the fitted adapter to the native receiver under the separate `NATIVE_RECEIVER` approval and validates the current Runtime source/session. Direct source readback confirms the probe still reports only decode/input-effect metrics; it does not score target tokens or generate an answer. The #2512 snapshot does not yet include the new #2511 task-score evaluator. Core was notified to refresh/rebase #2511 and add a bounded target-score producer before task utility can be measured. Exact-head CI was queued; no PASS claimed.
+
+
+### CI readback after Run 23 checkpoint (2026-11-25)
+
+- Core PR #2512 exact head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`: native input-embedding extractor PASS (Python contract 3.13/3.14, Linux pinned API, Android ARM64 cross-compile); staged-runtime PASS; integrated-regression PASS; offline deployment integrity PASS (Python 3.11/3.14). These are GitHub-hosted CI/cross-compile results, not Redmi runtime evidence.
+- Perception PR #2511 exact head `9d864d66f6d66f1f5ead3284a85cf22814aa69d9`: staged-runtime PASS; offline deployment integrity PASS (Python 3.11/3.14); integrated-regression still IN_PROGRESS at last readback. The connector did not expose a new exact-head adapter-contract run for the appended task-score tests, so no CI PASS is claimed for those eight tests.
+- #2512 still does not contain the new `native_receiver_utility.py` evaluator; Core has been asked to refresh/rebase the Perception parent and add the native target-score producer. Its current green consumer CI only validates the input-effect probe path.
