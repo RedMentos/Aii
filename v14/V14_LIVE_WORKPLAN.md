@@ -1,3 +1,16 @@
+## Research & Perception — RAW EAR next-delta prediction checkpoint (2026-11-25)
+
+- **Candidate:** PR #2498, branch research-perception/v14-raw-ear-next-delta-20261125-run13, stacked on current research base PR #2496. Code checkpoint SHA 58aee47736ddddde7d19c390bd878b37481f5fe1; subsequent research-ledger sync is separate. This is not a release branch or phone deployment.
+- **Connected path:** new v13/code/v13/audio_temporal_prediction.py is called by the existing audio_voice_cues.py consumer. It predicts the next absolute delta of eight continuous RAW EAR cues plus five activity-class indicators (13 dimensions, 182 LMS parameters). The process-local registry is bounded to 16 source/generation streams and consent-hash scoped; FINAL only; PROVISIONAL ignored; reset on consent rotation, source/generation reset, gap/chronology break, eviction and explicit teardown/revocation.
+- **Consumer effect:** only a capped 0.10 contribution to A4 novelty. external_interrupt, speaker evidence, C3 summary, PerceptPacket payload, truth/action authority and persistent model weights are unchanged. No PCM, transcript, speaker embedding or training example is persisted. This is not NAPE, JEPA, EMA or persistent body-weight learning.
+- **Local evidence:** LOCAL_LINUX isolated CPython 3.13.5 copy: py_compile PASS, 10/10 unit tests PASS. 10,000 updates ~0.74–0.84 s; 182 parameters; one stream's weight rows/list storage ~6.8 KB. This is an isolated module test/microbenchmark, not a full Aii checkout or Android measurement.
+- **Exact CI:** PR #2498 RAW EAR fastpath: 126 tests PASS on Python 3.13 and 3.14; py_compile, synthetic benchmark and public-content privacy scan PASS. First VAD-comparison run failed only because its exact audio_voice_cues.py blob pin still named the pre-change blob; the comparison workflow was rebound to blob a8fc1ab23b79231b44738892e3c120771c072687. Exact compare rerun and staged/integrated CI were pending at this checkpoint; do not call them passed.
+- **Research:** R-142 records the full NAPE arXiv review (20 Aug 2026 preprint) and OSS audit. NAPE-S is ~19M, but the paper's pretraining used AudioSet and 46-GB L40S GPUs; repository README MIT badge conflicts with Apache-2.0 LICENSE and no separate checkpoint license was verified. No code or weights reused.
+- **Canon/evidence:** A3 audio temporal prediction → A4 attention/salience on the existing caller-supplied PCM16 RAW EAR path. Classification remains CODE_CONNECTED / WIRED_SYNTHETIC_PENDING_EXACT_COMPARE; no held-out acoustic cohort, Android AudioRecord provider, Termux/Redmi measurement or native microphone proof. REDMI_UNVERIFIED; NOT_RELEASED.
+- **Next:** finish exact compare and staged/integrated CI; fix only observed failures without weakening source pins. Then add a frozen-weight held-out cohort against persistence/no-predictor/shuffled-cue controls. Reconcile with QA's Android AudioRecord provider only after its explicit permission/receipt contract exists. No user action is required.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
