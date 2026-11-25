@@ -301,6 +301,7 @@ def test_native_pair_records_fit_session_disjoint_tokenwise_candidate():
         min_relative_improvement=0.0,
     )
     assert result["adapter"]["schema"] == "v14.cross-organ-latent-adapter/4"
+    assert result["adapter"]["status"] == "ALIGNMENT_CANDIDATE"
     assert result["adapter"]["holdout_policy"] == "SOURCE_AND_SESSION_DISJOINT"
     assert result["adapter"]["metrics"]["session_disjoint"] is True
     assert result["adapter"]["metrics"]["train_session_count"] == 4
