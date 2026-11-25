@@ -121,8 +121,6 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
             cancel_event=self.r.cancel_event,
         )
-        receipt["sender_tokenwise_packet_id"]=tokenwise["packet_id"]
-        receipt["sender_tokenwise_manifest_sha256"]=tokenwise["manifest_sha256"]
         p=packet("LatentReceiverPacket","B3_NATIVE_RECEIVER_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
                  source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
                  sender_tokenwise_packet_id=tokenwise["packet_id"],
