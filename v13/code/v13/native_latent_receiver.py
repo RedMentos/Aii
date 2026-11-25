@@ -448,3 +448,243 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         "target_score": target_score,
         "status": status,
     }
+
+
+def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
+                 sender_tap_id, sender_model_revision, sender_model_sha256, tokenizer_revision,
+                 receiver_model_revision, source_id, generation_id, condition_inputs,
+                 target_token_ids, position_mode, deadline, threads=1, binary_path=None,
+                 cancel_event=None, target_environment=None,
+                 device_execution_receipt_sha256=None, device_runtime_build_id=None):
+    """Score the fixed eight-condition task matrix with one native model load.
+
+    Only hashes, target-token log-probabilities and dimensions are returned.
+    No input text, token IDs, vectors, learning, routing or persistence are added.
+    """
+    conditions = (
+        "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
+        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
+    )
+    if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
+        raise NativeReceiverError("unsupported or identical sender/receiver roles")
+    if not all(isinstance(value, str) and value for value in (
+        sender_tap_id, sender_model_revision, receiver_model_revision, source_id, generation_id
+    )):
+        raise NativeReceiverError("missing tap/model/source/generation binding")
+    if (not isinstance(expected_model_sha256, str) or len(expected_model_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in expected_model_sha256.lower())):
+        raise NativeReceiverError("receiver model hash missing or malformed")
+    if (not isinstance(sender_model_sha256, str) or len(sender_model_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in sender_model_sha256.lower())):
+        raise NativeReceiverError("sender model hash missing or malformed")
+    if tokenizer_revision is not None and (not isinstance(tokenizer_revision, str) or not tokenizer_revision):
+        raise NativeReceiverError("tokenizer revision malformed")
+    if position_mode != POSITION_MODE:
+        raise NativeReceiverError("task matrix position mode differs from the pinned receiver contract")
+    if not isinstance(condition_inputs, (list, tuple)) or len(condition_inputs) != len(conditions):
+        raise NativeReceiverError("native task matrix must contain exactly eight ordered conditions")
+    if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
+            or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
+        raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
+    target_ids = tuple(target_token_ids)
+    try:
+        target_payload = struct.pack("<" + "i" * len(target_ids), *target_ids)
+    except (OverflowError, struct.error) as exc:
+        raise NativeReceiverError("target token IDs cannot be encoded as int32") from exc
+    target_sha256 = hashlib.sha256(target_payload).hexdigest()
+
+    prepared = []
+    input_dim = None
+    for expected_condition, item in zip(conditions, condition_inputs):
+        if not isinstance(item, dict) or item.get("condition") != expected_condition:
+            raise NativeReceiverError("native task matrix condition order is invalid")
+        vectors = item.get("vectors")
+        position_ids = item.get("position_ids")
+        if expected_condition == "NO_MESSAGE":
+            if vectors not in ([], ()) or position_ids not in ([], ()):
+                raise NativeReceiverError("NO_MESSAGE must contain no injected rows or positions")
+            prepared.append({
+                "condition": expected_condition, "rows": 0, "positions": [],
+                "payload": b"", "input_sha256": hashlib.sha256(b"").hexdigest(),
+            })
+            continue
+        rows, dim, payload, input_sha256 = _vector_payload(vectors)
+        if input_dim is None:
+            input_dim = dim
+        elif dim != input_dim:
+            raise NativeReceiverError("native task matrix input dimensions differ across conditions")
+        positions = _validate_positions(position_ids, rows, position_mode)
+        if positions != list(range(rows)):
+            raise NativeReceiverError("native task matrix positions must be contiguous and zero based")
+        prepared.append({
+            "condition": expected_condition, "rows": rows, "positions": positions,
+            "payload": payload, "input_sha256": input_sha256,
+        })
+    if input_dim is None:
+        raise NativeReceiverError("native task matrix has no message-bearing condition")
+    matrix_payload = bytearray()
+    for item in prepared:
+        matrix_payload.extend(struct.pack("<i", item["rows"]))
+        if item["rows"]:
+            matrix_payload.extend(struct.pack("<" + "i" * item["rows"], *item["positions"]))
+            matrix_payload.extend(item["payload"])
+    matrix_payload.extend(target_payload)
+
+    injected_binary = binary_path is not None
+    binary = Path(binary_path) if injected_binary else Path(home).resolve() / "bin" / "native_latent_receiver"
+    if binary.is_symlink() or not binary.is_file() or not os.access(binary, os.X_OK):
+        raise NativeReceiverUnavailable("pinned native_latent_receiver executable is not installed")
+    binary = binary.resolve(strict=True)
+    root = Path(home).resolve()
+    if not injected_binary and not binary.is_relative_to((root / "bin").resolve()):
+        raise NativeReceiverError("native receiver executable escaped home/bin")
+    binary_sha256_before = _sha256_file(binary)
+
+    if injected_binary:
+        if target_environment not in (None, "SYNTHETIC") or device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+            raise NativeReceiverError("injected task-matrix binaries are synthetic fixtures only")
+        target_execution_kind, target_env = "SYNTHETIC_FIXTURE", "SYNTHETIC"
+    else:
+        if target_environment not in {"LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+            raise NativeReceiverError("native task-matrix scoring requires an explicit execution environment")
+        target_execution_kind, target_env = "NATIVE_LLAMA_CPP_GGUF", target_environment
+        if target_env in {"TERMUX_ANDROID", "REDMI"}:
+            if (type(device_execution_receipt_sha256) is not str or len(device_execution_receipt_sha256) != 64
+                    or any(ch not in "0123456789abcdef" for ch in device_execution_receipt_sha256)
+                    or type(device_runtime_build_id) is not str or not device_runtime_build_id
+                    or len(device_runtime_build_id) > 128):
+                raise NativeReceiverError("Android task-matrix scoring requires a verified device receipt and runtime build ID")
+        elif device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+            raise NativeReceiverError("local Linux task-matrix scoring must not carry Android device metadata")
+
+    model = Path(model_path)
+    if model.is_symlink():
+        raise NativeReceiverError("receiver model symlink refused")
+    model = model.resolve(strict=True)
+    models_root = (root / "models").resolve()
+    if not model.is_relative_to(models_root) or not model.is_file():
+        raise NativeReceiverError("receiver model must be an installed file under home/models")
+    expected_model_sha256 = expected_model_sha256.lower()
+    sender_model_sha256 = sender_model_sha256.lower()
+    if _sha256_file(model) != expected_model_sha256:
+        raise NativeReceiverError("receiver model hash differs from installed manifest")
+
+    remaining = float(deadline) - time.monotonic()
+    if not math.isfinite(remaining) or remaining <= 0:
+        raise TimeoutError("native task-matrix deadline expired")
+    if cancel_event is not None and cancel_event.is_set():
+        raise InterruptedError("native task-matrix cancelled")
+    try:
+        version = subprocess.run(
+            [str(binary), "--version"], stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            timeout=min(5.0, remaining), check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise TimeoutError("native receiver version check timed out") from exc
+    if version.returncode != 0:
+        raise NativeReceiverUnavailable("native receiver version check failed")
+    version_data = _json_output(version.stdout, "version")
+    if version_data.get("task_matrix_supported") is not True or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1":
+        raise NativeReceiverUnavailable("native receiver binary does not advertise eight-condition task scoring")
+
+    remaining = float(deadline) - time.monotonic()
+    if not math.isfinite(remaining) or remaining <= 0:
+        raise TimeoutError("native task-matrix deadline expired")
+    command = [
+        str(binary), "--model", str(model), "--matrix-count", str(len(conditions)),
+        "--conditions", ",".join(conditions), "--input-dim", str(input_dim),
+        "--threads", str(max(1, min(int(threads), 2))),
+        "--target-count", str(len(target_ids)), "--target-token-ids-sha256", target_sha256,
+    ]
+    started = time.monotonic()
+    returncode, stdout, stderr = _run_cancelable(command, bytes(matrix_payload), deadline, cancel_event)
+    duration_s = time.monotonic() - started
+    if returncode != 0:
+        raise NativeReceiverError("native receiver task-matrix execution failed")
+    try:
+        raw = json.loads(stdout.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise NativeReceiverError("native receiver returned invalid task-matrix JSON") from exc
+    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/1"
+            or raw.get("runner_revision") != PINNED_LLAMA_REVISION or raw.get("status") != "SCORED"
+            or raw.get("receiver_input_dim") != input_dim
+            or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
+            or raw.get("target_token_count") != len(target_ids)
+            or raw.get("target_token_ids_sha256") != target_sha256
+            or raw.get("llama_version") != version_data.get("llama_version")):
+        raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
+    native_conditions = raw.get("conditions")
+    if not isinstance(native_conditions, list) or len(native_conditions) != len(conditions):
+        raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
+    condition_scores = {}
+    for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
+        if (not isinstance(native_item, dict) or native_item.get("condition") != expected
+                or native_item.get("input_rows") != prepared_item["rows"]
+                or native_item.get("input_dim") != input_dim
+                or native_item.get("position_ids") != prepared_item["positions"]
+                or native_item.get("position_mode") != position_mode
+                or type(native_item.get("decode_status")) is not int or native_item.get("decode_status") != 0
+                or native_item.get("native_input_consumed") is not True):
+            raise NativeReceiverError("native receiver condition receipt is missing or misbound: " + expected)
+        score = native_item.get("target_score")
+        token_scores = score.get("token_logprobs") if isinstance(score, dict) else None
+        if (not isinstance(score, dict) or score.get("schema") != "v14.native-receiver-target-score/1"
+                or score.get("score_method") != "TEACHER_FORCED_TARGET_LOGPROB_V1"
+                or score.get("target_token_count") != len(target_ids)
+                or score.get("target_token_ids_sha256") != target_sha256
+                or not isinstance(token_scores, list) or len(token_scores) != len(target_ids)
+                or any(type(value) not in (int, float) or not math.isfinite(float(value)) or float(value) > 1e-7 for value in token_scores)
+                or type(score.get("decode_status")) is not int or score.get("decode_status") != 0
+                or score.get("native_input_consumed") is not True):
+            raise NativeReceiverError("native target-score condition receipt is missing or malformed: " + expected)
+        receipt = {
+            "schema": "v14.native-receiver-target-score/1",
+            "execution_kind": target_execution_kind,
+            "environment": target_env,
+            "llama_cpp_revision": PINNED_LLAMA_REVISION,
+            "binary_sha256": binary_sha256_before,
+            "receiver_model_sha256": expected_model_sha256,
+            "input_sha256": prepared_item["input_sha256"],
+            "target_token_ids_sha256": target_sha256,
+            "target_token_count": len(target_ids),
+            "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+            "token_logprobs": [float(value) for value in token_scores],
+            "decode_status": 0,
+            "native_input_consumed": True,
+            "llama_version": str(raw.get("llama_version", ""))[:120],
+        }
+        if target_env in {"TERMUX_ANDROID", "REDMI"}:
+            receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
+            receipt["device_runtime_build_id"] = device_runtime_build_id
+        condition_scores[expected] = receipt
+
+    if _sha256_file(model) != expected_model_sha256:
+        raise NativeReceiverError("receiver model changed during task-matrix probe")
+    if _sha256_file(binary) != binary_sha256_before:
+        raise NativeReceiverError("native receiver binary changed during task-matrix probe")
+    return {
+        "schema": "v14.native-receiver-task-matrix/1",
+        "status": "SCORED",
+        "sender_role": sender_role,
+        "receiver_role": receiver_role,
+        "sender_tap_id": sender_tap_id,
+        "sender_model_revision": sender_model_revision,
+        "sender_model_sha256": sender_model_sha256,
+        "tokenizer_revision": tokenizer_revision,
+        "receiver_model_revision": receiver_model_revision,
+        "receiver_model_sha256": expected_model_sha256,
+        "runner_revision": PINNED_LLAMA_REVISION,
+        "llama_version": str(raw.get("llama_version", ""))[:80],
+        "input_dim": input_dim,
+        "output_dim": int(raw["output_dim"]),
+        "target_token_count": len(target_ids),
+        "target_token_ids_sha256": target_sha256,
+        "duration_s": float(duration_s),
+        "condition_scores": condition_scores,
+        "native_input_consumed": len(condition_scores) == len(conditions),
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
