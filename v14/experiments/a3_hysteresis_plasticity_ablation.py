@@ -45,7 +45,7 @@ def make_stream(seed: int) -> list[list[float]]:
 
 
 class PeriodicMatchedUpdates(A3TemporalPredictor):
-    """Control with a fixed 7/8 update schedule, independent of prediction error."""
+    """Control with a fixed 3/4 update schedule, independent of prediction error."""
 
     def __init__(self) -> None:
         super().__init__(learning_rate=BASE_LR, warmup_updates=4, update_policy="ERROR_HYSTERESIS")
@@ -136,6 +136,15 @@ def run_noise_control(seed: int, amplitude: float, policy: str) -> dict:
     }
 
 
+def _aggregate_noise(rows: list[dict]) -> dict:
+    return {
+        "updates": round(fmean(row["updates"] for row in rows), 2),
+        "update_fraction": round(fmean(row["update_fraction"] for row in rows), 6),
+        "mean_mae": round(fmean(row["mean_mae"] for row in rows), 8),
+        "gate_transitions": round(fmean(row["gate_transitions"] for row in rows), 2),
+    }
+
+
 def run_experiment() -> dict:
     train_always = [run_one(seed, "ALWAYS") for seed in TRAIN_SEEDS]
     train_hysteresis = [run_one(seed, "ERROR_HYSTERESIS") for seed in TRAIN_SEEDS]
@@ -151,7 +160,7 @@ def run_experiment() -> dict:
     }
     noise_control = {
         str(amplitude): {
-            policy: _aggregate([
+            policy: _aggregate_noise([
                 run_noise_control(seed, amplitude, policy)
                 for seed in range(5)
             ])
