@@ -49,3 +49,10 @@ Core/QA should retain the source-bound consent lease across the full A5/A4/B1/B2
 **Limits:** intervention effects are not reported for the baseline encoders, so improved selective sensitivity over the baselines is not established. The 0.59-point validation gain has no repeated-run uncertainty and is not a test-set result. Edit strength, edited area and artifacts may explain some ordering. The paper explicitly does not prove complete nuisance invariance or causal feature discovery.
 
 **V14 testable adaptation:** extend the existing A3 source-disjoint counterfactual probe (#2470), not a parallel pipeline: pair controlled semantic-like and nuisance-like edits on the same source frames, match changed area/magnitude, compare the current A3 projector and simple feature baseline, report per-source SIR distributions and zero/shuffle/reversal controls. Keep it diagnostic-only; do not alter A4 gain or train weights until source-disjoint held-out utility, gradients/parameter diffs, retention, restart and rollback are demonstrated. This is a research proposal, not a result from this run.
+
+
+## OSS scan — Android audio alternatives
+
+- **k2-fsa/sherpa-onnx**: maintained upstream (repository shows 2,262 commits and 16.2k stars at review time), Apache-2.0 code license, explicit Android arm64 support, and modules for VAD, diarization, audio tagging, enhancement, ASR and TTS. It is a plausible optional native backend/teacher adapter, not a replacement for timestamped RAW EAR acoustic features. Model/checkpoint licenses, exact Android ABI packaging, RSS/latency and the Redmi thermal profile must be checked per selected model; none were measured or downloaded in this run.
+- **VoxRT/voxrt-silero-android**: not selected. Its wrapper is described as Apache-2.0 but its packaged native binary is marked proprietary; do not copy or redistribute that binary without a separate license grant.
+- No Maven dependency, native library, model weights, audio provider, microphone permission or production model was added/changed.
