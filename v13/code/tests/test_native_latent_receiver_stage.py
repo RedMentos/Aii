@@ -43,7 +43,10 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "import time" in approval
     assert "def operator_command(runtime, args):" in approval
     assert "prefix_run" in approval
-    assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
+    probe_dispatch = 'if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:'
+    assert probe_dispatch in callosum
+    assert callosum.index(probe_dispatch) < callosum.index("c=controller(r)")
+    assert "return probe_command(r, args)" in callosum
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
     assert "native_receiver_probe" in callosum
     staged_budget = (destination / "v13/native_turn_budget.py").read_text(encoding="utf-8")
