@@ -859,7 +859,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
             if speaker_change_candidate is None:
                 speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
-            if speaker_change_candidate is True:
+            if (
+                speaker_change_decision == "CHANGE_OR_OVERLAP_CANDIDATE"
+                and speaker_change_candidate is True
+            ):
                 speaker_change_score = float(
                     speaker_evidence.get("peak_candidate_change_score")
                     or speaker_evidence.get("change_score")
@@ -926,7 +929,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-            if speaker_change_candidate is not None:
+            if (
+                speaker_change_decision == "CHANGE_OR_OVERLAP_CANDIDATE"
+                and speaker_change_candidate is not None
+            ):
                 summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
                 summary += f" speaker_change_score={speaker_change_score:.2f}"
                 if speaker_change_candidate:
