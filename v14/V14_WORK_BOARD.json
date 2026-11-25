@@ -175,7 +175,7 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android microphone",
-      "next_step": "Keep MobileMoE-S/M as research-only candidates. Before any trial, verify exact QAT/PTE artifact and license/access, ARM64/Bionic runtime compatibility, tokenizer, real PSS/RSS/TTFT/decode, output quality, B1/B2 role complementarity and rollback on Redmi. Ask separately before experimental download and again before any productive swap; no action now.",
+      "next_step": "Perception/QA: #2312 signed one-shot 44.1-kHz PCM consumer remains stacked on the QA companion branch; no AudioRecord provider, microphone capture or Redmi test. Keep capture OFF until the companion verifier/provider is reconciled and exact consent/revocation/zeroization tests pass. libfvad remains a BSD-3-Clause research comparator only.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-25T23:32:41Z",
       "latest_candidate_pr": {
@@ -198,6 +198,18 @@
         "runtime": "Custom fused MoE kernels / ExecuTorch PTE; not GGUF/llama.cpp drop-in",
         "device_evidence": "Galaxy S25 and iPhone 16 Pro only; Redmi unverified",
         "status": "RESEARCH_CANDIDATE_ONLY_NO_DOWNLOAD_NO_SWAP"
+      },
+      "run35_next_step": "PR #2498 RAW EAR next-delta predictor: focused test correction and exact source-blob pin update have been pushed to head 369345769f89a655239813046196548e8c05d77b; exact CI is pending. The failed strict novelty>control assertion was invalid under max-fusion because existing voice evidence can dominate the bounded <=0.10 predictor novelty. Rerun focused RAW EAR and VAD comparison CI, then resolve the inherited integrated_audio_context_candidate source pin with Core. Separately keep MobileMoE-S/M research-only; no model download/swap.",
+      "latest_audio_pr": {
+        "pr": 2498,
+        "head_sha": "369345769f89a655239813046196548e8c05d77b",
+        "status": "CI_IN_PROGRESS",
+        "changes": [
+          "A4 max-fusion test now allows existing voice evidence to dominate; still requires predictor novelty to be included and external_interrupt unchanged",
+          "VAD comparison workflow expected RAW EAR source blob updated to exact current Git blob 0cbec2a9f424f177d7e6e783c28571b236612419"
+        ],
+        "local_linux": "BLOCKED_NO_CHECKOUT_GITHUB_DNS_FAILURE",
+        "redmi": "REDMI_UNVERIFIED"
       }
     },
     {
@@ -210,7 +222,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI focused tests PASS (Python 3.13/3.14); exact staged/native workflows FAIL; LOCAL_LINUX full checkout BLOCKED; REDMI_UNVERIFIED",
-      "next_step": "Core must repair the exact native receiver compile error (decode_embeddings uses undeclared model) and reconcile inherited staged source-pin/migration failures. Then rebase #2519 on the repaired exact Core head, rerun focused + staged + integrated + pinned Linux + Android arm64 CI, and run a real pinned-GGUF eight-condition cohort on LOCAL_LINUX before any device proposal.",
+      "next_step": "Core must rebind the stale Termux recovery source pin without weakening its hash gate, then rerun #2487 staged-runtime, integrated-regression and two-checkout migration on the composed current head. After that, reconcile the signed one-shot RAW EAR consumer with QA's companion provider; test route/silence/revocation only after explicit device permission. Supporting research PR #2489 adds a read-only B1/B2 LatentTapPacket alignment audit (9/9 local synthetic tests) but has no real tap cohort; after #2488 is integrated and the runtime is explicitly resumed, collect >=20 paired source/event/generation taps and run it.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-25T23:32:41Z",
       "latest_candidate_pr": {
@@ -222,7 +234,8 @@
         "local_linux": "BLOCKED_NO_CHECKOUT_GITHUB_DNS_FAILURE",
         "redmi": "NO_NEW_RECEIPT; REDMI_UNVERIFIED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required. Run 35 / PR #2519: focused source-bound matrix/bridge tests PASS on Python 3.13/3.14 CI; exact full workflow NOT_GREEN due inherited Core staged/runtime and native build failures. Core compile error posted to #2515. No local full suite, real GGUF, Android execution, weights or B3 proof."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required. Run 35 / PR #2519: focused source-bound matrix/bridge tests PASS on Python 3.13/3.14 CI; exact full workflow NOT_GREEN due inherited Core staged/runtime and native build failures. Core compile error posted to #2515. No local full suite, real GGUF, Android execution, weights or B3 proof.",
+      "run35_next_step": "Perception PR #2519 exact code head bc954f358640388e45ca52c9aa47ac2f6b15bdfe adds the source-bound eight-condition receiver matrix bridge; current branch head 9b181d4e4c7c0195558ba8271933609340fae38c includes documentation only. Focused matrix tests PASS on Python 3.13/3.14 CI, but staged/native CI remains NOT_GREEN due Core source-pin/migration failures and decode_embeddings() referencing undeclared model. Core repairs first; then rebase #2519 and rerun exact CI. No B3 promotion."
     },
     {
       "id": "V14-007",
