@@ -143,37 +143,6 @@ REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'pro
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
-OPERATOR_HELP_OLD = '''    """:callosum [status|shadow|active|degrade|promote <direction>]"""\n'''
-OPERATOR_HELP_NEW = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <B1_DETAIL|B2_GIST> <B1_DETAIL|B2_GIST|C3_LANGUAGE> --last-source --confirm]"""\n'''
-OPERATOR_PREFIX_NEW = r"""    c=controller(r)
-    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
-        sender,receiver=args[1],args[2]
-        if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
-            raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
-        r.require_idle()
-        last=r.last_answer()
-        if not last:raise ValueError('Erst eine abgeschlossene Eingabe erzeugen')
-        row=r.store.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))
-        if not row:raise ValueError('Letztes Ereignis fehlt')
-        event=json.loads(row['packet'])
-        ref=event.get('source_ref')
-        if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Letzte Eingabe hat keine gültige SourceRef')
-        r.models.path_for(receiver)
-        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
-        try:
-            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
-        finally:
-            r.pool.unload()
-        return dumps({**packet,'queued':False,'completed':True,
-                      'sender_role':sender,'receiver_role':receiver,
-                      'requires_explicit_confirmation':True,'production_route':False,
-                      'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
-                      'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
-"""
-
-OPERATOR_ERROR_OLD = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')\n"""
-OPERATOR_ERROR_NEW = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe <sender> <receiver> --last-source --confirm]')\n"""
-
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
 def _replace(raw,old,new,label):
@@ -199,9 +168,6 @@ def apply_sources(code_dir,sources):
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
     callosum=_replace(callosum,REPORT_PROBE_OLD.encode("utf-8"),REPORT_PROBE_NEW.encode("utf-8"),"Callosum report probe")
     callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
-    callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")
-    callosum=_replace(callosum,b"    c=controller(r)\n",OPERATOR_PREFIX_NEW.encode("utf-8"),"Callosum operator prefix")
-    callosum=_replace(callosum,OPERATOR_ERROR_OLD.encode("utf-8"),OPERATOR_ERROR_NEW.encode("utf-8"),"Callosum operator error help")
     compile(callosum,"v13/callosum.py","exec")
     result["v13/cognition.py"]=cognition
     result["v13/callosum.py"]=callosum
