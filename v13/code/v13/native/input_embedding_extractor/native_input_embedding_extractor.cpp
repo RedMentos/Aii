@@ -337,8 +337,7 @@ int extract(const Options & options) {
 
     llama_model_params params = llama_model_default_params();
     params.n_gpu_layers = 0;
-    params.use_mmap = true;
-    params.use_mlock = false;
+    // Keep llama.cpp's pinned default load mode (mmap/lazy policy is revision-owned).
     llama_model * model = llama_model_load_from_file(options.model_path.c_str(), params);
     if (!model) {
         llama_backend_free();
