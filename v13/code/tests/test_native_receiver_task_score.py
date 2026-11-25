@@ -12,7 +12,7 @@ REV = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 MODEL_BYTES = b"fixture-model-no-weights"
 MODEL_SHA = hashlib.sha256(MODEL_BYTES).hexdigest()
 SOURCE = {"source_id": "task-source-1", "sha256": "a" * 64}
-MESSAGE = {"source_id": "message-source-1", "sha256": "b" * 64}
+MESSAGE = SOURCE
 
 
 def fake_binary(path: Path, *, scores=None, modify_model=False, bad_count=False, bad_finite=True):
