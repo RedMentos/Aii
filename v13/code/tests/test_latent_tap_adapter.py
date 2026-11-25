@@ -171,6 +171,10 @@ def test_persisted_taps_fit_source_disjoint_crossdim_adapter_and_roundtrip(tmp_p
     assert adapter["rank"] == 2
     assert adapter["metrics"]["relative_improvement"] > 0.95
     assert adapter["metrics"]["holdout_mse"] < adapter["metrics"]["shuffled_train_mse"]
+    assert adapter["metrics"]["linear_map_frobenius"] > 0.0
+    assert adapter["metrics"]["parameter_count"] > 0
+    assert adapter["metrics"]["gradient_norm"] is None
+    assert adapter["metrics"]["old_task_retention_measured"] is False
 
     path = tmp_path / "adapter.v14lat"
     saved_sha = save_adapter(adapter, path)
