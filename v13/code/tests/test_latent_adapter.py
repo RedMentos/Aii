@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from v13.latent_adapter import (
-    LatentAdapterError, build_native_receiver_input, fit_adapter, project_event, project_rows, project_vector, save_adapter,
-    load_adapter,
+    LatentAdapterError, align_token_rows_by_char_span, build_native_receiver_input,
+    fit_adapter, project_event, project_rows, project_vector, save_adapter, load_adapter,
 )
 
 SENDER_HASH = "a" * 64
@@ -19,11 +19,27 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
     target = np.asarray([[1.2, -0.4, 0.7, 0.2], [0.3, 0.8, -0.6, 1.0]])
     rows = []
     for group in range(groups):
+        source_id = f"{prefix}-source-{group}"
+        spans = [[sample * 2, sample * 2 + 2] for sample in range(4)]
+        alignment_id = hashlib.sha256(json.dumps({
+            "method": "CHAR_SPAN_OVERLAP_V1", "source_id": source_id,
+            "sender_spans": spans, "receiver_spans": spans,
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
         for sample in range(4):
             z = rng.normal(size=2)
             x = z @ basis.T + rng.normal(scale=0.001, size=6)
             y = z @ target + np.asarray([0.2, -0.1, 0.3, 0.05]) + rng.normal(scale=0.001, size=4)
-            rows.append({"pair_id": f"{prefix}-pair-{group}-{sample}", "source_id": f"{prefix}-source-{group}", "token_position": sample, "sender_vector": x.tolist(), "receiver_vector": y.tolist()})
+            rows.append({
+                "pair_id": f"{prefix}-pair-{group}-{sample}",
+                "source_id": source_id,
+                "token_position": sample,
+                "source_span": spans[sample],
+                "alignment_method": "CHAR_SPAN_OVERLAP_V1",
+                "alignment_id": alignment_id,
+                "alignment_coverage": 1.0,
+                "sender_vector": x.tolist(),
+                "receiver_vector": y.tolist(),
+            })
     if shuffled:
         values = [row["receiver_vector"] for row in rows]
         rng.shuffle(values)
@@ -41,6 +57,9 @@ def fit(train=None, holdout=None, **overrides):
         rank=2, ridge=1e-5,
     )
     args.update(overrides)
+    if args.get("projection_scope") == "TOKENWISE":
+        args["sender_tokenizer_revision"] = "sender-tokenizer-r1"
+        args["receiver_tokenizer_revision"] = "tokenizer-r1"
     return fit_adapter(train or make_pairs("train", 10, seed=1), holdout or make_pairs("hold", 5, seed=2), **args)
 
 
@@ -173,6 +192,10 @@ def test_native_receiver_builder_rejects_tokenizer_row_mismatch():
         build_native_receiver_input(
             adapter, vectors, token_ids=[101, 102], tokenizer_revision="tokenizer-r1", **bindings,
         )
+    with pytest.raises(LatentAdapterError, match="receiver tokenizer revision mismatch"):
+        build_native_receiver_input(
+            adapter, vectors, token_ids=[101], tokenizer_revision="other-tokenizer-r1", **bindings,
+        )
 
 
 
@@ -181,6 +204,56 @@ def test_native_receiver_builder_rejects_tokenizer_row_mismatch():
     ("duplicate", "duplicate token position"),
     ("gap", "contiguous rows"),
 ])
+def test_char_span_alignment_handles_different_tokenizer_segmentations():
+    aligned = align_token_rows_by_char_span(
+        sender_vectors=[[1.0, 0.0], [3.0, 0.0], [5.0, 0.0]],
+        sender_spans=[[0, 2], [2, 4], [4, 6]],
+        receiver_vectors=[[0.0, 1.0], [0.0, 3.0]],
+        receiver_spans=[[0, 3], [3, 6]],
+        source_id="source-different-tokenizers",
+    )
+    assert [row["token_position"] for row in aligned] == [0, 1]
+    assert [row["source_span"] for row in aligned] == [[0, 3], [3, 6]]
+    assert aligned[0]["sender_vector"] == pytest.approx([5.0 / 3.0, 0.0])
+    assert aligned[1]["sender_vector"] == pytest.approx([13.0 / 3.0, 0.0])
+    assert [row["alignment_coverage"] for row in aligned] == [1.0, 1.0]
+    assert len({row["alignment_id"] for row in aligned}) == 1
+
+
+def test_char_span_alignment_rejects_uncovered_receiver_text():
+    with pytest.raises(LatentAdapterError, match="sufficiently cover"):
+        align_token_rows_by_char_span(
+            sender_vectors=[[1.0, 0.0], [2.0, 0.0]],
+            sender_spans=[[0, 1], [4, 6]],
+            receiver_vectors=[[0.0, 1.0], [0.0, 2.0]],
+            receiver_spans=[[0, 3], [3, 6]],
+            source_id="source-gap",
+        )
+
+
+def test_char_span_alignment_rejects_overlapping_or_unordered_spans():
+    with pytest.raises(LatentAdapterError, match="overlap or are out of order"):
+        align_token_rows_by_char_span(
+            sender_vectors=[[1.0, 0.0], [2.0, 0.0]],
+            sender_spans=[[0, 3], [2, 4]],
+            receiver_vectors=[[0.0, 1.0], [0.0, 2.0]],
+            receiver_spans=[[0, 2], [2, 4]],
+            source_id="source-overlap",
+        )
+
+
+def test_tokenwise_fit_rejects_position_only_pairs_without_span_proof():
+    train = make_pairs("train", 10, seed=1)
+    holdout = make_pairs("hold", 5, seed=2)
+    for row in train + holdout:
+        row.pop("source_span")
+        row.pop("alignment_method")
+        row.pop("alignment_id")
+        row.pop("alignment_coverage")
+    with pytest.raises(LatentAdapterError, match="source_span alignment"):
+        fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
+
+
 def test_tokenwise_fit_requires_source_local_contiguous_positions(mutation, match):
     train = make_pairs("train", 10, seed=1)
     holdout = make_pairs("hold", 5, seed=2)
