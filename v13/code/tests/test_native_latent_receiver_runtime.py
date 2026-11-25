@@ -372,6 +372,10 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     runtime.pool.unload = lambda: calls.append("unload")
     # Simulate the local interactive approval boundary; production still checks os.isatty(0).
     monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    armed = json.loads(operator_command(
+        runtime, ["arm-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
+    ))
+    assert armed["status"] == "ARMED"
     result = json.loads(operator_command(
         runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
