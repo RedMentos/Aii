@@ -320,3 +320,69 @@ def test_probe_does_not_write_audit_when_native_receiver_fails(tmp_path):
     with pytest.raises(RuntimeError, match="native receiver unavailable"):
         run_probe(runtime, approval, pair_record(runtime), receiver_fn=fail)
     assert runtime.store.logs == []
+
+
+def test_cohort_wrapper_requires_declared_holdout_and_keeps_candidate_in_memory(tmp_path):
+    runtime = FakeRuntime(tmp_path)
+    record = pair_record(runtime)
+    record["session_id"] = "holdout-session"
+    adapter = {
+        "status": "ALIGNMENT_CANDIDATE",
+        "projection_scope": "TOKENWISE",
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "adapter_sha256": "c" * 64,
+    }
+    calls = []
+
+    def fit_fn(records, train_sessions, holdout_sessions):
+        calls.append(("fit", list(train_sessions), list(holdout_sessions)))
+        return {
+            "adapter": adapter,
+            "fit_manifest": {
+                "session_disjoint": True,
+                "train_session_count": 2,
+                "holdout_session_count": 2,
+                "train_source_count": 8,
+                "holdout_source_count": 4,
+                "train_pair_count": 32,
+                "holdout_pair_count": 16,
+            },
+        }
+
+    def probe_fn(runtime_arg, adapter_arg, record_arg, **kwargs):
+        calls.append(("probe", adapter_arg, record_arg))
+        return {"status": "NATIVE_RECEIVER_DIAGNOSTIC", "semantic_utility_proven": False}
+
+    from v13.native_tokenwise_receiver_probe import fit_and_probe_native_tokenwise_cohort
+
+    result = fit_and_probe_native_tokenwise_cohort(
+        runtime, [{"fixture": True}], ["train-a", "train-b"],
+        ["holdout-session", "holdout-other"], record,
+        fit_fn=fit_fn, probe_fn=probe_fn,
+    )
+    assert calls[0] == ("fit", ["train-a", "train-b"], ["holdout-session", "holdout-other"])
+    assert calls[1][0] == "probe"
+    assert result["status"] == "ALIGNMENT_CANDIDATE_NATIVE_DIAGNOSTIC"
+    assert result["fit_manifest"]["session_disjoint"] is True
+    assert result["adapter_sha256"] == "c" * 64
+    assert result["adapter_persisted"] is False
+    assert result["pair_records_persisted"] is False
+    assert result["semantic_utility_proven"] is False
+
+
+def test_cohort_wrapper_refuses_record_outside_holdout_before_fit(tmp_path):
+    runtime = FakeRuntime(tmp_path)
+    record = pair_record(runtime)
+    calls = []
+
+    with pytest.raises(ValueError, match="declared holdout session"):
+        from v13.native_tokenwise_receiver_probe import fit_and_probe_native_tokenwise_cohort
+        fit_and_probe_native_tokenwise_cohort(
+            runtime, [], ["train-a", "train-b"], ["hold-a", "hold-b"], record,
+            fit_fn=lambda *args: calls.append(args),
+            probe_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
+        )
+    assert calls == []

@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import os
+import struct
 import stat
 import threading
 import time
@@ -82,12 +84,28 @@ def _validate_packet(packet, *, adapter, record):
     dimension = packet.get("input_dim")
     if (not isinstance(vectors, list) or not 1 <= len(vectors) <= 64
             or type(rows) is not int or rows != len(vectors)
-            or type(dimension) is not int or dimension < 1
+            or type(dimension) is not int or not 1 <= dimension <= 8192
+            or rows * dimension > 262144
             or not isinstance(positions, list) or positions != list(range(rows))
             or packet.get("position_mode") != POSITION_MODE
             or type(packet.get("input_sha256")) is not str or len(packet["input_sha256"]) != 64
-            or type(packet.get("anchor_sha256")) is not str or len(packet["anchor_sha256"]) != 64):
+            or any(ch not in "0123456789abcdef" for ch in packet["input_sha256"])
+            or type(packet.get("anchor_sha256")) is not str or len(packet["anchor_sha256"]) != 64
+            or any(ch not in "0123456789abcdef" for ch in packet["anchor_sha256"])):
         raise NativeTokenwiseReceiverProbeError("receiver packet geometry or digest is invalid")
+    flat = []
+    for row in vectors:
+        if not isinstance(row, (list, tuple)) or len(row) != dimension:
+            raise NativeTokenwiseReceiverProbeError("receiver packet contains ragged vectors")
+        for value in row:
+            if type(value) not in (int, float) or not math.isfinite(float(value)) or abs(float(value)) > 1.0e6:
+                raise NativeTokenwiseReceiverProbeError("receiver packet contains a non-finite or unbounded value")
+            flat.append(float(value))
+    payload = struct.pack("<" + "f" * len(flat), *flat)
+    if hashlib.sha256(payload).hexdigest() != packet["input_sha256"]:
+        raise NativeTokenwiseReceiverProbeError("receiver packet input digest differs from its vectors")
+    if type(packet.get("tokenizer_revision")) is not str or not packet["tokenizer_revision"]:
+        raise NativeTokenwiseReceiverProbeError("receiver packet tokenizer binding is missing")
     return packet
 
 
@@ -179,6 +197,13 @@ def probe_native_tokenwise_candidate(
                 or receiver_record.get("model_sha256") != receiver_binding.get("sha256")):
             raise PermissionError("pair record differs from installed sender/receiver models")
 
+        if (not isinstance(adapter, dict) or adapter.get("status") != "ALIGNMENT_CANDIDATE"
+                or adapter.get("projection_scope") != "TOKENWISE"
+                or adapter.get("production_route") is not False
+                or adapter.get("semantic_use_proven") is not False
+                or adapter.get("training_authority") != 0
+                or adapter.get("native_receiver_authority") != 0):
+            raise NativeTokenwiseReceiverProbeError("adapter is not an authority-zero TOKENWISE candidate")
         packet = packet_builder(
             adapter, record, residual_gain=residual_gain,
             max_relative_residual=max_relative_residual,
@@ -336,3 +361,59 @@ def probe_native_tokenwise_candidate(
             "vectors_persisted": False,
             "adapter_persisted": False,
         }
+
+
+def fit_and_probe_native_tokenwise_cohort(
+    runtime, records, train_session_ids, holdout_session_ids, heldout_record, *,
+    fit_fn=None, probe_fn=None, **probe_kwargs,
+):
+    """Fit an in-memory session-disjoint candidate, then probe one current holdout record.
+
+    Pair records and the fitted adapter remain in memory. This helper deliberately
+    does not persist activations/adapters or promote B3; alignment and native input
+    effect are separate from held-out semantic utility.
+    """
+    if not isinstance(heldout_record, dict):
+        raise ValueError("a held-out native pair record is required")
+    if (not isinstance(holdout_session_ids, (list, tuple, set))
+            or heldout_record.get("session_id") not in holdout_session_ids):
+        raise ValueError("native receiver probe record must belong to a declared holdout session")
+    if fit_fn is None:
+        from .native_tokenwise_pair_capture import fit_native_tokenwise_pair_cohort as fit_fn
+    if probe_fn is None:
+        probe_fn = probe_native_tokenwise_candidate
+    fitted = fit_fn(records, train_session_ids, holdout_session_ids)
+    if not isinstance(fitted, dict) or not isinstance(fitted.get("adapter"), dict):
+        raise NativeTokenwiseReceiverProbeError("tokenwise cohort fitter returned no adapter")
+    adapter = fitted["adapter"]
+    if (adapter.get("status") != "ALIGNMENT_CANDIDATE"
+            or adapter.get("projection_scope") != "TOKENWISE"
+            or adapter.get("production_route") is not False
+            or adapter.get("semantic_use_proven") is not False
+            or adapter.get("training_authority") != 0
+            or adapter.get("native_receiver_authority") != 0):
+        raise NativeTokenwiseReceiverProbeError("cohort fitter returned an ineligible adapter")
+    probe = probe_fn(runtime, adapter, heldout_record, **probe_kwargs)
+    manifest = fitted.get("fit_manifest", {})
+    if not isinstance(manifest, dict) or manifest.get("session_disjoint") is not True:
+        raise NativeTokenwiseReceiverProbeError("cohort fitter did not prove session-disjoint holdout")
+    return {
+        "schema": "v14.native-tokenwise-cohort-probe/1",
+        "status": "ALIGNMENT_CANDIDATE_NATIVE_DIAGNOSTIC",
+        "fit_manifest": {
+            key: manifest.get(key)
+            for key in (
+                "session_disjoint", "train_session_count", "holdout_session_count",
+                "train_source_count", "holdout_source_count", "train_pair_count",
+                "holdout_pair_count",
+            )
+        },
+        "adapter_sha256": adapter.get("adapter_sha256"),
+        "probe": probe,
+        "adapter_persisted": False,
+        "pair_records_persisted": False,
+        "production_route": False,
+        "semantic_utility_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
