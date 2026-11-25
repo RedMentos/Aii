@@ -234,3 +234,59 @@ def test_first_use_rejects_symlink_winning_directory_creation_race(tmp_path, mon
     assert mode == "UNAVAILABLE_STORAGE"
     assert (tmp_path / "data").is_symlink()
     assert list(outside.iterdir()) == []
+
+
+def test_first_use_directory_entries_are_fsynced(tmp_path, monkeypatch):
+    """New A3 directory entries are durable before statistics are returned."""
+    import os
+    import v13.vision_projector_stats as stats
+
+    real_fsync = os.fsync
+    synced_inodes = set()
+
+    def recording_fsync(fd):
+        synced_inodes.add(os.fstat(fd).st_ino)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(stats.os, "fsync", recording_fsync)
+    root_inode = tmp_path.stat().st_ino
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+
+    assert mode == SOURCE_STATS_MODE and len(records) == 4
+    data_inode = (tmp_path / "data").stat().st_ino
+    vision_inode = (tmp_path / "data" / "vision").stat().st_ino
+    assert root_inode in synced_inodes
+    assert data_inode in synced_inodes
+    assert vision_inode in synced_inodes
+
+
+def test_hardening_existing_directory_modes_fsyncs_metadata(tmp_path, monkeypatch):
+    """The 0700 privacy correction is durable, not only visible in the live inode."""
+    import os
+    import v13.vision_projector_stats as stats
+
+    data_dir = tmp_path / "data"
+    vision_dir = data_dir / "vision"
+    vision_dir.mkdir(parents=True)
+    data_dir.chmod(0o755)
+    vision_dir.chmod(0o755)
+    data_inode = data_dir.stat().st_ino
+    vision_inode = vision_dir.stat().st_ino
+
+    real_fsync = os.fsync
+    synced_inodes = set()
+
+    def recording_fsync(fd):
+        synced_inodes.add(os.fstat(fd).st_ino)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(stats.os, "fsync", recording_fsync)
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+
+    assert mode == SOURCE_STATS_MODE and len(records) == 4
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert data_inode in synced_inodes
+    assert vision_inode in synced_inodes
