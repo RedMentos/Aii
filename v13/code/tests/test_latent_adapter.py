@@ -70,10 +70,13 @@ def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
         ]
         receiver_rows = z @ target + np.asarray([0.2, -0.1, 0.3])
         receiver_rows += rng.normal(scale=0.001, size=(2, 3))
-        rows.extend(align_token_rows_by_char_span(
+        aligned = align_token_rows_by_char_span(
             [row.tolist() for row in sender_rows], sender_spans, receiver_rows.tolist(), receiver_spans,
             source_id=source_id, source_sha256=source_sha256,
-        ))
+        )
+        for pair in aligned:
+            pair["session_id"] = f"{prefix}-session-{group // 2}"
+        rows.extend(aligned)
     return rows
 
 
@@ -338,7 +341,7 @@ def test_char_span_alignment_feeds_source_disjoint_tokenwise_adapter_fit():
         receiver_tokenizer_revision="tokenizer-r1",
         rank=2, projection_scope="TOKENWISE",
     )
-    assert adapter["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert adapter["schema"] == "v14.cross-organ-latent-adapter/4"
     assert adapter["status"] == "ALIGNMENT_CANDIDATE"
     assert adapter["alignment_method"] == "CHAR_SPAN_OVERLAP_V1"
     assert len(adapter["alignment_sha256"]) == 64
@@ -383,7 +386,7 @@ def test_tokenwise_checkpoint_roundtrip_preserves_alignment_contract(tmp_path):
     saved_hash = save_adapter(adapter, path)
     restored = load_adapter(path)
     assert restored["adapter_sha256"] == saved_hash
-    assert restored["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert restored["schema"] == "v14.cross-organ-latent-adapter/4"
     assert restored["alignment_method"] == "CHAR_SPAN_OVERLAP_V1"
     assert restored["alignment_sha256"] == adapter["alignment_sha256"]
     assert restored["sender_tokenizer_revision"] == "sender-tokenizer-r1"
@@ -436,10 +439,13 @@ def _byte_piece_groups(prefix, groups):
         sender_vectors = [[float(i), float(i + 1)] for i in range(len(sender_pieces))]
         receiver_vectors = [[float(i + 1), float(i + 2), float(i + 3)]
                             for i in range(len(receiver_pieces))]
-        result.extend(align_token_rows_by_byte_pieces(
+        aligned = align_token_rows_by_byte_pieces(
             sender_vectors, sender_pieces, receiver_vectors, receiver_pieces,
             source_id=f"{prefix}-byte-source-{group}", source_text=source_text,
-        ))
+        )
+        for pair in aligned:
+            pair["session_id"] = f"{prefix}-session-{group // 2}"
+        result.extend(aligned)
     return result
 
 
@@ -476,7 +482,7 @@ def test_utf8_byte_piece_alignment_fits_a_tokenwise_adapter_with_distinct_segmen
         rank=2, projection_scope="TOKENWISE",
     )
     assert adapter["alignment_method"] == "UTF8_BYTE_PIECE_OVERLAP_V1"
-    assert adapter["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert adapter["schema"] == "v14.cross-organ-latent-adapter/4"
     assert adapter["semantic_use_proven"] is False
     assert adapter["training_authority"] == adapter["native_receiver_authority"] == 0
 
@@ -596,3 +602,16 @@ def test_build_tokenwise_tap_manifest_rejects_piece_ids_that_do_not_match_native
             "ab", [10, 11], [{"id": 11, "piece": "a"}, {"id": 10, "piece": "b"}],
             [10, 11], [[1.0, 2.0], [2.0, 3.0]],
         )
+
+
+
+def test_tokenwise_fit_rejects_session_leakage_across_source_disjoint_holdout():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=61)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=62)
+    leaked_source = holdout[0]["source_id"]
+    leaked_session = train[0]["session_id"]
+    for pair in holdout:
+        if pair["source_id"] == leaked_source:
+            pair["session_id"] = leaked_session
+    with pytest.raises(LatentAdapterError, match="session leakage"):
+        fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
