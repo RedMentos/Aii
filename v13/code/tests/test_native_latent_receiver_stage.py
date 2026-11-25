@@ -21,6 +21,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    approval = (destination / "v13/native_probe_approval.py").read_text(encoding="utf-8")
     operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
     runtime = (destination / "v13/runtime.py").read_text(encoding="utf-8")
     assert "v13/native_probe_approval.py" in manifest["files_sha256"]
@@ -39,7 +40,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
     assert "semantic_use_proven=False" in cognition
-    assert "import time" in callosum
+    assert "import time" in approval
     assert "if len(args)==5 and args[0]=='native-probe'" in callosum
     assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
