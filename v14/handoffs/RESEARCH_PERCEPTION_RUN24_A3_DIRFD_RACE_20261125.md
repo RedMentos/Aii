@@ -58,3 +58,16 @@ Environment: LOCAL_LINUX, CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 available
 - LOCAL_LINUX CPython 3.13.5 exact-helper harness: new parent-entry fsync PASS; existing-directory permission-metadata fsync PASS; prior 32-file concurrency and symlink-race probes remain PASS.
 - These are isolated helper reproductions, not the full Aii test module. The exact GitHub Actions run for the new head must provide repository-level results.
 - No Android filesystem/fsync behavior has been measured. If the target filesystem rejects directory fsync, the existing caller fails closed to `UNAVAILABLE_STORAGE` rather than claiming durable exact-deletion state.
+
+
+## Exact-head CI readback — 2026-11-25 01:42 UTC
+
+- Current runtime helper SHA-256: `eaecab5afde50eae5bb41de959a04473e40cb55bca2a6bc265cbebc3cc59a9f4`.
+- `vision.py` remains SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d`.
+- Exact source-lineage workflow for test commit `5d1983a11dabdea2147016d98386f3123679793c`: **55 passed on Python 3.13; 55 passed on Python 3.14**; exact `py_compile` passed on both.
+- RAW EYE MediaProjection frame ingress: PASS on Python 3.13 and 3.14.
+- Offline runtime deployment integrity: PASS on Python 3.11 and 3.14.
+- Staged runtime: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Root: Core-owned `source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`; two-checkout migration remains PARTIAL because the staged candidate cannot be composed. This is not a failure of the A3 focused suite.
+- Integrated regression for run 45527625231 was still in progress at this handoff update; read it before closing the next run.
+- Exact hashes and failure were sent to Core PR #2465 in comment 7149883105. Core must include both `vision.py` and `vision_projector_stats.py` in its immutable source closure and rebind the strict pins. No Core-owned file was edited.
+- The branch's latest handoff commit is after the tested code/test commit; the exact test evidence applies to the code/test commit above. PR remains DRAFT / NOT_RELEASED; Redmi remains REDMI_UNVERIFIED.
