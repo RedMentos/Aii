@@ -34,3 +34,16 @@ That allowed a later window to start before the preceding accepted window while 
 ## Integration
 
 Core/QA should retain the source-bound consent lease across the full A5/A4/B1/B2/C4/C3 turn as already required by #1904. This change only hardens the optional source-bound speaker-similarity history used inside the existing audio consumer. It does not resolve the basic-chat/B1/B2 P0, native microphone capture, calibrated diarization, or trained latent coupling.
+
+
+## Research note — CI-JEPA counterfactual intervention selectivity
+
+**Primary source reviewed:** Mintu Dutta, Ritesh Vyas and Mohendra Roy, *CI-JEPA: A Counterfactual Analysis of Latent Representations in Joint-Embedding Predictive Architectures for Self-Supervised Learning*, arXiv:2610.05043v1, submitted 2026-10-04. The full short paper's method, setup, tables, limitations and conclusion were read. The paper states acceptance at IS³A³ 2026; the proceedings/publication record was not independently verified. No official implementation or declared paper/code license was found in the checked source, so no reuse.
+
+**Mechanism:** retain I-JEPA masked-target prediction and add an intervention-conditioned branch. It predicts `ΔZ = Z_CF − Z` from a learned intervention embedding and binary intervention mask, with SmoothL1 counterfactual loss added to the JEPA objective. This models the effect of an edit rather than forcing every edit to be invariant.
+
+**Reported experiment:** Flowers102 (8,189 images; official train/validation/test split). Flower-center occlusion is treated as a candidate semantic intervention; background blur and tint as candidate nuisance interventions. Mean L2 representation changes are 4.42, 3.48 and 2.83 respectively; best validation linear-probe accuracy is 78.14% vs 77.55% for I-JEPA and pretrained ViT-B/16.
+
+**Limits:** intervention effects are not reported for the baseline encoders, so improved selective sensitivity over the baselines is not established. The 0.59-point validation gain has no repeated-run uncertainty and is not a test-set result. Edit strength, edited area and artifacts may explain some ordering. The paper explicitly does not prove complete nuisance invariance or causal feature discovery.
+
+**V14 testable adaptation:** extend the existing A3 source-disjoint counterfactual probe (#2470), not a parallel pipeline: pair controlled semantic-like and nuisance-like edits on the same source frames, match changed area/magnitude, compare the current A3 projector and simple feature baseline, report per-source SIR distributions and zero/shuffle/reversal controls. Keep it diagnostic-only; do not alter A4 gain or train weights until source-disjoint held-out utility, gradients/parameter diffs, retention, restart and rollback are demonstrated. This is a research proposal, not a result from this run.
