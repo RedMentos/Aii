@@ -149,7 +149,8 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               current_chunk_sha256, activity_hint, embeddings):
+               current_chunk_sha256, activity_hint, embeddings,
+               consent_scope_id=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -158,13 +159,20 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or not _SHA256.fullmatch(consent_scope_id)
+        ):
+            raise SpeakerEvidenceError("speaker consent scope fingerprint is invalid")
         batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms, current_chunk_sha256)
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
             "frame_step_ms", "lookback_frames", "lookback_ms",
             "confidence_threshold", "calibration_id",
         )}
-        key = (source_id, generation_id)
+        # The exact current consent receipt is hashed by the RAW EAR consumer;
+        # the opaque fingerprint partitions process-local history without
+        # persisting or returning the receipt or its fingerprint.
+        key = (source_id, generation_id, consent_scope_id)
         with self._lock:
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
@@ -321,6 +329,7 @@ class SpeakerChangeEvidenceRegistry:
                 "model_sha256": batch["model_sha256"],
                 "current_chunk_sha256": batch["current_chunk_sha256"],
                 "source_binding_status": "CURRENT_PCM_CHUNK_SHA256_MATCH",
+                "consent_scope_bound": consent_scope_id is not None,
                 "embedding_dim": batch["embedding_dim"],
                 "frame_step_ms": batch["frame_step_ms"],
                 "lookback_frames": batch["lookback_frames"],
@@ -345,9 +354,13 @@ class SpeakerChangeEvidenceRegistry:
                 "action_authority": False,
             }
 
-    def reset(self, *, source_id=None, generation_id=None):
-        if source_id is None and generation_id is not None:
-            raise ValueError("generation_id requires source_id")
+    def reset(self, *, source_id=None, generation_id=None, consent_scope_id=None):
+        if source_id is None and (generation_id is not None or consent_scope_id is not None):
+            raise ValueError("generation_id/consent_scope_id requires source_id")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or not _SHA256.fullmatch(consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id is invalid")
         if source_id is not None and (
             type(source_id) is not str or not source_id.strip() or len(source_id) > 128
         ):
@@ -361,7 +374,8 @@ class SpeakerChangeEvidenceRegistry:
                 key for key in self._states
                 if source_id is None or (
                     key[0] == source_id and
-                    (generation_id is None or key[1] == generation_id)
+                    (generation_id is None or key[1] == generation_id) and
+                    (consent_scope_id is None or key[2] == consent_scope_id)
                 )
             ]
             for key in keys:
