@@ -146,6 +146,8 @@ def probe_native_tokenwise_candidate(
     runtime, adapter, record, *, timeout_seconds=DEFAULT_TIMEOUT_SECONDS,
     threads=1, residual_gain=0.10, max_relative_residual=0.25,
     approval_module=None, packet_builder=None, receiver_fn=None,
+    target_token_ids=None, task_score_metadata=None, target_environment=None,
+    device_execution_receipt_sha256=None, device_runtime_build_id=None,
 ):
     """Run one local-TTY-approved native receiver diagnostic on an in-memory pair.
 
@@ -156,6 +158,27 @@ def probe_native_tokenwise_candidate(
         raise ValueError("tokenwise native receiver timeout must be 10..120 seconds")
     if type(threads) is not int or not 1 <= threads <= 2:
         raise ValueError("tokenwise native receiver threads must be 1 or 2")
+    target_ids = None
+    target_ids_sha256 = None
+    if target_token_ids is not None:
+        if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
+                or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
+            raise ValueError("target token IDs must be 1..512 non-negative int32 values")
+        target_ids = tuple(target_token_ids)
+        target_ids_sha256 = hashlib.sha256(struct.pack("<" + "i" * len(target_ids), *target_ids)).hexdigest()
+        if (not isinstance(task_score_metadata, dict)
+                or task_score_metadata.get("condition") != "LATENT_CANDIDATE"
+                or type(task_score_metadata.get("task_group_id")) is not str
+                or not task_score_metadata["task_group_id"]
+                or task_score_metadata.get("task_family") not in {"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"}
+                or type(task_score_metadata.get("context_sha256")) is not str
+                or len(task_score_metadata["context_sha256"]) != 64
+                or any(ch not in "0123456789abcdef" for ch in task_score_metadata["context_sha256"])):
+            raise ValueError("LATENT_CANDIDATE task-score metadata is incomplete or malformed")
+        if task_score_metadata.get("session_id") not in (None, getattr(runtime, "session", None)):
+            raise ValueError("task-score session differs from the active Runtime session")
+    elif any(value is not None for value in (task_score_metadata, target_environment, device_execution_receipt_sha256, device_runtime_build_id)):
+        raise ValueError("task-score metadata requires target token IDs")
     if not isinstance(record, dict) or record.get("schema") != "v14.native-tokenwise-pairing/1":
         raise NativeTokenwiseReceiverProbeError("a native tokenwise pair record is required")
     if (record.get("status") != "PAIRED_DIAGNOSTIC" or record.get("persisted") is not False
@@ -250,7 +273,7 @@ def probe_native_tokenwise_candidate(
         deadline = time.monotonic() + timeout_seconds
         if deadline <= time.monotonic():
             raise TimeoutError("tokenwise native receiver deadline expired before model load")
-        native_result = _run_interruptibly(runtime, receiver_fn, {
+        receiver_kwargs = {
             "home": runtime.home,
             "model_path": receiver_path,
             "expected_model_sha256": receiver_binding["sha256"],
@@ -269,7 +292,15 @@ def probe_native_tokenwise_candidate(
             "deadline": deadline,
             "threads": threads,
             "cancel_event": runtime.cancel_event,
-        })
+        }
+        if target_ids is not None:
+            receiver_kwargs.update({
+                "target_token_ids": target_ids,
+                "target_environment": target_environment,
+                "device_execution_receipt_sha256": device_execution_receipt_sha256,
+                "device_runtime_build_id": device_runtime_build_id,
+            })
+        native_result = _run_interruptibly(runtime, receiver_fn, receiver_kwargs)
         if (event, source_ref) != approval_module._current_event(runtime):
             raise NativeTokenwiseReceiverProbeError("source/event changed during native receiver probe")
         if runtime.store.read_source(source_ref) != source_text:
@@ -304,6 +335,43 @@ def probe_native_tokenwise_candidate(
                 or native_result.get("input_dim") != packet["input_dim"]
                 or type(native_result.get("native_input_consumed")) is not bool):
             raise NativeTokenwiseReceiverProbeError("native receiver result lost its input/model binding")
+
+        task_score_receipt = None
+        task_score_cohort = None
+        if target_ids is not None:
+            native_score = native_result.get("target_score")
+            if (not isinstance(native_score, dict)
+                    or native_score.get("schema") != "v14.native-receiver-target-score/1"
+                    or native_score.get("target_token_ids_sha256") != target_ids_sha256
+                    or native_score.get("target_token_count") != len(target_ids)
+                    or native_score.get("input_sha256") != packet["input_sha256"]
+                    or native_score.get("receiver_model_sha256") != receiver_binding["sha256"]
+                    or native_score.get("native_input_consumed") is not True
+                    or native_score.get("decode_status") != 0):
+                raise NativeTokenwiseReceiverProbeError("native target score is not bound to the exact input/target/model")
+            from .native_receiver_task_score import build_and_record_task_score_receipt
+            source_for_score = {"source_id": source_binding["source_id"], "sha256": source_binding["sha256"]}
+            task_score_receipt, task_score_cohort = build_and_record_task_score_receipt(
+                runtime,
+                condition="LATENT_CANDIDATE",
+                task_group_id=task_score_metadata["task_group_id"],
+                task_family=task_score_metadata["task_family"],
+                session_id=runtime.session,
+                source_ref=source_for_score,
+                message_source_ref=source_for_score,
+                receiver={
+                    "role": receiver_role,
+                    "model_revision": receiver_binding["revision"],
+                    "model_sha256": receiver_binding["sha256"],
+                    "tokenizer_revision": packet["tokenizer_revision"],
+                },
+                target_token_ids_sha256=target_ids_sha256,
+                target_token_count=len(target_ids),
+                context_sha256=task_score_metadata["context_sha256"],
+                input_sha256=packet["input_sha256"],
+                native_receipt=native_score,
+                adapter_sha256=adapter["adapter_sha256"],
+            )
 
         audit = {
             "operation": "TOKENWISE_NATIVE_RECEIVER_PROBE",
@@ -341,6 +409,11 @@ def probe_native_tokenwise_candidate(
             "shuffle_control_cosine": native_result.get("shuffle_control_cosine"),
             "row_shuffle_control_cosine": native_result.get("row_shuffle_control_cosine"),
             "repeat_cosine": native_result.get("repeat_cosine"),
+            "target_score_present": task_score_receipt is not None,
+            "target_token_ids_sha256": target_ids_sha256,
+            "target_token_count": len(target_ids) if target_ids is not None else 0,
+            "task_score_receipt_sha256": task_score_receipt.get("receipt_sha256") if task_score_receipt else None,
+            "task_score_collection_status": task_score_cohort.get("status") if isinstance(task_score_cohort, dict) else None,
             "duration_s": round(time.monotonic() - started, 3),
             "production_route": False,
             "semantic_use_proven": False,
@@ -379,6 +452,15 @@ def probe_native_tokenwise_candidate(
             "shuffle_control_cosine": native_result.get("shuffle_control_cosine"),
             "row_shuffle_control_cosine": native_result.get("row_shuffle_control_cosine"),
             "repeat_cosine": native_result.get("repeat_cosine"),
+            "task_score": ({
+                "receipt_sha256": task_score_receipt["receipt_sha256"],
+                "task_group_id": task_score_receipt["task_group_id"],
+                "condition": task_score_receipt["condition"],
+                "mean_target_logprob": task_score_receipt["mean_target_logprob"],
+                "collection_status": task_score_cohort.get("status"),
+                "receipt_count": task_score_cohort.get("receipt_count", 0),
+                "persisted": False,
+            } if task_score_receipt else None),
             "production_route": False,
             "semantic_use_proven": False,
             "semantic_utility_proven": False,
