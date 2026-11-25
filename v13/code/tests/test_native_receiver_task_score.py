@@ -63,6 +63,7 @@ def call(home, model, binary, **overrides):
         receiver_role="C3_LANGUAGE", receiver_model_revision="receiver-r1",
         tokenizer_revision="llama-server:b10964;gguf:" + MODEL_SHA,
         vectors=[[0.1, 0.2], [0.3, 0.4]],
+        expected_input_sha256=hashlib.sha256(struct.pack("<ffff", 0.1, 0.2, 0.3, 0.4)).hexdigest(),
         position_ids=[0, 1], position_mode="ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
         target_token_ids=[5, 6], deadline=time.monotonic() + 10,
         environment="SYNTHETIC", condition="LATENT_CANDIDATE", task_group_id="task-1",
@@ -138,6 +139,12 @@ def test_rejects_tokenizer_revision_not_bound_to_gguf(tmp_path):
     home, model, binary = setup(tmp_path)
     with pytest.raises(NativeReceiverTaskScoreError, match="tokenizer revision"):
         call(home, model, binary, tokenizer_revision="llama-server:b10964;gguf:" + "e" * 64)
+
+
+def test_rejects_candidate_input_hash_mismatch(tmp_path):
+    home, model, binary = setup(tmp_path)
+    with pytest.raises(NativeReceiverTaskScoreError, match="differ from the bound candidate"):
+        call(home, model, binary, expected_input_sha256="e" * 64)
 
 
 def test_rejects_noncontiguous_positions(tmp_path):
