@@ -1984,3 +1984,30 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - New read-only owner-relay requests for HEALTH / PIPELINE_STATUS / DIAGNOSTICS have not returned a device_status receipt yet: NO_LIVE_RECEIPT. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell, or device action.
 - **Deployment:** updater is available and reports the current base release up to date, but #2484 is still an unmerged draft and its staged/integrated CI fails on the Core source-lifecycle pin. No update request is appropriate. PR-specific Redmi behavior remains REDMI_UNVERIFIED.
 - **User action:** none. Do not start the stopped model or change settings solely for this A3 storage PR.
+
+
+## Research & Perception — run 24 verified next action (2026-11-25)
+
+**Current PR:** [#2484](https://github.com/RedMentos/Aii/pull/2484), branch head `cf7abbef5936124f5d97b61056a90ad0fa486e61` (handoff-only latest commit); tested code/test commit `5d1983a11dabdea2147016d98386f3123679793c`. **OPEN / DRAFT / NOT_RELEASED**.
+
+### What works on the tested code/test commit
+
+- A3 source-stat first-use directory creation is descriptor-relative and no-follow, checks owner/type, uses 0700 directories and 0600 files, fsyncs parent directory entries after create/concurrent-create races, and fsyncs directory metadata after hardening an existing directory to 0700.
+- Consumer path: `vision.train()` / `train_tiles()` → `build_source_statistics()` → source-scoped ridge-stat storage; source-forget rebuilds only the exact A3 ridge head.
+- Exact focused source-lineage/forget CI: **55/55 PASS on CPython 3.13 and 55/55 PASS on 3.14**, with exact `py_compile` PASS on both. RAW EYE MediaProjection ingress PASS on 3.13/3.14. Offline runtime deployment integrity PASS on 3.11/3.14.
+- LOCAL_LINUX CPython 3.13.5 helper-level checks: 32/32 concurrent artifact creation PASS; symlink-wins race FAIL_CLOSED PASS; new parent-entry fsync PASS; 0755→0700 permission-metadata fsync PASS. Full local Aii pytest NOT_RUN because no checkout is mounted.
+
+### Remaining blockers and actual device state
+
+- Staged runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression FAIL: 1 test. Both stop at the Core-owned strict source-lifecycle composer with `unsupported lifecycle source: vision.py`; migration reports PARTIAL because staging does not complete.
+- Exact source hashes to pin/materialize in Core's immutable closure: `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d`; `vision_projector_stats.py` SHA-256 `eaecab5afde50eae5bb41de959a04473e40cb55bca2a6bc265cbebc3cc59a9f4`. Core/Integrator has these in #2465 comments 7149883105 and 7149910139; no hash gate was weakened.
+- Redmi: **REDMI_UNVERIFIED**. Latest available consented snapshot is private V13OBS #115 (2026-11-24 09:28 UTC); later read-only relay requests have NO_LIVE_RECEIPT. The last snapshot records the AI runtime/model process STOPPED_BY_USER, B1/B2 zero valid offers and TIME_BUDGET failures. No new device turn or hardware measurement.
+- Updater: the latest recorded base release `8d93236c753f0194224c19edc7411d8d7082b1d6` was reported UP_TO_DATE with auto-update enabled, but this does not include or deploy PR #2484. No UPDATE_REQUEST is appropriate while staged/integrated CI fails.
+
+### Research and next internal step
+
+- R-149 full paper review: He et al., *Efficient Conversational Multi-Talker ASR with Predicted Speaker-Agnostic Activity Streams*, arXiv:2611.26796v1 (2026-11-19), CC BY 4.0 preprint. Two-stream HEAT may cap future ASR passes, but its ≤2-concurrent-speaker assumption and WavLM-Large/Whisper-large-v3-turbo backbones are not a Redmi candidate. No code/weights imported.
+- Next owner: Core/Integrator must add both exact Perception files to the immutable source lifecycle manifest and rebind strict composer/wrapper/stage/deployer pins bottom-up; then rerun staged/integrated/consumer/migration. Perception must not edit Core-owned composer files. After that, continue the independent RAW EAR signed-provider/consumer work; keep microphone capture OFF until QA companion verifier, revocation and zeroization integration is verified.
+- **User action: none.** No manual Termux command, model download/swap, runtime restart or permission change is needed for this blocked PR.
+- Detailed evidence: `v14/handoffs/RESEARCH_PERCEPTION_RUN24_A3_DIRFD_RACE_20261125.md`; whole-Canon issue: [#1984](https://github.com/RedMentos/Aii/issues/1984).
+
