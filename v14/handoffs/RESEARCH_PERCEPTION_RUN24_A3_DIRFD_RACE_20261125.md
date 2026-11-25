@@ -47,3 +47,14 @@ Environment: LOCAL_LINUX, CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 available
 2. Coordinate with Core owner on #2465's exact source-lifecycle materialization closure and source pins; Perception must not edit Core-owned composer files.
 3. Once composed, re-run A3 source-forget + staged/integrated + consumer/migration checks on one exact SHA.
 4. Continue a separate high-value Canon path after this integration blocker, preferably the signed Android RAW EAR provider/consumer boundary; keep microphone capture OFF until QA's companion verifier, revocation and zeroization chain is integrated.
+
+
+## Follow-up checkpoint — crash-durable directory metadata (2026-11-25)
+
+- Runtime commit: `7f15b9e674f25beca02ffb646ab0e399aaeec9ad`.
+- Test commit: `5d1983a11dabdea2147016d98386f3123679793c`.
+- `_open_or_create_dir()` now fsyncs the parent directory after a new child is created or a concurrent creator wins the mkdir race, and fsyncs the opened directory after changing legacy permissions to 0700. This closes the gap where the directory entry or privacy mode was visible in memory but not yet made durable before A3 returned its source-stat records. Existing 0600 artifact writes and atomic rename/fsync remain unchanged.
+- Added tests that observe the actual directory inodes passed to fsync for fresh creation and for 0755→0700 hardening.
+- LOCAL_LINUX CPython 3.13.5 exact-helper harness: new parent-entry fsync PASS; existing-directory permission-metadata fsync PASS; prior 32-file concurrency and symlink-race probes remain PASS.
+- These are isolated helper reproductions, not the full Aii test module. The exact GitHub Actions run for the new head must provide repository-level results.
+- No Android filesystem/fsync behavior has been measured. If the target filesystem rejects directory fsync, the existing caller fails closed to `UNAVAILABLE_STORAGE` rather than claiming durable exact-deletion state.
