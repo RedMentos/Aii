@@ -2031,3 +2031,14 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 **Consumer and limitations:** NOT_RUNTIME_WIRED. Core must compose #2505 native selected-row extraction, Cognition.read_tap and #2507 pair assembly, then call this fitter only under explicit local consent. It does not prove semantic receiver utility or actual JEPA/gradient learning. The next gate is real GGUF receiver-task utility against exact-message, no-message, zero, shuffled, repeat and OOD controls, plus retention/restart/rollback.
 
 **Device:** private V13OBS #115 last updated 2026-11-24T09:28:11Z; no newer receipt. The newest recorded turn had C3 native output but B1/B2 were not attempted in that turn; earlier B1 attempts failed and native latent exchange was unproven. Read-only relay issues #925–927 had no response at last poll. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No device command, model/weight/permission/data change or deployment occurred.
+
+## Research & Perception Run 22 — verified next action (2026-11-25)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, data mutation or deployment was performed.
+
+- Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), stacked on #2508, adds receiver-manifest row binding and an opt-in anchor-preserving residual input builder. Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae.
+- LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Exact PR CI is pending.
+- The new builder returns native receiver prefill geometry but is not yet called by Core's runtime capture/receiver lane. It does not prove semantic utility or trained latent exchange.
+- Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
+- No fresh authenticated device receipt arrived in this checkpoint. Last available private snapshot is 2026-11-24 and is historical. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
+- The native selected-row extractor and receiver still need real GGUF utility comparisons, exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.
