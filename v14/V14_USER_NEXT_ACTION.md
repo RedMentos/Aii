@@ -1801,3 +1801,13 @@ CI follow-up (2026-11-25): workflow run 45559754665 later completed with both st
 
 
 Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-only on this branch. It now points to #2487 as the latest functional Perception candidate (focused 143/143 PASS; staged/integrated FAIL due the Core-owned stale recovery source pin; migration PARTIAL) and records #2489 as supporting read-only latent-audit evidence. V14-006 remains IN_PROGRESS_PARTIAL; the next step is Core pin rebinding and the signed RAW EAR/QA provider integration, not a claim of Android microphone proof.
+
+
+
+## Research & Perception — latent adapter bridge follow-up, 2026-11-25
+
+**Code:** PR #2489, branch `research-perception/latent-alignment-audit-20261125-run11`; latest code checkpoint `fdaee28e256b82e56059e475972ec62acd2b9d84` (adapter bridge), with subsequent exact-head CI still pending at this note. The PR now adds `latent_adapter.py` and a Store-backed `fit_from_tap_records()` path alongside the read-only alignment audit. It pairs exact source/event/generation receipts, uses one observation per source ID, requires at least 20 source groups, performs a deterministic source-disjoint split, fits a low-rank PCA+ridge adapter, and supports atomic hash-checked checkpoint save/load. Projection is standard-library; NumPy is lazy and offline-only.
+
+**Evidence boundary:** this is code and synthetic validation only. No real paired tap cohort exists in the current receipts, so no real adapter has been trained. No gradient-based learning, old-task retention, native receiver execution, task-level semantic utility, B1/B2/C3 body-weight change, or production B3 route is claimed. Model SHA values are caller-supplied and not verified against an installed manifest by this tool; model-weight licences remain unverified. Core's local-TTY/one-shot native-probe approval is not bypassed or invoked. The full Aii checkout is not mounted and container GitHub DNS fails, so exact repository pytest cannot run locally; only an isolated NumPy algorithm reproduction has been executed. Exact-head GitHub CI is pending.
+
+**User impact:** no production Runtime behaviour changes yet. The next useful step is to obtain >=20 real, source-disjoint B1/B2 tap pairs after Core's opt-in tap writer is integrated and the local Runtime is explicitly running. Then run audit + adapter fit, and only after held-out controls pass ask Core to wire projected rows through the existing local-TTY-approved native receiver. No model download/swap, permission change, updater request or device action is required. **User action: NONE.**
