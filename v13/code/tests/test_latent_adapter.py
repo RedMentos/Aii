@@ -19,8 +19,8 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
     rng = np.random.default_rng(seed)
     basis = np.asarray([[1.0, 0.0], [0.0, 1.0], [0.5, 0.3], [-0.2, 0.4], [0.1, -0.3], [0.2, 0.1]])
     target = np.asarray([[1.2, -0.4, 0.7, 0.2], [0.3, 0.8, -0.6, 1.0]])
-    rows = []
     spans = [[sample * 2, sample * 2 + 2] for sample in range(4)]
+    source_groups = []
     for group in range(groups):
         source_id = f"{prefix}-source-{group}"
         source_sha256 = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
@@ -32,13 +32,24 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
             y = z @ target + np.asarray([0.2, -0.1, 0.3, 0.05]) + rng.normal(scale=0.001, size=4)
             sender_rows.append(x.tolist())
             receiver_rows.append(y.tolist())
-        if shuffled:
-            rng.shuffle(receiver_rows)
-        rows.extend(align_token_rows_by_char_span(
+        source_groups.append((source_id, source_sha256, sender_rows, receiver_rows))
+    if shuffled:
+        receiver_rows = [row for _source_id, _source_hash, _senders, rows in source_groups for row in rows]
+        rng.shuffle(receiver_rows)
+        cursor = 0
+        rebuilt = []
+        for source_id, source_sha256, sender_rows, rows in source_groups:
+            count = len(rows)
+            rebuilt.append((source_id, source_sha256, sender_rows, receiver_rows[cursor:cursor + count]))
+            cursor += count
+        source_groups = rebuilt
+    result = []
+    for source_id, source_sha256, sender_rows, receiver_rows in source_groups:
+        result.extend(align_token_rows_by_char_span(
             sender_rows, spans, receiver_rows, spans,
             source_id=source_id, source_sha256=source_sha256,
         ))
-    return rows
+    return result
 
 def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
     rng = np.random.default_rng(seed)
