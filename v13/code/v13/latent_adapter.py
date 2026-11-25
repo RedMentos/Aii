@@ -221,6 +221,11 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         and holdout_mse + 1e-12 < baseline_mse
         and holdout_mse + 1e-12 < shuffled_mse
     )
+    linear_map = sender_factor @ receiver_factor
+    affine_bias = y_mean - x_mean @ linear_map
+    linear_map_frobenius = float(np.linalg.norm(linear_map))
+    affine_bias_l2 = float(np.linalg.norm(affine_bias))
+    parameter_count = int(sender_dim + receiver_dim + sender_dim * effective_rank + effective_rank * receiver_dim)
     adapter = {
         "schema": SCHEMA,
         "status": "ALIGNMENT_CANDIDATE" if candidate else "REJECTED",
@@ -246,6 +251,12 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
             "relative_improvement": relative_improvement,
             "shuffle_advantage": shuffle_advantage,
             "min_relative_improvement": float(min_relative_improvement),
+            "linear_map_frobenius": linear_map_frobenius,
+            "affine_bias_l2": affine_bias_l2,
+            "parameter_count": parameter_count,
+            "gradient_norm": None,
+            "gradient_based_training": False,
+            "old_task_retention_measured": False,
         },
         "train_pairs": len(train_pairs),
         "holdout_pairs": len(holdout_pairs),
