@@ -11,12 +11,23 @@ final class ClaimedActionRecovery {
         JSONObject sign(JSONObject body) throws Exception;
     }
 
+    interface Finalizer {
+        boolean finish(CompanionDb db, String actionId, String expectedStatus,
+                       String status, String receiptJson) throws Exception;
+    }
+
     private static final String EXECUTING = "EXECUTING";
     private static final String DENYING = "DENYING";
 
     private ClaimedActionRecovery() {}
 
     static int recoverAll(CompanionDb db, Signer signer, long nowMillis) {
+        return recoverAll(db, signer, nowMillis,
+                (database, actionId, expected, status, receipt) ->
+                        database.finishClaimed(actionId, expected, status, receipt));
+    }
+
+    static int recoverAll(CompanionDb db, Signer signer, long nowMillis, Finalizer finalizer) {
         List<CompanionDb.Action> pending;
         try {
             pending = db.claimedWithoutReceipt();
@@ -25,13 +36,21 @@ final class ClaimedActionRecovery {
         }
         int recovered = 0;
         for (CompanionDb.Action action : pending) {
-            if (recoverAction(db, signer, action.actionId, nowMillis)) recovered++;
+            if (recoverAction(db, signer, action.actionId, nowMillis, finalizer)) recovered++;
         }
         return recovered;
     }
 
     static boolean recoverAction(CompanionDb db, Signer signer, String actionId, long nowMillis) {
-        if (db == null || signer == null || actionId == null || actionId.isEmpty() || nowMillis <= 0) return false;
+        return recoverAction(db, signer, actionId, nowMillis,
+                (database, id, expected, status, receipt) ->
+                        database.finishClaimed(id, expected, status, receipt));
+    }
+
+    static boolean recoverAction(CompanionDb db, Signer signer, String actionId,
+                                  long nowMillis, Finalizer finalizer) {
+        if (db == null || signer == null || finalizer == null
+                || actionId == null || actionId.isEmpty() || nowMillis <= 0) return false;
         try {
             CompanionDb.Action action = db.get(actionId);
             if (action == null || action.receiptJson != null
@@ -78,10 +97,14 @@ final class ClaimedActionRecovery {
             body.put("key_id", keyId);
 
             JSONObject receipt = signer.sign(body);
-            if (receipt == null || !receipt.has("body") || !receipt.has("key_id") || !receipt.has("signature")) {
+            if (receipt == null || !receipt.has("body") || !receipt.has("key_id") || !receipt.has("signature")
+                    || !body.toString().equals(receipt.getJSONObject("body").toString())
+                    || !keyId.equals(receipt.optString("key_id"))
+                    || receipt.optString("signature").isEmpty()) {
                 return false;
             }
-            return db.finishClaimed(
+            return finalizer.finish(
+                    db,
                     action.actionId,
                     action.status,
                     executionUnknown ? "EXECUTION_OUTCOME_UNKNOWN" : "USER_DENIED",
