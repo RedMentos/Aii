@@ -1400,7 +1400,7 @@ These are CI/Linux results, not local checkout, native GGUF, Android or Redmi pr
 
 The receipt is copied into the manifest digest. It rejects ID/order drift, invalid vocabulary bounds, partial/wrong element counts, dimension mismatch, wrong model bytes/revision, malformed binary/revision digests, non-F32 output and malformed tensor types. It deliberately calls the IDs “requested” rather than “returned”: upstream API returns an element count, not token IDs. The C++ wrapper must prevalidate *all* token IDs before calling it and must emit a receipt only if the API returns exactly `n_tokens × n_embd`; the upstream implementation can otherwise write earlier rows before encountering a later invalid token and returning zero. Python validates receipt consistency; the caller still has to independently hash the actual model and extractor binary. Manifest SHA is integrity, not a signature.
 
-**Verification.** Isolated LOCAL_LINUX reproduction, CPython 3.13.5: `py_compile` PASS; 19 focused positive/negative tests PASS. This used an isolated package with the exact new module logic and minimal dependency stubs; it is **not** the full Aii checkout or full repository suite. Exact Aii checkout remains unavailable in this environment. Exact-head GitHub CI is pending on the child PR. No llama.cpp native build, real GGUF row read, Android arm64 binary, Termux or Redmi execution is claimed. No model, weights, permissions, updater or device data were changed. B3 remains OFF; REDMI_UNVERIFIED / NOT_RELEASED.
+**Verification.** Isolated LOCAL_LINUX reproduction, CPython 3.13.5: `py_compile` PASS; 19 focused positive/negative tests PASS. This used an isolated package with the exact new module logic and minimal dependency stubs; it is **not** the full Aii checkout or full repository suite. Exact Aii checkout remains unavailable in this environment. Exact GitHub Actions run 45658242985 on code/test commit 787758a885294d63c614c4171c4a528ecc303dc8 passed 66 tests on both Python 3.13 and 3.14; public privacy scan CLEAN. No llama.cpp native build, real GGUF row read, Android arm64 binary, Termux or Redmi execution is claimed. No model, weights, permissions, updater or device data were changed. B3 remains OFF; REDMI_UNVERIFIED / NOT_RELEASED.
 
 **Next integration.** Core must consume this receipt from its native selected-row wrapper, independently verify the model/extractor hashes and pin the API-bearing llama.cpp revision. Keep the sender final-RMSNorm tap distinct from the receiver input-embedding table. The event-pooled `LATENT_PREFIX_V1` route remains a separate experiment; neither contract proves learned semantic utility or production latent communication.
 
@@ -1409,7 +1409,7 @@ The receipt is copied into the manifest digest. It rejects ID/order drift, inval
 
 ### R-149 exact-head CI readback — 2026-11-25
 
-The branch push workflow `V14 latent token-span alignment`, run `45658242985`, completed successfully on code/workflow commit `11b8e983523e2962752bd5129c377e597b886e39`:
+The branch push workflow `V14 latent token-span alignment`, run `45658242985`, completed successfully on code/test commit `787758a885294d63c614c4171c4a528ecc303dc8`:
 - Python 3.13: compile PASS; focused suite 66 passed; public privacy scan CLEAN.
-- Python 3.14: compile PASS; focused suite 65 passed; public privacy scan CLEAN.
+- Python 3.14: compile PASS; focused suite 66 passed; public privacy scan CLEAN.
 This is GitHub-hosted CI/Linux evidence, not local full-repository execution. The subsequent handoff/ledger-only commits do not change the tested module/test bytes. No native llama.cpp build, real GGUF row extraction, Android cross-compile, Termux or Redmi proof.
