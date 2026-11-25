@@ -2302,3 +2302,13 @@ The current selected-row extractor and native receiver are separate executables 
 | Canon family | Evidence | Interpretation | Next acceptance |
 |---|---|---|---|
 | JEPA / continual learning / replay | Staged/integrated CI 45678205707: synthetic WorldJEPA A→B→A, 12 source-disjoint arms; parameter deltas 2.447–3.583; exact rollback all arms; B actual-action holdout worse than zero and shuffled controls in 12/12. Uniform replay reduced mean B forgetting delta but did not restore B action utility. | Numeric learning and checkpoint persistence exist in this synthetic 4D harness, but cross-task interference remains. Not native B1/B2/C3 weights, not real user data, not Android. | JEPA & Memory: selective plasticity, per-organ/task adapters, eligibility × error × modulator, balanced/importance replay, and simultaneous new-task gain + old-task retention gates. Require actual-action holdout to beat zero and shuffled controls across seeds. No blanket freeze. |
+
+
+## Research & Perception Run 21 — B3 tokenwise fitting evidence overlay (2026-11-25)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — tokenwise adapter fit | Source-bound sender final-RMSNorm rows and receiver selected input-embedding rows can now be assembled into in-memory PAIRED_DIAGNOSTIC records and passed to a session-disjoint low-rank PCA+ridge fitter. TOKENWISE schema v4 binds session IDs into the alignment digest. | Draft PR #2508, head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99; LOCAL_LINUX CPython 3.13.5 isolated stub-bound wrapper harness 3/3 PASS. Exact repository compile/pytest NOT_RUN; no exact PR Actions run visible. | Core Cognition.tap wiring, real GGUF row extraction, explicit-consent native pair cohort, receiver-task utility vs exact/no-message/zero/shuffle/repeat/OOD, retention/restart/rollback, Redmi measurement. | CODE_PRESENT / ISOLATED_STUB_HARNESS / NOT_RUNTIME_WIRED / NATIVE_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+
+This is not a production latent path, not a semantic-use result and not a release. Event-pooled LATENT_PREFIX_V1 remains separate.
+

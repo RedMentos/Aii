@@ -7,6 +7,7 @@ on:
       - research-perception/v14-native-input-tap-receipt-20261125-run18
       - research-perception/v14-native-input-bridge-20261125-run19
       - research-perception/v14-native-tokenwise-pairing-20261125-run20
+      - research-perception/v14-native-tokenwise-session-fit-20261125-run21
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111

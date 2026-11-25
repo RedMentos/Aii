@@ -1,7 +1,11 @@
 import hashlib
 import pytest
 
-from v13.native_tokenwise_pairing import build_native_tokenwise_pair_record
+from v13.native_tokenwise_pairing import (
+    build_native_tokenwise_pair_record,
+    fit_adapter_from_native_pair_records,
+)
+from v13.latent_adapter import align_token_rows_by_byte_pieces
 from v13.latent_adapter import LatentAdapterError
 
 LLAMA_REV = "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40"
@@ -207,3 +211,132 @@ def test_tokenwise_path_rejects_same_role_and_malformed_runtime_ids():
     args["session_id"] = "session id with spaces"
     with pytest.raises(LatentAdapterError, match="opaque identifier"):
         build_native_tokenwise_pair_record(**args)
+
+
+
+def native_record(index, session_id):
+    args = fixture()
+    source_text = f"alpha{index} beta"
+    source_ref = {
+        "source_id": f"source-{index}",
+        "sha256": hashlib.sha256(source_text.encode("utf-8")).hexdigest(),
+        "char_start": 0,
+        "char_end": len(source_text),
+    }
+    sender_pieces = [
+        token(11, f"alpha{index}"),
+        token(12, " "),
+        token(13, "beta"),
+    ]
+    receiver_pieces = [
+        token(21, "al"),
+        token(22, f"pha{index} "),
+        token(23, "be"),
+        token(24, "ta"),
+    ]
+    sender_rows = [
+        [float(index + 1), float(index + 2)],
+        [float(index + 2), float(index + 1)],
+        [float(index + 3), float(index + 1)],
+    ]
+    aligned = align_token_rows_by_byte_pieces(
+        sender_rows, sender_pieces, [[1.0, 0.0, 1.0]] * 4, receiver_pieces,
+        source_id=source_ref["source_id"], source_text=source_text,
+    )
+    receiver_rows = [
+        [pair["sender_vector"][0], pair["sender_vector"][1],
+         pair["sender_vector"][0] + pair["sender_vector"][1]]
+        for pair in aligned
+    ]
+    sender_prefill_ids = [1, 11, 12, 13, 2]
+    sender_prefill_rows = [[0.0, 0.0], *sender_rows, [0.0, 0.0]]
+    args.update({
+        "source_text": source_text,
+        "source_ref": source_ref,
+        "sender_content_token_ids": [11, 12, 13],
+        "sender_content_token_pieces": sender_pieces,
+        "sender_tap_packet": dict(
+            args["sender_tap_packet"],
+            event_id=f"event-{index}",
+            source_ref=source_ref,
+            token_ids=sender_prefill_ids,
+            shape=[5, 2],
+            feature_sha256=hashlib.sha256(f"feature-{index}".encode()).hexdigest(),
+        ),
+        "sender_tap_data": {"token_ids": sender_prefill_ids, "vectors": sender_prefill_rows},
+        "receiver_content_token_ids": [21, 22, 23, 24],
+        "receiver_content_token_pieces": receiver_pieces,
+        "receiver_extractor_output": {
+            **args["receiver_extractor_output"],
+            "rows": receiver_rows,
+            "receipt": {
+                **args["receiver_extractor_output"]["receipt"],
+                "requested_token_ids": [21, 22, 23, 24],
+                "embedding_dim": 3,
+                "elements_written": 12,
+            },
+        },
+        "source_id": source_ref["source_id"],
+        "session_id": session_id,
+        "event_id": f"event-{index}",
+    })
+    return build_native_tokenwise_pair_record(**args)
+
+
+def test_native_pair_records_fit_session_disjoint_tokenwise_candidate():
+    records = [
+        native_record(i, f"train-session-{i // 2}") for i in range(8)
+    ] + [
+        native_record(i, f"hold-session-{(i - 8) // 2}") for i in range(8, 12)
+    ]
+    result = fit_adapter_from_native_pair_records(
+        records,
+        train_session_ids=[
+            "train-session-0", "train-session-1",
+            "train-session-2", "train-session-3",
+        ],
+        holdout_session_ids=["hold-session-0", "hold-session-1"],
+        rank=2,
+        ridge=1e-5,
+        min_relative_improvement=0.0,
+    )
+    assert result["adapter"]["schema"] == "v14.cross-organ-latent-adapter/4"
+    assert result["adapter"]["status"] == "ALIGNMENT_CANDIDATE"
+    assert result["adapter"]["holdout_policy"] == "SOURCE_AND_SESSION_DISJOINT"
+    assert result["adapter"]["metrics"]["session_disjoint"] is True
+    assert result["adapter"]["metrics"]["train_session_count"] == 4
+    assert result["adapter"]["metrics"]["holdout_session_count"] == 2
+    assert result["fit_manifest"]["session_disjoint"] is True
+    assert result["fit_manifest"]["train_source_count"] == 8
+    assert result["fit_manifest"]["holdout_source_count"] == 4
+    assert result["fit_manifest"]["train_pair_count"] == 32
+    assert result["fit_manifest"]["holdout_pair_count"] == 16
+    assert result["adapter"]["production_route"] is False
+    assert result["adapter"]["training_authority"] == 0
+
+
+def test_native_pair_record_fit_rejects_session_overlap_and_tampering():
+    records = [
+        native_record(i, f"train-session-{i // 2}") for i in range(8)
+    ] + [
+        native_record(i, f"hold-session-{(i - 8) // 2}") for i in range(8, 12)
+    ]
+    with pytest.raises(LatentAdapterError, match="session leakage"):
+        fit_adapter_from_native_pair_records(
+            records,
+            train_session_ids=["train-session-0", "train-session-1"],
+            holdout_session_ids=["train-session-1", "hold-session-0"],
+            rank=2,
+        )
+    tampered = [dict(record) for record in records]
+    tampered[0] = dict(tampered[0], session_id="forged-session")
+    with pytest.raises(LatentAdapterError, match="session"):
+        fit_adapter_from_native_pair_records(
+            tampered,
+            train_session_ids=[
+                "train-session-0", "train-session-1",
+                "train-session-2", "train-session-3",
+            ],
+            holdout_session_ids=["hold-session-0", "hold-session-1"],
+            rank=2,
+        )

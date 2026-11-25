@@ -16,6 +16,7 @@ from .latent_adapter import (
     LatentAdapterError,
     align_token_rows_by_byte_pieces,
     build_tokenwise_tap_manifest,
+    fit_adapter,
 )
 from .native_input_embedding_tap import (
     build_native_input_embedding_tap_manifest_from_extractor_output,
@@ -29,6 +30,12 @@ _RECEIVER_TAPS = {
     "C3_LANGUAGE": "c3.input-embedding.v1",
 }
 _ID_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-")
+_RECORD_MATERIAL_FIELDS = (
+    "schema", "status", "source_ref", "session_id", "event_id", "brain_generation_id",
+    "sender", "receiver", "alignment_method", "pair_ids", "alignment_coverage",
+    "production_route", "semantic_use_proven", "training_authority",
+    "native_receiver_authority", "persisted",
+)
 
 
 def _required_id(value, name: str) -> str:
@@ -206,6 +213,8 @@ def build_native_tokenwise_pair_record(
     if any(type(value) not in (int, float) or not math.isfinite(float(value))
             or not 0.80 <= float(value) <= 1.0 for value in coverages):
         raise LatentAdapterError("native token pair coverage is outside the accepted byte-overlap range")
+    for pair in pairs:
+        pair["session_id"] = session_id
 
     sender_meta = {
         "role": sender_role,
@@ -264,3 +273,170 @@ def build_native_tokenwise_pair_record(
         "mean_coverage": sum(float(value) for value in coverages) / len(coverages),
         "record_sha256": _record_digest(material),
     }
+
+
+
+def _validate_native_pair_record(record: Mapping) -> dict:
+    """Verify the exact in-memory pair-record envelope before fitting."""
+    expected_fields = set(_RECORD_MATERIAL_FIELDS) | {
+        "pairs", "pair_count", "minimum_coverage", "mean_coverage", "record_sha256",
+    }
+    if not isinstance(record, Mapping) or set(record) != expected_fields:
+        raise LatentAdapterError("native tokenwise pair record has an unexpected field set")
+    material = {key: record[key] for key in _RECORD_MATERIAL_FIELDS}
+    if record.get("schema") != SCHEMA or record.get("status") != "PAIRED_DIAGNOSTIC":
+        raise LatentAdapterError("native tokenwise pair record schema/status is unsupported")
+    if (record.get("production_route") is not False
+            or record.get("semantic_use_proven") is not False
+            or record.get("training_authority") != 0
+            or record.get("native_receiver_authority") != 0
+            or record.get("persisted") is not False):
+        raise LatentAdapterError("native tokenwise pair record carries forbidden authority or persistence")
+    source_ref = record.get("source_ref")
+    if not isinstance(source_ref, Mapping):
+        raise LatentAdapterError("native tokenwise pair record lacks SourceRef")
+    source_id = _required_id(source_ref.get("source_id"), "source_ref.source_id")
+    source_sha = _sha256(source_ref.get("sha256"), "source_ref.sha256")
+    if (type(source_ref.get("char_start")) is not int or source_ref["char_start"] != 0
+            or type(source_ref.get("char_end")) is not int or not 1 <= source_ref["char_end"] <= 1_048_576):
+        raise LatentAdapterError("native tokenwise pair record SourceRef range is invalid")
+    session_id = _required_id(record.get("session_id"), "session_id")
+    _required_id(record.get("event_id"), "event_id")
+    _required_id(record.get("brain_generation_id"), "brain_generation_id")
+    if not isinstance(record.get("sender"), Mapping) or not isinstance(record.get("receiver"), Mapping):
+        raise LatentAdapterError("native tokenwise pair record model bindings are missing")
+    pairs = record.get("pairs")
+    pair_ids = record.get("pair_ids")
+    coverages = record.get("alignment_coverage")
+    if (not isinstance(pairs, list) or not pairs or any(not isinstance(item, Mapping) for item in pairs)
+            or type(record.get("pair_count")) is not int or record["pair_count"] != len(pairs)
+            or not isinstance(pair_ids, list) or any(type(item) is not str or not item for item in pair_ids)
+            or pair_ids != [item.get("pair_id") for item in pairs]
+            or len(set(pair_ids)) != len(pair_ids)
+            or not isinstance(coverages, list) or len(coverages) != len(pairs)):
+        raise LatentAdapterError("native tokenwise pair record row manifest is inconsistent")
+    for pair, coverage in zip(pairs, coverages):
+        pair_coverage = pair.get("alignment_coverage")
+        if (pair.get("source_id") != source_id
+                or pair.get("source_sha256") != source_sha
+                or pair.get("session_id") != session_id
+                or pair.get("alignment_method") != record.get("alignment_method")
+                or type(coverage) not in (int, float) or not math.isfinite(float(coverage))
+                or type(pair_coverage) not in (int, float) or not math.isfinite(float(pair_coverage))
+                or abs(float(pair_coverage) - float(coverage)) > 1e-12):
+            raise LatentAdapterError("native tokenwise pair row differs from its source/session record")
+    minimum, mean = record.get("minimum_coverage"), record.get("mean_coverage")
+    if (type(minimum) not in (int, float) or not math.isfinite(float(minimum))
+            or type(mean) not in (int, float) or not math.isfinite(float(mean))
+            or abs(float(minimum) - min(float(v) for v in coverages)) > 1e-12
+            or abs(float(mean) - sum(float(v) for v in coverages) / len(coverages)) > 1e-12):
+        raise LatentAdapterError("native tokenwise pair coverage summary is inconsistent")
+    _sha256(record.get("record_sha256"), "record_sha256")
+    if _record_digest(material) != record["record_sha256"]:
+        raise LatentAdapterError("native tokenwise pair record digest mismatch")
+    return dict(record)
+
+
+def fit_adapter_from_native_pair_records(
+    records,
+    *,
+    train_session_ids,
+    holdout_session_ids,
+    rank: int = 16,
+    ridge: float = 1e-4,
+    min_relative_improvement: float = 0.02,
+    seed: int = 7,
+) -> dict:
+    """Fit a TOKENWISE alignment candidate from source-bound native pair records.
+
+    The split is declared by whole session IDs; source IDs and source hashes
+    must also be disjoint. The result is an offline PCA+ridge alignment
+    candidate only. It does not persist vectors, run receiver inference,
+    change model weights, or prove semantic/task utility.
+    """
+    if not isinstance(records, (list, tuple)) or not 1 <= len(records) <= 1024:
+        raise LatentAdapterError("native pair records must be a bounded non-empty sequence")
+
+    def session_set(values, name):
+        if not isinstance(values, (list, tuple)) or len(values) < 2:
+            raise LatentAdapterError(name + " requires at least two session IDs")
+        normalized = [_required_id(value, name) for value in values]
+        if len(set(normalized)) != len(normalized):
+            raise LatentAdapterError(name + " contains duplicate session IDs")
+        return set(normalized)
+
+    train_sessions = session_set(train_session_ids, "train_session_ids")
+    holdout_sessions = session_set(holdout_session_ids, "holdout_session_ids")
+    if train_sessions & holdout_sessions:
+        raise LatentAdapterError("session leakage: train and holdout session IDs overlap")
+
+    checked = [_validate_native_pair_record(record) for record in records]
+    observed_sessions = {record["session_id"] for record in checked}
+    if observed_sessions != train_sessions | holdout_sessions:
+        raise LatentAdapterError("pair records do not exactly cover the declared train/holdout sessions")
+
+    source_ids, source_hashes = set(), set()
+    first = checked[0]
+    sender, receiver = first["sender"], first["receiver"]
+    binding_fields = ("role", "tap_id", "model_revision", "model_sha256", "tokenizer_revision")
+    for record in checked:
+        source_id = record["source_ref"]["source_id"]
+        source_sha = record["source_ref"]["sha256"]
+        if source_id in source_ids or source_sha in source_hashes:
+            raise LatentAdapterError("native pair cohort repeats a source ID or source hash")
+        source_ids.add(source_id)
+        source_hashes.add(source_sha)
+        if record["alignment_method"] != first["alignment_method"]:
+            raise LatentAdapterError("native pair cohort mixes token alignment methods")
+        for side, expected in (("sender", sender), ("receiver", receiver)):
+            actual = record[side]
+            if any(actual.get(field) != expected.get(field) for field in binding_fields):
+                raise LatentAdapterError("native pair cohort mixes model, role, tap or tokenizer bindings")
+
+    train_records = [record for record in checked if record["session_id"] in train_sessions]
+    holdout_records = [record for record in checked if record["session_id"] in holdout_sessions]
+    train_pairs = [pair for record in train_records for pair in record["pairs"]]
+    holdout_pairs = [pair for record in holdout_records for pair in record["pairs"]]
+    adapter = fit_adapter(
+        train_pairs, holdout_pairs,
+        sender_role=sender["role"],
+        receiver_role=receiver["role"],
+        sender_tap_id=sender["tap_id"],
+        receiver_tap_id=receiver["tap_id"],
+        sender_model_revision=sender["model_revision"],
+        receiver_model_revision=receiver["model_revision"],
+        sender_model_sha256=sender["model_sha256"],
+        receiver_model_sha256=receiver["model_sha256"],
+        sender_tokenizer_revision=sender["tokenizer_revision"],
+        receiver_tokenizer_revision=receiver["tokenizer_revision"],
+        rank=rank,
+        ridge=ridge,
+        min_relative_improvement=min_relative_improvement,
+        seed=seed,
+        projection_scope="TOKENWISE",
+    )
+    manifest_material = {
+        "schema": "v14.native-tokenwise-adapter-fit/1",
+        "record_sha256s": sorted(record["record_sha256"] for record in checked),
+        "train_session_ids": sorted(train_sessions),
+        "holdout_session_ids": sorted(holdout_sessions),
+    }
+    fit_manifest_material = manifest_material | {
+        "status": adapter["status"],
+        "train_record_count": len(train_records),
+        "holdout_record_count": len(holdout_records),
+        "train_source_count": len({record["source_ref"]["source_id"] for record in train_records}),
+        "holdout_source_count": len({record["source_ref"]["source_id"] for record in holdout_records}),
+        "train_pair_count": len(train_pairs),
+        "holdout_pair_count": len(holdout_pairs),
+        "source_disjoint": True,
+        "session_disjoint": True,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    fit_manifest = fit_manifest_material | {
+        "manifest_sha256": _record_digest(fit_manifest_material),
+    }
+    return {"adapter": adapter, "fit_manifest": fit_manifest}
