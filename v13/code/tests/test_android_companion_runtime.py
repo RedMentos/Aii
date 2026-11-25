@@ -253,8 +253,30 @@ def test_immediate_android_receipt_context_rejects_tampered_provenance_and_obser
         packet_id=outcome["packet_id"],
     )
     followup = runtime.store.event(runtime.session, "Did it work?")
-    valid = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
-    assert any(item["from"] == "C5_ACTION" for item in valid["messages"])
+    # This receipt is a one-turn control cue for every normal cognitive
+    # consumer, not a C3-only side channel. Cognition.offer consumes the same
+    # port for both bodies; Cognition.answer consumes it for C3.
+    for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        valid = space.consume(followup, role, query="Did it work?")
+        action_messages = [
+            item for item in valid["messages"]
+            if item["from"] == "C5_ACTION"
+        ]
+        assert len(action_messages) == 1
+        action_message = action_messages[0]
+        assert action_message["channel"] == "CONTROL"
+        assert action_message["authority"] == "CONTROL_ONLY"
+        assert "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED" in action_message["semantic_cue_not_fact"]
+        assert any(
+            source["source_ref"] == event["source_ref"]
+            for source in action_message["exact_sources"]
+        )
+
+    # Do not let an old action receipt leak into later turns.
+    later = runtime.store.event(runtime.session, "Another question.")
+    for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        stale = space.consume(later, role, query="Did it work?")
+        assert not any(item["from"] == "C5_ACTION" for item in stale["messages"])
 
     row = runtime.store.one(
         "SELECT payload FROM packets WHERE id=?", (outcome["packet_id"],))
