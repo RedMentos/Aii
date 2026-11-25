@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_BLOB_SHA1 = "7c994f98b72bc402ffe44e47f0d4f0cd5b2d2fd5"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_BLOB_SHA1 = "3a1a4ec36b6993b09dd408dd009d83235068efd4"
+AUDIO_BUILDER_BLOB_SHA1 = "730f77b8da97c8467d2e5464eb4ca0d05c379fb5"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
