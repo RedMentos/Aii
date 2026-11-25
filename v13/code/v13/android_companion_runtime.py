@@ -215,7 +215,9 @@ class AndroidCompanionController:
         """Validate a previously committed receipt so a crash cannot force a remote retry."""
         proposal = self.broker.consumed.get(action_id)
         if proposal is None:
-            raise ControlDenied("receipt-consumed action has no recoverable local proposal")
+            # RECEIPT_VERIFIED removes the one-shot consumed map entry. Recover
+            # only its durable source/digest binding for read-only signature checks.
+            proposal = self.broker.receipt_proposal(action_id)
         intent_rows = self.runtime.store.rows(
             "SELECT p.payload,p.event_id AS packet_event_id,e.packet AS event_packet,e.session_id "
             "FROM packets p JOIN events e ON e.id=p.event_id "
@@ -373,10 +375,56 @@ class AndroidCompanionController:
             raise ControlDenied("stored receipt signature does not authenticate the persisted outcome")
         return outcome
 
+    def _publish_jef_outcome(self, packet_id):
+        """Expose a receipt-only ActionOutcome to JEF/shared space, never to learning."""
+        try:
+            from . import jefbridge as jefctl
+            result = jefctl.controller(self.runtime).publish_android_action_outcome(
+                packet_id, expected_session=self.runtime.session,
+            )
+            return {
+                "status": result.get("status", "UNKNOWN"),
+                "message_id": result.get("message_id"),
+                "representation": "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+                "trained_latent": False,
+                "t8_authoritative": False,
+                "world_learning_eligible": False,
+            }
+        except ValueError:
+            return {
+                "status": "REJECTED_SOURCE_OR_BINDING",
+                "representation": "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+                "trained_latent": False,
+                "t8_authoritative": False,
+                "world_learning_eligible": False,
+            }
+        except Exception as exc:
+            try:
+                self.runtime.store.log(
+                    "android_action_jef_publish_failed", None,
+                    {"error": type(exc).__name__},
+                )
+            except Exception:
+                pass
+            return {
+                "status": "UNAVAILABLE",
+                "representation": "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+                "trained_latent": False,
+                "t8_authoritative": False,
+                "world_learning_eligible": False,
+            }
+
     def poll(self, action_id):
         self.runtime.require_idle()
         if type(action_id) is not str or re.fullmatch(r"[0-9a-f]{32}", action_id) is None:
             raise ControlDenied("invalid action identifier")
+        intent_rows = self.runtime.store.rows(
+            "SELECT e.session_id FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionIntent' AND json_extract(p.payload,'$.action_id')=?",
+            (action_id,),
+        )
+        if len(intent_rows) != 1 or intent_rows[0]["session_id"] != self.runtime.session:
+            raise ControlDenied("Android action does not belong to the active session")
         state = self.broker.action_state(action_id)
         if state == "RECEIPT_CONSUMED":
             stored = self._stored_receipt_outcome(action_id)
@@ -386,6 +434,7 @@ class AndroidCompanionController:
                 self.broker.record_companion_receipt(
                     action_id, actual["digest"], verified=True
                 )
+                jef_space = self._publish_jef_outcome(stored["packet_id"])
                 return dumps({
                     "status": stored["status"],
                     "packet_id": stored["packet_id"],
@@ -394,8 +443,27 @@ class AndroidCompanionController:
                     "world_learning_eligible": actual["world_learning_eligible"],
                     "receipt_status": actual["receipt_status"],
                     "recovered_from_store": True,
+                    "jef_space": jef_space,
                 })
-        if state in {"RECEIPT_VERIFIED", "RECEIPT_REJECTED", "CANCELLED", "EXPIRED", "DROPPED_ON_RESTART"}:
+        if state == "RECEIPT_VERIFIED":
+            stored = self._stored_receipt_outcome(action_id)
+            jef_space = (
+                self._publish_jef_outcome(stored["packet_id"])
+                if stored is not None else {
+                    "status": "NO_STORED_OUTCOME",
+                    "representation": "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+                    "trained_latent": False,
+                    "t8_authoritative": False,
+                    "world_learning_eligible": False,
+                }
+            )
+            return dumps({
+                "status": "ALREADY_FINAL", "action_id": action_id,
+                "action_state": state,
+                "packet_id": stored.get("packet_id") if stored else None,
+                "jef_space": jef_space,
+            })
+        if state in {"RECEIPT_REJECTED", "CANCELLED", "EXPIRED", "DROPPED_ON_RESTART"}:
             return dumps({"status": "ALREADY_FINAL", "action_id": action_id, "action_state": state})
         trust, public_key, _ = self._pinned_key()
         self.broker.start()
@@ -421,6 +489,7 @@ class AndroidCompanionController:
             )
         finally:
             verifier.close()
+        jef_space = self._publish_jef_outcome(packet["packet_id"])
         return dumps({
             "status": outcome.status,
             "packet_id": packet["packet_id"],
@@ -428,6 +497,7 @@ class AndroidCompanionController:
             "t8_authoritative": outcome.details.get("t8_authoritative", False),
             "world_learning_eligible": outcome.details.get("world_learning_eligible", False),
             "receipt_status": outcome.details.get("receipt_status"),
+            "jef_space": jef_space,
         })
 
     def cancel(self, action_id):

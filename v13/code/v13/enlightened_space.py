@@ -17,6 +17,7 @@ import hashlib
 import json
 import math
 import re
+import sqlite3
 
 from .common import safe_text
 
@@ -106,6 +107,7 @@ class EnlightenedSpace:
 
     def __init__(self, store, session):
         self.store = store
+        self.session = session
         self.key = STATE_PREFIX + session
 
     def _state(self, generation):
@@ -197,6 +199,81 @@ class EnlightenedSpace:
                     raise
         return {"status": "RACE_RETRY_LIMIT", "message_id": None}
 
+    def _immediate_action_receipt_message_id(self, entries, event_id):
+        """Return the latest Android receipt only for the immediately following event.
+
+        Short follow-ups such as "Did it work?" often have no lexical overlap
+        with the capability name. Keep one source-bound, receipt-only control
+        signal available to every organ for that next event, without promoting
+        it to a fact, observation, reward or learning transition.
+        """
+        candidate = next((entry for entry in reversed(entries)
+                          if entry.get("producer") == "C5_ACTION"
+                          and entry.get("channel") == "CONTROL"
+                          and entry.get("authority") == "CONTROL_ONLY"), None)
+        if (not isinstance(candidate, dict)
+                or candidate.get("event_id") == event_id
+                or not isinstance(candidate.get("packet_id"), str)
+                or not candidate.get("packet_id")):
+            return None
+        message_id = candidate.get("message_id")
+        if not isinstance(message_id, str) or not message_id:
+            return None
+        try:
+            packet_row = self.store.one(
+                "SELECT kind,event_id,payload FROM packets WHERE id=?",
+                (candidate["packet_id"],),
+            )
+            if (not packet_row or packet_row["kind"] != "ActionOutcome"
+                    or packet_row["event_id"] != candidate["event_id"]):
+                return None
+            payload = json.loads(packet_row["payload"])
+            if not isinstance(payload, dict):
+                return None
+            actual = payload.get("actual")
+            allowed_status = {
+                "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "COMPANION_USER_DENIED",
+                "COMPANION_DISPATCH_FAILED",
+                "COMPANION_OUTCOME_UNKNOWN",
+            }
+            if (
+                payload.get("packet_id") != candidate["packet_id"]
+                or payload.get("producer_component") != "C5_ANDROID_COMPANION"
+                or payload.get("event_id") != candidate["event_id"]
+                or payload.get("brain_generation_id") != candidate.get("generation")
+                or payload.get("provenance") != candidate.get("source_refs")
+                or payload.get("status") not in allowed_status
+                or not isinstance(actual, dict)
+                or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+                or actual.get("capability") != "launch_app"
+                or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+                or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
+                or actual.get("observed") is not False
+                or actual.get("t8_authoritative") is not False
+                or actual.get("world_learning_eligible") is not False
+                or actual.get("trusted_transition_eligible") is not False
+            ):
+                return None
+            prior = self.store.one(
+                "SELECT rowid AS event_order,session_id FROM events WHERE id=?",
+                (candidate["event_id"],),
+            )
+            current = self.store.one(
+                "SELECT rowid AS event_order,session_id FROM events WHERE id=?",
+                (event_id,),
+            )
+            if (not prior or not current
+                    or prior["session_id"] != self.session
+                    or current["session_id"] != self.session
+                    or current["event_order"] != prior["event_order"] + 1):
+                return None
+            return message_id
+        except (sqlite3.Error, KeyError, TypeError, ValueError, OSError, RuntimeError):
+            # This is optional context. Any missing, malformed or unavailable
+            # binding fails closed and cannot grant authority.
+            return None
+
     def consume(self, event, receiver, query="", *, selected_offers=(),
                 max_messages=MAX_READ, max_chars=MAX_SHARED_CHARS):
         """Materially condition actual receiver prompts from shared organ state.
@@ -213,6 +290,8 @@ class EnlightenedSpace:
                 type(max_chars) is not int or not 0 <= max_chars <= MAX_SHARED_CHARS):
             raise ValueError("invalid shared-space budget")
         state, version = self._state(generation)
+        immediate_action_receipt_id = self._immediate_action_receipt_message_id(
+            state["entries"], event_id)
         qterms = _terms(_safe_text(query))
         approved = set(selected_offers or ())
         rows = []
@@ -239,7 +318,10 @@ class EnlightenedSpace:
             if record["authority"] in {"MODEL_HYPOTHESIS", "SOURCE_POINTER", "USER_MEMORY_CUE"} and not refs:
                 continue
             sim = _similarity(qterms, record["semantic_terms"])
-            if record["event_id"] != event_id and sim < .09:
+            immediate_action_receipt = (
+                record.get("message_id") == immediate_action_receipt_id)
+            if (record["event_id"] != event_id and sim < .09
+                    and not immediate_action_receipt):
                 continue
             scope = 1. if record["event_id"] == event_id else .15
             # World/Self/JEPA statuses are control hints, never source facts.
@@ -253,6 +335,13 @@ class EnlightenedSpace:
             value = sim + scope + evidence + control
             rows.append((value, record, refs))
         rows.sort(key=lambda row: row[0], reverse=True)
+        if immediate_action_receipt_id and max_messages > 0:
+            # Reserve one bounded slot for the immediately preceding action
+            # receipt; all other messages retain their normal relevance order.
+            action_row = next((row for row in rows
+                               if row[1].get("message_id") == immediate_action_receipt_id), None)
+            if action_row is not None:
+                rows = [action_row] + [row for row in rows if row is not action_row]
         entries, all_refs = [], []
         used = 0
         for score, record, refs in rows:

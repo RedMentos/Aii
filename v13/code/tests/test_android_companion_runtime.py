@@ -4,7 +4,8 @@ import json
 
 import pytest
 
-from v13 import android_control, android_outcomes
+from v13 import android_control, android_outcomes, jefbridge
+from v13.enlightened_space import EnlightenedSpace
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
@@ -75,6 +76,7 @@ class RuntimeStub:
         self.home = home
         self.store = Store(home)
         self.session = self.store.new_session()
+        self.cfg = {}
         self.idle_checks = 0
 
     def require_idle(self):
@@ -166,7 +168,48 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert recorded["observed"] is False
     assert recorded["t8_authoritative"] is False
     assert recorded["world_learning_eligible"] is False
-    assert json.loads(controller.poll(pending["action_id"]))["status"] == "ALREADY_FINAL"
+    assert recorded["jef_space"]["status"] == "PUBLISHED"
+    assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert recorded["jef_space"]["trained_latent"] is False
+    assert recorded["jef_space"]["t8_authoritative"] is False
+    assert recorded["jef_space"]["world_learning_eligible"] is False
+    # A second process must revalidate the stored receipt from SQLite even
+    # though the verified one-shot proposal was removed from the in-memory map.
+    controller.broker.close()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    repeated = json.loads(controller.poll(pending["action_id"]))
+    assert repeated["status"] == "ALREADY_FINAL"
+    assert repeated["jef_space"]["status"] == "ALREADY_PRESENT"
+
+    event_row = runtime.store.one(
+        "SELECT session_id,packet FROM events WHERE id=?", (pending["source_event_id"],))
+    space = EnlightenedSpace(runtime.store, event_row["session_id"])
+    # A short pronoun follow-up has no lexical overlap with "launch_app".
+    # The signed receipt must still reach the real B1/B2/C3 shared-space readers
+    # for exactly the immediately following event, as CONTROL_ONLY context.
+    followup = runtime.store.event(runtime.session, "Did it work?")
+    for receiver, budget in (("B1_DETAIL", 2), ("B2_GIST", 2), ("C3_LANGUAGE", 5)):
+        view = space.consume(followup, receiver, query="Did it work?",
+                             max_messages=budget)
+        assert view["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+        assert view["trained_latent"] is False
+        assert any(
+            item["from"] == "C5_ACTION" and item["authority"] == "CONTROL_ONLY"
+            and "not independently observed" in item["semantic_cue_not_fact"]
+            for item in view["messages"]
+        )
+
+    # It is not a sticky fact: after one intervening user event, an unrelated
+    # query must not receive the old action receipt merely because it exists.
+    later = runtime.store.event(runtime.session, "What is my favorite color?")
+    later_view = space.consume(later, "C3_LANGUAGE",
+                               query="What is my favorite color?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in later_view["messages"])
+    jef_view = jefbridge.controller(runtime).publish_android_action_outcome(
+        recorded["packet_id"], expected_session=runtime.session)
+    assert jef_view["status"] == "ALREADY_PRESENT"
+    assert any(item["from"] == "C5_ACTION" for item in jef_view["jef_view"]["messages"])
 
     packet = runtime.store.one("SELECT kind,payload FROM packets WHERE id=?", (recorded["packet_id"],))
     assert packet["kind"] == "ActionOutcome"
@@ -177,6 +220,84 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert runtime.idle_checks == 4
     runtime.store.close()
     controller.broker.close()
+
+
+def test_immediate_android_receipt_context_rejects_tampered_provenance_and_observation(tmp_path):
+    runtime = make_runtime(tmp_path)
+    event = runtime.store.event(runtime.session, "Launch the calculator app.")
+    outcome = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION",
+        event["event_id"], event["brain_generation_id"], [event["source_ref"]],
+        action_id="act_test_android_receipt",
+        status="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+        actual={
+            "outcome_kind": "ANDROID_COMPANION_RECEIPT",
+            "capability": "launch_app",
+            "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
+            "evidence_level": "COMPANION_RECEIPT_ONLY",
+            "observed": False,
+            "t8_authoritative": False,
+            "world_learning_eligible": False,
+            "trusted_transition_eligible": False,
+        },
+    )
+    runtime.store.add_packet("ActionOutcome", outcome)
+    space = EnlightenedSpace(runtime.store, runtime.session)
+    space.publish(
+        event, "C5_ACTION", "CONTROL",
+        summary=("Android companion launch_app receipt: "
+                 "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED; "
+                 "device outcome not independently observed; T8/world learning disabled."),
+        source_refs=[event["source_ref"]],
+        authority="CONTROL_ONLY",
+        packet_id=outcome["packet_id"],
+    )
+    followup = runtime.store.event(runtime.session, "Did it work?")
+    # This receipt is a one-turn control cue for every normal cognitive
+    # consumer, not a C3-only side channel. Cognition.offer consumes the same
+    # port for both bodies; Cognition.answer consumes it for C3.
+    for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        valid = space.consume(followup, role, query="Did it work?")
+        action_messages = [
+            item for item in valid["messages"]
+            if item["from"] == "C5_ACTION"
+        ]
+        assert len(action_messages) == 1
+        action_message = action_messages[0]
+        assert action_message["channel"] == "CONTROL"
+        assert action_message["authority"] == "CONTROL_ONLY"
+        assert "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED" in action_message["semantic_cue_not_fact"]
+        assert any(
+            source["source_ref"] == event["source_ref"]
+            for source in action_message["exact_sources"]
+        )
+
+    # Do not let an old action receipt leak into later turns.
+    later = runtime.store.event(runtime.session, "Another question.")
+    for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        stale = space.consume(later, role, query="Did it work?")
+        assert not any(item["from"] == "C5_ACTION" for item in stale["messages"])
+
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE id=?", (outcome["packet_id"],))
+    tampered = json.loads(row["payload"])
+    tampered["provenance"] = []
+    with runtime.store.tx() as tx:
+        tx.execute("UPDATE packets SET payload=? WHERE id=?",
+                   (json.dumps(tampered), outcome["packet_id"]))
+    wrong_source = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in wrong_source["messages"])
+
+    tampered["provenance"] = [event["source_ref"]]
+    tampered["actual"]["observed"] = True
+    with runtime.store.tx() as tx:
+        tx.execute("UPDATE packets SET payload=? WHERE id=?",
+                   (json.dumps(tampered), outcome["packet_id"]))
+    false_observation = space.consume(followup, "C3_LANGUAGE", query="Did it work?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in false_observation["messages"])
+    runtime.store.close()
 
 
 def test_signed_denial_is_persisted_and_stop_cancels_pending_requests(tmp_path, monkeypatch):
@@ -191,6 +312,8 @@ def test_signed_denial_is_persisted_and_stop_cancels_pending_requests(tmp_path, 
     assert result["status"] == "COMPANION_USER_DENIED"
     assert result["observed"] is False
     assert result["t8_authoritative"] is False
+    assert result["jef_space"]["status"] == "PUBLISHED"
+    assert result["jef_space"]["t8_authoritative"] is False
 
     second = json.loads(controller.launch("com.example.other", True))
     stopped = json.loads(controller.stop())
@@ -347,6 +470,8 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
     )
     runtime.store.add_packet("ActionIntent", other_intent)
+    with pytest.raises(android_control.ControlDenied, match="active session"):
+        controller.poll("9" * 32)
 
     before_restart = json.loads(controller.history())
     assert before_restart["session_scoped"] is True
@@ -410,6 +535,9 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
     )
     runtime.store.add_packet("ActionOutcome", authority_forgery)
+    with pytest.raises(ValueError, match="NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            authority_forgery["packet_id"], expected_session=runtime.session)
     after_forgery = json.loads(controller.history())
     assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert after_forgery["actions"][0]["observed"] is False
