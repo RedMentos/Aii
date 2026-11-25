@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from v13 import android_control
+from v13 import android_control, android_companion_ecdsa
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
 from v13.operator import Operator
@@ -154,6 +154,39 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert actual["observed"] is False
     assert actual["world_learning_eligible"] is False
     assert runtime.idle_checks == 4
+    runtime.store.close()
+    controller.broker.close()
+
+
+def test_unknown_execution_receipt_is_final_and_never_promoted(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_companion_ecdsa, "_verify", lambda public_point, message, signature: True)
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    unknown_body = {
+        **BODY,
+        "nonce": "5" * 32,
+        "status": "EXECUTION_OUTCOME_UNKNOWN",
+        "local_consent": True,
+    }
+    unknown_receipt = {
+        "body": unknown_body,
+        "key_id": KEY_ID,
+        "signature": base64.b64encode(b"test-signature-stub").decode("ascii"),
+    }
+    transport = FakeTransport(unknown_receipt)
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    pending = json.loads(controller.launch("com.example.app", True))
+    result = json.loads(controller.poll(pending["action_id"]))
+    assert result["status"] == "COMPANION_EXECUTION_OUTCOME_UNKNOWN"
+    assert result["receipt_status"] == "EXECUTION_OUTCOME_UNKNOWN"
+    assert result["observed"] is False
+    assert result["t8_authoritative"] is False
+    assert result["world_learning_eligible"] is False
+    assert controller.broker.action_state(pending["action_id"]) == "RECEIPT_VERIFIED"
+    assert json.loads(controller.poll(pending["action_id"]))["status"] == "ALREADY_FINAL"
+
     runtime.store.close()
     controller.broker.close()
 
