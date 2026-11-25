@@ -2094,3 +2094,8 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Research candidate: MobileMoE-S/M may inform the separate sparse B1/B2 model lab, but the FAIR Noncommercial Research License, custom ExecuTorch/fused-kernel path and lack of Redmi measurements make it a research candidate only. No weights were downloaded.
 - Next: Core fixes the exact parent compile/source-pin failures; Perception rebases #2519, reruns the full exact-head matrix and then runs a real pinned-GGUF holdout. B3 stays OFF pending utility, negative controls, retention and rollback.
 
+
+
+### Additional Perception checkpoint — RAW EAR predictor CI correction
+
+PR [#2498](https://github.com/RedMentos/Aii/pull/2498) now has head `369345769f89a655239813046196548e8c05d77b`. The A4 test no longer assumes the predictor must strictly increase aggregate novelty when stronger voice evidence can dominate a max-fusion; it still checks positive omission novelty, inclusion in the novelty channel, and unchanged external-interrupt. The VAD comparison workflow now pins the exact current RAW EAR source blob. Focused workflows were still running at the last poll; do not mark them PASS until completed. The full local checkout remains unavailable. Core's integrated audio source pin and migration failures remain separate blockers. No microphone capture or Redmi test was run.
