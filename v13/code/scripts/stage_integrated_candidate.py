@@ -13,11 +13,11 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = 'ffe5d0e39fe5f24773baa242d05e08844b58f30535c51bedbabcb6f5c68229e6'
+BUILDER_SHA = '3f1f818326437b5786f415f4232a8ce7158cf1386b3b5e29d42d6959a6081d4b'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '94cf14f671f695efc1544f50c8edbc8d462c0cd5'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
-NATIVE_PROBE_OVERLAY_GIT_BLOB = '8be75cecf7b76865ea95b4cb60985d52d586edf6'
+NATIVE_PROBE_OVERLAY_GIT_BLOB = 'e8913a4de0cf99c484e21edf2b7a86dcff1e0620'
 RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_20261124.py'
 RUNTIME_CLOSE_OVERLAY_GIT_BLOB = 'fc32dc9c350e36b76c54bf8f1e26186370ccb133'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
