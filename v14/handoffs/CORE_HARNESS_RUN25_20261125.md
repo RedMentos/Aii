@@ -40,3 +40,12 @@
 5. Continue whole-Canon work: Redmi B1/B2 offer quality/latency, correct C3 output, native consumed-organ telemetry, learned B3 alignment, permanent safe weight learning, voice and Android action providers remain open.
 
 **User action now:** none. Future local native probe requires separate explicit approval after integration and installation.
+
+
+## #2481 emulator completion update — 2026-11-25
+
+- Exact head `545ec845a35a4567aeaf7487d6765edf2229176f`: 17/17 check-runs SUCCESS.
+- Android API-33 x86_64 GitHub-hosted emulator: PASS. Espresso confirmed visible Stop control; provider startup after process death remained OFF; PID/start changed `2176@493104 → 2621@560711`; first death boundary was Activity teardown.
+- The instrumented test uses the actual button/listener through `View.performClick()` after visibility checks; it does not claim physical touch injection.
+- This is not Redmi/Termux proof. No APK install on the user's phone, signer pairing, Accessibility, screen capture or device action.
+- #2481 remains DRAFT / NOT_RELEASED and awaits independent QA/Boss review and safe rebase/compose onto the newest compatible companion base.
