@@ -1349,3 +1349,14 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Full local Aii pytest BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Prior #2433 focused passes are historical only. Exact #2472 CI pending; no Redmi test.
 - #2433 stays open temporarily; do not merge it. Close as superseded only after #2472 current-base CI and independent review are green.
 - Next: exact Python 3.13/3.14, controller guard, A4, FASTDIAR, RAW EAR, consent/privacy, deployment and staged/integrated checks; then signed Android provider only after QA consent/revocation/zeroization gates.
+
+
+## Research & Perception — run 26 (2026-11-25)
+
+- A4/RAW EAR candidate #2472 now supports borrowing an already-held Runtime audio-consent lease in `audio_consent_generation_scope()`; it validates the exact lease scope and never reacquires the provider guard. Code `9e3c5719a4dfbc70f3869aa7a3ac7e541bb736ee`, tests `c655b1e75c6a1db6cbbfa181d7675c7939c05fb5`, comparator pin correction `b54354ebd95d066a637303ce852831c2549300e9`.
+- Focused exact-head CI: FASTDIAR 2/2, A4 outcomes 2/2, RAW EAR prosody 2/2, optional NumPy 2/2, consent revocation 1/1, runtime deploy integrity 2/2, privacy scan PASS; RAW EAR/WebRTC/libfvad comparator rerun 2/2 PASS.
+- Staged/integrated and controller/Core same-turn still fail before downstream assertions at the Core-owned recovery builder's stale controller-guard SHA. #2482/#2483 remain the stacked source-pin repair path; no Core-owned file changed.
+- Core #2478 already holds one Runtime-wide lease across the complete C3 iterator and does not import the helper. This change prevents lock re-entry if a distinct A4/A5 composition consumer later uses it; it does not add a user-visible runtime capability today.
+- Full local Aii suite BLOCKED/NOT_RUN (no checkout/DNS); Android/Termux/Redmi tests NOT_RUN. Latest available V13OBS #115 (2026-11-24 09:28 UTC) reports 8d93236 installed, updater enabled, AI STOPPED_BY_USER; no new device operation.
+- Research ledger adds R-119 Palimpsa (metaplastic precision; GPU-heavy / repo license text unverified) and R-120 memorized mistake gating (supervised classification; repo lacks code/license). Both remain NO_REUSE; V14 experiment hypothesis is recorded, not activated.
+- Next: let Boss/Core integrate #2482/#2483, then re-evaluate whether the actual Runtime A4/A5 seam needs the borrowed scope. Keep the full audio/voice Canon open; no AudioRecord proof.
