@@ -51,6 +51,31 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
     return rows
 
 
+def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
+    rng = np.random.default_rng(seed)
+    target = np.asarray([[1.2, -0.4, 0.7], [0.3, 0.8, -0.6]])
+    rows = []
+    sender_spans = [[0, 2], [2, 4], [4, 6]]
+    receiver_spans = [[0, 3], [3, 6]]
+    for group in range(groups):
+        source_id = f"{prefix}-aligned-source-{group}"
+        source_sha256 = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        z = rng.normal(size=(2, 2))
+        middle = (z[0] + z[1]) / 2.0
+        sender_rows = [
+            (3.0 * z[0] - middle) / 2.0,
+            middle,
+            (3.0 * z[1] - middle) / 2.0,
+        ]
+        receiver_rows = z @ target + np.asarray([0.2, -0.1, 0.3])
+        receiver_rows += rng.normal(scale=0.001, size=(2, 3))
+        rows.extend(align_token_rows_by_char_span(
+            sender_rows, sender_spans, receiver_rows.tolist(), receiver_spans,
+            source_id=source_id, source_sha256=source_sha256,
+        ))
+    return rows
+
+
 def fit(train=None, holdout=None, **overrides):
     args = dict(
         sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
@@ -246,6 +271,47 @@ def test_char_span_alignment_rejects_overlapping_or_unordered_spans():
             source_id="source-overlap",
             source_sha256="e" * 64,
         )
+
+
+def test_char_span_alignment_feeds_source_disjoint_tokenwise_adapter_fit():
+    adapter = fit_adapter(
+        make_aligned_tokenwise_pairs("train", 10, seed=11),
+        make_aligned_tokenwise_pairs("hold", 5, seed=12),
+        sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+        sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+        sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+        sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+        sender_tokenizer_revision="sender-tokenizer-r1",
+        receiver_tokenizer_revision="tokenizer-r1",
+        rank=2, projection_scope="TOKENWISE",
+    )
+    assert adapter["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert adapter["status"] == "ALIGNMENT_CANDIDATE"
+    assert adapter["alignment_method"] == "CHAR_SPAN_OVERLAP_V1"
+    assert len(adapter["alignment_sha256"]) == 64
+    assert adapter["metrics"]["gradient_based_training"] is False
+    assert adapter["semantic_use_proven"] is False
+
+
+def test_tokenwise_fit_rejects_source_hash_leakage_across_holdout():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=21)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=22)
+    holdout[0]["source_sha256"] = train[0]["source_sha256"]
+    with pytest.raises(LatentAdapterError, match="source hash leakage"):
+        fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
+
+
+def test_tokenwise_checkpoint_roundtrip_preserves_alignment_contract(tmp_path):
+    adapter = fit(projection_scope="TOKENWISE")
+    path = tmp_path / "tokenwise-adapter.v14lat"
+    saved_hash = save_adapter(adapter, path)
+    restored = load_adapter(path)
+    assert restored["adapter_sha256"] == saved_hash
+    assert restored["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert restored["alignment_method"] == "CHAR_SPAN_OVERLAP_V1"
+    assert restored["alignment_sha256"] == adapter["alignment_sha256"]
+    assert restored["sender_tokenizer_revision"] == "sender-tokenizer-r1"
+    assert restored["receiver_tokenizer_revision"] == "tokenizer-r1"
 
 
 def test_tokenwise_fit_rejects_position_only_pairs_without_span_proof():
