@@ -181,7 +181,7 @@ def _bootstrap_ci(values, samples, seed):
 
 def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_sessions=2,
         min_task_families=2, min_tasks_per_session=5, min_tasks_per_family=4,
-        min_tasks_per_session_family=1, min_mean_delta_nats=0.02, min_win_rate=0.70,
+        min_tasks_per_session_family=2, min_mean_delta_nats=0.02, min_win_rate=0.70,
         bootstrap_samples=1000, seed=17):
     """Evaluate paired held-out target-logprob proxy on source-disjoint crossed cohorts.
 
