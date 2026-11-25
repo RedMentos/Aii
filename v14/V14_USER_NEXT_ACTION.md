@@ -1879,3 +1879,10 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Next: Core to finish/review the separately typed LATENT_PREFIX_V1 event-pooled receiver in #2499; Research + Core to add a trusted tokenwise tap producer with packet/blob/event/generation/model/tokenizer/source-span provenance before any native receiver utility experiment.
 
 **User action required: NONE.** Do not run a manual Termux command or change models/weights. A future native probe requires a separate explicit local approval and fresh device receipt.
+
+ 
+### Device receipt refresh — latest available private V13OBS #115
+
+The latest available consented snapshot is timestamped 2026-11-24 09:22:33 UTC; no newer receipt was available in this run. It reports auto-update enabled and dashboard/runtime UP_TO_DATE at release SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but the AI runtime is STOPPED_BY_USER, autostart is false and the model process is stopped. Across the recorded five-turn sample, B1 and B2 each had two failed native attempts and zero valid offers; native latent exchange and C3 semantic use remain unproven. This does not validate PR #2501 or any new device behavior.
+
+**Updater/deployment:** the installed release is reported up to date; PR #2501 is still a draft research PR and is not a release. No UPDATE_REQUEST, restart, CHAT_SEND, shell, model/weight swap, permission change or data mutation was performed. Do not send a manual Termux command or restart the user-stopped runtime. Redmi acceptance for this candidate remains REDMI_UNVERIFIED.
