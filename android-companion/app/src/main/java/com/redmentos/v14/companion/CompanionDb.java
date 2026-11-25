@@ -142,6 +142,33 @@ final class CompanionDb extends SQLiteOpenHelper {
         return changed == 1;
     }
 
+    synchronized List<Action> claimedWithoutReceipt() {
+        List<Action> out = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT action_id,request_json,package_name,status,receipt_json,expires_at "
+                        + "FROM actions WHERE status IN ('EXECUTING','DENYING') "
+                        + "AND receipt_json IS NULL ORDER BY expires_at,action_id", null)) {
+            while (c.moveToNext()) out.add(new Action(c.getString(0), c.getString(1), c.getString(2),
+                    c.getString(3), null, c.getLong(5)));
+        }
+        return out;
+    }
+
+    synchronized boolean finishClaimed(String actionId, String expectedStatus,
+                                        String status, String receiptJson) {
+        if (!("EXECUTING".equals(expectedStatus) || "DENYING".equals(expectedStatus))
+                || receiptJson == null || receiptJson.isEmpty()) {
+            throw new IllegalArgumentException("invalid claimed-action receipt finalization");
+        }
+        ContentValues values = new ContentValues();
+        values.put("status", status);
+        values.put("receipt_json", receiptJson);
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status=? AND receipt_json IS NULL",
+                new String[]{actionId, expectedStatus});
+        return changed == 1;
+    }
+
     synchronized void finish(String actionId, String expectedStatus, String status, String receiptJson) {
         ContentValues values = new ContentValues();
         values.put("status", status);
