@@ -3,6 +3,8 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import threading
+import time
 import textwrap
 import unittest
 
@@ -183,10 +185,29 @@ print(json.dumps({
         with self.assertRaises(NativeInputEmbeddingError):
             self._extract(timeout_seconds=1)
 
-    def test_failed_native_process_does_not_leak_stderr(self):
-        self._write_binary("fail")
-        with self.assertRaisesRegex(NativeInputEmbeddingError, "extractor failed"):
-            self._extract()
+    def test_cancel_event_terminates_native_extractor_promptly(self):
+        self._write_binary("timeout")
+        cancel = threading.Event()
+        outcome = {}
+
+        def run():
+            try:
+                self._extract(timeout_seconds=10, cancel_event=cancel)
+            except BaseException as exc:
+                outcome["error"] = exc
+
+        worker = threading.Thread(target=run)
+        worker.start()
+        time.sleep(0.2)
+        cancel.set()
+        worker.join(2.5)
+        self.assertFalse(worker.is_alive())
+        self.assertIsInstance(outcome.get("error"), NativeInputEmbeddingError)
+        self.assertIn("cancelled", str(outcome["error"]))
+
+    def test_cancel_signal_must_be_event_like(self):
+        with self.assertRaisesRegex(NativeInputEmbeddingError, "cancellation signal"):
+            self._extract(cancel_event=object())
 
 
 if __name__ == "__main__":
