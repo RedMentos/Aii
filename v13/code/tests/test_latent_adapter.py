@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from v13.latent_adapter import (
-    LatentAdapterError, fit_adapter, project_vector, save_adapter,
+    LatentAdapterError, fit_adapter, project_event, project_rows, project_vector, save_adapter,
     load_adapter,
 )
 
@@ -87,6 +87,7 @@ def test_checkpoint_roundtrip_and_tamper_detection(tmp_path):
     saved_hash = save_adapter(adapter, path)
     restored = load_adapter(path)
     assert restored["adapter_sha256"] == saved_hash
+    assert restored["projection_scope"] == "PAIRED_VECTOR"
     vector = make_pairs("probe", 1, seed=99)[0]["sender_vector"]
     kwargs = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
                   sender_tap_id=adapter["sender_tap_id"], receiver_tap_id=adapter["receiver_tap_id"])
@@ -96,3 +97,20 @@ def test_checkpoint_roundtrip_and_tamper_detection(tmp_path):
     path.write_bytes(damaged)
     with pytest.raises(LatentAdapterError, match="weight digest"):
         load_adapter(path)
+
+
+def test_projection_scope_prevents_event_vector_broadcast_to_token_rows():
+    event_adapter = fit()
+    vector = make_pairs("probe", 1, seed=99)[0]["sender_vector"]
+    bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                    sender_tap_id=event_adapter["sender_tap_id"], receiver_tap_id=event_adapter["receiver_tap_id"])
+    with pytest.raises(LatentAdapterError, match="event-level adapter"):
+        project_rows(event_adapter, [vector, vector], **bindings)
+
+    token_adapter = fit(projection_scope="TOKENWISE")
+    token_bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                          sender_tap_id=token_adapter["sender_tap_id"], receiver_tap_id=token_adapter["receiver_tap_id"])
+    projected = project_rows(token_adapter, [vector, vector], **token_bindings)
+    assert len(projected) == 2 and all(len(row) == token_adapter["receiver_dim"] for row in projected)
+    with pytest.raises(LatentAdapterError, match="tokenwise adapter"):
+        project_event(token_adapter, vector, **token_bindings)
