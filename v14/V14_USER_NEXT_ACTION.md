@@ -2060,3 +2060,10 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 ### Cross-lane update — Core native consumer PR #2512
 
 Core has opened [PR #2512](https://github.com/RedMentos/Aii/pull/2512), head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, which consumes the anchor-preserving tokenwise input under the separate `NATIVE_RECEIVER` approval. It is a real Runtime diagnostic consumer, but it still measures only decode/input-effect metrics. It does not yet score target tokens or generated answers. The current #2512 branch snapshot does not contain the new #2511 `native_receiver_utility.py` module; Core has been asked to refresh the Perception parent and add a bounded native teacher-forced target-score producer. #2512 exact-head CI was queued; no PASS claimed. This is not trained semantic utility, B3 remains OFF, and no Redmi evidence exists.
+
+
+### CI readback after Run 23 checkpoint (2026-11-25)
+
+- Core PR #2512 exact head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`: native input-embedding extractor PASS (Python contract 3.13/3.14, Linux pinned API, Android ARM64 cross-compile); staged-runtime PASS; integrated-regression PASS; offline deployment integrity PASS (Python 3.11/3.14). These are GitHub-hosted CI/cross-compile results, not Redmi runtime evidence.
+- Perception PR #2511 exact head `9d864d66f6d66f1f5ead3284a85cf22814aa69d9`: staged-runtime PASS; offline deployment integrity PASS (Python 3.11/3.14); integrated-regression still IN_PROGRESS at last readback. The connector did not expose a new exact-head adapter-contract run for the appended task-score tests, so no CI PASS is claimed for those eight tests.
+- #2512 still does not contain the new `native_receiver_utility.py` evaluator; Core has been asked to refresh/rebase the Perception parent and add the native target-score producer. Its current green consumer CI only validates the input-effect probe path.
