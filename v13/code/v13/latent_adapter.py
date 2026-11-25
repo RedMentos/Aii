@@ -110,7 +110,8 @@ def _validate_span_sequence(spans, name: str) -> list[tuple[int, int]]:
 
 
 def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors, receiver_spans,
-                                  *, source_id: str, min_coverage: float = _TOKEN_ALIGNMENT_MIN_COVERAGE) -> list[dict]:
+                                  *, source_id: str, source_sha256: str,
+                                  min_coverage: float = _TOKEN_ALIGNMENT_MIN_COVERAGE) -> list[dict]:
     """Align different tokenizer segmentations by exact source-character overlap.
 
     Each receiver token receives a coverage-weighted average of sender rows that
@@ -119,6 +120,7 @@ def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors
     """
     if type(source_id) is not str or not source_id or len(source_id) > 128:
         raise LatentAdapterError("token alignment source_id is invalid")
+    source_sha256 = _sha256_text(source_sha256, "source_sha256")
     if (type(min_coverage) not in (int, float) or not math.isfinite(float(min_coverage))
             or not _TOKEN_ALIGNMENT_MIN_COVERAGE <= float(min_coverage) <= 1.0):
         raise LatentAdapterError("token alignment minimum coverage must be in [0.80, 1]")
@@ -142,6 +144,7 @@ def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors
     alignment_material = json.dumps({
         "method": _TOKEN_ALIGNMENT_METHOD,
         "source_id": source_id,
+        "source_sha256": source_sha256,
         "sender_spans": clean_sender_spans,
         "receiver_spans": clean_receiver_spans,
     }, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -162,12 +165,13 @@ def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors
             raise LatentAdapterError("sender token spans do not sufficiently cover a receiver token span")
         sender_aligned = [value / covered for value in weighted]
         pair_material = json.dumps(
-            [source_id, position, start, end, alignment_id],
+            [source_id, source_sha256, position, start, end, alignment_id],
             separators=(",", ":"), ensure_ascii=True,
         ).encode("utf-8")
         aligned.append({
             "pair_id": hashlib.sha256(pair_material).hexdigest(),
             "source_id": source_id,
+            "source_sha256": source_sha256,
             "sender_vector": sender_aligned,
             "receiver_vector": receiver_rows[position],
             "token_position": position,
@@ -194,6 +198,11 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
             raise LatentAdapterError(name + " tokenwise pairs require source_span alignment metadata")
         if pair.get("alignment_method") != _TOKEN_ALIGNMENT_METHOD:
             raise LatentAdapterError(name + " tokenwise pairs require CHAR_SPAN_OVERLAP_V1 alignment")
+        source_sha256 = pair.get("source_sha256")
+        try:
+            _sha256_text(source_sha256, name + " source_sha256")
+        except LatentAdapterError as exc:
+            raise LatentAdapterError(name + " tokenwise pairs require a valid source_sha256") from exc
         alignment_id = pair.get("alignment_id")
         if (type(alignment_id) is not str or len(alignment_id) != 64
                 or any(ch not in "0123456789abcdef" for ch in alignment_id)):
@@ -211,6 +220,10 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
             raise LatentAdapterError(name + " token positions must contain at least two contiguous rows from zero")
         if len({item["alignment_id"] for item in ordered}) != 1:
             raise LatentAdapterError(name + " tokenwise rows for one source disagree on alignment_id")
+        if len({item["source_sha256"] for item in ordered}) != 1:
+            raise LatentAdapterError(name + " tokenwise rows for one source disagree on source_sha256")
+        if len(set(positions)) != len(positions):
+            raise LatentAdapterError(name + " contains a duplicate token position for one source")
         previous_end = -1
         for item in ordered:
             start, end = item["source_span"]
@@ -226,7 +239,7 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
 def _token_alignment_digest(pairs: Sequence[Mapping], *, method: str,
                             sender_tokenizer_revision: str, receiver_tokenizer_revision: str) -> str:
     rows = sorted((
-        pair["pair_id"], pair["source_id"], pair["token_position"],
+        pair["pair_id"], pair["source_id"], pair["source_sha256"], pair["token_position"],
         list(pair["source_span"]), pair["alignment_id"],
         float(pair["alignment_coverage"]),
     ) for pair in pairs)
@@ -364,6 +377,10 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         holdout_method = _validate_tokenwise_pairs(holdout_pairs, "holdout_pairs")
         if train_method != holdout_method:
             raise LatentAdapterError("train/holdout token alignment methods differ")
+        train_source_hashes = {pair["source_sha256"] for pair in train_pairs}
+        holdout_source_hashes = {pair["source_sha256"] for pair in holdout_pairs}
+        if train_source_hashes & holdout_source_hashes:
+            raise LatentAdapterError("source hash leakage: token alignment source appears in train and holdout")
         for key, value in (
             ("sender_tokenizer_revision", sender_tokenizer_revision),
             ("receiver_tokenizer_revision", receiver_tokenizer_revision),
