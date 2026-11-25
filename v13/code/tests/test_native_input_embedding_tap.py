@@ -136,3 +136,27 @@ def test_native_input_tap_manifest_rejects_receipt_tampering_even_if_rows_match(
     manifest["extractor_receipt"]["requested_token_ids"][0] = 999
     with pytest.raises(LatentAdapterError, match="requested token IDs/order"):
         validate(manifest, SOURCE, PIECES, ROWS)
+
+
+def test_native_input_tap_preserves_repeated_token_ids_without_deduplication():
+    source = "ababcd"
+    token_ids = [10, 10, 11]
+    pieces = [
+        {"id": 10, "piece": "ab"},
+        {"id": 10, "piece": "ab"},
+        {"id": 11, "piece": "cd"},
+    ]
+    rows = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+    result = build(
+        "C3_LANGUAGE", source, token_ids, pieces, rows,
+        source_id="repeat-source", event_id="repeat-event",
+        brain_generation_id="repeat-generation", model_revision="model-r1",
+        model_sha256=MODEL_SHA, tokenizer_revision="tokenizer-r1",
+        extractor_receipt=receipt(
+            token_ids=token_ids, elements_written=9, embedding_dim=3,
+        ),
+    )
+    assert result["manifest"]["token_ids"] == token_ids
+    assert result["manifest"]["extractor_receipt"]["requested_token_ids"] == token_ids
+    assert result["manifest"]["row_positions"] == [0, 1, 2]
+    assert validate(result["manifest"], source, pieces, rows) == result
