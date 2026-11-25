@@ -272,6 +272,7 @@ def test_tokenwise_fit_rejects_activation_mutation_after_alignment():
             sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
             sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
             sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            projection_scope="TOKENWISE",
             sender_tokenizer_revision="sender-tokenizer-r1",
             receiver_tokenizer_revision="tokenizer-r1",
             rank=2, ridge=1e-5,
@@ -290,6 +291,7 @@ def test_tokenwise_fit_rejects_rehashed_activation_with_stale_pair_id():
             sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
             sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
             sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            projection_scope="TOKENWISE",
             sender_tokenizer_revision="sender-tokenizer-r1",
             receiver_tokenizer_revision="tokenizer-r1",
             rank=2, ridge=1e-5,
@@ -306,6 +308,7 @@ def test_alignment_digest_changes_when_activation_rows_change():
         sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
         sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
         sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+        projection_scope="TOKENWISE",
         sender_tokenizer_revision="sender-tokenizer-r1",
         receiver_tokenizer_revision="tokenizer-r1",
         rank=2, ridge=1e-5,
@@ -375,11 +378,16 @@ def test_tokenwise_fit_rejects_source_hash_leakage_across_holdout():
         if row["source_id"] == leaked_source:
             row["source_sha256"] = leaked_hash
             row["alignment_id"] = leaked_alignment
-            start, end = row["source_span"]
-            row["pair_id"] = hashlib.sha256(json.dumps(
-                [leaked_source, leaked_hash, row["token_position"], start, end, leaked_alignment],
-                separators=(",", ":"), ensure_ascii=True,
-            ).encode("utf-8")).hexdigest()
+            row["pair_id"] = _token_pair_id(
+                source_id=row["source_id"],
+                source_sha256=row["source_sha256"],
+                token_position=row["token_position"],
+                source_span=row["source_span"],
+                alignment_id=row["alignment_id"],
+                alignment_coverage=row["alignment_coverage"],
+                sender_vector_sha256=row["sender_vector_sha256"],
+                receiver_vector_sha256=row["receiver_vector_sha256"],
+            )
     with pytest.raises(LatentAdapterError, match="source hash leakage"):
         fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
 
