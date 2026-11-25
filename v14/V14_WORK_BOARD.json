@@ -203,7 +203,7 @@
       "latest_audio_pr": {
         "pr": 2498,
         "head_sha": "369345769f89a655239813046196548e8c05d77b",
-        "status": "FOCUSED_CI_PASS_STAGED_INTEGRATION_PENDING",
+        "status": "FOCUSED_CI_PASS_STAGED_INTEGRATION_FAIL_SOURCE_PIN_DIVERGENCE",
         "changes": [
           "A4 max-fusion test now allows existing voice evidence to dominate; still requires predictor novelty to be included and external_interrupt unchanged",
           "VAD comparison workflow expected RAW EAR source blob updated to exact current Git blob 0cbec2a9f424f177d7e6e783c28571b236612419"
@@ -214,7 +214,13 @@
           "raw_ear_fastpath": "PASS_PYTHON_3.13_AND_3.14_RUN_45723389394",
           "vad_comparison": "PASS_PYTHON_3.13_AND_3.14_RUN_45723389184",
           "offline_runtime_integrity": "PASS_PYTHON_3.11_AND_3.14_RUN_45723389226",
-          "staged_integrated": "IN_PROGRESS_RUN_45723389826"
+          "staged_integrated": "FAIL_RUN_45723389826"
+        },
+        "staged_failure": {
+          "file": "v13/code/scripts/integrated_audio_context_candidate_20261121.py",
+          "actual_blob_sha": "598e9c12ad387a1b693ed9fdda2bd8101212d2e8",
+          "expected_blob_sha_in_recovery_candidate": "831080bceec90711bd42e0fa4eba47c669975c98",
+          "owner_boundary": "Core-owned recovery/deploy pin; Perception did not edit"
         }
       }
     },
