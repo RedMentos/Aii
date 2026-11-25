@@ -875,6 +875,9 @@ def consume_projected_frame(
             "multichannel_changed_tile_ids": list(temporal_visual.get("multichannel_changed_tile_ids", [])),
             "local_change_score": temporal_visual.get("local_change_score", 0.0),
             "local_temporal_activity_score": temporal_visual.get("local_temporal_activity_score", 0.0),
+            "a3_attention_novelty": round(
+                float(temporal_visual.get("a3_attention_novelty", 0.0)), 6,
+            ),
             "attention_novelty": round(attention_novelty, 6),
             "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
             "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
