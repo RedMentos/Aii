@@ -16,7 +16,7 @@ C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a2202
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
 NATIVE_RECEIVER_BLOB_SHA1 = "7b6465c0a95dda60a51baff6204b8305d2828d61"
 RUNTIME_CLOSE_OVERLAY = "scripts/integrated_native_probe_runtime_close_overlay_20261124.py"
-RUNTIME_CLOSE_OVERLAY_BLOB_SHA1 = "109bcb8ac2be5666f118f5266a1e6ba8f0ef6bfc"
+RUNTIME_CLOSE_OVERLAY_BLOB_SHA1 = "fc32dc9c350e36b76c54bf8f1e26186370ccb133"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
