@@ -41,4 +41,6 @@ def apply_sources(sources, *, code_dir: Path) -> dict:
         raise ValueError("native-probe Runtime.close overlay does not compile") from exc
     if patched.count(b"guard_runtime_close(self)") != 1:
         raise ValueError("native-probe Runtime.close barrier was not installed exactly once")
-    return {RUNTIME_PATH: patched}
+    result = dict(sources)
+    result[RUNTIME_PATH] = patched
+    return result
