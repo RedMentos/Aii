@@ -304,10 +304,10 @@ struct BatchGuard {
     ~BatchGuard() { if (active) llama_batch_free(value); }
 };
 
-bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_dim,
+bool decode_embeddings(llama_context * ctx, const llama_model * model, int rows, int input_dim, int output_dim,
                        const std::vector<int> & positions, const std::vector<float> & input,
                        std::vector<float> & output, int & decode_status) {
-    if (!v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
+    if (!ctx || !model || !v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
     llama_memory_clear(llama_get_memory(ctx), true);
     BatchGuard batch;
     batch.value = llama_batch_init(rows, input_dim, 1);
@@ -448,7 +448,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     std::vector<float> positive_out, zero_out, shuffled_out, row_shuffled_out, repeat_out;
     int positive_status = -999, zero_status = -999, shuffle_status = -999, row_shuffle_status = -999, repeat_status = -999;
     const bool row_shuffle_applicable = rows >= 2;
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status)) {
+    if (!decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status)) {
         std::cerr << "native positive decode failed\n";
         return 6;
     }
@@ -459,10 +459,10 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         std::cerr << "native teacher-forced target scoring failed\n";
         return 7;
     }
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
-        (row_shuffle_applicable && !decode_embeddings(context.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
+    if (!decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
+        !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
+        (row_shuffle_applicable && !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
+        !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
         std::cerr << "native control decode or output embedding failed\n";
         return 6;
     }
@@ -597,7 +597,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         const int target_context_rows = item.rows == 0 ? 1 : item.rows;
         const bool decoded = item.rows == 0
             ? decode_bos(context.value, model.value, decode_status)
-            : decode_embeddings(context.value, item.rows, input_dim, output_dim,
+            : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
         std::vector<double> token_logprobs;
