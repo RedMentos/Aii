@@ -12,6 +12,7 @@ or native receiver authority is granted.
 """
 from __future__ import annotations
 
+import hashlib
 import time
 from pathlib import Path
 
@@ -91,7 +92,9 @@ def _verify_pair_record(record, *, source_ref, event, session_id, sender_role,
             or receiver.get("role") != receiver_role
             or receiver.get("model_revision") != receiver_binding.get("revision")
             or receiver.get("model_sha256") != receiver_binding.get("sha256")
-            or receiver.get("tap_id") != RECEIVER_TAP_IDS[receiver_role]):
+            or receiver.get("tap_id") != RECEIVER_TAP_IDS[receiver_role]
+            or not isinstance(record.get("pairs"), list)
+            or len(record.get("pairs")) != record.get("pair_count")):
         raise NativeTokenwisePairCaptureError("tokenwise pair record lost its source/session/model/tap binding")
     pair_count = record.get("pair_count")
     if type(pair_count) is not int or not 1 <= pair_count <= 64:
@@ -146,7 +149,6 @@ def capture_native_tokenwise_pair_record(
         source_bytes = source_text.encode("utf-8", errors="strict")
         if len(source_bytes) > MAX_SOURCE_BYTES:
             raise NativeTokenwisePairCaptureError("last source exceeds the 4096-byte diagnostic bound")
-        import hashlib
         if (source_ref.get("char_start") != 0
                 or source_ref.get("char_end") != len(source_text)
                 or source_ref.get("sha256") != hashlib.sha256(source_bytes).hexdigest()):
@@ -157,8 +159,18 @@ def capture_native_tokenwise_pair_record(
             lease_token=lease_token,
             probe_kind=PROBE_KIND,
         )
-        if approval.get("consumed") is not True or approval.get("probe_kind") != PROBE_KIND:
-            raise PermissionError("tokenwise pair capture did not consume its distinct local approval")
+        if not isinstance(approval, dict) or not isinstance(approval.get("approval_id"), str):
+            raise PermissionError("tokenwise pair capture did not consume a local approval")
+        consumed_record, _ = runtime.store.state(approval_module.KEY, None)
+        if (not isinstance(consumed_record, dict)
+                or consumed_record.get("status") != "CONSUMED"
+                or consumed_record.get("probe_kind") != PROBE_KIND
+                or consumed_record.get("sender_role") != sender_role
+                or consumed_record.get("receiver_role") != receiver_role
+                or consumed_record.get("session_id") != runtime.session
+                or consumed_record.get("event_id") != event.get("event_id")
+                or consumed_record.get("source_ref") != source_ref):
+            raise PermissionError("consumed approval state is not the exact tokenwise-pair authorization")
 
         sender_binding = approval_module._model_binding(runtime, sender_role)
         receiver_binding = approval_module._model_binding(runtime, receiver_role)
@@ -224,6 +236,7 @@ def capture_native_tokenwise_pair_record(
                 raise PermissionError("managed native processes remain before receiver row extraction")
             approval_module._resource_preflight(runtime, receiver_binding)
 
+        _check_live(runtime, deadline, "native row extraction")
         remaining = int(deadline - time.monotonic())
         if remaining < 1:
             raise TimeoutError("native tokenwise pair deadline expired before receiver row extraction")
