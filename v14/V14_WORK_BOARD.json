@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T13:50:07+01:00",
+  "updated_at": "2026-11-25T03:21:30+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,7 +197,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
+      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration. Perception extension in PR #2470 now feeds bounded A3 projected change into the existing A4 novelty/modulation path (0.15 × score, cap 0.15; no truth/learning/action authority); focused ingress CI passes 54/54 on Python 3.13 and 3.14. Current integration blocker remains the Core-owned source lifecycle composer: A5 UI lease fails both versions with `unsupported lifecycle source: vision.py`. After Core rebinds the exact source and dependency closure, rerun the staged/integrated gates; then Perception adds noise/shuffled and source-disjoint calibration.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-24T13:50:07+01:00",
       "latest_candidate_pr": {
@@ -213,7 +213,22 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
+      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action.",
+      "latest_evidence": {
+        "candidate_pr": 2470,
+        "branch": "research-perception/v14-a3-counterfactual-probe-20261124-run13",
+        "code_test_sha": "2b96fb9ce919fd5de1ee0ead6c5c5f1e2fbc4a55",
+        "docs_head_before_board_update": "93d9841e4ed7a00e5d0b05f54329563a20e3909f",
+        "behavior": "A3 source-bound projected temporal cosine change contributes min(0.15,0.15*change_score) to A4 attention novelty through the existing UI frame consumer; attention-only, no truth/learning/action authority, no weight update",
+        "focused_ci": "PASS: run 45532096806, Python 3.13 and 3.14, py_compile + 54 tests each",
+        "privacy_ci": "PASS: run 45532097200",
+        "bridge_security_ci": "PASS: run 45532096814",
+        "integration_ci": "FAIL: run 45532096819, both Python 3.13 and 3.14; 17 passed, 5 subtests passed, 1 failed: unsupported lifecycle source vision.py",
+        "local": "Python 3.13.5 isolated A3->A4 formula harness 6/6 PASS; full repository suite BLOCKED because no checkout and git clone/DNS unavailable",
+        "release": "NOT_RELEASED; PR remains open",
+        "device": "REDMI_UNVERIFIED; no fresh receipt; prior STOPPED_BY_USER state respected; no UPDATE_REQUEST",
+        "next": "Core/Integrator rebind exact vision.py and full lifecycle dependency closure; rerun A5 lease, staged/integrated consumers and migration. Then Perception adds noise/shuffled-frame and source-disjoint salience calibration."
+      }
     },
     {
       "id": "V14-007",
@@ -1376,5 +1391,26 @@
     "user_action_required": "NONE. Do not run a manual Termux command. Existing updater is enabled; #519 is already queued. No model/weight/permission/microphone change or device action requested.",
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
+  },
+  "perception_run25": {
+    "timestamp": "2026-11-25T03:21:30+01:00",
+    "owner": "Research & Perception",
+    "whole_system_issue": 1984,
+    "candidate_pr": 2470,
+    "branch": "research-perception/v14-a3-counterfactual-probe-20261124-run13",
+    "code_test_sha": "2b96fb9ce919fd5de1ee0ead6c5c5f1e2fbc4a55",
+    "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_A4_TEMPORAL_SALIENCE_20261125.md",
+    "behavior": "A3 projected temporal change now contributes a capped, source-bound attention signal to A4 novelty. It remains diagnostic/attention-only; no learning, truth or action authority.",
+    "tests": {
+      "local_linux": "isolated formula 6/6 PASS (Python 3.13.5); full checkout unavailable",
+      "github_ci": "MediaProjection frame ingress PASS 54/54 on Python 3.13 and 3.14 (run 45532096806)",
+      "privacy": "PASS (run 45532097200)",
+      "bridge_security": "PASS (run 45532096814)",
+      "integration": "FAIL: A5 UI lease run 45532096819 on both Python 3.13/3.14; unsupported lifecycle source vision.py"
+    },
+    "research": "R-150: full Future-OPSD main PDF and official OSS README reviewed; code/checkpoint Apache-2.0, dataset terms separate; 8x B200, not a Redmi candidate; no model/data imported.",
+    "release_status": "NOT_RELEASED",
+    "redmi_status": "REDMI_UNVERIFIED; no fresh receipt; STOPPED_BY_USER respected; no update request",
+    "user_action_required": "NONE"
   }
 }
