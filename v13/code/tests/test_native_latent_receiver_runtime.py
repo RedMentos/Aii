@@ -312,7 +312,8 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
         "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
-    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [1, 101, 202, 2], "vectors": [[0.0, 0.0], [1.0, 2.0], [3.0, 4.0], [0.0, 0.0]]}
+    install_tokenwise_stubs(runtime, event, tap, sender_digest)
     runtime.pool.unload = lambda: None
     sender_path.write_bytes(b"changed-after-tap")
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
@@ -340,7 +341,8 @@ def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monke
         "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
-    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [1, 101, 202, 2], "vectors": [[0.0, 0.0], [1.0, 2.0], [3.0, 4.0], [0.0, 0.0]]}
+    install_tokenwise_stubs(runtime, event, tap, sender_digest)
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
     try:
@@ -371,7 +373,8 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
-    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [1, 101, 202, 2], "vectors": [[0.0, 0.0], [1.0, 2.0], [3.0, 4.0], [0.0, 0.0]]}
+    install_tokenwise_stubs(runtime, event, tap, sender_digest)
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
     try:
