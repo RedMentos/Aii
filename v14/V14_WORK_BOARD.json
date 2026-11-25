@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T20:42:25.952Z",
+  "updated_at": "2026-11-25T20:47:08.426Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.",
@@ -1386,7 +1386,7 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
-    "timestamp": "2026-11-25T20:42:25.952Z",
+    "timestamp": "2026-11-25T20:47:08.426Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-anchor-preserving-tokenwise-20261125-run22",
     "pr": 2511,
@@ -1395,15 +1395,17 @@
     "current_parent_branch_head": "e333b5c3da2448ef6d188f2278672f7f692ac76e",
     "code_test_sha": "87c8c7ecdf18ac42ad2753568991a2c4e32078ae",
     "tested_sha": null,
-    "status": "DRAFT_CI_PENDING",
+    "status": "CI_RUNNING",
     "local": "LOCAL_LINUX CPython 3.13.5 isolated anchor-residual harness: py_compile PASS; 4/4 positive/negative checks PASS. Full Aii checkout absent; exact repository py_compile/pytest NOT_RUN.",
-    "ci": "Exact PR #2511 workflow pending at checkpoint. Parent #2508 CI is not evidence for this child. Staged/integrated runtime NOT_RUN.",
+    "ci": "offline 3.11/3.14 and privacy PASS on prior code/test head c1e3e20; staged-runtime and integrated-regression IN_PROGRESS; adapter-contract 3.13/3.14 QUEUED after workflow filter repair at e8b8d95. Exact tests for this child still pending.",
     "consumer": "Perception fitter now verifies native receiver extractor manifest digest/row hashes; optional anchor-preserving residual builder emits vectors in native receiver prefill geometry. Core PR #2510 has not yet called this new builder; no native receiver inference, persistence, gradient update or B3 authority.",
-    "device": "No fresh authenticated device receipt in this checkpoint; last available private snapshot is historical (2026-11-24). REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.",
-    "next_action": "Poll exact PR #2511 CI and fix failures; coordinate Core PR #2510 rebase/consumer wiring under explicit native-probe approval; then run held-out receiver-task utility with exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.",
+    "device": "NO_LIVE_RECEIPT for the owner-read DIAGNOSTICS request. Last authenticated private snapshot 2026-11-24 reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only. Current installation unverified. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.",
+    "next_action": "Wait for exact adapter-contract 3.13/3.14 and staged/integrated CI; fix any failures; coordinate Core PR #2510 rebase/consumer wiring under explicit native-probe approval; then run held-out task utility with exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.",
     "pr_url": "https://github.com/RedMentos/Aii/pull/2511",
     "research": "R-155: XBridge motivates exact receiver lexical anchors plus gated latent enrichment, but its 264M/7B-class implementation is not mobile. arXiv:2608.16347v2 shows representational retrieval does not reliably predict causal task utility. New helper is a bounded residual approximation, not XBridge LEB or semantic proof.",
-    "staged_integration": "NOT_RUN; no real GGUF or Redmi integration."
+    "staged_integration": "NOT_RUN; no real GGUF or Redmi integration.",
+    "head_sha": "e8b8d95229f3c17db099468f4767ccfad18be612",
+    "ci_config_sha": "e8b8d95229f3c17db099468f4767ccfad18be612"
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-25T18:52:29.980Z",
