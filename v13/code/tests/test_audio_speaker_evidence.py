@@ -180,6 +180,64 @@ def test_external_temporal_voice_state_resets_when_receipt_scope_changes():
     assert changed["consent_scope_bound"] is True
 
 
+def test_uncalibrated_speaker_candidate_cannot_modulate_a4(monkeypatch, tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    captured = {}
+
+    class UncalibratedCandidateRegistry(SpeakerChangeEvidenceRegistry):
+        def update(self, **kwargs):
+            return {
+                "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                "status": "MEASURED",
+                "source_id": kwargs["source_id"],
+                "generation_id": kwargs["generation_id"],
+                "change_score": 1.0,
+                "peak_candidate_change_score": 1.0,
+                "peak_speaker_change_candidate": True,
+                "speaker_change_candidate": True,
+                "candidate_count": 1,
+                "threshold_status": "CALLER_ASSERTED_UNVERIFIED",
+                "speaker_label": None,
+                "identity_authority": False,
+                "learning_authority": False,
+                "action_authority": False,
+            }
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal):
+            captured.update(sal)
+            return dict(sal)
+
+    runtime._raw_ear_speaker_registry = UncalibratedCandidateRegistry()
+    monkeypatch.setattr(audio_voice_module.attctl, "controller", lambda _: CaptureAttention())
+    pcm = tone()
+    embeddings = speaker_batch(
+        SOURCE, event["brain_generation_id"], 100, 1100,
+        lambda _: (1.0, 0.0, 0.0),
+        current_chunk_sha256=hashlib.sha256(pcm).hexdigest(),
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=embeddings,
+        )
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        expected = max(
+            result["packet"]["segments"][0]["acoustic"]["rms"] * 0.5,
+            0.25 * result["a4"]["prosody_change_score"]
+                if result["temporal_voice"]["voice_active"] else 0.0,
+            0.5 if result["temporal_voice"]["voice_onset"] else 0.0,
+        )
+        assert captured["external_interrupt"] == pytest.approx(min(1.0, expected))
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" not in result["c3_admission"]["summary"]
+    finally:
+        runtime.store.close()
+
+
 def test_speaker_window_start_cannot_move_backwards_when_frame_times_advance_and_state_recovers():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(
