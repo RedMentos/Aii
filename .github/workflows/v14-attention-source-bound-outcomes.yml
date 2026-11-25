@@ -50,13 +50,33 @@ jobs:
           python - <<'PY'
           from hashlib import sha256
           from pathlib import Path
-          for name in (
+          names = (
               "v13/code/v13/attention.py",
               "v13/code/v13/neuromod.py",
               "v13/code/v13/audio_voice_cues.py",
               "v13/code/v13/audio_speaker_evidence.py",
-          ):
+              "v13/code/scripts/record_only_controller_guard_20261116.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
+              "v13/code/scripts/stage_integrated_candidate.py",
+              "v13/code/scripts/activate_termux_recovery.py",
+              "v13/code/scripts/termux_runtime_recovery.sh",
+              "v13/code/scripts/termux_one_command.sh",
+              "v13/code/v13/runtime_deploy.py",
+          )
+          for name in names:
               print(f"{name} sha256={sha256(Path(name).read_bytes()).hexdigest()}")
+          import re
+          recovery = Path("v13/code/scripts/termux_runtime_recovery_candidate_20261112.py").read_text()
+          match = re.search(
+              r"load\\(code_dir, 'scripts/record_only_controller_guard_20261116\\.py',\\s*'([0-9a-f]{64})'\\)",
+              recovery,
+          )
+          if not match:
+              raise SystemExit("recovery candidate guard pin not found")
+          expected = match.group(1)
+          actual = sha256(Path("v13/code/scripts/record_only_controller_guard_20261116.py").read_bytes()).hexdigest()
+          print(f"CORE_RECOVERY_GUARD_PIN expected={expected} actual={actual} matches={expected == actual}")
           PY
       - name: Install minimal CPU test dependencies
         run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 prompt-toolkit==3.0.52
