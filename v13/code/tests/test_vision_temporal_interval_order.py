@@ -16,6 +16,7 @@ def update(registry, start_ms, end_ms, receipt):
         capture_session_id="capture-session",
         generation_id="generation",
         consent_receipt_ref=receipt,
+        session_consent_receipt_ref="session-consent",
         start_ms=start_ms,
         end_ms=end_ms,
         tile_luminance=tiles(),
