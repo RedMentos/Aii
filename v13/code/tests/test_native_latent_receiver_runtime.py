@@ -351,7 +351,7 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"status": "FINAL", "event_id": event["event_id"]}
     calls = []
@@ -370,6 +370,8 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
     )
     runtime.pool.unload = lambda: calls.append("unload")
+    # Simulate the local interactive approval boundary; production still checks os.isatty(0).
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
     result = json.loads(operator_command(
         runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
