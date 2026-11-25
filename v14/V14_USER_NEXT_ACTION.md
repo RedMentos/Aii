@@ -1,3 +1,22 @@
+# Latest verified checkpoint — Research & Perception Run 31 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is required or authorized by this checkpoint.
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` remains at verified base `8d93236c753f0194224c19edc7411d8d7082b1d6`; this work is a separate draft PR stack, NOT_RELEASED.
+- Updated Perception branch `research-perception/v14-anchor-preserving-tokenwise-20261125-run22` is at `f7418d6d9e95c7d7bc71fde2c36414c106b04d11`, parent PR [#2511](https://github.com/RedMentos/Aii/pull/2511).
+- Code commit `635a6bc09f3ef5e268aa7037f327092a49b5f92d` changes `v13/code/v13/native_receiver_utility.py`: native receiver task-score cohorts now reject duplicate source-content hashes across task groups and require crossed session × task-family coverage. The result exposes per-cell counts and source-group count.
+- Test commit `4b8fb872ce43c01f0363f718ce21486498ced721` adds three negative tests: duplicate source content, a missing session/family cell, and a per-cell minimum above the observed count.
+- Research ledger commit `d55734f8354abc62295c93645d9fdc2592b8ea12` records full-text reviews of RASP (arXiv:2611.03513) and Stability Does Not Mirror Plasticity (arXiv:2611.23427), plus an Android llama.cpp packaging/licence audit. Handoff: [RESEARCH_PERCEPTION_RUN31_NATIVE_RECEIVER_COHORT_20261125.md](handoffs/RESEARCH_PERCEPTION_RUN31_NATIVE_RECEIVER_COHORT_20261125.md).
+- **LOCAL_LINUX:** isolated cohort-gate reproduction, 4 assertions PASS on CPython 3.13.5. Full Aii checkout/pytest and full native llama.cpp build BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
+- **CI:** exact-head runtime deployment integrity PASS (Python 3.11 and 3.14, run 45710597904). Staged-runtime/integrated-regression run 45710597847 is still IN_PROGRESS; no integrated PASS is claimed. No dedicated exact-head adapter-contract run was observed.
+- **Consumer:** Core PR [#2515](https://github.com/RedMentos/Aii/pull/2515) is the immediate consumer, but it currently produces only LATENT_CANDIDATE; the other seven conditions are still missing. It must refresh/rebase its copied helper onto #2511 before collecting the eight-condition cohort.
+- **Device:** latest available private V13OBS #115 snapshot is historical (2026-11-24) and reported STOPPED_BY_USER. No fresh authenticated receipt was obtained. Current Redmi installation, runtime and updater state are therefore REDMI_UNVERIFIED / UPDATER_UNVERIFIED. Do not restart the user-stopped runtime.
+- **Whole-system blockers:** #1904 P0 basic-chat and B1/B2 delivery remain open. B3 remains OFF. The new evaluator is a target-logprob proxy gate, not semantic correctness, trained latent coupling or release acceptance.
+
+**Next executable step:** Core rebase #2515 onto #2511, produce all eight source/session-bound conditions, then run a pinned real GGUF cohort with at least 20 unique source groups, two sessions, two families, five tasks per session, four per family and non-empty session × family cells. Keep B3 OFF until every control is beaten with real native evidence and independent review.
+
+---
+
 # Current V14 handoff — Research & Perception Run 19 (2026-11-25)
 
 **User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
