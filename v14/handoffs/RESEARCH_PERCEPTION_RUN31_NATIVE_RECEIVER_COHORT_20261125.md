@@ -53,7 +53,7 @@ No newly published JEPA result was verified since the previous daily digest. The
 - Concrete V14 test: task-family-stratified, source-disjoint cohorts before interpreting native-receiver utility; then compare module-specific update masks with matched parameter budgets and old-task retention.
 
 ### Memory and mobile execution
-The module-level paper's distinction between declarative storage and attention-mediated access is a testable memory hypothesis, not a one-to-one map of human brain modules. The Android llama.cpp v0.8.0 packaging project is MIT at repository root and targets Snapdragon 8 Gen 3 / 7+ Gen 3; its release metadata includes API 34 / ARMv8.6-a OpenCL builds and selected Hexagon kernels. It is not a validated Redmi target binary. No binary/model/weight download or swap was made. Current handset RSS/PSS, TTFT and thermal measurements remain unavailable.
+The module-level paper's distinction between declarative storage and attention-mediated access is a testable memory hypothesis, not a one-to-one map of human brain modules. The Android llama.cpp packaging project is MIT at repository root and targets Snapdragon 8 Gen 3 / 7+ Gen 3. Its latest repo release is v1.0.0 (2026-11-13), with API 34 / ARMv8.6-a OpenCL metadata and selected Hexagon kernels; upstream llama.cpp had advanced to signed commit b12682 on 2026-11-24. It remains an unvalidated target-device reference, not a Redmi binary candidate. It is not a validated Redmi target binary. No binary/model/weight download or swap was made. Current handset RSS/PSS, TTFT and thermal measurements remain unavailable.
 
 ## Next executable step
 
