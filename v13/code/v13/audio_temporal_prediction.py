@@ -319,10 +319,11 @@ class AudioTemporalPredictionRegistry:
             valid = (
                 set(payload) == {
                     "schema", "status", "source_scope_sha256", "generation_scope_sha256",
-                    "consent_scope_id", "weights", "updates", "last_touched_ns", "state_sha256",
+                    "consent_scope_id", "method", "weights", "updates", "last_touched_ns", "state_sha256",
                 }
                 and payload.get("schema") == self.PERSISTENCE_SCHEMA
                 and payload.get("status") == "ACTIVE"
+                and payload.get("method") == METHOD
                 and payload.get("source_scope_sha256") == source_hash
                 and payload.get("generation_scope_sha256") == generation_hash
                 and type(payload.get("last_touched_ns")) is int
@@ -350,6 +351,7 @@ class AudioTemporalPredictionRegistry:
             "source_scope_sha256": source_hash,
             "generation_scope_sha256": generation_hash,
             "consent_scope_id": consent_scope_id,
+            "method": METHOD,
             "weights": predictor.state_dict()["weights"],
             "updates": predictor.updates,
             "last_touched_ns": time.time_ns(),
