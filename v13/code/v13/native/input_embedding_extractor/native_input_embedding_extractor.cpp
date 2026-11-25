@@ -150,6 +150,16 @@ bool collect_rows(
     return true;
 }
 
+bool valid_tensor_type(const char * value) {
+    if (!value) return false;
+    const std::string type(value);
+    if (type.empty() || type.size() > 32) return false;
+    for (char ch : type) {
+        if (!((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_')) return false;
+    }
+    return true;
+}
+
 bool parse_options(int argc, char ** argv, Options & options) {
     std::map<std::string, std::string> values;
     const std::vector<std::string> allowed = {
@@ -361,7 +371,7 @@ int extract(const Options & options) {
     const std::int64_t * tensor_ne = tensor_id >= 0 ? gguf_get_tensor_ne(gguf, tensor_id) : nullptr;
     const char * tensor_type = tensor_id >= 0
         ? ggml_type_name(gguf_get_tensor_type(gguf, tensor_id)) : nullptr;
-    if (!tensor_ne || !tensor_type || !*tensor_type
+    if (!tensor_ne || !valid_tensor_type(tensor_type)
             || tensor_ne[0] != embedding_dim || tensor_ne[1] != vocab_size) {
         gguf_free(gguf);
         llama_model_free(model);
