@@ -274,7 +274,7 @@ def test_probe_consumes_separate_native_receiver_approval_and_native_input(tmp_p
     assert calls[0]["vectors"] == [[0.1, 0.2], [0.3, 0.4]]
     assert calls[0]["position_ids"] == [0, 1]
     assert calls[0]["position_mode"] == POSITION_MODE
-    assert calls[0]["model_path"] == runtime.bindings["C3_LANGUAGE"]["canonical_path"]
+    assert calls[0]["model_path"] == Path(runtime.bindings["C3_LANGUAGE"]["canonical_path"])
     assert result["status"] == "NATIVE_RECEIVER_DIAGNOSTIC"
     assert result["native_status"] == "NATIVE_INPUT_EFFECT"
     assert result["native_input_consumed"] is True
