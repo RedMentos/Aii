@@ -42,3 +42,10 @@ After the first hash-chain repair, CI progressed past the guard-file digest chec
 The guard now uses a separate exact byte anchor for the attention module and retains the original exact anchor for the other modules. No regex, fuzzy replacement, wildcard pin or relaxed verification was added. The downstream recovery-builder, wrapper and stage pins were recomputed from the new complete file bytes. Exact GitHub readback follows this commit; new CI is pending.
 
 Evidence: PR #2482 staged/integrated run 45497547640 failed at `controller guard anchor changed: v13/attention.py import` (19 failed, 234 passed, 10 skipped, 2 errors, 44 subtests); its integrated regression run had the same anchor failure. The independent Lab Age suite had 21 tests pass and one staged-consumer error at the same anchor. The two-checkout migration remained PARTIAL instead of UPDATED and is a separate Core/updater blocker, not fixed here.
+
+
+## 2026-11-24 third-stage guard correction
+
+The second CI run exposed the next exact anchor mismatch after the import fix: the current \`attention.py\` has \`key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)\\n\` without the historical WP-U6 inline comment. The guard now inserts its RECORD_ONLY early return at that exact current statement, after provenance/lineage validation but before \`step()\`, state mutation, receipt creation and neuromodulator emission. The source hash allowlist remains exact. Builder Git blob SHA-1, wrapper SHA-256 and stage SHA-256 were recomputed from complete bytes.
+
+A targeted test is added to the existing controller-guard test file. It checks that the exact import and outcome guard are present in the staged attention source, compiles the resulting module, and verifies that an unreviewed attention source is rejected by the source pin. The integrated workflow already executes this test file.

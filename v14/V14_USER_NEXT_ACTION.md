@@ -1860,3 +1860,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Core CI on the previous head 7e055b4 had 10 failures (guard, phone offer receipt, Lab Age/WebView, owner-read bootstrap, staged, source contracts, two-checkout migration, native latent receiver and same-turn/audio runtime), 6 success, 1 skipped, 1 cancelled. The current dd4d0d head has a fresh matrix queued/in progress; no result is claimed yet.
 - Core runtime still has no audio_consent_generation_scope() import/call and directly iterates runner.generate at runtime.py line 651.
 - Perception remains blocked from safe recomposition until Core combines the attention pin with its ActionLearn variants and produces a green exact recovery/stage/deployer chain. No Core-owned source was modified.
+
+
+## 2026-11-24 Perception lane — verified checkpoint (not a release)
+
+- **Current Perception PR chain:** #2472 is still open on `cfb0beab5050acba6d01639d27c50d07475f0fa2`; #2482 is the source-pin repair stacked on #2472; #2483 is the exact A4 RECORD_ONLY guard-anchor/test follow-up stacked on #2482. No release SHA was created by this lane.
+- **CI at code-test head:** #2483 head `9054d1d1933aa5c8541a6de0dfb3e4ea6acae00a`: controller RECORD_ONLY guard PASS (run 45499862951); staged/integrated regression QUEUED (run 45499863057); Lab Age/WebView truth QUEUED (run 45499862983); two-checkout updater migration FAIL (run 45499862937, reports PARTIAL where the test expects UPDATED). The migration failure belongs to Core/updater ownership and is not fixed here.
+- **Local execution:** full local Aii checkout and pytest NOT_RUN/BLOCKED; `git ls-remote` failed because GitHub DNS was unavailable from the local container. GitHub-hosted CI is not a local Linux measurement.
+- **Device:** REDMI_UNVERIFIED in this run. No private relay receipt was requested; no microphone, model, weights, permission, updater or phone state was touched.
+- **User action:** none. No Termux command, model download, model swap, permission change or deployment is requested or performed. Do not infer the current installed state from a green updater-only check.
+- **Next:** finish exact-head #2483 staged/Lab Age CI; integrate #2483 into #2482, then #2482 into #2472 after independent review. Core should resolve the separate updater PARTIAL→UPDATED regression and current #2478 ActionLearn output-pin failure.
