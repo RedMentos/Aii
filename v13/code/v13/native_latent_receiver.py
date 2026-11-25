@@ -16,7 +16,8 @@ import time
 from pathlib import Path
 
 SCHEMA = "v14.native-latent-receiver/3"
-POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
+POSITION_MODE = "ZERO_BASED_CONTIGUOUS_SOURCE_CONTENT_TOKENS"
+LEGACY_POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
@@ -52,7 +53,7 @@ def _finite_number(value) -> bool:
 
 
 def _validate_positions(position_ids, rows, position_mode):
-    if position_mode != POSITION_MODE:
+    if position_mode not in {POSITION_MODE, LEGACY_POSITION_MODE}:
         raise NativeReceiverError("unsupported sender position mode")
     if not isinstance(position_ids, (list, tuple)) or len(position_ids) != rows:
         raise NativeReceiverError("position row count differs from tap rows")
@@ -64,7 +65,7 @@ def _validate_positions(position_ids, rows, position_mode):
         positions.append(value)
         previous = value
     if positions != list(range(rows)):
-        raise NativeReceiverError("position IDs are not the verified zero-based tokenizer-prefill sequence")
+        raise NativeReceiverError("position IDs are not a zero-based contiguous source-token sequence")
     return positions
 
 
@@ -224,6 +225,15 @@ def validate_packet(value):
         raise NativeReceiverError("LatentReceiverPacket status")
     if value["tokenizer_revision"] is not None and (not isinstance(value["tokenizer_revision"], str) or not value["tokenizer_revision"]):
         raise NativeReceiverError("LatentReceiverPacket tokenizer revision")
+    tokenwise_packet_id = value.get("sender_tokenwise_packet_id")
+    tokenwise_manifest_sha = value.get("sender_tokenwise_manifest_sha256")
+    if (tokenwise_packet_id is None) != (tokenwise_manifest_sha is None):
+        raise NativeReceiverError("LatentReceiverPacket tokenwise binding is incomplete")
+    if tokenwise_packet_id is not None:
+        if (not isinstance(tokenwise_packet_id, str) or not tokenwise_packet_id
+                or not isinstance(tokenwise_manifest_sha, str) or len(tokenwise_manifest_sha) != 64
+                or any(ch not in "0123456789abcdef" for ch in tokenwise_manifest_sha)):
+            raise NativeReceiverError("LatentReceiverPacket tokenwise binding is invalid")
     return value
 
 
