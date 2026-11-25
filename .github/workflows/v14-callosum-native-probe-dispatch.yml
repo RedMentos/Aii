@@ -28,24 +28,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Print exact integrated source-pin hashes
-        run: |
-          python - <<'PY'
-          import hashlib
-          from pathlib import Path
-          paths = (
-              "v13/code/scripts/record_only_controller_guard_20261116.py",
-              "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py",
-              "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py",
-              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
-              "v13/code/scripts/stage_integrated_candidate.py",
-              "v13/code/v13/runtime_deploy.py",
-          )
-          for name in paths:
-              raw = Path(name).read_bytes()
-              blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
-              print("PIN_HASH", name, "sha256=" + hashlib.sha256(raw).hexdigest(), "git_blob_sha1=" + blob)
-          PY
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
