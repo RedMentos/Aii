@@ -152,8 +152,8 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
     This is an alignment candidate only. The held-out MSE and shuffled control
     are necessary diagnostics, not semantic/task-utility evidence.
     """
-    if sender_role not in _ROLES or receiver_role not in _ROLES or sender_role == receiver_role:
-        raise LatentAdapterError("persisted tap fitting supports distinct B1/B2 roles only")
+    if sender_role not in _ROLES or receiver_role not in _RECEIVERS or sender_role == receiver_role:
+        raise LatentAdapterError("unsupported or identical sender/receiver roles")
     for key, value in (("sender_tap_id", sender_tap_id), ("receiver_tap_id", receiver_tap_id),
                        ("sender_model_revision", sender_model_revision), ("receiver_model_revision", receiver_model_revision)):
         if type(value) is not str or not value or len(value) > 160:
