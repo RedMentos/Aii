@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - research-perception/v14-token-span-alignment-20261125-run14
+      - research-perception/v14-token-span-manifest-integrity-20261125-run16
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111
       - research-perception/latent-event-scope-20261125-run12
+      - research-perception/v14-token-span-alignment-20261125-run14b
     paths:
       - "v13/code/v13/latent_adapter.py"
       - "v13/code/tests/test_latent_adapter.py"
