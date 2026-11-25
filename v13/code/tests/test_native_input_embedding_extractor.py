@@ -83,13 +83,17 @@ print(json.dumps({
         self.binary.chmod(0o700)
 
     def _extract(self, **kwargs):
+        expected = kwargs.pop(
+            "expected_model_sha256",
+            hashlib.sha256(self.model.read_bytes()).hexdigest(),
+        )
         return extract_native_input_embedding_rows(
             self.binary,
             self.model,
             "installed-model-rev-1",
             [7, 12, 12],
             model_root=self.root,
-            expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
+            expected_model_sha256=expected,
             **kwargs,
         )
 
@@ -143,12 +147,14 @@ print(json.dumps({
         with self.assertRaises(NativeInputEmbeddingError):
             extract_native_input_embedding_rows(
                 self.binary, model_link, "rev", [1, 2], model_root=self.root,
+                expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
             )
         binary_link = self.root / "binary-link"
         binary_link.symlink_to(self.binary)
         with self.assertRaises(NativeInputEmbeddingError):
             extract_native_input_embedding_rows(
                 binary_link, self.model, "rev", [1, 2], model_root=self.root,
+                expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
             )
 
     def test_invalid_token_ids_and_timeout_are_rejected(self):
