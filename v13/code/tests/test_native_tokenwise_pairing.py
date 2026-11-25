@@ -170,16 +170,27 @@ def test_content_token_ids_must_match_native_tokenizer_piece_ids():
 
 def test_sender_content_sequence_must_map_to_one_prefill_span():
     args = fixture()
-    ids = args["sender_tap_data"]["token_ids"]
+    source_text = "aa"
+    source_ref = {
+        "source_id": "source-1",
+        "sha256": hashlib.sha256(source_text.encode("utf-8")).hexdigest(),
+        "char_start": 0,
+        "char_end": len(source_text),
+    }
+    args["source_text"] = source_text
+    args["source_ref"] = source_ref
+    args["sender_content_token_ids"] = [11, 11]
+    args["sender_content_token_pieces"] = [token(11, "a"), token(11, "a")]
     args["sender_tap_data"] = {
-        "token_ids": ids + ids[1:-1],
-        "vectors": args["sender_tap_data"]["vectors"] + args["sender_tap_data"]["vectors"][1:-1],
+        "token_ids": [11, 11, 11],
+        "vectors": [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]],
     }
     args["sender_tap_packet"] = dict(
         args["sender_tap_packet"],
+        source_ref=source_ref,
         token_ids=args["sender_tap_data"]["token_ids"],
-        shape=[len(args["sender_tap_data"]["vectors"]), 2],
-        metrics=dict(args["sender_tap_packet"]["metrics"], prompt_tokens=len(args["sender_tap_data"]["token_ids"])),
+        shape=[3, 2],
+        metrics=dict(args["sender_tap_packet"]["metrics"], prompt_tokens=3),
     )
     with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
         build_native_tokenwise_pair_record(**args)
