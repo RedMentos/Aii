@@ -1,0 +1,36 @@
+name: V14 Core source-bound tokenwise native tap
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/runners.py"
+      - "v13/code/v13/cognition.py"
+      - "v13/code/v13/latent_adapter.py"
+      - "v13/code/tests/test_native_tap_tokenwise_manifest.py"
+      - ".github/workflows/v14-core-tokenwise-native-tap.yml"
+  push:
+    branches:
+      - "core/v14-tokenwise-native-tap-producer-20261125-run1"
+permissions:
+  contents: read
+jobs:
+  tokenwise-native-tap:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependencies
+        run: python -m pip install pytest numpy psutil pyyaml
+      - name: Compile changed runtime and test modules
+        run: |
+          python -m py_compile v13/code/v13/runners.py v13/code/v13/cognition.py v13/code/v13/latent_adapter.py v13/code/tests/test_native_tap_tokenwise_manifest.py
+      - name: Exercise tokenwise producer, persistence and existing native receiver consumer
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_native_tap_tokenwise_manifest.py v13/code/tests/test_latent_adapter.py v13/code/tests/test_native_latent_receiver_runtime.py
