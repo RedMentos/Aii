@@ -260,7 +260,7 @@ def native_result(**kwargs):
     }
 
 
-def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet, **extra_kwargs):
+def run_probe(runtime, approval, record, *, receiver_fn=native_result, packet_fn=packet, **extra_kwargs):
     return probe_native_tokenwise_candidate(
         runtime, {
             "status": "ALIGNMENT_CANDIDATE",
@@ -272,7 +272,7 @@ def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet, 
             "adapter_sha256": "c" * 64,
         }, record,
         approval_module=approval, packet_builder=packet_fn,
-        receiver_fn=receiver_fn or native_result,
+        receiver_fn=receiver_fn,
         **extra_kwargs,
     )
 
@@ -625,6 +625,7 @@ def test_task_score_metadata_and_environment_are_rejected_before_approval(tmp_pa
     with pytest.raises(ValueError, match="execution environment"):
         run_probe(
             runtime, approval, pair_record(runtime),
+            receiver_fn=None,
             target_token_ids=target_ids,
             task_score_metadata={
                 "condition": "LATENT_CANDIDATE",
