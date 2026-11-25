@@ -211,6 +211,33 @@ def capture_native_input_embedding_tap(
 
         receipt = extracted["receipt"]
         audit = {
+            # Store.telemetry_metrics admits these bounded fields and redacts
+            # arbitrary strings. The manifest hash is recorded as an opaque ID.
+            "operation": "PREFILL_TAP",
+            "role": receiver_role,
+            "model_revision": model_binding["revision"],
+            "sha256": model_binding["sha256"],
+            "source_ref": {
+                "source_id": source_ref["source_id"],
+                "sha256": source_ref["sha256"],
+                "char_start": source_ref["char_start"],
+                "char_end": source_ref["char_end"],
+                "modality": "text",
+            },
+            "id": manifest["manifest_sha256"],
+            "n": len(token_ids),
+            "embedding_dim": manifest["embedding_dim"],
+            "duration_s": round(time.monotonic() - started, 3),
+            "native_receiver_authority": 0,
+            "semantic_quality_proven": False,
+            "training_authority": 0,
+        }
+        # Only a sanitized digest/measurement record is durable. Source text,
+        # token pieces, IDs, and vectors remain in memory for this call only.
+        runtime.store.log("native_input_embedding_tap", event["event_id"], audit)
+        del manifest_result
+        del extracted
+        return {
             "schema": SCHEMA,
             "status": "DIAGNOSTIC_ONLY",
             "event_id": event["event_id"],
@@ -227,25 +254,18 @@ def capture_native_input_embedding_tap(
             "extractor_binary_sha256": receipt["extractor_binary_sha256"],
             "llama_cpp_revision": receipt["llama_cpp_revision"],
             "manifest_sha256": manifest["manifest_sha256"],
-            "duration_seconds": round(time.monotonic() - started, 3),
+            "duration_seconds": audit["duration_s"],
             "vectors_persisted": False,
             "production_route": False,
             "semantic_use_proven": False,
             "training_authority": 0,
             "native_receiver_authority": 0,
-        }
-        # Only a sanitized digest/measurement record is durable. Source text,
-        # token pieces, IDs, and vectors remain in memory for this call only.
-        runtime.store.log("native_input_embedding_tap", event["event_id"], audit)
-        del manifest_result
-        del extracted
-        return {
-            **audit,
             "approval_id": approval["approval_id"],
             "local_approval_consumed": True,
             "resource_preflight": approval["resource_preflight"],
             "runtime_exclusive": True,
             "vectors_returned": False,
+            "audit_logged": True,
             "notice": "Receiver input-table rows were read from the pinned native API; this is not a trained latent channel or production B3 activation.",
         }
 
