@@ -102,6 +102,102 @@ def test_audio_window_hash_mismatch_is_rejected_before_history_changes():
     assert len(registry) == 0
 
 
+def test_speaker_window_start_cannot_move_backwards_when_frame_times_advance_and_state_recovers():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    state = registry._states[(SOURCE, "gen-a")]
+    before_frames = tuple(state.frames)
+    later_frames = speaker_batch(
+        SOURCE, "gen-a", 1100, 1200, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    # Every embedding frame is newer than the previous frame, but the supplied
+    # window itself starts before the previously accepted window.
+    with pytest.raises(SpeakerEvidenceError, match="window starts must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=90, end_ms=1200,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later_frames,
+        )
+    assert state.last_window_start_ms == 100
+    assert state.last_window_end_ms == 1100
+    assert tuple(state.frames) == before_frames
+
+    accepted = registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1200,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=later_frames,
+    )
+    assert accepted["status"] == "MEASURED"
+    assert registry._states[(SOURCE, "gen-a")].last_window_start_ms == 100
+    assert registry._states[(SOURCE, "gen-a")].last_window_end_ms == 1200
+
+
+def test_speaker_window_end_must_advance_even_when_embedding_frames_do():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    first["frames"] = first["frames"][:-1]
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    later_frame = speaker_batch(
+        SOURCE, "gen-a", 1040, 1080, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="window ends must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1090,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later_frame,
+        )
+    state = registry._states[(SOURCE, "gen-a")]
+    assert state.last_window_start_ms == 100
+    assert state.last_window_end_ms == 1100
+
+
+def test_speaker_window_chronology_survives_model_revision_reset():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    later = speaker_batch(
+        SOURCE, "gen-a", 1100, 1200, lambda _: (1.0, 0.0, 0.0),
+        revision="fixture-embedding-v2", frame_step_ms=40, lookback_frames=1,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="window starts must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=90, end_ms=1200,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later,
+        )
+    accepted = registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1200,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=later,
+    )
+    assert accepted["reset_reason"] == "MODEL_OR_CALIBRATION_CHANGED"
+    assert accepted["history_frame_count"] == 0
+
+
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
     registry = SpeakerChangeEvidenceRegistry()
     warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
