@@ -154,6 +154,7 @@ def probe_native_tokenwise_candidate(
     The separate NATIVE_RECEIVER approval is consumed; TOKENWISE_PAIR_CAPTURE
     approval is not interchangeable. No vectors or adapter are persisted.
     """
+    injected_receiver_fn = receiver_fn is not None
     if type(timeout_seconds) is not int or not 10 <= timeout_seconds <= 120:
         raise ValueError("tokenwise native receiver timeout must be 10..120 seconds")
     if type(threads) is not int or not 1 <= threads <= 2:
@@ -177,7 +178,11 @@ def probe_native_tokenwise_candidate(
             raise ValueError("LATENT_CANDIDATE task-score metadata is incomplete or malformed")
         if task_score_metadata.get("session_id") not in (None, getattr(runtime, "session", None)):
             raise ValueError("task-score session differs from the active Runtime session")
-        if target_environment not in {"LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+        if injected_receiver_fn:
+            if target_environment not in (None, "SYNTHETIC") or device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+                raise ValueError("injected receiver functions are synthetic fixtures only")
+            target_environment = "SYNTHETIC"
+        elif target_environment not in {"LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
             raise ValueError("native target scoring requires an explicit execution environment")
         if target_environment in {"TERMUX_ANDROID", "REDMI"}:
             if (type(device_execution_receipt_sha256) is not str or len(device_execution_receipt_sha256) != 64
