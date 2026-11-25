@@ -52,3 +52,8 @@ R-007 records the full-paper review of Cardenas Piepereit, Architecture-Dependen
 4. Native probe only through the existing local-TTY one-shot approval path and a separate explicit user decision; no remote shell or phone action.
 
 User action: NONE. Do not change installed models/weights or send a manual Termux command.
+
+ 
+## Latest available private device boundary
+
+Read-only private V13OBS #115 snapshot (last device check 2026-11-24T09:22:33Z): auto-update enabled and dashboard/runtime UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; AI runtime STOPPED_BY_USER, autostart false, model process stopped. Recorded five-turn metadata has two failed native attempts and zero valid offers for each of B1/B2; native latent exchange and C3 semantic use are not proven. No newer receipt was available in this run. This does not validate PR #2501. No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission change or data mutation was performed. Redmi remains REDMI_UNVERIFIED / NOT_RELEASED.
