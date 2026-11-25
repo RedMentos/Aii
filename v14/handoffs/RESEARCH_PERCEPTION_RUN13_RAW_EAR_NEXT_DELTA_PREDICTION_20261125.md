@@ -98,3 +98,13 @@ The first audio source pin was repaired correctly, but staging now stops at the 
 Ownership handoff: Research & Perception owns the A5 source and its exact consumer behavior. Core/QA own termux_runtime_recovery_candidate_20261121.py, stage_integrated_candidate.py and runtime_deploy.py. A PR #2498 comment (#7164267690) gives the exact next expected-vs-actual hash and requests ordered recomputation of recovery-builder, stager and deployer hashes. No cross-owner files were changed and no source pin was weakened.
 
 Board V14-022 was updated with this precise blocker and the next Core/QA action. PR #2498 remains OPEN / DRAFT / NOT_RELEASED. REDMI_UNVERIFIED. No microphone, Termux, native model or device action occurred.
+
+## Run 18 follow-up — persistent namespace data-integrity fix (2026-11-25)
+
+**New bug:** both `_save_persistent()` pruning and `_clear_persistent()` cleanup used SQLite `LIKE 'raw_ear_prediction.v1.%'`. The underscores are SQL wildcards; a foreign state key `rawXearYprediction.v1.foreign` matched and could be deleted. This is not theoretical: LOCAL_LINUX SQLite reproduction showed the old query returns the foreign key and the new `substr(key,1,?)=?` selector excludes it.
+
+**Implementation:** `audio_temporal_prediction.py` now has a single exact-prefix selector used by both paths. Two Store-backed negative tests cover pruning and source reset. The existing restart test also now preserves the immutable active generation via `make_runtime(..., preserve_generation=True)`, rather than assigning to read-only `Store.generation_id`.
+
+**Tests:** RAW EAR CI run 45659079888: 130/130 PASS on Python 3.13 and 3.14, py_compile/benchmark/privacy PASS. VAD comparison run 45658785225: 3/3 PASS on both Python versions, pinned libfvad and smoke PASS. Offline integrity run 45658785223: Python 3.11/3.14 PASS. Staged runtime run 45659079347: FAIL 16/237/10/2 at Core-owned recovery pin (expected audio composer blob 831080bceec90711bd42e0fa4eba47c669975c98; current blob 598e9c12ad387a1b693ed9fdda2bd8101212d2e8); integrated regression was still running at last poll. Core/QA must rebind exact pins in order; no pin weakened. No full local Aii suite, native audio model, Android microphone, Termux or Redmi proof.
+
+**Next:** await integrated-regression result; coordinate pin-chain repair with Core/QA; retain SHADOW/opt-in status and run held-out consented audio controls before raising A4 influence.
