@@ -18,7 +18,7 @@ import sys
 import tempfile
 from typing import Mapping, Sequence
 
-SCHEMA = "v14.cross-organ-latent-adapter/1"
+SCHEMA = "v14.cross-organ-latent-adapter/2"
 _MAGIC = b"V14LAT1\0"
 _MAX_DIM = 8192
 _MAX_RANK = 64
@@ -26,6 +26,7 @@ _MAX_PAIRS = 4096
 _MAX_FILE_BYTES = 64 * 1024 * 1024
 _ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 _RECEIVERS = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
+_PROJECTION_SCOPES = frozenset({"PAIRED_VECTOR", "EVENT_POOLED_NONZERO_MEAN", "TOKENWISE"})
 
 
 class LatentAdapterError(ValueError):
@@ -99,7 +100,7 @@ def _serialize(adapter: Mapping) -> bytes:
         "sender_model_revision", "receiver_model_revision", "sender_model_sha256",
         "receiver_model_sha256", "sender_dim", "receiver_dim", "rank", "metrics",
         "train_pairs", "holdout_pairs", "train_source_count", "holdout_source_count",
-        "training_method", "holdout_policy",
+        "training_method", "holdout_policy", "projection_scope",
         "production_route", "semantic_use_proven", "training_authority", "native_receiver_authority",
     )}
     header["weight_count"] = len(values)
@@ -117,6 +118,8 @@ def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> No
         raise LatentAdapterError("adapter did not pass its source-disjoint alignment gate")
     if adapter.get("sender_role") not in _ROLES or adapter.get("receiver_role") not in _RECEIVERS or adapter.get("sender_role") == adapter.get("receiver_role"):
         raise LatentAdapterError("invalid sender/receiver role binding")
+    if adapter.get("projection_scope") not in _PROJECTION_SCOPES:
+        raise LatentAdapterError("invalid projection scope")
     _sha256_text(adapter.get("sender_model_sha256"), "sender_model_sha256")
     _sha256_text(adapter.get("receiver_model_sha256"), "receiver_model_sha256")
     for key in ("sender_tap_id", "receiver_tap_id", "sender_model_revision", "receiver_model_revision"):
@@ -146,7 +149,8 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
                 sender_model_revision: str, receiver_model_revision: str,
                 sender_model_sha256: str, receiver_model_sha256: str,
                 rank: int = 16, ridge: float = 1e-4,
-                min_relative_improvement: float = 0.02, seed: int = 7) -> dict:
+                min_relative_improvement: float = 0.02, seed: int = 7,
+                projection_scope: str = "PAIRED_VECTOR") -> dict:
     """Fit a low-rank affine map on paired activations with source-disjoint holdout.
 
     This is an alignment candidate only. The held-out MSE and shuffled control
@@ -168,6 +172,8 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         raise LatentAdapterError("invalid minimum holdout improvement")
     if type(seed) is not int:
         raise LatentAdapterError("seed must be an integer")
+    if projection_scope not in _PROJECTION_SCOPES:
+        raise LatentAdapterError("unsupported projection scope")
     train_ids, train_sources, x_train, y_train = _validate_pairs(train_pairs, "train_pairs")
     holdout_ids, holdout_sources, x_holdout, y_holdout = _validate_pairs(holdout_pairs, "holdout_pairs")
     if train_ids & holdout_ids:
@@ -233,6 +239,7 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         "receiver_role": receiver_role,
         "sender_tap_id": sender_tap_id,
         "receiver_tap_id": receiver_tap_id,
+        "projection_scope": projection_scope,
         "sender_model_revision": sender_model_revision,
         "receiver_model_revision": receiver_model_revision,
         "sender_model_sha256": sender_model_sha256,
@@ -303,8 +310,24 @@ def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
     )
 
 
-def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+def project_event(adapter: Mapping, sender_vector, **bindings) -> list[float]:
+    """Project one source-bound event vector with an event-level adapter.
+
+    Pooled tap fitting produces one vector per source/event. It must not be
+    broadcast over token rows: the native receiver has a separate token-position
+    contract and currently has no latent-prefix position mode.
+    """
     _validate_adapter(adapter)
+    if adapter["projection_scope"] not in {"PAIRED_VECTOR", "EVENT_POOLED_NONZERO_MEAN"}:
+        raise LatentAdapterError("tokenwise adapter cannot be projected as one event vector")
+    return _project_vector_validated(adapter, sender_vector, **bindings)
+
+
+def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+    """Project token rows only when the adapter was fitted tokenwise."""
+    _validate_adapter(adapter)
+    if adapter["projection_scope"] != "TOKENWISE":
+        raise LatentAdapterError("event-level adapter requires project_event; token-aligned fit is required for rows")
     if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
         raise LatentAdapterError("sender tap must contain 1..64 activation rows")
     return [_project_vector_validated(adapter, row, **bindings) for row in sender_vectors]
@@ -551,6 +574,7 @@ def fit_from_tap_records(
         ridge=ridge,
         min_relative_improvement=min_relative_improvement,
         seed=fit_seed,
+        projection_scope="EVENT_POOLED_NONZERO_MEAN",
     )
     return {
         "schema": "v14.latent-tap-adapter-fit/1",
