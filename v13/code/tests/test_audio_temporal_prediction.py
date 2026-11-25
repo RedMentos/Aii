@@ -41,10 +41,11 @@ def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.
     return struct.pack("<" + "h" * len(samples), *samples)
 
 
-def make_runtime(tmp_path):
+def make_runtime(tmp_path, *, preserve_generation=False):
     (tmp_path / "data" / "db").mkdir(parents=True, exist_ok=True)
     store = Store(tmp_path)
-    store.ensure_generation_snapshot({}, {})
+    if not preserve_generation:
+        store.ensure_generation_snapshot({}, {})
     session = store.new_session("RAW EAR temporal prediction test")
     event = store.event(session, "synthetic acoustic-cue prediction fixture")
     return SimpleNamespace(home=tmp_path, store=store), event
@@ -412,11 +413,9 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
     finally:
         runtime.store.close()
 
-    restarted, event2 = make_runtime(tmp_path)
+    restarted, event2 = make_runtime(tmp_path, preserve_generation=True)
     restarted.cfg = {"raw_ear_persist_prediction_weights": True}
-    # make_runtime starts a fresh generation; this test deliberately resumes the original scope.
-    event2["brain_generation_id"] = event["brain_generation_id"]
-    restarted.store.generation_id = event["brain_generation_id"]
+    assert event2["brain_generation_id"] == event["brain_generation_id"]
     capture2 = CaptureAttention()
     try:
         with monkeypatch.context() as patch:
@@ -447,7 +446,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         restarted.store.close()
 
     # Revocation after restart must clear persisted weights even before a registry exists.
-    revoked, _event3 = make_runtime(tmp_path)
+    revoked, _event3 = make_runtime(tmp_path, preserve_generation=True)
     revoked.cfg = {"raw_ear_persist_prediction_weights": True}
     reset_runtime_temporal_voice_states(
         revoked, source_id=SOURCE, generation_id=event["brain_generation_id"]
