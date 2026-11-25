@@ -1,0 +1,100 @@
+name: V14 native input-embedding extractor
+
+on:
+  push:
+    branches:
+      - core/v14-native-input-embedding-extractor-20261125-run2
+  pull_request:
+    branches:
+      - core/v14-actionselection-broadcast-lineage-20261125-run1
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - "v13/code/v13/native/input_embedding_extractor/**"
+      - "v13/code/v13/native_input_embedding_extractor.py"
+      - "v13/code/tests/test_native_input_embedding_extractor.py"
+      - "v13/code/docs/NATIVE_INPUT_EMBEDDING_EXTRACTOR.md"
+      - ".github/workflows/v14-native-input-embedding-extractor.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Compile and test verified Python consumer
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m py_compile v13/code/v13/native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_extractor.py
+          python -m unittest -v tests.test_native_input_embedding_extractor
+      - name: Scan public diff for private data and secrets
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
+
+  linux-pinned-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact llama.cpp API revision
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40
+          path: third_party/llama.cpp
+          persist-credentials: false
+      - name: Verify upstream license and build native selected-row extractor
+        run: |
+          test -f third_party/llama.cpp/LICENSE
+          grep -q "MIT License" third_party/llama.cpp/LICENSE
+          cmake -S v13/code/v13/native/input_embedding_extractor -B build-native -DLLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp" -DV14_LLAMA_REVISION=2851b3bcbf8d993a2243ae751c0a7dfa8e944a40 -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF
+          cmake --build build-native --target native_input_embedding_extractor -j2
+          build-native/bin/native_input_embedding_extractor --selftest
+          build-native/bin/native_input_embedding_extractor --version | grep -q "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40"
+
+  android-arm64-cross-compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact llama.cpp API revision
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40
+          path: third_party/llama.cpp
+          persist-credentials: false
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools"
+      - name: Install Android NDK
+        run: sdkmanager "ndk;27.2.12479018"
+      - name: Cross-compile Android arm64-v8a
+        run: |
+          cmake -S v13/code/v13/native/input_embedding_extractor -B build-android -DLLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp" -DV14_LLAMA_REVISION=2851b3bcbf8d993a2243ae751c0a7dfa8e944a40 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_HOME/ndk/27.2.12479018/build/cmake/android.toolchain.cmake" -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-26 -DANDROID_STL=c++_static -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-android --target native_input_embedding_extractor -j2
+          test -x build-android/bin/native_input_embedding_extractor
+          mkdir -p native-artifact
+          cp build-android/bin/native_input_embedding_extractor native-artifact/
+          cp third_party/llama.cpp/LICENSE native-artifact/LLAMA_CPP_LICENSE
+          (cd native-artifact && sha256sum native_input_embedding_extractor > SHA256SUMS)
+      - name: Upload review-only Android ARM64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v14-native-input-embedding-extractor-android-arm64
+          path: native-artifact/
+          if-no-files-found: error
+          retention-days: 14
