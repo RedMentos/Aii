@@ -1375,3 +1375,18 @@ The implementation audit found an important distinction: `losses.py` implements 
 **License/provenance:** llama.cpp is pinned at the exact commit above and licensed MIT; no upstream source or model weights were copied by this research note.
 
 **Status:** PRIMARY_HEADER_AND_LICENSE_REVIEWED_AT_PINNED_REVISION / LINUX_NATIVE_BUILD_SELFTEST_CI_PASS / ANDROID_ARM64_CROSS_COMPILE_CI_PASS / NO_GGUF_MODEL_RUN / NO_LOCAL_FULL_SUITE / NO_REDMI_PROOF.
+
+
+## R-117 — Native prompt accounting and B1/B2→C4→C3 delivery receipts (2026-11-25)
+
+**Primary source:** official `ggml-org/llama.cpp` `tools/server/README.md` and `tools/server/server-common.cpp` at the exact receiver pin `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`. The documented final completion timings expose `cache_n`, `prompt_n`, `prompt_ms`, `prompt_per_second` and `predicted_n`; the documentation defines context token count as `prompt_n + cache_n + predicted_n`. The pinned server implementation's `server_slot_stats::to_json()` emits these fields in the completion timing object. The exact upstream LICENSE is MIT (also recorded in R-116).
+
+**V14 implementation:** PR #2488, exact head `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e`, adds a read-only consumer in `v13/code/v13/brain_panel.py`. For B1/B2/C3 it compares the exact `LLAMA_SERVER_TOKENIZE` admitted prompt count with `prompt_n + cache_n`; it separately reports `predicted_n` versus the runner's generated-token count. It joins persisted B1/B2 `body_offer_attempt` and `OfferPacket` records to C4 selected IDs and C3's native rendered-offer receipt. Only role/status/count/timing/PSS/delivery booleans are exposed; no prompt text, offer summary, source ref or resource sample is returned.
+
+**Interpretation boundary:** a matching native token count is evidence that the server accounted for the expected prompt tokens (processed plus cached). A matching C4/C3 packet receipt is evidence of packet selection and template inclusion. Neither proves model attention, semantic use, useful B1/B2 reasoning, learned latent alignment or weight updates; the panel keeps `semantic_use_proven=false`. Missing counters, synthetic inputs, mismatches and incomplete attempts fail closed.
+
+**Verification:** local isolated Python checks 5/5 accounting cases and 1/1 B1/B2 delivery/privacy case; exact-head CI 7 workflow runs / 13 jobs SUCCESS; new panel tests 5 passed on Python 3.13 and 3.14; native receiver tests 27 passed; staged/integrated regression 424 passed, 3 skipped, 58 subtests; pinned Linux native build/selftest PASS; Android arm64-v8a/API 26 cross-compile PASS; public privacy scan CLEAN. Full local Aii suite NOT_RUN because GitHub DNS resolution failed. No GGUF/model pair was executed and no Redmi test occurred.
+
+**Next experiment:** after Boss/QA review, integration and a fresh installed-SHA receipt, use a separately approved local run to compare actual B1/B2 native prompt/token receipts, C4 selection and C3 input accounting against zero/shuffle/repeat/OOD controls. Then measure answer correctness, latency, RSS, old-task retention and rollback. Do not infer semantic attention from accounting alone.
+
+**Status:** PINNED_PRIMARY_SOURCE_REVIEWED / CI_NATIVE_LINUX_BUILD_PASS / ANDROID_ARM64_CROSS_COMPILE_PASS / LOCAL_ISOLATED_TESTS_PASS / FULL_LOCAL_SUITE_BLOCKED / NO_GGUF_RUN / REDMI_UNVERIFIED / NOT_RELEASED.
