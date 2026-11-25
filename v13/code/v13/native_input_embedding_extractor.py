@@ -90,6 +90,24 @@ def _hash_regular_file(path):
         os.close(fd)
 
 
+def _stat_regular_file(path):
+    path = Path(path)
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(str(path), flags)
+    except OSError as exc:
+        raise NativeInputEmbeddingError("model or extractor path changed during extraction") from exc
+    try:
+        opened = os.fstat(fd)
+        current = os.stat(path, follow_symlinks=False)
+        if (not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(current.st_mode)
+                or _file_identity(opened) != _file_identity(current)):
+            raise NativeInputEmbeddingError("model or extractor changed during extraction")
+        return _file_identity(opened)
+    finally:
+        os.close(fd)
+
+
 def _safe_file(path, name, *, executable=False):
     path = Path(path)
     if path.is_symlink() or not path.is_file():
@@ -148,7 +166,7 @@ def extract_native_input_embedding_rows(
     """
     if (type(model_revision) is not str or not model_revision
             or len(model_revision) > 160
-            or any(ord(ch) < 0x20 or ord(ch) == 0x7f for ch in model_revision)):
+            or any(ord(ch) < 0x21 or ord(ch) > 0x7e for ch in model_revision)):
         raise NativeInputEmbeddingError("installed model revision is invalid")
     if (not isinstance(token_ids, (list, tuple)) or not 2 <= len(token_ids) <= MAX_TOKENS
             or any(type(token_id) is not int or not 0 <= token_id <= 2_147_483_647
@@ -210,10 +228,9 @@ def extract_native_input_embedding_rows(
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         raise NativeInputEmbeddingError("native input-embedding extractor returned invalid JSON") from exc
 
-    model_sha_after, model_identity_after = _hash_regular_file(model)
-    binary_sha_after, binary_identity_after = _hash_regular_file(binary)
-    if (model_sha_after != model_sha or model_identity_after != model_identity
-            or binary_sha_after != binary_sha or binary_identity_after != binary_identity):
+    model_identity_after = _stat_regular_file(model)
+    binary_identity_after = _stat_regular_file(binary)
+    if (model_identity_after != model_identity or binary_identity_after != binary_identity):
         raise NativeInputEmbeddingError("model or extractor changed during native extraction")
 
     if (not isinstance(result, dict)
