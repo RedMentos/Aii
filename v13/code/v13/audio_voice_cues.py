@@ -24,6 +24,7 @@ from .audio_temporal_prediction import (
     AudioTemporalPredictionError,
     AudioTemporalPredictionRegistry,
     predictive_attention_novelty,
+    predictive_omission_novelty,
     unavailable_prediction,
 )
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
@@ -854,10 +855,14 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             audio_temporal_predictive_novelty = predictive_attention_novelty(
                 audio_temporal_prediction
             )
+            audio_temporal_omission_novelty = predictive_omission_novelty(
+                audio_temporal_prediction
+            )
         except AudioTemporalPredictionError as exc:
             audio_temporal_prediction = unavailable_prediction("REJECTED")
             audio_temporal_prediction["error"] = type(exc).__name__
             audio_temporal_predictive_novelty = 0.0
+            audio_temporal_omission_novelty = 0.0
 
         speaker_change_score = 0.0
         speaker_change_candidate = None
@@ -873,6 +878,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 )
         voice_novelty = max(
             audio_temporal_predictive_novelty,
+            audio_temporal_omission_novelty,
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
@@ -902,6 +908,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "audio_temporal_prediction": audio_temporal_prediction,
             "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
+            "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
@@ -961,6 +968,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "audio_temporal_prediction": audio_temporal_prediction,
             "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
+            "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
