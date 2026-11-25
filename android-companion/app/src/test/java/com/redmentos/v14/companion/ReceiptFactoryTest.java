@@ -58,16 +58,16 @@ public final class ReceiptFactoryTest {
     private static CompanionDb.Action openUrlAction(String status, String url) throws Exception {
         String digest = Canonical.requestDigest("open_url", url);
         String requestJson = "{"
-                + "\\"schema\\":\\"v14.android-action-request/1\\","
-                + "\\"action_id\\":\\"" + ACTION_ID + "\\","
-                + "\\"capability\\":\\"open_url\\","
-                + "\\"args\\":{\\"url\\":\\"" + url + "\\"},"
-                + "\\"digest\\":\\"" + digest + "\\","
-                + "\\"companion_local_consent_required\\":true,"
-                + "\\"android_os_permission_required\\":false,"
-                + "\\"permission_bypass\\":false,"
-                + "\\"model_authority\\":false,"
-                + "\\"local_approval\\":\\"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION\\""
+                + "\"schema\":\"v14.android-action-request/1\","
+                + "\"action_id\":\"" + ACTION_ID + "\","
+                + "\"capability\":\"open_url\","
+                + "\"args\":{\"url\":\"" + url + "\"},"
+                + "\"digest\":\"" + digest + "\","
+                + "\"companion_local_consent_required\":true,"
+                + "\"android_os_permission_required\":false,"
+                + "\"permission_bypass\":false,"
+                + "\"model_authority\":false,"
+                + "\"local_approval\":\"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION\""
                 + "}";
         return new CompanionDb.Action(ACTION_ID, requestJson, url, status, null, 2_000_000L);
     }
