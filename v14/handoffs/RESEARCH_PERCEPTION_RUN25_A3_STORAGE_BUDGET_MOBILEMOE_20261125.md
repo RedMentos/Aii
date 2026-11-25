@@ -5,7 +5,7 @@
 - Whole-system epic: [#1984](https://github.com/RedMentos/Aii/issues/1984).
 - Active candidate: [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`.
 - Release base: `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
-- Current branch/PR head after code, research and handoff updates: `b64d4b916dabe062657b2f649613b26ef33b57c1`.
+- Code/test SHA: `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b`. Documentation/board/workplan/coverage commit: `b64d4b916dabe062657b2f649613b26ef33b57c1`. Handoff-file commit at creation: `a1a70bfd6420d5960a9b5b4905725eabd4e3e0f3`; re-read PR #2484 for the current branch head before continuing.
 - Run start/end instrumentation unavailable: UNKNOWN.
 - No edits to V14 master, historical V13 appendix, release branch, Core-owned source-lifecycle composer, installed models/weights, permissions or user data.
 
