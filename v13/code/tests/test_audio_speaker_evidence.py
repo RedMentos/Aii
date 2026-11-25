@@ -131,8 +131,11 @@ def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_pat
         assert first["temporal_voice"]["consent_scope_bound"] is True
 
         active["receipt"] = "fixture:consented-speaker-b"
-        second_session = runtime.store.new_session("RAW EAR renewed consent")
-        second_event = runtime.store.event(second_session, "new consent scope")
+        session_id = runtime.store.one(
+            "SELECT session_id FROM events WHERE id=?",
+            (first_event["event_id"],),
+        )["session_id"]
+        second_event = runtime.store.event(session_id, "new consent scope")
         assert second_event["brain_generation_id"] == first_event["brain_generation_id"]
         second_pcm = tone(frequency=180)
         second_embeddings = speaker_batch(
