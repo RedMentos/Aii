@@ -1542,3 +1542,29 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - Native `TERMUX_ANDROID`/ `REDMI` receipts must include a digest of the private device-execution receipt and a runtime-build identifier; raw private receipt bodies/IDs are not stored. This is an evidence-shape check, not cryptographic attestation.
 - Three additional focused tests cover missing Redmi receipt metadata, per-session/family minima and adapter-revision drift. LOCAL_LINUX CPython 3.13.5 isolated evaluator harness: 10/10 PASS. Exact repository test target/new-head CI still NOT_YET_OBSERVED.
 - Research ledger R-163 appended at commit `becf115df76f861d7332b8e735511b49319a26f6`. B3 remains OFF; no native target-score producer, no Redmi receipt and no release.
+
+
+## Run24 — Perception to native receiver task-score producer (2026-11-25)
+
+**Acceptance gap addressed:** the Perception lane had a source-bound task-utility evaluator but no native producer that could score answer-token likelihoods from actual receiver input embeddings. The existing native receiver probe measured input effects only; it did not produce teacher-forced target-token scores. This run adds the missing producer without claiming semantic success.
+
+**Code / consumers**
+- Added v13/code/v13/native/receiver_task_score/native_receiver_task_score.cpp and CMakeLists.txt, pinned to ggml-org/llama.cpp commit b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 (MIT).
+- Added v13/code/v13/native_receiver_task_score.py: explicit environment provenance; GGUF SHA and tokenizer-to-GGUF binding; candidate input digest check; bounded float32 + int32 stdin protocol; deadline/cancel; binary/model hash readback; source/session/task-bound receipt via native_receiver_utility.
+- Added probe_anchor_preserving_candidate() as the direct consumer for build_anchor_preserving_native_receiver_input() output. It refuses production/semantic-use/authority flags and binds the candidate's exact input digest, source reference, adapter and receiver metadata.
+- Added 11 contract tests and v14-native-receiver-task-score.yml for Python 3.13/3.14, pinned Linux native build and Android arm64 cross-build. Android setup uses sdkmanager directly because the v3 action attempted to install the removed tools package.
+
+**Exact local evidence**
+- LOCAL_LINUX: CMake configure/build with V14_WITH_LLAMA=OFF — PASS (only the portable scorer core; does not compile llama.cpp integration).
+- LOCAL_LINUX: C++ --selftest — PASS.
+- LOCAL_LINUX: py_compile — PASS.
+- LOCAL_LINUX: 11/11 Python tests — PASS using a fake executable and a stub receipt builder. This is explicitly SYNTHETIC_FIXTURE evidence, not a native model run.
+- CI exact-head run 45708325010 was queued at the time of this update. Earlier CI failures and fixes are recorded in V14_USER_NEXT_ACTION.md. Linux llama.cpp model execution and Android arm64 cross-build are not yet proven.
+- REDMI_UNVERIFIED; no device receipt or installed release. NOT_RELEASED.
+
+**Consumer boundary / handoff**
+- Core must call the producer under the existing NATIVE_RECEIVER approval, serial model-load/resource lease and consented/public held-out task policy. No private conversation content is to be supplied without the separate local consent.
+- TEACHER_FORCED_TARGET_LOGPROB_V1 is a likelihood proxy only. The full cohort still requires 8 independent conditions, 20 tasks, 2 sessions and 2 task families. Do not count a single task score as latent coupling or semantic acceptance.
+- The first API reloads the GGUF for each condition. Next performance task: one-process/batched scoring for a whole condition cohort, then integrate into Core callosum native-tokenwise-probe; retain B3 OFF until independent acceptance.
+
+**Research updates:** R-164 (stability vs plasticity metrics) and R-165 (MobileFineTuner OSS review) appended to V14_RESEARCH_LEDGER.md. No new full-text JEPA empirical paper confirmed this sweep. No model weights downloaded or changed.
