@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T07:56:05.495Z",
+  "updated_at": "2026-11-25T07:57:07.330Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -199,10 +199,10 @@
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
       "next_step": "Independent review of #2491; keep it a child of #2487. Then Core/QA resolve the #2482/#2483 strict source-pin failure and rerun staged/integrated/migration on the exact combined head. Keep speaker identity and learning/action authority OFF. Next Perception evidence: source/session-disjoint calibration with overlap, silence and long-return controls; no threshold or model change from synthetic results.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T07:56:05.495Z",
+      "last_checkpoint": "2026-11-25T07:57:07.330Z",
       "latest_candidate_pr": {
         "pr": 2491,
-        "head_sha": "9d2b3444cc136f4d5ef63a40078c579838a0d649",
+        "head_sha": "38f0ef5fa46651e157c365a490e5faa16c33feb9",
         "tested_code_sha": "38f0ef5fa46651e157c365a490e5faa16c33feb9",
         "base_pr": 2487,
         "base_sha": "cbf3bca17797f52c889b672baef5b7fd5b7deb80",
