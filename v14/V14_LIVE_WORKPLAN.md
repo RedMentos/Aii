@@ -1560,3 +1560,8 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 ### Run 35 CI status refresh — PR #2498
 
 At the latest poll on exact head `369345769f89a655239813046196548e8c05d77b`: RAW EAR fastpath passed on Python 3.13/3.14 (run 45723389394); VAD comparison passed on 3.13/3.14 (run 45723389184); offline runtime integrity passed on 3.11/3.14 (run 45723389226). Staged/integrated regression run 45723389826 remains IN_PROGRESS. No full-suite or Redmi claim.
+
+
+### Run 35 staged failure root-cause correction — PR #2498
+
+The staged/integrated run 45723389826 completed FAIL. The failure is not in the RAW EAR predictor: the #2498 base branch carries `scripts/integrated_audio_context_candidate_20261121.py` at Git blob `598e9c12ad387a1b693ed9fdda2bd8101212d2e8`, but Core's `scripts/termux_runtime_recovery_candidate_20261121.py` still expects `831080bceec90711bd42e0fa4eba47c669975c98`. This exact mismatch causes the recovery builder to abort, cascading into staged/integrated failures and migration PARTIAL. Core #2515 still has the old builder blob and matching pin; the divergence is in the #2498 Perception base stack. The mismatch and ownership boundary were posted to #2498 and #1984. Do not weaken the hash gate; rebase or coordinate a full downstream pin-chain update with Core/Integrator.
