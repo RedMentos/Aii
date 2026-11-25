@@ -23,12 +23,12 @@ Environment: LOCAL_LINUX, CPython 3.13. The full repository checkout is not moun
 - python -m pytest -q test_exact_import.py: 8/8 PASS.
 - Repeating 16-tile pattern, 120 observations: parameter L2 1.08094; last-20 prediction MAE 0.01350 vs persistence baseline 0.10000.
 - Old-pattern retention after 100 updates on an orthogonal second pattern: MAE 0.01350 → 0.01747 (+0.00397).
-- 10,000 isolated updates: 1,054.3 ms (~105.4 µs/update); 256 float64 weights ≈ 2 KiB.
+- 10,000 isolated updates: 1,054.3 ms (~105.4 µs/update); 256 float64 weights = 2,048 raw bytes; measured Python list/tuple state with one previous vector = 9,824 bytes per stream on CPython 3.13.5.
 - These are deterministic synthetic helper measurements, not real visual understanding, persistent learning, native model execution or Redmi performance.
 
 ## CI / integration
 
-- PR #2494 exact-head GitHub workflows were started on code head c9e60d3; final exact-head result must be read back before promotion.
+- PR #2494 exact-head CI on head 6e6a7a2: frame ingress 55/55 PASS on Python 3.13 and 3.14; A3 temporal calibration/consumer 67/67 PASS on both; source-lineage 39/39 PASS on both; offline/runtime-deployment Python 3.11 and 3.14 PASS. Staged-runtime FAIL 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression FAIL 1. Both fail at scripts/source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Two-checkout migration returned PARTIAL instead of UPDATED. The focused Perception suites are green; shared composition is not.
 - Parent #2486 exact focused workflows: temporal calibration 58/58 PASS and frame ingress 54/54 PASS on Python 3.13 and 3.14. Its staged/integrated composition remains blocked at the Core-owned strict vision.py source-lifecycle pin. This child does not relax that pin.
 - No release SHA; NOT_RELEASED.
 
@@ -48,3 +48,14 @@ No fresh private V13OBS receipt was obtained in this run. The last known private
 4. Continue other Canon families; this shadow predictor does not close A0–A5, voice, B1/B2, B3, World/Self/Memory/JEPA, Android agency or persistent learning.
 
 User action: **keine Aktion nötig**.
+
+
+## Exact final poll — 2026-11-25
+
+- PR #2494 final code/docs head at this poll: 6e6a7a24256bb8318073b8352c9fcbe89558982f.
+- Frame-ingress run 45588286186: Python 3.13 55 passed; Python 3.14 55 passed.
+- A3 temporal-calibration run 45588286521: Python 3.13 67 passed; Python 3.14 67 passed.
+- Source-lineage run 45588286146: Python 3.13 39 passed; Python 3.14 39 passed.
+- Runtime deployment offline jobs: Python 3.11 and 3.14 PASS.
+- Staged/integrated run 45588286331: staged-runtime FAIL 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression FAIL 1. Root is scripts/source_lifecycle_lock_integration_candidate.py:172 rejecting vision.py. The two-checkout migration cases return PARTIAL rather than UPDATED. This is the existing shared Core source-composition blocker; no Perception source pin was weakened.
+- PR remains OPEN / DRAFT / NOT_RELEASED. No Redmi proof.
