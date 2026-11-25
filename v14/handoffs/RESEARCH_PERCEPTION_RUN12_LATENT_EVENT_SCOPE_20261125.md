@@ -4,7 +4,7 @@
 **Branch:** `research-perception/latent-event-scope-20261125-run12`  
 **Base:** #2489 head `314e4e651da54f8168508c0d0f2e8bac2ca8ed2e`  
 **Code-bearing head at checkpoint:** `a1d8fe6c82ffd4573d81ab69769d12dce50827a6`  
-**Final docs/board checkpoint head:** `cb7b94d800912a70786b5d1d533234c1c4bb4596`
+**Docs/board checkpoint before final handoff refresh:** `e9133d72a3a9f989dc3260f7e74819ca8cfb3700`
 
 ## Why this change exists
 
@@ -31,7 +31,7 @@ Core's native receiver v3 currently accepts a sequence of token-aligned embeddin
 
 ## Tests and exact evidence
 
-- **LOCAL_LINUX isolated helper reproduction:** CPython 3.13.5, `py_compile` PASS; 10/10 isolated contract/position tests PASS. This is a local reproduction of the new scope/receiver-builder logic with a local receiver-validator stub, not the exact repository test files.
+- **LOCAL_LINUX isolated helper reproduction:** CPython 3.13.5, `py_compile` PASS; 10/10 isolated contract/position tests PASS. The harness uses a local copy of the receiver validator contract and is not the repository module. This is a local reproduction of the new scope/receiver-builder logic with a local receiver-validator stub, not the exact repository test files.
 - **Full local Aii checkout/tests:** NOT_RUN; no checkout is mounted in the execution environment. GitHub DNS/network access is unavailable from the local shell.
 - **Exact repository CI for #2496:** staged/integrated workflow was still IN_PROGRESS at the last poll; no PASS is claimed for this PR. The dedicated #2489 workflow is not present on the repository default branch, so it was not independently dispatched for this child branch. Latest code head #a1d8fe6 has runtime-deployment integrity SUCCESS; staged/integrated regression remains IN_PROGRESS at last poll.
 - **Core receiver PR #2488 context:** its exact reported head `b8b43910a67a1b706be22e42f4e9cbcfa6de1fa6` has 17/17 check-runs SUCCESS, pinned llama.cpp Linux build/selftest PASS and Android arm64 cross-compile PASS. That is Core's receiver build evidence, not a native model-pair test for this adapter.
