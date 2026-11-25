@@ -1,0 +1,61 @@
+name: V14 A3 temporal calibration and RAW EYE interval integrity
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/vision_temporal_evidence.py"
+      - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_temporal_interval_order.py"
+      - "v14/experiments/vision_counterfactual_probe.py"
+      - "v14/experiments/vision_temporal_calibration.py"
+      - "v14/experiments/test_vision_temporal_calibration.py"
+      - ".github/workflows/v14-a3-temporal-calibration.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/vision_temporal_evidence.py"
+      - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_temporal_interval_order.py"
+      - "v14/experiments/vision_counterfactual_probe.py"
+      - "v14/experiments/vision_temporal_calibration.py"
+      - "v14/experiments/test_vision_temporal_calibration.py"
+      - ".github/workflows/v14-a3-temporal-calibration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-a3-temporal-calibration-\${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  temporal-calibration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Install bounded temporal test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
+      - name: Report exact source hashes
+        run: sha256sum v13/code/v13/vision_temporal_evidence.py v13/code/v13/vision_ui_frame_ingress.py v14/experiments/vision_counterfactual_probe.py v14/experiments/vision_temporal_calibration.py
+      - name: Compile exact Runtime and experiment code
+        run: python -m py_compile v13/code/v13/vision_temporal_evidence.py v13/code/v13/vision_ui_frame_ingress.py v13/code/tests/test_vision_ui_frame_ingress.py v13/code/tests/test_vision_temporal_interval_order.py v14/experiments/vision_counterfactual_probe.py v14/experiments/vision_temporal_calibration.py v14/experiments/test_vision_temporal_calibration.py
+      - name: Run A3 to A4 consumer, interval and source-disjoint calibration regressions
+        env:
+          PYTHONPATH: \${{ github.workspace }}/v13/code:\${{ github.workspace }}/v14/experiments
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q v13/code/tests/test_vision_ui_frame_ingress.py v13/code/tests/test_vision_temporal_interval_order.py v14/experiments/test_vision_temporal_calibration.py
