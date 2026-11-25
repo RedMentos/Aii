@@ -964,7 +964,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
 def audio_consent_generation_scope(
     runtime, pcm, *, runner, messages_factory, cancel, deadline,
     sample_rate, start_ms, event_id, generation_id, source_id, consent_receipt,
-    consent_check, consent_guard, token_budget=512, finality="FINAL",
+    consent_check=None, consent_guard=None, token_budget=512, finality="FINAL",
     voice_backend="python", speaker_embeddings=None, teacher_result=None,
     teacher_opt_in=False, teacher_transcript_consent=False,
     temporal_state=None, vad_stream=None, runner_kwargs=None,
@@ -994,6 +994,8 @@ def audio_consent_generation_scope(
         raise TypeError("audio runner kwargs must be a dictionary")
 
     if consent_lease is None:
+        if not callable(consent_check) or not callable(consent_guard):
+            raise TypeError("owned audio consent scope requires consent_check and consent_guard")
         lease_scope = audio_consent_lease(
             runtime, source_id, generation_id, consent_receipt,
             consent_check, consent_guard, temporal_state, vad_stream,
