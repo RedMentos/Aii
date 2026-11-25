@@ -1,3 +1,37 @@
+# CURRENT VERIFIED PERCEPTION NEXT ACTION — 2026-11-25
+
+**Run timing:** start/end wall-clock instrumentation unavailable (UNKNOWN). Evidence snapshot: 2026-11-25T00:29:18Z.  
+**Code candidate:** [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact head `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`, stacked on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867` and Core #2465. **NOT_RELEASED / not installed.**
+
+## What now works on that candidate
+
+A3 global/tile training writes bounded, per-source fp64 ridge sufficient statistics using descriptor-relative creation of missing `data/` and `data/vision/`, owner-only 0700 directories and 0600 artifacts. The exact source-forget path can reconstruct the same standardized ridge optimum after excluding one source. This only updates the A3 linear projector; it does not unlearn the feature extractor, teacher, encoder or other organs.
+
+- Exact source-lineage/A3 forget CI: PASS on Python 3.13 and 3.14.
+- RAW EYE / MediaProjection frame-ingress CI: PASS on Python 3.13 and 3.14.
+- Runtime-deployment integrity CI: PASS on Python 3.11 and 3.14.
+- Staged-runtime and integrated-regression CI: FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`.
+- LOCAL_LINUX algorithm-level check: PASS, 24/24 source-deletion reconstructions; max absolute errors `mu=2.78e-16`, `sd=4.44e-16`, `W=2.67e-13`. This is not a full Aii package test.
+- Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS/network unavailable).
+
+## Actual user effect and deployment
+
+The exact-delete code is not yet in the integrated Runtime because the Core source-lifecycle materializer does not yet pin the new helper. No end-to-end app behavior is claimed. No new device receipt was obtained; Redmi remains **REDMI_UNVERIFIED**. The last shared device snapshot (2026-11-24 09:28:11Z) recorded the model process STOPPED_BY_USER and no native-residency proof. No UPDATE_REQUEST, model download, model/weight swap, permission change, microphone capture or deployment was performed. Existing updater state was not freshly reverified.
+
+## Research and model-lab conclusion
+
+- R-146 SGM-Diar: useful evidence for a calibrated known/change/**DEFER** gate and strictly session-scoped memory; proof-of-concept only, no code repo found, DiariZen weights CC BY-NC 4.0.
+- R-147 Edge0: Apache-2.0 framework, but current Android engine is 35B only, requires i8mm/ARMv8.6-A, and the documented 16-GB OnePlus benchmark has 18.4–18.8 s TTFT for 627 tokens; model assets require about 42 GB disk. Not a Redmi candidate.
+- R-148 BigMoMo: promising expert-movement scheduling, but preprint-only/no official code found; tests require newer Snapdragon Hexagon HMX devices and 12–24 GB RAM. Not a Redmi port.
+
+## Next concrete action
+
+Core/Integrator must pin the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper `vision_projector_stats.py` SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f` in the strict source-lifecycle closure, rebind dependent pins bottom-up, and rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken hash gates.
+
+**User action: none.** No manual Termux command or model consent is needed for this blocked integration step.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
