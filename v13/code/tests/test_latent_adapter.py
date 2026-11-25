@@ -7,7 +7,8 @@ import pytest
 from v13.latent_adapter import (
     LatentAdapterError, _activation_vector_sha256, _alignment_manifest_sha256, _token_pair_id,
     align_token_rows_by_byte_pieces, align_token_rows_by_char_span, build_native_receiver_input,
-    fit_adapter, token_piece_byte_spans, project_event, project_rows, project_vector,
+    fit_adapter, token_piece_byte_spans, build_tokenwise_tap_manifest,
+    project_event, project_rows, project_vector,
     save_adapter, load_adapter,
 )
 
@@ -530,4 +531,60 @@ def test_tokenwise_fit_recomputes_alignment_coverage_instead_of_trusting_metadat
             sender_tokenizer_revision="sender-tokenizer-r1",
             receiver_tokenizer_revision="tokenizer-r1",
             rank=2, ridge=1e-5,
+        )
+
+
+def test_build_tokenwise_tap_manifest_maps_content_tokens_to_prefill_rows():
+    source = "A\u00e1\U0001f9e0e\u0301"
+    pieces = [
+        {"id": 1, "piece": "A"},
+        {"id": 2, "piece": [0xC3]},
+        {"id": 3, "piece": [0xA1, 0xF0]},
+        {"id": 4, "piece": [0x9F, 0xA7]},
+        {"id": 5, "piece": [0xA0]},
+        {"id": 6, "piece": "e"},
+        {"id": 7, "piece": [0xCC]},
+        {"id": 8, "piece": [0x81]},
+    ]
+    content_ids = list(range(10, 18))
+    prefill_ids = [1] + content_ids
+    activation_rows = [[float(i), float(i + 1)] for i in range(len(prefill_ids))]
+    manifest = build_tokenwise_tap_manifest(
+        source, content_ids, pieces, prefill_ids, activation_rows,
+    )
+    assert manifest["schema"] == "v14.source-bound-tokenwise-tap/1"
+    assert manifest["prefill_positions"] == list(range(1, 9))
+    assert manifest["special_prefix_tokens"] == 1
+    assert manifest["special_suffix_tokens"] == 0
+    assert manifest["vectors"] == activation_rows[1:]
+    assert len(manifest["token_spans"]) == len(content_ids)
+    assert manifest["source_sha256"] == hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
+def test_build_tokenwise_tap_manifest_rejects_ambiguous_content_token_subsequence():
+    with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
+        build_tokenwise_tap_manifest(
+            "ab", [10, 11], ["a", "b"], [10, 11, 10, 11],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_unmatched_content_tokens():
+    with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], ["a", "b", "c"], [1, 10, 12, 11],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_excess_special_tokens_and_row_mismatch():
+    with pytest.raises(LatentAdapterError, match="invalid token count"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], ["a", "b", "c"], [1, 2, 3, 10, 11, 12],
+            [[float(i), float(i + 1)] for i in range(6)],
+        )
+    with pytest.raises(LatentAdapterError, match="do not match native prefill"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], ["a", "b", "c"], [1, 10, 11, 12],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0]],
         )
