@@ -2390,3 +2390,18 @@ This is a dated evidence overlay, not a change to the 1,255-heading historical i
 | Voice output contract | `v13/code/v13/speech_intent.py`, `speech_output.py` | Existing explicit TTY-only Termux system-TTS fallback remains source-bound and does not auto-play or capture audio. | Not a trainable speech decoder/vocoder, not full duplex, no microphone capture or Redmi voice proof. |
 
 **Platform boundary:** last authenticated private metadata still reports release 8d932 installed, auto-update enabled, AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE and B1/B2 TIME_BUDGET. Fresh read-only refresh had NO_LIVE_RECEIPT. Full LOCAL_LINUX repository suite NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. All PRs above remain draft/candidate; none is a release or proof of complete V14/V13 behavior.
+
+
+## Candidate evidence overlay — Core & Harness — 2026-11-25
+
+This overlay preserves the 1,255-heading historical inventory and does not promote any Canon family to COMPLETE.
+
+| Canon family / contract | Current candidate path | Exact evidence | Remaining acceptance boundary |
+|---|---|---|---|
+| B1_DETAIL / B2_GIST fair pre-answer path | #2478 → #2485 → #2488 | #2478 head 55db58a: 13/28 success, 14 fail, 1 skipped. #2485 head 358b089: 11/11 success. #2488 head b8b4391: 17/17 success; integrated regression 424 passed, 3 skipped, 58 subtests. | CI/synthetic only; no Redmi native offer success, no quality/latency acceptance. |
+| C5 ActionSelection source lineage | `v13/code/v13/focal.py::_action_provenance`; `test_focal.py::test_action_selection_binds_offer_query_context_and_survives_restart` | Exact event + admitted Memory/observer + B1/B2 OfferPacket/QueryPacket + Context OS + Enlightened Space + body-view refs; same-session/digest/readability validation; T8 source consumer and Runtime restart regression included in #2488 integrated suite. | Source lineage does not prove semantic use, learned reward, numeric JEPA update or retention. |
+| B3 / native receiver | `native_latent_receiver.cpp`, `native_latent_receiver.py`, pair-matrix operator; PR #2488 | Pinned llama.cpp b29c606 Linux x86_64 build/selftest PASS; Android arm64-v8a cross-compile PASS; 17/17 exact check-runs. | No GGUF/model execution, no sender→receiver utility, gradients, held-out retention, OOD or Redmi proof. Production B3 OFF. |
+| Android ActionIntent / ActionOutcome | #2450/#2481 companion runtime, signed receipt and next-event JEF context | #2481 head 545ec845: 64 companion-outcome tests pass on Python 3.13 and 3.14; staged/integrated and companion assemble/unit pass; 16/17 checks at last read, emulator process-death job pending. | DRAFT/NOT_RELEASED; emulator pending at last poll; no APK install, signer pairing, Redmi action or device proof. Receipt remains CONTROL_ONLY, not observation/reward. |
+| Local / device evidence | Current runtime and release branch | No local checkout; git ls-remote DNS failure. Last authenticated device baseline remains installed 8d93236, AI STOPPED_BY_USER. | LOCAL_LINUX full suite NOT_RUN; REDMI_UNVERIFIED; no update request or device action. |
+
+No model/weight swap, permission change, private log access or user-data mutation occurred. No result here promotes B3, native body learning, Android control, or whole-system acceptance.
