@@ -4,7 +4,7 @@
 
 - Role: Research & Perception.
 - Started: 2026-11-25 03:06:51 Europe/Berlin (automation-provided start).
-- Last verified checkpoint: 2026-11-25 03:18 Europe/Berlin.
+- Last verified checkpoint: 2026-11-25 03:25:17 Europe/Berlin. PR head before this final handoff timestamp update: `0c279e7ab220dce4b8a475158a823870a9c2e46e`.
 - Completion time: UNKNOWN; this handoff records the verified checkpoint, not a claim that the platform limit was reached.
 - Product branch: `research-perception/v14-a3-counterfactual-probe-20261124-run13`.
 - Parent PR: [#2470](https://github.com/RedMentos/Aii/pull/2470), stacked on the current temporal UI-session branch and ultimately the verified `gpt6/v13-private-remote-bridge-20261111` development line at `8d93236`.
