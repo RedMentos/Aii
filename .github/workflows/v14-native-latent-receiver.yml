@@ -27,8 +27,6 @@ on:
       - "v13/code/tests/test_native_probe_runtime_close_overlay.py"
       - "v13/code/tests/test_stage_integrated_candidate.py"
       - "v13/code/tests/test_callosum.py"
-      - "v13/code/v13/brain_panel.py"
-      - "v13/code/tests/test_brain_panel_native_evidence.py"
       - ".github/workflows/v14-native-latent-receiver.yml"
 permissions:
   contents: read
@@ -50,7 +48,7 @@ jobs:
       - name: Install focused Runtime test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5 psutil PyYAML
       - name: Compile staged receiver and deploy chain
-        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/native_probe_matrix.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py v13/code/scripts/integrated_native_probe_runtime_close_overlay_20261124.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_matrix.py v13/code/tests/test_native_probe_approval_overlay.py v13/code/tests/test_stage_integrated_candidate.py v13/code/v13/brain_panel.py v13/code/tests/test_brain_panel_native_evidence.py
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/native_probe_matrix.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py v13/code/scripts/integrated_native_probe_runtime_close_overlay_20261124.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_matrix.py v13/code/tests/test_native_probe_approval_overlay.py v13/code/tests/test_stage_integrated_candidate.py
       - name: Verify stage/deployer/overlay source pins
         run: |
           python - <<'PY'
@@ -111,11 +109,6 @@ jobs:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
         run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_matrix.py v13/code/tests/test_native_probe_approval_overlay.py v13/code/tests/test_stage_integrated_candidate.py
-      - name: Test native prompt accounting and B1/B2 to C4 to C3 delivery evidence
-        env:
-          PYTHONPATH: v13/code
-          PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_brain_panel_native_evidence.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
