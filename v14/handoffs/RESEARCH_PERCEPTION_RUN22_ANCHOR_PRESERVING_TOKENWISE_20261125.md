@@ -23,7 +23,7 @@ Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae
 
 - LOCAL_LINUX CPython 3.13.5: python3 -m py_compile /tmp/anchor_residual_harness.py PASS; isolated harness 4/4 PASS.
 - Full local Aii checkout: NOT_AVAILABLE / NOT_RUN.
-- Latest PR #2511 head 33b6ada2c600734dfae678d1ce270ecd7b0e48f2: adapter-contract 3.13/3.14, staged-runtime, integrated-regression, offline 3.11/3.14, privacy and bridge-security checks are QUEUED. Earlier head c1e3e20 had offline 3.11/3.14, privacy and bridge-security PASS; its staged/integrated checks were still running when superseded. The v14-latent-token-alignment workflow filter was corrected in e8b8d95229f3c17db099468f4767ccfad18be612 to include this head/base.
+- The current PR #2511 branch head is tracked directly on GitHub; code/test SHA remains 87c8c7ecdf18ac42ad2753568991a2c4e32078ae. On the current head, adapter-contract 3.13/3.14, staged-runtime, integrated-regression, offline 3.11/3.14, privacy and bridge-security checks are QUEUED. Earlier head c1e3e20 had offline 3.11/3.14, privacy and bridge-security PASS; its staged/integrated checks were still running when superseded. The v14-latent-token-alignment workflow filter was corrected in e8b8d95229f3c17db099468f4767ccfad18be612.
 - Native GGUF receiver inference, task utility, Android arm64/Termux and Redmi: NOT_RUN / UNVERIFIED.
 
 ## Integration and next owner
