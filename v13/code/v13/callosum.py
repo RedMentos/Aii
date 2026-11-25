@@ -198,7 +198,17 @@ def controller(runtime):
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
+    """:callosum status/shadow/active/degrade/promote plus local one-shot native-probe commands."""
+    # These probe commands have their own source/model-bound one-shot approval,
+    # local-TTY check, Runtime lease, cancellation and fixed time bounds.
+    # Dispatch before creating the production Callosum controller: probes are
+    # diagnostic-only and must not change the production B3 route.
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        from .native_probe_approval import operator_command as probe_command
+        return probe_command(r, args)
+    if args and args[0] in {"arm-probe-matrix", "native-probe-matrix", "revoke-probe-matrix"}:
+        from .native_probe_matrix import operator_command as matrix_command
+        return matrix_command(r, args)
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
@@ -206,4 +216,4 @@ def operator_command(r,args):
     if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
     if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
         return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')
+    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|arm-probe B1_DETAIL B2_GIST --last-source --confirm|native-probe B1_DETAIL B2_GIST --last-source --confirm|revoke-probe|arm-probe-matrix --last-source --confirm|native-probe-matrix --last-source --confirm|revoke-probe-matrix]')
