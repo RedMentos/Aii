@@ -2055,3 +2055,8 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Research notes R-156–R-161 were appended with explicit evidence levels and license/resource caveats. No code, weights, data or dependencies were imported.
 - Updater/deployment: no fresh private phone receipt in this run. The last available private snapshot is historical (2026-11-24) and reported auto-update enabled but AI runtime STOPPED_BY_USER at 8d93236; current installed SHA is unknown. No device action was attempted.
 - Next: Core adds a bounded native teacher-forced target-score operation and calls the Perception evaluator across all eight controls; then exact CI, independent review, held-out utility, restart/rollback and only later any separate device approval. Boss should update the shared board after review.
+
+
+### Cross-lane update — Core native consumer PR #2512
+
+Core has opened [PR #2512](https://github.com/RedMentos/Aii/pull/2512), head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, which consumes the anchor-preserving tokenwise input under the separate `NATIVE_RECEIVER` approval. It is a real Runtime diagnostic consumer, but it still measures only decode/input-effect metrics. It does not yet score target tokens or generated answers. The current #2512 branch snapshot does not contain the new #2511 `native_receiver_utility.py` module; Core has been asked to refresh the Perception parent and add a bounded native teacher-forced target-score producer. #2512 exact-head CI was queued; no PASS claimed. This is not trained semantic utility, B3 remains OFF, and no Redmi evidence exists.
