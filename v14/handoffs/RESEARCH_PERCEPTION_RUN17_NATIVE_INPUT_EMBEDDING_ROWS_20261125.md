@@ -44,3 +44,6 @@ Latest available consented private V13OBS #115 metadata remains historical (2026
 ## Final CI and branch readback correction
 
 The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is fully CI-green: adapter 53/53 PASS on Python 3.13/3.14; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (integrated 424 passed, 3 skipped, 58 subtests; staged 255 passed, 10 skipped, 47 subtests). The later docs-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is read back on the branch ref, but PR #2502 API still showed the old head `2f74fa94...` at last poll. Do not claim PR synchronization until verified.
+
+
+Final readback: branch ref 4d3faa297cbdc343573ad15216d62b38d55f2699 is verified; PR API head remains 2f74fa94d2ad4d0004ec61ea128bdec4d320e569. PR-head sync is unresolved.
