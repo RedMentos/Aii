@@ -61,3 +61,23 @@ Canon paths: B1_DETAIL / B2_GIST observer scheduling; C4 focal selection; C3 lan
 4. Only after a safe integrated release, use the consented private owner-read relay to obtain a fresh PIPELINE_STATUS/DIAGNOSTICS receipt; compare per-role B1/B2 TTFT, token counts and PSS against the C3 reserve before adjusting time slices.
 
 No model alternative is recommended yet: there is no fresh device-native comparison to justify a download or swap. No user action is required now. Run start/end time: UNKNOWN (not measured).
+
+## Final exact-head CI readback — 2026-11-25
+
+Code/test SHA `fd1c58e2998ad018dcafdf8ac3367eb45f543575` is green on all six exact-head workflows:
+- Controller guard 45542286279 PASS.
+- Lab Age/WebView 45542286382 PASS.
+- Runtime deployment integrity 45542286519 PASS on Python 3.11 and 3.14.
+- Owner-read/bootstrap 45542286527 PASS.
+- Two-checkout migration 45542286331 PASS.
+- Staged/integrated 45542286369 PASS: staged 288 passed / 10 skipped / 48 subtests; integrated 424 passed / 3 skipped / 58 subtests; recovery shell syntax PASS.
+
+The earlier single staged failure was a stale test fixture pin for `focal.py`; the current source and overlay both use Git blob `41c850b4a4b6de356a7e1049a9df56b085f76f9f`, and the test-only expectation was updated. No Focal runtime code changed.
+
+Private relay requests #888 HEALTH, #889 PIPELINE_STATUS and #890 DIAGNOSTICS have no `device_status` response. Latest available private snapshot #115 (2026-11-24 09:28 UTC) is historical and reports STOPPED_BY_USER, model process STOPPED, and zero valid B1/B2 offers. No device command, update request, model/weight/permission change or deployment occurred.
+
+Cross-stack note: PRs #2482/#2483 change the same strict guard/recovery/stage/deployer chain for A4 attention. #2485 only covers the fair-budget arithmetic Runtime hash. Boss/Integrator must combine the exact Runtime and A4 attention changes on one reviewed base and rebind the chain once; do not merge parallel chains blindly.
+
+Next Core package: port the diagnostic native latent receiver and local TTY-approved probe from #2451 onto the current fair-budget base. #2451's old branch is 56 commits ahead / 297 behind #2478, so port reviewed feature files rather than merging it wholesale. Android action/outcome #2481 is another green candidate (10/10 workflows at bd53f2c) but remains stacked on #2450 and awaits Boss/QA review.
+
+Final status: #2485 CI_GREEN / DRAFT / NOT_RELEASED; LOCAL_LINUX full checkout BLOCKED by DNS; Redmi REDMI_UNVERIFIED; user action NONE. No model download or swap is recommended without fresh native comparison.
