@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T21:30:00Z",
+  "updated_at": "2026-11-25T21:32:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness.",
@@ -1430,14 +1430,14 @@
     "package_id": "V14-NATIVE-TARGET-SCORE-001",
     "branch": "core/v14-native-target-score-20261125-run1",
     "base_dependency": "Core PR #2512 (head 10c2f66f8c110516e02d165e2b60183199527116); Perception evaluator copied byte-for-byte from PR #2511 latest head",
-    "head_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7",
+    "head_sha": "54a72bc38213f0c1e551e4ae216f450106371230",
     "pull_request": "https://github.com/RedMentos/Aii/pull/2515",
     "status": "DRAFT_CI_PENDING",
     "local_linux": "PASS: isolated C++17 logprob math with -Wall -Wextra -Werror; full checkout/pytest NOT_RUN (GitHub DNS unavailable)",
     "ci_python_313_314": "NOT_YET_OBSERVED",
     "native_build": "PENDING_EXACT_HEAD_GITHUB_CI",
     "redmi": "REDMI_UNVERIFIED",
-    "proof": "Native C++ receiver gains bounded teacher-forced target-token scoring (1..512) after positive embedding decode; Python wrapper binds per-token logprobs to model/input/target/binary hashes, pinned llama.cpp revision/version, decode status and input-consumed evidence. Exact Perception native_receiver_utility.py carried unchanged. Core collector is ephemeral, capped at 160 receipts, rejects duplicates, and grants no training/production/B3 authority. Tokenwise probe currently emits LATENT_CANDIDATE only; no complete 8-condition utility cohort or real GGUF score yet.",
+    "proof": "Native C++ receiver gains bounded teacher-forced target-token scoring (1..512) after positive embedding decode; Python wrapper binds per-token logprobs to model/input/target/binary hashes, pinned llama.cpp revision/version, decode status and input-consumed evidence. Exact Perception native_receiver_utility.py carried unchanged. Core collector is ephemeral, capped at 160 receipts, rejects duplicates, and grants no training/production/B3 authority. Tokenwise probe currently emits LATENT_CANDIDATE only; no complete 8-condition utility cohort or real GGUF score yet. Documentation/handoff commits after code commit 1eee88b are docs-only; current branch/PR HEAD is 54a72bc.",
     "parallel_prs": [
       {
         "number": 2512,
@@ -1453,7 +1453,8 @@
         "scope": "consent-gated HTTPS ACTION_VIEW Android open_url"
       }
     ],
-    "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately."
+    "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately.",
+    "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
   },
   "previous_core_checkpoint": {
     "owner": "Core & Harness",
