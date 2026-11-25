@@ -199,6 +199,8 @@ def validate_packet(value):
     _validate_positions(value["position_ids"], value["input_rows"], value["position_mode"])
     if value["position_mode"] == LATENT_PREFIX_MODE:
         digest = value.get("adapter_sha256")
+        if value["input_dim"] < 2:
+            raise NativeReceiverError("LATENT_PREFIX_V1 requires at least two dimensions for a nontrivial shuffle control")
         if (value.get("tokenizer_revision") is not None
                 or value.get("input_semantics") != "SINGLE_EVENT_PREFIX"
                 or value.get("projection_scope") != "EVENT_POOLED_NONZERO_MEAN"
