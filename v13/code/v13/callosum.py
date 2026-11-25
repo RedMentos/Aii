@@ -23,6 +23,7 @@ Degradation (B3-H10)     a receiver model revision change resets that direction 
 import json
 import math
 import re
+import time
 from . import b3degrade
 from .common import dumps
 from .neuromod import step
@@ -197,19 +198,202 @@ def controller(runtime):
 
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
+
+
+_TOKENWISE_LAB_MAX_RECORDS = 8
+_TOKENWISE_LAB_MIN_AVAILABLE_BYTES = 512 * 1024 * 1024
+
+
+def _tokenwise_session_ids(value, label):
+    if type(value) is not str:
+        raise ValueError(label + " must be a comma-separated session list")
+    values = [part.strip() for part in value.split(",")]
+    if len(values) < 2 or any(not item or len(item) > 160 for item in values):
+        raise ValueError(label + " requires at least two bounded session IDs")
+    if len(set(values)) != len(values):
+        raise ValueError(label + " contains duplicate session IDs")
+    return values
+
+
+def _tokenwise_source_key(value):
+    if not isinstance(value, dict):
+        return None
+    return tuple(value.get(key) for key in ("source_id", "sha256", "char_start", "char_end"))
+
+
+def _fit_tokenwise_candidate(runtime, args):
+    if len(args) != 5 or args[0] != "fit-tokenwise-cohort" or args[4] != "--confirm":
+        raise ValueError("usage: :callosum fit-tokenwise-cohort <train-session-ids> <holdout-session-ids> <record-sha-prefix> --confirm")
+    from . import native_probe_approval as approval
+    approval._require_local_tty()
+    runtime.require_idle()
+    pending, _ = runtime.store.state(approval.KEY, None)
+    if isinstance(pending, dict) and pending.get("status") == "PENDING":
+        raise PermissionError("revoke the pending local probe approval before fitting a new candidate")
+    if getattr(runtime, "_native_tokenwise_candidate", None) is not None:
+        raise ValueError("a tokenwise candidate is already staged; probe it or clear the lab first")
+    resources = runtime.resources()
+    available = resources.get("mem_available_bytes") if isinstance(resources, dict) else None
+    if type(available) is not int or available < _TOKENWISE_LAB_MIN_AVAILABLE_BYTES:
+        raise MemoryError("tokenwise cohort fit requires at least 512 MiB available RAM")
+    train = _tokenwise_session_ids(args[1], "train sessions")
+    holdout = _tokenwise_session_ids(args[2], "holdout sessions")
+    if set(train) & set(holdout):
+        raise ValueError("train and holdout session IDs must be disjoint")
+    prefix = args[3]
+    if (type(prefix) is not str or not 8 <= len(prefix) <= 64
+            or any(ch not in "0123456789abcdef" for ch in prefix)):
+        raise ValueError("record SHA prefix must be 8..64 lowercase hexadecimal characters")
+    records = getattr(runtime, "_native_tokenwise_pair_records", None)
+    if not isinstance(records, list) or not 1 <= len(records) <= _TOKENWISE_LAB_MAX_RECORDS:
+        raise ValueError("no bounded in-memory tokenwise pair cohort is available")
+    cohort = [item for item in records if item.get("session_id") in set(train) | set(holdout)]
+    matches = [
+        item for item in cohort
+        if item.get("session_id") in set(holdout)
+        and item.get("record_sha256", "").startswith(prefix)
+    ]
+    if len(matches) != 1:
+        raise ValueError("record SHA prefix must identify exactly one held-out in-memory record")
+    heldout = matches[0]
+    event, source_ref = approval._current_event(runtime)
+    if (heldout.get("session_id") != runtime.session
+            or heldout.get("event_id") != event.get("event_id")
+            or heldout.get("brain_generation_id") != event.get("brain_generation_id")
+            or _tokenwise_source_key(heldout.get("source_ref")) != _tokenwise_source_key(source_ref)):
+        raise PermissionError("selected held-out record is not the current Runtime source/event/session")
+    from .native_tokenwise_pair_capture import fit_native_tokenwise_pair_cohort
+    fitted = fit_native_tokenwise_pair_cohort(cohort, train, holdout)
+    if not isinstance(fitted, dict):
+        raise ValueError("tokenwise fitter returned no candidate")
+    adapter, manifest = fitted.get("adapter"), fitted.get("fit_manifest")
+    if (not isinstance(adapter, dict) or adapter.get("status") != "ALIGNMENT_CANDIDATE"
+            or adapter.get("projection_scope") != "TOKENWISE"
+            or adapter.get("production_route") is not False
+            or adapter.get("semantic_use_proven") is not False
+            or adapter.get("training_authority") != 0
+            or adapter.get("native_receiver_authority") != 0
+            or type(adapter.get("adapter_sha256")) is not str
+            or len(adapter["adapter_sha256"]) != 64
+            or not isinstance(manifest, dict)
+            or manifest.get("session_disjoint") is not True
+            or manifest.get("source_disjoint") is not True
+            or type(manifest.get("manifest_sha256")) is not str
+            or len(manifest["manifest_sha256"]) != 64):
+        raise ValueError("fitter did not return a source/session-disjoint authority-zero TOKENWISE candidate")
+    runtime._native_tokenwise_candidate = {
+        "adapter": adapter,
+        "record": heldout,
+        "fit_manifest": manifest,
+        "staged_at": time.time(),
+    }
+    runtime._native_tokenwise_pair_records = [heldout]
+    return dumps({
+        "schema": "v14.native-tokenwise-candidate-stage/1",
+        "status": "ALIGNMENT_CANDIDATE_STAGED",
+        "adapter_sha256": adapter["adapter_sha256"],
+        "record_sha256": heldout["record_sha256"],
+        "session_id": heldout["session_id"],
+        "fit_manifest_sha256": manifest["manifest_sha256"],
+        "train_record_count": manifest.get("train_record_count"),
+        "holdout_record_count": manifest.get("holdout_record_count"),
+        "train_pair_count": manifest.get("train_pair_count"),
+        "holdout_pair_count": manifest.get("holdout_pair_count"),
+        "adapter_persisted": False,
+        "pair_records_persisted": False,
+        "production_route": False,
+        "semantic_utility_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    })
+
+
+def _run_tokenwise_native_probe(runtime, args):
+    if args != ["native-tokenwise-probe", "--confirm"]:
+        raise ValueError("usage: :callosum native-tokenwise-probe --confirm")
+    from . import native_probe_approval as approval
+    approval._require_local_tty()
+    candidate = getattr(runtime, "_native_tokenwise_candidate", None)
+    if not isinstance(candidate, dict):
+        raise ValueError("no in-memory tokenwise candidate is staged")
+    record = candidate.get("record")
+    adapter = candidate.get("adapter")
+    if not isinstance(record, dict) or not isinstance(adapter, dict):
+        raise ValueError("staged tokenwise candidate is malformed")
+    pending, _ = runtime.store.state(approval.KEY, None)
+    if (not isinstance(pending, dict) or pending.get("status") != "PENDING"
+            or pending.get("probe_kind") != "NATIVE_RECEIVER"
+            or pending.get("sender_role") != record.get("sender", {}).get("role")
+            or pending.get("receiver_role") != record.get("receiver", {}).get("role")
+            or pending.get("session_id") != record.get("session_id")
+            or pending.get("event_id") != record.get("event_id")
+            or pending.get("brain_generation_id") != record.get("brain_generation_id")
+            or _tokenwise_source_key(pending.get("source_ref")) != _tokenwise_source_key(record.get("source_ref"))
+            or type(pending.get("expires_at")) not in (int, float)
+            or time.time() >= pending["expires_at"]):
+        raise PermissionError("a fresh, matching one-shot NATIVE_RECEIVER local approval is required")
+    from .native_tokenwise_receiver_probe import probe_native_tokenwise_candidate
+    try:
+        result = probe_native_tokenwise_candidate(runtime, adapter, record)
+    except BaseException:
+        consumed, _ = runtime.store.state(approval.KEY, None)
+        if isinstance(consumed, dict) and consumed.get("status") == "CONSUMED":
+            runtime._native_tokenwise_candidate = None
+        raise
+    runtime._native_tokenwise_candidate = None
+    runtime._native_tokenwise_pair_records = []
+    return dumps(result)
+
+
+def _clear_tokenwise_lab(runtime, args):
+    if args != ["clear-tokenwise-lab", "--confirm"]:
+        raise ValueError("usage: :callosum clear-tokenwise-lab --confirm")
+    from . import native_probe_approval as approval
+    approval._require_local_tty()
+    runtime.require_idle()
+    pending, _ = runtime.store.state(approval.KEY, None)
+    if isinstance(pending, dict) and pending.get("status") == "PENDING":
+        raise PermissionError("revoke the pending local probe approval before clearing the tokenwise lab")
+    records = getattr(runtime, "_native_tokenwise_pair_records", [])
+    candidate = getattr(runtime, "_native_tokenwise_candidate", None)
+    runtime._native_tokenwise_pair_records = []
+    runtime._native_tokenwise_candidate = None
+    return dumps({
+        "schema": "v14.native-tokenwise-pair-lab/1",
+        "status": "CLEARED",
+        "cleared_record_count": len(records) if isinstance(records, list) else 0,
+        "cleared_candidate": isinstance(candidate, dict),
+        "persisted": False,
+    })
+
 def operator_command(r,args):
-    """:callosum status/shadow/active/degrade/promote plus local one-shot native taps."""
+    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
         from .native_input_embedding_capture import operator_command as input_tap_command
         return input_tap_command(r,args)
     if args and args[0] in {"arm-tokenwise-pair", "native-tokenwise-pair", "revoke-tokenwise-pair"}:
         from .native_tokenwise_pair_capture import operator_command as pair_command
         return pair_command(r,args)
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        from .native_probe_approval import operator_command as native_probe_command
+        return native_probe_command(r,args)
+    if args and args[0] == "fit-tokenwise-cohort":
+        return _fit_tokenwise_candidate(r,args)
+    if args and args[0] == "native-tokenwise-probe":
+        return _run_tokenwise_native_probe(r,args)
+    if args and args[0] == "clear-tokenwise-lab":
+        return _clear_tokenwise_lab(r,args)
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
-    if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
+    if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:
         return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')
+    raise ValueError(
+        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'
+        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
+        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
+        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'
+    )

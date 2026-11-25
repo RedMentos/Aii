@@ -1,10 +1,13 @@
 import copy
 import hashlib
+import json
 import struct
+import time
 import threading
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
 
@@ -89,6 +92,13 @@ class FakeRuntime:
                     info.st_mtime_ns, info.st_ctime_ns,
                 ],
             }
+
+    def require_idle(self):
+        if self.current is not None:
+            raise RuntimeError("Runtime is not idle")
+
+    def resources(self):
+        return {"mem_available_bytes": 1024 * 1024 * 1024}
 
 
 class FakeApproval:
@@ -405,3 +415,129 @@ def test_cohort_wrapper_refuses_record_outside_holdout_before_fit(tmp_path):
             probe_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
         )
     assert calls == []
+
+
+def test_callosum_routes_arm_probe_to_native_approval_handler():
+    from v13 import callosum
+
+    with patch("v13.native_probe_approval.operator_command", return_value="approval-routed") as routed:
+        result = callosum.operator_command(
+            object(), ["arm-probe", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"]
+        )
+    assert result == "approval-routed"
+    routed.assert_called_once()
+
+
+def test_callosum_native_tokenwise_probe_fails_closed_without_local_approval(tmp_path):
+    from v13 import callosum
+
+    runtime = FakeRuntime(tmp_path)
+    runtime._native_tokenwise_candidate = {
+        "adapter": {"adapter_sha256": "c" * 64},
+        "record": pair_record(runtime),
+    }
+    with patch("v13.native_probe_approval._require_local_tty"):
+        with patch("v13.native_tokenwise_receiver_probe.probe_native_tokenwise_candidate") as probe:
+            with pytest.raises(PermissionError, match="fresh, matching one-shot"):
+                callosum.operator_command(runtime, ["native-tokenwise-probe", "--confirm"])
+    probe.assert_not_called()
+    assert isinstance(runtime._native_tokenwise_candidate, dict)
+
+
+def test_callosum_native_tokenwise_probe_consumes_matching_approval_and_clears_candidate(tmp_path):
+    from v13 import callosum
+
+    runtime = FakeRuntime(tmp_path)
+    record = pair_record(runtime)
+    adapter = {"adapter_sha256": "c" * 64}
+    runtime._native_tokenwise_candidate = {"adapter": adapter, "record": record}
+    runtime.store.state_value = {
+        "status": "PENDING",
+        "probe_kind": "NATIVE_RECEIVER",
+        "sender_role": "B1_DETAIL",
+        "receiver_role": "C3_LANGUAGE",
+        "session_id": runtime.session,
+        "event_id": runtime.event["event_id"],
+        "brain_generation_id": runtime.event["brain_generation_id"],
+        "source_ref": runtime.source_ref,
+        "expires_at": time.time() + 60,
+    }
+
+    def fake_probe(runtime_arg, adapter_arg, record_arg):
+        assert runtime_arg is runtime
+        assert adapter_arg is adapter
+        assert record_arg is record
+        runtime.store.state_value["status"] = "CONSUMED"
+        return {"status": "NATIVE_RECEIVER_DIAGNOSTIC", "semantic_utility_proven": False}
+
+    with patch("v13.native_probe_approval._require_local_tty"):
+        with patch("v13.native_tokenwise_receiver_probe.probe_native_tokenwise_candidate", side_effect=fake_probe):
+            result = json.loads(callosum.operator_command(runtime, ["native-tokenwise-probe", "--confirm"]))
+    assert result["status"] == "NATIVE_RECEIVER_DIAGNOSTIC"
+    assert runtime._native_tokenwise_candidate is None
+    assert runtime._native_tokenwise_pair_records == []
+
+
+def test_callosum_fit_tokenwise_cohort_stages_only_current_holdout_record(tmp_path):
+    from v13 import callosum
+    from v13 import native_probe_approval
+    from v13 import native_tokenwise_pair_capture
+
+    runtime = FakeRuntime(tmp_path)
+    runtime.session = "holdout-a"
+    heldout = pair_record(runtime)
+    heldout["session_id"] = "holdout-a"
+    heldout["record_sha256"] = "d" * 64
+    train_a = copy.deepcopy(heldout)
+    train_a.update(session_id="train-a", event_id="event-train-a", record_sha256="a" * 64)
+    train_b = copy.deepcopy(heldout)
+    train_b.update(session_id="train-b", event_id="event-train-b", record_sha256="b" * 64)
+    holdout_b = copy.deepcopy(heldout)
+    holdout_b.update(session_id="holdout-b", event_id="event-holdout-b", record_sha256="e" * 64)
+    runtime._native_tokenwise_pair_records = [train_a, train_b, heldout, holdout_b]
+    adapter = {
+        "status": "ALIGNMENT_CANDIDATE",
+        "projection_scope": "TOKENWISE",
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "adapter_sha256": "c" * 64,
+    }
+    fit_manifest = {
+        "session_disjoint": True,
+        "source_disjoint": True,
+        "manifest_sha256": "f" * 64,
+        "train_record_count": 2,
+        "holdout_record_count": 2,
+        "train_pair_count": 32,
+        "holdout_pair_count": 32,
+    }
+    with patch.object(native_probe_approval, "_require_local_tty"):
+        with patch.object(native_probe_approval, "_current_event", return_value=(runtime.event, runtime.source_ref)):
+            with patch.object(native_tokenwise_pair_capture, "fit_native_tokenwise_pair_cohort",
+                              return_value={"adapter": adapter, "fit_manifest": fit_manifest}) as fit:
+                result = json.loads(callosum.operator_command(
+                    runtime,
+                    ["fit-tokenwise-cohort", "train-a,train-b", "holdout-a,holdout-b", "d" * 8, "--confirm"],
+                ))
+    assert result["status"] == "ALIGNMENT_CANDIDATE_STAGED"
+    assert result["adapter_sha256"] == "c" * 64
+    assert runtime._native_tokenwise_candidate["record"] is heldout
+    assert runtime._native_tokenwise_pair_records == [heldout]
+    fit.assert_called_once()
+
+
+def test_callosum_fit_tokenwise_cohort_refuses_missing_local_tty(tmp_path):
+    from v13 import callosum
+    from v13 import native_probe_approval
+
+    runtime = FakeRuntime(tmp_path)
+    runtime._native_tokenwise_pair_records = [pair_record(runtime)]
+    with patch.object(native_probe_approval, "_require_local_tty", side_effect=PermissionError("TTY required")):
+        with pytest.raises(PermissionError, match="TTY required"):
+            callosum.operator_command(
+                runtime,
+                ["fit-tokenwise-cohort", "train-a,train-b", "hold-a,hold-b", "d" * 8, "--confirm"],
+            )
+    assert not hasattr(runtime, "_native_tokenwise_candidate")

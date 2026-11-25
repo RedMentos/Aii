@@ -455,7 +455,7 @@ def test_pair_operator_requires_distinct_approval_kind_and_routes_capture():
             return {"status": "REVOKED"}
 
     commands = Commands()
-    runtime = object()
+    runtime = SimpleNamespace(_native_tokenwise_pair_records=[])
     armed = json.loads(operator_command(
         runtime,
         ["arm-tokenwise-pair", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"],
@@ -468,9 +468,24 @@ def test_pair_operator_requires_distinct_approval_kind_and_routes_capture():
         runtime,
         ["native-tokenwise-pair", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"],
         approval_module=commands,
-        capture_fn=lambda r, s, t: {"status": "PAIRED_DIAGNOSTIC", "sender": s, "receiver": t},
+        capture_fn=lambda r, s, t, return_record=False: {
+            "schema": "v14.native-tokenwise-pairing/1",
+            "status": "PAIRED_DIAGNOSTIC",
+            "persisted": False,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "record_sha256": "d" * 64,
+            "session_id": "session-a",
+            "event_id": "event-a",
+            "pair_count": 1,
+            "pairs": [{"sender_vector": [1.0, 2.0], "receiver_vector": [3.0, 4.0]}],
+        },
     ))
-    assert ran["status"] == "PAIRED_DIAGNOSTIC"
+    assert ran["status"] == "PAIRED_DIAGNOSTIC_STAGED"
+    assert ran["pair_vectors_persisted"] is False
+    assert len(runtime._native_tokenwise_pair_records) == 1
     assert commands.calls == [("arm", "B1_DETAIL", "C3_LANGUAGE", PROBE_KIND), ("revoke",)]
 
 
