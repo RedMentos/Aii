@@ -84,3 +84,17 @@ Prior staged/integrated failure details: 16 failed, 237 passed, 10 skipped, 2 er
 Local isolated CPython 3.13.5 tests and microbenchmark remain the only local evidence for the predictor. The new source-pin commit has not yet received final CI at this handoff point. No full repository local suite, real acoustic held-out cohort, native model, Android AudioRecord provider, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. The 182-parameter LMS state remains process-local and consent-scoped; it is not persistent JEPA/EMA body-weight learning.
 
 Next: poll all four exact workflows on 0cd31098110ee36bb63078947cfed1c444d3ff04. If staged/integrated passes, add frozen-weight held-out acoustic controls against persistence, no-predictor and shuffled cues, plus source/voice retention and revocation. If another pin fails, trace the exact consumer chain and rebind only the precise verified blob; do not relax hash gates.
+
+## Run 13b final poll — downstream pin-chain blocker (2026-11-25 13:46 UTC)
+
+The exact rerun on code SHA 0cd31098110ee36bb63078947cfed1c444d3ff04 has now completed:
+- V14 RAW EAR vs WebRTC/libfvad comparison #595: PASS.
+- V14 RAW EAR optional NumPy backend #714: PASS.
+- V13 runtime deployment integrity #2522: PASS.
+- V13 staged context and integrated regression #5065: FAIL in both staged-runtime and integrated-regression.
+
+The first audio source pin was repaired correctly, but staging now stops at the next wrapper: termux_runtime_recovery_candidate_20261121.py expects integrated_audio_context_candidate_20261121.py Git blob 831080bceec90711bd42e0fa4eba47c669975c98; the exact current script blob is 598e9c12ad387a1b693ed9fdda2bd8101212d2e8. The failure then cascades into two-checkout migration returning PARTIAL. This is the next link in the same exact-hash chain, not evidence of a new audio predictor runtime failure.
+
+Ownership handoff: Research & Perception owns the A5 source and its exact consumer behavior. Core/QA own termux_runtime_recovery_candidate_20261121.py, stage_integrated_candidate.py and runtime_deploy.py. A PR #2498 comment (#7164267690) gives the exact next expected-vs-actual hash and requests ordered recomputation of recovery-builder, stager and deployer hashes. No cross-owner files were changed and no source pin was weakened.
+
+Board V14-022 was updated with this precise blocker and the next Core/QA action. PR #2498 remains OPEN / DRAFT / NOT_RELEASED. REDMI_UNVERIFIED. No microphone, Termux, native model or device action occurred.
