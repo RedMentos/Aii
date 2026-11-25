@@ -426,7 +426,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
 
 
 def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_id=None):
-    """Clear process-local A4 voice and speaker-change state after revocation or teardown."""
+    """Clear A4 voice/speaker state and optional persisted numeric predictor weights."""
     count = 0
     registry = getattr(runtime, "_raw_ear_temporal_registry", None)
     if registry is not None:
