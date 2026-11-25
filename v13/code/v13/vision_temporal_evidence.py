@@ -256,7 +256,7 @@ class TemporalVisualEvidence:
         gap_ms = 0
         if self._last_end_ms is not None:
             if self._last_start_ms is not None and start_ms < self._last_start_ms:
-                raise TemporalVisualEvidenceError("temporal visual frame starts must be monotonic")
+                raise TemporalVisualEvidenceError("temporal visual frame starts must advance monotonically")
             if end_ms <= self._last_end_ms:
                 raise TemporalVisualEvidenceError("temporal visual frames must advance monotonically")
             gap_ms = max(0, start_ms - self._last_end_ms)
