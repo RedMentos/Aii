@@ -1,3 +1,19 @@
+## Research & Perception checkpoint — 2026-11-25 03:21 CET (Run 25)
+
+PR #2470 adds a source-bound A3→A4 temporal attention path: A3 projected cosine change contributes `min(0.15, 0.15 × change_score)` to the existing A4 novelty signal consumed by `vision_ui_frame_ingress`. The signal is attention-only; no truth, learning, action authority or weight update.
+
+- Code/test SHA: `2b96fb9ce919fd5de1ee0ead6c5c5f1e2fbc4a55`.
+- Focused CI: PASS, Python 3.13 and 3.14, 54/54 tests each; privacy scan and bridge security PASS.
+- A5 UI lease integration: FAIL on both Python versions due to the existing Core-owned `vision.py` source-pin mismatch (`unsupported lifecycle source: vision.py`). Full staged/integrated acceptance remains blocked.
+- Local: isolated formula harness 6/6 PASS; full checkout/pytest BLOCKED by unavailable local repository/network.
+- Device: REDMI_UNVERIFIED; no fresh receipt and no update request. Release: NOT_RELEASED.
+- Research ledger: R-150 records the full Future-OPSD paper/OSS review and a future source-bound outcome-contrast experiment; no model/data import.
+- Handoff: `v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_A4_TEMPORAL_SALIENCE_20261125.md`.
+
+Next: Core/Integrator rebinds the exact `vision.py` and dependency closure, then reruns A5 lease + staged/integrated consumers. Perception next adds noise/shuffle and source-disjoint controls. The requested master filename/ref discrepancy is recorded in `V14_USER_NEXT_ACTION.md`; no master edit made.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
