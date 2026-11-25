@@ -5,6 +5,7 @@ Base: gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d
 Branch: research-perception/latent-alignment-audit-20261125-run11
 PR: #2489 (OPEN / DRAFT / NOT_RELEASED)
 Implementation SHA: 8ebc18b322745dfb96b524e25933408597ae92eb
+Final branch head: f0dddf93166bd9949a1be88748e66b720a889afd
 
 ## Product gap addressed
 The current native probe can persist source-bound LatentTapPacket records, but no accepted method exists to screen whether B1 and B2 final-output tap spaces preserve the same source neighbourhoods. The research paper R-007 demonstrates why raw cosine/CKA or successful retrieval must not be treated as causal communication evidence. It also identifies position-0 domination in its tested causal decoders.
@@ -25,7 +26,7 @@ Environment: LOCAL_LINUX container, CPython 3.13.5.
 - Synthetic Store/blob fixture uses the real V13 packets table column layout; DB file hash unchanged across audit.
 - Negative checks: mismatched event, missing counterpart, tampered blob, authority escalation, path traversal, symlinked blob root — PASS.
 
-The full Aii checkout and full repository test suite were not run locally: GitHub DNS/network access from the container is unavailable. The Zenodo archive was also inaccessible from this environment. CI is separate and pending.
+The full Aii checkout and full repository test suite were not run locally: GitHub DNS/network access from the container is unavailable. The Zenodo archive was also inaccessible from this environment. CI is partial: implementation commit 8ebc18b has V13 staged context/integrated regression, V14 Perception privacy scan and V13 integration workflow SUCCESS; safe-additive workflow SKIPPED. Docs commit 8818a88 has staged-runtime SUCCESS, privacy scan/runtime-integrity/Core same-turn checks SUCCESS, safe-additive SKIPPED, while integrated-regression remains IN_PROGRESS at last poll. Final docs-only head f0dddf9 has no workflow run visible. Do not call the final head fully CI-green.
 
 ## Research update and licensing
 The v2 full text says the archive includes concept-pair sets, extraction/projection scripts, the injection mechanism, raw results for all 180 generation trials, logs, pre-registration, and a recomputation script. It explicitly describes the activation-level channel as a monitoring/interpretability risk because it removes human-readable text and can evade ordinary filters/logs. V14 must keep future latent exchange opt-in, source/age/consent-bound and control-plane-auditable. The paper's explicitly open research item is a formal information-theoretic channel characterization (capacity, coding scheme, error rate) compared against token-path cost. The Zenodo archive should be inspected before adapting its code.

@@ -1776,7 +1776,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ## Research & Perception — run 11, 2026-11-25
 
-**Verified code checkpoint:** Draft PR #2489, branch research-perception/latent-alignment-audit-20261125-run11, implementation commit 8ebc18b322745dfb96b524e25933408597ae92eb. It adds a read-only audit of persisted LatentTapPacket records and updates R-007 from abstract-only to full-text review. The PR is OPEN / DRAFT / NOT_RELEASED. No CI workflow run was visible at the first exact-head poll; CI status is PENDING, not PASS.
+**Verified code checkpoint:** Draft PR #2489, branch research-perception/latent-alignment-audit-20261125-run11, implementation commit 8ebc18b322745dfb96b524e25933408597ae92eb. It adds a read-only audit of persisted LatentTapPacket records and updates R-007 from abstract-only to full-text review. The PR is OPEN / DRAFT / NOT_RELEASED; final branch head f0dddf93166bd9949a1be88748e66b720a889afd. CI on implementation commit 8ebc18b: staged context/integrated regression, privacy scan and integration workflow SUCCESS; safe-additive workflow SKIPPED. On docs commit 8818a88: staged-runtime, privacy scan, runtime-integrity and Core same-turn checks SUCCESS; integrated-regression remained IN_PROGRESS at last poll. The final docs-only head f0dddf9 has no workflow run visible. This is PARTIAL CI evidence, not a fully green final head.
 
 **Exact local evidence:** LOCAL_LINUX / CPython 3.13.5: py_compile PASS; focused tests 9/9 PASS; CLI help PASS. Synthetic SQLite/blob fixture uses the actual V13 packets table columns. DB file hash was unchanged by the audit. This is not a real tap cohort, native model run, full Aii suite, or Redmi test.
 
