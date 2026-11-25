@@ -8,8 +8,6 @@ on:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/tests/test_audio_temporal_prediction.py"
-      - "v13/code/v13/audio_temporal_prediction.py"
-      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_input.py"
       - "v13/code/tests/test_audio_input.py"
@@ -20,6 +18,8 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_input.py"
       - "v13/code/v13/audio_input.py"
