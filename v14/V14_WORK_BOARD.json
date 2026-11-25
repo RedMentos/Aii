@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T05:23:46.665Z",
+  "updated_at": "2026-11-25T05:24:23.201Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -1316,7 +1316,7 @@
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
-  "latest_documentation_head_at_readback": "48c9d1aef661ca9757bc71078e53085a492e5a11",
+  "latest_documentation_head_at_readback": "3a9e8705381c3d9efcd0c301bebfdba9bcfcd036",
   "core_run_20261124": {
     "timestamp": "2026-11-24T19:24:35Z",
     "owner": "Core & Harness",
@@ -1498,7 +1498,7 @@
     }
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-25T05:23:46.665Z",
+    "timestamp": "2026-11-25T05:24:23.201Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2488,
     "primary_runtime_branch": "core/v14-native-probe-fair-budget-20261125-run1",
@@ -1506,7 +1506,7 @@
     "primary_runtime_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN_NOT_RELEASED",
     "secondary_android_pr": 2481,
     "secondary_android_head": "545ec845a35a4567aeaf7487d6765edf2229176f",
-    "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN_NOT_RELEASED; ANDROID_API33_EMULATOR_PROCESS_DEATH_PASS",
+    "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN; ANDROID_API33_EMULATOR_PROCESS_DEATH_AND_STOP_PERSISTENCE_PASS; NOT_REDM I",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
     "redmi": "INSTALLED_8D93236_LAST_RECEIPT_AI_STOPPED_BY_USER_REDMI_UNVERIFIED",
     "next_action": "Independent QA/Boss review/rebase of #2481; Boss review of #2485/#2488. No device update or native probe without explicit approval."
