@@ -212,7 +212,8 @@ class TemporalVoiceEvidenceRegistry:
         )
         with self._lock:
             state = self._states.get(key)
-            if state is None:
+            state_was_missing = state is None
+            if state_was_missing:
                 state = TemporalVoiceEvidence(**self._state_options)
             # Validate the new epoch before evicting the old one. Malformed
             # input must not destroy the last valid source-bound state.
@@ -236,7 +237,7 @@ class TemporalVoiceEvidenceRegistry:
                     consent_scope_keys.append(old_key)
             for old_key in generation_keys + consent_scope_keys:
                 del self._states[old_key]
-            if consent_scope_keys:
+            if consent_scope_keys and state_was_missing:
                 result["state_reset"] = True
                 result["reset_reason"] = "CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
