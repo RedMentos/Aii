@@ -1837,3 +1837,19 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Tests: exact repository tests have not yet run in this automation environment; the new Python 3.13/3.14 CI workflow is pending. No LOCAL_LINUX full-repository PASS is claimed.
 - Device/deployment: REDMI_UNVERIFIED / NOT_RELEASED. No fresh authenticated phone receipt, model pair, native task-utility test or updater deployment was performed. A GitHub push is not a deployment.
 - Next executable step: after focused CI, extend the native tap producer to emit verified tokenizer byte/character spans (without storing source text), then build a real paired cohort and run receiver-side task utility with answer-disjoint, mis-source, no-op, zero, shuffled, parity and OOD controls. Do not promote the adapter based on MSE/logit changes alone.
+
+
+## Research & Perception update — 2026-11-25 (Run 14b)
+
+**No user action required.** No model download/swap, device command, new permission, native probe, runtime restart or deployment was requested or performed.
+
+- Research branch: research-perception/v14-token-span-alignment-20261125-run14b. Latest verified code/test checkpoint before documentation-only updates: 10b07cedd60db0b61dcbd7fdc493ceb6f6c48d84. The branch then appended R-144 and this handoff/user-action update; re-read current HEAD before any further work.
+- Tokenwise adapter schema v3 remains a geometric candidate only. Test fixtures now use the declared list-vector input contract, and the holdout source-hash leakage test now mutates a complete source group consistently so it reaches the intended train/holdout leakage guard.
+- The read-only latent alignment audit now measures sender/receiver nonzero-position residual-energy ratios after event mean pooling. It quantifies within-event activation variation not reconstructed by one mean; it is not semantic information loss, task utility, native transfer or learning proof.
+- Local isolated Python reproductions: PASS for token-span helper input normalization and event-pool residual-energy arithmetic. Full repository local pytest NOT_RUN because no checkout is mounted in this execution environment.
+- Exact CI on code/test SHA 10b07ced: V14 latent token-span alignment #12 PASS; V13 runtime deployment integrity #2517 PASS. Current docs-only branch head must be rechecked. V13 staged context/integrated regression #5060 was still IN_PROGRESS at last poll.
+- Research R-144: full review of Chen et al., arXiv:2606.13594v2 (v2 2026-10-05). The method is dense per-layer/per-KV-group KV-cache alignment with reconstruction then generation training, not a one-vector hidden-state adapter. It reports 33/36 context-unaware Qwen3 task/pair wins but uses 4B/8B/14B models, 30k+2k training steps and estimated 27.2–30.2 MB/example cache payload. No official code release or model/data license reuse was verified. See V14_RESEARCH_LEDGER R-144.
+- Core PR #2499: the exact failure on df19e207 was a missing arm-probe call in its runtime test, not a lost PENDING record. This correction is posted in comment #7164132935. Core commit 8502afe adds the explicit arm step and updates expected preflight unload ordering; dedicated V14 native latent receiver staged-runtime workflow #911 PASS. This is staged control-path evidence, not a real GGUF task-utility test.
+- B3 remains OFF. No native GGUF task-utility, gradient/parameter diff, retention/restart, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. A GitHub push is not a deployment.
+
+**Next executable step:** after the exact integrated CI finishes, coordinate with Core on the real tap producer's tokenizer byte/character offsets, then form a source-disjoint paired cohort and compare one-vector vs span/tokenwise receiver utility under context-aware and context-unaware conditions with zero, shuffled, mis-source, position, parity and OOD controls.
