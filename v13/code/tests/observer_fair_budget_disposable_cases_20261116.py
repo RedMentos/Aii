@@ -142,11 +142,15 @@ class SchedulingTests(unittest.TestCase):
         self.assertEqual(fair['preanswer_end_monotonic'], 120.0)
         self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
         self.assertAlmostEqual(fair['c3_reserved_seconds'], 10.0, places=2)
-        self.assertEqual(fair['minimum_role_slice_s'], 1.0)
+        self.assertEqual(fair['minimum_role_slice_s'], 2.0)
         first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
                                         background_enabled=True, observer_deadline=106.75)
         self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
         self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 10.0, places=2)
+        self.assertFalse(first_slot['postcommit_body_eligible'])
+        below_minimum = native_budget.plan(100, 130, 104, recent=[failed, failed],
+                                          background_enabled=True, observer_deadline=105.99)
+        self.assertTrue(below_minimum['postcommit_body_eligible'])
 
 
 class RuntimeObserverTests(unittest.TestCase):
