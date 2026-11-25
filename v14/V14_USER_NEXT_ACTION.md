@@ -1,3 +1,28 @@
+# Current V14 handoff — Core & Harness Run 1 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+## New Core work
+
+- Draft PR [#2513](https://github.com/RedMentos/Aii/pull/2513), head `e2774a22c2f9d0a4acfee3c00d1024793b952f61`, adds a visible-consent HTTPS `Intent.ACTION_VIEW` Android capability. The local operator path is TTY-gated; the native companion shows a per-action approval screen and returns a signed `DISPATCHED_UNVERIFIED` receipt. It does not claim page load or foreground observation. Stacked on #2481; NOT_RELEASED.
+- Draft PR [#2515](https://github.com/RedMentos/Aii/pull/2515), current code head `1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7`, adds teacher-forced target-token log-probability scoring to the pinned llama.cpp receiver, binds scores to target/input/model/binary hashes and native revision/version, and carries the exact Perception-owned utility evaluator from #2511. The bounded cohort collector is in-memory only (160 receipts max); no text, token IDs or vectors are persisted.
+- PR #2515 is stacked on Core #2512 (current base head `10c2f66f8c110516e02d165e2b60183199527116`), which consumes Perception #2511. All three remain draft dependencies, not a release.
+- The tokenwise probe currently produces only `LATENT_CANDIDATE` receipts. The other seven evaluator conditions and the full held-out matrix are NOT_IMPLEMENTED. No task utility or learned latent coupling is proven.
+
+## Exact evidence boundary
+
+- LOCAL_LINUX: isolated C++17 log-sum-exp/token-logprob helper compiled with `-Wall -Wextra -Werror` and passed equal-logit, invalid-index, NaN, +Inf and all-∞-negative checks.
+- Full Aii checkout and full pytest: NOT_RUN because the local runner has no checkout and GitHub DNS resolution failed.
+- Exact-head GitHub CI for #2513/#2515: not yet observed at checkpoint. Do not infer success from parent PRs.
+- No real GGUF was downloaded or loaded; no real native target score exists. The Python receipt/cohort tests are synthetic and cannot establish model quality.
+- No Redmi hardware was connected. `REDMI_UNVERIFIED`; no APK installed, no phone permission changed, no model/weight changed, no update request sent. Android API behavior is not device-verified.
+
+## Next executable step
+
+Core must build the eight-condition source/session-bound matrix (`NO_MESSAGE`, `EXACT_MESSAGE`, `LATENT_CANDIDATE`, `ZERO`, `SHUFFLE`, `REPEAT`, `OOD`, `ENTITY_SUBSTITUTION`), collect at least 20 held-out task groups across at least two sessions and two task families, run teacher-forced target scoring against a pinned real GGUF on LOCAL_LINUX, and require the latent candidate to beat every control. Even then, token likelihood is only a utility proxy—not semantic correctness or generated-answer correctness. Termux/Redmi evidence remains a separate authorized device test.
+
+---
+
 # Current V14 handoff — Research & Perception Run 19 (2026-11-25)
 
 **User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
