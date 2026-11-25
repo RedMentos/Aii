@@ -205,6 +205,30 @@ def test_open_url_is_consent_gated_source_bound_and_not_persisted_in_termux(tmp_
     runtime.store.close()
 
 
+def test_operator_tty_routes_open_url_and_rejects_non_tty_origin(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "a" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    runtime._android_companion_controller = controller
+
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        Operator(runtime).run(
+            ":android open-url https://example.com/path --confirm",
+            origin="MODEL",
+        )
+    result = json.loads(Operator(runtime).run(
+        ":android open-url https://example.com/path --confirm"
+    ))
+    assert result["status"] == "PENDING_USER_APPROVAL"
+    assert result["action_type"] == "open_url"
+    assert result["url_host"] == "example.com"
+    assert transport.submitted[0]["capability"] == "open_url"
+    controller.broker.close()
+    runtime.store.close()
+
+
 def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative(tmp_path, monkeypatch):
     monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
     runtime = make_runtime(tmp_path)
