@@ -1489,3 +1489,10 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 ## Core & Harness — #2481 exact-head emulator completion — 2026-11-25
 
 #2481 head `545ec845a35a4567aeaf7487d6765edf2229176f` is now 17/17 check-runs SUCCESS. The API-33 x86_64 GitHub-hosted emulator passed the process-death/Stop-persistence test: visible Stop control, fresh provider process remained OFF, PID/start changed `2176@493104 → 2621@560711`. This remains emulator/CI, not Redmi/Termux or physical touch proof. #2481 stays DRAFT / NOT_RELEASED pending independent QA/Boss review and safe rebase/compose.
+
+
+## Core & Harness — exact arithmetic and voice output test results — 2026-11-25
+
+- #2488 staged exact-arithmetic test proves `2+2` and English/German two-integer questions return `4` through Runtime/C5/ActionSelection/Broker/Egress/ExperienceRecord; date-shaped ambiguous inputs are held unless explicitly calculated. No native model or normal B1/B2 path is loaded. Manifest remains SHADOW_REVIEW_ONLY; not released/installed, so no Redmi fix claim.
+- #2479 test-only PR head `dce46db`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED. Audio/arithmetic tests: 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Two test fixture defects fixed. The TTS code already exists in release base; this PR adds coverage only.
+- TTS evidence is fake CLI Runtime/SQLite only. No real Android audio, audibility, microphone, raw-ear learning, trainable decoder/vocoder or full-duplex proof. No device command.
