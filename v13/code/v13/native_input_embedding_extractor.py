@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import stat
 import subprocess
+import time
 
 PINNED_LLAMA_REVISION = "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40"
 RECEIPT_SCHEMA = "v14.llama-token-embedding-rows-receipt/1"
@@ -157,6 +158,7 @@ def extract_native_input_embedding_rows(
     expected_model_sha256=None,
     prepare_idle=None,
     timeout_seconds=120,
+    cancel_event=None,
 ):
     """Read selected receiver token-embedding rows from an already-installed GGUF.
 
@@ -178,6 +180,8 @@ def extract_native_input_embedding_rows(
 
     if model_root is None or expected_model_sha256 is None or not callable(prepare_idle):
         raise NativeInputEmbeddingError("registered model root, manifest hash and idle guard are required")
+    if cancel_event is not None and not callable(getattr(cancel_event, "is_set", None)):
+        raise NativeInputEmbeddingError("native extractor cancellation signal is invalid")
     binary = _safe_file(binary_path, "native extractor", executable=True)
     model = _safe_file(model_path, "installed model")
     if model_root is not None:
@@ -208,8 +212,10 @@ def extract_native_input_embedding_rows(
         "--extractor-sha256", binary_sha,
         "--token-ids", ",".join(str(token_id) for token_id in token_ids),
     ]
+    if cancel_event is not None and cancel_event.is_set():
+        raise NativeInputEmbeddingError("native input-embedding extraction cancelled")
     try:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             argv,
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
@@ -217,20 +223,47 @@ def extract_native_input_embedding_rows(
             text=True,
             encoding="utf-8",
             errors="replace",
-            timeout=timeout_seconds,
-            check=False,
             close_fds=True,
         )
-    except subprocess.TimeoutExpired as exc:
-        raise NativeInputEmbeddingError("native input-embedding extraction timed out") from exc
     except OSError as exc:
         raise NativeInputEmbeddingError("native input-embedding extractor could not start") from exc
-    if completed.returncode != 0:
+
+    end = time.monotonic() + timeout_seconds
+    stdout = ""
+    stderr = ""
+
+    def stop_process():
+        if process.poll() is None:
+            try:
+                process.terminate()
+                process.wait(timeout=1.5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=2.0)
+
+    try:
+        while True:
+            if cancel_event is not None and cancel_event.is_set():
+                stop_process()
+                raise NativeInputEmbeddingError("native input-embedding extraction cancelled")
+            remaining = end - time.monotonic()
+            if remaining <= 0:
+                stop_process()
+                raise NativeInputEmbeddingError("native input-embedding extraction timed out")
+            try:
+                stdout, stderr = process.communicate(timeout=min(0.1, remaining))
+                break
+            except subprocess.TimeoutExpired:
+                continue
+    except BaseException:
+        stop_process()
+        raise
+    if process.returncode != 0:
         raise NativeInputEmbeddingError("native input-embedding extractor failed")
-    if len(completed.stdout.encode("utf-8")) > MAX_OUTPUT_BYTES:
+    if len(stdout.encode("utf-8")) > MAX_OUTPUT_BYTES:
         raise NativeInputEmbeddingError("native input-embedding extractor output exceeded its bound")
     try:
-        result = json.loads(completed.stdout, parse_constant=_reject_json_constant)
+        result = json.loads(stdout, parse_constant=_reject_json_constant)
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         raise NativeInputEmbeddingError("native input-embedding extractor returned invalid JSON") from exc
 
