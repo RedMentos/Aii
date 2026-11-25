@@ -67,3 +67,11 @@ Core PR #2512 was opened on head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, sta
 - Core PR #2512 exact head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`: native input-embedding extractor PASS (Python contract 3.13/3.14, Linux pinned API, Android ARM64 cross-compile); staged-runtime PASS; integrated-regression PASS; offline deployment integrity PASS (Python 3.11/3.14). These are GitHub-hosted CI/cross-compile results, not Redmi runtime evidence.
 - Perception PR #2511 exact head `9d864d66f6d66f1f5ead3284a85cf22814aa69d9`: staged-runtime PASS; offline deployment integrity PASS (Python 3.11/3.14); integrated-regression still IN_PROGRESS at last readback. The connector did not expose a new exact-head adapter-contract run for the appended task-score tests, so no CI PASS is claimed for those eight tests.
 - #2512 still does not contain the new `native_receiver_utility.py` evaluator; Core has been asked to refresh/rebase the Perception parent and add the native target-score producer. Its current green consumer CI only validates the input-effect probe path.
+
+
+### Run 23 evaluator hardening — balanced cohorts and Android evidence (2026-11-25)
+
+- Perception evaluator branch head `f1e84db9d3140c53927ff3ef301a1d981d96e69d`: now requires one adapter revision across the entire cohort, >=5 tasks/session and >=4 tasks/family by default, in addition to >=20 tasks, >=2 sessions and >=2 families.
+- Native `TERMUX_ANDROID`/ `REDMI` receipts must include a digest of the private device-execution receipt and a runtime-build identifier; raw private receipt bodies/IDs are not stored. This is an evidence-shape check, not cryptographic attestation.
+- Three additional focused tests cover missing Redmi receipt metadata, per-session/family minima and adapter-revision drift. LOCAL_LINUX CPython 3.13.5 isolated evaluator harness: 10/10 PASS. Exact repository test target/new-head CI still NOT_YET_OBSERVED.
+- Research ledger R-163 appended at commit `becf115df76f861d7332b8e735511b49319a26f6`. B3 remains OFF; no native target-score producer, no Redmi receipt and no release.
