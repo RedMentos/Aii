@@ -15,7 +15,7 @@ Draft PR [#2506](https://github.com/RedMentos/Aii/pull/2506), branch `research-p
 
 - LOCAL_LINUX isolated helper reproduction: 7/7 PASS; builder dependency was stubbed, so this is not the full package suite.
 - Exact GitHub Actions run [45673125410](https://github.com/RedMentos/Aii/actions/runs/45673125410): 73/73 PASS on Python 3.13 and 73/73 PASS on Python 3.14; compile PASS; public privacy scan CLEAN.
-- Staged/integrated regression [45673125502](https://github.com/RedMentos/Aii/actions/runs/45673125502) was still IN_PROGRESS at last poll.
+- Staged/integrated regression [45673125502](https://github.com/RedMentos/Aii/actions/runs/45673125502) completed SUCCESS: integrated 424 passed / 3 skipped / 58 subtests; staged runtime 255 passed / 10 skipped / 47 subtests; two-checkout migration sub-suite 39 passed / 17 subtests. GitHub-hosted synthetic/Linux only, not Redmi deployment.
 - Full local Aii checkout/pytest NOT_RUN: no checkout mounted; `git ls-remote` failed due unavailable GitHub DNS.
 - Core PR #2505 head `298b96efba5bdbd07ac845b5e22e799ef742350d`: CI [45665062470](https://github.com/RedMentos/Aii/actions/runs/45665062470) PASS for Python 3.13/3.14 wrapper tests, pinned llama.cpp Linux native compile, and Android arm64-v8a cross-compile. No actual GGUF row read.
 - No Android device/Termux/Redmi test; B3 OFF; NOT_RELEASED.
