@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import tempfile
 import textwrap
+import time
 import unittest
 
 from v13.native_input_embedding_extractor import (
@@ -35,6 +36,10 @@ if args and args[0] == "--extract":
 opts = {args[i]: args[i + 1] for i in range(0, len(args), 2)}
 mode = MODE
 if mode == "timeout":
+    time.sleep(3)
+if mode == "oversized":
+    sys.stdout.write("x" * (16 * 1024 * 1024 + 1024))
+    sys.stdout.flush()
     time.sleep(3)
 if mode == "fail":
     sys.exit(7)
@@ -182,6 +187,11 @@ print(json.dumps({
         self._write_binary("timeout")
         with self.assertRaises(NativeInputEmbeddingError):
             self._extract(timeout_seconds=1)
+        self._write_binary("oversized")
+        started = time.monotonic()
+        with self.assertRaisesRegex(NativeInputEmbeddingError, "output exceeded its bound"):
+            self._extract(timeout_seconds=5)
+        self.assertLess(time.monotonic() - started, 2.5)
 
     def test_failed_native_process_does_not_leak_stderr(self):
         self._write_binary("fail")
