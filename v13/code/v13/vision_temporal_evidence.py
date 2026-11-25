@@ -19,6 +19,7 @@ from .vision_temporal_adaptation import (
     decompose_temporal_feature_change,
     weighted_tile_score,
 )
+from .vision_temporal_prediction import A3TemporalPredictor
 
 TILE_IDS = tuple(f"r{row}{col}" for row in range(4) for col in range(4))
 LUMINANCE_VALUES_PER_TILE = 16
@@ -153,6 +154,7 @@ class TemporalVisualEvidence:
         self._previous_a3_embeddings = None
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
+        self._a3_temporal_predictor = A3TemporalPredictor()
 
     def reset(self) -> None:
         self._last_start_ms = None
@@ -166,6 +168,7 @@ class TemporalVisualEvidence:
         self._previous_a3_embeddings = None
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
+        self._a3_temporal_predictor.reset()
 
     def _update_a3_projected_change(self, *, tile_embeddings, projector_sha256,
                                     frame_source_ref, unavailable_reason):
@@ -242,6 +245,18 @@ class TemporalVisualEvidence:
             "action_authority": False,
         }
 
+    def _update_a3_temporal_prediction(self, projected_change):
+        """Learn one bounded next-tile-delta step inside this consent-scoped stream."""
+        status = projected_change.get("status", "UNAVAILABLE")
+        if status != "MEASURED":
+            self._a3_temporal_predictor.reset()
+            return self._a3_temporal_predictor.unavailable(status)
+        tile_delta = projected_change.get("tile_delta")
+        if type(tile_delta) is not dict or set(tile_delta) != set(TILE_IDS):
+            self._a3_temporal_predictor.reset()
+            return self._a3_temporal_predictor.unavailable("MALFORMED_CHANGE")
+        return self._a3_temporal_predictor.update([tile_delta[tile] for tile in TILE_IDS])
+
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict,
                tile_features: dict | None = None,
                a3_tile_embeddings: dict | None = None,
@@ -270,6 +285,7 @@ class TemporalVisualEvidence:
             frame_source_ref=frame_source_ref,
             unavailable_reason=a3_unavailable_reason,
         )
+        a3_temporal_prediction = self._update_a3_temporal_prediction(a3_projected_change)
 
         if self._previous is None:
             self._previous = current
@@ -280,6 +296,7 @@ class TemporalVisualEvidence:
                 "method": METHOD if current_features is not None else LUMINANCE_METHOD,
                 "feature_method": FEATURE_METHOD if current_features is not None else None,
                 "a3_projected_change": a3_projected_change,
+                "a3_temporal_prediction": a3_temporal_prediction,
                 "status": "WARMUP",
                 "multichannel_status": "WARMUP" if current_features is not None else "UNAVAILABLE",
                 "multichannel_tile_delta": {}, "multichannel_changed_tile_ids": [],
@@ -407,6 +424,7 @@ class TemporalVisualEvidence:
             "method": METHOD if current_features is not None else LUMINANCE_METHOD,
             "feature_method": FEATURE_METHOD if current_features is not None else None,
             "a3_projected_change": a3_projected_change,
+            "a3_temporal_prediction": a3_temporal_prediction,
             "multichannel_status": multichannel_status,
             "multichannel_tile_delta": {k: round(v, 6) for k, v in multichannel_tile_delta.items()},
             "multichannel_changed_tile_ids": multichannel_changed_tile_ids,
