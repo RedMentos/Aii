@@ -336,7 +336,16 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "TERMUX_ANDROID": "ANDROID_NATIVE_TARGET_LOGPROB_PASS", "REDMI": "REDMI_TARGET_LOGPROB_PASS"}[env]
         evidence = env
     return {"schema": RESULT_SCHEMA, "status": status, "evidence_class": evidence,
-        "task_group_count": len(groups), "session_count": len(sessions), "task_families": sorted(families),
+        "task_group_count": len(groups),
+        "complete_task_group_count": len(groups),
+        "incomplete_task_group_count": 0,
+        "minimum_task_groups": min_task_groups,
+        "minimum_sessions": min_sessions,
+        "minimum_task_families": min_task_families,
+        "minimum_tasks_per_session": min_tasks_per_session,
+        "minimum_tasks_per_family": min_tasks_per_family,
+        "minimum_tasks_per_session_family": min_tasks_per_session_family,
+        "session_count": len(sessions), "task_families": sorted(families),
         "tasks_per_session": dict(sorted(tasks_per_session.items())),
         "tasks_per_family": dict(sorted(tasks_per_family.items())),
         "tasks_per_session_family": session_family_report,

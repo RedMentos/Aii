@@ -370,6 +370,7 @@ def score_and_record_native_receiver_condition_matrix(
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),
+            "minimum_task_groups": cohort.get("minimum_task_groups"),
             "incomplete_task_group_count": cohort.get("incomplete_task_group_count", 0),
             "condition_count": len(score_receipts),
             "matrix_sha256": receipt["matrix_sha256"],
