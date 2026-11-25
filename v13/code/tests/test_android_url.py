@@ -101,3 +101,35 @@ def test_broker_rejects_unsafe_url_before_creating_action(tmp_path, url):
         broker.propose("open_url", {"url": url})
     assert broker.db.execute("SELECT COUNT(*) FROM control_actions").fetchone()[0] == 0
     broker.close()
+
+
+def test_open_url_receipt_only_binding_survives_restart_after_receipt_verification(tmp_path):
+    db_path = tmp_path / "open-url-receipt.sqlite"
+    url = "https://example.com/private?session_token=private"
+    source_ref = {
+        "source_id": "source-2",
+        "sha256": "b" * 64,
+        "char_start": 0,
+        "char_end": 8,
+        "modality": "text",
+    }
+    broker = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    broker.start()
+    proposal = broker.propose(
+        "open_url", {"url": url}, ttl=30,
+        event_id="event-2", source_ref=source_ref,
+    )
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+    consumed = broker.consume_dispatched(proposal.action_id)
+    broker.record_companion_receipt(proposal.action_id, consumed.digest, verified=True)
+    broker.close()
+
+    resumed = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    recovered = resumed.receipt_proposal(proposal.action_id)
+    assert recovered.capability == "open_url"
+    assert recovered.args == {}
+    assert recovered.digest == proposal.digest
+    assert recovered.source_ref == source_ref
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_VERIFIED"
+    resumed.close()
