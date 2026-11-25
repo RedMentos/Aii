@@ -1,10 +1,11 @@
 """Ephemeral, consent-lease-scoped temporal RAW EYE feature evidence.
 
-This deterministic diagnostic compares the existing 37-value tile descriptor
-(RGB/hue/edge/orientation/4x4 luminance). It is not optical flow, OCR, object
-recognition, a calibrated probability, or a learned temporal model. Only the
-previous numeric tile descriptors are retained in bounded process memory.
-No frame bytes, images, text, or persistent model state are stored.
+The deterministic 37-value tile descriptor and A3 projected cosine delta are
+paired with a tiny 16x16 online next-change predictor. This is not optical flow,
+OCR, object recognition, a calibrated probability, or semantic motion
+understanding. Only numeric tile deltas and bounded session-local predictor
+weights are retained in process memory. No frame bytes, images, text, or
+persistent model state are stored.
 """
 from __future__ import annotations
 
