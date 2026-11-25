@@ -592,7 +592,7 @@ def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> No
         raise LatentAdapterError("invalid projection scope")
     if adapter.get("projection_scope") == "TOKENWISE":
         if adapter.get("schema") != TOKENWISE_SCHEMA or adapter.get("alignment_method") not in _TOKEN_ALIGNMENT_METHODS:
-            raise LatentAdapterError("tokenwise adapter requires the v3 source-span alignment contract")
+            raise LatentAdapterError("tokenwise adapter requires the v4 source/session-span alignment contract")
         _sha256_text(adapter.get("alignment_sha256"), "alignment_sha256")
         for key in ("sender_tokenizer_revision", "receiver_tokenizer_revision"):
             if type(adapter.get(key)) is not str or not adapter[key] or len(adapter[key]) > 160:
@@ -605,7 +605,7 @@ def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> No
                 or adapter.get("holdout_policy") != "SOURCE_AND_SESSION_DISJOINT"):
             raise LatentAdapterError("tokenwise adapter lacks a source/session-disjoint holdout receipt")
     elif adapter.get("schema") == TOKENWISE_SCHEMA:
-        raise LatentAdapterError("v3 adapter must declare TOKENWISE projection scope")
+        raise LatentAdapterError("v4 adapter must declare TOKENWISE projection scope")
     _sha256_text(adapter.get("sender_model_sha256"), "sender_model_sha256")
     _sha256_text(adapter.get("receiver_model_sha256"), "receiver_model_sha256")
     for key in ("sender_tap_id", "receiver_tap_id", "sender_model_revision", "receiver_model_revision"):
@@ -639,7 +639,7 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
                 projection_scope: str = "PAIRED_VECTOR",
                 sender_tokenizer_revision: str | None = None,
                 receiver_tokenizer_revision: str | None = None) -> dict:
-    """Fit a low-rank affine map on paired activations with source-disjoint holdout.
+    """Fit a low-rank affine map on paired activations with source/session-disjoint tokenwise holdout.
 
     This is an alignment candidate only. The held-out MSE and shuffled control
     are necessary diagnostics, not semantic/task-utility evidence.
