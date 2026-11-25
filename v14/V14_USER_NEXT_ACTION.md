@@ -1860,3 +1860,28 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Core CI on the previous head 7e055b4 had 10 failures (guard, phone offer receipt, Lab Age/WebView, owner-read bootstrap, staged, source contracts, two-checkout migration, native latent receiver and same-turn/audio runtime), 6 success, 1 skipped, 1 cancelled. The current dd4d0d head has a fresh matrix queued/in progress; no result is claimed yet.
 - Core runtime still has no audio_consent_generation_scope() import/call and directly iterates runner.generate at runtime.py line 651.
 - Perception remains blocked from safe recomposition until Core combines the attention pin with its ActionLearn variants and produces a green exact recovery/stage/deployer chain. No Core-owned source was modified.
+
+## Research & Perception — run 26 (2026-11-25)
+
+### Code / actual consumer seam
+- PR #2472 branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, based on release HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Added optional `consent_lease: AudioConsentLease | None` to `audio_consent_generation_scope()`. Code commit `9e3c5719a4dfbc70f3869aa7a3ac7e541bb736ee`, test commit `c655b1e75c6a1db6cbbfa181d7675c7939c05fb5`, exact source blob `ceef8d8a2f26ec3f4a447ae8037ca51027d133af`. If no lease is supplied, the old owned-lease path is unchanged. If supplied, the function validates Runtime/source/generation/receipt/temporal-state/VAD-stream/active/thread identity and borrows it through `nullcontext`; it does not reacquire the non-reentrant provider guard. The outer Runtime scope remains the owner.
+- Regression covers valid borrowed lease across PCM16 → A5/A4 → complete C3 iterator/close, no consent-check/guard re-entry, mismatch rejection before PCM ingress, and the existing owned path.
+- Core #2478 already wraps the complete Runtime turn/C3 iterator in its own lease and currently does not import this helper. Do not add a duplicate lease. Pass the existing handle only if the helper is used for a distinct A4/A5 composition seam.
+
+### Exact evidence
+- Local Linux isolated contract harness: PASS (borrowed reuse, callback non-reentry, source/generation/receipt/state/active negatives, owned path and iterator close). This is an isolated contract harness, not a full Aii checkout.
+- Exact GitHub CI after code/test head: FASTDIAR 2/2 PASS (Python 3.13/3.14); A4 outcomes 2/2 PASS; RAW EAR prosody 2/2 PASS; optional NumPy 2/2 PASS; consent-revocation 1/1 PASS; runtime-deploy-integrity 2/2 PASS; privacy scan PASS.
+- The first RAW EAR/WebRTC/libfvad comparator run failed only because its workflow still pinned the prior audio source blob. Rebound the exact V3 blob to `ceef8d8a2f26ec3f4a447ae8037ca51027d133af` in workflow-pin commit `b54354ebd95d066a637303ce852831c2549300e9`. New comparator run `45535816776`: 2/2 PASS (Python 3.13/3.14).
+- Remaining exact-head failures are outside the lease change: controller guard and staged/integrated stop at Core's recovery builder expecting the old guard SHA `86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9`; Core same-turn also fails on that chain. #2482/#2483 are the explicit stacked recovery-pin repairs. No hash gate was weakened.
+- Full local Aii suite: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS unavailable). Exact CI is not local Linux or Android evidence.
+
+### Research
+- R-119 Palimpsa: full arXiv HTML / ICML 2026 paper reviewed; Bayesian metaplastic precision/forgetting is a conceptual candidate, not a mobile code import. Public repo README has an MIT badge but no root LICENSE text; heavy FLA/PyTorch/GPU dependencies, no reuse.
+- R-120 Mistake Gating: full arXiv HTML reviewed; journal publication 2026-11-05, DOI 10.1162/NECO.a.1602. Memorized mistake gating reduces updates in supervised classification, but relies on stable sample identity and single-sample updates; public repo contains only a README and no license/code, no reuse.
+- Candidate experiment only: compare all-update vs pure vs memorized source-bound prediction-error gating on deterministic A4 outcomes, with stable event keys, session-disjoint holdout, parameter/update-count evidence, retention, restart and rollback. Not implemented or activated.
+
+### Product / device boundary
+- Release branch HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`: 22/22 observed workflow runs SUCCESS. Latest authenticated V13OBS #115 (2026-11-24 09:28 UTC) reports this SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE; AI STOPPED_BY_USER, model process STOPPED.
+- Last stored C3 turn is not a new test: 6.30 s total / 2.05 s TTFT / 1.87 s prefill / 358 admitted tokens / 7 generated; correctness UNKNOWN. B1/B2 each had two failed attempts and zero valid offers. No 20-turn acceptance.
+- PR #2472 remains DRAFT / NOT_RELEASED; no deployment, no Redmi test, no AudioRecord/microphone capture, no model/weight/permission/data mutation. User action: NONE.
