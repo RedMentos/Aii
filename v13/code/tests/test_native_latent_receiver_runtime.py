@@ -383,8 +383,9 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     assert result["queued"] is False
     assert result["production_route"] is False
     assert calls[0] == "idle"
-    assert calls[1][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
-    assert calls[2] == "unload"
+    assert calls[1] == "unload"  # preflight releases every managed runner before the native probe
+    assert calls[2][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
+    assert calls[-1] == "unload"  # final cleanup after the synchronous probe
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):
