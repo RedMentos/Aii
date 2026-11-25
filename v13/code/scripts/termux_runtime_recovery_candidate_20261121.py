@@ -14,7 +14,7 @@ AUDIO_BUILDER_BLOB_SHA1 = "730f77b8da97c8467d2e5464eb4ca0d05c379fb5"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
-NATIVE_RECEIVER_BLOB_SHA1 = "6ef9d422abe1851dacf5312c2751f867c37dacad"
+NATIVE_RECEIVER_BLOB_SHA1 = "8233f81b08b8850bf344e90502c1ada843775ebf"
 RUNTIME_CLOSE_OVERLAY = "scripts/integrated_native_probe_runtime_close_overlay_20261124.py"
 RUNTIME_CLOSE_OVERLAY_BLOB_SHA1 = "fc32dc9c350e36b76c54bf8f1e26186370ccb133"
 
