@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T19:50:27.191Z",
+  "updated_at": "2026-11-25T19:56:03.769Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated A3 predictor mirror: py_compile PASS; pytest 10/10 PASS; exact GitHub CI on code SHA 6523b8: A3 74/74, frame ingress 55/55, source-lineage 39/39 on Python 3.13/3.14, runtime deploy PASS; staged 19 fail/234 pass/10 skip/2 errors and integrated 1 fail at inherited Core vision.py source pin; full local Aii suite NOT_RUN; Redmi visual provider NOT_VERIFIED",
-      "next_step": "Core/Integrator: recompose #2465 / source_lifecycle_lock_integration_candidate.py exact vision.py pin, then rerun staged/integrated/migration/consumer. Perception: keep #2509 DRAFT; after shared gate, compare ALWAYS vs ERROR_GATED on explicitly consented real visual sequences with source/session-disjoint, static/motion, codec, brightness and camera controls, retention and restart/rollback. Keep A4 gain 0.15 unchanged; continue other Canon paths.",
+      "proof_environment": "LOCAL_LINUX isolated A3 predictor mirror: py_compile PASS; pytest 10/10 PASS; exact GitHub CI on code SHA 6523b8: A3 74/74, frame ingress 55/55, source-lineage 39/39 on Python 3.13/3.14, runtime deploy PASS; staged 19 fail/234 pass/10 skip/2 errors and integrated 1 fail at inherited Core vision.py source pin; full local Aii suite NOT_RUN; Redmi visual provider NOT_VERIFIED; B3 PR #2508 exact CI 83/83 on Python 3.13/3.14, staged 255/10 skipped/47 subtests, integrated 424/3 skipped/58 subtests; offline fitter only, no native receiver utility. Audio PR #2498 already carries nonverbal 13-cue RAW EAR features into final C3 summary; staged audio source pin still Core-blocked.",
+      "next_step": "Core/Integrator: recompose #2465/#2494/#2509 strict vision.py source closure and #2498 audio_voice_cues.py source closure; rerun staged/integrated/migration/consumer on exact SHA. Core: complete #2499 native-prefix receiver. Perception: #2508 is ready with session-disjoint offline fitter (not native utility); after receiver exists, test real source/session-disjoint native pairs against exact/no-message/zero/shuffle/repeat/OOD controls. Keep #2509 ERROR_GATED shadow-only and A4 gain 0.15 unchanged; compare it on explicitly consented visual sequences only after source gate.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T19:50:27.191Z",
+      "last_checkpoint": "2026-11-25T19:56:03.769Z",
       "latest_candidate_pr": {
         "pr": 2494,
         "head_sha": "25520673cc6297ce9924906ce1703a1744f28b6f",
