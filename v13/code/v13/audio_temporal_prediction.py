@@ -1,16 +1,19 @@
 # CI coverage: v14-raw-ear-fastpath and v14-raw-ear-vad-comparison validate this module and its A5/A4 consumer.
-"""Consent-scoped, process-local A3 predictor for RAW EAR cue deltas.
+"""Consent-scoped A3 predictor for RAW EAR cue deltas.
 
-This is a tiny online shadow learner over already-extracted acoustic cues. It
-never receives or stores PCM, transcripts, speaker embeddings, or model weights.
-Its only downstream effect is a capped A4 novelty contribution; it has no
-interrupt, learning-commit, truth, or action authority.
+The online shadow learner sees extracted acoustic cues only. By default its
+weights are process-local; an explicit Runtime config gate may persist only
+bounded numeric predictor weights. PCM, transcripts, speaker embeddings and
+feature windows are never persisted. Its only effect is capped A4 novelty.
 """
 from __future__ import annotations
 
 from collections import OrderedDict
+import hashlib
+import json
 import math
 import threading
+import time
 
 SCHEMA = "v14.raw-ear.temporal-prediction/1"
 METHOD = "RAW_EAR_DELTA_ONLINE_LMS_ZERO_CONTEXT_BIAS_V1"
@@ -130,6 +133,34 @@ class AudioTemporalPredictor:
         self._previous = None
         self.updates = 0
 
+    def state_dict(self) -> dict:
+        """Return numeric weights only; temporal features are intentionally excluded."""
+        return {"weights": [list(row) for row in self._weights], "updates": self.updates}
+
+    def load_state_dict(self, state: dict) -> None:
+        if not isinstance(state, dict) or set(state) != {"weights", "updates"}:
+            raise AudioTemporalPredictionError("predictor state schema is invalid")
+        weights = state.get("weights")
+        updates = state.get("updates")
+        if type(updates) is not int or not 0 <= updates <= 10_000_000:
+            raise AudioTemporalPredictionError("predictor state update count is invalid")
+        if not isinstance(weights, (list, tuple)) or len(weights) != INPUT_COUNT:
+            raise AudioTemporalPredictionError("predictor state row count is invalid")
+        clean = []
+        for row in weights:
+            if not isinstance(row, (list, tuple)) or len(row) != FEATURE_COUNT:
+                raise AudioTemporalPredictionError("predictor state column count is invalid")
+            values = []
+            for value in row:
+                if (type(value) not in (int, float) or not math.isfinite(float(value))
+                        or abs(float(value)) > self.max_abs_weight):
+                    raise AudioTemporalPredictionError("predictor state weight is outside its finite bound")
+                values.append(float(value))
+            clean.append(values)
+        self._weights = clean
+        self._previous = None  # restart always performs a fresh temporal warm-up
+        self.updates = updates
+
     def _parameter_l2(self) -> float:
         return math.sqrt(sum(weight * weight for row in self._weights for weight in row))
 
@@ -208,35 +239,212 @@ class AudioTemporalPredictor:
 
 
 class _StreamState:
-    __slots__ = ("consent_scope_id", "last_start_ms", "last_end_ms", "previous_features", "predictor")
+    __slots__ = (
+        "consent_scope_id", "last_start_ms", "last_end_ms",
+        "previous_features", "predictor", "store_version",
+    )
 
     def __init__(self, consent_scope_id: str, start_ms: int, end_ms: int,
-                 features: tuple[float, ...]):
+                 features: tuple[float, ...], *, predictor=None, store_version=0):
         self.consent_scope_id = consent_scope_id
         self.last_start_ms = start_ms
         self.last_end_ms = end_ms
         self.previous_features = features
-        self.predictor = AudioTemporalPredictor()
+        self.predictor = predictor or AudioTemporalPredictor()
+        self.store_version = store_version
 
 
 class AudioTemporalPredictionRegistry:
-    """Bounded process-local registry, partitioned by source/generation/consent hash."""
+    """Bounded streams; optional persistence stores numeric weights only, never audio/features."""
 
-    def __init__(self, *, max_streams: int = MAX_STREAMS, max_gap_ms: int = MAX_GAP_MS):
+    PERSISTENCE_SCHEMA = "v14.raw-ear.temporal-prediction-state/1"
+    PERSISTENCE_PREFIX = "raw_ear_prediction.v1."
+
+    def __init__(self, *, max_streams: int = MAX_STREAMS, max_gap_ms: int = MAX_GAP_MS, store=None):
         if type(max_streams) is not int or not 1 <= max_streams <= 64:
             raise AudioTemporalPredictionError("max_streams must be in [1, 64]")
         if type(max_gap_ms) is not int or not 100 <= max_gap_ms <= 10000:
             raise AudioTemporalPredictionError("max_gap_ms must be in [100, 10000]")
+        if store is not None and not all(callable(getattr(store, name, None)) for name in ("state", "tx")):
+            raise AudioTemporalPredictionError("persistent Store lacks transactional state support")
         self.max_streams = max_streams
         self.max_gap_ms = max_gap_ms
         self._states = OrderedDict()
         self._lock = threading.RLock()
+        self._store = store
+
+    @property
+    def persistent_weights_enabled(self) -> bool:
+        return self._store is not None
+
+    def _decorate(self, result: dict) -> dict:
+        result["weight_persistence"] = self.persistent_weights_enabled
+        result["weight_scope"] = (
+            "LOCAL_STORE_NUMERIC_ONLY_CONSENT_SCOPED"
+            if self.persistent_weights_enabled else "EPHEMERAL_CONSENT_SCOPED_PROCESS"
+        )
+        result["training_data_persisted"] = False
+        return result
 
     @staticmethod
     def _validate_scope(value: str) -> None:
         if (type(value) is not str or len(value) != 64
                 or any(char not in "0123456789abcdef" for char in value)):
             raise AudioTemporalPredictionError("consent_scope_id must be a SHA-256 hex digest")
+
+    @staticmethod
+    def _scope_hash(value: str) -> str:
+        return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _state_digest(payload: dict) -> str:
+        raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        return hashlib.sha256(b"V14-RAW-EAR-PREDICTION-STATE/1\0" + raw).hexdigest()
+
+    def _persistent_key(self, source_id: str, generation_id: str) -> tuple[str, str, str]:
+        source_hash = self._scope_hash(source_id)
+        generation_hash = self._scope_hash(generation_id)
+        key_hash = self._scope_hash(source_id + "\0" + generation_id)
+        return source_hash, generation_hash, self.PERSISTENCE_PREFIX + key_hash
+
+    def _load_persistent(self, source_id, generation_id, consent_scope_id):
+        source_hash, generation_hash, key = self._persistent_key(source_id, generation_id)
+        payload, version = self._store.state(key, None)
+        if payload is None:
+            return None, version, "MISSING"
+        if not isinstance(payload, dict):
+            return None, version, "INVALID"
+        material = {name: value for name, value in payload.items() if name != "state_sha256"}
+        try:
+            valid = (
+                set(payload) == {
+                    "schema", "status", "source_scope_sha256", "generation_scope_sha256",
+                    "consent_scope_id", "weights", "updates", "last_touched_ns", "state_sha256",
+                }
+                and payload.get("schema") == self.PERSISTENCE_SCHEMA
+                and payload.get("status") == "ACTIVE"
+                and payload.get("source_scope_sha256") == source_hash
+                and payload.get("generation_scope_sha256") == generation_hash
+                and type(payload.get("last_touched_ns")) is int
+                and payload.get("last_touched_ns") >= 0
+                and payload.get("state_sha256") == self._state_digest(material)
+            )
+            state = {"weights": payload.get("weights"), "updates": payload.get("updates")}
+            probe = AudioTemporalPredictor()
+            probe.load_state_dict(state)
+            valid = valid and payload.get("consent_scope_id") == consent_scope_id
+        except (AudioTemporalPredictionError, TypeError, ValueError):
+            valid = False
+            state = None
+        if not valid:
+            if payload.get("consent_scope_id") != consent_scope_id:
+                return None, version, "CONSENT_CHANGED"
+            return None, version, "INVALID"
+        return state, version, "OK"
+
+    def _save_persistent(self, source_id, generation_id, consent_scope_id, predictor, expected_version):
+        source_hash, generation_hash, key = self._persistent_key(source_id, generation_id)
+        material = {
+            "schema": self.PERSISTENCE_SCHEMA,
+            "status": "ACTIVE",
+            "source_scope_sha256": source_hash,
+            "generation_scope_sha256": generation_hash,
+            "consent_scope_id": consent_scope_id,
+            "weights": predictor.state_dict()["weights"],
+            "updates": predictor.updates,
+            "last_touched_ns": time.time_ns(),
+        }
+        material["state_sha256"] = self._state_digest(material)
+        encoded = json.dumps(material, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        with self._store.tx() as connection:
+            row = connection.execute("SELECT version FROM states WHERE key=?", (key,)).fetchone()
+            current = row[0] if row else 0
+            if current != expected_version:
+                raise ValueError("Stale persistent predictor state write")
+            version = current + 1
+            connection.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)", (key, version, encoded))
+            rows = connection.execute(
+                "SELECT key,payload FROM states WHERE key LIKE ?",
+                (self.PERSISTENCE_PREFIX + "%",),
+            ).fetchall()
+            touched = []
+            for row in rows:
+                try:
+                    saved = json.loads(row[1])
+                    stamp = saved.get("last_touched_ns")
+                    if type(stamp) is int and stamp >= 0:
+                        touched.append((stamp, row[0]))
+                except (TypeError, json.JSONDecodeError):
+                    continue
+            excess = max(0, len(touched) - self.max_streams)
+            stale = [stale_key for _stamp, stale_key in sorted(touched) if stale_key != key][:excess]
+            for stale_key in stale:
+                connection.execute("DELETE FROM states WHERE key=?", (stale_key,))
+        return version
+
+    def _clear_persistent(self, source_id=None, generation_id=None):
+        source_hash = self._scope_hash(source_id) if source_id is not None else None
+        generation_hash = self._scope_hash(generation_id) if generation_id is not None else None
+        with self._store.tx() as connection:
+            rows = connection.execute(
+                "SELECT key,payload FROM states WHERE key LIKE ?",
+                (self.PERSISTENCE_PREFIX + "%",),
+            ).fetchall()
+            keys = []
+            expected_key = (
+                self._persistent_key(source_id, generation_id)[2]
+                if source_id is not None and generation_id is not None else None
+            )
+            for row in rows:
+                key, raw_payload = row[0], row[1]
+                if expected_key is not None:
+                    if key == expected_key:
+                        keys.append(key)
+                    continue
+                try:
+                    payload = json.loads(raw_payload)
+                except (TypeError, json.JSONDecodeError):
+                    continue
+                if ((source_hash is None or payload.get("source_scope_sha256") == source_hash)
+                        and (generation_hash is None or payload.get("generation_scope_sha256") == generation_hash)):
+                    keys.append(key)
+            for key in keys:
+                connection.execute("DELETE FROM states WHERE key=?", (key,))
+        return len(keys)
+
+    def _new_state(self, source_id, generation_id, consent_scope_id, start_ms, end_ms, features):
+        predictor = AudioTemporalPredictor()
+        version = 0
+        reset_reason = None
+        if self._store is not None:
+            saved, version, status = self._load_persistent(source_id, generation_id, consent_scope_id)
+            if status == "OK":
+                predictor.load_state_dict(saved)
+            else:
+                if status == "CONSENT_CHANGED":
+                    reset_reason = "RESET_CONSENT_SCOPE"
+                elif status == "INVALID":
+                    reset_reason = "RESET_INVALID_PERSISTED_STATE"
+                version = self._save_persistent(
+                    source_id, generation_id, consent_scope_id, predictor, version,
+                )
+        return _StreamState(
+            consent_scope_id, start_ms, end_ms, features,
+            predictor=predictor, store_version=version,
+        ), reset_reason
+
+    def _reset_state(self, source_id, generation_id, consent_scope_id,
+                     start_ms, end_ms, features, previous_version):
+        predictor = AudioTemporalPredictor()
+        version = previous_version
+        if self._store is not None:
+            version = self._save_persistent(
+                source_id, generation_id, consent_scope_id, predictor, previous_version,
+            )
+        return _StreamState(
+            consent_scope_id, start_ms, end_ms, features,
+            predictor=predictor, store_version=version,
+        )
 
     def update(self, *, source_id: str, generation_id: str, consent_scope_id: str,
                start_ms: int, end_ms: int, cues: dict, finality: str) -> dict:
@@ -249,7 +457,7 @@ class AudioTemporalPredictionRegistry:
                 or start_ms < 0 or end_ms <= start_ms or end_ms - start_ms > MAX_WINDOW_MS):
             raise AudioTemporalPredictionError("audio window interval is invalid")
         if finality == "PROVISIONAL":
-            return unavailable_prediction("PROVISIONAL_IGNORED")
+            return self._decorate(unavailable_prediction("PROVISIONAL_IGNORED"))
         if finality != "FINAL":
             raise AudioTemporalPredictionError("finality must be FINAL or PROVISIONAL")
         features = acoustic_feature_vector(cues)
@@ -257,39 +465,70 @@ class AudioTemporalPredictionRegistry:
         with self._lock:
             state = self._states.get(key)
             if state is not None and state.consent_scope_id != consent_scope_id:
-                state.predictor.reset()
-                state = _StreamState(consent_scope_id, start_ms, end_ms, features)
+                try:
+                    state, reset_reason = self._new_state(
+                        source_id, generation_id, consent_scope_id, start_ms, end_ms, features,
+                    )
+                except Exception:
+                    return self._decorate(unavailable_prediction("PERSISTENCE_UNAVAILABLE"))
                 self._states[key] = state
                 self._states.move_to_end(key)
-                result = unavailable_prediction("RESET_CONSENT_SCOPE")
-                result.update({"updates": 0, "stream_count": len(self._states)})
-                return result
+                result = unavailable_prediction(reset_reason or "RESET_CONSENT_SCOPE")
+                result.update({
+                    "updates": state.predictor.updates,
+                    "parameter_l2": state.predictor._parameter_l2(),
+                    "stream_count": len(self._states),
+                })
+                return self._decorate(result)
+
             if state is None:
-                state = _StreamState(consent_scope_id, start_ms, end_ms, features)
+                try:
+                    state, reset_reason = self._new_state(
+                        source_id, generation_id, consent_scope_id, start_ms, end_ms, features,
+                    )
+                except Exception:
+                    return self._decorate(unavailable_prediction("PERSISTENCE_UNAVAILABLE"))
                 self._states[key] = state
                 while len(self._states) > self.max_streams:
                     _, evicted = self._states.popitem(last=False)
                     evicted.predictor.reset()
-                result = unavailable_prediction("WARMUP_FEATURE_BASELINE")
-                result.update({"updates": 0, "stream_count": len(self._states)})
-                return result
+                result = unavailable_prediction(reset_reason or "WARMUP_FEATURE_BASELINE")
+                result.update({
+                    "updates": state.predictor.updates,
+                    "parameter_l2": state.predictor._parameter_l2(),
+                    "stream_count": len(self._states),
+                })
+                return self._decorate(result)
 
             if start_ms < state.last_start_ms or end_ms <= state.last_end_ms:
-                state.predictor.reset()
-                state = _StreamState(consent_scope_id, start_ms, end_ms, features)
+                try:
+                    state = self._reset_state(
+                        source_id, generation_id, consent_scope_id,
+                        start_ms, end_ms, features, state.store_version,
+                    )
+                except Exception:
+                    self._states.pop(key, None)
+                    return self._decorate(unavailable_prediction("PERSISTENCE_WRITE_FAILED"))
                 self._states[key] = state
                 self._states.move_to_end(key)
                 result = unavailable_prediction("RESET_CHRONOLOGY")
                 result.update({"updates": 0, "stream_count": len(self._states)})
-                return result
+                return self._decorate(result)
+
             if start_ms - state.last_end_ms > self.max_gap_ms:
-                state.predictor.reset()
-                state = _StreamState(consent_scope_id, start_ms, end_ms, features)
+                try:
+                    state = self._reset_state(
+                        source_id, generation_id, consent_scope_id,
+                        start_ms, end_ms, features, state.store_version,
+                    )
+                except Exception:
+                    self._states.pop(key, None)
+                    return self._decorate(unavailable_prediction("PERSISTENCE_WRITE_FAILED"))
                 self._states[key] = state
                 self._states.move_to_end(key)
                 result = unavailable_prediction("RESET_GAP")
                 result.update({"updates": 0, "stream_count": len(self._states)})
-                return result
+                return self._decorate(result)
 
             delta = tuple(abs(features[i] - state.previous_features[i]) for i in range(FEATURE_COUNT))
             state.previous_features = features
@@ -297,10 +536,19 @@ class AudioTemporalPredictionRegistry:
             state.last_end_ms = end_ms
             self._states.move_to_end(key)
             result = state.predictor.update(delta)
+            if self._store is not None:
+                try:
+                    state.store_version = self._save_persistent(
+                        source_id, generation_id, consent_scope_id,
+                        state.predictor, state.store_version,
+                    )
+                except Exception:
+                    self._states.pop(key, None)
+                    return self._decorate(unavailable_prediction("PERSISTENCE_WRITE_FAILED"))
             result["stream_count"] = len(self._states)
             result["window_start_ms"] = start_ms
             result["window_end_ms"] = end_ms
-            return result
+            return self._decorate(result)
 
     def reset(self, *, source_id: str | None = None,
               generation_id: str | None = None) -> int:
@@ -311,7 +559,11 @@ class AudioTemporalPredictionRegistry:
             for key in keys:
                 state = self._states.pop(key)
                 state.predictor.reset()
-            return len(keys)
+            cleared = (
+                self._clear_persistent(source_id=source_id, generation_id=generation_id)
+                if self._store is not None else 0
+            )
+            return max(len(keys), cleared)
 
     def __len__(self) -> int:
         with self._lock:
