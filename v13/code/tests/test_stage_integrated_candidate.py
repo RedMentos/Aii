@@ -26,6 +26,8 @@ class StageTest(unittest.TestCase):
         self.addCleanup(setattr, module, 'RUNTIME_CLOSE_OVERLAY_GIT_BLOB', original_close_pin)
         original_action_pin = module.ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB
         self.addCleanup(setattr, module, 'ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB', original_action_pin)
+        original_tokenwise_pin = module.TOKENWISE_PAIR_OVERLAY_GIT_BLOB
+        self.addCleanup(setattr, module, 'TOKENWISE_PAIR_OVERLAY_GIT_BLOB', original_tokenwise_pin)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -38,10 +40,12 @@ class StageTest(unittest.TestCase):
         shutil.copy2(source_code / 'v13/operator.py', self.code / 'v13/operator.py')
         shutil.copy2(source_code / 'v13/native_probe_approval.py', self.code / 'v13/native_probe_approval.py')
         shutil.copy2(source_code / 'v13/native_probe_matrix.py', self.code / 'v13/native_probe_matrix.py')
+        for name in ('runners.py', 'cognition.py', 'callosum.py'):
+            shutil.copy2(source_code / ('v13/' + name), self.code / 'v13/' / name)
         shutil.copy2(source_code / module.NATIVE_PROBE_OVERLAY, self.code / module.NATIVE_PROBE_OVERLAY)
         shutil.copy2(source_code / module.RUNTIME_CLOSE_OVERLAY, self.code / module.RUNTIME_CLOSE_OVERLAY)
         shutil.copy2(source_code / module.ACTION_SELECTION_LINEAGE_OVERLAY, self.code / module.ACTION_SELECTION_LINEAGE_OVERLAY)
-        overlay = (
+        tokenwise = (\n            \"from pathlib import Path\\n\"\n            \"def apply_staged_tokenwise(code_dir, staging):\\n\"\n            \"    result = {}\\n\"\n            \"    for name, marker in ((\\\"runners.py\\\", b\\\"\\\\n# TOKENWISE_TOKENIZER\\\\n\\\"), (\\\"cognition.py\\\", b\\\"\\\\n# TOKENWISE_CONSUMER\\\\n\\\"), (\\\"callosum.py\\\", b\\\"\\\\n# TOKENWISE_COMMAND\\\\n\\\"), (\\\"native_probe_approval.py\\\", b\\\"\\\\n# TOKENWISE_PURPOSE\\\\n\\\")):\\n\"\n            \"        path = staging / \\\"v13\\\" / name\\n\"\n            \"        result[\\\"v13/\\\" + name] = path.read_bytes() + marker\\n\"\n            \"    return result\\n\"\n        ).encode('utf-8')\n        tokenwise_path = self.code / module.TOKENWISE_PAIR_OVERLAY\n        tokenwise_path.write_bytes(tokenwise)\n        module.TOKENWISE_PAIR_OVERLAY_GIT_BLOB = hashlib.sha1(\n            b'blob ' + str(len(tokenwise)).encode('ascii') + b'\\0' + tokenwise\n        ).hexdigest()\n        overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
             "    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n"
@@ -84,6 +88,12 @@ class StageTest(unittest.TestCase):
         self.assertEqual(result['native_probe_close_overlay']['replaced_files'], ['v13/runtime.py'])
         self.assertEqual(result['action_selection_lineage_overlay']['status'], 'SHADOW_REVIEW_ONLY')
         self.assertEqual(result['action_selection_lineage_overlay']['replaced_files'], ['v13/focal.py'])
+        self.assertEqual(result['native_tokenwise_pair_overlay']['status'], 'SHADOW_REVIEW_ONLY')
+        self.assertEqual(result['native_tokenwise_pair_overlay']['replaced_files'], [
+            'v13/callosum.py', 'v13/cognition.py', 'v13/native_probe_approval.py', 'v13/runners.py'])
+        self.assertIn(b'TOKENWISE_TOKENIZER', (out / 'v13/runners.py').read_bytes())
+        self.assertIn(b'TOKENWISE_CONSUMER', (out / 'v13/cognition.py').read_bytes())
+        self.assertIn(b'TOKENWISE_COMMAND', (out / 'v13/callosum.py').read_bytes())
         self.assertEqual((self.code / 'v13/focal.py').read_bytes(), source_focal)
         self.assertIn(b'ACTION_SELECTION_C1_BROADCAST_LINEAGE_V1', (out / 'v13/focal.py').read_bytes())
         self.assertTrue((out / 'specs/test.json').exists())
@@ -99,6 +109,20 @@ class StageTest(unittest.TestCase):
         match = re.search(r"""STAGER_SHA256 = ["']([a-f0-9]{64})["']""", deploy_source)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1), hashlib.sha256(stage_bytes).hexdigest())
+
+    def test_real_repo_stage_applies_tokenwise_runtime_overlay(self):
+        code = Path(__file__).resolve().parents[1]
+        destination = self.root / 'real-candidate'
+        result = module.stage(code, destination)
+        self.assertEqual(result['status'], 'SHADOW_REVIEW_ONLY')
+        self.assertIn('native_tokenwise_pair_overlay', result)
+        self.assertEqual(result['native_tokenwise_pair_overlay']['training_authority'], 0)
+        self.assertEqual(result['native_tokenwise_pair_overlay']['native_receiver_authority'], 0)
+        self.assertIn(b'def tokenize_with_pieces(', (destination / 'v13/runners.py').read_bytes())
+        self.assertIn(b'def native_tokenwise_pair_probe(', (destination / 'v13/cognition.py').read_bytes())
+        self.assertIn(b'arm-tokenwise', (destination / 'v13/callosum.py').read_bytes())
+        self.assertIn(b'TOKENWISE_PAIR_DIAGNOSTIC', (destination / 'v13/native_probe_approval.py').read_bytes())
+        self.assertFalse((destination / 'v13/native_input_embedding_extractor').exists())
 
     def test_pin_failure_never_publishes_candidate(self):
         self.builder("    raise ValueError('pin mismatch')\n")
@@ -139,7 +163,8 @@ class StageTest(unittest.TestCase):
             'v13/runtime.py', 'v13/operator.py', 'v13/native_probe_approval.py',
             'v13/native_probe_matrix.py', 'v13/focal.py', 'specs/test.json', module.BUILDER,
             module.ARITHMETIC_OVERLAY, module.NATIVE_PROBE_OVERLAY, module.RUNTIME_CLOSE_OVERLAY,
-            module.ACTION_SELECTION_LINEAGE_OVERLAY})
+            module.ACTION_SELECTION_LINEAGE_OVERLAY, module.TOKENWISE_PAIR_OVERLAY,
+            'v13/runners.py', 'v13/cognition.py', 'v13/callosum.py'})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):
