@@ -1925,3 +1925,14 @@ Core still needs to call build_tokenwise_tap_manifest() from LlamaRunner.tap and
 Latest available private V13OBS snapshot: 2026-11-24T09:28:11Z, historical only. Three read-only private relay requests were created at 2026-11-25T15:25:01Z: PIPELINE_STATUS #915, DIAGNOSTICS #916, HEALTH #917; no receipt had arrived at the last poll. Do not treat the old receipt as live. No device command, update request, restart, model/weight/permission/data change was performed.
 
 **User action:** keine Aktion nötig. No Termux command, model download or swap is needed.
+
+
+## Research & Perception — Run 17 verified next action (2026-11-25)
+
+**User action required: NONE.** No device command, update request, runtime restart, model/weight download or swap, permission change, or data mutation was performed.
+
+- PR #2502 remains OPEN/DRAFT, stacked on #2501. Exact current code/test head: `2f74fa94d2ad4d0004ec61ea128bdec4d320e569`. New source-bound native input-embedding manifest contract is in `v13/code/v13/native_input_embedding_tap.py`; tests are in `v13/code/tests/test_native_input_embedding_tap.py`.
+- Exact CI: adapter workflow 45648811640 — 53/53 PASS on Python 3.13 and 3.14; privacy scan CLEAN. Runtime-deployment integrity 45648811730 — PASS on Python 3.11 and 3.14. Staged/integrated regression 45648811577 was still IN_PROGRESS at last poll. Full local Aii checkout/pytest NOT_RUN: no checkout mounted and local GitHub DNS unavailable.
+- The new module validates rows returned by a native receiver input-embedding extractor; it does not implement that extractor or wire `Cognition.tap`. Core PR #2499 currently pins llama.cpp `b29c606e...6c4`, which lacks the row-select API. R-148 identifies the MIT upstream row API at `a8fad21e...`, but it lives in a staging/WIP header and requires exact pin/build/ABI review.
+- The next executable step is Core's native row extractor + producer integration, then a source-disjoint paired cohort and receiver-task controls. Keep final-RMSNorm taps, input-embedding taps and event-pooled LATENT_PREFIX_V1 separate.
+- Latest available consented private V13OBS #115 metadata remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, autostart false and model process stopped. No newer authenticated device receipt was available in this run; REDMI_UNVERIFIED. The release branch HEAD is 8d93236; PR #2502 is not a release or deployment. No UPDATE_REQUEST or restart was sent.

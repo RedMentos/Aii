@@ -1405,3 +1405,16 @@ Code/test SHA fa2673340f2dce78dcf7952b802957bf8b2f9212:
 Initial fixture failures were not hidden: 6955caf failed the shuffled-pairing negative control because the shuffle was within-source; 9cbefd failed three new manifest tests because they used raw pieces instead of llama.cpp token objects with matching IDs. Both were corrected; exact fa267 is green.
 
 Core integration remains outstanding: LlamaRunner.tap must call the helper, and Cognition.tap must persist the returned source/token/row manifest with event/generation/model/tap/tokenizer/blob bindings. No native GGUF, task utility, weight update, or Redmi proof.
+
+
+## Research & Perception — Run 17: native input-embedding target contract — 2026-11-25
+
+PR #2502 was advanced on the existing Research/Perception branch (no new PR). Exact code/test head: `2f74fa94d2ad4d0004ec61ea128bdec4d320e569`.
+
+**New code:** `v13/code/v13/native_input_embedding_tap.py` defines a source-bound manifest for actual receiver token-embedding rows. The role determines the tap ID (`b1/b2/c3.input-embedding.v1`); the caller cannot label final-RMSNorm vectors as input embeddings. The manifest binds UTF-8 byte-piece IDs/spans, source ID/hash, event, brain generation, model/tokenizer revisions, dimensions and per-row hashes. `v13/code/tests/test_native_input_embedding_tap.py` adds positive, role-binding, mutated-row/source, token-ID and geometry controls. The existing tokenwise alignment workflow now compiles and runs this module/test.
+
+**Exact CI:** adapter workflow RUN 45648811640: 53/53 PASS on Python 3.13 and 3.14, privacy scan CLEAN. Runtime-deployment integrity RUN 45648811730: PASS on Python 3.11 and 3.14. Staged/integrated regression RUN 45648811577 was still IN_PROGRESS at the last poll. Full local Aii checkout/pytest remains BLOCKED/NOT_RUN because no checkout is mounted and local GitHub DNS is unavailable.
+
+**Research R-148:** upstream llama.cpp commit `a8fad21e9949c20f6b21692c8d38a8aba422eafe` (2026-11-09, MIT) has `llama_model_get_tok_embd_rows` in `src/llama-ext.h`; its implementation reads only requested token rows through `llama_tensor_rows_to_f32`. The current #2499 pin `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` lacks this row-select API and only exposes whole-matrix extraction. The newer header explicitly says staging/WIP, so pin and compile it exactly; no stable-ABI claim. 64×1024 and 64×2048 F32 output buffers are calculated as 256 KiB and 512 KiB respectively; this is not a Redmi RSS measurement.
+
+**Integration owner:** Core must review a compatible llama.cpp pin/include update, call the row extractor for no-special content-token IDs, and persist its output through the native tap producer using the new manifest. Keep this distinct from event-pooled `LATENT_PREFIX_V1`. No GGUF pair, receiver-task utility, gradient/retention, Android build or Redmi proof. Production B3 remains OFF; NOT_RELEASED / REDMI_UNVERIFIED.
