@@ -26,9 +26,9 @@ def sha(value):
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def make_receipt(task_index, session_id, task_family, condition):
+def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None):
     task_group_id = f"task-{task_index:02d}"
-    source_ref = {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
+    source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
         message_source_ref = None
         adapter_sha256 = None
@@ -79,22 +79,23 @@ def make_receipt(task_index, session_id, task_family, condition):
     )
 
 
-def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC"):
+def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC", source_ref_override=None):
     result = None
     for condition in CONDITIONS:
         result = record_task_score_receipt(
-            runtime, make_receipt(task_index, session_id, task_family, condition)
+            runtime, make_receipt(task_index, session_id, task_family, condition, source_ref_override=source_ref_override)
         )
     return result
 
 
-def test_single_complete_task_group_is_not_enough_for_utility():
+def test_single_complete_task_group_remains_collecting_until_minimums():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = complete_group(runtime)
-    assert result["status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["status"] == "COLLECTING"
     assert result["task_group_count"] == 1
-    assert result["enough_holdout"] is False
-    assert result["semantic_use_proven"] is False
+    assert result["complete_task_group_count"] == 1
+    assert result["incomplete_task_group_count"] == 0
+    assert result["minimum_task_groups"] == 20
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert result["persisted"] is False
 
@@ -111,6 +112,11 @@ def test_twenty_task_groups_across_two_sessions_are_fixture_only():
     assert result["task_group_count"] == 20
     assert result["session_count"] == 2
     assert result["enough_holdout"] is True
+    assert result["balanced_session_family_coverage"] is True
+    assert result["tasks_per_session_family"] == {
+        "session-A": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
+        "session-B": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
+    }
     assert result["candidate_beats_all_controls"] is False
     assert result["semantic_use_proven"] is False
     assert result["generated_answer_correctness_proven"] is False
@@ -154,3 +160,39 @@ def test_receipt_cap_is_bounded_and_explicit_clear_discards_memory():
     assert cleared["discarded_receipt_count"] == MAX_TASK_SCORE_RECEIPTS
     assert task_score_status(runtime)["status"] == "EMPTY"
     assert cleared["persisted"] is False
+
+
+def test_collector_rejects_duplicate_source_content_across_task_groups():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    shared_source = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")["source_ref"]
+    with pytest.raises(NativeReceiverTaskScoreError, match="failed validation"):
+        for task_index in range(20):
+            session_id = "session-A" if task_index < 10 else "session-B"
+            family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+            override = shared_source if task_index == 1 else None
+            complete_group(
+                runtime, task_index, session_id, family,
+                source_ref_override=override,
+            )
+
+
+def test_collector_rejects_sparse_session_family_cross_even_when_totals_pass():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        if session_id == "session-A":
+            family = "ENTITY_RECALL" if task_index == 1 else "ARITHMETIC"
+        else:
+            family = "ARITHMETIC" if task_index == 10 else "ENTITY_RECALL"
+        result = complete_group(runtime, task_index, session_id, family)
+    assert result["status"] == "COLLECTING"
+    assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["tasks_per_session"] == {"session-A": 10, "session-B": 10}
+    assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
+    assert result["tasks_per_session_family"] == {
+        "session-A": {"ARITHMETIC": 9, "ENTITY_RECALL": 1},
+        "session-B": {"ARITHMETIC": 1, "ENTITY_RECALL": 9},
+    }
+    assert result["balanced_session_family_coverage"] is False
+    assert result["enough_holdout"] is False
