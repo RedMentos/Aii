@@ -1970,3 +1970,18 @@ The #2488 composed staged Runtime test `test_exact_arithmetic_is_date_safe_and_r
 ### Voice output test-only PR #2479
 
 The current release base already contains the explicit Termux system-TTS fallback (`:voice status|on|off|speak`), OFF by default and explicit-command only. PR #2479 changes tests only. Exact head `dce46db13068d95443db060327202dec45b6701e`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED. Staged audio/arithmetic: 53 passed + 26 subtests on Python 3.13 and the same on Python 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Two test-fixture defects were corrected (operator origin and fake TTS script newlines). This is fake-CLI Runtime/SQLite evidence only; no real Android audio, audibility, microphone, raw-ear learning, trainable decoder/vocoder or full-duplex proof. No device command was sent.
+
+
+---
+
+# Core & Harness — run 26 — 2026-11-25
+
+- **Code PR:** [#2488](https://github.com/RedMentos/Aii/pull/2488), branch `core/v14-native-probe-fair-budget-20261125-run1`, exact head `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e`, DRAFT / NOT_RELEASED.
+- **New function:** `brain_panel.status` now exposes B1/B2 native attempt metrics and correlates persisted OfferPackets → C4 selected IDs → C3's native rendered-offer receipt. It compares `prompt_n + cache_n` with the exact `LLAMA_SERVER_TOKENIZE` count and reports `predicted_n` against generated-token count. The output excludes raw prompt text, offer summaries, source refs and resource samples. It explicitly does not prove semantic attention/use.
+- **Tests:** local isolated Python checks 5/5 accounting cases + 1/1 body-delivery/privacy case; GitHub exact-head CI 7 workflow runs / 13 jobs SUCCESS; new panel tests 5 passed on Python 3.13 and 3.14; native receiver tests 27 passed; staged/integrated regression 424 passed, 3 skipped, 58 subtests passed; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a/API 26 cross-compile PASS; public privacy scan CLEAN.
+- **Environment limits:** full local Aii checkout/suite BLOCKED / NOT_RUN because GitHub DNS resolution failed. Android cross-compile and GitHub emulator are not Redmi tests. Redmi remains REDMI_UNVERIFIED; no fresh receipt or device action was taken. Preserve the prior AI STOPPED_BY_USER state.
+- **Release:** NOT_RELEASED. PR #2488 remains DRAFT and stacked on #2485/#2478. A GitHub push is not deployment. Production B3 remains OFF; no GGUF was loaded and no native model-pair probe was run.
+- **Related Android branch:** #2481 head `545ec845a35a4567aeaf7487d6765edf2229176f` is 17/17 green with API-33 x86_64 emulator process-death/Stop-persistence PASS; still DRAFT / NOT_RELEASED, QA/Boss review and safe compose pending.
+- **Next:** Boss/QA review and compose the fair B1/B2 + native receiver chain, then continue Android action/outcome integration. Any local native probe requires reviewed installation, a fresh installed-SHA receipt and separate explicit user approval.
+
+**User action: NONE.** No Termux command, restart, update request, model download/swap, permission change or device action is requested.
