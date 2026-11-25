@@ -45,7 +45,21 @@ class StageTest(unittest.TestCase):
         shutil.copy2(source_code / module.NATIVE_PROBE_OVERLAY, self.code / module.NATIVE_PROBE_OVERLAY)
         shutil.copy2(source_code / module.RUNTIME_CLOSE_OVERLAY, self.code / module.RUNTIME_CLOSE_OVERLAY)
         shutil.copy2(source_code / module.ACTION_SELECTION_LINEAGE_OVERLAY, self.code / module.ACTION_SELECTION_LINEAGE_OVERLAY)
-        tokenwise = (\n            \"from pathlib import Path\\n\"\n            \"def apply_staged_tokenwise(code_dir, staging):\\n\"\n            \"    result = {}\\n\"\n            \"    for name, marker in ((\\\"runners.py\\\", b\\\"\\\\n# TOKENWISE_TOKENIZER\\\\n\\\"), (\\\"cognition.py\\\", b\\\"\\\\n# TOKENWISE_CONSUMER\\\\n\\\"), (\\\"callosum.py\\\", b\\\"\\\\n# TOKENWISE_COMMAND\\\\n\\\"), (\\\"native_probe_approval.py\\\", b\\\"\\\\n# TOKENWISE_PURPOSE\\\\n\\\")):\\n\"\n            \"        path = staging / \\\"v13\\\" / name\\n\"\n            \"        result[\\\"v13/\\\" + name] = path.read_bytes() + marker\\n\"\n            \"    return result\\n\"\n        ).encode('utf-8')\n        tokenwise_path = self.code / module.TOKENWISE_PAIR_OVERLAY\n        tokenwise_path.write_bytes(tokenwise)\n        module.TOKENWISE_PAIR_OVERLAY_GIT_BLOB = hashlib.sha1(\n            b'blob ' + str(len(tokenwise)).encode('ascii') + b'\\0' + tokenwise\n        ).hexdigest()\n        overlay = (
+        tokenwise = (
+            "def apply_staged_tokenwise(code_dir, staging):\\n"
+            "    return {\\n"
+            "        'v13/runners.py': (staging / 'v13/runners.py').read_bytes() + b'TOKENWISE_TOKENIZER',\\n"
+            "        'v13/cognition.py': (staging / 'v13/cognition.py').read_bytes() + b'TOKENWISE_CONSUMER',\\n"
+            "        'v13/callosum.py': (staging / 'v13/callosum.py').read_bytes() + b'TOKENWISE_COMMAND',\\n"
+            "        'v13/native_probe_approval.py': (staging / 'v13/native_probe_approval.py').read_bytes() + b'TOKENWISE_PURPOSE',\\n"
+            "    }\\n"
+        ).encode('utf-8')
+        tokenwise_path = self.code / module.TOKENWISE_PAIR_OVERLAY
+        tokenwise_path.write_bytes(tokenwise)
+        module.TOKENWISE_PAIR_OVERLAY_GIT_BLOB = hashlib.sha1(
+            b'blob ' + str(len(tokenwise)).encode('ascii') + b'\\0' + tokenwise
+        ).hexdigest()
+        overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
             "    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n"
