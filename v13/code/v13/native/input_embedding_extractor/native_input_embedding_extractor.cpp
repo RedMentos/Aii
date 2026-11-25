@@ -56,7 +56,7 @@ bool is_hex_sha256(const std::string & value) {
 bool valid_model_revision(const std::string & value) {
     if (value.empty() || value.size() > kMaxModelRevision) return false;
     for (unsigned char ch : value) {
-        if (ch < 0x20 || ch == 0x7f) return false;
+        if (ch < 0x21 || ch > 0x7e) return false;
     }
     return true;
 }
@@ -70,6 +70,9 @@ bool parse_token_ids(const std::string & raw, std::vector<llama_token> & ids) {
         const std::size_t end = comma == std::string::npos ? raw.size() : comma;
         if (end == start) return false;
         const std::string item = raw.substr(start, end - start);
+        if (!std::all_of(item.begin(), item.end(), [](char ch) { return ch >= '0' && ch <= '9'; })) {
+            return false;
+        }
         errno = 0;
         char * tail = nullptr;
         const long long value = std::strtoll(item.c_str(), &tail, 10);
@@ -168,7 +171,7 @@ bool parse_options(int argc, char ** argv, Options & options) {
     options.model_sha256 = values["--model-sha256"];
     options.extractor_sha256 = values["--extractor-sha256"];
     options.token_ids = values["--token-ids"];
-    return !options.model_path.empty()
+    return !options.model_path.empty() && options.model_path.size() <= 4096
         && valid_model_revision(options.model_revision)
         && is_hex_sha256(options.model_sha256)
         && is_hex_sha256(options.extractor_sha256);
@@ -210,13 +213,15 @@ int selftest() {
     if (!parse_token_ids("0,17,17", ids) || ids.size() != 3) return 1;
     if (parse_token_ids("1,,2", ids)) return 2;
     if (parse_token_ids("-1,2", ids)) return 3;
-    if (parse_token_ids("1,2,", ids)) return 4;
+    if (parse_token_ids("+1,2", ids)) return 4;
+    if (parse_token_ids(" 1,2", ids)) return 5;
+    if (parse_token_ids("1,2,", ids)) return 6;
     std::string too_many;
     for (int i = 0; i < 65; ++i) {
         if (i) too_many += ",";
         too_many += "1";
     }
-    if (parse_token_ids(too_many, ids)) return 5;
+    if (parse_token_ids(too_many, ids)) return 7;
 
     ids = {0, 3};
     std::vector<float> rows;
@@ -229,7 +234,7 @@ int selftest() {
             out[0] = 1.0f; out[1] = 2.0f; out[2] = 3.0f; out[3] = 4.0f;
             return 4U;
         }, rows, written);
-    if (!ok || calls != 1 || written != 4 || rows.size() != 4 || rows[3] != 4.0f) return 6;
+    if (!ok || calls != 1 || written != 4 || rows.size() != 4 || rows[3] != 4.0f) return 8;
 
     ids = {0, 4};
     calls = 0;
@@ -238,7 +243,7 @@ int selftest() {
             ++calls;
             return 4U;
         }, rows, written);
-    if (ok || calls != 0 || !rows.empty()) return 7;
+    if (ok || calls != 0 || !rows.empty()) return 9;
 
     ids = {0, 1};
     ok = collect_rows(ids, 4, 2,
@@ -247,7 +252,7 @@ int selftest() {
             return 3U;
         }, rows, written);
     if (ok || written != 3 || rows.size() != 4
-            || std::any_of(rows.begin(), rows.end(), [](float value) { return value != 0.0f; })) return 8;
+            || std::any_of(rows.begin(), rows.end(), [](float value) { return value != 0.0f; })) return 10;
 
     ok = collect_rows(ids, 4, 2,
         [](const llama_token *, std::uint32_t, float * out) {
@@ -255,10 +260,10 @@ int selftest() {
             out[2] = std::numeric_limits<float>::quiet_NaN(); out[3] = 4.0f;
             return 4U;
         }, rows, written);
-    if (ok || std::any_of(rows.begin(), rows.end(), [](float value) { return value != 0.0f; })) return 9;
+    if (ok || std::any_of(rows.begin(), rows.end(), [](float value) { return value != 0.0f; })) return 11;
 
     std::cout << "{\"schema\":\"" << kOutputSchema
-              << "\",\"status\":\"PASS\",\"checks\":9}\n";
+              << "\",\"status\":\"PASS\",\"checks\":11}\n";
     return 0;
 }
 
