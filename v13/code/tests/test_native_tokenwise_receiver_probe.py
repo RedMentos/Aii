@@ -260,7 +260,7 @@ def native_result(**kwargs):
     }
 
 
-def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet):
+def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet, **extra_kwargs):
     return probe_native_tokenwise_candidate(
         runtime, {
             "status": "ALIGNMENT_CANDIDATE",
@@ -273,6 +273,7 @@ def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet):
         }, record,
         approval_module=approval, packet_builder=packet_fn,
         receiver_fn=receiver_fn or native_result,
+        **extra_kwargs,
     )
 
 
@@ -558,3 +559,79 @@ def test_top_level_operator_rejects_remote_callosum_probe_origin():
             ":callosum native-tokenwise-probe --confirm",
             origin="REMOTE_RELAY",
         )
+
+
+def test_probe_builds_ephemeral_native_target_score_receipt(tmp_path):
+    runtime = FakeRuntime(tmp_path)
+    approval = FakeApproval(runtime)
+    target_ids = [101, 202]
+
+    def scored_receiver(**kwargs):
+        result = native_result(**kwargs)
+        target_payload = struct.pack("<2i", *target_ids)
+        result["target_score"] = {
+            "schema": "v14.native-receiver-target-score/1",
+            "execution_kind": "SYNTHETIC_FIXTURE",
+            "environment": "SYNTHETIC",
+            "llama_cpp_revision": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+            "binary_sha256": "c" * 64,
+            "receiver_model_sha256": kwargs["expected_model_sha256"],
+            "input_sha256": result["input_sha256"],
+            "target_token_ids_sha256": hashlib.sha256(target_payload).hexdigest(),
+            "target_token_count": len(target_ids),
+            "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+            "token_logprobs": [-0.75, -1.25],
+            "decode_status": 0,
+            "native_input_consumed": True,
+            "llama_version": "fixture-llama",
+        }
+        return result
+
+    result = run_probe(
+        runtime, approval, pair_record(runtime),
+        receiver_fn=scored_receiver,
+        target_token_ids=target_ids,
+        target_environment="LOCAL_LINUX",
+        task_score_metadata={
+            "condition": "LATENT_CANDIDATE",
+            "task_group_id": "task-0001",
+            "task_family": "ARITHMETIC",
+            "session_id": runtime.session,
+            "context_sha256": "f" * 64,
+        },
+    )
+
+    assert result["task_score"]["condition"] == "LATENT_CANDIDATE"
+    assert result["task_score"]["collection_status"] == "COLLECTING"
+    assert result["task_score"]["receipt_count"] == 1
+    assert result["task_score"]["persisted"] is False
+    receipts = runtime._native_receiver_task_score_receipts
+    assert len(receipts) == 1
+    assert receipts[0]["native"]["execution_kind"] == "SYNTHETIC_FIXTURE"
+    assert receipts[0]["native"]["environment"] == "SYNTHETIC"
+    assert receipts[0]["target_token_ids_sha256"] == hashlib.sha256(struct.pack("<2i", *target_ids)).hexdigest()
+    assert receipts[0]["native_receiver_authority"] == receipts[0]["training_authority"] == 0
+    assert runtime.source_text not in str(runtime.store.logs)
+    assert str(target_ids) not in str(runtime.store.logs)
+    audit = runtime.store.logs[0][2]
+    assert audit["target_token_count"] == 2
+    assert audit["task_score_receipt_sha256"] == receipts[0]["receipt_sha256"]
+
+
+def test_task_score_metadata_and_environment_are_rejected_before_approval(tmp_path):
+    runtime = FakeRuntime(tmp_path)
+    approval = FakeApproval(runtime)
+    target_ids = [1, 2]
+    with pytest.raises(ValueError, match="execution environment"):
+        run_probe(
+            runtime, approval, pair_record(runtime),
+            target_token_ids=target_ids,
+            task_score_metadata={
+                "condition": "LATENT_CANDIDATE",
+                "task_group_id": "task-0002",
+                "task_family": "ARITHMETIC",
+                "context_sha256": "f" * 64,
+            },
+        )
+    assert approval.consumed_kind is None
+    assert runtime.store.logs == []
