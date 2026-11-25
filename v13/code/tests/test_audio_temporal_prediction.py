@@ -81,6 +81,10 @@ SILENCE = acoustic_cues(
     "SILENCE", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
     voiced_fraction=0.0, confidence=0.0, activity_score=0.0, prosody=0.0,
 )
+UNCERTAIN = acoustic_cues(
+    "UNCERTAIN", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
+    voiced_fraction=0.0, confidence=0.0, activity_score=0.0, prosody=0.0,
+)
 VOICED = acoustic_cues("VOICED")
 
 
@@ -113,7 +117,7 @@ def run_consumer_sequence(runtime, event, monkeypatch, sequence, capture,
     for index in range(len(sequence)):
         results.append(consume_pcm16_voice_window(
             runtime,
-            tone(phase=index * 0.1),
+            bytes(32000),
             sample_rate=16000,
             start_ms=100 + index * 1000,
             event_id=event["event_id"],
@@ -270,8 +274,8 @@ def test_direct_predictor_reports_real_gradient_and_parameter_delta():
 
 
 def test_real_a5_a4_consumer_uses_predictive_novelty_only_on_a4_novelty(tmp_path, monkeypatch):
-    sequence = [SILENCE, VOICED, VOICED, SILENCE, SILENCE,
-                VOICED, VOICED, SILENCE, SILENCE, VOICED, VOICED, VOICED]
+    sequence = [SILENCE, UNCERTAIN, UNCERTAIN, SILENCE, SILENCE,
+                UNCERTAIN, UNCERTAIN, SILENCE, SILENCE, UNCERTAIN, UNCERTAIN, UNCERTAIN]
 
     runtime, event = make_runtime(tmp_path / "predictor")
     predictor_attention = CaptureAttention()
@@ -285,7 +289,7 @@ def test_real_a5_a4_consumer_uses_predictive_novelty_only_on_a4_novelty(tmp_path
         assert prediction["status"] == "SHADOW_MEASURED"
         assert last["a4"]["audio_temporal_predictive_novelty"] > 0
         assert last["a4"]["audio_temporal_predictive_novelty"] <= ATTENTION_GAIN
-        assert last["a4"]["voice_activity_hint"] == "VOICED"
+        assert last["a4"]["voice_activity_hint"] == "UNCERTAIN"
         assert last["learning_authority"] is False
         assert last["action_authority"] is False
         assert len(last["c3_admission"].selected) == 1
