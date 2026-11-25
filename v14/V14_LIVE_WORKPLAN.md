@@ -1473,3 +1473,14 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - User action: NONE.
 
 - Voice I/O evidence: `speech_intent.py` + `speech_output.py` + `Operator :voice` already provide an explicit Termux system-TTS fallback with source-bound FINAL text, ActionIntent/ActionOutcome persistence, no automatic playback and `audibility_verified=false`. PR #2479 adds a real Runtime/SQLite/Operator test using a fake TTS CLI; 5/5 exact-head checks are QUEUED. This is WIRED_SYNTHETIC only; Redmi audibility, trainable decoder/vocoder, raw acoustic learning and full-duplex remain OPEN.
+
+
+## Core & Harness — 2026-11-25 checkpoint
+
+- #2478 fair B1/B2 head `55db58ae` is not green (13/28 success, 14 failures, 1 skipped). #2485 exact source-pin rebind is 11/11 green; #2488 composed native-receiver head `b8b43910` is 17/17 green and remains DRAFT / NOT_RELEASED.
+- #2488 adds a bounded native input-embedding receiver v3 and four-pair diagnostic matrix. Pinned llama.cpp `b29c606` Linux x86_64 build + selftest PASS; Android arm64-v8a cross-compile PASS; integrated regression 424 passed / 3 skipped / 58 subtests. No GGUF or real model pair was executed. B3 remains OFF.
+- The #2488 composed C5 ActionSelection path now has verified source lineage across event, admitted Memory/observer, B1/B2 OfferPacket and QueryPacket context, Context OS, Enlightened Space and body-view refs; same-session/digest/readability and restart checks are included. This is provenance, not semantic attention or weight learning.
+- #2481 ActionOutcome branch head `545ec845` is 16/17 green with the Android process-death emulator job still running at last poll. Companion-outcome: 64 tests on Python 3.13 and 64 on Python 3.14; staged/integrated and companion assemble/unit PASS. New regression proves one-turn CONTROL_ONLY receipt delivery to B1/B2/C3 and expiry.
+- LOCAL_LINUX full Aii suite remains NOT_RUN: no checkout mounted and GitHub DNS failure. CI/emulator/cross-compile are not Redmi proof. Last authenticated phone state remains installed `8d93236`, AI STOPPED_BY_USER; no new receipt, device action or update request. REDMI_UNVERIFIED.
+- Next: finish #2481 emulator run; independent QA/Boss review and safe rebase; review/integrate #2485/#2488; only then consider a separately approved local native probe. Continue native B1/B2 quality, C3 correctness, and whole-Canon integration.
+- User action: NONE now. Future local probe requires separate explicit approval after integration/installation.
