@@ -88,6 +88,24 @@ def _validate_pairs(pairs, name: str):
     return pair_ids, source_ids, senders, receivers
 
 
+def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> None:
+    """Require ordered, contiguous token positions within each source group."""
+    by_source: dict[str, list[int]] = {}
+    for pair in pairs:
+        source_id = pair["source_id"]
+        position = pair.get("token_position")
+        if type(position) is not int or not 0 <= position < 64:
+            raise LatentAdapterError(name + " tokenwise pairs require bounded token_position metadata")
+        positions = by_source.setdefault(source_id, [])
+        if position in positions:
+            raise LatentAdapterError(name + " contains a duplicate token position for one source")
+        positions.append(position)
+    for source_id, positions in by_source.items():
+        ordered = sorted(positions)
+        if len(ordered) < 2 or ordered != list(range(len(ordered))):
+            raise LatentAdapterError(name + " token positions must contain at least two contiguous rows from zero")
+
+
 def _weight_values(adapter: Mapping) -> list[float]:
     values = list(adapter["sender_mean"]) + list(adapter["receiver_mean"])
     values.extend(value for row in adapter["sender_factor"] for value in row)
@@ -188,6 +206,9 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         raise LatentAdapterError("paired activation IDs cross train/holdout")
     if train_sources & holdout_sources:
         raise LatentAdapterError("source leakage: a source appears in train and holdout")
+    if projection_scope == "TOKENWISE":
+        _validate_tokenwise_pairs(train_pairs, "train_pairs")
+        _validate_tokenwise_pairs(holdout_pairs, "holdout_pairs")
     if len(train_pairs) < 8 or len(holdout_pairs) < 4 or len(train_sources) < 4 or len(holdout_sources) < 2:
         raise LatentAdapterError("insufficient independent source groups for alignment holdout")
     sender_dim, receiver_dim = len(x_train[0]), len(y_train[0])
