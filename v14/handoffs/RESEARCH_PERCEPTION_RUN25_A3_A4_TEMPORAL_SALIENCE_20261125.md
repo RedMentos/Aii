@@ -53,6 +53,6 @@ V14 follow-up hypothesis: later test a source-bound true-outcome vs shuffled/unr
 ## Device, release and next action
 
 - Release status: **NOT_RELEASED**. PR #2470 is still open; GitHub push is not deployment.
-- Redmi: **REDMI_UNVERIFIED**. No fresh authenticated phone receipt was obtained in this run. The prior recorded stop state remains in force; no UPDATE_REQUEST, model download/swap, permission change, or device command was issued.
+- Redmi: **REDMI_UNVERIFIED**. No fresh authenticated phone receipt was obtained in this run. Issue #1904 remains OPEN; the latest available consented V13OBS snapshot is 2026-11-24 09:28 UTC and reports STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers, and native residency unavailable; the 2026-11-24 17:50 UTC issue update reports no fresh receipt. No UPDATE_REQUEST, model download/swap, permission change, or device command was issued.
 - User action: **none required** for this code-only checkpoint.
 - Next owner/action: Core/Integrator must rebind the exact current `vision.py` hash and full lifecycle dependency closure, then rerun A5 UI lease, staged runtime, integrated regression, both consumers and migration. After that, Perception should add noise/shuffled-frame and source-disjoint negative controls to calibrate the A3→A4 gain before any stronger salience use. No Android capture or learned-weight claim until separately verified.
