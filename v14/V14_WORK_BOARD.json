@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T05:18:58.501Z",
+  "updated_at": "2026-11-25T05:23:46.665Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -404,7 +404,7 @@
       "last_checkpoint": "2026-11-24T19:24:35Z",
       "proof_environment": "CI only; no Android APK/device proof",
       "proof": "Core #2450 head 523c04 has 11/12 checks green; only android-companion-process-restart fails. Its tests cover EXECUTING→signed UNKNOWN and DENYING→signed denial receipt-only recovery plus SQLite failure/restart without redispatch. QA #2427 head ae56dd has 5/5 checks green separately; that does not prove the combined candidate. No APK install or Redmi proof.",
-      "next_step": "Core PR #2481 current head 545ec845 (stacked on #2450/#2356, NOT release): 16/17 exact checks SUCCESS, Android process-death/Stop-persistence emulator job still IN_PROGRESS at last readback. Companion ActionOutcome Python 3.13 and 3.14 each report 64 passed; staged-runtime and integrated-regression PASS; Android companion assemble/unit PASS. Added regression verifies a signed receipt is available as CONTROL_ONLY to B1_DETAIL, B2_GIST and C3_LANGUAGE on the immediately following event and expires after that event. Wait for the exact emulator result, then independent QA/Boss review and rebase/compose; no APK install or Redmi proof."
+      "next_step": "Core PR #2481 exact head 545ec845 is now 17/17 SUCCESS, including the Android API-33 x86_64 emulator process-death/Stop-persistence test. Espresso confirmed the visible Stop control; provider startup after a fresh process remained OFF; process identity changed 2176@493104 → 2621@560711. Python 3.13/3.14 companion-outcome tests each 64 PASS; staged/integrated and companion assemble/unit PASS. This is emulator/CI evidence, not Redmi. Next: independent QA/Boss review and safe rebase/compose on the newest compatible companion base; no device install/action."
     },
     {
       "id": "V14-018",
@@ -621,10 +621,10 @@
       "capability": "ANDROID_BACKGROUND_CONTROL",
       "code": "ANDROID_ACTIONINTENT_ACTIONOUTCOME_RECEIPT_ONLY_RECOVERY_PR2450_PR2481; ESPRESSO_PROCESS_DEATH_HARNESS",
       "wired": "TERMUX_CONTROLLER→COMPANION_INTENT→SIGNED_ACTIONOUTCOME→SQLITE→C5/JEF→NEXT_EVENT_B1_B2_C3_CONTROL_ONLY; COMPANION_UI_STOP_PERSISTED_OFF",
-      "tested_synthetic": "#2481 head 545ec845: companion-outcome 64 tests PASS on Python 3.13 and 3.14; staged/integrated PASS; Android companion assemble/unit PASS; process-death emulator still IN_PROGRESS at last readback.",
+      "tested_synthetic": "#2481 head 545ec845: 17/17 exact checks SUCCESS; 64 companion-outcome tests on Python 3.13 and 64 on 3.14; staged/integrated PASS; Android API-33 x86_64 emulator proves visible Stop control, process death/restart and persisted OFF.",
       "tested_android": "NOT_VERIFIED",
       "active": "DRAFT_CI_CANDIDATE / DEFAULT_OFF / NOT_RELEASED",
-      "evidence": "Emulator/CI only. No APK installation, signer pairing, Redmi action, Accessibility, screen capture or device receipt. Signed dispatch receipt is not proof that an app became visible."
+      "evidence": "GitHub-hosted emulator only. ActivityScenario + actual button listener (View.performClick after visible-view checks), not physical touch injection. No APK installation, signer pairing, Redmi action, Accessibility, screen capture or device receipt. Signed dispatch receipt is not proof that an app became visible on the user's device."
     },
     {
       "capability": "ANDROID_UI_CONTROL",
@@ -657,7 +657,7 @@
       "capability": "Tools/JEF action and permission fabric",
       "code": "TYPED_ACTIONINTENT_ACTIONOUTCOME_AND_SOURCE_BOUND_NEXT_EVENT_RECEIPT_PR2481",
       "wired": "SIGNED_RECEIPT→STORE→JEF_CONTROL_ONLY_CONTEXT_FOR_B1_B2_C3",
-      "tested_synthetic": "#2481 exact head: 64 companion-outcome tests pass on Python 3.13/3.14; integrated regression pass; emulator process-death pending.",
+      "tested_synthetic": "#2481 exact head 17/17 SUCCESS: 64 companion-outcome tests on Python 3.13 and 64 on 3.14; integrated regression and Android process-death emulator pass.",
       "tested_android": "NOT_TESTED",
       "active": "DRAFT_CI_CANDIDATE / NO_DEVICE_ACTION_PROOF",
       "evidence": "Typed action/outcome contracts; no OS-authenticated approved Android action"
@@ -1498,7 +1498,7 @@
     }
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-25T05:18:58.501Z",
+    "timestamp": "2026-11-25T05:23:46.665Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2488,
     "primary_runtime_branch": "core/v14-native-probe-fair-budget-20261125-run1",
@@ -1506,10 +1506,10 @@
     "primary_runtime_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN_NOT_RELEASED",
     "secondary_android_pr": 2481,
     "secondary_android_head": "545ec845a35a4567aeaf7487d6765edf2229176f",
-    "secondary_android_status": "DRAFT_16_OF_17_SUCCESS_ONE_EMULATOR_JOB_IN_PROGRESS",
+    "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN_NOT_RELEASED; ANDROID_API33_EMULATOR_PROCESS_DEATH_PASS",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
     "redmi": "INSTALLED_8D93236_LAST_RECEIPT_AI_STOPPED_BY_USER_REDMI_UNVERIFIED",
-    "next_action": "Complete #2481 emulator job; independent review/rebase; integrate #2488 only after Boss review. No device update or native probe without explicit approval."
+    "next_action": "Independent QA/Boss review/rebase of #2481; Boss review of #2485/#2488. No device update or native probe without explicit approval."
   },
   "previous_core_checkpoint": {
     "timestamp": "2026-11-24T20:18:58.353Z",
@@ -1587,12 +1587,12 @@
       "head_sha": "545ec845a35a4567aeaf7487d6765edf2229176f",
       "base_branch": "core/v14-android-action-journal-qa-rebase-20261123-run1",
       "base_sha": "523c04eb1e96d0e01e1cdda0c9832632360de044",
-      "status": "DRAFT_16_OF_17_CHECKS_SUCCESS_ONE_EMULATOR_JOB_IN_PROGRESS_NOT_RELEASED",
+      "status": "DRAFT_CI_GREEN_NOT_RELEASED",
       "checks": {
         "total": 17,
-        "success": 16,
+        "success": 17,
         "failure": 0,
-        "in_progress": 1
+        "pending": 0
       },
       "verified": {
         "python313": "64 companion-outcome tests passed.",
@@ -1600,9 +1600,9 @@
         "staged_runtime": "PASS",
         "integrated_regression": "PASS",
         "android_companion_assemble_unit": "PASS",
-        "receipt_context": "B1_DETAIL/B2_GIST/C3_LANGUAGE immediate-next-event CONTROL_ONLY delivery and expiry regression."
-      },
-      "pending": "android-companion-process-restart emulator job 45551689708 was still IN_PROGRESS at last readback."
+        "receipt_context": "B1_DETAIL/B2_GIST/C3_LANGUAGE immediate-next-event CONTROL_ONLY delivery and expiry regression.",
+        "android_emulator": "PASS: API-33 x86_64 emulator; Espresso visible Stop control; persisted OFF after fresh provider process; process identity 2176@493104 → 2621@560711; first death boundary=activity-teardown. Actual button/listener invoked with View.performClick after visible-view checks; no physical touch claim."
+      }
     },
     "source_lineage": {
       "path": "v13/code/v13/focal.py::_action_provenance",
@@ -1629,7 +1629,7 @@
       "auto_update": "ENABLED (last authenticated pipeline receipt)",
       "actions": "NONE: no CHAT_SEND, UPDATE_REQUEST, restart, LOG_PAGE, shell, model/weight/permission/data mutation."
     },
-    "next_action": "Finish exact #2481 emulator process-death job; then independent QA/Boss review and compose the Android ActionOutcome stack on the newest compatible companion base. Separately request Boss review of #2488/#2485 and integrate only after exact chain review. No native probe until integrated/installed and the user explicitly approves a single local one-shot run. Continue whole-Canon work; B3 remains OFF.",
+    "next_action": "Request independent QA/Boss review and safe rebase/compose of #2481 onto the newest compatible companion integration base. Separately request Boss review of #2485/#2488 and integrate only after exact chain review. No native probe until integrated/installed and the user explicitly approves a single local one-shot run. Continue whole-Canon work; B3 remains OFF.",
     "user_action_required": "NONE_NOW; a future local native model probe requires separate explicit user approval after safe integration and installation."
   }
 }
