@@ -1877,3 +1877,18 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - **Device:** REDMI_UNVERIFIED. Last known private V13OBS #115 (2026-11-24 09:28 UTC) reported installed 8d93236, auto-update enabled, AI STOPPED_BY_USER and native residency unavailable. No fresh receipt proves current updater status or installation.
 - **Next internal step:** poll exact CI; Core/Integrator recompose the #2465 strict vision.py source-lifecycle chain; then run source/session-disjoint tests on explicitly consented real visual sequences. No manual Termux command, model change or update request.
 - **User action:** **keine Aktion nötig**.
+
+
+## Research & Perception — run 11, 2026-11-25, PR #2509
+
+**New runtime path:** A3 now has an optional `ERROR_GATED` 16×16 next-delta LMS shadow alongside the default ALWAYS predictor. It is called by the existing consent-scoped `TemporalVisualEvidence` consumer and surfaced as `a3_temporal_prediction.error_gated_shadow`. A4 reads only the original predictor; no attention/action behavior changes. Both states reset through the existing stream reset/unavailable/projector-change/revocation path. No persistent weights or raw frames are stored.
+
+**Research:** Pache & van Rossum, *Mistake Gating Leads to Energy and Memory Efficient Continual Learning*, arXiv:2604.14336v2 (full PDF reviewed), *Neural Computation* ahead-of-print 2026-11-05, DOI 10.1162/NECO.a.1602. Their memorized rule is classification/sample-identity based; this is a fixed persistence-relative regression adaptation, not a reproduction. Pure gating's generalization caveat is relevant, so the new predictor remains shadow-only. No upstream code reused; the referenced repository has no LICENSE file.
+
+**LOCAL_LINUX:** CPython 3.13.5 isolated predictor mirror, `py_compile` PASS and `pytest -q` 10/10 PASS. On 2,299 deterministic synthetic observations, updates fell from 2,299 to 773 (66.38% fewer); ERROR_GATED mean MAE 0.003816 vs persistence 0.012505 and final old-pattern MAE 0.024976 vs persistence 0.099500. It is worse than ALWAYS (mean MAE 0.003039; final old-pattern MAE 0.009499), so the savings are not free. 8 streams / 16 predictors used 375,824 bytes in a CPython tracemalloc snapshot; not Android PSS. Full local Aii checkout/suite NOT_RUN.
+
+**PR:** [#2509](https://github.com/RedMentos/Aii/pull/2509), stacked on [#2494](https://github.com/RedMentos/Aii/pull/2494), head before docs `47de95db5a51541fdc3efee2bfb0ba332a15b544`. Exact-head workflows were IN_PROGRESS at last poll; no CI PASS claimed. Parent #2494 focused suites pass, but staged/integrated still fail at Core-owned `source_lifecycle_lock_integration_candidate.py:172` rejecting `vision.py`. No release SHA; NOT_RELEASED.
+
+**Device/updater:** latest authenticated private V13OBS #115 (2026-11-24 09:28:11 UTC) reports installed `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and pipeline UP_TO_DATE; AI STOPPED_BY_USER, model process STOPPED, native residency unavailable. Last turn 6.295 s / 2.046 s TTFT / 358 prompt tokens / 7 generated tokens; correctness/semantic use unproven. B1/B2 remain TIME_BUDGET 53.2/54.2 s. b20e9 has green 37/37 CI but no installation receipt. #2509 not deployed; REDMI_UNVERIFIED.
+
+**Next:** Core/Integrator recompose the #2494 `vision.py` lifecycle closure and rerun staged/integrated/migration/consumer. Then compare ALWAYS vs ERROR_GATED on explicitly consented real visual sequences with source/session-disjoint holdouts, static/motion, brightness/codec/camera controls, retention and restart/rollback. Keep A4 gain 0.15 unchanged. Continue other Canon families. User action: **keine Aktion nötig**.
