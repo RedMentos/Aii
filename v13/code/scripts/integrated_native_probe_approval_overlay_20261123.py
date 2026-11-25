@@ -13,7 +13,7 @@ MATRIX_PATH = "v13/native_probe_matrix.py"
 
 SOURCE_PINS = {
     OPERATOR_PATH: "8d59efa1bfb7dea7bbb2fd1af2cf7d2e25adebc4",
-    APPROVAL_PATH: "3404cccb64abd94c9cc4e568b53a3fdbdcce969a",
+    APPROVAL_PATH: "2a36065b566f49c31cdd9ba7b1e4ba618ad51bc5",
     MATRIX_PATH: "5fd7f6b4dc83001ef8948bb8d0c52d07c02e31fb",
 }
 
