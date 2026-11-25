@@ -87,7 +87,6 @@ def _home(tmp_path: Path, count: int = 24, *, shuffle_receiver: bool = False):
         [0.3, 0.8, -0.6, 1.0],
     ])
     rows = []
-    receiver_vectors = []
     for index in range(count):
         latent = rng.normal(size=2)
         sender = latent @ basis + rng.normal(scale=0.0005, size=6)
@@ -102,11 +101,6 @@ def _home(tmp_path: Path, count: int = 24, *, shuffle_receiver: bool = False):
             _packet(tmp_path, "B1_DETAIL", index, sender, SENDER_REV, SENDER_TAP, index),
             _packet(tmp_path, "B2_GIST", index, receiver, RECEIVER_REV, RECEIVER_TAP, index),
         ]
-        # Rebuild the tuples with the packet's actual JSON payload.
-        for row in rows_db:
-            rows.append(row) if False else None
-        # Keep only database rows; source payloads remain in the SQLite table.
-        receiver_vectors.append((sender, receiver))
         if index == 0:
             db = tmp_path / "data" / "db" / "brain.sqlite3"
             db.parent.mkdir(parents=True, exist_ok=True)
@@ -121,7 +115,7 @@ def _home(tmp_path: Path, count: int = 24, *, shuffle_receiver: bool = False):
         )
     connection.commit()
     connection.close()
-    return tmp_path, receiver_vectors
+    return tmp_path, rows
 
 
 def _fit(home, **overrides):
@@ -214,7 +208,8 @@ def test_requested_tap_binding_must_match_persisted_packets(tmp_path):
 
 def test_corrupt_blob_cannot_enter_adapter_fit(tmp_path):
     home, _ = _home(tmp_path)
-    corrupt = home / "data" / "blobs" / "B1_DETAIL-0.json"
-    corrupt.write_text("{}", encoding="utf-8")
+    for index in range(5):
+        corrupt = home / "data" / "blobs" / f"B1_DETAIL-{index}.json"
+        corrupt.write_text("{}", encoding="utf-8")
     with pytest.raises(LatentAdapterError, match="insufficient valid source-disjoint pairs"):
         _fit(home)
