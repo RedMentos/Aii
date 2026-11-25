@@ -15,7 +15,7 @@ import tempfile
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = '322e332b86a50f46597fe0cf90f33624e43b25cfc0ad791bea967adc998796b7'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
-ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+ARITHMETIC_OVERLAY_GIT_BLOB = '6d7d326832baecb3bcff872b005dda8831a601f9'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
