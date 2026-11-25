@@ -6,6 +6,7 @@
 - LOCAL_LINUX algorithm-level ridge deletion math PASS 24/24; full Aii suite BLOCKED / NOT_RUN. Redmi REDMI_UNVERIFIED; no fresh receipt or deployment.
 - R-146 SGM-Diar, R-147 Edge0 and R-148 BigMoMo recorded in the Research Ledger. None is a model swap candidate for Redmi; no downloads or weight changes.
 - User action: none. Perception will not modify Core-owned composer files or weaken source pins.
+- Additional Core #2465 integrated-regression blocker (run 45474789385): the staged builder replaces `vision.unlink_source_blob` with `source_lifecycle_candidate.cleanup_unreferenced`, but the concurrency test still patches the old symbol. Patch the test seam to the actual consumer; preserve the helper's Store lock and source-hash checks.
 
 ---
 
