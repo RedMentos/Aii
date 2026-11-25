@@ -1374,3 +1374,19 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+---
+
+## Core & Harness — Run 27 — 2026-11-25
+
+- **PR:** [#2493](https://github.com/RedMentos/Aii/pull/2493), stacked on the green fair-budget/native-receiver/Callosum dispatch chain [#2490](https://github.com/RedMentos/Aii/pull/2490) at cb3b8c16ea4061bc9ed2ef33cbff3c179b9bb406. Current branch head: ced17d1a60156c6ea353672f0b3e7c88e24bd62d. DRAFT / NOT_RELEASED.
+- **Runtime change:** after a native DEADLINE, the runner closes the HTTP request and retains the same llama-server child only if a bounded local /slots read is non-empty, well-formed, all slots are exactly idle, and the same process/lifecycle stamp is still current. Busy, malformed, unavailable, dead or changed runners unload fail-closed. User cancellation and native errors still unload immediately. The /slots response is never persisted.
+- **Local test:** LOCAL_LINUX isolated logic harness **6/6 PASS** (0.47 s). It covers idle retention, busy/malformed slots, unavailable endpoint, lifecycle change, cancel/error unload, multiple slots and same-pool reuse. This is not the full Aii checkout.
+- **Exact CI:** the dedicated Python 3.13/3.14 workflow passed on the initial code-only head b09b6734716a30f41a0743df0bb9ff2be886fd54; the current pin-rebound head ced17d1a60156c6ea353672f0b3e7c88e24bd62d has fresh exact-head workflows pending. Initial staged/phone-offer failures exposed the stale native receiver runners.py pin; the exact runner SHA-256, native receiver blob, recovery-21 builder, stage builder and RuntimeDeploy hashes have now been rebound bottom-up.
+- **Environment:** full LOCAL_LINUX Aii checkout NOT_RUN/BLOCKED because GitHub DNS fails. No local llama.cpp/GGUF model pair, no Redmi/Termux test, no fresh private phone receipt. REDMI_UNVERIFIED.
+- **User effect / Canon:** prevents a safe-to-retain idle native child from being needlessly cold-reloaded after a deadline; this can remove repeated model-load overhead but does not shorten prefill, prove a correct answer or prove a Redmi latency gain. V14-001 remains IN_PROGRESS_PARTIAL; B1/B2→C4→C3, correct C3 output and whole-Canon acceptance remain open.
+- **Safety / deployment:** no model/weight, permission, data, updater or device state changed. GitHub push is not deployment. No user action required.
+- **Next:** finish exact-head CI; fix any newly exposed source pin or integration failure; then Boss/QA should compose #2493 with the #2492 B1/B2→C4→C3 telemetry branch on one reviewed base and obtain fresh consented Redmi evidence after release.
+
+Run start/end time: UNKNOWN (not measured by the execution environment).
