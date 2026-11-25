@@ -1291,3 +1291,22 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Next falsifiable work:** after exact comparison/staged/integrated CI, add a frozen-weight held-out evaluation against persistence, no-predictor, shuffled-cue and no-consent controls; then test real nonverbal/prosody windows only through a separately authorized Android provider. Keep this pilot SHADOW until held-out attention utility is positive without harming source/voice retention. A learned audio patch encoder and persistent/EMA JEPA updates remain separate future organs; this entry does not replace them.
 
 **Status:** FULL_ARXIV_HTML_REVIEWED / PAPER_PREPRINT / OSS_LICENSE_METADATA_CONFLICT / NO_REUSE / LOCAL_LINUX_ISOLATED_PASS / CI_FASTPATH_126_126_PY313_PY314 / COMPARE_RETEST_PENDING / NO_HELDOUT_COHORT / REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## R-150 — RAW EAR persistent-state prefix isolation (2026-11-25)
+
+**Reproduced data-integrity defect.** `AudioTemporalPredictionRegistry.PERSISTENCE_PREFIX` is `raw_ear_prediction.v1.`. Both persistent LRU pruning and source-reset cleanup used SQLite `key LIKE prefix || '%'`. In SQLite, underscores in a LIKE pattern match any one character. A foreign key such as `rawXearYprediction.v1.foreign` therefore matched the RAW EAR namespace and could be deleted by stream pruning or source reset. Local SQLite reproduction on CPython 3.13.5: old LIKE selector returned both the foreign key and the real RAW EAR key; literal-prefix selector returned only the real key.
+
+**Code fix in existing PR #2498.** Added one `_persistent_rows()` selector using `substr(key,1,?)=?`, and routed both `_save_persistent()` and `_clear_persistent()` through it. Added two Store-backed negative tests for LRU pruning and source reset, asserting similar-looking unrelated keys survive. Also repaired an existing restart test that assigned to read-only `Store.generation_id`: `make_runtime(..., preserve_generation=True)` now reopens the same immutable active generation without attempting a property assignment.
+
+**Verification.**
+- LOCAL_LINUX SQLite reproduction: PASS (foreign key matched by old LIKE; excluded by literal prefix).
+- Exact RAW EAR CI run `45659079888`: Python 3.13 and 3.14 each py_compile PASS, 130 tests PASS, deterministic synthetic benchmark PASS, public privacy scan CLEAN.
+- VAD comparison CI run `45658785225`: Python 3.13 and 3.14 each 3/3 tests PASS; pinned libfvad build and WebRTC/libfvad smoke checks PASS.
+- Offline deployment integrity run `45658785223`: Python 3.11 and 3.14 PASS.
+- Staged runtime run `45659079347`: FAIL, 16 failed / 237 passed / 10 skipped / 2 errors. The blocker is the Core/QA-owned exact pin in `scripts/termux_runtime_recovery_candidate_20261121.py`: it expects audio composer Git blob `831080bceec90711bd42e0fa4eba47c669975c98`, while the reviewed current `scripts/integrated_audio_context_candidate_20261121.py` blob is `598e9c12ad387a1b693ed9fdda2bd8101212d2e8`. Integrated regression was still running at the last poll. Do not weaken the pin; Core/QA must rebind the recovery → stager → deployer hash chain in order.
+- Full local Aii suite unavailable; no Android microphone, native audio model, Termux or Redmi proof. REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Boundary.** This fixes a persistent-state namespace/data-deletion bug in the opt-in A4 predictor. It does not change the predictor algorithm, consent policy, model weights on-device, or A4 influence. The 182-parameter predictor remains shadow/opt-in; no PCM, transcript or feature vectors are persisted.
+
+**Next.** Finish integrated-regression readback; hand exact pin mismatch to Core/QA without touching their files. Then evaluate the predictor against persistence/no-predictor/shuffled-cue/no-consent controls on held-out consented audio before increasing A4 influence.
