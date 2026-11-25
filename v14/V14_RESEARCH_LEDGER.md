@@ -1310,3 +1310,20 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Boundary.** This fixes a persistent-state namespace/data-deletion bug in the opt-in A4 predictor. It does not change the predictor algorithm, consent policy, model weights on-device, or A4 influence. The 182-parameter predictor remains shadow/opt-in; no PCM, transcript or feature vectors are persisted.
 
 **Next.** Finish integrated-regression readback; hand exact pin mismatch to Core/QA without touching their files. Then evaluate the predictor against persistence/no-predictor/shuffled-cue/no-consent controls on held-out consented audio before increasing A4 influence.
+
+
+## R-162 — Signed omission prediction error as a distinct RAW EAR/A4 signal (2026-11-25)
+
+**Research link:** this is an implementation hypothesis derived from R-156 (co-observation/replay) and R-157 (mistake-gated plasticity), not a new paper or a reproduction of either work.
+
+**Gap observed:** the existing RAW EAR next-delta predictor reported absolute MAE and positive-only excess error relative to persistence. When it correctly predicted a repeated acoustic transition but that expected transition then failed to occur, the model could be better than persistence and still produce zero positive-only surprise. The signed direction—predicted change greater than observed change—was not exposed as an omission/negative prediction error.
+
+**Code path added in PR #2498:** `AudioTemporalPredictor.update()` now reports mean signed error, negative error, omission magnitude and commission magnitude separately. A new `predictive_omission_novelty()` maps only measured FINAL-window omission magnitude to a capped 0.10 A4 novelty signal. `consume_pcm16_voice_window()` exposes this signal in the A4 result and includes it in novelty salience only; it does not change external_interrupt, C3 summary, speaker identity, source truth, action authority, learning authority or the existing update rule. PROVISIONAL/unavailable results produce zero omission novelty. Numeric weights, persistence schema and opt-in persistence behavior are unchanged.
+
+**Local evidence:** a formula-level CPython 3.13.5 reproduction of the current LMS update equations trained on eight repeated high-delta transitions, then presented a zero-delta omission. It measured signed error -0.968896, omission magnitude 0.968896, commission 0 and the previous positive-only excess error 0. This validates the direction/sign calculation only; it is not execution of the repository module or A4 consumer. The exact modified module and consumer were not locally available because no checkout was mounted and `raw.githubusercontent.com` DNS failed.
+
+**Exact test additions:** two predictor/A4 consumer tests and a PROVISIONAL zero-novelty assertion were added to `test_audio_temporal_prediction.py`. They check signed negative PE, bounded omission salience, A4 novelty routing and unchanged external_interrupt under a disabled-predictor control. Exact CI for the new head has not yet been observed. No local full module/consumer pytest is claimed.
+
+**Limitations / next test:** the cue predictor is still a 13-D hand-engineered feature model, not learned audio patch embeddings or a trained speech model. The omission signal is a salience proxy, not proof of an omitted semantic event. Run the exact RAW EAR fastpath workflow on the new head, then add held-out alternating/omitted-event, shuffled-cue, silence/noise, session-reset and consent-rotation ablations. Keep the signal shadow/capped and compare A4 decisions against a no-predictor control before any gain increase.
+
+**Status:** CODE_AND_TESTS_PUSHED / FORMULA_LEVEL_LOCAL_REPRODUCTION_PASS / EXACT_BRANCH_CI_NOT_YET_OBSERVED / FULL_LOCAL_AUDIO_SUITE_NOT_RUN / REDMI_UNVERIFIED / NOT_RELEASED.
