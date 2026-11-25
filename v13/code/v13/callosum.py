@@ -198,7 +198,13 @@ def controller(runtime):
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
+    """:callosum status/shadow/active/degrade/promote plus local one-shot native taps."""
+    if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
+        from .native_input_embedding_capture import operator_command as input_tap_command
+        return input_tap_command(r,args)
+    if args and args[0] in {"arm-tokenwise-pair", "native-tokenwise-pair", "revoke-tokenwise-pair"}:
+        from .native_tokenwise_pair_capture import operator_command as pair_command
+        return pair_command(r,args)
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
