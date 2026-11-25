@@ -494,11 +494,11 @@ class LlamaRunner:
                 from .focal import token_confidence
                 self.last_metrics['token_confidence']=token_confidence(lp_pairs,confidence_field)  # AG12 solver: field 'answer'
     def tap(self,text,cancel,deadline,max_tokens=64):
-        """Pinned role/model-specific final-state tap; read-only, never live KV injection.
+        """Pinned read-only final-state tap plus optional exact token/source alignment.
 
-        RunnerPool binds the model-specific tap ID and dimension. Direct B2
-        fallback uses the canonical two-body Qwen tap; shared-body controls
-        must pass their explicit LFM2 binding from RunnerPool.
+        RunnerPool binds the model-specific tap ID and dimension. The ordinary
+        event-pooled tap remains available when /tokenize with_pieces is absent
+        or outside the bounded 2..64-token alignment window.
         """
         if self.purpose!='tap':raise Unavailable('Separaten Tap-Modus anfordern')
         defaults={
@@ -528,8 +528,40 @@ class LlamaRunner:
         monitor=threading.Thread(target=watchdog,daemon=True);monitor.start()
         try:
             self.load(cancel,deadline);check(cancel,deadline)
-            tokens=self._json('POST','/tokenize',{'content':text,'add_special':True},deadline)['tokens']
-            if not tokens or len(tokens)>max_tokens:raise Limits('Tap-Quelle über '+str(max_tokens)+' native Tokens; expliziten kürzeren SourceRef wählen')
+            content_pieces=None
+            content_ids=None
+            tokenwise_status='UNAVAILABLE'
+            tokenwise_reason=None
+            try:
+                piece_result=self._json(
+                    'POST','/tokenize',
+                    {'content':text,'add_special':False,'with_pieces':True},
+                    deadline,
+                )
+                content_pieces=piece_result.get('tokens') if isinstance(piece_result,dict) else None
+                if not isinstance(content_pieces,list):
+                    raise Unavailable('Native tokenizer did not return token pieces')
+                content_ids=[
+                    item.get('id') if isinstance(item,dict) else None
+                    for item in content_pieces
+                ]
+                tokenwise_status='OUT_OF_SCOPE' if not 2<=len(content_ids)<=64 else 'PENDING'
+            except (Cancelled,Limits):
+                raise
+            except Exception as exc:
+                content_pieces=None
+                content_ids=None
+                tokenwise_status='UNAVAILABLE'
+                tokenwise_reason=type(exc).__name__
+            check(cancel,deadline)
+            tokens=self._json(
+                'POST','/tokenize',
+                {'content':text,'add_special':True},
+                deadline,
+            )['tokens']
+            if (not isinstance(tokens,list) or not tokens or len(tokens)>max_tokens
+                    or any(type(token) is not int or token<0 for token in tokens)):
+                raise Limits('Tap-Quelle über '+str(max_tokens)+' native Tokens oder ungültige Token-IDs; expliziten kürzeren SourceRef wählen')
             # The native watchdog already terminates this read-only request on
             # cancellation/deadline. Mobile prefill may legitimately exceed the
             # short health/control HTTP timeout; retain the actual job budget.
@@ -537,11 +569,48 @@ class LlamaRunner:
             vectors=result[0]['embedding']
             if len(vectors)!=len(tokens) or any(len(v)!=dimension or any(isinstance(x,bool) or not isinstance(x,(float,int)) or not math.isfinite(x) for x in v) for v in vectors):raise Unavailable('Native Tap-Dimension/Token-Bindung ungültig')
             if any(sum(x*x for x in v)<=1e-20 for v in vectors):raise Unavailable('Native Tap lieferte Null-Vektor')
-            self.last_metrics={'role':self.role,'operation':'PREFILL_TAP','duration_s':time.monotonic()-started,'prompt_tokens':len(tokens),'embedding_dim':dimension,
-                               'memory':process_memory(self.proc.pid),'CAN_LATENT_TAP':True,'CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,
-                               'tap_id':tap_id,'pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
-                               'physical_batch_tokens':512 if self.role=='C3_LANGUAGE' else 128,'whole_sequence_prefill':True}
-            return {'tap_id':tap_id,'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
+            tokenwise_manifest=None
+            if content_pieces is not None and content_ids is not None and 2<=len(content_ids)<=64:
+                try:
+                    from .latent_adapter import build_tokenwise_tap_manifest
+                    built=build_tokenwise_tap_manifest(
+                        text,content_ids,content_pieces,tokens,vectors,
+                    )
+                    # The prefill activation rows are already stored once below.
+                    # Persist only the source/token/position manifest, not a second
+                    # copy of up to 64 x 2048 floats.
+                    tokenwise_manifest={key:value for key,value in built.items() if key!='vectors'}
+                    tokenwise_status='VALID'
+                except (Cancelled,Limits):
+                    raise
+                except Exception as exc:
+                    tokenwise_status='REJECTED'
+                    tokenwise_reason=type(exc).__name__
+            self.last_metrics={
+                'role':self.role,'operation':'PREFILL_TAP',
+                'duration_s':time.monotonic()-started,'prompt_tokens':len(tokens),
+                'embedding_dim':dimension,'memory':process_memory(self.proc.pid),
+                'CAN_LATENT_TAP':True,'CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,
+                'tap_id':tap_id,'pooling':'none',
+                'normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
+                'physical_batch_tokens':512 if self.role=='C3_LANGUAGE' else 128,
+                'whole_sequence_prefill':True,
+                'tokenwise_manifest_status':tokenwise_status,
+            }
+            if tokenwise_manifest is not None:
+                self.last_metrics.update({
+                    'tokenwise_manifest_token_count':len(tokenwise_manifest['token_ids']),
+                    'tokenwise_manifest_source_bytes':tokenwise_manifest['source_length'],
+                    'tokenwise_manifest_special_prefix_tokens':tokenwise_manifest['special_prefix_tokens'],
+                    'tokenwise_manifest_special_suffix_tokens':tokenwise_manifest['special_suffix_tokens'],
+                })
+            if tokenwise_reason is not None:
+                self.last_metrics['tokenwise_manifest_reason']=tokenwise_reason
+            return {
+                'tap_id':tap_id,'token_ids':tokens,'vectors':vectors,
+                'tokenwise_manifest':tokenwise_manifest,
+                'metrics':dict(self.last_metrics),
+            }
         except BaseException:
             self.unload();check(cancel,deadline);raise
         finally:done.set();monitor.join(.2)
