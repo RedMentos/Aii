@@ -78,7 +78,12 @@ def validate_tokenwise_packet(value):
     if value["role"] not in {"B1_DETAIL", "B2_GIST"}:
         raise TokenwiseTapError("tokenwise sender role")
     source_ref = value["source_ref"]
-    if not isinstance(source_ref.get("source_id"), str) or source_ref not in value["provenance"]:
+    if (not isinstance(source_ref.get("source_id"), str)
+            or not _hex_digest(source_ref.get("sha256"))
+            or type(source_ref.get("char_start")) is not int
+            or type(source_ref.get("char_end")) is not int
+            or source_ref["char_start"] < 0 or source_ref["char_end"] < source_ref["char_start"]
+            or source_ref not in value["provenance"]):
         raise TokenwiseTapError("tokenwise source provenance")
     for name in ("model_sha256", "model_manifest_sha256", "source_sha256",
                  "feature_sha256", "vectors_sha256", "manifest_sha256"):
@@ -108,6 +113,14 @@ def validate_tokenwise_packet(value):
         cursor = span[1]
     if cursor != value["source_length"]:
         raise TokenwiseTapError("tokenwise spans do not cover exact source bytes")
+    if (type(value["prefill_token_count"]) is not int
+            or value["prefill_token_count"] < len(ids)
+            or value["prefill_token_count"] > len(ids) + 2):
+        raise TokenwiseTapError("tokenwise prefill token count")
+    if (type(value["special_prefix_tokens"]) is not int
+            or type(value["special_suffix_tokens"]) is not int
+            or value["special_prefix_tokens"] < 0 or value["special_suffix_tokens"] < 0):
+        raise TokenwiseTapError("tokenwise special-token count")
     if not isinstance(positions, list) or len(positions) != len(ids):
         raise TokenwiseTapError("tokenwise prefill position count")
     previous = -1
@@ -118,10 +131,6 @@ def validate_tokenwise_packet(value):
         previous = position
     if positions != list(range(positions[0], positions[0] + len(positions))):
         raise TokenwiseTapError("tokenwise content rows are not contiguous")
-    if (type(value["prefill_token_count"]) is not int
-            or value["prefill_token_count"] < len(ids)
-            or value["prefill_token_count"] > len(ids) + 2):
-        raise TokenwiseTapError("tokenwise prefill token count")
     if (value["special_prefix_tokens"] != positions[0]
             or value["special_suffix_tokens"] != value["prefill_token_count"] - positions[-1] - 1
             or value["special_prefix_tokens"] + value["special_suffix_tokens"]
@@ -135,7 +144,9 @@ def validate_tokenwise_packet(value):
         raise TokenwiseTapError("tokenwise vector shape")
     if value["position_mode"] != POSITION_MODE:
         raise TokenwiseTapError("tokenwise position mode")
-    if value["production_route"] is not False or value["training_authority"] != 0:
+    if (value["production_route"] is not False
+            or type(value["training_authority"]) is not int
+            or value["training_authority"] != 0):
         raise TokenwiseTapError("tokenwise packet cannot grant production or learning authority")
     return value
 
