@@ -405,7 +405,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         payload, _version = runtime.store.state(rows[0]["key"], None)
         assert set(payload) == {
             "schema", "status", "source_scope_sha256", "generation_scope_sha256",
-            "consent_scope_id", "weights", "updates", "last_touched_ns", "state_sha256",
+            "consent_scope_id", "method", "weights", "updates", "last_touched_ns", "state_sha256",
         }
         assert "previous_features" not in payload and "pcm" not in payload and "transcript" not in payload
     finally:
@@ -454,3 +454,27 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         ("raw_ear_prediction.v1.%",),
     ) == []
     revoked.store.close()
+
+
+def test_persistent_mode_does_not_write_provisional_windows(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    runtime.cfg = {"raw_ear_persist_prediction_weights": True}
+    try:
+        registry = _runtime_audio_temporal_prediction_registry(runtime)
+        result = registry.update(
+            source_id=SOURCE,
+            generation_id=event["brain_generation_id"],
+            consent_scope_id="c" * 64,
+            start_ms=0,
+            end_ms=1000,
+            cues=VOICED,
+            finality="PROVISIONAL",
+        )
+        assert result["status"] == "PROVISIONAL_IGNORED"
+        assert result["weight_persistence"] is True
+        assert runtime.store.rows(
+            "SELECT key FROM states WHERE key LIKE ?",
+            ("raw_ear_prediction.v1.%",),
+        ) == []
+    finally:
+        runtime.store.close()
