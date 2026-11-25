@@ -390,7 +390,7 @@ def test_native_pair_fit_rejects_receiver_rows_detached_from_extractor_manifest(
     material = {key: tampered[key] for key in _RECORD_MATERIAL_FIELDS}
     tampered["record_sha256"] = _record_digest(material)
     records[8] = tampered
-    with pytest.raises(LatentAdapterError, match="native receiver row"):
+    with pytest.raises(LatentAdapterError, match="native manifest row"):
         fit_adapter_from_native_pair_records(
             records,
             train_session_ids=[
