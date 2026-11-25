@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T05:17:05.106Z",
+  "updated_at": "2026-11-25T05:17:57.773Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -622,7 +622,7 @@
       "code": "ANDROID_ACTIONINTENT_ACTIONOUTCOME_RECEIPT_ONLY_RECOVERY_PR2450_PR2481; ESPRESSO_PROCESS_DEATH_HARNESS",
       "wired": "TERMUX_CONTROLLER→COMPANION_INTENT→SIGNED_ACTIONOUTCOME→SQLITE→C5/JEF→NEXT_EVENT_B1_B2_C3_CONTROL_ONLY; COMPANION_UI_STOP_PERSISTED_OFF",
       "tested_synthetic": "#2481 head 545ec845: companion-outcome 64 tests PASS on Python 3.13 and 3.14; staged/integrated PASS; Android companion assemble/unit PASS; process-death emulator still IN_PROGRESS at last readback.",
-      "tested_android": "NOT_REDM I_VERIFIED",
+      "tested_android": "NOT_VERIFIED",
       "active": "DRAFT_CI_CANDIDATE / DEFAULT_OFF / NOT_RELEASED",
       "evidence": "Emulator/CI only. No APK installation, signer pairing, Redmi action, Accessibility, screen capture or device receipt. Signed dispatch receipt is not proof that an app became visible."
     },
