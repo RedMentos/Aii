@@ -1,5 +1,43 @@
 # CURRENT VERIFIED PERCEPTION NEXT ACTION — 2026-11-25
 
+## Latest verified checkpoint — 2026-11-25T05:09:25Z (supersedes the older run snapshot below)
+
+**Current release base:** `gpt6/v13-private-remote-bridge-20261111` HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. Private V13OBS #115 (2026-11-24 09:28:11Z) reports this base installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. This does not install or accept PR #2484.
+
+**Current Perception candidate:** PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact head `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b` (NOT_RELEASED / not installed).
+
+### New runtime behavior on that candidate
+
+A3 source-stat storage now has a conservative **32 MiB per-projector budget**. The estimate uses fp64 sufficient-stat array sizes plus 8 KiB per source for NPZ/NPY headers and metadata. If it exceeds the budget, ordinary A3 global/tile training still publishes the projector with `SOURCE_STATS_BUDGET_EXCEEDED`; source-forget does not pretend an exact rebuild is available and instead takes the existing conservative projector-invalidation path. This bounds optional exact-delete artifacts without changing installed models, weights, permissions or user data.
+
+### Exact test evidence
+
+- GitHub Actions run `45551382106`: vision/source-lineage and A3 source-forget **58/58 PASS on CPython 3.13 and 58/58 PASS on 3.14**; exact `py_compile` passed on both. This includes the new byte-budget rejection, conservative NPZ-size estimate, and full Runtime consumer test covering both global and tile projectors.
+- Run `45551381858`: RAW EYE / MediaProjection frame-ingress passed on Python 3.13 and 3.14.
+- Run `45551381910`: offline runtime-deployment integrity passed on Python 3.11 and 3.14.
+- Run `45551381822`: staged-runtime **FAIL** (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests); integrated-regression **FAIL** (1 test). Both stop at the Core-owned strict source-lifecycle composer with `ValueError: unsupported lifecycle source: vision.py`. No hash gate was bypassed.
+- LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated formula+NPZ reproduction: **PASS**; the 8 KiB-per-source estimate exceeded actual NPZ sizes for the tested `d=37/c=768`, `d=117/c=768`, and `d=512/c=1024` shapes. This is not a full repository test.
+- Full local Aii pytest/compile: **BLOCKED / NOT_RUN** because no checkout is mounted and the local raw-GitHub download is unavailable.
+
+### Device, updater and release
+
+- Redmi acceptance for PR #2484: **REDMI_UNVERIFIED**. Latest available private pipeline receipt is #115 (2026-11-24 09:28:11Z), installed base `8d93236`, auto-update enabled and base Runtime/Dashboard UP_TO_DATE.
+- Fresh read-only owner-relay requests #895 HEALTH, #896 PIPELINE_STATUS and #897 DIAGNOSTICS have **NO_LIVE_RECEIPT**; no fresh health, native residency, learning status or current-turn correctness claim is available.
+- GitHub push/CI is not deployment. PR #2484 remains DRAFT / NOT_RELEASED, so no UPDATE_REQUEST was sent and no model, weight, permission or data change was made.
+
+### Research update
+
+R-150 audits MobileMoE-S-PTE (arXiv:2605.27358v1; official Meta PTE card). It offers 272M active / 1.3B total parameters, 0.68 GB projected INT4 weights and a 0.95 GB ExecuTorch 1.6.0 PTE, but is FAIR Noncommercial Research licensed and gated; it requires a custom NDK r28c / torchao / fused-MoE runner, not the current GGUF/Termux path. The paper's Android numbers are from Galaxy S25, not Redmi. No download or reuse; not a production recommendation.
+
+### Next concrete action
+
+Core/Integrator must rebind the immutable source-lifecycle closure to the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and `vision_projector_stats.py` SHA-256 `bb987ff4b12f7c5622e3890a62a3afc145d82d7401f5a0518d9f04d2786ad10f`, include the helper in the materialized closure, then rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken pins. After that, continue the next independent RAW EAR/A-plane integration slice.
+
+**User action: none.** No manual Termux command, model download/swap, restart, permission change or device action is needed for this blocked candidate.
+
+---
+
+## Previous snapshot (historical; superseded by the checkpoint above)
 **Run timing:** start/end wall-clock instrumentation unavailable (UNKNOWN). Evidence snapshot: 2026-11-25T00:29:18Z.  
 **Code/test commit:** `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`. **Current PR branch head:** `37baae12f27a1457bbff14496f5caf6611d7e451` (subsequent commits are documentation/handoff/board only; no code changed after the tested commit). [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, stacked on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867` and Core #2465. **NOT_RELEASED / not installed.**
 
