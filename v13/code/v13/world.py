@@ -103,7 +103,7 @@ class WorldState:
 
     def profile(self,role):
         r=self.r
-        data={'role':role,'model_revision':r.models.revision(role) if role!='SOURCE_COPY' else None,
+        data={'role':role,'model_revision':r.models.revision(role) if role not in {'SOURCE_COPY','LOCAL_EXACT_ARITHMETIC'} else None,
               'device':device(),'config':{k:r.cfg[k] for k in ('threads','context_tokens','answer_tokens','temperature')}}
         return {'id':digest(dumps(data)),**data}
 

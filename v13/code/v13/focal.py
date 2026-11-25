@@ -537,7 +537,7 @@ class ActionGate:
     """
     PRIOR={'simple':'C3_LANGUAGE','detail':'B1_DETAIL','gist':'B2_GIST','both':'B1_DETAIL'}
     def __init__(self,store):self.s=store
-    def candidates(self,route,direct,coalition,view,age,tool=None):
+    def candidates(self,route,direct,coalition,view,age,tool=None,direct_action='SOURCE_COPY'):
         total=sum(x['priority'] for x in coalition) or 1.
         support={r:round(sum(x['priority'] for x in coalition if x['source_kind']==r)/total,4) for r in BODY}
         support['C3_LANGUAGE']=round(sum(x['priority'] for x in coalition)/total/2,4) if coalition else 0.
@@ -547,15 +547,17 @@ class ActionGate:
             out.append({'action_id':aid,'action_type':kind,'expected_utility':utility,'expected_cost':cost,'confidence':round(1-unc,4),'reversibility':rev,
                         'evidence':[x['item_id'] for x in coalition if x['source_kind']==aid][:4],'permission_class':permission,'novelty':0.,'uncertainty':unc,
                         'habit_strength':.5 if aid==self.PRIOR.get(route) else 0.,'focal_support':support.get(aid,0.)})
-        if direct:add('SOURCE_COPY',1.,0.,'local_text_only',1.,'EXACT_RENDER')
+        if direct:add(direct_action,1.,0.,'local_text_only',1.,'TEXT_REPORT' if direct_action=='LOCAL_EXACT_ARITHMETIC' else 'EXACT_RENDER')
         for role in ('C3_LANGUAGE','B1_DETAIL','B2_GIST'):
             add(role,.8 if role==self.PRIOR.get(route) else (.5 if role=='C3_LANGUAGE' else .4),.1 if role=='C3_LANGUAGE' else .3,'local_text_only',1.)
         add('ASK_USER',round(.3+.3*unc*conf,4),.2,'local_text_only',1.,'CLARIFY')
         if tool:add('EXTERNAL_TOOL',tool['utility'],.1,'local_tool' if tool['risk']=='READ_LOCAL' else 'external_tool',1. if tool['risk']=='READ_LOCAL' else 0.,'TOOL_CALL')  # WP-K: concrete proposal
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
-    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
-        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
+    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None,direct_action='SOURCE_COPY'):
+        if direct_action not in {'SOURCE_COPY','LOCAL_EXACT_ARITHMETIC'} or (not direct and direct_action!='SOURCE_COPY'):
+            raise ValueError('Invalid deterministic C5 action')
+        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool,direct_action);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
             if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
@@ -563,7 +565,7 @@ class ActionGate:
             elif c['permission_class']=='external_tool':why='NO_EXTERNAL_TOOL_REQUESTED'
             elif c['action_type']=='CLARIFY' and clarify and clarify.get('apply') and not direct:c['expected_utility']=1.  # WP-N13 AG9 abstain -> ask instead of guessing (explicit human ACTIVE)
             elif c['action_type']=='CLARIFY':why='WAIT_VS_ACT_BIAS_BOOT'  # §85.5 ask is available, not executed at BOOT
-            elif direct and c['action_id']!='SOURCE_COPY':why='EXACT_OR_FIXED_OUTPUT'
+            elif direct and c['action_id']!=direct_action:why='EXACT_OR_FIXED_OUTPUT'
             elif resource_state=='PRESSURE' and c['action_id'] in BODY:why='RESOURCE_PRESSURE'
             elif c['action_id'] in BODY and c['action_type']=='TEXT_REPORT':why='BODY_INTERNAL_OFFER_ONLY'  # Canon §28: B1/B2 contribute via Offers/coalition, never speak as independent agents
             if why:c['suppressed']=why;suppressed.append(c)
