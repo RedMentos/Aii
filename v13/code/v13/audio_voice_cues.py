@@ -823,7 +823,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
-        # Only FINAL source-bound acoustic cues update the tiny session-local predictor.
+        # Only FINAL source-bound acoustic cues update the tiny process-local predictor.
         # The receipt itself is never retained; its process-local SHA partitions state.
         try:
             if type(consent_receipt) is not str or not consent_receipt:
