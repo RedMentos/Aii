@@ -21,7 +21,9 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
+    runtime = (destination / "v13/runtime.py").read_text(encoding="utf-8")
     assert "v13/native_probe_approval.py" in manifest["files_sha256"]
+    assert "v13/native_probe_matrix.py" in manifest["files_sha256"]
     assert manifest["native_probe_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["native_probe_overlay"]["production_route"] is False
     assert manifest["native_probe_overlay"]["training_authority"] == 0
@@ -45,6 +47,9 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
     assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
     assert "native-probe <sender> <receiver>" in callosum
+    assert "arm-probe-matrix --last-source --confirm" in operator
+    assert "native-probe-matrix --last-source --confirm" in operator
+    assert "guard_runtime_close(self)" in runtime
     env = dict(os.environ)
     env["PYTHONPATH"] = str(destination)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
