@@ -1,4 +1,3 @@
-import copy
 import json
 
 from v13 import brain_panel
@@ -199,3 +198,14 @@ def test_brain_panel_never_returns_private_offer_or_runner_text():
     assert "PRIVATE_NATIVE_SAMPLE_SENTINEL" not in serialized
     assert "PRIVATE_BODY_SUMMARY_SENTINEL" not in serialized
     assert "source-1" not in serialized
+
+def test_operator_brain_status_exposes_delivery_evidence_without_claiming_learning():
+    _, store = _evidence()
+    panel = brain_panel.operator_command(_Runtime(store), ["status"])
+
+    assert panel["kind"] == "READ_ONLY_RUNTIME_STATUS"
+    assert panel["native_model_training_proven"] is False
+    assert panel["latest_turn"]["offer_flow"]["native_prompt_accounting"]["verified"] is True
+    assert panel["latest_turn"]["body_offer_flow"]["c4_selected_packets_persisted"] is True
+    assert panel["latest_turn"]["body_offer_flow"]["semantic_use_proven"] is False
+
