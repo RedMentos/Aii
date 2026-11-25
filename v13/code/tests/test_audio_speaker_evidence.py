@@ -133,6 +133,7 @@ def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_pat
         active["receipt"] = "fixture:consented-speaker-b"
         second_session = runtime.store.new_session("RAW EAR renewed consent")
         second_event = runtime.store.event(second_session, "new consent scope")
+        assert second_event["brain_generation_id"] == first_event["brain_generation_id"]
         second_pcm = tone(frequency=180)
         second_embeddings = speaker_batch(
             SOURCE, second_event["brain_generation_id"], 100, 1100,
@@ -233,7 +234,7 @@ def test_uncalibrated_speaker_candidate_cannot_modulate_a4(monkeypatch, tmp_path
             0.5 if result["temporal_voice"]["voice_onset"] else 0.0,
         )
         assert captured["external_interrupt"] == pytest.approx(min(1.0, expected))
-        assert "speaker_change_kind=CHANGE_OR_OVERLAP" not in result["c3_admission"]["summary"]
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" not in result["c3_admission"].selected[0].summary
     finally:
         runtime.store.close()
 
