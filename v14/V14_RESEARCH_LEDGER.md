@@ -1461,3 +1461,13 @@ This is GitHub-hosted CI/Linux evidence, not local full-repository execution. Th
 ### R-151/R-153 final CI status correction (2026-11-25)
 
 The previously pending staged/integrated run 45678205707 has now completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. The R-153 synthetic WorldJEPA findings above are from this completed run. This does not change the no-native-GGUF/no-Redmi classification.
+
+
+## R-154 — Session-disjoint holdout for native tokenwise adapter fitting (2026-11-25)
+
+- **Methodological correction:** source-ID/source-hash separation alone does not prevent two different sources from the same conversation/session appearing in train and holdout. That can leak session-specific context and overstate cross-session generalization.
+- **Implementation:** draft PR #2508, exact head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99, adds TOKENWISE schema v4, per-pair session binding in the alignment digest, a >=2 train-session / >=2 holdout-session gate, and `fit_adapter_from_native_pair_records()` for in-memory source-bound pair records. It checks unique source IDs/hashes, exact record digests and consistent sender/receiver model/tap/tokenizer bindings.
+- **Evidence:** LOCAL_LINUX CPython 3.13.5 isolated stub-bound wrapper harness 3/3 PASS (positive cohort, session-overlap rejection, session-tamper rejection). Full local Aii checkout unavailable; exact repository py_compile/pytest NOT_RUN; no exact PR #2508 CI run visible at last poll. This is not native receiver utility or model learning evidence.
+- **Research status:** this is an evaluation-design correction, not a new paper claim. It complements R-149's pinned native selected-row API source review and R-150's pair-specific transfer caution. The fitter remains PCA+ridge alignment only, with no persistence, inference, gradient update or B3 authority.
+- **Next falsifiable step:** Core composes #2505 extractor + Cognition.read_tap + #2507 pair builder, then runs the fitter on consented real native pairs with whole-session holdout. A candidate must subsequently beat exact/no-message/zero/shuffle/repeat/OOD receiver-task controls and pass old-task retention, restart and rollback before any B3 promotion.
+
