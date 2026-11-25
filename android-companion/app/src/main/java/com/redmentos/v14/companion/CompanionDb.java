@@ -13,15 +13,15 @@ final class CompanionDb extends SQLiteOpenHelper {
     static final class Action {
         final String actionId;
         final String requestJson;
-        final String packageName;
+        final String targetValue;
         final String status;
         final String receiptJson;
         final long expiresAt;
-        Action(String actionId, String requestJson, String packageName, String status,
+        Action(String actionId, String requestJson, String targetValue, String status,
                String receiptJson, long expiresAt) {
             this.actionId = actionId;
             this.requestJson = requestJson;
-            this.packageName = packageName;
+            this.targetValue = targetValue;
             this.status = status;
             this.receiptJson = receiptJson;
             this.expiresAt = expiresAt;
@@ -42,7 +42,7 @@ final class CompanionDb extends SQLiteOpenHelper {
         throw new IllegalStateException("No implicit companion DB migration");
     }
 
-    synchronized boolean insertPending(String actionId, String requestJson, String packageName, long expiresAt) {
+    synchronized boolean insertPending(String actionId, String requestJson, String targetValue, long expiresAt) {
         SQLiteDatabase db = getWritableDatabase();
         try (Cursor c = db.rawQuery("SELECT request_json,status FROM actions WHERE action_id=?",
                 new String[]{actionId})) {
@@ -53,7 +53,8 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("action_id", actionId);
         values.put("request_json", requestJson);
-        values.put("package_name", packageName);
+        // Keep the v1 column name so existing local companion DBs migrate without data loss.
+        values.put("package_name", targetValue);
         values.put("status", "PENDING_USER_APPROVAL");
         values.put("expires_at", expiresAt);
         return db.insertOrThrow("actions", null, values) != -1;
