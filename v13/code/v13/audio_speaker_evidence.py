@@ -177,6 +177,18 @@ class SpeakerChangeEvidenceRegistry:
             else (source_id, generation_id, consent_scope_id)
         )
         with self._lock:
+            state = self._states.get(key)
+            previous_window_start_ms = None if state is None else state.last_window_start_ms
+            previous_window_end_ms = None if state is None else state.last_window_end_ms
+            # Validate the whole audio-window interval and registry capacity
+            # before evicting any prior consent epoch. A malformed new scope
+            # must not destroy the last valid source-bound speaker history.
+            if previous_window_start_ms is not None and start_ms < previous_window_start_ms:
+                raise SpeakerEvidenceError("speaker window starts must advance monotonically")
+            if previous_window_end_ms is not None and end_ms <= previous_window_end_ms:
+                raise SpeakerEvidenceError("speaker window ends must advance monotonically")
+            if self.max_frames < batch["lookback_frames"] + 2:
+                raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
             consent_epoch_changed = False
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
@@ -187,18 +199,7 @@ class SpeakerChangeEvidenceRegistry:
                     # them resident in the bounded LRU until later eviction.
                     del self._states[old_key]
                     consent_epoch_changed = True
-            state = self._states.get(key)
             reset_reason = "CONSENT_SCOPE_CHANGED" if consent_epoch_changed else None
-            previous_window_start_ms = None if state is None else state.last_window_start_ms
-            previous_window_end_ms = None if state is None else state.last_window_end_ms
-            # Validate the whole audio-window interval, not just the timestamps
-            # of optional speaker-embedding frames. A caller can otherwise move
-            # start_ms backwards while keeping every supplied frame_end_ms
-            # greater than the previous batch's last frame.
-            if previous_window_start_ms is not None and start_ms < previous_window_start_ms:
-                raise SpeakerEvidenceError("speaker window starts must advance monotonically")
-            if previous_window_end_ms is not None and end_ms <= previous_window_end_ms:
-                raise SpeakerEvidenceError("speaker window ends must advance monotonically")
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
@@ -218,8 +219,6 @@ class SpeakerChangeEvidenceRegistry:
             peak_candidate_change_score = 0.0
             peak_candidate_frame_end_ms = None
             peak_candidate_reference_age_ms = None
-            if self.max_frames < batch["lookback_frames"] + 2:
-                raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
             # A batch is one publication unit. Every frame in it must compare
             # against the history that existed before this batch; otherwise a
             # later frame can compare with an earlier same-batch frame from the
