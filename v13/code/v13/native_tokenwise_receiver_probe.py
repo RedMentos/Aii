@@ -375,9 +375,15 @@ def fit_and_probe_native_tokenwise_cohort(
     """
     if not isinstance(heldout_record, dict):
         raise ValueError("a held-out native pair record is required")
-    if (not isinstance(holdout_session_ids, (list, tuple, set))
-            or heldout_record.get("session_id") not in holdout_session_ids):
-        raise ValueError("native receiver probe record must belong to a declared holdout session")
+    if (not isinstance(records, (list, tuple)) or not records
+            or not isinstance(holdout_session_ids, (list, tuple, set))
+            or heldout_record.get("session_id") not in holdout_session_ids
+            or not any(
+                isinstance(item, dict)
+                and item.get("record_sha256") == heldout_record.get("record_sha256")
+                for item in records
+            )):
+        raise ValueError("native receiver probe record must be a member of a declared holdout session")
     if fit_fn is None:
         from .native_tokenwise_pair_capture import fit_native_tokenwise_pair_cohort as fit_fn
     if probe_fn is None:

@@ -244,7 +244,15 @@ def native_result(**kwargs):
 
 def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet):
     return probe_native_tokenwise_candidate(
-        runtime, {"adapter_sha256": "c" * 64}, record,
+        runtime, {
+            "status": "ALIGNMENT_CANDIDATE",
+            "projection_scope": "TOKENWISE",
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "adapter_sha256": "c" * 64,
+        }, record,
         approval_module=approval, packet_builder=packet_fn,
         receiver_fn=receiver_fn or native_result,
     )
@@ -359,7 +367,7 @@ def test_cohort_wrapper_requires_declared_holdout_and_keeps_candidate_in_memory(
     from v13.native_tokenwise_receiver_probe import fit_and_probe_native_tokenwise_cohort
 
     result = fit_and_probe_native_tokenwise_cohort(
-        runtime, [{"fixture": True}], ["train-a", "train-b"],
+        runtime, [record], ["train-a", "train-b"],
         ["holdout-session", "holdout-other"], record,
         fit_fn=fit_fn, probe_fn=probe_fn,
     )
@@ -381,7 +389,7 @@ def test_cohort_wrapper_refuses_record_outside_holdout_before_fit(tmp_path):
     with pytest.raises(ValueError, match="declared holdout session"):
         from v13.native_tokenwise_receiver_probe import fit_and_probe_native_tokenwise_cohort
         fit_and_probe_native_tokenwise_cohort(
-            runtime, [], ["train-a", "train-b"], ["hold-a", "hold-b"], record,
+            runtime, [record], ["train-a", "train-b"], ["hold-a", "hold-b"], record,
             fit_fn=lambda *args: calls.append(args),
             probe_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
         )
