@@ -359,7 +359,22 @@ def test_capture_composes_cognition_tap_exact_piece_streams_and_native_extractor
     assert runtime.store.logs[0][0] == "native_tokenwise_pair_capture"
     audit_text = json.dumps(runtime.store.logs[0][2])
     assert SOURCE not in audit_text
-    assert "vectors" not in audit_text
+    audit = runtime.store.logs[0][2]
+
+    def field_names(value):
+        if isinstance(value, dict):
+            for key, item in value.items():
+                yield key
+                yield from field_names(item)
+        elif isinstance(value, list):
+            for item in value:
+                yield from field_names(item)
+
+    assert not {"vectors", "pairs", "sender_vector", "receiver_vector", "receiver_rows"}.intersection(
+        field_names(audit)
+    )
+    assert audit["pair_vectors_persisted"] is False
+    assert audit["pair_record_persisted"] is False
     assert "token_ids" not in audit_text
 
 
