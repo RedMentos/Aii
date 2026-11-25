@@ -1871,3 +1871,15 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Full local Aii checkout is not mounted; no Android microphone, native audio model, Termux or Redmi proof. REDMI_UNVERIFIED / NOT_RELEASED. The earlier consented private device snapshot remains stale; no fresh relay receipt arrived in this run.
 - Next: finish integrated-regression readback, coordinate exact pin repair with Core/QA, then test held-out consented audio against persistence/no-predictor/shuffled/no-consent controls. The predictor remains SHADOW/opt-in; no product weight changes.
 
+
+
+## Research & Perception — Run 23 RAW EAR omission handoff (2026-11-25)
+
+**User action: keine Aktion nötig.** No microphone permission, Termux command, restart, update request, model/weight change or data mutation is required or authorized.
+
+- Draft [PR #2498](https://github.com/RedMentos/Aii/pull/2498) now exposes signed RAW EAR prediction error and routes omission magnitude into A4 novelty only. Commits: predictor `8839946f17973c1a7bd238a60e3173e3f6005815`, A4 consumer `68192953fb3f91163f1488eea095b2e396631dce`, tests `1d1e53d47424098c2b9a781b75d4b6f8c26cacb2`, research ledger R-162 `042ac79d4f378b773660018d316c73c0cd748bee`.
+- The new channel distinguishes omission (predicted acoustic change did not occur) from commission (observed change was under-predicted). Only SHADOW_MEASURED FINAL windows can contribute; A4 novelty is capped at 0.10. External interrupt and all other authority paths are unchanged.
+- LOCAL_LINUX CPython 3.13.5 formula-level reproduction PASS: signed error -0.968896, omission magnitude 0.968896, commission 0, previous positive-only excess error 0. This does not execute the repository module/consumer. Exact branch CI for the new head is NOT_YET_OBSERVED; full local module/consumer pytest NOT_RUN because no checkout is mounted and raw GitHub DNS fails.
+- Prior #2498 fastpath and consumer CI applies only to the earlier tested head; it is not evidence for the new omission changes. Existing Core staged/integrated audio source-pin failure remains open; exact pins must not be weakened.
+- Device/deployment: no microphone or phone receipt was used. Last available private snapshot is historical (2026-11-24) and reported auto-update enabled but runtime STOPPED_BY_USER at `8d93236c753f0194224c19edc7411d8d7082b1d6`; current installed SHA is unknown. REDMI_UNVERIFIED; NOT_RELEASED.
+- Next: exact-head RAW EAR CI, Core/QA source-pin rebind, held-out omission/no-predictor/shuffled/silence-noise tests, then independent review. No model or weight swap.
