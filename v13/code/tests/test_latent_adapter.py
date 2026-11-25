@@ -5,8 +5,9 @@ import numpy as np
 import pytest
 
 from v13.latent_adapter import (
-    LatentAdapterError, align_token_rows_by_char_span, build_native_receiver_input,
-    fit_adapter, project_event, project_rows, project_vector, save_adapter, load_adapter,
+    LatentAdapterError, _activation_vector_sha256, _token_pair_id,
+    align_token_rows_by_char_span, build_native_receiver_input, fit_adapter,
+    project_event, project_rows, project_vector, save_adapter, load_adapter,
 )
 
 SENDER_HASH = "a" * 64
@@ -31,8 +32,22 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
             z = rng.normal(size=2)
             x = z @ basis.T + rng.normal(scale=0.001, size=6)
             y = z @ target + np.asarray([0.2, -0.1, 0.3, 0.05]) + rng.normal(scale=0.001, size=4)
+            sender_vector = x.tolist()
+            receiver_vector = y.tolist()
+            sender_vector_sha256 = _activation_vector_sha256(sender_vector)
+            receiver_vector_sha256 = _activation_vector_sha256(receiver_vector)
+            pair_id = _token_pair_id(
+                source_id=source_id,
+                source_sha256=source_sha256,
+                token_position=sample,
+                source_span=spans[sample],
+                alignment_id=alignment_id,
+                alignment_coverage=1.0,
+                sender_vector_sha256=sender_vector_sha256,
+                receiver_vector_sha256=receiver_vector_sha256,
+            )
             rows.append({
-                "pair_id": f"{prefix}-pair-{group}-{sample}",
+                "pair_id": pair_id,
                 "source_id": source_id,
                 "source_sha256": source_sha256,
                 "token_position": sample,
@@ -40,8 +55,10 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
                 "alignment_method": "CHAR_SPAN_OVERLAP_V1",
                 "alignment_id": alignment_id,
                 "alignment_coverage": 1.0,
-                "sender_vector": x.tolist(),
-                "receiver_vector": y.tolist(),
+                "sender_vector": sender_vector,
+                "receiver_vector": receiver_vector,
+                "sender_vector_sha256": sender_vector_sha256,
+                "receiver_vector_sha256": receiver_vector_sha256,
             })
     if shuffled:
         values = [row["receiver_vector"] for row in rows]
@@ -242,6 +259,60 @@ def test_char_span_alignment_handles_different_tokenizer_segmentations():
     assert aligned[1]["sender_vector"] == pytest.approx([13.0 / 3.0, 0.0])
     assert [row["alignment_coverage"] for row in aligned] == [1.0, 1.0]
     assert len({row["alignment_id"] for row in aligned}) == 1
+
+
+def test_tokenwise_fit_rejects_activation_mutation_after_alignment():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=11)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=12)
+    train[0]["sender_vector"][0] += 0.25
+    with pytest.raises(LatentAdapterError, match="activation vector digest mismatch"):
+        fit_adapter(
+            train, holdout,
+            sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+            sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+            sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+            sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            sender_tokenizer_revision="sender-tokenizer-r1",
+            receiver_tokenizer_revision="tokenizer-r1",
+            rank=2, ridge=1e-5,
+        )
+
+
+def test_tokenwise_fit_rejects_rehashed_activation_with_stale_pair_id():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=11)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=12)
+    train[0]["sender_vector"][0] += 0.25
+    train[0]["sender_vector_sha256"] = _activation_vector_sha256(train[0]["sender_vector"])
+    with pytest.raises(LatentAdapterError, match="pair ID does not bind"):
+        fit_adapter(
+            train, holdout,
+            sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+            sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+            sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+            sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            sender_tokenizer_revision="sender-tokenizer-r1",
+            receiver_tokenizer_revision="tokenizer-r1",
+            rank=2, ridge=1e-5,
+        )
+
+
+def test_alignment_digest_changes_when_activation_rows_change():
+    train_a = make_aligned_tokenwise_pairs("train", 10, seed=11)
+    holdout_a = make_aligned_tokenwise_pairs("hold", 5, seed=12)
+    train_b = make_aligned_tokenwise_pairs("train", 10, seed=111)
+    holdout_b = make_aligned_tokenwise_pairs("hold", 5, seed=112)
+    kwargs = dict(
+        sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+        sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+        sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+        sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+        sender_tokenizer_revision="sender-tokenizer-r1",
+        receiver_tokenizer_revision="tokenizer-r1",
+        rank=2, ridge=1e-5,
+    )
+    adapter_a = fit_adapter(train_a, holdout_a, **kwargs)
+    adapter_b = fit_adapter(train_b, holdout_b, **kwargs)
+    assert adapter_a["alignment_sha256"] != adapter_b["alignment_sha256"]
 
 
 def test_char_span_alignment_rejects_uncovered_receiver_text():
