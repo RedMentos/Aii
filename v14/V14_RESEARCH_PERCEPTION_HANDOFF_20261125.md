@@ -2,7 +2,7 @@
 
 ## Result
 
-Draft PR [#2506](https://github.com/RedMentos/Aii/pull/2506), branch `research-perception/v14-native-input-bridge-20261125-run19`, head `c4b73ab2d792b4be6d4c673d23233f8fb07c9274`, stacked on Research/Perception #2503. Adds an executable typed bridge from Core's native selected-row extractor wrapper output to the existing Perception receiver input-embedding manifest builder.
+Draft PR [#2506](https://github.com/RedMentos/Aii/pull/2506), branch `research-perception/v14-native-input-bridge-20261125-run19`, current PR/branch head `7f33772b6434c3ec019562a48a3d77ca3b85ebaa` (code/test SHA `c4b73ab2d792b4be6d4c673d23233f8fb07c9274`), stacked on Research/Perception #2503. Adds an executable typed bridge from Core's native selected-row extractor wrapper output to the existing Perception receiver input-embedding manifest builder.
 
 ### Code and tests
 
