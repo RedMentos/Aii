@@ -11,3 +11,15 @@ Build on Linux:
 The Android ARM64 CI workflow cross-compiles this executable and uploads a review-only artifact. It is not automatically installed by the runtime updater. The staged operator fails closed until a separately reviewed binary is installed at `$HOME/v13/bin/native_latent_receiver`.
 
 The probe accepts source-bound B1/B2 tap vectors, uses llama_batch.embd -> llama_decode -> llama_get_embeddings_ith, and reports only dimensions, hashes, decode status, input-effect metrics and negative controls. Dimension mismatch is a hard refusal. Production routing, semantic-use proof and training authority remain false/zero.
+
+### M-RoPE / I-MRoPE embedding positions
+
+The pinned llama.cpp embedding-input path reads four position sections for
+M-RoPE and I-MRoPE models. In the pinned revision, `llama_batch_init()`
+allocates only one position per token, so the receiver now expands and fills
+the section-major `4 * rows` buffer before `llama_decode()`. This is a
+caller-side memory-layout correction for upstream issue
+[ggml-org/llama.cpp#28963](https://github.com/ggml-org/llama.cpp/issues/28963),
+not evidence of useful cross-model transfer. The native `--selftest` checks
+normal RoPE, M-RoPE, I-MRoPE, and invalid position counts without loading a
+model.
