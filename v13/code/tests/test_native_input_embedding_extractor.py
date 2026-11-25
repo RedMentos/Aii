@@ -108,6 +108,21 @@ print(json.dumps({
         self.assertEqual(result["model_sha256"], result["receipt"]["model_sha256"])
         self.assertEqual(result["extractor_binary_sha256"], result["receipt"]["extractor_binary_sha256"])
 
+    def test_idle_guard_is_required_and_invoked_before_native_process(self):
+        called = []
+        result = self._extract(prepare_idle=lambda: called.append("idle"))
+        self.assertEqual(result["status"], "COMPLETE")
+        self.assertEqual(called, ["idle"])
+        with self.assertRaises(NativeInputEmbeddingError):
+            extract_native_input_embedding_rows(
+                self.binary,
+                self.model,
+                "installed-model-rev-1",
+                [7, 12],
+                model_root=self.root,
+                expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
+            )
+
     def test_expected_model_manifest_hash_is_enforced(self):
         with self.assertRaises(NativeInputEmbeddingError):
             self._extract(expected_model_sha256="0" * 64)
