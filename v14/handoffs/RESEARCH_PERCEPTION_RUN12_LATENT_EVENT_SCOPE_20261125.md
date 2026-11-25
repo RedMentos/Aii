@@ -3,7 +3,7 @@
 **PR:** [#2496](https://github.com/RedMentos/Aii/pull/2496)  
 **Branch:** `research-perception/latent-event-scope-20261125-run12`  
 **Base:** #2489 head `314e4e651da54f8168508c0d0f2e8bac2ca8ed2e`  
-**Code-bearing head at checkpoint:** `c0422f69cba825994ac3e2cbac77d13dd31abfe0`  
+**Code-bearing head at checkpoint:** `a1d8fe6c82ffd4573d81ab69769d12dce50827a6`  
 **Final docs/board checkpoint head:** `cb7b94d800912a70786b5d1d533234c1c4bb4596`
 
 ## Why this change exists
@@ -20,9 +20,10 @@ Core's native receiver v3 currently accepts a sequence of token-aligned embeddin
   - `fit_from_tap_records()` explicitly produces `EVENT_POOLED_NONZERO_MEAN`.
   - `project_event()` projects one event-level vector.
   - `project_rows()` now rejects event-level adapters and accepts only `TOKENWISE` adapters.
+  - Tokenwise fitting additionally requires per-source `token_position` metadata with at least two contiguous rows starting at zero; duplicate, missing and gapped positions are refused.
   - `build_native_receiver_input()` constructs the receiver-v3 token-row payload only for a tokenwise adapter bound to the explicit receiver `*.input-embedding.v1` tap. It validates row/token count and tokenizer revision, delegates vector shape/hash and contiguous-position checks to the existing Python native receiver, returns no token IDs, and retains zero production/learning authority.
 - `v13/code/tests/test_latent_adapter.py`
-  - Adds scope isolation, tokenwise projection, native receiver contract and negative controls.
+  - Adds scope isolation, tokenwise projection, native receiver contract and negative controls, including missing/duplicate/gapped token-position cases.
 - `v13/code/tests/test_latent_tap_adapter.py`
   - Uses `project_event()` for the event-pooled persisted tap adapter and asserts multi-row projection is refused.
 - `v14/V14_RESEARCH_LEDGER.md`
@@ -30,9 +31,9 @@ Core's native receiver v3 currently accepts a sequence of token-aligned embeddin
 
 ## Tests and exact evidence
 
-- **LOCAL_LINUX isolated helper reproduction:** CPython 3.13.5, `py_compile` PASS; 5/5 isolated contract tests PASS. This is a local reproduction of the new scope/receiver-builder logic with a local receiver-validator stub, not the exact repository test files.
+- **LOCAL_LINUX isolated helper reproduction:** CPython 3.13.5, `py_compile` PASS; 10/10 isolated contract/position tests PASS. This is a local reproduction of the new scope/receiver-builder logic with a local receiver-validator stub, not the exact repository test files.
 - **Full local Aii checkout/tests:** NOT_RUN; no checkout is mounted in the execution environment. GitHub DNS/network access is unavailable from the local shell.
-- **Exact repository CI for #2496:** staged/integrated workflow was still IN_PROGRESS at the last poll; no PASS is claimed for this PR. The dedicated #2489 workflow is not present on the repository default branch, so it was not independently dispatched for this child branch. Final PR head #cb7b94d also has runtime-deployment integrity IN_PROGRESS at last poll.
+- **Exact repository CI for #2496:** staged/integrated workflow was still IN_PROGRESS at the last poll; no PASS is claimed for this PR. The dedicated #2489 workflow is not present on the repository default branch, so it was not independently dispatched for this child branch. Latest code head #a1d8fe6 has runtime-deployment integrity SUCCESS; staged/integrated regression remains IN_PROGRESS at last poll.
 - **Core receiver PR #2488 context:** its exact reported head `b8b43910a67a1b706be22e42f4e9cbcfa6de1fa6` has 17/17 check-runs SUCCESS, pinned llama.cpp Linux build/selftest PASS and Android arm64 cross-compile PASS. That is Core's receiver build evidence, not a native model-pair test for this adapter.
 - No GGUF was loaded by this run; no native sender/receiver pair, gradient, semantic task utility, retention, restart/rollback or Redmi measurement was performed.
 
