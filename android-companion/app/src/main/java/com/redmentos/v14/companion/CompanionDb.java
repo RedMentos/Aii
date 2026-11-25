@@ -1,5 +1,7 @@
 package com.redmentos.v14.companion;
 
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
