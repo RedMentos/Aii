@@ -1250,3 +1250,123 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Concrete V14 adaptation hypothesis (not yet implemented):** after the current source-verified temporal JEPA retrieval path is stable, train a small query-conditioned cue-utility head over existing numeric, provenance-safe cues: learned temporal latent distance, episode age/spacing, action-transition compatibility, outcome-profile compatibility and modality/event-type compatibility. For each training query, use a later committed T8 ActionOutcome to score how much each candidate episode improves a held-out temporal prediction relative to a query-only baseline; construct a future-aware soft target from current retrieval score + measured predictive utility, then train the future-blind cue scorer. Inference must never read the future outcome used for credit assignment. Keep the current latent-distance retriever as baseline and compare recency, random, shuffled-future-credit, single-cue and learned multi-cue variants at matched candidate/compute budgets. Split by session and source cohort; exclude query sources and all holdout windows; test delayed-outcome leakage, omission/censoring, temporal chunk diversity, retention, source forget, checkpoint/restart and rollback. A candidate may enter the B1/B2 SHADOW prompt only if its held-out utility beats the existing baseline; no action authority or native-body-weight change follows from retrieval.
 
 **Status:** FULL_ARXIV_HTML_REVIEWED / REPO_MAIN_REVISION_AND_CC_BY_NC_LICENSE_VERIFIED / SIMULATION_ONLY_PAPER_EVIDENCE / NO_REUSE / V14_CANDIDATE_PROPOSED / NO_ANDROID_PROOF. This entry does not claim FAR has been reproduced or that current V14 episodic recall already learns cue utility.
+
+
+## R-108 — Semantic end-of-turn prediction as a separate full-duplex signal (2026-11-24)
+
+**Primary source status:** Puneet Mathur and Dinesh Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791v1, submitted 2026-09-16: https://arxiv.org/abs/2609.35791 . The arXiv abstract and official project site were reviewed; the full paper text was not independently retrieved in this run, so this entry is **not** marked full-text reviewed and no peer-reviewed acceptance is claimed. Official project site: https://fd-vad.github.io/ .
+
+**Reported method:** FD-VAD makes a causal Continue/Stop decision from bounded audio windows rather than treating silence as semantic completion. The reported architecture is WavLM-base-plus (50 Hz features) → a two-layer modality adapter with temporal downsampling by four → Qwen2.5-0.5B-Instruct with LoRA (about 10.3M trainable parameters). It uses a 2.56 s window, 320 ms stride, last-chunk cross-entropy, confidence-gated endpoint commitment, and boundary-focused hard-negative sampling. The model card says the intended task is English end-of-turn detection, not general VAD; it recommends pairing the semantic head with a lightweight acoustic VAD gate.
+
+**Reported evidence and limits:** the official project site reports 0.832 chunk F1, 0.6% false-stop on incomplete chunks, 0.966 utterance accuracy on the authors' English Smart Turn test, and 0.853 TurnBench dev end-of-turn recall at FP 0.097. It reports 45.8 ms per 2.56 s window on one NVIDIA A100 and a 1,019 ms median commit latency in its TurnBench comparison. These are the authors' reported values, not independently reproduced V14 results. The paper is an arXiv submission; no peer-reviewed venue was established here. English-only training/evaluation and limited benchmark transfer do not establish German, overlap-heavy, noisy far-field or Android performance.
+
+**OSS, model and license audit:** official code repository [fd-vad/fd-vad](https://github.com/fd-vad/fd-vad), inspected at main revision `99112fc9cf6efbf80f556378d8e553d78a932300`, contains an MIT LICENSE (blob `66430db46e696ea2b258a4a4e0889402e233ae7e`). The [Hugging Face model card](https://huggingface.co/puneetUMD/fd-vad) labels the FD-VAD model/weights MIT; it lists WavLM-base-plus as MIT, Qwen2.5-0.5B-Instruct as Apache-2.0, and the derived Smart Turn dataset as BSD-2-Clause. It describes a 119 MB adapter and approximately 1.5 GB offline package including the base models. The code README and model card are not a proof of Android portability: the lockfile pins CUDA 12.4 PyTorch/Torchaudio, the latency benchmark hardcodes CUDA, and no Android/Termux ARM64 ABI/dependency closure was found. The repository's `configs/base.yaml` defaults to Zipformer and 24 kHz, while the WavLM path requires the separately configured 16 kHz setup; the exact config/checkpoint pairing needs care. No code, weights, datasets or dependencies were imported or downloaded.
+
+**V14 implication:** acoustic activity, prosody, non-speech events and semantic turn completion must remain separate signals. A future optional semantic endpointer may inform the full-duplex turn controller, but must not replace RAW EAR, force ASR transcripts into the acoustic path, suppress user barge-in, or become an action/learning authority. The 0.5B LLM plus WavLM stack and 1.5 GB offline bundle are not a Redmi recommendation without a separately measured resource/quality comparison and explicit experimental approval. A smaller distilled head may be a future research question, not an assumed drop-in replacement.
+
+**Status:** PREPRINT_ABSTRACT_AND_OFFICIAL_PROJECT_SITE_REVIEWED / PAPER_FULL_TEXT_NOT_REVIEWED / MIT_CODE_AND_MODEL_CARD_LICENSES_VERIFIED / A100_ONLY_REPORTED_LATENCY / ENGLISH_TASK / NO_ANDROID_PROOF / NO_IMPORT_OR_DOWNLOAD / RESEARCH_ONLY.
+
+
+## R-108 addendum — full-text review completed (2026-11-24)
+
+The full arXiv HTML for Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech* (arXiv:2609.35791v1, submitted 2026-09-16), was read through its method, data, results, latency and conclusion sections. This supersedes the earlier R-108 note that only the abstract/project site had been reviewed; the paper remains an arXiv preprint, not a verified peer-reviewed publication.
+
+- Exact reported setup: WavLM-base-plus (frozen, 16 kHz, 50 Hz) → two-layer adapter with temporal downsampling ×4 → Qwen2.5-0.5B-Instruct with LoRA rank 16; 10.3M trainable parameters. The causal window is 2.56 s with 320 ms stride. Only the terminal chunk is supervised; a confidence gate can require K consecutive Stop decisions, and training oversamples ±2 chunks around boundaries.
+- Training/evaluation: 63,386 Smart Turn v3.1 English training clips (156 h); 1,000 held-out test clips; training on two A100 GPUs. Reported chunk F1 is 0.832 with 0.6% false-stop on incomplete chunks. The paper's utterance table reports complete 0.972, incomplete 0.969 and overall 0.976, which is internally inconsistent because the aggregate exceeds both class values; do not use that aggregate without clarification. On TurnBench dev it reports EOT recall 0.853 at FP 0.097.
+- Latency must not be collapsed into one number: 45.8 ms per 2.56 s window is measured on one A100; the TurnBench comparison table reports 1,019 ms median commit latency, while a separate operating-point paragraph reports 190 ms median endpoint delay at τ=0.9, K=1 with 2.0% false interruptions. These are different conditions/definitions and are not a Redmi estimate.
+- Official code repo [fd-vad/fd-vad](https://github.com/fd-vad/fd-vad) is MIT; the [HF card](https://huggingface.co/puneetUMD/fd-vad) labels the adapter/weights MIT and lists WavLM MIT, Qwen2.5-0.5B Apache-2.0, Smart Turn data BSD-2-Clause. The adapter is 119 MB and the complete offline package about 1.5 GB. The repo's pinned CUDA 12.4 PyTorch/Torchaudio install and CUDA-only latency script do not establish Android/Termux ARM64 support. No artifacts were downloaded or imported.
+- V14 implication remains research-only: semantic completion is distinct from acoustic VAD and RAW EAR. Preserve the acoustic stream and source-bound transcript provenance; a future optional semantic endpointer must use confidence-gated decisions and must not become the only interruption/permission authority.
+
+**Status:** FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / OFFICIAL_REPO_AND_MODEL_CARD_LICENSES_VERIFIED / A100_ONLY_LATENCY / NO_ANDROID_PROOF / NO_IMPORT_OR_DOWNLOAD.
+
+## R-109 — Intent-aware streaming turn state and barge-in (2026-11-24)
+
+**Primary source:** Feiyang Chen et al., *HiThink Turn: An Intent-Aware Turn-Taking Control Module for Full-Duplex Dialogue*, arXiv:2609.34096v1, submitted 2026-09-28: https://arxiv.org/abs/2609.34096 . The full arXiv HTML was read (method, state definitions, training, experiments and conclusion). It is a preprint; no peer-reviewed venue or official HiThink Turn code/checkpoint release was established.
+
+- The paper separates three axes rather than treating end-of-turn as a single binary: audio validity (noise/incomplete/complete), user interaction intent (response/backchannel/interruption), and system playback state (speaking/listening). It trains on 240 ms chunks with boundary-aware truncation and a minimal intent-sufficient prefix for interruption.
+- Reported model/training: Qwen3-ASR-1.7B fine-tuned with LoRA rank 32; 7,633 h English/Chinese audio; two epochs on eight H100 GPUs, sequence length 4,096, bf16. The paper reports Full-Duplex-Bench aggregate 0.933, mean model/end-to-end latency 160/625 ms, interruption response success 89%→98%, and mean stop latency 3.380→1.322 s. These are paper-reported results, not V14 reproduction.
+- The upstream [Qwen3-ASR code repo](https://github.com/QwenLM/Qwen3-ASR) is Apache-2.0 and the [Qwen3-ASR-1.7B-hf model card](https://huggingface.co/Qwen/Qwen3-ASR-1.7B-hf) labels that base checkpoint Apache-2.0. This does **not** establish a license for a HiThink-specific fine-tune, which was not located. The 1.7B starting model and H100-scale training are not a Redmi candidate.
+- V14 research implication: the future duplex controller should represent playback state, response intent, backchannel and interruption separately from acoustic activity and semantic completeness. Current A4 prosody/speaker evidence does not implement these learned intent labels. Keep the distinction as an open contract/research item; do not infer user intent from RMS/VAD or adopt the 1.7B model.
+
+**Status:** FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / UPSTREAM_BASE_CODE_AND_BASE_MODEL_APACHE2_VERIFIED / HITHINK_CHECKPOINT_LICENSE_NOT_FOUND / H100_TRAINING / NO_ANDROID_PROOF / NO_IMPORT_OR_DOWNLOAD.
+
+
+## R-110 — Yggdrasil: Tree-Routed Recurrent Experts for State Tracking and Fast CPU Inference
+- Primary: arXiv:2611.29954v1, 2026-11-23; full HTML architecture, CPU protocol, results and limitations reviewed; preprint.
+- Evidence: enwik8 configuration stores 195.4M parameters / 681.3 MB but reads 329.5k active parameters per token; reports 6.7 μs/token and 1.540 bits/byte on one Intel Xeon Gold 6426Y core. The hg38 configuration reports 5.8 μs/base and 1.567 bits/base. These are state/compression tasks, not generative LLM results.
+- Limits: timing uses AVX-512 VNNI on Sapphire Rapids; no ARM64/Android benchmark. The repository's portable/SIMDe path is not the measured fast path. No separate checkpoint/weight license identified.
+- OSS: CosmoNaught/yggdrasil commit ce1252970b9f0f51259514944a6ba857b716cbc3; code MIT; paper CC BY 4.0.
+- V14: candidate for a compact recurrent state/attention/goal tracker, not B1/B2/C3 replacement. An ARM port must separately measure stored bank bytes, active bytes/read, cache misses and latency.
+
+## R-111 — Fork-JEPA: measured action-effect supervision from same-state forks
+- Primary: arXiv:2611.28350v1, 2026-11-20; full HTML method, experiments, ablations and limitations plus project site reviewed; preprint. Project site says code/checkpoints are coming soon; no code license/reusable implementation yet.
+- Evidence: execute two actions from one restored simulator state and train on the measured difference between their futures. On the regime task, cross-zone success at horizon 10 rises from 35% (LeWM) to 68%; 1,024 fork pairs outperform adding 1.2M behavior steps in that setup. Across TwoRoom/PushT/Cube, gains are not uniform; PushT is within seed spread.
+- Limits: locally linear action-response assumption; only sampled action directions; simulator restoration and one-step pairs; approximate hardware resets and multi-block forks remain untested. arXiv distribution license is non-exclusive, not a code license.
+- V14: use same-state action forks only in a reversible sandbox/test app. Never execute alternate actions against arbitrary real Android apps or side-effectful user data. Require held-out action-effect readout and downstream planning utility, not latent loss alone.
+
+## R-112 — JEPA-Tuner: prediction in the receiving policy's native guidance interface
+- Primary: arXiv:2611.29096v1, 2026-11-21; full HTML method, simulation tables, real-robot results and limitations reviewed; preprint. Project site has demos; no official code/weight repository or separate license found.
+- Method: adapter and predictor operate at the VLA's own native guidance prefix; future guidance is predicted from current guidance, state and intervening actions, then supervised by the downstream action objective. This is stronger than cosine-aligning unrelated embeddings.
+- Evidence: LIBERO asynchronous success at delays 10/15: SmolVLA 76.8/72.1%, pi0.5 85.4/58.2%. Eight SO-101/ALOHA real-robot task/lead conditions used 20 trials each; highest outright in five, tied in two; boundary step change vs naive async reduced 48.1–73.4% on SO-101 and 20.4–57.6% on ALOHA.
+- Limits: two robot platforms, small-scale fine-tuning, 450M and 4.14B backbones; not Android or independent multi-model latent coupling. arXiv distribution license only.
+- V14: B3 must expose the recipient's real conditioning interface and optimize receiver task utility. No receiver + no held-out utility gain = no accepted latent coupling.
+
+## R-113 — Skill-JEPA: planner-aligned latent action chunks
+- Primary: arXiv:2611.26825v1, 2026-11-19; full HTML method/results reviewed; preprint.
+- Evidence: state-conditioned VAE encodes short action chunks as skills; JEPA predicts their effects and planner samples from the same Gaussian prior. Across three JEPA models/four planners, mean success at 80-step goals rises 42%→62%; AntMaze two-cell success 0.4%→38%.
+- Limits: simulated robot tasks and continuous actions, no Android/discrete OS-action test. tcouso/Skill-JEPA pyproject metadata declares MIT, but no LICENSE file was found; confirm before vendoring. GPU/research dependency stack.
+- V14: possible later macro-action representation over already-approved Android intents; decoder must be restricted to an explicit allowlist and per-action consent/audit.
+
+## R-114 — Revisiting Continual Learning in Language Models: A Three-Interface Diagnosis
+- Primary: arXiv:2611.30151v1, 2026-11-23; arXiv comments list NeurIPS 2026 main; full HTML methods/results/compute/limitations reviewed.
+- Key distinction: trained head = deployed performance; linear probe on frozen features = recoverability; classifier-free backbone diagnostic = representation separability/drift. The paper shows interface-dependent BWT/FWT and a negative algorithmic stability/plasticity relation.
+- JLT recovers 96–99% of the joint-training gap for replay/distillation methods, but task-adaptive JLT uses the evaluated task's training split and is explicitly an oracle-style diagnostic, not deployable performance. A post-hoc replay-buffer variant is separately measured.
+- Compute: eight RTX A5000 24 GB GPUs, usually three seeds. Code kkt94/RevisitingCL commit 056194b7a57bfab48f0cf704c49445ba7b011351, MIT; paper CC BY 4.0.
+- V14: every real adapter/weight-learning run should report deployed organ quality, frozen-feature probe recoverability, backbone representation diagnostics, old-task retention and restart. Probe recovery is not deployed capability. This is algorithmic, not biological synaptic plasticity.
+
+## R-115 — CoLiR: contrastive-likelihood replay for continual VLM RL
+- Primary: arXiv:2611.25989v1, 2026-11-19; full HTML method, experimental setup, results and ablations reviewed; preprint, paper CC BY 4.0; no official code repo found.
+- Method: rank historical prompts by likelihood increase on final-policy correct responses and likelihood decrease on initial-policy incorrect responses. Reuses logged responses; only two cross-policy likelihood evaluations, no new response generation; at most 80 prompts/task.
+- Evidence: Qwen3-VL 2B/4B/8B on five MRCL tasks; best MFN/MTA at all three scales and up to +9.99 points MFN over CPO at 8B. Authors also corrected answer leakage, malformed data, duplicates and scoring.
+- Limits: large VLM/RL setup, not mobile online learning; requires correct/incorrect labels and token log-likelihoods.
+- V14: candidate only if C3 exposes trustworthy token log-probabilities and outcome labels. Do not add phone-side generation calls to imitate it.
+
+## R-116 — MNN-Pocket-0.3B: compact on-device model candidate
+- Primary: MNN Team, arXiv:2611.12311v1, 2026-11-09; technical-report abstract and official instruction-model card reviewed; preprint, not independent validation.
+- Official card: ~300M parameters, 28 layers, 2 KV heads, bilingual Chinese/English, 32K deployment context; INT4 W4A16 QAT MNN package 173 MB. Author-reported decode at 512-token context: 466 tok/s iPad Pro M5 Metal; 138 tok/s Snapdragon 8 Gen 5 OpenCL (251 CPU). Its 11-benchmark average is 50.00 vs LFM2.5-350M 31.28, but MATH500 is 35.4 vs Qwen3-0.6B 45.2.
+- License: official model card declares Apache-2.0; MNN engine Apache-2.0. No Redmi Note 10 Pro/Snapdragon 732G TTFT/RSS/quality evidence.
+- V14: possible isolated C3 experiment only. Compare same prompts, TTFT, prefill/decode, PSS/RSS, peak memory, arithmetic, instruction following, English quality, 20-turn stability and rollback. No download/swap; separate explicit approval required for experiment and production swap.
+
+## R-117 — mzCache: Android KV-cache memory management
+- Primary: arXiv:2609.01338 and HongseungYu/mzcache artifact repository. Full paper PDF/HTML could not be retrieved; abstract and repository/evaluation guide only, so no full-paper-read claim.
+- Artifact reports MobiCom 2026 and MIT code license; Android memory-pressure callbacks, chunked KV offload/restore and cache eviction. Reported 2.1–5.5x TTFT improvement over partial offload is on rooted OnePlus 12 / Galaxy S25+ class devices (Snapdragon 8 Gen 3/Elite, Adreno 750/830, 12 GB).
+- Limit: rooted high-end hardware/OpenCL-SVM path; not Redmi Note 10 Pro (Snapdragon 732G/Adreno 618) or a drop-in Termux library. No code imported.
+- V14: study memory-pressure/chunked-restore design only; any port needs ARM64/Adreno-618 compatibility and real Redmi TTFT/PSS/thermal tests.
+
+## R-118 — Adaptive Guard: Android dynamic quantization + ART GC co-design
+- Primary: IEEE GAISS 2026 conference abstract, DOI 10.1109/GAISS66401.2026.11779656; conference 2026-10-28–30, added to IEEE Xplore 2026-11-16. Abstract only; full paper, source code and license not found.
+- Abstract claims 73% fewer OOM crashes vs static FP16, 78% fewer GC-related latency spikes, 81.7% KV-cache hit on 4 GB devices and sub-500 ms median token latency on Llama-3 1B/Gemma 2B/Phi-2, using ActivityManager trim callbacks, FP16/INT8/INT4 switching and GC-pause interlock.
+- V14: Android-runtime hypothesis only. Require full methodology, workload/device matrix, quality deltas and source before adoption; do not infer Redmi performance.
+
+### 2026-11-24 synthesis
+- JEPA: Fork-JEPA contributes measured same-state action comparisons; JEPA-Tuner shows prediction should be in the recipient's native conditioning space and tied to downstream utility; Skill-JEPA aligns planner sampling with learned action chunks. Complementary, not interchangeable.
+- Continual learning: three-interface diagnosis separates head mismatch from representation drift; CoLiR ranks replay from existing likelihoods. Neither proves persistent on-device gradient learning.
+- Biological plasticity: no new reviewed study in this pass establishes biological/synaptic plasticity on-device; R-114 uses algorithmic stability/plasticity.
+- Android/memory: Yggdrasil's small active read set costs a 681 MB stored bank and AVX-512-specific timing; mzCache/Adaptive Guard are not Redmi-proven; MNN-Pocket is a candidate but has no Snapdragon 732G measurements.
+- No paper/model was downloaded, integrated or activated. These are research hypotheses, not development/release success.
+
+
+## R-119 — Palimpsa: Bayesian metaplasticity for in-context associative memory
+- Primary: Palimpsa, arXiv:2602.09075v4 (2026-06-03); accepted/published in PMLR 306, ICML 2026. Full arXiv HTML reviewed. The method adds a per-state precision/importance trace and a learned forgetting gate to a linear-attention associative memory, approximating Bayesian metaplasticity.
+- Evidence scope: reported experiments include 8-seed MQAR settings, 170M/760M language-model variants and a 2.7B Mamba2 fine-tune. Gains are workload-dependent: longer-context retrieval improves in some settings, while shorter RULER ranges can regress; the 760M Palimpsa variant is reported over 3× slower than Mamba2. Fast-kernel results are GPU-specific, not Android measurements.
+- OSS/license: `djo1996/Palimpsa` README displays an MIT badge, but the root LICENSE path is absent (404); dependencies include PyTorch/Flash Linear Attention/custom accelerator kernels. Weight license and ARM64/Bionic closure are not established. No code, weights or dependencies reused.
+- V14 hypothesis: a tiny diagonal precision/importance state may stabilize local A4/JEPA adapter plasticity, but only as a separately measured candidate. Compare fixed-rate SGD, diagonal-precision scaling, no-forgetting and bounded forgetting on source/session-disjoint outcomes; record gradients, numeric deltas, update cost, old-session retention, restart and rollback.
+- Status: FULL_ARXIV_HTML_REVIEWED / ICML_2026 / REPO_LICENSE_TEXT_UNVERIFIED / GPU_DEPENDENT / NO_REUSE.
+
+## R-120 — Memorized mistake-gated continual learning
+- Primary: Aaron Pache & Mark C. W. van Rossum, “Mistake gating leads to energy and memory efficient continual learning”, arXiv:2604.14336v1 (2026-04-15); *Neural Computation*, online publication 2026-11-05, DOI 10.1162/NECO.a.1602. Full arXiv HTML reviewed.
+- Method: update on a sample when it is currently misclassified or was misclassified at least once before. The paper reports 50–80% fewer updates on MNIST, about 12% of baseline update steps on EMNIST, ~20% on blurred MNIST, and roughly halved updates in a pretrained/incremental CIFAR-10 setting with plasticity restricted to later blocks. Pure mistake gating is less robust; the memorized variant retains past mistakes.
+- Limits: supervised classification, stable sample identity, one-sample updates; batching reduces the advantage, and training from scratch on the more complex CIFAR-10 setup did not save updates. This is not evidence for unsupervised JEPA, open-ended streaming identity or Android efficiency.
+- OSS/license: `vanrossumlab/mistake-gating26` currently contains only a short README; no implementation or LICENSE file was found. No code or data reused.
+- V14 hypothesis: compare always-update, pure error-gating and memorized error-gating on deterministic, source-bound A4 outcomes. Require stable event keys, source/session-disjoint holdouts, confirmed targets (not self-assessed model errors), update-count/gradient/parameter-diff evidence, old-session retention, bounded replay storage, restart and rollback. No private raw conversation is eligible without separate local consent.
+- Status: FULL_ARXIV_HTML_REVIEWED / JOURNAL_AHEAD_OF_PRINT / REPO_NO_CODE_NO_LICENSE / SUPERVISED_ONLY / NO_REUSE.

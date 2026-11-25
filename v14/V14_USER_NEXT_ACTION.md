@@ -1,3 +1,47 @@
+# Research & Perception — latest combined checkpoint (2026-11-24, run 18)
+
+**Current release-development base:** gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
+
+**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch research-perception/v14-a4-audio-source-outcomes-current-20261124-run16, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Code commit b08238d53a441aeb2aa650b97c0ac8cbda39b5f8; regression-test commit 4b036157337debaa2a6db2cb70e9cc5f142dcdef. The PR head includes the subsequent handoff, ledger and next-action readback commits.
+
+- Added audio_consent_generation_scope() in v13/code/v13/audio_voice_cues.py. It opens one provider revocation lease, consumes the source-bound PCM16 RAW EAR window and A4/A5 packet, calls a Runtime-supplied messages_factory (where Core can compose B1/B2/C4 context), and yields the C3 runner iterator while the same lease remains held. The iterator is closed on context exit, early cancellation/close, or exception. It does not itself grant microphone access or action/learning authority.
+- Added test_audio_generation_scope_holds_provider_lease_through_full_runner_iterator to v13/code/tests/test_audio_speaker_evidence.py. The test checks that the provider's revocation lock remains held through message composition and both generated tokens, and that revocation proceeds only after the generation scope exits.
+- **LOCAL_LINUX isolated contract harness: PASS** — py_compile plus two concurrency assertions (full iterator and early close) passed. This harness used stubs for Store/RAW EAR internals; it is not the full repository test.
+- **Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN** — no repository checkout is mounted; git ls-remote to GitHub failed in this runtime due DNS/network resolution. Exact project test is committed but awaits CI.
+- **Exact #2472 head CI: QUEUED** after the new code/test commits; no exact-head CI pass is claimed. The previous head's controller record-only guard and staged/integrated workflows failed before feature assertions because the Recovery Builder pins an older guard SHA. That pin chain is Core/QA-owned and must be rebound, not bypassed.
+- **Important integration gap:** Core PR #2478's current v13/code/v13/runtime.py (blob 7a803bae06e3bca606ffb7cd3103b74148c8cbf8) still calls runner.generate(...) directly at line 651 and does not import the new scope. Thus the new adapter is available and tested in isolation, but the production Runtime has **not yet** wired one lease across B1/B2/C4 composition and the complete C3 iterator. Core must wrap that path in with audio_consent_generation_scope(...) and iterate the yielded stream inside the context; Perception has not edited Core-owned Runtime files.
+- PR #2472 remains **OPEN / DRAFT / NOT_RELEASED**. No code was installed; no new authenticated Redmi receipt was obtained. REDMI_UNVERIFIED. The last available consented device snapshot remains historical and does not prove this branch installed. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation was performed.
+
+**Research:** R-108 now has a full-text review of FD-VAD (arXiv:2609.35791v1); R-109 records the full-text review of HiThink Turn (arXiv:2609.34096v1). Both support separating acoustic activity, semantic completeness, response intent and playback state. FD-VAD's 0.5B+WavLM stack is ~1.5 GB and CUDA-oriented; HiThink fine-tunes 1.7B on eight H100s. Neither is an approved Redmi model candidate. No download/import/model swap.
+
+**Next internal action:** Core integrates the lease scope in the actual Runtime around A4/A5 packet consumption, B1/B2/C4 context composition and full C3 iterator; then run the exact audio lease test plus staged/integrated regression on one head. Perception will handle any failure in its own files; Core/QA owns the recovery/stage/deployer source-pin repair.
+
+**User action:** none required.
+**Run started:** 2026-11-24 21:37:30 Europe/Berlin. **Completed:** 2026-11-24 21:48:05 Europe/Berlin.
+---
+
+# Research & Perception — latest combined checkpoint (2026-11-24, run 17)
+
+**Current base:** release-development `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, code-bearing SHA `8df6a16fd5dced71a2643eae141f9f204fc66855` (subsequent branch commits are documentation/handoff only), base `8d93236c753f0194224c19edc7411d8d7082b1d6`. This remains OPEN / DRAFT / NOT_RELEASED.
+
+- A4 source-bound outcome and RAW EAR speaker/prosody work remain on #2472. The exact attention.py SHA-256 is pinned in the RECORD_ONLY guard while the previous pin is preserved.
+- The RAW EAR temporal filter now also rejects backwards interval starts, not just non-advancing ends. Equal-start cumulative windows and ordinary overlap remain valid. Rejected input leaves the previous ordering baseline unchanged. Source blob: `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`; regression test blob: `6f16afa97a04d4f0da9ab37a95cad38a25413fce`; comparator workflow is pinned to that exact blob.
+- Commits: source `c5a68bafed30365eec7719c56f190b76f9061ea9`; test `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`; workflow/readback head `8df6a16fd5dced71a2643eae141f9f204fc66855`.
+- **LOCAL_LINUX isolated reproduction:** 5 assertions PASS. **Full local Aii suite:** BLOCKED / NOT_RUN (no checkout mounted; previous GitHub DNS resolution failed).
+- **Exact #2472 head CI:** queued/pending at last readback (deployment 2178, controller guard 631, privacy 1544, staged/integrated 4678, release-event integration 3001). Do not inherit #2471's focused PASS as proof for this new #2472 head.
+- Earlier #2471 temporal regression workflow passed on Python 3.13 and 3.14; its interval change is now ported into #2472. Keep #2471 open until #2472 exact-head CI is green and independently reviewed, then close it as superseded. Do not merge stale #2433.
+
+**Device/deployment:** latest available consented private V13OBS #115 snapshot is historical (2026-11-24 09:28:11 UTC): auto-update enabled and Runtime/Dashboard UP_TO_DATE at `8d93236`, but AI STOPPED_BY_USER/model STOPPED and zero valid B1/B2 offers. No new receipt was obtained. This PR is not installed; REDMI_UNVERIFIED / NOT_RELEASED. No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or user-data mutation was performed.
+
+**Research:** R-108 records FD-VAD as a separate semantic end-of-turn research candidate. Only the arXiv abstract, official project site, MIT code repository and HF model card were reviewed; full paper text was not retrieved. Its 0.5B + WavLM stack, ~1.5 GB bundle and CUDA/A100-only reported latency are not a Redmi recommendation. No download or import.
+
+**Next:** inspect exact #2472 CI and logs; fix Perception-owned failures only. Core owns staged composer and dependent source-pin rebinding. After #2472 is green and independently reviewed, close #2433 and #2471 as superseded. Keep AudioRecord OFF until QA's signed companion, lifecycle, revocation and zeroization gates pass.
+
+**User action required: NONE.** No manual Termux command or device update is needed.
+
+---
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
@@ -1772,3 +1816,72 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception run 19 — verified handoff (2026-11-24)
+
+### Code and exact evidence
+- Repo: RedMentos/Aii. Perception PR #2472 remains DRAFT / NOT_RELEASED. Code/test head before this documentation append: f7ee15ec19d46e8e17aeb695ad0a2ee6fede83a6; base: 8d93236c753f0194224c19edc7411d8d7082b1d6.
+- Fixed two Perception-owned CI failures: the audio-generation-scope fixture now passes event["event_id"] rather than the Store.event() envelope dict; the RAW EAR vs WebRTC/libfvad workflow now pins the exact current audio_voice_cues.py blob 5d47c48467025199d77ba82974bb2ecea8c65b3d.
+- Exact-head GitHub Actions at f7ee15ec: 9 SUCCESS, 2 FAILURE, 1 IN_PROGRESS, 1 SKIPPED. Perception-focused A4 source-bound outcomes, RAW EAR consent revocation, prosody→attention, RAW EAR/libfvad comparator, optional NumPy, FASTDIAR, privacy scan and runtime-deployment-integrity checks are SUCCESS. Core same-turn B1/B2/C4/C3 was still IN_PROGRESS at last poll.
+- The two failures converge on the controller-guard pin: recovery builder expects SHA-256 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9, while the Perception branch guard hashes to 9c901c4e5e3d3fd17c113a8e9458bcb32a30646593483202f1f472763435fa96. Staged/integrated result: 18 failed, 235 passed, 10 skipped, 2 errors, 44 subtests; migration PARTIAL is downstream of the same guard failure.
+- Branch comparison: Perception guard contains original + new attention.py pins; Core #2478 contains the original attention pin plus ActionLearn variants. Core was given exact hashes and asked to combine both sets, then rebind recovery/stage/deployer pins bottom-up. Perception did not edit Core-owned runtime/recovery files.
+- Core #2478 still has no import/call to audio_consent_generation_scope() in its current runtime branch. A cross-lane handoff asks Core to wrap the full C3 iterator and keep output commit/append/latewatch inside the lease. The adapter is not yet a connected production Runtime path.
+
+### Environment and device
+- LOCAL_LINUX: Python 3.13.5, pytest/numpy/torch installed; no repository .git checkout present. git ls-remote failed, so the full repository suite could not be run locally.
+- LOCAL_LINUX isolated contract reproduction: the envelope-as-event_id shape reproduced “missing event/generation/source identity”; event["event_id"] passed; five negative controls (empty identity, bad source hash, missing consent receipt, >1 s interval, NaN feature) were rejected. The surrounding contracts were stubbed; this is not a full Runtime integration test.
+- CI is not local Linux and is not Android proof.
+- Latest available authenticated private snapshot: RedMentos/Aiiii V13OBS #115 at 2026-11-24 09:28Z: installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, auto_update=true, runtime/dashboard UP_TO_DATE, AI STOPPED_BY_USER, autostart=false, model process STOPPED. Later #1904 note reports no newer owner-read receipt. No UPDATE_REQUEST, CHAT_SEND, shell action, restart or model change was sent. Current live state is REDMI_UNVERIFIED.
+- RELEASE-SHA: NOT_RELEASED. A GitHub push is not deployment.
+
+### Canon boundary and next actions
+- A0–A5: caller-supplied PCM16 RAW EAR and synthetic acoustic/attention paths remain; this PR does not create AudioRecord, microphone permission, MediaProjection, AccessibilityService or real Android capture.
+- A4 source-bound attention outcomes are focused-CI-green on this exact head, but full staged consumer is blocked by the shared controller-guard pin chain.
+- B3 remains symbolic/diagnostic; no trained cross-organ projector/receiver utility or native hidden-state exchange is proven. World/Self/Memory/JEPA weight promotion, numeric master-weight change, retention/restart proof, Android voice and UI-control remain unaccepted.
+- Research ledger R-110–R-118 records Yggdrasil, Fork-JEPA, JEPA-Tuner, Skill-JEPA, three-interface continual-learning diagnosis, CoLiR, MNN-Pocket-0.3B, mzCache and Adaptive Guard with dates/evidence/license caveats.
+- Next owned action: after Core supplies a stable combined guard and green recovery/stage/deployer chain, recompose #2472 on that exact head; then verify the full C3 iterator lease in the real Runtime consumer. Do not patch Core-owned source pins in parallel.
+- Next whole-system research action: test Fork-JEPA-style action-effect forks only in a reversible sandbox; use JEPA-Tuner's receiver-native objective for B3 utility; add three-interface retention readouts to actual weight-learning tests.
+- Model candidate: MNN-Pocket-0.3B INT4/MNN is a possible isolated C3 comparison (Apache-2.0; 173 MB; published speed only on iPad Pro M5 / Snapdragon 8 Gen 5). No Snapdragon 732G TTFT/RSS/quality evidence; no download or swap made. No approval requested until a valid device comparison can be run.
+- Nutzeraktion: keine Aktion nötig. Kein Termux-Befehl, kein Modell-Download/Swap, keine Gerätefreigabe und kein Update-Request erforderlich.
+
+
+### Late CI / cross-lane poll — 2026-11-24
+- Perception PR #2472 latest docs head remains db326f32b2cd2c0149920c3b26aa1646202fe1ff. Its fresh docs-triggered CI batch now shows the controller record-only guard failed, staged/integrated and Core same-turn still in progress; the A4/RAW EAR focused jobs remain successful. Do not claim a full PR pass.
+- Core PR #2478 advanced to 7e055b4b56267ea99ebd9bc6efacce3649d853a9. Its guard blob 3068f3647d89a9f67c2ea5ff782c316c7f1fe7bb still contains only the original attention.py pin 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739; Perception's current attention pin 58e68ce... is still absent. The new Core recovery builder expects guard SHA-256 4abc789470ede189afc7efb73c64b669c66a76374642e285bb680e296255c289.
+- Core exact-head CI has failures in controller guard, phone offer receipt evidence, Lab Age/WebView truth, private owner-read bootstrap, staged/integrated, coordinated source contracts, two-checkout updater migration and native latent receiver; Core same-turn and Core audio/arithmetic Runtime remain in progress. No green exact-head result is available.
+- Core runtime still directly iterates runner.generate(messages,...) at runtime.py line 651 and does not call audio_consent_generation_scope(). This remains a required integration step after Core's exact source/pin chain is stable.
+- The exact guard comparison and requested combined-pin repair were posted to PR #2478. Perception did not modify Core-owned files. Do not rebase #2472 until #2478 has a stable green exact head and the Perception attention pin is present.
+
+
+### Late poll #2 — 2026-11-24
+- Perception PR #2472 docs head db326f32b2cd2c0149920c3b26aa1646202fe1ff completed its exact workflow batch: 9 SUCCESS, 3 FAILURE, 1 SKIPPED. The three failures are controller guard, staged/integrated and Core same-turn. All three stop on the same stale base recovery-builder expectation 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9 versus the Perception guard bytes; the staged suite still reports 18 failed, 235 passed, 10 skipped, 2 errors, 44 subtests. Focused A4/RAW EAR jobs remain green.
+- Core PR #2478 latest head is dd4d0d6916c0506acadd2ba518d1edeb19ad08c0, still DRAFT. Its current guard blob ec2219b6fb3e40e9b53cbe5586b7a8054d0f6e0c still pins only the original attention.py SHA 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739; the Perception attention pin 58e68ce... remains absent. Core's recovery builder now expects guard SHA-256 786a538141315febd63df4fbff4a781b5d19eae2a1e032d8dfa95630618e506c.
+- Core CI on the previous head 7e055b4 had 10 failures (guard, phone offer receipt, Lab Age/WebView, owner-read bootstrap, staged, source contracts, two-checkout migration, native latent receiver and same-turn/audio runtime), 6 success, 1 skipped, 1 cancelled. The current dd4d0d head has a fresh matrix queued/in progress; no result is claimed yet.
+- Core runtime still has no audio_consent_generation_scope() import/call and directly iterates runner.generate at runtime.py line 651.
+- Perception remains blocked from safe recomposition until Core combines the attention pin with its ActionLearn variants and produces a green exact recovery/stage/deployer chain. No Core-owned source was modified.
+
+## Research & Perception — run 26 (2026-11-25)
+
+### Code / actual consumer seam
+- PR #2472 branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, based on release HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Added optional `consent_lease: AudioConsentLease | None` to `audio_consent_generation_scope()`. Code commit `9e3c5719a4dfbc70f3869aa7a3ac7e541bb736ee`, test commit `c655b1e75c6a1db6cbbfa181d7675c7939c05fb5`, exact source blob `ceef8d8a2f26ec3f4a447ae8037ca51027d133af`. If no lease is supplied, the old owned-lease path is unchanged. If supplied, the function validates Runtime/source/generation/receipt/temporal-state/VAD-stream/active/thread identity and borrows it through `nullcontext`; it does not reacquire the non-reentrant provider guard. The outer Runtime scope remains the owner.
+- Regression covers valid borrowed lease across PCM16 → A5/A4 → complete C3 iterator/close, no consent-check/guard re-entry, mismatch rejection before PCM ingress, and the existing owned path.
+- Core #2478 already wraps the complete Runtime turn/C3 iterator in its own lease and currently does not import this helper. Do not add a duplicate lease. Pass the existing handle only if the helper is used for a distinct A4/A5 composition seam.
+
+### Exact evidence
+- Local Linux isolated contract harness: PASS (borrowed reuse, callback non-reentry, source/generation/receipt/state/active negatives, owned path and iterator close). This is an isolated contract harness, not a full Aii checkout.
+- Exact GitHub CI after code/test head: FASTDIAR 2/2 PASS (Python 3.13/3.14); A4 outcomes 2/2 PASS; RAW EAR prosody 2/2 PASS; optional NumPy 2/2 PASS; consent-revocation 1/1 PASS; runtime-deploy-integrity 2/2 PASS; privacy scan PASS.
+- The first RAW EAR/WebRTC/libfvad comparator run failed only because its workflow still pinned the prior audio source blob. Rebound the exact V3 blob to `ceef8d8a2f26ec3f4a447ae8037ca51027d133af` in workflow-pin commit `b54354ebd95d066a637303ce852831c2549300e9`. New comparator run `45535816776`: 2/2 PASS (Python 3.13/3.14).
+- Remaining exact-head failures are outside the lease change: controller guard and staged/integrated stop at Core's recovery builder expecting the old guard SHA `86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9`; Core same-turn also fails on that chain. #2482/#2483 are the explicit stacked recovery-pin repairs. No hash gate was weakened.
+- Full local Aii suite: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS unavailable). Exact CI is not local Linux or Android evidence.
+
+### Research
+- R-119 Palimpsa: full arXiv HTML / ICML 2026 paper reviewed; Bayesian metaplastic precision/forgetting is a conceptual candidate, not a mobile code import. Public repo README has an MIT badge but no root LICENSE text; heavy FLA/PyTorch/GPU dependencies, no reuse.
+- R-120 Mistake Gating: full arXiv HTML reviewed; journal publication 2026-11-05, DOI 10.1162/NECO.a.1602. Memorized mistake gating reduces updates in supervised classification, but relies on stable sample identity and single-sample updates; public repo contains only a README and no license/code, no reuse.
+- Candidate experiment only: compare all-update vs pure vs memorized source-bound prediction-error gating on deterministic A4 outcomes, with stable event keys, session-disjoint holdout, parameter/update-count evidence, retention, restart and rollback. Not implemented or activated.
+
+### Product / device boundary
+- Release branch HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`: 22/22 observed workflow runs SUCCESS. Latest authenticated V13OBS #115 (2026-11-24 09:28 UTC) reports this SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE; AI STOPPED_BY_USER, model process STOPPED.
+- Last stored C3 turn is not a new test: 6.30 s total / 2.05 s TTFT / 1.87 s prefill / 358 admitted tokens / 7 generated; correctness UNKNOWN. B1/B2 each had two failed attempts and zero valid offers. No 20-turn acceptance.
+- PR #2472 remains DRAFT / NOT_RELEASED; no deployment, no Redmi test, no AudioRecord/microphone capture, no model/weight/permission/data mutation. User action: NONE.

@@ -1,3 +1,15 @@
+## Research & Perception — run 17: RAW EAR interval ordering and semantic endpoint research (2026-11-24)
+
+- Current-base PR #2472 is at code-bearing SHA `8df6a16fd5dced71a2643eae141f9f204fc66855` (later commits on the branch are documentation/handoff only), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Added a source-local ordering baseline for RAW EAR intervals: start_ms cannot move backwards within a source/generation even if end_ms advances; equal-start cumulative windows and ordinary overlap remain valid. Rejected windows do not mutate the accepted ordering baseline. The comparator workflow now pins the exact updated source blob `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`.
+- Exact source/test/workflow commits: `c5a68bafed30365eec7719c56f190b76f9061ea9`, `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`, `8df6a16fd5dced71a2643eae141f9f204fc66855`.
+- LOCAL_LINUX isolated reproduction: 5 assertions PASS. Full local Aii suite BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS previously failed.
+- Exact #2472 head CI was QUEUED/PENDING at readback (run IDs 45461037584, 45461037614, 45461037620, 45461038016, 45461037991). Earlier #2471 focused temporal workflow passed on Python 3.13/3.14, but is not inherited proof for the new #2472 head.
+- R-108 reviews FD-VAD as a separate semantic endpoint candidate: arXiv abstract/project site/code/model card only; full paper not read. MIT code/model card; WavLM MIT; Qwen2.5 Apache-2.0; Smart Turn BSD-2. The 0.5B + WavLM ~1.5 GB package and A100/CUDA evidence do not establish Android suitability. No import/download.
+- PR #2472 remains DRAFT / NOT_RELEASED. No microphone capture, Android model inference, Redmi test or device update. Latest available private receipt predates this work and only establishes historical auto-update enabled at 8d93236; current deployment is unverified.
+- Next: inspect exact #2472 CI; Core owns any staged composer/recovery/stager/deployer pin chain failures. After independent review and green exact-head checks, close #2433/#2471 as superseded. AudioRecord remains OFF pending QA signature/lifecycle/revocation/zeroization.
+
+---
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
@@ -1328,3 +1340,23 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+## Research & Perception — run 16: current-base A4 / RAW EAR rebase (2026-11-24 18:23 UTC)
+
+- PR #2472 is a current-base rebase of #2433 onto gpt6 HEAD 8d93236c753f0194224c19edc7411d8d7082b1d6. The old #2433 head was 43 ahead / 82 behind; its stale V14 docs were not transplanted.
+- Transplanted A4 source-bound outcome, RAW EAR voice/speaker evidence, optional FASTDIAR adapter, tests and three targeted workflows. No AudioRecord provider, raw PCM persistence, speaker identity, model swap or learning-authority change.
+- RECORD_ONLY guard now allows the exact current attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e while preserving the old pin. No hash bypass.
+- Full local Aii pytest BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Prior #2433 focused passes are historical only. Exact #2472 CI pending; no Redmi test.
+- #2433 stays open temporarily; do not merge it. Close as superseded only after #2472 current-base CI and independent review are green.
+- Next: exact Python 3.13/3.14, controller guard, A4, FASTDIAR, RAW EAR, consent/privacy, deployment and staged/integrated checks; then signed Android provider only after QA consent/revocation/zeroization gates.
+
+
+## Research & Perception — run 26 (2026-11-25)
+
+- A4/RAW EAR candidate #2472 now supports borrowing an already-held Runtime audio-consent lease in `audio_consent_generation_scope()`; it validates the exact lease scope and never reacquires the provider guard. Code `9e3c5719a4dfbc70f3869aa7a3ac7e541bb736ee`, tests `c655b1e75c6a1db6cbbfa181d7675c7939c05fb5`, comparator pin correction `b54354ebd95d066a637303ce852831c2549300e9`.
+- Focused exact-head CI: FASTDIAR 2/2, A4 outcomes 2/2, RAW EAR prosody 2/2, optional NumPy 2/2, consent revocation 1/1, runtime deploy integrity 2/2, privacy scan PASS; RAW EAR/WebRTC/libfvad comparator rerun 2/2 PASS.
+- Staged/integrated and controller/Core same-turn still fail before downstream assertions at the Core-owned recovery builder's stale controller-guard SHA. #2482/#2483 remain the stacked source-pin repair path; no Core-owned file changed.
+- Core #2478 already holds one Runtime-wide lease across the complete C3 iterator and does not import the helper. This change prevents lock re-entry if a distinct A4/A5 composition consumer later uses it; it does not add a user-visible runtime capability today.
+- Full local Aii suite BLOCKED/NOT_RUN (no checkout/DNS); Android/Termux/Redmi tests NOT_RUN. Latest available V13OBS #115 (2026-11-24 09:28 UTC) reports 8d93236 installed, updater enabled, AI STOPPED_BY_USER; no new device operation.
+- Research ledger adds R-119 Palimpsa (metaplastic precision; GPU-heavy / repo license text unverified) and R-120 memorized mistake gating (supervised classification; repo lacks code/license). Both remain NO_REUSE; V14 experiment hypothesis is recorded, not activated.
+- Next: let Boss/Core integrate #2482/#2483, then re-evaluate whether the actual Runtime A4/A5 seam needs the borrowed scope. Keep the full audio/voice Canon open; no AudioRecord proof.

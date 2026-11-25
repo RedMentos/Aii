@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import math
 import struct
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from functools import lru_cache
 import threading
 from statistics import median
@@ -27,6 +27,17 @@ from .audio_perception_bridge import _require_current_consent, _validate_runtime
 from .percept_admission import Percept, admit
 from .common import dumps, now
 from .contracts import validate
+
+
+def _load_teacher_ear_validator():
+    """Load the optional ASR teacher only when a source-bound result is supplied."""
+    try:
+        from .audio_teacher_ear import validate_teacher_ear_result
+    except ModuleNotFoundError as exc:
+        if exc.name not in {f"{__package__}.audio_teacher_ear", "audio_teacher_ear"}:
+            raise
+        return None
+    return validate_teacher_ear_result
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -687,10 +698,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                                speaker_embeddings: dict | None = None,
+                                teacher_result: dict | None = None,
+                                teacher_opt_in: bool = False,
+                                teacher_transcript_consent: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
+    if type(teacher_opt_in) is not bool or type(teacher_transcript_consent) is not bool:
+        raise ValueError("teacher opt-in flags must be literal booleans")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
@@ -725,6 +741,34 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             consent_receipt=consent_receipt,
         )
         audio_segment = audio_packet["segments"][0]
+        teacher_ear = None
+        teacher_ear_status = "NOT_SUPPLIED"
+        if teacher_result is not None:
+            # Preserve the teacher-specific consent checks even if the optional
+            # validator package is absent; absence must never weaken permission.
+            if lease_active is not True:
+                raise PermissionError("current audio consent lease is required for teacher output")
+            if teacher_opt_in is not True or teacher_transcript_consent is not True:
+                raise PermissionError("local teacher use and transcript use require separate opt-ins")
+            teacher_validator = _load_teacher_ear_validator()
+            if teacher_validator is None:
+                # The teacher is an optional add-on. Keep the acoustic path alive,
+                # but never admit unvalidated teacher text when its validator is absent.
+                teacher_ear_status = "UNAVAILABLE_MODULE"
+            else:
+                teacher_ear = teacher_validator(
+                    teacher_result,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=segment["start_ms"],
+                    end_ms=segment["end_ms"],
+                    finality=finality,
+                    consent_active=lease_active,
+                    teacher_opt_in=teacher_opt_in,
+                    transcript_consent=teacher_transcript_consent,
+                )
+                teacher_ear_status = teacher_ear["status"]
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
         if speaker_embeddings is not None:
@@ -732,6 +776,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    current_chunk_sha256=raw["source_ref"]["sha256"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                 )
             except SpeakerEvidenceError as exc:
@@ -837,6 +882,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
+            "teacher_ear_status": teacher_ear_status,
+            "teacher_ear_authority": teacher_ear["authority"] if teacher_ear else "NONE",
+            "teacher_ear_word_count": teacher_ear["word_count"] if teacher_ear else 0,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -885,7 +933,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
             summary, candidate.consent, candidate.final, candidate.priority,
         )
-        c3 = admit((candidate,), token_budget)
+        percepts = [candidate]
+        if teacher_ear is not None:
+            percepts.append(Percept(
+                teacher_ear["teacher_source_id"], "audio",
+                teacher_ear["start_ms"], teacher_ear["end_ms"],
+                teacher_ear["summary"], True, teacher_ear["finality"] == "FINAL",
+                candidate.priority,
+            ))
+        c3 = admit(tuple(percepts), token_budget)
         result = {
             "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
             "packet": audio_packet,
@@ -893,6 +949,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
+            "teacher_ear": teacher_ear,
+            "teacher_ear_status": teacher_ear_status,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
@@ -900,3 +958,92 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
         return result
+
+
+@contextmanager
+def audio_consent_generation_scope(
+    runtime, pcm, *, runner, messages_factory, cancel, deadline,
+    sample_rate, start_ms, event_id, generation_id, source_id, consent_receipt,
+    consent_check=None, consent_guard=None, token_budget=512, finality="FINAL",
+    voice_backend="python", speaker_embeddings=None, teacher_result=None,
+    teacher_opt_in=False, teacher_transcript_consent=False,
+    temporal_state=None, vad_stream=None, runner_kwargs=None,
+    consent_lease: AudioConsentLease | None = None,
+):
+    """Hold one revocation lease across RAW EAR, A4, body/context composition and C3.
+
+    Core should put the complete B1/B2/C4 composition in messages_factory and
+    consume the returned runner iterator before leaving this context. The
+    provider lease remains held until iterator exhaustion, explicit close, or
+    an exception. The callback receives the structured A4/A5 result so the
+    Runtime can preserve source refs and add the bounded C3 admission.
+
+    If Runtime already owns the provider lease for the complete turn, pass that
+    exact ephemeral handle as consent_lease. It is validated against Runtime,
+    source, generation, receipt, temporal state and VAD stream without re-entering
+    the provider guard. The outer Runtime scope remains its sole owner.
+    """
+    if not callable(messages_factory):
+        raise TypeError("audio generation requires a Runtime messages factory")
+    generate = getattr(runner, "generate", None)
+    if not callable(generate):
+        raise TypeError("audio generation requires a runner with generate()")
+    if runner_kwargs is None:
+        runner_kwargs = {}
+    if type(runner_kwargs) is not dict:
+        raise TypeError("audio runner kwargs must be a dictionary")
+
+    if consent_lease is None:
+        if not callable(consent_check) or not callable(consent_guard):
+            raise TypeError("owned audio consent scope requires consent_check and consent_guard")
+        lease_scope = audio_consent_lease(
+            runtime, source_id, generation_id, consent_receipt,
+            consent_check, consent_guard, temporal_state, vad_stream,
+        )
+    else:
+        if not isinstance(consent_lease, AudioConsentLease) or not consent_lease.matches(
+            runtime, source_id, generation_id, consent_receipt,
+            temporal_state=temporal_state, vad_stream=vad_stream,
+            require_state=True,
+        ):
+            _reset_audio_temporal_state(
+                runtime, source_id, generation_id, temporal_state, vad_stream,
+            )
+            raise PermissionError("a live source-bound audio consent lease is required")
+        # Runtime already owns the provider lock. Borrow, never reacquire it.
+        lease_scope = nullcontext(consent_lease)
+
+    with lease_scope as lease:
+        audio_result = consume_pcm16_voice_window(
+            runtime, pcm,
+            sample_rate=sample_rate,
+            start_ms=start_ms,
+            event_id=event_id,
+            generation_id=generation_id,
+            source_id=source_id,
+            consent_receipt=consent_receipt,
+            consent_check=consent_check,
+            consent_guard=consent_guard,
+            token_budget=token_budget,
+            finality=finality,
+            temporal_state=temporal_state,
+            vad_stream=vad_stream,
+            consent_lease=lease,
+            voice_backend=voice_backend,
+            speaker_embeddings=speaker_embeddings,
+            teacher_result=teacher_result,
+            teacher_opt_in=teacher_opt_in,
+            teacher_transcript_consent=teacher_transcript_consent,
+        )
+        messages = messages_factory(audio_result)
+        if type(messages) is not list:
+            raise ValueError("audio messages factory must return a message list")
+        iterator = generate(messages, cancel, deadline, **runner_kwargs)
+        if not hasattr(iterator, "__iter__"):
+            raise TypeError("audio runner generate() must return an iterator")
+        try:
+            yield audio_result, iterator
+        finally:
+            close = getattr(iterator, "close", None)
+            if callable(close):
+                close()
