@@ -11,6 +11,24 @@ import sys
 CODE = Path(__file__).resolve().parents[1]
 
 
+def test_guard_source_pins_use_their_declared_hash_algorithms():
+    spec = importlib.util.spec_from_file_location(
+        'arithmetic_guard',
+        CODE / 'scripts/integrated_arithmetic_guard_candidate_20261121.py',
+    )
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+
+    runtime = (CODE / 'v13' / 'runtime.py').read_bytes()
+    arithmetic = (CODE / 'v13' / 'arithmetic_reflex.py').read_bytes()
+
+    assert hashlib.sha256(runtime).hexdigest() == guard.SOURCE_SHA256_PINS['v13/runtime.py']
+    assert guard.git_blob_sha1(arithmetic) == guard.SOURCE_GIT_BLOB_PINS['v13/arithmetic_reflex.py']
+    assert hashlib.sha256(runtime + b'\\0').hexdigest() != guard.SOURCE_SHA256_PINS['v13/runtime.py']
+    assert guard.git_blob_sha1(arithmetic + b'\\0') != guard.SOURCE_GIT_BLOB_PINS['v13/arithmetic_reflex.py']
+
+
+
 def test_actual_staged_arithmetic_and_existing_broker_contracts(tmp_path):
     frozen = ('runtime.py', 'store.py', 'operator.py', 'broker.py', 'contracts.py', 'focal.py', 'world.py')
     before = {name: hashlib.sha256((CODE / 'v13' / name).read_bytes()).hexdigest() for name in frozen}

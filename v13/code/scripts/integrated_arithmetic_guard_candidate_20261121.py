@@ -9,8 +9,13 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-SOURCE_PINS = {
+# These source pins intentionally use two different, explicit algorithms:
+# the arithmetic module is pinned by Git blob SHA-1; Runtime is pinned by
+# raw-file SHA-256. Never compare a 64-hex SHA-256 value with git_blob_sha1().
+SOURCE_GIT_BLOB_PINS = {
     "v13/arithmetic_reflex.py": "b721b769157b3df3936752419c5b93bed78bc347",
+}
+SOURCE_SHA256_PINS = {
     "v13/runtime.py": "1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47",
 }
 
@@ -29,11 +34,17 @@ def _replace(raw: bytes, old: bytes, new: bytes, label: str) -> bytes:
 def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, bytes]:
     code_dir = Path(code_dir).resolve(strict=True)
     staged_root = Path(staged_root).resolve(strict=True)
-    for relative, expected in SOURCE_PINS.items():
+    for relative, expected in SOURCE_GIT_BLOB_PINS.items():
         source = code_dir / relative
         if source.is_symlink() or not source.is_file():
             raise ValueError("arithmetic source missing or unsafe: " + relative)
         if git_blob_sha1(source.read_bytes()) != expected:
+            raise ValueError("arithmetic source changed; review a new overlay: " + relative)
+    for relative, expected in SOURCE_SHA256_PINS.items():
+        source = code_dir / relative
+        if source.is_symlink() or not source.is_file():
+            raise ValueError("arithmetic source missing or unsafe: " + relative)
+        if hashlib.sha256(source.read_bytes()).hexdigest() != expected:
             raise ValueError("arithmetic source changed; review a new overlay: " + relative)
 
     arithmetic_path = staged_root / "v13/arithmetic_reflex.py"
