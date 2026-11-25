@@ -19,7 +19,7 @@ All numeric values are BOOT/RESEARCH-BOOT priors from the blueprint, not measure
 import hashlib
 import json
 import math
-from .common import dumps
+from .common import dumps,now
 from .contracts import packet
 from .plasticity import LR_KEYS
 
@@ -291,15 +291,27 @@ class Neuromod:
         if detail is not None:extra['detail']=detail
         return self.s.add_packet('LearningTrace',packet('LearningTrace','N10_NEUROMOD',event_id,self.s.generation_id,refs or [],
                                  path_id=path,activity=clamp(activity),eligibility=SLOW_DECAY,authority=authority,**extra))
-    def signal(self,event_id,path=None,source_class='internal_crosscheck',finality='FINAL',safety_veto=False,irreversible=False,rollback_available=False,refs=None,**channels):
+    def _signal_packet(self,event_id,path=None,source_class='internal_crosscheck',finality='FINAL',safety_veto=False,irreversible=False,rollback_available=False,refs=None,**channels):
         if source_class not in SOURCE_WEIGHT:raise ValueError('Unbekannte Quellenklasse: '+str(source_class))
         ch={k:clamp(v,-1.,1.) for k,v in channels.items() if k in CHANNELS}
         if len(ch)!=len(channels):raise ValueError('Unbekannter Modulator-Kanal')
         extra=({'path_id':path} if path else {})|({'irreversible':True} if irreversible else {})|({'rollback_available':True} if rollback_available else {})
-        return self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','N10_NEUROMOD',event_id,self.s.generation_id,refs or [],
+        return packet('ModulatorPacket','N10_NEUROMOD',event_id,self.s.generation_id,refs or [],
             epistemic_evidence=max(0.,ch.get('evidence_gain',0.)),human_correction=max(0.,ch.get('human_correction',0.)),
             task_success=max(0.,ch.get('task_success',0.)),resource_cost=max(0.,ch.get('cost_error',0.)),safety_veto=bool(safety_veto),
-            channels=ch,source_class=source_class,finality=finality,**extra))
+            channels=ch,source_class=source_class,finality=finality,**extra)
+    def signal(self,event_id,path=None,source_class='internal_crosscheck',finality='FINAL',safety_veto=False,irreversible=False,rollback_available=False,refs=None,**channels):
+        return self.s.add_packet('ModulatorPacket',self._signal_packet(event_id,path,source_class,finality,
+            safety_veto,irreversible,rollback_available,refs,**channels))
+    def signal_in_transaction(self,connection,event_id,path=None,source_class='internal_crosscheck',finality='FINAL',
+                              safety_veto=False,irreversible=False,rollback_available=False,refs=None,**channels):
+        """Atomically insert an N10 modulator into a caller-owned Store.tx (e.g. A4 outcome + receipt)."""
+        if connection is None or not getattr(connection,'in_transaction',False):
+            raise ValueError('signal_in_transaction needs an active Store transaction')
+        p=self._signal_packet(event_id,path,source_class,finality,safety_veto,irreversible,rollback_available,refs,**channels)
+        connection.execute("INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                           (p['packet_id'],'ModulatorPacket',p['event_id'],p['brain_generation_id'],dumps(p),now()))
+        return p
     # -- gate -------------------------------------------------------------------------------------------
     def _age_p(self,kind,p):
         if self.age is None:return 1.

@@ -1,0 +1,92 @@
+name: V14 A4 source-bound attention outcomes
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/neuromod.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_attention.py"
+      - "v13/code/tests/test_attention_outcome_receipt_v14.py"
+      - ".github/workflows/v14-attention-source-bound-outcomes.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/neuromod.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_attention.py"
+      - "v13/code/tests/test_attention_outcome_receipt_v14.py"
+      - ".github/workflows/v14-attention-source-bound-outcomes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-attention-source-bound-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  attention-outcomes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Report exact Perception source pins for Core
+        run: |
+          echo "HEAD=$(git rev-parse HEAD)"
+          python - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+          names = (
+              "v13/code/v13/attention.py",
+              "v13/code/v13/neuromod.py",
+              "v13/code/v13/audio_voice_cues.py",
+              "v13/code/v13/audio_speaker_evidence.py",
+              "v13/code/scripts/record_only_controller_guard_20261116.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
+              "v13/code/scripts/stage_integrated_candidate.py",
+              "v13/code/scripts/activate_termux_recovery.py",
+              "v13/code/scripts/termux_runtime_recovery.sh",
+              "v13/code/scripts/termux_one_command.sh",
+              "v13/code/v13/runtime_deploy.py",
+          )
+          for name in names:
+              print(f"{name} sha256={sha256(Path(name).read_bytes()).hexdigest()}")
+          import re
+          recovery = Path("v13/code/scripts/termux_runtime_recovery_candidate_20261112.py").read_text()
+          needle = "control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',"
+          start = recovery.find(needle)
+          if start < 0:
+              raise SystemExit("recovery candidate guard pin not found")
+          match = re.search(r"[0-9a-f]{64}", recovery[start:start + 300])
+          if not match:
+              raise SystemExit("recovery candidate guard hash not found")
+          expected = match.group(0)
+          actual = sha256(Path("v13/code/scripts/record_only_controller_guard_20261116.py").read_bytes()).hexdigest()
+          print(f"CORE_RECOVERY_GUARD_PIN expected={expected} actual={actual} matches={expected == actual}")
+          PY
+      - name: Install minimal CPU test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 prompt-toolkit==3.0.52
+      - name: Compile A4 attention, source store and regression modules
+        run: python -m py_compile v13/code/v13/attention.py v13/code/v13/neuromod.py v13/code/v13/store.py v13/code/tests/test_attention.py v13/code/tests/test_attention_outcome_receipt_v14.py
+      - name: Run durable receipt, source provenance, Attention and Neuromod regressions
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q -s tests/test_attention_outcome_receipt_v14.py tests/test_attention.py tests/test_neuromod.py tests/test_neuromod_authority_live.py
+      - name: Scan changed public content for secrets and private identifiers
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
