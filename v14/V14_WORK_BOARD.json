@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T09:44:18.752Z",
+  "updated_at": "2026-11-25T09:48:13.474Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,21 +196,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated A3 predictor helper 8/8 PASS; CI synthetic A3→A4/PerceptPacket consumer pending on PR #2494; full local Aii suite BLOCKED/NOT_RUN; Redmi provider/real visual sequences NOT_VERIFIED",
+      "proof_environment": "LOCAL_LINUX isolated A3 predictor helper 8/8 PASS; exact CI synthetic A3→A4/PerceptPacket consumer 55/55 frame ingress and 67/67 temporal suite on Python 3.13/3.14; source-lineage 39/39 both; staged/integrated blocked by Core vision.py source pin; full local Aii suite NOT_RUN; Redmi real visual provider NOT_VERIFIED",
       "next_step": "Core/Integrator: recompose #2465 current vision.py source-lifecycle pin and integrate #2470 → #2486 → #2494 on one exact SHA; rerun staged/integrated/migration/consumer. Perception: after the shared gate, measure the session-local predictor on explicitly consented real visual sequences with source/session-disjoint, codec, brightness and camera controls. Keep A4 gain 0.15 unchanged until those controls pass; continue other Canon paths.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T09:44:18.752Z",
+      "last_checkpoint": "2026-11-25T09:48:13.474Z",
       "latest_candidate_pr": {
         "pr": 2494,
-        "head_sha": "c9e60d3f05a9285c1ae82bb2419c2e55effa2545",
+        "head_sha": "6e6a7a24256bb8318073b8352c9fcbe89558982f",
         "tested_code_sha": "c9e60d3f05a9285c1ae82bb2419c2e55effa2545",
         "base_sha": "a4cc431aaed9afce5de8d6c69d664a264040c7f7",
-        "state": "OPEN_DRAFT_STACKED_ON_2486_EXACT_CI_PENDING",
-        "ci": "LOCAL_LINUX_HELPER_8_OF_8_PASS_CP313; EXACT_GITHUB_WORKFLOWS_STARTED; PARENT_2486_FOCUSED_58_OF_58_AND_54_OF_54_PY313_PY314; PARENT_STAGED_INTEGRATED_CORE_SOURCE_LIFECYCLE_PIN_BLOCKED",
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_AND_INTEGRATED_CORE_COMPOSER_BLOCKED",
+        "ci": "EXACT_HEAD_6E6A7A2: FRAME_INGRESS_55_OF_55_PY313_AND_314; TEMPORAL_CALIBRATION_CONSUMER_67_OF_67_PY313_AND_314; VISION_SOURCE_LINEAGE_39_OF_39_PY313_AND_314; OFFLINE_RUNTIME_DEPLOYMENT_PY311_AND_314_PASS; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_1_FAILURE; BOTH_SHARED_FAILURES_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY; MIGRATION_PARTIAL_NOT_UPDATED",
         "code_commit_sha": "c9e60d3f05a9285c1ae82bb2419c2e55effa2545",
-        "branch_head_at_readback": "c9e60d3f05a9285c1ae82bb2419c2e55effa2545"
+        "branch_head_at_readback": "6e6a7a24256bb8318073b8352c9fcbe89558982f"
       },
-      "proof": "PR #2494 adds a consent-scoped 16x16 online LMS predictor to A3 tile-delta temporal evidence. Pre-update MAE is compared with persistence; numeric gradient and parameter delta are reported; the predictor resets on session/consent/projector boundaries. A4/PerceptPacket receive SHADOW_ONLY telemetry; the 0.15 gain and action/truth authority remain unchanged. LOCAL_LINUX isolated helper 8/8 PASS, py_compile PASS; synthetic 120-step MAE 0.01350 vs 0.10000 persistence, orthogonal-pattern retention +0.00397. Exact PR CI pending; no real visual data, Redmi proof, persistent weights or release."
+      "proof": "PR #2494 adds a consent-scoped 16x16 online LMS predictor to A3 tile-delta temporal evidence. Pre-update MAE is compared with persistence; gradient and parameter delta are reported; state resets on session/consent/projector boundaries. A4/PerceptPacket receive SHADOW_ONLY telemetry; the 0.15 gain and action/truth authority remain unchanged. LOCAL_LINUX isolated helper 8/8 PASS, py_compile PASS; synthetic 120-step MAE 0.01350 vs 0.10000 persistence, orthogonal-pattern retention +0.00397, 10k updates 1054.3ms and 9824-byte Python state/stream. Exact CI: frame ingress 55/55 and temporal consumer 67/67 on Python 3.13/3.14; source-lineage 39/39 on both; offline/runtime-deploy PASS. Staged 19 failures and integrated 1 failure remain the Core-owned unsupported vision.py source pin; migration PARTIAL. No real visual data, Redmi proof, persistent weights or release."
     },
     {
       "id": "V14-007",
@@ -1195,7 +1195,7 @@
     {
       "id": "R-140",
       "topic": "V-JEPA-LM counterfactual supervision and mobile-sized A3 prediction-error probe",
-      "status": "FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / LICENSES_AUDITED / NO_REUSE / LOCAL_SYNTHETIC_HELPER_8_OF_8",
+      "status": "FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / LICENSES_AUDITED / NO_REUSE / LOCAL_SYNTHETIC_HELPER_8_OF_8 / FOCUSED_CI_PASS / CORE_COMPOSITION_BLOCKED",
       "primary": "Kim et al., arXiv:2611.17831v1 (2026-11-13); kkt94/Llama-V-JEPA-LM",
       "next": "After #2465 source-lifecycle composition, evaluate the A3 predictor on explicitly consented real visual sequences with source/session-disjoint and pixel/codec/brightness/camera controls; no A4 gain or persistent threshold promotion from synthetic data."
     }
@@ -1376,18 +1376,18 @@
       "next": "Core recompose #2465 vision.py pin; then integrate #2470/#2486. Perception needs consented real frames for calibration; no synthetic threshold promotion."
     },
     "perception_run11_20261125": {
-      "timestamp": "2026-11-25T09:44:18.752Z",
+      "timestamp": "2026-11-25T09:48:13.474Z",
       "owner": "Research & Perception",
       "branch": "research-perception/v14-a3-online-prediction-shadow-20261125-run11",
       "pr": 2494,
       "parent_pr": 2486,
       "code_head": "c9e60d3f05a9285c1ae82bb2419c2e55effa2545",
       "behavior": "A3_16x16_ONLINE_LMS_NEXT_TILE_DELTA; SOURCE_SESSION_CONSENT_SCOPED; A4_AND_PERCEPTPACKET_SHADOW_READOUT; A4_GAIN_UNCHANGED; NO_PERSISTENT_WEIGHTS",
-      "local_linux": "ISOLATED_CP313_HELPER_8_OF_8_PASS; PY_COMPILE_PASS; SYNTHETIC_120_STEP_MAE_0.01350_VS_PERSISTENCE_0.10000; OLD_PATTERN_RETENTION_DELTA_PLUS_0.00397; 10000_UPDATES_1054.3MS",
-      "exact_ci": "IN_PROGRESS_AT_CHECKPOINT; PR_2494_FOCUSED_CONSUMER_AND_COMPILE_PENDING; PARENT_2486_FOCUSED_TEMPORAL_58_OF_58_AND_FRAME_INGRESS_54_OF_54_ON_PY313_PY314; PARENT_STAGED_INTEGRATED_BLOCKED_BY_CORE_VISION_PY_SOURCE_PIN",
+      "local_linux": "ISOLATED_CP3135_HELPER_8_OF_8_PASS; PY_COMPILE_PASS; SYNTHETIC_120_STEP_MAE_0.01350_VS_PERSISTENCE_0.10000; OLD_PATTERN_RETENTION_DELTA_PLUS_0.00397; 10000_UPDATES_1054.3MS; PYTHON_STATE_9824_BYTES_PER_STREAM",
+      "exact_ci": "FRAME_INGRESS_55_OF_55_PY313_AND_314; TEMPORAL_CALIBRATION_CONSUMER_67_OF_67_PY313_AND_314; SOURCE_LINEAGE_39_OF_39_PY313_AND_314; OFFLINE_RUNTIME_DEPLOYMENT_PY311_AND_314_PASS; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_1_FAILURE; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY; MIGRATION_PARTIAL_NOT_UPDATED",
       "device": "NO_FRESH_PRIVATE_RECEIPT; LAST_V13OBS_115_2026-11-24T09:28Z_INSTALLED_8D93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_NATIVE_RESIDENCY_UNAVAILABLE; REDMI_UNVERIFIED",
       "release": "NOT_RELEASED",
-      "next": "Poll exact PR #2494 CI; Core/Integrator recompose #2465 strict vision.py lifecycle chain; then evaluate on explicitly consented real source/session-disjoint visual sequences."
+      "next": "Core/Integrator recompose #2465 strict vision.py source-lifecycle chain; then integrate #2470/#2486/#2494 on one exact SHA and rerun staged/integrated/migration/consumer. Perception next requires explicitly consented real source/session-disjoint visual sequences before any A4 promotion."
     }
   },
   "qa_latest_checkpoint": {
