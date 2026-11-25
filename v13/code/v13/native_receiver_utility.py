@@ -76,7 +76,7 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count):
     if (not isinstance(token_scores, list) or len(token_scores) != target_count
             or any(type(x) not in (int, float) or not math.isfinite(float(x)) or float(x) > 1e-7 for x in token_scores)):
         raise NativeReceiverUtilityError("target token log-probabilities are invalid")
-    return {
+    native_data = {
         "schema": NATIVE_SCHEMA, "execution_kind": kind, "environment": env,
         "llama_cpp_revision": _id(value.get("llama_cpp_revision"), "native.llama_cpp_revision"),
         "binary_sha256": _sha(value.get("binary_sha256"), "native.binary_sha256"),
@@ -86,6 +86,12 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count):
         "decode_status": 0, "native_input_consumed": True,
         "llama_version": _id(value.get("llama_version"), "native.llama_version")[:120],
     }
+    if env in {"TERMUX_ANDROID", "REDMI"}:
+        native_data["device_execution_receipt_sha256"] = _sha(
+            value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
+        native_data["device_runtime_build_id"] = _id(
+            value.get("device_runtime_build_id"), "native.device_runtime_build_id")
+    return native_data
 
 
 def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_family, session_id,
@@ -174,8 +180,8 @@ def _bootstrap_ci(values, samples, seed):
 
 
 def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_sessions=2,
-        min_task_families=2, min_mean_delta_nats=0.02, min_win_rate=0.70,
-        bootstrap_samples=1000, seed=17):
+        min_task_families=2, min_tasks_per_session=5, min_tasks_per_family=4,
+        min_mean_delta_nats=0.02, min_win_rate=0.70, bootstrap_samples=1000, seed=17):
     """Evaluate paired held-out target-logprob proxy; never assert answer correctness."""
     if not isinstance(receipts, Sequence) or isinstance(receipts, (str, bytes)) or not receipts:
         raise NativeReceiverUtilityError("task-score receipts must be a non-empty sequence")
@@ -183,6 +189,10 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         raise NativeReceiverUtilityError("invalid minimum task/session cohort")
     if type(min_task_families) is not int or min_task_families < 1:
         raise NativeReceiverUtilityError("min_task_families must be positive")
+    if type(min_tasks_per_session) is not int or min_tasks_per_session < 1:
+        raise NativeReceiverUtilityError("min_tasks_per_session must be positive")
+    if type(min_tasks_per_family) is not int or min_tasks_per_family < 1:
+        raise NativeReceiverUtilityError("min_tasks_per_family must be positive")
     if type(min_mean_delta_nats) not in (int, float) or not math.isfinite(float(min_mean_delta_nats)) or min_mean_delta_nats < 0:
         raise NativeReceiverUtilityError("invalid minimum score delta")
     if type(min_win_rate) not in (int, float) or not math.isfinite(float(min_win_rate)) or not .5 <= min_win_rate <= 1:
@@ -198,7 +208,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         group[item["condition"]] = item
     if len(checked) != len(groups) * len(CONDITIONS):
         raise NativeReceiverUtilityError("task cohort has missing or extra conditions")
-    sessions, families, receiver_binding, native_binding = set(), set(), None, None
+    sessions, families, receiver_binding, native_binding, cohort_adapter = set(), set(), None, None, None
+    tasks_per_session, tasks_per_family = defaultdict(int), defaultdict(int)
     scores = defaultdict(list)
     deltas = {name: [] for name in CONDITIONS if name != "LATENT_CANDIDATE"}
     for group in groups.values():
@@ -208,6 +219,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         common = (first["session_id"], first["task_family"], first["source_ref"],
             first["target_token_ids_sha256"], first["target_token_count"], first["context_sha256"], first["receiver"])
         sessions.add(first["session_id"]); families.add(first["task_family"])
+        tasks_per_session[first["session_id"]] += 1
+        tasks_per_family[first["task_family"]] += 1
         if receiver_binding is None: receiver_binding = first["receiver"]
         elif receiver_binding != first["receiver"]: raise NativeReceiverUtilityError("receiver binding changed across cohort")
         for condition in CONDITIONS:
@@ -230,11 +243,20 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             scores[condition].append(item["mean_target_logprob"])
         if len({group[name]["input_sha256"] for name in CONDITIONS}) != len(CONDITIONS):
             raise NativeReceiverUtilityError("task controls reused an input digest")
-        if len({group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}) != 1:
+        adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
+        if len(adapter_hashes) != 1:
             raise NativeReceiverUtilityError("latent controls use different adapter revisions")
+        adapter_hash = next(iter(adapter_hashes))
+        if cohort_adapter is None:
+            cohort_adapter = adapter_hash
+        elif cohort_adapter != adapter_hash:
+            raise NativeReceiverUtilityError("adapter revision changed across task cohort")
         candidate = group["LATENT_CANDIDATE"]["mean_target_logprob"]
         for control in deltas: deltas[control].append(candidate - group[control]["mean_target_logprob"])
-    enough = len(groups) >= min_task_groups and len(sessions) >= min_sessions and len(families) >= min_task_families
+    enough = (len(groups) >= min_task_groups and len(sessions) >= min_sessions
+        and len(families) >= min_task_families
+        and min(tasks_per_session.values()) >= min_tasks_per_session
+        and min(tasks_per_family.values()) >= min_tasks_per_family)
     delta_report, all_pass = {}, enough
     for i, (control, values) in enumerate(deltas.items()):
         mean = sum(values) / len(values); win = sum(x > 0 for x in values) / len(values)
@@ -254,7 +276,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         evidence = env
     return {"schema": RESULT_SCHEMA, "status": status, "evidence_class": evidence,
         "task_group_count": len(groups), "session_count": len(sessions), "task_families": sorted(families),
-        "enough_holdout": enough,
+        "tasks_per_session": dict(sorted(tasks_per_session.items())),
+        "tasks_per_family": dict(sorted(tasks_per_family.items())), "enough_holdout": enough,
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
