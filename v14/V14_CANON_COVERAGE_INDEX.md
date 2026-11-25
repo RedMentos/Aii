@@ -2281,3 +2281,12 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+## Evidence overlay — 2026-11-25: RAW EAR lease composition
+
+- Canon paths: A5 RAW EAR / timed audio provenance, A4 salience-attention, C3 output generation; historical STEP9/G10C/G10D voice scope remains OPEN.
+- PR #2472 adds an optional borrowed `AudioConsentLease` to `audio_consent_generation_scope()`. It validates Runtime/source/generation/receipt/temporal-state/VAD-stream plus active/thread identity and does not reacquire the provider guard. Existing owned-lease behavior remains unchanged.
+- Exact code/test evidence: source commit `9e3c5719a4dfbc70f3869aa7a3ac7e541bb736ee`, regression commit `c655b1e75c6a1db6cbbfa181d7675c7939c05fb5`, comparator-pin commit `b54354ebd95d066a637303ce852831c2549300e9`; FASTDIAR 2/2, A4 outcomes 2/2, RAW EAR prosody 2/2, NumPy fastpath 2/2, consent-revocation 1/1, RAW EAR/WebRTC/libfvad comparator 2/2, runtime-deploy-integrity 2/2, privacy scan PASS.
+- Composition status: Core #2478 currently has a Runtime-wide lease around the full turn/C3 iterator and does not import the Perception scope. The borrowed-lease API is a safe integration seam, not a new user-visible Runtime feature. Staged/integrated and Core same-turn remain blocked by Core's recovery-builder controller-guard pin chain.
+- Platform status: caller-supplied PCM16 and synthetic consumer only; no AudioRecord/microphone provider, no real Android audio, no voice learning, no Redmi proof. PR #2472 remains DRAFT / NOT_RELEASED.
