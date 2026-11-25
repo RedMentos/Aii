@@ -45,6 +45,7 @@ class TemporalVoiceEvidence:
     def reset(self) -> None:
         self._source_id: str | None = None
         self._generation_id: str | None = None
+        self._consent_scope_id: str | None = None
         self._last_start_ms: int | None = None
         self._last_end_ms: int | None = None
         self._evidence = 0.0
@@ -58,6 +59,7 @@ class TemporalVoiceEvidence:
         start_ms: int,
         end_ms: int,
         cues: dict,
+        consent_scope_id: str | None = None,
     ) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
@@ -69,6 +71,11 @@ class TemporalVoiceEvidence:
             raise ValueError("end_ms must be an integer after start_ms")
         if type(cues) is not dict:
             raise ValueError("cues must be an object")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id must be a lowercase SHA-256 fingerprint")
         hint = cues.get("activity_hint")
         score = cues.get("activity_score")
         if type(hint) is not str or hint not in {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}:
@@ -77,11 +84,15 @@ class TemporalVoiceEvidence:
             raise ValueError("activity_score must be finite and in [0, 1]")
 
         reset_reason = None
-        if self._source_id is not None and (
-            source_id != self._source_id or generation_id != self._generation_id
-        ):
-            self.reset()
-            reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+        if self._source_id is not None:
+            if source_id != self._source_id or generation_id != self._generation_id:
+                self.reset()
+                reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+            elif consent_scope_id != self._consent_scope_id:
+                # A new provider-validated receipt starts a new acoustic
+                # memory scope even if the source and brain generation persist.
+                self.reset()
+                reset_reason = "CONSENT_SCOPE_CHANGED"
 
         previous_start_ms = self._last_start_ms
         previous_end_ms = self._last_end_ms
@@ -146,6 +157,7 @@ class TemporalVoiceEvidence:
 
         self._source_id = source_id
         self._generation_id = generation_id
+        self._consent_scope_id = consent_scope_id
         self._last_start_ms = start_ms
         self._last_end_ms = end_ms
         self._evidence = max(0.0, min(1.0, evidence))
@@ -163,6 +175,7 @@ class TemporalVoiceEvidence:
             "elapsed_ms": elapsed_ms,
             "state_reset": reset_reason is not None,
             "reset_reason": reset_reason,
+            "consent_scope_bound": consent_scope_id is not None,
         }
 
 
@@ -182,12 +195,18 @@ class TemporalVoiceEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id: str, generation_id: str,
-               start_ms: int, end_ms: int, cues: dict) -> dict:
+               start_ms: int, end_ms: int, cues: dict,
+               consent_scope_id: str | None = None) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
             raise ValueError("generation_id is invalid")
-        key = (source_id, generation_id)
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id must be a lowercase SHA-256 fingerprint")
+        key = (source_id, generation_id, consent_scope_id)
         with self._lock:
             state = self._states.get(key)
             if state is None:
@@ -195,6 +214,7 @@ class TemporalVoiceEvidenceRegistry:
             result = state.update(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
+                consent_scope_id=consent_scope_id,
             )
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
@@ -206,9 +226,15 @@ class TemporalVoiceEvidenceRegistry:
             return result
 
     def reset(self, *, source_id: str | None = None,
-              generation_id: str | None = None) -> int:
-        if source_id is None and generation_id is not None:
-            raise ValueError("generation_id requires source_id")
+              generation_id: str | None = None,
+              consent_scope_id: str | None = None) -> int:
+        if source_id is None and (generation_id is not None or consent_scope_id is not None):
+            raise ValueError("generation_id/consent_scope_id requires source_id")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id is invalid")
         if source_id is not None and (
             type(source_id) is not str or not source_id.strip() or len(source_id) > 128
         ):
@@ -222,7 +248,8 @@ class TemporalVoiceEvidenceRegistry:
                 key for key in self._states
                 if source_id is None or (
                     key[0] == source_id and
-                    (generation_id is None or key[1] == generation_id)
+                    (generation_id is None or key[1] == generation_id) and
+                    (consent_scope_id is None or key[2] == consent_scope_id)
                 )
             ]
             for key in keys:
