@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T18:22:22.493Z",
+  "updated_at": "2026-11-25T18:24:14.175Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.",
@@ -474,7 +474,7 @@
       "next_step": "Core: compose #2505 with #2503/#2506 and call build_native_input_embedding_tap_manifest_from_extractor_output() from LlamaRunner.tap/Cognition.tap; persist the manifest with SourceRef, event/generation, model/tap/tokenizer revisions, native receipt, and model/binary/blob hashes. Then run a real small GGUF row read and source-disjoint receiver utility controls. Keep B3 OFF.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-25T18:14:36Z",
-      "proof": "Research/Perception PR #2506 current head 7f33772b6434c3ec019562a48a3d77ca3b85ebaa, tested code/test SHA c4b73ab2d792b4be6d4c673d23233f8fb07c9274, base #2503 head 664aff9553c64f3b96eb987bf3ffdefd207933a3. Module blob 36c03f2cb76eca55f5751d8cee944697a8f1c17d; test blob 22e6f1780686eec05f905d203d21ce48df0787f4. Exact adapter workflow 45673125410: 73 tests PASS on Python 3.13/3.14; privacy CLEAN. Local isolated helper 7/7 PASS. Core #2505 head 298b96efba5bdbd07ac845b5e22e799ef742350d: workflow 45665062470 PASS for Python 3.13/3.14 wrapper tests, pinned llama.cpp Linux native compile and Android arm64-v8a cross-compile. No real GGUF row read, runtime consumer, Android/Termux/Redmi proof; NOT_RELEASED.",
+      "proof": "Research/Perception PR #2506 tested code/test SHA c4b73ab2d792b4be6d4c673d23233f8fb07c9274; subsequent commits are handoff/board-only, current head is the live PR ref, base #2503 head 664aff9553c64f3b96eb987bf3ffdefd207933a3. Module blob 36c03f2cb76eca55f5751d8cee944697a8f1c17d; test blob 22e6f1780686eec05f905d203d21ce48df0787f4. Exact adapter workflow 45673125410: 73 tests PASS on Python 3.13/3.14; privacy CLEAN. Local isolated helper 7/7 PASS. Core #2505 head 298b96efba5bdbd07ac845b5e22e799ef742350d: workflow 45665062470 PASS for Python 3.13/3.14 wrapper tests, pinned llama.cpp Linux native compile and Android arm64-v8a cross-compile. No real GGUF row read, runtime consumer, Android/Termux/Redmi proof; NOT_RELEASED.",
       "parent_ticket": "V14-021",
       "related_prs": [
         2502,
@@ -1389,7 +1389,6 @@
     "owner": "Research & Perception",
     "branch": "research-perception/v14-native-input-bridge-20261125-run19",
     "pr": 2506,
-    "head_sha": "7f33772b6434c3ec019562a48a3d77ca3b85ebaa",
     "base_pr": 2503,
     "base_sha": "664aff9553c64f3b96eb987bf3ffdefd207933a3",
     "local": "LOCAL_LINUX isolated bridge helper 7/7 PASS; full local Aii checkout NOT_RUN",
@@ -1397,6 +1396,8 @@
     "consumer": "NOT_RUNTIME_WIRED; Core must compose #2505 and call bridge from Cognition.tap",
     "device": "REDMI_UNVERIFIED; no native GGUF read; B3 OFF; NOT_RELEASED",
     "next_action": "Core consumes bridge in LlamaRunner.tap/Cognition.tap, persists source-bound manifest, then runs real GGUF and receiver utility controls.",
-    "code_test_sha": "c4b73ab2d792b4be6d4c673d23233f8fb07c9274"
+    "code_test_sha": "c4b73ab2d792b4be6d4c673d23233f8fb07c9274",
+    "tested_sha": "c4b73ab2d792b4be6d4c673d23233f8fb07c9274",
+    "pr_url": "https://github.com/RedMentos/Aii/pull/2506"
   }
 }
