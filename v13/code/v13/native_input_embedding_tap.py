@@ -57,7 +57,7 @@ def _manifest_digest(material: Mapping) -> str:
     payload = json.dumps(
         dict(material), sort_keys=True, separators=(",", ":"), allow_nan=False,
     ).encode("utf-8")
-    return hashlib.sha256(b"V14-NATIVE-INPUT-EMBEDDING-TAP/2\\0" + payload).hexdigest()
+    return hashlib.sha256(b"V14-NATIVE-INPUT-EMBEDDING-TAP/2\0" + payload).hexdigest()
 
 
 def _validate_extractor_receipt(
