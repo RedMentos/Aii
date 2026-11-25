@@ -184,3 +184,14 @@ def test_close_overlay_rejects_missing_or_ambiguous_runtime_anchor():
     source = (CODE / "v13" / "runtime.py").read_bytes()
     with pytest.raises(ValueError, match="anchor expected exactly once"):
         overlay.apply_sources({"v13/runtime.py": source + b"\\n" + source[source.index(b"    def close(self):"):source.index(b"    def close(self):")+len(b"    def close(self):\\n        if self.closed:return\\n")]}, code_dir=CODE)
+
+
+def test_close_overlay_preserves_other_composed_sources():
+    source = (CODE / "v13" / "runtime.py").read_bytes()
+    sentinel = b"PRESERVE_COGNITION_SOURCE"
+    patched = _overlay().apply_sources(
+        {"v13/runtime.py": source, "v13/cognition.py": sentinel},
+        code_dir=CODE,
+    )
+    assert patched["v13/cognition.py"] == sentinel
+    assert patched["v13/runtime.py"].count(b"guard_runtime_close(self)") == 1
