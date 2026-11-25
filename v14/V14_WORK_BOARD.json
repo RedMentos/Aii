@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T11:18:46.133Z",
+  "updated_at": "2026-11-25T12:13:14Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -199,7 +199,7 @@
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
       "next_step": "Core must rebind the stale Termux recovery source pin without weakening its hash gate, then rerun #2487 staged-runtime, integrated-regression and two-checkout migration on the composed current head. After that, reconcile the signed one-shot RAW EAR consumer with QA's companion provider; test route/silence/revocation only after explicit device permission. Supporting research PR #2489 adds a read-only B1/B2 LatentTapPacket alignment audit (9/9 local synthetic tests) but has no real tap cohort; after #2488 is integrated and the runtime is explicitly resumed, collect >=20 paired source/event/generation taps and run it.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T06:03:17.000Z",
+      "last_checkpoint": "2026-11-25T12:13:14Z",
       "latest_candidate_pr": {
         "pr": 2487,
         "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
@@ -208,7 +208,17 @@
         "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
         "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.",
+      "research_perception_run13": {
+        "pr": 2498,
+        "branch": "research-perception/v14-raw-ear-next-delta-20261125-run13",
+        "code_sha": "58aee47736ddddde7d19c390bd878b37481f5fe1",
+        "docs_sync_sha": "61fc01689fcd8bae2405cd3f4989249dd568cd84",
+        "local": "CPython 3.13.5 isolated module py_compile PASS; 10/10 tests PASS; 10k updates ~0.74–0.84s; ~6.8KB weight rows/list storage per stream",
+        "ci": "RAW_EAR_FASTPATH 126/126 PASS on Python 3.13/3.14; compare retest pending after exact source pin update; staged/integrated pending",
+        "device": "REDMI_UNVERIFIED; no AudioRecord provider or microphone test",
+        "next_action": "Finish exact compare/staged/integrated CI; then frozen-weight held-out cohort and persistence/shuffled controls"
+      }
     },
     {
       "id": "V14-007",
@@ -447,6 +457,28 @@
         2490
       ],
       "user_action_required": false
+    },
+    {
+      "id": "V14-022",
+      "title": "RAW EAR A3 temporal prediction and A4 novelty",
+      "owner": "Research & Perception",
+      "reviewer": "QA & Boss",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "scope": "13-D bounded RAW EAR cue deltas; 182-parameter process-local LMS; FINAL-only updates; consent-scoped reset; capped A4 novelty",
+      "acceptance": "Frozen-weight held-out utility beats persistence/no-predictor/shuffled controls; revocation/reset; no C3/external_interrupt side effects; Android microphone only through explicit AudioRecord provider",
+      "proof_environment": "LOCAL_LINUX_ISOLATED + CI_SYNTHETIC; REDMI_UNVERIFIED",
+      "next_step": "Complete exact VAD comparison and staged/integrated CI for #2498; then add frozen-weight held-out acoustic controls and source/voice retention checks; integrate with QA AudioRecord provider only after its explicit consent/receipt contract exists.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-25T12:13:14Z",
+      "latest_candidate_pr": {
+        "pr": 2498,
+        "head_sha": "58aee47736ddddde7d19c390bd878b37481f5fe1",
+        "base": "research-perception/latent-event-scope-20261125-run12",
+        "state": "OPEN_DRAFT_CI_PARTIAL",
+        "scope": "A3 RAW EAR next-delta predictor; process-local/consent-scoped; A4 novelty cap 0.10; no persistent weights",
+        "ci": "RAW_EAR_FASTPATH 126/126 PASS on Python 3.13/3.14; first VAD comparison failure was stale audio_voice_cues.py blob pin, now rebound; exact compare retest and staged/integrated pending"
+      }
     }
   ],
   "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",
@@ -516,12 +548,12 @@
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK",
-      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock",
-      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK; RAW_EAR_A3_TEMPORAL_PREDICTION_13D_182P_PROCESS_LOCAL",
+      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock; FINAL_RAW_EAR_CUE_DELTA→A4_NOVELTY_CAP_0.10",
+      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins; #2498 RAW EAR fastpath 126/126 on Python 3.13/3.14",
       "tested_android": "NOT_VERIFIED",
-      "active": "MERGED_INTEGRATION / SHADOW_ONLY",
-      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only."
+      "active": "MERGED_INTEGRATION / SHADOW_ONLY / AUDIO_PREDICTOR_SHADOW",
+      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only. New predictor has no held-out cohort, persistent model weights or Android microphone proof."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -597,12 +629,12 @@
     },
     {
       "capability": "VOICE_AUDIO input and speech output",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_FEATURE_DECIMATOR; RESEARCH_ONLY_LIBFVAD_COMPARATOR; EXPLICIT_TTS_FALLBACK",
-      "wired": "STAGED_A5_A4_C3_SYNTHETIC_CONSENT_LEASE",
-      "tested_synthetic": "#2433 head a2662b9 has 3 failures: path/path_id assertion on Python 3.13/3.14 and stale attention.py staged pin",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_FEATURE_DECIMATOR; RESEARCH_ONLY_LIBFVAD_COMPARATOR; EXPLICIT_TTS_FALLBACK; A3_RAW_EAR_TEMPORAL_PREDICTION_PR2498",
+      "wired": "STAGED_A5_A4_C3_SYNTHETIC_CONSENT_LEASE; FINAL_CUE_DELTA→A4_NOVELTY_ONLY",
+      "tested_synthetic": "#2433 head a2662b9 has 3 failures: path/path_id assertion on Python 3.13/3.14 and stale attention.py staged pin; #2498 126/126 fastpath tests on Python 3.13/3.14",
       "tested_android": "NO_AUDIORECORD_PROVIDER",
-      "active": "PARTIAL_FEATURE_ONLY / DRAFT",
-      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, raw acoustic weight learning or full-duplex."
+      "active": "PARTIAL_FEATURE_ONLY / DRAFT / A3_AUDIO_SHADOW",
+      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, raw acoustic weight learning or full-duplex. No persistent weight update, held-out acoustic cohort or AudioRecord provider; no Android capture."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -1313,6 +1345,16 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "research_perception_run13": {
+      "timestamp": "2026-11-25T12:13:14Z",
+      "pr": 2498,
+      "code_sha": "58aee47736ddddde7d19c390bd878b37481f5fe1",
+      "code_behavior": "13D_RAW_EAR_CUE_DELTA_LMS_182_PARAMS_PROCESS_LOCAL; FINAL_ONLY; CONSENT_HASH_SCOPED; A4_NOVELTY_CAP_0.10",
+      "local": "ISOLATED_CPYTHON_3.13.5_10_OF_10_PASS; 10K_UPDATES_0.74_TO_0.84S; ~6.8KB_WEIGHT_LISTS_PER_STREAM",
+      "ci": "RAW_EAR_FASTPATH_126_OF_126_PY313_AND_PY314_PASS; VAD_COMPARE_PIN_REBOUND_RETEST_PENDING; STAGED_INTEGRATED_PENDING",
+      "device": "REDMI_UNVERIFIED_NO_AUDIORECORD_PROVIDER",
+      "next_action": "EXACT_COMPARE_AND_STAGED_INTEGRATED_CI; THEN_FROZEN_WEIGHT_HELDOUT_COHORT"
     }
   },
   "qa_latest_checkpoint": {
