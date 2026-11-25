@@ -1,10 +1,14 @@
-name: V14 Core interrupted runner warm retention
+name: V14 Core fastpath and interrupted runner warm retention
 
 on:
   pull_request:
     paths:
       - "v13/code/v13/runners.py"
       - "v13/code/tests/test_runner_interruption_retention.py"
+      - "v13/code/tests/test_arithmetic_fastpath_runtime.py"
+      - "v13/code/tests/test_arithmetic_fastpath.py"
+      - "v13/code/v13/arithmetic_fastpath.py"
+      - "v13/code/v13/runtime.py"
       - ".github/workflows/v14-core-runner-interruption-retention.yml"
   push:
     branches:
@@ -31,8 +35,12 @@ jobs:
       - name: Compile exact runner and test
         env:
           PYTHONPATH: v13/code
-        run: python -m py_compile v13/code/v13/runners.py v13/code/tests/test_runner_interruption_retention.py
+        run: python -m py_compile v13/code/v13/runners.py v13/code/v13/runtime.py v13/code/v13/arithmetic_fastpath.py v13/code/tests/test_runner_interruption_retention.py v13/code/tests/test_arithmetic_fastpath.py v13/code/tests/test_arithmetic_fastpath_runtime.py
       - name: Test warm retention and fail-closed interruption cleanup
         env:
           PYTHONPATH: v13/code
         run: python -m pytest -q v13/code/tests/test_runner_interruption_retention.py
+      - name: Test exact arithmetic fastpath and full-path fallthrough
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_arithmetic_fastpath.py v13/code/tests/test_arithmetic_fastpath_runtime.py
