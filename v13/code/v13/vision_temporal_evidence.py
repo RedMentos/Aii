@@ -28,6 +28,9 @@ FEATURE_METHOD = "RAW_EYE_TILE_FEATURES_V1"
 FEATURE_VALUES_PER_TILE = 37
 MAX_A3_TEMPORAL_DIM = 1024
 A3_PROJECTED_CHANGE_METHOD = "A3_TILE_COSINE_DELTA_V1"
+# BOOT: cap A3 projected change at a small A4 novelty contribution. This is
+# an attention-only heuristic, not a learned weight, confidence or truth score.
+A3_TEMPORAL_ATTENTION_GAIN = 0.15
 A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FAILED", "DIMENSION_LIMIT", "ZERO_EMBEDDING"}
 MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
@@ -286,6 +289,7 @@ class TemporalVisualEvidence:
                 "global_luminance_shift": 0.0, "global_change_score": 0.0,
                 "local_tile_delta": {}, "local_change_score": 0.0,
                 "local_temporal_activity_score": 0.0, "locally_changed_tile_ids": [],
+                "a3_attention_novelty": 0.0,
                 "attention_novelty": 0.0,
                 "surface_expired": False, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
                 "gap_ms": gap_ms, "state_reset": reset_reason is not None,
@@ -374,11 +378,20 @@ class TemporalVisualEvidence:
         base_attention_novelty = compute_attention_novelty(
             local_change_score, local_temporal_activity_score, global_change_score,
         )
+        a3_change_score = (
+            a3_projected_change["change_score"]
+            if a3_projected_change["status"] == "MEASURED" else 0.0
+        )
+        a3_attention_novelty = round(min(
+            A3_TEMPORAL_ATTENTION_GAIN,
+            A3_TEMPORAL_ATTENTION_GAIN * a3_change_score,
+        ), 6)
         attention_novelty = round(max(
             base_attention_novelty,
             multichannel_change_score,
             0.15 * global_appearance_shift,
             0.15 * global_structure_shift,
+            a3_attention_novelty,
         ), 6)
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
@@ -411,6 +424,7 @@ class TemporalVisualEvidence:
             "local_change_score": round(local_change_score, 6),
             "local_temporal_activity_score": round(local_temporal_activity_score, 6),
             "locally_changed_tile_ids": [tile for tile in TILE_IDS if local_tile_delta[tile] >= self.changed_tile_threshold],
+            "a3_attention_novelty": a3_attention_novelty,
             "attention_novelty": attention_novelty,
             "on_activity": round(on_activity, 6), "off_activity": round(off_activity, 6),
             "surface_expired": surface_expired, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
