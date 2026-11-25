@@ -288,3 +288,15 @@ def test_temporal_visual_reset_clears_error_gated_shadow_weights():
     assert state._a3_error_gated_predictor._observations == 0
     assert state._a3_error_gated_predictor._updates == 0
     assert state._a3_error_gated_predictor._parameter_l2() == 0.0
+
+
+def test_error_gate_rule_is_explicit_and_invalid_policy_fails_closed():
+    predictor = A3TemporalPredictor(update_policy="ERROR_GATED")
+    zero = [0.0] * 16
+    for _ in range(5):
+        result = predictor.update(zero)
+    assert result["update_gate"] == "ERROR_GATE_CLOSED"
+    assert result["prediction_error_exceeds_gate"] is False
+    assert result["update_gate_rule"] == "MODEL_MAE_GT_MAX_EPSILON_OR_0.25_PERSISTENCE_MAE"
+    with pytest.raises(ValueError, match="update_policy"):
+        A3TemporalPredictor(update_policy="UNBOUNDED")
