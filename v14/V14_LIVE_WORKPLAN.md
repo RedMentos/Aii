@@ -1355,3 +1355,10 @@ R-007 (Cardenas Piepereit, arXiv:2608.16347v2, full-paper review) and R-144 (den
 ### Next owner handoff
 
 Core owns the separate LATENT_PREFIX_V1 event-pooled receiver integration in #2499. Research + Core own the missing trusted tokenwise tap producer. Keep both modes distinct; do not call either semantic transfer or production B3 until held-out receiver utility and rollback gates pass. No user action required.
+
+ 
+### Latest available private device receipt (read-only)
+
+Private V13OBS #115 was read without creating a new relay request. Its last device check is 2026-11-24T09:22:33Z: auto-update enabled; dashboard/runtime UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; AI runtime STOPPED_BY_USER; autostart false; model process stopped. The five-turn metadata sample records two failed native attempts and zero valid offers for each of B1/B2. Native latent exchange and C3 semantic use are not proven. No newer receipt exists in this run. Do not infer that the device is running because the dashboard is UP_TO_DATE.
+
+No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission change or data mutation was performed. The updater is reported up to date for the old release, but PR #2501 is a draft and NOT_RELEASED. Redmi acceptance remains REDMI_UNVERIFIED.
