@@ -211,7 +211,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             raise ValueError('native tokenwise runtime overlay missing or unsafe')
         tokenwise_overlay_raw = tokenwise_overlay_path.read_bytes()
         tokenwise_overlay_blob = hashlib.sha1(
-            b'blob ' + str(len(tokenwise_overlay_raw)).encode('ascii') + b'\\0' + tokenwise_overlay_raw
+            b'blob ' + str(len(tokenwise_overlay_raw)).encode('ascii') + b'\0' + tokenwise_overlay_raw
         ).hexdigest()
         if tokenwise_overlay_blob != TOKENWISE_PAIR_OVERLAY_GIT_BLOB:
             raise ValueError('native tokenwise runtime overlay source changed')
