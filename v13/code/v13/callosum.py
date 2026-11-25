@@ -181,7 +181,7 @@ class Callosum:
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (native receiver is diagnostic-only; no trained alignment or held-out utility; production B3 remains OFF pending parity/zero/shuffle/OOD controls)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
 
 def controller(runtime):
     c=getattr(runtime,'callosum',None)

@@ -84,3 +84,18 @@ class UtilityTests(Base):
         self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')
 
 if __name__=='__main__':unittest.main()
+
+
+
+def test_native_receiver_is_diagnostic_only_and_production_latent_stays_blocked():
+    with tempfile.TemporaryDirectory() as tmp:
+        runtime = Runtime(Path(tmp))
+        runtime.sleep.cycle.set_policy("enabled", "off")
+        try:
+            report = C.controller(runtime).report(runtime.cfg)
+            assert "LATENT blocked" in report["gate"]
+            assert "diagnostic-only" in report["gate"]
+            assert "production B3 remains OFF" in report["gate"]
+            assert report["claim_limit"] == "Channel choice among exact/control/symbolic baselines; no latent exchange"
+        finally:
+            runtime.close()
