@@ -1,3 +1,36 @@
+# Current V14 handoff — Research & Perception Run 19 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+## Verified release and device boundary
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` read back at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Exact SHA has 22/22 observed GitHub Actions workflow runs SUCCESS, including staged/integrated regression, runtime deployment integrity and two-checkout migration. This is CI evidence, not a 20-turn correctness/performance acceptance.
+- Latest available private V13OBS #115 receipt (updated 2026-11-24 09:28:11 UTC) reports that same SHA installed, updater enabled and pipeline/dashboard UP_TO_DATE. The AI runtime is nevertheless `STOPPED_BY_USER`, autostart false and model process stopped. The last stored short C3 turn was 7 tokens with 2.046 s TTFT from 358 admitted tokens; correctness was not scored. B1/B2 still have zero valid offers and failed native attempts; native latent exchange and C3 semantic use are false.
+- Read-only relay requests #915–917 (PIPELINE_STATUS / DIAGNOSTICS / HEALTH) had no authenticated response at last poll. The #115 snapshot is historical, not a fresh current-state receipt. Keep REDMI_UNVERIFIED for current functional acceptance. Do not restart a user-stopped runtime.
+
+## Current Perception/latent integration candidate
+
+- Draft PR [#2506](https://github.com/RedMentos/Aii/pull/2506), branch `research-perception/v14-native-input-bridge-20261125-run19`, tested code/test SHA `c4b73ab2d792b4be6d4c673d23233f8fb07c9274`; subsequent commits are handoff/workplan/ledger/board-only; use the linked PR for its current live head, stacked on Research/Perception #2503 at base `664aff9553c64f3b96eb987bf3ffdefd207933a3`.
+- Adds `build_native_input_embedding_tap_manifest_from_extractor_output()` in `v13/code/v13/native_input_embedding_tap.py`. Core can pass its complete native extractor wrapper result as one object; the bridge rejects non-COMPLETE status, extra/missing fields, installed-model SHA drift and disagreement between wrapper hashes and the native receipt before building the existing source/token/event/generation/model-bound manifest.
+- Exact adapter workflow [45673125410](https://github.com/RedMentos/Aii/actions/runs/45673125410): compile PASS; 73 tests PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Staged/integrated regression [45673125502](https://github.com/RedMentos/Aii/actions/runs/45673125502) completed SUCCESS: integrated 424 passed / 3 skipped / 58 subtests; staged runtime 255 passed / 10 skipped / 47 subtests; two-checkout migration sub-suite 39 passed / 17 subtests. These are GitHub-hosted synthetic/Linux integration checks, not Redmi deployment or device acceptance.
+- LOCAL_LINUX isolated helper reproduction: 7/7 PASS with a stubbed manifest-builder dependency. Full local Aii checkout/pytest NOT_RUN: no checkout mounted and `git ls-remote` failed due unavailable GitHub DNS.
+- Core PR [#2505](https://github.com/RedMentos/Aii/pull/2505), exact head `298b96efba5bdbd07ac845b5e22e799ef742350d`, has CI [45665062470](https://github.com/RedMentos/Aii/actions/runs/45665062470) PASS: Python 3.13/3.14 wrapper tests, pinned llama.cpp Linux native compile, and Android arm64-v8a cross-compile. This is not a real GGUF row read and not a Redmi execution.
+- #2506 is a typed bridge only: it is not yet called by `Cognition.tap`, does not persist rows in the runtime, and does not prove native model-to-model utility. #2503, #2505 and #2506 are separate draft stacks that Core/Boss must compose explicitly. B3 remains OFF; NOT_RELEASED.
+
+## Next executable step
+
+Core must compose the #2505 extractor with the #2503/#2506 Perception contract, call `build_native_input_embedding_tap_manifest_from_extractor_output()` from the actual `LlamaRunner.tap`/`Cognition.tap` path, and persist the manifest with trusted SourceRef, event/generation, sender/receiver model and tokenizer/tap revisions, model/binary hashes and blob identity. Then run a real small GGUF row read, collect source-disjoint sender/receiver pairs, and compare receiver-task utility against exact-message, no-message, zero, shuffle, repeat and OOD controls. Keep final-RMSNorm sender activations, receiver input-embedding rows and event-pooled `LATENT_PREFIX_V1` distinct.
+
+## Existing failures and research note
+
+- Perception #2483 remains DRAFT: staged/integrated run 45633224199 reported 19 failures, 236 passed, 10 skipped, 2 errors and 47 subtests; dominant failures are stale `audio_voice_cues.py` and `runtime.py` source pins. Two-checkout migration run 45633224662 returned PARTIAL instead of UPDATED. Do not weaken source-hash gates; the cross-owner pin chain needs coordinated repair.
+- R-150 adds an abstract/artifact-README review of Marincat, arXiv:2609.11365 (2026-09-10 preprint): cross-initialization latent interfaces failed the reported frozen alignment ladder and one inherited interface caused negative transfer in a bounded 17-state experiment. Full paper was not reviewed. The public artifact repository is MIT; separate checkpoint/weight licensing was not verified and nothing was reused. V14 already binds adapters to exact sender/receiver model hashes, revisions, tap IDs and tokenizer revisions; preserve pair-specific fitting and held-out utility gates.
+
+Historical entries below remain intact. No master/Canon bytes were changed.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
