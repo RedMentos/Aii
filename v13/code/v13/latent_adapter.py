@@ -165,7 +165,7 @@ def _require_exact_span_partition(spans, source_length: int, name: str) -> None:
         raise LatentAdapterError(name + " byte spans must exactly partition the source")
 
 
-def token_piece_byte_spans(token_pieces, source_text: str) -> dict:
+def token_piece_byte_spans(token_pieces, source_text: str, *, expected_token_ids=None) -> dict:
     """Build exact UTF-8 byte spans from llama.cpp /tokenize with_pieces output.
 
     Callers must request add_special=false. The endpoint may return each piece as
@@ -183,8 +183,18 @@ def token_piece_byte_spans(token_pieces, source_text: str) -> dict:
     if not isinstance(token_pieces, (list, tuple)) or not 2 <= len(token_pieces) <= 64:
         raise LatentAdapterError("token pieces must contain 2..64 entries")
 
+    if expected_token_ids is not None:
+        if (not isinstance(expected_token_ids, (list, tuple))
+                or len(expected_token_ids) != len(token_pieces)
+                or any(type(token_id) is not int or not 0 <= token_id <= 2_147_483_647
+                       for token_id in expected_token_ids)):
+            raise LatentAdapterError("expected token IDs do not match the token-piece count")
     pieces = []
-    for token in token_pieces:
+    for index, token in enumerate(token_pieces):
+        if expected_token_ids is not None:
+            if (not isinstance(token, Mapping) or type(token.get("id")) is not int
+                    or token.get("id") != expected_token_ids[index]):
+                raise LatentAdapterError("llama.cpp token-piece ID differs from the native token ID")
         piece = token.get("piece") if isinstance(token, Mapping) else token
         if isinstance(piece, str):
             try:
@@ -240,7 +250,7 @@ def build_tokenwise_tap_manifest(source_text: str, content_token_ids, content_to
         prefill_token_ids, "prefill_token_ids",
         minimum=len(content_ids), maximum=len(content_ids) + 2,
     )
-    piece_meta = token_piece_byte_spans(content_token_pieces, source_text)
+    piece_meta = token_piece_byte_spans(content_token_pieces, source_text, expected_token_ids=content_ids)
     if len(piece_meta["token_spans"]) != len(content_ids):
         raise LatentAdapterError("content token IDs and token pieces have different row counts")
     if not isinstance(activation_rows, (list, tuple)) or len(activation_rows) != len(prefill_ids):
