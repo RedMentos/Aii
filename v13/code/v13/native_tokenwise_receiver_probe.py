@@ -177,6 +177,16 @@ def probe_native_tokenwise_candidate(
             raise ValueError("LATENT_CANDIDATE task-score metadata is incomplete or malformed")
         if task_score_metadata.get("session_id") not in (None, getattr(runtime, "session", None)):
             raise ValueError("task-score session differs from the active Runtime session")
+        if target_environment not in {"LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+            raise ValueError("native target scoring requires an explicit execution environment")
+        if target_environment in {"TERMUX_ANDROID", "REDMI"}:
+            if (type(device_execution_receipt_sha256) is not str or len(device_execution_receipt_sha256) != 64
+                    or any(ch not in "0123456789abcdef" for ch in device_execution_receipt_sha256)
+                    or type(device_runtime_build_id) is not str or not device_runtime_build_id
+                    or len(device_runtime_build_id) > 128):
+                raise ValueError("Android target scoring requires a device receipt and runtime build ID")
+        elif device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+            raise ValueError("local Linux target scoring must not carry Android device metadata")
     elif any(value is not None for value in (task_score_metadata, target_environment, device_execution_receipt_sha256, device_runtime_build_id)):
         raise ValueError("task-score metadata requires target token IDs")
     if not isinstance(record, dict) or record.get("schema") != "v14.native-tokenwise-pairing/1":
