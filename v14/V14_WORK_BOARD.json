@@ -1397,15 +1397,14 @@
     "tested_sha": null,
     "status": "CI_QUEUED",
     "local": "LOCAL_LINUX CPython 3.13.5 isolated anchor-residual harness: py_compile PASS; 4/4 positive/negative checks PASS. Full Aii checkout absent; exact repository py_compile/pytest NOT_RUN.",
-    "ci": "Latest head 33b6ada: adapter-contract 3.13/3.14, staged-runtime, integrated-regression, offline 3.11/3.14, privacy and bridge-security QUEUED. Earlier head c1e3e20 had offline 3.11/3.14, privacy and bridge-security PASS; staged/integrated still in progress when superseded. Exact repository test result for latest head not yet available.",
+    "ci": "Current PR head checks: adapter-contract 3.13/3.14, staged-runtime, integrated-regression, offline 3.11/3.14, privacy and bridge-security QUEUED. Earlier head c1e3e20 had offline 3.11/3.14, privacy and bridge-security PASS; staged/integrated still in progress when superseded. Workflow filter repair commit e8b8d95 adds the current branch and base branch.",
     "consumer": "Perception fitter now verifies native receiver extractor manifest digest/row hashes; optional anchor-preserving residual builder emits vectors in native receiver prefill geometry. Core PR #2510 has not yet called this new builder; no native receiver inference, persistence, gradient update or B3 authority.",
     "device": "NO_LIVE_RECEIPT for the owner-read DIAGNOSTICS request. Last authenticated private snapshot 2026-11-24 reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only. Current installation unverified. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.",
     "next_action": "Wait for exact adapter-contract 3.13/3.14 and staged/integrated CI; fix any failures; coordinate Core PR #2510 rebase/consumer wiring under explicit native-probe approval; then run held-out task utility with exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.",
     "pr_url": "https://github.com/RedMentos/Aii/pull/2511",
     "research": "R-155: XBridge motivates exact receiver lexical anchors plus gated latent enrichment, but its 264M/7B-class implementation is not mobile. arXiv:2608.16347v2 shows representational retrieval does not reliably predict causal task utility. New helper is a bounded residual approximation, not XBridge LEB or semantic proof.",
     "staged_integration": "NOT_RUN; no real GGUF or Redmi integration.",
-    "head_sha": "33b6ada2c600734dfae678d1ce270ecd7b0e48f2",
-    "ci_config_sha": "e8b8d95229f3c17db099468f4767ccfad18be612"
+    "workflow_fix_sha": "e8b8d95229f3c17db099468f4767ccfad18be612"
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-25T18:52:29.980Z",
