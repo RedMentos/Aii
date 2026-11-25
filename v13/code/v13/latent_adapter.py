@@ -109,6 +109,29 @@ def _validate_span_sequence(spans, name: str) -> list[tuple[int, int]]:
     return clean
 
 
+def _activation_vector_sha256(vector) -> str:
+    """Hash one activation row using a canonical little-endian float64 encoding."""
+    values = _finite_vector(vector, "activation vector")
+    payload = struct.pack("<" + ("d" * len(values)), *values)
+    return hashlib.sha256(b"V14-LATENT-ACTIVATION-F64LE\0" + payload).hexdigest()
+
+
+def _token_pair_id(*, source_id: str, source_sha256: str, token_position: int,
+                   source_span: Sequence[int], alignment_id: str, alignment_coverage: float,
+                   sender_vector_sha256: str, receiver_vector_sha256: str) -> str:
+    material = json.dumps({
+        "source_id": source_id,
+        "source_sha256": source_sha256,
+        "token_position": token_position,
+        "source_span": list(source_span),
+        "alignment_id": alignment_id,
+        "alignment_coverage": float(alignment_coverage),
+        "sender_vector_sha256": sender_vector_sha256,
+        "receiver_vector_sha256": receiver_vector_sha256,
+    }, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(b"V14-LATENT-TOKEN-PAIR/1\0" + material).hexdigest()
+
+
 def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors, receiver_spans,
                                   *, source_id: str, source_sha256: str,
                                   min_coverage: float = _TOKEN_ALIGNMENT_MIN_COVERAGE) -> list[dict]:
@@ -164,16 +187,27 @@ def align_token_rows_by_char_span(sender_vectors, sender_spans, receiver_vectors
         if covered <= 0 or coverage + 1e-12 < float(min_coverage):
             raise LatentAdapterError("sender token spans do not sufficiently cover a receiver token span")
         sender_aligned = [value / covered for value in weighted]
-        pair_material = json.dumps(
-            [source_id, source_sha256, position, start, end, alignment_id],
-            separators=(",", ":"), ensure_ascii=True,
-        ).encode("utf-8")
+        receiver_vector = receiver_rows[position]
+        sender_vector_sha256 = _activation_vector_sha256(sender_aligned)
+        receiver_vector_sha256 = _activation_vector_sha256(receiver_vector)
+        pair_id = _token_pair_id(
+            source_id=source_id,
+            source_sha256=source_sha256,
+            token_position=position,
+            source_span=(start, end),
+            alignment_id=alignment_id,
+            alignment_coverage=coverage,
+            sender_vector_sha256=sender_vector_sha256,
+            receiver_vector_sha256=receiver_vector_sha256,
+        )
         aligned.append({
-            "pair_id": hashlib.sha256(pair_material).hexdigest(),
+            "pair_id": pair_id,
             "source_id": source_id,
             "source_sha256": source_sha256,
             "sender_vector": sender_aligned,
-            "receiver_vector": receiver_rows[position],
+            "receiver_vector": receiver_vector,
+            "sender_vector_sha256": sender_vector_sha256,
+            "receiver_vector_sha256": receiver_vector_sha256,
             "token_position": position,
             "source_span": [start, end],
             "alignment_method": _TOKEN_ALIGNMENT_METHOD,
@@ -231,6 +265,27 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
                 raise LatentAdapterError(name + " receiver token spans overlap or are out of order")
             previous_end = end
             methods.add(item["alignment_method"])
+    # Structural failures are reported before digest failures so duplicate/gap
+    # controls remain diagnostically precise.
+    for source_pairs in by_source.values():
+        for item in source_pairs:
+            sender_digest = _activation_vector_sha256(item["sender_vector"])
+            receiver_digest = _activation_vector_sha256(item["receiver_vector"])
+            if (item.get("sender_vector_sha256") != sender_digest
+                    or item.get("receiver_vector_sha256") != receiver_digest):
+                raise LatentAdapterError(name + " activation vector digest mismatch")
+            expected_pair_id = _token_pair_id(
+                source_id=item["source_id"],
+                source_sha256=item["source_sha256"],
+                token_position=item["token_position"],
+                source_span=item["source_span"],
+                alignment_id=item["alignment_id"],
+                alignment_coverage=item["alignment_coverage"],
+                sender_vector_sha256=sender_digest,
+                receiver_vector_sha256=receiver_digest,
+            )
+            if item.get("pair_id") != expected_pair_id:
+                raise LatentAdapterError(name + " pair ID does not bind activation rows and source span")
     if methods != {_TOKEN_ALIGNMENT_METHOD}:
         raise LatentAdapterError(name + " tokenwise alignment methods are inconsistent")
     return _TOKEN_ALIGNMENT_METHOD
@@ -241,7 +296,8 @@ def _token_alignment_digest(pairs: Sequence[Mapping], *, method: str,
     rows = sorted((
         pair["pair_id"], pair["source_id"], pair["source_sha256"], pair["token_position"],
         list(pair["source_span"]), pair["alignment_id"],
-        float(pair["alignment_coverage"]),
+        float(pair["alignment_coverage"]), pair["sender_vector_sha256"],
+        pair["receiver_vector_sha256"],
     ) for pair in pairs)
     material = json.dumps({
         "method": method,
