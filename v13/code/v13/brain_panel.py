@@ -87,7 +87,8 @@ def _identifier(value):
 
 def _body_offer_evidence(
     store, event_id, *, c4_ids=(), c4_recorded=False, c4_accepted=False,
-    template_ids=(), template_receipt_available=False, template_submitted=False, synthetic=False,
+    template_ids=(), template_role_by_id=None, template_receipt_available=False,
+    template_submitted=False, synthetic=False,
     native_prefill_verified=False, native_prefill_observed=False,
     native_generation_completed=False, synthetic_prefill_verified=False,
     synthetic_generation_completed=False,
@@ -116,6 +117,11 @@ def _body_offer_evidence(
     template_values = template_ids if type(template_ids) in (list, tuple, set) else ()
     c4_ids = {value for value in c4_values if _identifier(value)}
     template_ids = {value for value in template_values if _identifier(value)}
+    raw_template_roles = template_role_by_id if type(template_role_by_id) is dict else {}
+    template_roles = {
+        packet_id: role for packet_id, role in raw_template_roles.items()
+        if _identifier(packet_id) and type(role) is str and role in _BODY_ROLES
+    }
     by_role_query = {}
     for row in rows:
         if type(row) is not dict:
@@ -145,6 +151,8 @@ def _body_offer_evidence(
             "sampled_peak_pss_bytes": None,
             "evidence_environment": "UNAVAILABLE",
             "packet_id": None,
+            "native_template_role": None,
+            "template_role_matches": None,
             "verified_source_span_count": None,
             "delivery_duration_s": None,
             "selected_by_c4": None,
@@ -176,10 +184,15 @@ def _body_offer_evidence(
         else:
             item["delivered"] = True
             item["packet_id"] = packet_id
+            item["native_template_role"] = template_roles.get(packet_id)
+            item["template_role_matches"] = template_roles.get(packet_id) == role
             item["verified_source_span_count"] = _count(metrics.get("count"))
             item["delivery_duration_s"] = _seconds(metrics.get("duration_s"))
             item["selected_by_c4"] = packet_id in c4_ids if c4_accepted else None
-            item["included_in_c3_template"] = packet_id in template_ids if template_submitted else None
+            item["included_in_c3_template"] = (
+                packet_id in template_ids and item["template_role_matches"]
+                if template_submitted else None
+            )
             path_synthetic = synthetic or item["evidence_environment"] == "SYNTHETIC"
             item["native_prefill_observed"] = bool(not path_synthetic and native_prefill_observed)
             item["native_prefill_verified"] = bool(not path_synthetic and native_prefill_verified)
@@ -198,6 +211,8 @@ def _body_offer_evidence(
                 state = "C4_SELECTED_C3_TEMPLATE_NOT_SUBMITTED"
             elif packet_id not in template_ids:
                 state = "C4_C3_PACKET_ID_MISMATCH"
+            elif template_roles.get(packet_id) != role:
+                state = "C4_C3_PACKET_ROLE_MISMATCH"
             elif path_synthetic:
                 state = (
                     "SYNTHETIC_PREFILL_AND_GENERATION_VERIFIED"
@@ -268,6 +283,10 @@ def _latest_native_evidence(r):
     native_ids = (
         [_identifier(item.get("packet_id")) for item in native_offers]
         if native_ids_valid else []
+    )
+    native_role_by_id = (
+        {_identifier(item.get("packet_id")): item.get("role") for item in native_offers}
+        if native_ids_valid and len(set(native_ids)) == len(native_ids) else {}
     )
     raw_c4_ids = c4_metrics.get("selected_offer_ids")
     c4_ids_valid = (
@@ -351,6 +370,7 @@ def _latest_native_evidence(r):
         c4_recorded=c4_recorded,
         c4_accepted=c4_accepted,
         template_ids=native_ids,
+        template_role_by_id=native_role_by_id,
         template_receipt_available=bool(receipt),
         template_submitted=submitted,
         synthetic=synthetic,
