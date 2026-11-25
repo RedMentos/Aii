@@ -1914,3 +1914,43 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Core & Harness — 2026-11-25 checkpoint
+
+**Release base remains** `gpt6/v13-private-remote-bridge-20261111` @ `8d93236c753f0194224c19edc7411d8d7082b1d6`. Nothing in this checkpoint is released or installed.
+
+### Fair B1/B2 runtime and native receiver chain
+
+- PR #2478 head `55db58ae053c0e93430015a002ca620f8489bcc3`: 28 exact check-runs, 13 SUCCESS / 14 FAILURE / 1 SKIPPED. Do not call this head green.
+- PR #2485 source-pin rebind head `358b08934f3f36c37562dea02449fea649adb1a9`: 11/11 check-runs SUCCESS; based on #2478.
+- PR #2488 native receiver v3 head `b8b43910a67a1b706be22e42f4e9cbcfa6de1fa6`: 17/17 check-runs SUCCESS; based on #2485. It carries the fair-budget runtime chain and adds a bounded four-pair B1/B2→B2/B1/C3 native input-embedding diagnostic matrix, exact model/source binding, one-shot local TTY approval, cancellation/deadline and a Runtime-close lease.
+- Exact CI evidence on #2488: pinned llama.cpp `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` Linux x86_64 CMake Release build; `native_latent_receiver --selftest` PASS and `--version` PASS; Android `arm64-v8a` / API 26 cross-compile PASS; staged/integrated regression 424 passed, 3 skipped, 58 subtests passed; Python 3.13/3.14, owner-read and offline-security checks PASS.
+- **Not proven:** no GGUF was loaded, no real sender/receiver model pair was executed, no trained alignment, gradient, semantic utility, retention or Redmi result. Production B3 remains OFF. Cross-compile is not a Redmi test.
+
+### Source lineage and Android ActionOutcome
+
+- On the #2488 composed code path, `focal.py::_action_provenance` binds ActionSelection to the current event plus admitted Memory/observer sources and the B1/B2 OfferPacket + QueryPacket provenance, including Context OS, Enlightened Space and body-view refs. It checks same-session origin, source readability/digest and the exact offer/query binding. `test_action_selection_binds_offer_query_context_and_survives_restart` verifies the complete ref set reaches the T8 source consumer and survives Runtime restart. This is lineage evidence, not semantic attention or JEPA weight-learning proof.
+- PR #2481 Android ActionIntent/ActionOutcome head `545ec845a35a4567aeaf7487d6765edf2229176f` remains DRAFT and stacked on #2450/#2356, not on the release branch. At last readback it had 16/17 checks SUCCESS and one Android process-death emulator job IN_PROGRESS. Companion-outcome tests: 64 passed on Python 3.13 and 64 on Python 3.14; staged-runtime and integrated-regression PASS; Android companion assemble/unit PASS.
+- New regression verifies that a signed receipt is exposed to B1_DETAIL, B2_GIST and C3_LANGUAGE only as CONTROL_ONLY context on the immediately following event, and is not force-included after that event. A dispatch receipt does not prove the app became visible or that the device observed the result.
+- No APK installation, pairing, accessibility/screen action, CHAT_SEND, update request or Redmi action was performed.
+
+### Environment and deployment boundary
+
+- LOCAL_LINUX full checkout/compile/pytest: BLOCKED / NOT_RUN. No repository checkout is mounted; `git ls-remote` failed because GitHub DNS could not resolve.
+- CI is CI evidence only. Android emulator/cross-compile is not TERMUX/REDMI proof.
+- Last authenticated phone baseline remains release `8d93236` installed, updater enabled, AI STOPPED_BY_USER. No fresh private receipt was requested this run. REDMI_UNVERIFIED; no candidate deployed. The existing updater was not used because neither candidate is integrated/released.
+- No model, weight, permission, user data or installed runtime was changed.
+
+### Research note
+
+R-116 audits the pinned upstream `llama.cpp` C API: `llama_batch.embd` is documented as embedding input when token IDs are NULL; `llama_get_embeddings_ith` and `llama_get_logits_ith` expose per-token receiver outputs. The pinned upstream LICENSE is MIT. This validates the API and dependency license, not cross-model semantic alignment. No source or weights were copied.
+
+### Next executable steps
+
+1. Finish the exact #2481 Android process-death emulator check; fix only a reproduced failure, then request independent QA/Boss review and compose it onto the newest compatible companion integration base.
+2. Request independent Boss review of #2485/#2488 and integrate the fair B1/B2 + receiver diagnostic chain only after the exact combined source-pin and consumer matrix is green.
+3. Keep production B3 OFF. Only after safe integration and a verified installed build may a separate explicit user decision authorize one local one-shot model probe. Preserve zero/shuffle/repeat/parity/OOD, source-disjoint holdout, cancellation and rollback gates.
+4. Continue whole-Canon work after the checkpoint: actual Redmi B1/B2 offer quality/latency, correct C3 output, native consumed-organ telemetry, and real learned latent/weight paths remain open.
+
+**User action required now: NONE.** A future local native-model probe requires a separate explicit approval after integration/installation.
