@@ -1,7 +1,7 @@
 # Research & Perception — Run 31
 **Date:** 2026-11-25  
 **Started:** 23:02:26 Europe/Berlin  
-**Checkpoint written:** 23:09 Europe/Berlin  
+**Checkpoint written:** 23:11 Europe/Berlin  
 **Branch:** `research-perception/v14-anchor-preserving-tokenwise-20261125-run22`  
 **Parent PR:** [#2511](https://github.com/RedMentos/Aii/pull/2511)  
 **Release:** NOT_RELEASED
@@ -18,15 +18,15 @@ Files:
 - `v14/V14_RESEARCH_LEDGER.md`
 
 Commits:
-- Evaluator: `635a6bc09f3ef5e268aa7037f327092a49b5f92d`
-- Tests: `4b8fb872ce43c01f0363f718ce21486498ced721`
+- Evaluator: `006ec09afee1dbe40da7f16630456d698c072087` (follow-up to `635a6bc09f3ef5e268aa7037f327092a49b5f92d`)
+- Tests: `cabcff089abcfb0eefe3c32bf1f11385ec56fc3d` (follow-up to `4b8fb872ce43c01f0363f718ce21486498ced721`)
 - Research ledger: `d55734f8354abc62295c93645d9fdc2592b8ea12`
 
 ## Test evidence
 
 - **LOCAL_LINUX — CPython 3.13.5:** isolated reproduction of the new cohort gate, 4 assertions PASS (normal crossed cohort, per-cell minimum, duplicate-source rejection, missing session/family cell rejection).
 - **LOCAL_LINUX — full repository:** BLOCKED / NOT_RUN. No Aii checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` failed because GitHub DNS is unavailable in this runner. No exact repository pytest or native llama.cpp build is claimed locally.
-- **GitHub Actions:** exact new-head runs must be read back; no PASS is claimed until then.
+- **GitHub Actions:** earlier code/test head `4b8fb872` had deployment-integrity PASS (Python 3.11/3.14) and staged-runtime PASS; integrated-regression was still running. The follow-up code/test head `cabcff089` must be read back separately; no PASS is claimed for it yet.
 - **TERMUX/REDMI:** REDMI_UNVERIFIED. No connected device, live microphone, native GGUF target-score cohort, model download/swap, update request, restart or permission/data mutation occurred.
 
 ## Actual consumer and user effect
