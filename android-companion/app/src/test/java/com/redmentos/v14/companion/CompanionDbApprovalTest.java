@@ -486,18 +486,18 @@ public final class CompanionDbApprovalTest {
 
     @Test public void databaseFailureLeavesClaimForReceiptOnlyRetry() throws Exception {
         String actionId = "g".repeat(32);
-        FailOnceCompanionDb flakyDb = new FailOnceCompanionDb(context);
-        try {
-            assertTrue(flakyDb.insertPending(actionId, validRequest(actionId), "com.example.app", NOW + 10_000L));
-            assertTrue(flakyDb.claimForExecution(actionId, NOW));
-            assertEquals(0, ClaimedActionRecovery.recoverAll(flakyDb, fakeSigner(), NOW + 2_000L));
-            assertEquals("EXECUTING", flakyDb.get(actionId).status);
-            assertNull(flakyDb.receipt(actionId));
-            assertEquals(1, ClaimedActionRecovery.recoverAll(flakyDb, fakeSigner(), NOW + 3_000L));
-            assertEquals("EXECUTION_OUTCOME_UNKNOWN", flakyDb.get(actionId).status);
-        } finally {
-            flakyDb.close();
-        }
+        insertValidPending(actionId, NOW + 10_000L);
+        assertTrue(first.claimForExecution(actionId, NOW));
+        AtomicBoolean failOnce = new AtomicBoolean(true);
+        ClaimedActionRecovery.Finalizer flakyFinalizer = (database, id, expected, status, receipt) -> {
+            if (failOnce.getAndSet(false)) throw new IllegalStateException("injected SQLite finalization failure");
+            return database.finishClaimed(id, expected, status, receipt);
+        };
+        assertEquals(0, ClaimedActionRecovery.recoverAll(first, fakeSigner(), NOW + 2_000L, flakyFinalizer));
+        assertEquals("EXECUTING", first.get(actionId).status);
+        assertNull(first.receipt(actionId));
+        assertEquals(1, ClaimedActionRecovery.recoverAll(first, fakeSigner(), NOW + 3_000L));
+        assertEquals("EXECUTION_OUTCOME_UNKNOWN", first.get(actionId).status);
     }
 
     private String validRequest(String actionId) throws Exception {
@@ -514,19 +514,6 @@ public final class CompanionDbApprovalTest {
                 .put("model_authority", false)
                 .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION")
                 .toString();
-    }
-
-    private static final class FailOnceCompanionDb extends CompanionDb {
-        private boolean fail = true;
-        FailOnceCompanionDb(Context context) { super(context); }
-        @Override synchronized boolean finishClaimed(String actionId, String expectedStatus,
-                                                       String status, String receiptJson) {
-            if (fail) {
-                fail = false;
-                throw new IllegalStateException("injected SQLite finalization failure");
-            }
-            return super.finishClaimed(actionId, expectedStatus, status, receiptJson);
-        }
     }
 
     @Test public void companionDatabaseHasNoRawPcmOrAudioBlobStorage() {
