@@ -1435,3 +1435,21 @@ The code/test SHA `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` passed all three ex
 - **Consumer gap:** Core still must compose #2505 with #2503/#2506 and call the bridge from `LlamaRunner.tap`/`Cognition.tap`, then persist the source-bound manifest. Next acceptance is a real GGUF row read plus source-disjoint receiver utility and exact/no-message/zero/shuffle/repeat/OOD controls. B3 remains OFF; Redmi native proof remains UNVERIFIED.
 - Existing Perception #2483 failures remain visible: run 45633224199 had 19 failed / 236 passed / 10 skipped / 2 errors / 47 subtests, primarily stale `audio_voice_cues.py` and `runtime.py` pins; migration run 45633224662 returned PARTIAL instead of UPDATED. No hash gate was weakened.
 - No model/weight/permission/updater/device-data change; no device command or restart. No user action is required.
+
+
+## Research & Perception Run 20 — native tokenwise pair assembly (2026-11-25)
+
+Draft PR #2507, branch research-perception/v14-native-tokenwise-pairing-20261125-run20, is stacked on #2506. Code/test SHA: 29cda16ef3e3ce436e5f0d59eb418c030626f024. The initial code commit was d06c52f; the negative-fixture correction was a9314d4; the final provenance addition is included in 29cda16.
+
+**New executable Perception contract:** native_tokenwise_pairing.py composes the existing sender tokenwise prefill mapper, the #2506 native extractor-output manifest bridge, and byte-piece overlap alignment. It accepts the stored LatentTapPacket plus the exact Cognition.read_tap data, validates source/event/generation/model/tap/tokenizer/blob bindings and read-only authority, and returns a deterministic in-memory PAIRED_DIAGNOSTIC. It does not persist pairs, fit an adapter, invoke the receiver, edit weights or enable B3. It remains distinct from event-pooled LATENT_PREFIX_V1.
+
+**Exact verification:**
+- LOCAL_LINUX, CPython 3.13.5: isolated harness with stubbed existing dependencies 7/7 PASS; py_compile PASS. Full Aii checkout NOT_RUN because no checkout is mounted and local GitHub DNS is unavailable.
+- GitHub Actions PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; py_compile PASS; public privacy scan CLEAN.
+- GitHub Actions push run 45678196840: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; privacy scan CLEAN.
+- Staged/integrated regression run 45678205707 was IN_PROGRESS at this checkpoint. No claim of staged integration acceptance.
+- No real GGUF selected-row extraction, native receiver-task utility, Android arm64/Termux or Redmi test.
+
+**Known limitations:** Core has not yet called this helper from Cognition.tap/receiver execution. The extractor's row-output bound is not a peak-RSS bound; its CPU mmap/lazy model load remains unmeasured. The selected-row API is in a staging/WIP header and the extractor/receiver llama.cpp pins differ. Model-weight license remains unverified until the actual model is chosen.
+
+**Next owner/action:** Core must supply both exact native tokenizer piece streams, invoke the selected-row extractor for the already-installed receiver GGUF, call this helper after Cognition.read_tap, and persist only under the existing explicit local consent/lab gate. Then run source/session-disjoint receiver utility and zero/shuffle/repeat/OOD/retention/restart/rollback tests. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
