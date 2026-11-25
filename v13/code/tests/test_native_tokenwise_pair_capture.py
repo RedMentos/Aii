@@ -36,6 +36,13 @@ class FakeStore:
     def log(self, kind, event_id, metrics):
         self.logs.append((kind, event_id, copy.deepcopy(metrics)))
 
+    def state(self, key, default=None):
+        return getattr(self, "_state", default), 1
+
+    def set_state(self, key, value, expected=None):
+        self._state = copy.deepcopy(value)
+        return 2
+
 
 class FakeQueue:
     def empty(self):
@@ -177,10 +184,20 @@ class FakeApproval:
         assert event == runtime.event
         assert source_ref == runtime.source_ref
         runtime.events.append("approval_consumed")
+        runtime.store.set_state(self.KEY, {
+            "status": "CONSUMED",
+            "probe_kind": probe_kind,
+            "sender_role": sender,
+            "receiver_role": receiver,
+            "session_id": runtime.session,
+            "event_id": event["event_id"],
+            "source_ref": source_ref,
+        })
         return {
             "approval_id": "approval-123456",
-            "consumed": True,
-            "probe_kind": probe_kind,
+            "sender_role": sender,
+            "receiver_role": receiver,
+            "resource_preflight": {"status": "PASS"},
         }
 
 
