@@ -537,14 +537,14 @@ def test_tokenwise_fit_recomputes_alignment_coverage_instead_of_trusting_metadat
 def test_build_tokenwise_tap_manifest_maps_content_tokens_to_prefill_rows():
     source = "A\u00e1\U0001f9e0e\u0301"
     pieces = [
-        {"id": 1, "piece": "A"},
-        {"id": 2, "piece": [0xC3]},
-        {"id": 3, "piece": [0xA1, 0xF0]},
-        {"id": 4, "piece": [0x9F, 0xA7]},
-        {"id": 5, "piece": [0xA0]},
-        {"id": 6, "piece": "e"},
-        {"id": 7, "piece": [0xCC]},
-        {"id": 8, "piece": [0x81]},
+        {"id": 10, "piece": "A"},
+        {"id": 11, "piece": [0xC3]},
+        {"id": 12, "piece": [0xA1, 0xF0]},
+        {"id": 13, "piece": [0x9F, 0xA7]},
+        {"id": 14, "piece": [0xA0]},
+        {"id": 15, "piece": "e"},
+        {"id": 16, "piece": [0xCC]},
+        {"id": 17, "piece": [0x81]},
     ]
     content_ids = list(range(10, 18))
     prefill_ids = [1] + content_ids
@@ -587,4 +587,12 @@ def test_build_tokenwise_tap_manifest_rejects_excess_special_tokens_and_row_mism
         build_tokenwise_tap_manifest(
             "abc", [10, 11, 12], ["a", "b", "c"], [1, 10, 11, 12],
             [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_piece_ids_that_do_not_match_native_tokens():
+    with pytest.raises(LatentAdapterError, match="piece ID differs"):
+        build_tokenwise_tap_manifest(
+            "ab", [10, 11], [{"id": 11, "piece": "a"}, {"id": 10, "piece": "b"}],
+            [10, 11], [[1.0, 2.0], [2.0, 3.0]],
         )
