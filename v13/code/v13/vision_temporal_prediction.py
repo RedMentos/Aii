@@ -2,9 +2,12 @@
 
 This is an ephemeral shadow learner, not a visual encoder or semantic motion
 model. It predicts the next 16-tile A3 cosine-delta vector from the previous
-vector, reports pre-update error against a persistence baseline, then applies
-one bounded LMS update. State must remain inside the existing consent-scoped
-TemporalVisualEvidence stream and be erased on reset/revocation.
+vector using 256 transition weights plus a zero-context-only bias row (272
+parameters). The bias is active only when the previous delta vector is all
+zero, so it can learn zero-to-event transitions without shifting non-zero
+contexts. It reports pre-update error against a persistence baseline, then
+applies one bounded LMS update. State remains inside the existing
+consent-scoped TemporalVisualEvidence stream and is erased on reset/revocation.
 """
 from __future__ import annotations
 
@@ -12,8 +15,8 @@ import math
 
 
 TILE_COUNT = 16
-INPUT_COUNT = TILE_COUNT  # 16 previous tile deltas
-METHOD = "A3_TILE_DELTA_ONLINE_LMS_V1"
+INPUT_COUNT = TILE_COUNT + 1  # 16 previous deltas plus zero-context bias
+METHOD = "A3_TILE_DELTA_ONLINE_LMS_ZERO_CONTEXT_BIAS_V2"
 
 
 class A3TemporalPredictorError(ValueError):
@@ -88,6 +91,8 @@ class A3TemporalPredictor:
             "parameter_delta_l2": round(parameter_delta_l2, 8),
             "parameter_l2": round(self._parameter_l2(), 8),
             "learning_rate": self.learning_rate,
+            "parameter_count": INPUT_COUNT * TILE_COUNT,
+            "bias_policy": "ZERO_CONTEXT_ONLY",
             "persistent_weights": False,
             "weight_scope": "EPHEMERAL_SESSION_SHADOW",
             "authority": "SHADOW_ONLY",
@@ -109,7 +114,10 @@ class A3TemporalPredictor:
             self._previous = target
             return self._payload(status="WARMUP")
 
-        features = self._previous
+        # A permanent constant bias caused old-pattern drift in the
+        # disjoint-pattern retention control. Activate this row only for a
+        # zero-change context; non-zero temporal contexts cannot update it.
+        features = self._previous + (1.0 if not any(self._previous) else 0.0,)
         prediction = tuple(max(0.0, min(1.0, sum(
             features[row] * self._weights[row][column] for row in range(INPUT_COUNT)
         ))) for column in range(TILE_COUNT))
