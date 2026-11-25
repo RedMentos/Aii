@@ -1,3 +1,17 @@
+# Research & Perception — current verified checkpoint (2026-11-25, Run 26)
+
+- Draft PR [#2486](https://github.com/RedMentos/Aii/pull/2486), stacked on Perception PR #2470, adds a monotonic-start guard to RAW EYE visual intervals and a source-disjoint A3 temporal calibration diagnostic. Code commit: 092bdaeaae0d4be63c922901a15ad395b2d84533. PR head at checkpoint: 369e4cc9e8c0a7e1ae6ee29db94f7ee65abb88b3.
+- Calibration uses the existing A3 projector and source-disjoint fold helper. Synthetic identity-projector measurements: held-out noise FPR 0.05, stable-transition FPR 0.00, changed-transition TPR 1.00, shuffled score >= ordered score on 0.6125 of transitions, reverse-order score error 0.0. This is a diagnostic only: feature-noise is not pixel/camera/codec noise; no threshold or weights are persisted or consumed by Runtime.
+- LOCAL_LINUX isolated harness: 7/7 PASS on CPython 3.13.5 / NumPy 2.3.5 / pytest 9.0.2. The helper and interval state were reproduced with stubs; this is not an exact full-repository test. Full checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution failed.
+- Exact-head GitHub Actions runs 45546003192 (new calibration), 45546003212 (RAW EYE frame ingress), 45546003205 (source-lineage) and 45546003231 (staged/integrated) were QUEUED at the last readback. Do not call them PASS until completed.
+- Parent #2470 focused frame-ingress CI is 54/54 PASS on Python 3.13 and 3.14; staged A5 UI lease still FAILS at the Core-owned source-lifecycle composer pin for vision.py (#2465).
+- Latest available consented private V13OBS #115 snapshot (2026-11-24 09:28 UTC) reports installed release 8d93236c753f0194224c19edc7411d8d7082b1d6 and auto-update enabled, but AI runtime STOPPED_BY_USER, model process STOPPED and zero valid B1/B2 offers. No fresh authenticated receipt is available yet; current installation/runtime state is therefore not newly verified. No update request, restart, chat send, model/weight change, permission change or data action was made.
+- Release: NOT_RELEASED. Device: REDMI_UNVERIFIED. Updater: last snapshot enabled, current state unverified. P0 basic-chat and B1/B2 delivery remain OPEN.
+
+**Next:** read back the exact-head CI; Core/Integrator must compose the current vision.py source-lifecycle pin chain before staged/lease acceptance. Perception should next calibrate with explicitly consented real visual sequences and only then consider a runtime A4 cap. No user action is required; no manual Termux command or model download is warranted.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
