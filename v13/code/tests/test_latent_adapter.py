@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from v13.latent_adapter import (
-    LatentAdapterError, fit_adapter, project_event, project_rows, project_vector, save_adapter,
+    LatentAdapterError, build_native_receiver_input, fit_adapter, project_event, project_rows, project_vector, save_adapter,
     load_adapter,
 )
 
@@ -114,3 +114,62 @@ def test_projection_scope_prevents_event_vector_broadcast_to_token_rows():
     assert len(projected) == 2 and all(len(row) == token_adapter["receiver_dim"] for row in projected)
     with pytest.raises(LatentAdapterError, match="tokenwise adapter"):
         project_event(token_adapter, vector, **token_bindings)
+
+
+
+def test_tokenwise_adapter_builds_exact_native_receiver_input_contract():
+    from v13 import native_latent_receiver
+
+    adapter = fit(projection_scope="TOKENWISE")
+    vectors = [
+        make_pairs("probe", 1, seed=99)[0]["sender_vector"],
+        make_pairs("probe", 1, seed=100)[1]["sender_vector"],
+    ]
+    bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                    sender_tap_id=adapter["sender_tap_id"], receiver_tap_id=adapter["receiver_tap_id"])
+    packet = build_native_receiver_input(
+        adapter, vectors, token_ids=[101, 102], tokenizer_revision="tokenizer-r1", **bindings,
+    )
+    rows, dim, payload, digest = native_latent_receiver._vector_payload(packet["vectors"])
+    positions = native_latent_receiver._validate_positions(
+        packet["position_ids"], rows, packet["position_mode"],
+    )
+    assert rows == packet["input_rows"] == 2
+    assert dim == packet["input_dim"] == adapter["receiver_dim"]
+    assert packet["position_mode"] == native_latent_receiver.POSITION_MODE
+    assert positions == [0, 1]
+    assert packet["input_sha256"] == digest
+    assert len(payload) == rows * dim * 4
+    assert packet["production_route"] is False
+    assert packet["semantic_use_proven"] is False
+    assert packet["training_authority"] == packet["native_receiver_authority"] == 0
+
+
+def test_native_receiver_builder_rejects_pooled_or_non_input_space_adapters():
+    vectors = [make_pairs("probe", 1, seed=99)[0]["sender_vector"]]
+    event_adapter = fit()
+    event_bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                          sender_tap_id=event_adapter["sender_tap_id"], receiver_tap_id=event_adapter["receiver_tap_id"])
+    with pytest.raises(LatentAdapterError, match="tokenwise adapter"):
+        build_native_receiver_input(
+            event_adapter, vectors, token_ids=[101], tokenizer_revision="tokenizer-r1", **event_bindings,
+        )
+
+    wrong_tap_adapter = fit(receiver_tap_id="c3.final-rmsnorm.v1", projection_scope="TOKENWISE")
+    wrong_bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                          sender_tap_id=wrong_tap_adapter["sender_tap_id"], receiver_tap_id=wrong_tap_adapter["receiver_tap_id"])
+    with pytest.raises(LatentAdapterError, match="input-embedding tap"):
+        build_native_receiver_input(
+            wrong_tap_adapter, vectors, token_ids=[101], tokenizer_revision="tokenizer-r1", **wrong_bindings,
+        )
+
+
+def test_native_receiver_builder_rejects_tokenizer_row_mismatch():
+    adapter = fit(projection_scope="TOKENWISE")
+    vectors = [make_pairs("probe", 1, seed=99)[0]["sender_vector"]]
+    bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                    sender_tap_id=adapter["sender_tap_id"], receiver_tap_id=adapter["receiver_tap_id"])
+    with pytest.raises(LatentAdapterError, match="token ID count"):
+        build_native_receiver_input(
+            adapter, vectors, token_ids=[101, 102], tokenizer_revision="tokenizer-r1", **bindings,
+        )
