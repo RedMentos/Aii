@@ -17,6 +17,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     manifest = builder.stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
+    assert "v13/latent_adapter.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
@@ -33,6 +34,8 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "from .native_probe_approval import operator_command as probe_operator_command" in operator
     assert operator.index("if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}") < operator.index("if cmd=='callosum':")
     assert "def native_receive(" in cognition
+    assert "def native_receive_prefix(" in cognition
+    assert "LATENT_PREFIX_V1" in cognition
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
     assert "semantic_use_proven=False" in cognition
