@@ -1853,3 +1853,16 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - B3 remains OFF. No native GGUF task-utility, gradient/parameter diff, retention/restart, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. A GitHub push is not a deployment.
 
 **Next executable step:** after the exact integrated CI finishes, coordinate with Core on the real tap producer's tokenizer byte/character offsets, then form a source-disjoint paired cohort and compare one-vector vs span/tokenwise receiver utility under context-aware and context-unaware conditions with zero, shuffled, mis-source, position, parity and OOD controls.
+
+## Research & Perception — final Run 14b integration CI (2026-11-25 13:47 UTC)
+
+**User action required: NONE.** No device action, model download/swap, permission change, runtime restart or deployment is requested.
+
+- PR #2501 code/test SHA 64eb3cf693f97f3f44999912858d651a1b682a01: focused V14 latent token-span alignment #14 PASS; V13 runtime deployment integrity #2519 PASS; V13 staged context/integrated regression #5062 PASS. The branch then received documentation-only updates; current head dfb954331c6fc41987ca4a7cb306dff976f20b75 contains no further code/test change.
+- PR #2501 remains OPEN / DRAFT, stacked on #2496; NOT_RELEASED. The adapter's tokenwise schema-v3 path is still a geometric candidate only. Current persisted taps do not provide the token offsets required to feed it with a real paired cohort.
+- Research R-144 reviewed dense cross-model KV-cache alignment. Its context-unaware results use large Qwen3 models, dense per-layer/KV-group transformations and substantial training; it is not a drop-in Redmi solution. The read-only event-pool residual-energy audit reports within-event variance only, not semantic utility.
+- Core PR #2499 head 8502afe: dedicated native receiver staged-runtime #911 PASS after its test added the missing explicit arm-probe call. This is fake-runner/staged control-path evidence, not native GGUF task utility or Redmi proof.
+- RAW EAR PR #2498: VAD comparator #595, optional NumPy backend #714 and runtime integrity #2522 PASS; staged/integrated #5065 FAIL at the next exact pin in Core/QA's recovery→stager→deployer chain. Details and ownership are recorded in V14-022 and the Run 13b handoff.
+- Full repository local pytest NOT_RUN; isolated Python formula reproductions PASS. No native model, persistent weight diff/retention, Android microphone, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Next internal step:** Core/QA rebind the recovery builder's audio-composition pin, then recompute the stager and deployer hashes in order and rerun staged/integrated/migration. Research then works with Core on a producer-side token-span contract and source-disjoint receiver task-utility evaluation. No user action is needed.
