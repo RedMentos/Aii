@@ -71,3 +71,12 @@ Environment: LOCAL_LINUX, CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 available
 - Integrated regression for run 45527625231 was still in progress at this handoff update; read it before closing the next run.
 - Exact hashes and failure were sent to Core PR #2465 in comment 7149883105. Core must include both `vision.py` and `vision_projector_stats.py` in its immutable source closure and rebind the strict pins. No Core-owned file was edited.
 - The branch's latest handoff commit is after the tested code/test commit; the exact test evidence applies to the code/test commit above. PR remains DRAFT / NOT_RELEASED; Redmi remains REDMI_UNVERIFIED.
+
+
+### Final integration readback
+
+- Staged runtime: **FAIL** — 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests passed. Root is the strict Core composer rejecting `vision.py` at `source_lifecycle_lock_integration_candidate.py:179`; the two-checkout migration tests report PARTIAL because the stage cannot be built.
+- Integrated regression: **FAIL** — 1 test, same unsupported `vision.py` source pin.
+- This failure is downstream of the Perception A3 focused tests. It is not evidence that the A3 directory/statistics implementation failed; it does block integration and release.
+- Final evidence was sent to Core #2465 in comments 7149883105 and 7149910139 and to Perception #2484 in comment 7149914088.
+- No release or phone update was requested. Next owner action: Core/Integrator must include the exact `vision.py` and `vision_projector_stats.py` bytes in the source lifecycle manifest and rebind strict pins; then rerun the full staged/integrated/consumer/migration matrix. Perception must not edit the Core-owned composer.
