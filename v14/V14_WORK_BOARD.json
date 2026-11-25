@@ -1411,6 +1411,14 @@
     "research": "R-150: full Future-OPSD main PDF and official OSS README reviewed; code/checkpoint Apache-2.0, dataset terms separate; 8x B200, not a Redmi candidate; no model/data imported.",
     "release_status": "NOT_RELEASED",
     "redmi_status": "REDMI_UNVERIFIED; no fresh receipt; STOPPED_BY_USER respected; no update request",
-    "user_action_required": "NONE"
+    "user_action_required": "NONE",
+    "p0_issue1904": {
+      "state": "OPEN",
+      "last_issue_update": "2026-11-24T17:50:08Z",
+      "latest_available_consented_device_snapshot": "2026-11-24T09:28:00Z",
+      "device_state": "STOPPED_BY_USER; model process STOPPED; zero valid B1/B2 offers; native residency unavailable",
+      "fresh_receipt": "NONE in latest issue update",
+      "action": "Do not restart, CHAT_SEND, UPDATE_REQUEST or alter permissions; P0 remains open"
+    }
   }
 }
