@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
+from v13 import vision_projector_stats as stats_module
 from v13.vision_projector_stats import (
     MAX_SOURCE_STATS, SOURCE_STATS_MODE, build_source_statistics,
     load_source_statistics, rebuild_without_source,
@@ -290,3 +291,26 @@ def test_hardening_existing_directory_modes_fsyncs_metadata(tmp_path, monkeypatc
     assert vision_dir.stat().st_mode & 0o777 == 0o700
     assert data_inode in synced_inodes
     assert vision_inode in synced_inodes
+
+def test_aggregate_byte_budget_refuses_before_writing_any_stats(tmp_path, monkeypatch):
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    monkeypatch.setattr(stats_module, "MAX_SOURCE_STATS_SET_BYTES", 1)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert records == []
+    assert mode == "SOURCE_STATS_BUDGET_EXCEEDED"
+    # Budget rejection happens before opening/creating the private directory tree.
+    assert not (tmp_path / "data").exists()
+
+
+def test_aggregate_byte_estimate_covers_actual_npz_artifacts(tmp_path, monkeypatch):
+    X, Y, keys, lineage, _ = _fixture(seed=43, d=37, c=768, sources=4, rows_per=8)
+    budget = stats_module._estimate_source_stats_set_bytes(
+        X.shape[1], Y.shape[1], len(lineage),
+    )
+    monkeypatch.setattr(stats_module, "MAX_SOURCE_STATS_SET_BYTES", budget)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == len(lineage)
+    actual_bytes = sum((tmp_path / record["path"]).stat().st_size for record in records)
+    assert actual_bytes <= budget
+
