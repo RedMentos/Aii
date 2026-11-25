@@ -3,6 +3,7 @@ import json
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
@@ -310,6 +311,20 @@ class NativeInputEmbeddingCaptureTest(unittest.TestCase):
             self._capture()
         self.assertFalse(any(item == "approval_consumed" for item in self.runtime.events))
         self.assertFalse(any(item.startswith("get_tap:") for item in self.runtime.events))
+
+
+    def test_callosum_dispatches_input_tap_before_production_controller(self):
+        from v13 import callosum
+        with patch("v13.native_input_embedding_capture.operator_command", return_value="input-tap-routed") as routed:
+            result = callosum.operator_command(
+                self.runtime,
+                ["native-input-tap", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"],
+            )
+        self.assertEqual(result, "input-tap-routed")
+        routed.assert_called_once_with(
+            self.runtime,
+            ["native-input-tap", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"],
+        )
 
     def test_operator_command_uses_separate_arm_run_and_revoke_names(self):
         class Commands:
