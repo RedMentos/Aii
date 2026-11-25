@@ -291,9 +291,12 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject pending(Context context) throws Exception {
         org.json.JSONArray values = new org.json.JSONArray();
+        org.json.JSONArray recoveredReceipts = new org.json.JSONArray();
         org.json.JSONArray recoveryPending = new org.json.JSONArray();
         synchronized (ACTION_GATE_LOCK) {
-            ClaimedActionRecovery.recoverAll(db, signer, System.currentTimeMillis());
+            for (String actionId : ClaimedActionRecovery.recoverAllIds(db, signer, System.currentTimeMillis())) {
+                recoveredReceipts.put(actionId);
+            }
             for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
                 JSONObject item = new JSONObject();
                 item.put("action_id", action.actionId);
@@ -308,6 +311,7 @@ public final class CompanionProvider extends ContentProvider {
         JSONObject out = new JSONObject();
         out.put("status", "OK");
         out.put("pending", values);
+        out.put("recovered_receipts", recoveredReceipts);
         out.put("recovery_pending", recoveryPending);
         return out;
     }
