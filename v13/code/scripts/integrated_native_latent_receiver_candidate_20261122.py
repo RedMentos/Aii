@@ -15,14 +15,25 @@ BASE_PINS = {
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "6ec80446feec4a0f709992db15e0b1b9986f4b4f5fe1f85106e95c0dbb203056",
+    "v13/native_latent_receiver.py": "7e26a95a299054610503af3a1e342c93e23a6ba831bd3f2123afd50e43a25c15",
+    "v13/latent_adapter.py": "c3c285575849b408022ba12d50987d37f3d685e3f05a8965d6059e1e3f90aff6",
+    "v13/tokenwise_tap_runtime.py": "79e9aa4935fa0f7577fb917444ce9e7ca7e31efb39c1242a08be5cdb08499a4d",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "4aafc21483d156f122b2edcd3eb2990cdecb744538aa6b783e6556604e6fbc08",
     "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0"
 }
 
+NATIVE_TOKENWISE_METHODS = r'''    def tokenwise_tap(self,tap,deadline):
+        from .tokenwise_tap_runtime import capture_tokenwise_tap
+        return capture_tokenwise_tap(self,tap,deadline)
+
+    def read_tokenwise_tap(self,p):
+        from .tokenwise_tap_runtime import read_tokenwise_tap
+        return read_tokenwise_tap(self,p)
+'''
+
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
-        """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
+        """Opt-in native receiver probe using source-aligned content-token rows only."""
         from .models import model_key
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
@@ -39,37 +50,44 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
                 or tap.get("brain_generation_id")!=e.get("brain_generation_id")
                 or tap.get("source_ref")!=source_ref):
             raise ValueError("Sender tap identity/source differs from this event")
-        # The tap runner is exclusive. Reap it before loading the receiver model
-        # so the probe never intentionally holds two dense model copies at once.
+        tokenwise=self.tokenwise_tap(tap,deadline)
+        if (tokenwise.get("sender_tap_packet_id")!=tap.get("packet_id")
+                or tokenwise.get("role")!=sender_role
+                or tokenwise.get("event_id")!=tap.get("event_id")
+                or tokenwise.get("brain_generation_id")!=tap.get("brain_generation_id")
+                or tokenwise.get("source_ref")!=source_ref
+                or tokenwise.get("production_route") is not False
+                or tokenwise.get("training_authority")!=0):
+            raise ValueError("Tokenwise tap identity/source/authority differs from sender tap")
+        # Reap the exclusive sender runner before loading the receiver model.
         self.r.pool.unload()
-        data=self.read_tap(tap)
-        token_ids=data.get("token_ids")
-        vectors=data.get("vectors")
+        token_data=self.read_tokenwise_tap(tokenwise)
+        token_ids=token_data.get("token_ids")
+        vectors=token_data.get("vectors")
         metrics=tap.get("metrics")
-        if (type(token_ids) is not list or not 1<=len(token_ids)<=64
+        if (type(token_ids) is not list or not 2<=len(token_ids)<=64
                 or any(type(token_id) is not int or token_id<0 for token_id in token_ids)
                 or type(vectors) is not list or len(vectors)!=len(token_ids)
                 or type(metrics) is not dict
                 or metrics.get("whole_sequence_prefill") is not True
                 or metrics.get("pooling")!="none"
-                or metrics.get("prompt_tokens")!=len(token_ids)):
-            raise ValueError("Sender tap lacks a verified whole-sequence position map")
-        # LlamaRunner.tap sends this exact token list to a fresh /embeddings
-        # prefill with pooling=none. Its positions are therefore 0..N-1; derive
-        # them only after checking the persisted token/vector count and runner receipt.
+                or metrics.get("prompt_tokens")!=tokenwise.get("prefill_token_count")):
+            raise ValueError("Sender tap lacks a verified source-token/prefill row map")
         position_ids=list(range(len(token_ids)))
         sender_key=model_key(sender_role,self.r.models.b2_control)
         sender_installed=self.r.models.installed.get(sender_key)
         if (not sender_installed or sender_installed.get("download_complete") is not True
-                or tap.get("model_revision")!=sender_installed.get("exact_revision")):
+                or tap.get("model_revision")!=sender_installed.get("exact_revision")
+                or tokenwise.get("model_revision")!=tap.get("model_revision")):
             raise ValueError("Sender model revision is not the installed pinned tap model")
         sender_main=sender_installed.get("files",{}).get(sender_installed.get("main_file"))
         if not isinstance(sender_main,dict):
             raise ValueError("Sender model manifest hash is missing")
         sender_model_sha256=sender_main.get("sha256")
         if (not isinstance(sender_model_sha256,str) or len(sender_model_sha256)!=64
-                or any(ch not in "0123456789abcdef" for ch in sender_model_sha256)):
-            raise ValueError("Sender model manifest hash is invalid")
+                or any(ch not in "0123456789abcdef" for ch in sender_model_sha256)
+                or sender_model_sha256!=tokenwise.get("model_sha256")):
+            raise ValueError("Sender model manifest hash differs from tokenwise tap")
         sender_model_path=self.r.models.path_for(sender_role)
         if sender_model_path.is_symlink():
             raise ValueError("Sender model symlink refused")
@@ -89,25 +107,34 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         main=installed.get("files",{}).get(installed.get("main_file"))
         if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
             raise ValueError("Receiver model manifest hash is missing")
+        tokenizer_revision=tokenwise.get("tokenizer_revision")
+        if not isinstance(tokenizer_revision,str) or not tokenizer_revision:
+            raise ValueError("Tokenwise tap tokenizer revision is missing")
         receipt=native_probe(
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
             sender_tap_id=tap["tap_id"],sender_model_revision=tap["model_revision"],
-            sender_model_sha256=sender_model_sha256,tokenizer_revision=tap.get("tokenizer_revision"),
+            sender_model_sha256=sender_model_sha256,tokenizer_revision=tokenizer_revision,
             receiver_model_revision=installed["exact_revision"],
             source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
             vectors=vectors,position_ids=position_ids,position_mode=POSITION_MODE,
             deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
             cancel_event=self.r.cancel_event,
         )
+        receipt["sender_tokenwise_packet_id"]=tokenwise["packet_id"]
+        receipt["sender_tokenwise_manifest_sha256"]=tokenwise["manifest_sha256"]
         p=packet("LatentReceiverPacket","B3_NATIVE_RECEIVER_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
                  source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
+                 sender_tokenwise_packet_id=tokenwise["packet_id"],
+                 sender_tokenwise_manifest_sha256=tokenwise["manifest_sha256"],
                  production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0,
                  **receipt)
         validate_packet(p)
         self.s.add_packet("LatentReceiverPacket",p)
         self.s.log("native_latent_receiver_probe",e["event_id"],{
             "sender_role":sender_role,"receiver_role":receiver_role,"status":p["status"],
+            "sender_tokenwise_packet_id":tokenwise["packet_id"],
+            "sender_tokenwise_manifest_sha256":tokenwise["manifest_sha256"],
             "input_rows":p["input_rows"],"input_dim":p["input_dim"],
             "receiver_input_dim":p["receiver_input_dim"],"output_dim":p["output_dim"],
             "decode_status":p["decode_status"],"native_input_consumed":p["native_input_consumed"],
@@ -115,13 +142,14 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             "semantic_use_proven":False,"training_authority":0,"native_receiver_authority":0,
         })
         return p'''
+
 NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
         row=self.s.one("SELECT payload FROM packets WHERE kind='LatentReceiverPacket' ORDER BY rowid DESC LIMIT 1")
         if not row:return None
         try:
             from .native_latent_receiver import validate_packet
             q=validate_packet(json.loads(row['payload']))
-            return {k:q.get(k) for k in ('sender_role','receiver_role','sender_tap_packet_id','sender_tap_id',
+            return {k:q.get(k) for k in ('sender_role','receiver_role','sender_tap_packet_id','sender_tokenwise_packet_id','sender_tokenwise_manifest_sha256','sender_tap_id',
                 'sender_model_revision','sender_model_sha256','tokenizer_revision',
                 'receiver_model_revision','receiver_model_sha256','runner_revision','llama_version',
                 'status','input_rows','input_dim','input_sha256','position_ids','position_mode',
@@ -155,9 +183,12 @@ def apply_sources(code_dir,sources):
             raise ValueError("native receiver base source changed: "+relative)
     result=dict(sources)
     cognition=result.get("v13/cognition.py",(code_dir/"v13/cognition.py").read_bytes())
-    if not isinstance(cognition,bytes) or b"def native_receive(" in cognition:
+    if (not isinstance(cognition,bytes) or b"def native_receive(" in cognition
+            or b"def tokenwise_tap(" in cognition):
         raise ValueError("native receiver Cognition already patched or unavailable")
-    cognition=_replace(cognition,b"    def body_context(self,role,e):\n",NATIVE_RECEIVE.encode("utf-8")+b"\n    def body_context(self,role,e):\n","Cognition.native_receive")
+    cognition=_replace(cognition,b"    def body_context(self,role,e):\n",
+        NATIVE_TOKENWISE_METHODS.encode("utf-8")+NATIVE_RECEIVE.encode("utf-8")+b"\n    def body_context(self,role,e):\n",
+        "Cognition.tokenwise/native_receive")
     compile(cognition,"v13/cognition.py","exec")
     callosum=result.get("v13/callosum.py",(code_dir/"v13/callosum.py").read_bytes())
     if not isinstance(callosum,bytes) or b"def native_receiver_probe(" in callosum:
