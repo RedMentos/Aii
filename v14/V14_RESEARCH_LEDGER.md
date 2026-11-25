@@ -1384,3 +1384,32 @@ The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is now fully
 - Runtime-deployment integrity `45648811730`: PASS on Python 3.11 and 3.14.
 - Staged/integrated regression `45648811577`: PASS. Integrated regression: 424 passed, 3 skipped, 58 subtests; staged runtime: 255 passed, 10 skipped, 47 subtests.
 These are CI/Linux results, not local checkout, native GGUF, Android or Redmi proof. The subsequent documentation-only branch commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` was read back from the branch ref; the GitHub PR API still reported the prior PR head `2f74fa94...` at last poll, so PR-head synchronization of the docs commit remains unverified.
+
+
+
+## R-149 — Native input-embedding tap: extractor receipt and upstream provenance correction (2026-11-25)
+
+**Correction to R-148.** The cited upstream commit `a8fad21e9949c20f6b21692c8d38a8aba422eafe` is *not* the origin of `llama_model_get_tok_embd_rows`; its actual title is “mtp: read the target hidden states from a device buffer” (#31927). The selected-token-row API is present in upstream llama.cpp commit `2851b3bcbf8d993a2243ae751c0a7dfa8e944a40` (2026-10-16, commit `mtmd: add mtmd_audio_stream + support voxtral-realtime`, #30629). Its `src/llama-ext.h` declaration and `src/llama-model.cpp` implementation expose `llama_model_get_tok_embd_rows(model, tokens, n_tokens, out)`; implementation validates each token against the token-embedding tensor and reads one row at a time through `llama_tensor_rows_to_f32`. The helper obtains F32 rows from F32/F16/BF16/quantized storage. Upstream repository license is MIT. The header remains explicitly staging/WIP, so this is not a stable ABI. The current V14 receiver pin `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` predates the API and cannot be claimed to provide it.
+
+**New implementation.** Research/Perception child PR adds schema v2 to `v13/code/v13/native_input_embedding_tap.py`. The previous manifest bound source, event, generation, token pieces/IDs, model/tokenizer revision, row dimensions and row digests, but it did not bind the native extractor call that supposedly produced those rows. Schema v2 now requires a strict `v14.llama-token-embedding-rows-receipt/1` containing:
+- exact API symbol/header and explicit `STAGING_WIP` status;
+- pinned llama.cpp commit and native extractor binary SHA-256;
+- installed model revision and model SHA-256;
+- source tensor type and F32 output dtype;
+- vocabulary size, embedding dimension, exact ordered requested token IDs and returned element count.
+
+The receipt is copied into the manifest digest. It rejects ID/order drift, invalid vocabulary bounds, partial/wrong element counts, dimension mismatch, wrong model bytes/revision, malformed binary/revision digests, non-F32 output and malformed tensor types. It deliberately calls the IDs “requested” rather than “returned”: upstream API returns an element count, not token IDs. The C++ wrapper must prevalidate *all* token IDs before calling it and must emit a receipt only if the API returns exactly `n_tokens × n_embd`; the upstream implementation can otherwise write earlier rows before encountering a later invalid token and returning zero. Python validates receipt consistency; the caller still has to independently hash the actual model and extractor binary. Manifest SHA is integrity, not a signature.
+
+**Verification.** Isolated LOCAL_LINUX reproduction, CPython 3.13.5: `py_compile` PASS; 19 focused positive/negative tests PASS. This used an isolated package with the exact new module logic and minimal dependency stubs; it is **not** the full Aii checkout or full repository suite. Exact Aii checkout remains unavailable in this environment. Exact GitHub Actions run 45658242985 on code/test commit 787758a885294d63c614c4171c4a528ecc303dc8 passed 66 tests on both Python 3.13 and 3.14; public privacy scan CLEAN. No llama.cpp native build, real GGUF row read, Android arm64 binary, Termux or Redmi execution is claimed. No model, weights, permissions, updater or device data were changed. B3 remains OFF; REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Next integration.** Core must consume this receipt from its native selected-row wrapper, independently verify the model/extractor hashes and pin the API-bearing llama.cpp revision. Keep the sender final-RMSNorm tap distinct from the receiver input-embedding table. The event-pooled `LATENT_PREFIX_V1` route remains a separate experiment; neither contract proves learned semantic utility or production latent communication.
+
+**Sources.** Upstream commit mirror/diff: https://gitea.gnumetry.com/ggml-org/llama.cpp/commit/2851b3bcbf8d993a2243ae751c0a7dfa8e944a40 ; current upstream API/source documentation: https://fossies.org/dox/llama.cpp-1.0.0/llama-model_8cpp_source.html ; official upstream LICENSE: https://github.com/ggml-org/llama.cpp/blob/master/LICENSE ; unrelated commit correction: https://github.com/ggml-org/llama.cpp/commit/a8fad21e9949c20f6b21692c8d38a8aba422eafe .
+
+
+### R-149 exact-head CI readback — 2026-11-25
+
+The branch push workflow `V14 latent token-span alignment`, run `45658242985`, completed successfully on code/test commit `787758a885294d63c614c4171c4a528ecc303dc8`:
+- Python 3.13: compile PASS; focused suite 66 passed; public privacy scan CLEAN.
+- Python 3.14: compile PASS; focused suite 66 passed; public privacy scan CLEAN.
+This is GitHub-hosted CI/Linux evidence, not local full-repository execution. The subsequent handoff/ledger-only commits do not change the tested module/test bytes. No native llama.cpp build, real GGUF row extraction, Android cross-compile, Termux or Redmi proof.
