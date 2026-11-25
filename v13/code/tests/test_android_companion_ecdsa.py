@@ -4,7 +4,7 @@ import base64
 
 import pytest
 
-from v13 import android_control
+from v13 import android_control, android_companion_ecdsa
 from v13.android_companion_ecdsa import ECDSAReceiptVerifier
 from v13.android_companion_protocol import CompanionDenied
 from v13.android_outcomes import accept_and_persist_companion_receipt, trusted_transition_eligible
@@ -143,6 +143,71 @@ def test_signed_user_denial_persists_without_learning_authority(tmp_path, monkey
     assert actual["receipt_status"] == "USER_DENIED"
     assert actual["companion_local_consent_claim"] is False
     assert actual["world_learning_eligible"] is False
+    store.close()
+    broker.close()
+    receipt_verifier.close()
+
+
+def test_recovered_unknown_execution_receipt_persists_without_learning_authority(tmp_path, monkeypatch):
+    # The Java companion signs this status with Android Keystore. Stub only the
+    # ECDSA primitive here so this test isolates the new status/authority mapping;
+    # the existing tests continue to verify real pinned ECDSA signatures.
+    monkeypatch.setattr(android_companion_ecdsa, "_verify", lambda public_point, message, signature: True)
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    home = tmp_path / "runtime-unknown"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+    broker = android_control.AndroidControlBroker(tmp_path / "unknown-broker.sqlite", clock=lambda: 1000.0)
+    receipt_verifier = verifier(tmp_path / "unknown-ecdsa.sqlite")
+    broker.start()
+    proposal = broker.propose(
+        "launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id=event["event_id"], source_ref=event["source_ref"],
+    )
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+
+    unknown_body = {
+        **BODY,
+        "nonce": "5" * 32,
+        "status": "EXECUTION_OUTCOME_UNKNOWN",
+        "local_consent": True,
+    }
+    unknown_receipt = {
+        "body": unknown_body,
+        "key_id": KEY_ID,
+        "signature": base64.b64encode(b"test-signature-stub").decode("ascii"),
+    }
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, receipt_verifier, proposal.action_id, unknown_receipt
+    )
+    assert outcome.status == "COMPANION_EXECUTION_OUTCOME_UNKNOWN"
+    assert outcome.observed is False
+    assert outcome.evidence_level == "COMPANION_RECEIPT_ONLY"
+    assert outcome.details["receipt_status"] == "EXECUTION_OUTCOME_UNKNOWN"
+    assert outcome.details["companion_local_consent_claim"] is True
+    assert outcome.details["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UNKNOWN_OUTCOME"
+    assert outcome.details["t8_authoritative"] is False
+    assert outcome.details["world_learning_eligible"] is False
+    assert trusted_transition_eligible(outcome) is False
+    assert broker.action_state(proposal.action_id) == "RECEIPT_VERIFIED"
+
+    stored = store.one("SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],))
+    assert stored["kind"] == "ActionOutcome"
+    actual = json.loads(stored["payload"])["actual"]
+    assert actual["status"] == "COMPANION_EXECUTION_OUTCOME_UNKNOWN"
+    assert actual["receipt_status"] == "EXECUTION_OUTCOME_UNKNOWN"
+    assert actual["observed"] is False
+    assert actual["world_learning_eligible"] is False
+
+    invalid = copy.deepcopy(unknown_receipt)
+    invalid["body"]["local_consent"] = False
+    with pytest.raises(CompanionDenied, match="invalid signed action outcome"):
+        receipt_verifier.verify(ENVELOPE, invalid, consume_nonce=False)
+
     store.close()
     broker.close()
     receipt_verifier.close()
