@@ -21,8 +21,10 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
     for group in range(groups):
         source_id = f"{prefix}-source-{group}"
         spans = [[sample * 2, sample * 2 + 2] for sample in range(4)]
+        source_sha256 = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
         alignment_id = hashlib.sha256(json.dumps({
             "method": "CHAR_SPAN_OVERLAP_V1", "source_id": source_id,
+            "source_sha256": source_sha256,
             "sender_spans": spans, "receiver_spans": spans,
         }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
         for sample in range(4):
@@ -32,6 +34,7 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
             rows.append({
                 "pair_id": f"{prefix}-pair-{group}-{sample}",
                 "source_id": source_id,
+                "source_sha256": source_sha256,
                 "token_position": sample,
                 "source_span": spans[sample],
                 "alignment_method": "CHAR_SPAN_OVERLAP_V1",
@@ -211,6 +214,7 @@ def test_char_span_alignment_handles_different_tokenizer_segmentations():
         receiver_vectors=[[0.0, 1.0], [0.0, 3.0]],
         receiver_spans=[[0, 3], [3, 6]],
         source_id="source-different-tokenizers",
+        source_sha256="c" * 64,
     )
     assert [row["token_position"] for row in aligned] == [0, 1]
     assert [row["source_span"] for row in aligned] == [[0, 3], [3, 6]]
@@ -228,6 +232,7 @@ def test_char_span_alignment_rejects_uncovered_receiver_text():
             receiver_vectors=[[0.0, 1.0], [0.0, 2.0]],
             receiver_spans=[[0, 3], [3, 6]],
             source_id="source-gap",
+            source_sha256="d" * 64,
         )
 
 
@@ -239,6 +244,7 @@ def test_char_span_alignment_rejects_overlapping_or_unordered_spans():
             receiver_vectors=[[0.0, 1.0], [0.0, 2.0]],
             receiver_spans=[[0, 2], [2, 4]],
             source_id="source-overlap",
+            source_sha256="e" * 64,
         )
 
 
