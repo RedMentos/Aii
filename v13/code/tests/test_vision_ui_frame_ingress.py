@@ -1158,6 +1158,10 @@ def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monk
     a3_attention = second_result["temporal_visual_evidence"]["a3_attention_novelty"]
     assert a3_attention > 0.0
     assert second_result["a4"]["temporal_visual_evidence"]["a3_attention_novelty"] == a3_attention
+    predictive_attention = second_result["temporal_visual_evidence"]["a3_predictive_attention_novelty"]
+    assert 0.0 <= predictive_attention <= 0.15
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_predictive_attention_novelty"] == predictive_attention
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_temporal_prediction"] == second_result["temporal_visual_evidence"]["a3_temporal_prediction"]
     assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == second_result["temporal_visual_evidence"]["attention_novelty"]
     assert second_result["temporal_visual_evidence"]["attention_novelty"] >= a3_attention
     assert third_result["student_projector_used"] is True
