@@ -1,11 +1,49 @@
 import copy
 import json
 import base64
+import hashlib
 
 import pytest
 
 from v13 import android_control
 from v13.android_companion_ecdsa import ECDSAReceiptVerifier
+
+from v13.android_companion_ecdsa import _G, _N, _point_mul
+
+
+def _der_integer(value):
+    raw = value.to_bytes(max(1, (value.bit_length() + 7) // 8), "big")
+    if raw[0] & 0x80:
+        raw = b"\\x00" + raw
+    return b"\\x02" + bytes([len(raw)]) + raw
+
+
+def _sign_test_body(body):
+    # Test-only private scalar d=1; PUBLIC_KEY is the corresponding P-256 generator.
+    message = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    digest = hashlib.sha256(message).digest()
+    z = int.from_bytes(digest, "big")
+    counter = 0
+    while True:
+        k = int.from_bytes(hashlib.sha256(b"v14-test-signature" + digest + counter.to_bytes(4, "big")).digest(), "big") % _N
+        if k == 0:
+            counter += 1
+            continue
+        point = _point_mul(k, _G)
+        r = point[0] % _N
+        if r == 0:
+            counter += 1
+            continue
+        s = (pow(k, -1, _N) * (z + r)) % _N
+        if s == 0:
+            counter += 1
+            continue
+        if s > _N // 2:
+            s = _N - s
+        body_der = _der_integer(r) + _der_integer(s)
+        signature_der = b"\\x30" + bytes([len(body_der)]) + body_der
+        return base64.b64encode(signature_der).decode("ascii")
+
 from v13.android_companion_protocol import CompanionDenied
 from v13.android_outcomes import accept_and_persist_companion_receipt, trusted_transition_eligible
 from v13.store import Store
