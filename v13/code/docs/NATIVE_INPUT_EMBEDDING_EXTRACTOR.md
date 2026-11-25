@@ -33,9 +33,9 @@ mismatches, model/hash drift, token-order drift, and binary/model changes
 during the call.
 
 The receipt is a provenance envelope, **not a cryptographic signature**.
-The Python caller hashes the actual files before and after execution and
-checks that the receipt binds those exact hashes and the expected model
-revision. The binary receives only the model path, revision/hash, extractor
+The Python caller hashes the actual files before execution, passes those
+hashes into the native process, and rechecks file identity/metadata afterward
+to detect replacement or mutation without reading a multi-gigabyte GGUF twice. The binary receives only the model path, revision/hash, extractor
 hash, and token IDs; it receives no source text.
 
 ## Bounds and privacy
