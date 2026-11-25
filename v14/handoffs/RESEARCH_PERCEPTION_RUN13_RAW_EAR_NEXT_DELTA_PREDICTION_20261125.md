@@ -52,3 +52,35 @@ This V14 pilot is not NAPE, a learned spectrogram patch encoder, JEPA/EMA, persi
 5. Keep persistent model-weight updates, learned audio patch embeddings, JEPA/EMA coupling and full-duplex speech as separate open requirements.
 
 User action required: NONE. No manual Termux command, model download, permission change or device operation requested.
+
+
+## Run 13b — staged integration pin repair (2026-11-25)
+
+### Failure root cause
+
+The previous exact staged/integrated run #5037 failed before the audio predictor could be composed. The stack terminates in scripts/integrated_audio_context_candidate_20261121.py, whose SOURCE_BLOBS still required v13/audio_voice_cues.py Git blob b18e450162b062b09368a12b1ca18924ed8c5025. The exact current source blob after the RAW EAR predictor integration is a8fc1ab23b79231b44738892e3c120771c072687. The strict hash check correctly refused the stale composition; it must not be weakened.
+
+### Fix committed
+
+- Updated only the audio_voice_cues.py source pin in integrated_audio_context_candidate_20261121.py to the exact a8fc1ab23b79231b44738892e3c120771c072687 blob.
+- Commit: 0cd31098110ee36bb63078947cfed1c444d3ff04.
+- Updated the Research-owned V14-022 ticket in V14_WORK_BOARD.json with the failure, exact fix, and fresh CI queue.
+- No runtime logic, user data, permissions, weights or model files were changed by this pin repair.
+
+### Exact CI after the fix
+
+Fresh workflows triggered on code SHA 0cd31098110ee36bb63078947cfed1c444d3ff04:
+- V14 RAW EAR vs WebRTC/libfvad comparison harness #595: IN_PROGRESS at last poll.
+- V14 RAW EAR optional NumPy backend #714: IN_PROGRESS at last poll.
+- V13 staged context and integrated regression #5065: IN_PROGRESS at last poll.
+- V13 runtime deployment integrity #2522: IN_PROGRESS at last poll.
+- Previous focused RAW EAR fastpath: 126/126 PASS on Python 3.13 and 3.14.
+- Previous VAD comparator and optional NumPy backend runs #594 and #713: PASS before the staged source-pin failure.
+
+Prior staged/integrated failure details: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests passed. The dominant failures all shared the single stale audio_voice_cues.py pin; two-checkout migration consequently returned PARTIAL rather than UPDATED because staging did not complete. The rerun must confirm whether any independent failures remain.
+
+### Boundaries and next work
+
+Local isolated CPython 3.13.5 tests and microbenchmark remain the only local evidence for the predictor. The new source-pin commit has not yet received final CI at this handoff point. No full repository local suite, real acoustic held-out cohort, native model, Android AudioRecord provider, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. The 182-parameter LMS state remains process-local and consent-scoped; it is not persistent JEPA/EMA body-weight learning.
+
+Next: poll all four exact workflows on 0cd31098110ee36bb63078947cfed1c444d3ff04. If staged/integrated passes, add frozen-weight held-out acoustic controls against persistence, no-predictor and shuffled cues, plus source/voice retention and revocation. If another pin fails, trace the exact consumer chain and rebind only the precise verified blob; do not relax hash gates.
