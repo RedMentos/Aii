@@ -1984,3 +1984,34 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+---
+
+## Core & Harness — 2026-11-25: fair-budget arithmetic source-pin repair
+
+- Parent PR [#2478](https://github.com/RedMentos/Aii/pull/2478) was at `55db58ae053c0e93430015a002ca620f8489bcc3` on the release-development ancestor `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Exact staged CI exposed one common blocker: the RECORD_ONLY controller guard omitted the exact arithmetic/fair-budget Runtime SHA-256 `2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0`. Runs 45540305517 and 45540305597 failed at this pin. Direct same-turn B1/B2→C4→C3 tests passed 3/3 on Python 3.13 and 3.14 in run 45540305358, before its final staged-composition step failed at the same pin.
+- Core opened stacked draft [PR #2485](https://github.com/RedMentos/Aii/pull/2485), branch `core/v14-fair-budget-guard-rebind-20261125-run1`, code head `1660a81281279a873bff676b4733ee62f14d37ba`. It adds only the exact Runtime hash to the finite guard allowlist and rebinds guard → recovery-12 → recovery-21 → integrated stage → RuntimeDeploy. No wildcard, gate relaxation or runtime behavior change.
+- LOCAL_LINUX isolated arithmetic fastpath: **21/21 PASS**, CPython 3.13.5 / pytest 9.0.2; `py_compile` PASS. This is not full staged Runtime evidence.
+- Six exact-head CI workflows are queued: 45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694. No post-rebind CI PASS is claimed yet.
+- Full LOCAL_LINUX Aii checkout remains **BLOCKED / NOT_RUN** because this environment cannot resolve `github.com`. Redmi remains **REDMI_UNVERIFIED**; no fresh private receipt, update request, Termux command, native probe or device action occurred. GitHub push/PR is not deployment.
+- **Next:** poll the six exact-head runs, repair any subsequent exact pin failure bottom-up, then obtain independent review and integrate #2485 into #2478. After the staged path is green, use real device per-role TTFT/PSS receipts to calibrate the B1/B2 slices; do not change models or claim improved phone latency before measurement.
+
+Run start/end time: **UNKNOWN** (not measured by this environment). User action required: **none**.
+
+---
+
+## Core & Harness — Run 25 final exact-head CI readback
+
+- Tested code/test SHA: `fd1c58e2998ad018dcafdf8ac3367eb45f543575` on child PR [#2485](https://github.com/RedMentos/Aii/pull/2485), stacked on [#2478](https://github.com/RedMentos/Aii/pull/2478). PR remains DRAFT / NOT_RELEASED.
+- Exact CI: controller guard [45542286279](https://github.com/RedMentos/Aii/actions/runs/45542286279) PASS; Lab Age/WebView [45542286382](https://github.com/RedMentos/Aii/actions/runs/45542286382) PASS; runtime deployment integrity [45542286519](https://github.com/RedMentos/Aii/actions/runs/45542286519) PASS on Python 3.11/3.14; owner-read [45542286527](https://github.com/RedMentos/Aii/actions/runs/45542286527) PASS; two-checkout migration [45542286331](https://github.com/RedMentos/Aii/actions/runs/45542286331) PASS; staged/integrated [45542286369](https://github.com/RedMentos/Aii/actions/runs/45542286369) PASS.
+- Staged Runtime: **288 passed, 10 skipped, 48 subtests**; integrated regression: **424 passed, 3 skipped, 58 subtests**; recovery shell syntax PASS. Arithmetic stage: 40 passed / 17 subtests. The stale C4 focal test blob was corrected to the exact current source blob `41c850b4a4b6de356a7e1049a9df56b085f76f9f`.
+- LOCAL_LINUX isolated arithmetic: **21/21 PASS** on CPython 3.13.5 / pytest 9.0.2; py_compile PASS. Full Aii checkout NOT_RUN/BLOCKED by DNS. GitHub-hosted CI is not local Redmi/native proof.
+- P0 effect: the strict source-pin blocker is cleared on the child branch and the existing fair B1/B2→C4→C3 staged path now passes its integrated synthetic Runtime tests. This does **not** prove native B1/B2 offers, correct Redmi arithmetic, reduced device TTFT, or trained latent coupling.
+- Coordination: #2482/#2483 address A4 attention guard/anchor changes on another stack and touch the same guard/recovery/stage/deployer files. Combine all exact pins on one reviewed base; do not merge parallel pin chains independently.
+- Private read-only relay requests [#888 HEALTH](https://github.com/RedMentos/Aiiii/issues/888), [#889 PIPELINE_STATUS](https://github.com/RedMentos/Aiiii/issues/889), [#890 DIAGNOSTICS](https://github.com/RedMentos/Aiiii/issues/890) have no `device_status` response. Latest available #115 snapshot (2026-11-24 09:28 UTC) is historical and says STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers. No UPDATE_REQUEST, Termux command, model/weight/permission change or deployment occurred. Redmi remains **REDMI_UNVERIFIED**.
+- **Next Core package:** port the diagnostic native latent receiver and local TTY-approved probe from [#2451](https://github.com/RedMentos/Aii/pull/2451) onto the current fair-budget base after Boss/QA reconciles the shared pin chain. #2451's old branch is 56 commits ahead / 297 behind #2478, so do not merge it wholesale; port reviewed feature files and rerun the current-base matrix.
+- Android action/outcome follow-up [#2481](https://github.com/RedMentos/Aii/pull/2481) separately reads 10/10 exact workflows green at `bd53f2c`; it remains stacked on #2450 and awaits independent Boss/QA review. Emulator proof is not Redmi proof.
+
+User action required: **none**. No model alternative or download is recommended without fresh device-native comparison.
