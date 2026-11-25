@@ -195,7 +195,9 @@ def test_speaker_window_chronology_survives_model_revision_reset():
         embeddings=later,
     )
     assert accepted["reset_reason"] == "MODEL_OR_CALIBRATION_CHANGED"
-    assert accepted["history_frame_count"] == 0
+    assert accepted["status"] == "WARMUP"
+    assert accepted["interpretation"] == "LOOKBACK_NOT_YET_AVAILABLE"
+    assert accepted["history_frame_count"] == 2
 
 
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
