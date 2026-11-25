@@ -4,7 +4,7 @@
 
 **Current release base:** `gpt6/v13-private-remote-bridge-20261111` HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. Private V13OBS #115 (2026-11-24 09:28:11Z) reports this base installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. This does not install or accept PR #2484.
 
-**Current Perception candidate:** PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact head `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b` (NOT_RELEASED / not installed).
+**Current Perception candidate:** PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, current branch head `afdbbfc00770ca1620cca04b370a67af8bd3e3be`; tested code SHA `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b` (NOT_RELEASED / not installed; later commits are documentation/handoff only).
 
 ### New runtime behavior on that candidate
 
