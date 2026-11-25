@@ -290,6 +290,124 @@ def test_temporal_visual_reset_clears_error_gated_shadow_weights():
     assert state._a3_error_gated_predictor._parameter_l2() == 0.0
 
 
+
+def test_hysteresis_gate_has_distinct_open_close_thresholds_and_avoids_band_chatter():
+    predictor = A3TemporalPredictor(
+        update_policy="ERROR_HYSTERESIS",
+        gate_open_ratio=0.50,
+        gate_close_ratio=0.25,
+    )
+    ratios = [0.60, 0.40, 0.30, 0.20, 0.40, 0.60]
+    states = [
+        predictor._update_hysteresis_gate(ratio, 1.0)[0]
+        for ratio in ratios
+    ]
+    assert states == [True, True, True, False, False, True]
+    assert predictor._gate_transitions == 3
+
+
+def test_hysteresis_gate_rejects_invalid_thresholds_and_error_values():
+    with pytest.raises(ValueError, match="gate_open_ratio"):
+        A3TemporalPredictor(update_policy="ERROR_HYSTERESIS", gate_open_ratio=0.0)
+    with pytest.raises(ValueError, match="gate_close_ratio"):
+        A3TemporalPredictor(
+            update_policy="ERROR_HYSTERESIS",
+            gate_open_ratio=0.5,
+            gate_close_ratio=0.5,
+        )
+    predictor = A3TemporalPredictor(update_policy="ERROR_HYSTERESIS")
+    with pytest.raises(A3TemporalPredictorError, match="finite nonnegative"):
+        predictor._update_hysteresis_gate(float("nan"), 1.0)
+    with pytest.raises(A3TemporalPredictorError, match="finite nonnegative"):
+        predictor._update_hysteresis_gate(1.0, -1.0)
+
+
+def test_error_hysteresis_policy_is_bounded_and_emits_gate_diagnostics():
+    zero = [0.0] * 16
+    a, b = patterns()
+    c, d = [0.0] * 16, [0.0] * 16
+    c[8], d[9] = 0.7, 0.7
+    stream = (
+        [zero] * 100
+        + [a if i % 2 == 0 else b for i in range(80)]
+        + [zero] * 160
+        + [c if i % 2 == 0 else d for i in range(80)]
+        + [zero] * 100
+    )
+    always = A3TemporalPredictor(learning_rate=0.3, warmup_updates=4)
+    hysteresis = A3TemporalPredictor(
+        learning_rate=0.3,
+        warmup_updates=4,
+        update_policy="ERROR_HYSTERESIS",
+    )
+    for sample in stream:
+        always.update(sample)
+        result = hysteresis.update(sample)
+        assert result["authority"] == "SHADOW_ONLY"
+        assert result["persistent_weights"] is False
+        assert result["truth_authority"] == 0
+        assert result["learning_authority"] is False
+        assert result["action_authority"] is False
+    assert 0 < hysteresis._updates < always._updates
+    assert hysteresis._gate_transitions > 0
+    assert hysteresis._parameter_l2() < 10.0
+    assert result["update_gate_rule"] == "PERSISTENCE_RELATIVE_ERROR_HYSTERESIS"
+
+
+def test_temporal_visual_consumer_runs_error_hysteresis_shadow_without_a4_authority():
+    state = TemporalVisualEvidence()
+    luminance = {tile: [0.0] * 16 for tile in TILE_IDS}
+    projector_sha = "b" * 64
+    result = None
+    for index in range(10):
+        changed = TILE_IDS[index % len(TILE_IDS)] if index % 2 else None
+        embeddings = {
+            tile: ((0.0, 1.0) if tile == changed else (1.0, 0.0))
+            for tile in TILE_IDS
+        }
+        source_ref = {
+            "source_id": f"hysteresis-frame-{index}",
+            "sha256": f"{index + 101:064x}",
+            "char_start": 0,
+            "char_end": 0,
+            "modality": "image",
+        }
+        result = state.update(
+            start_ms=index * 10,
+            end_ms=(index + 1) * 10,
+            tile_luminance=luminance,
+            a3_tile_embeddings=embeddings,
+            a3_projector_sha256=projector_sha,
+            frame_source_ref=source_ref,
+        )
+    prediction = result["a3_temporal_prediction"]
+    shadow = prediction["error_hysteresis_shadow"]
+    assert shadow["update_policy"] == "ERROR_HYSTERESIS"
+    assert shadow["authority"] == "SHADOW_ONLY"
+    assert shadow["persistent_weights"] is False
+    assert shadow["truth_authority"] == 0
+    assert shadow["learning_authority"] is False
+    assert shadow["action_authority"] is False
+    original = _a3_predictive_attention_novelty(prediction)
+    changed_shadow = dict(prediction)
+    changed_shadow["error_hysteresis_shadow"] = dict(shadow, shadow_surprise=1.0)
+    assert _a3_predictive_attention_novelty(changed_shadow) == original
+
+
+def test_temporal_visual_reset_clears_error_hysteresis_shadow_weights():
+    state = TemporalVisualEvidence()
+    zero = [0.0] * 16
+    for index in range(40):
+        state._a3_error_hysteresis_predictor.update(
+            zero if index % 2 else [0.8] + [0.0] * 15,
+        )
+    assert state._a3_error_hysteresis_predictor._observations > 0
+    state.reset()
+    assert state._a3_error_hysteresis_predictor._observations == 0
+    assert state._a3_error_hysteresis_predictor._updates == 0
+    assert state._a3_error_hysteresis_predictor._parameter_l2() == 0.0
+    assert state._a3_error_hysteresis_predictor._gate_transitions == 0
+
 def test_error_gate_rule_is_explicit_and_invalid_policy_fails_closed():
     predictor = A3TemporalPredictor(update_policy="ERROR_GATED")
     zero = [0.0] * 16

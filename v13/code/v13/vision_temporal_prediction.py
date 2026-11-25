@@ -31,7 +31,9 @@ class A3TemporalPredictor:
 
     def __init__(self, *, learning_rate: float = 0.25,
                  warmup_updates: int = 4, max_gradient_norm: float = 1.0,
-                 max_abs_weight: float = 2.0, update_policy: str = "ALWAYS") -> None:
+                 max_abs_weight: float = 2.0, update_policy: str = "ALWAYS",
+                 gate_open_ratio: float = 0.50,
+                 gate_close_ratio: float = 0.25) -> None:
         if (type(learning_rate) not in (int, float)
                 or not math.isfinite(float(learning_rate))
                 or not 0.0 < float(learning_rate) <= 1.0):
@@ -46,8 +48,22 @@ class A3TemporalPredictor:
                 or not math.isfinite(float(max_abs_weight))
                 or not 0.0 < float(max_abs_weight) <= 10.0):
             raise ValueError("max_abs_weight must be finite in (0,10]")
-        if update_policy not in {"ALWAYS", "ERROR_GATED"}:
-            raise ValueError("update_policy must be ALWAYS or ERROR_GATED")
+        if type(update_policy) is not str or update_policy not in {
+            "ALWAYS", "ERROR_GATED", "ERROR_HYSTERESIS",
+        }:
+            raise ValueError("update_policy must be ALWAYS, ERROR_GATED or ERROR_HYSTERESIS")
+        if (type(gate_open_ratio) not in (int, float)
+                or not math.isfinite(float(gate_open_ratio))
+                or not 0.0 < float(gate_open_ratio) <= 10.0):
+            raise ValueError("gate_open_ratio must be finite in (0,10]")
+        if (type(gate_close_ratio) not in (int, float)
+                or not math.isfinite(float(gate_close_ratio))
+                or not 0.0 <= float(gate_close_ratio) < float(gate_open_ratio)):
+            raise ValueError("gate_close_ratio must be finite in [0,gate_open_ratio)")
+        self.gate_open_ratio = float(gate_open_ratio)
+        self.gate_close_ratio = float(gate_close_ratio)
+        self._gate_open = False
+        self._gate_transitions = 0
         self.learning_rate = float(learning_rate)
         self.warmup_updates = warmup_updates
         self.update_policy = update_policy
@@ -64,6 +80,8 @@ class A3TemporalPredictor:
         self._previous = None
         self._updates = 0
         self._observations = 0
+        self._gate_open = False
+        self._gate_transitions = 0
 
     @staticmethod
     def _validate(values) -> tuple[float, ...]:
@@ -82,10 +100,27 @@ class A3TemporalPredictor:
     def _parameter_l2(self) -> float:
         return math.sqrt(sum(weight * weight for row in self._weights for weight in row))
 
+    def _update_hysteresis_gate(self, model_error: float, baseline_error: float) -> tuple[bool, float]:
+        """Update a persistence-relative error gate with separate open/close thresholds."""
+        if (type(model_error) not in (int, float)
+                or not math.isfinite(float(model_error)) or float(model_error) < 0.0
+                or type(baseline_error) not in (int, float)
+                or not math.isfinite(float(baseline_error)) or float(baseline_error) < 0.0):
+            raise A3TemporalPredictorError("hysteresis gate errors must be finite nonnegative numbers")
+        relative_error = float(model_error) / max(1e-8, float(baseline_error))
+        was_open = self._gate_open
+        if not was_open and relative_error >= self.gate_open_ratio:
+            self._gate_open = True
+        elif was_open and relative_error <= self.gate_close_ratio:
+            self._gate_open = False
+        if self._gate_open != was_open:
+            self._gate_transitions += 1
+        return self._gate_open, relative_error
+
     def _payload(self, *, status: str, prediction_error=None, baseline_error=None,
                  improvement=None, surprise=None, gradient_l2=0.0,
                  parameter_delta_l2=0.0, update_gate="NONE",
-                 prediction_error_exceeds_gate=False) -> dict:
+                 prediction_error_exceeds_gate=False, gate_relative_error=None) -> dict:
         return {
             "schema": "v14.a3-temporal-prediction/1",
             "status": status,
@@ -94,9 +129,21 @@ class A3TemporalPredictor:
             "observations": self._observations,
             "update_fraction": round(self._updates / max(1, self._observations), 6),
             "update_policy": self.update_policy,
-            "update_gate_rule": "MODEL_MAE_GT_MAX_EPSILON_OR_0.25_PERSISTENCE_MAE",
+            "update_gate_rule": (
+                "PERSISTENCE_RELATIVE_ERROR_HYSTERESIS"
+                if self.update_policy == "ERROR_HYSTERESIS"
+                else "MODEL_MAE_GT_MAX_EPSILON_OR_0.25_PERSISTENCE_MAE"
+                if self.update_policy == "ERROR_GATED" else "ALWAYS"
+            ),
             "update_gate": update_gate,
             "prediction_error_exceeds_gate": bool(prediction_error_exceeds_gate),
+            "gate_open": self._gate_open,
+            "gate_transition_count": self._gate_transitions,
+            "gate_open_ratio": self.gate_open_ratio,
+            "gate_close_ratio": self.gate_close_ratio,
+            "gate_relative_error": (
+                None if gate_relative_error is None else round(gate_relative_error, 8)
+            ),
             "warmup_updates": self.warmup_updates,
             "prediction_error_mae": None if prediction_error is None else round(prediction_error, 8),
             "persistence_baseline_mae": None if baseline_error is None else round(baseline_error, 8),
@@ -140,10 +187,19 @@ class A3TemporalPredictor:
         model_error = sum(abs(target[i] - prediction[i]) for i in range(TILE_COUNT)) / TILE_COUNT
         measured = self._observations >= self.warmup_updates
         error_gate_open = model_error > max(1e-8, baseline_error * 0.25)
-        should_update = self.update_policy == "ALWAYS" or error_gate_open
-        update_gate = "ALWAYS" if self.update_policy == "ALWAYS" else (
-            "ERROR_GATE_OPEN" if error_gate_open else "ERROR_GATE_CLOSED"
-        )
+        gate_relative_error = None
+        if self.update_policy == "ERROR_HYSTERESIS":
+            error_gate_open, gate_relative_error = self._update_hysteresis_gate(
+                model_error, baseline_error,
+            )
+            should_update = error_gate_open
+            update_gate = "HYSTERESIS_OPEN" if error_gate_open else "HYSTERESIS_CLOSED"
+        elif self.update_policy == "ERROR_GATED":
+            should_update = error_gate_open
+            update_gate = "ERROR_GATE_OPEN" if error_gate_open else "ERROR_GATE_CLOSED"
+        else:
+            should_update = True
+            update_gate = "ALWAYS"
 
         gradient_l2 = 0.0
         delta_squared = 0.0
@@ -175,6 +231,7 @@ class A3TemporalPredictor:
                 status="WARMUP", gradient_l2=gradient_l2,
                 parameter_delta_l2=math.sqrt(delta_squared), update_gate=update_gate,
                 prediction_error_exceeds_gate=error_gate_open,
+                gate_relative_error=gate_relative_error,
             )
         improvement = baseline_error - model_error
         return self._payload(
@@ -184,4 +241,5 @@ class A3TemporalPredictor:
             gradient_l2=gradient_l2,
             parameter_delta_l2=math.sqrt(delta_squared), update_gate=update_gate,
             prediction_error_exceeds_gate=error_gate_open,
+            gate_relative_error=gate_relative_error,
         )
