@@ -216,14 +216,14 @@ def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> str:
     for source_id, source_pairs in by_source.items():
         ordered = sorted(source_pairs, key=lambda item: item["token_position"])
         positions = [item["token_position"] for item in ordered]
+        if len(set(positions)) != len(positions):
+            raise LatentAdapterError(name + " contains a duplicate token position for one source")
         if len(positions) < 2 or positions != list(range(len(positions))):
             raise LatentAdapterError(name + " token positions must contain at least two contiguous rows from zero")
         if len({item["alignment_id"] for item in ordered}) != 1:
             raise LatentAdapterError(name + " tokenwise rows for one source disagree on alignment_id")
         if len({item["source_sha256"] for item in ordered}) != 1:
             raise LatentAdapterError(name + " tokenwise rows for one source disagree on source_sha256")
-        if len(set(positions)) != len(positions):
-            raise LatentAdapterError(name + " contains a duplicate token position for one source")
         previous_end = -1
         for item in ordered:
             start, end = item["source_span"]
