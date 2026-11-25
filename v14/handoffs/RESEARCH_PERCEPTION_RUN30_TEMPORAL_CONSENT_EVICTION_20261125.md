@@ -47,3 +47,14 @@
 3. After merge into the current Perception chain, QA/Core still need the signed Android audio-consent provider/revocation/zeroization lifecycle before AudioRecord is enabled.
 
 **User action:** none required. No manual Termux command, device update, model download or productive swap is requested.
+
+
+## Additional speaker-registry preflight correction — 2026-11-25
+
+Independent review of the just-added speaker-scope purge found one more fail-closed ordering defect: `SpeakerChangeEvidenceRegistry.update()` evicted the old consent key before checking whether the incoming lookback could fit the registry's `max_frames` bound. A malformed new scope could therefore erase the last valid vectors and then raise.
+
+- Moved current-scope chronology and lookback-capacity validation before any old-generation/old-scope eviction.
+- Added `test_invalid_new_consent_scope_does_not_evict_previous_speaker_vectors`, which verifies that an invalid new lookback raises while the prior state object, frames and key remain intact.
+- LOCAL_LINUX isolated negative-control reproduction: **PASS**; the pre-fix ordering loses the prior key before raising, while validate-first preserves it.
+- Code/test commit: `0dabbc3a49cf161972750dd5f7faaae26e1248d7`; source blob `5e2b4a88e416cfb92d6c94df7544d0be355cbbe8`; test blob `b819a6e4323a0975e3da80fb67718eeaacbcd36f`.
+- Exact-head CI for this additional speaker-registry change: pending at this handoff revision. Do not inherit the previous `de18aa02` results as proof for the new speaker source/test bytes.
