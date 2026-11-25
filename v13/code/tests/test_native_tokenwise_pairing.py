@@ -643,3 +643,60 @@ def test_task_score_no_message_cannot_claim_sender_source_or_adapter():
             native_receipt=_task_score_native("d" * 64, "f" * 64, -0.5),
             adapter_sha256="c" * 64,
         )
+
+
+def test_task_score_redmi_receipt_requires_private_execution_digest_and_build_id():
+    target_hash = _task_score_sha("target")
+    input_hash = _task_score_sha("input")
+    native_receipt = _task_score_native(target_hash, input_hash, -0.5)
+    native_receipt["execution_kind"] = "NATIVE_LLAMA_CPP_GGUF"
+    native_receipt["environment"] = "REDMI"
+    kwargs = dict(
+        condition="LATENT_CANDIDATE", task_group_id="device-task", task_family="OTHER",
+        session_id="device-session",
+        source_ref={"source_id": "source", "sha256": "1" * 64},
+        message_source_ref={"source_id": "source", "sha256": "1" * 64},
+        receiver={"role": "C3_LANGUAGE", "model_revision": "r1",
+                  "model_sha256": "b" * 64, "tokenizer_revision": "tok1"},
+        target_token_ids_sha256=target_hash, target_token_count=2,
+        context_sha256=_task_score_sha("context"), input_sha256=input_hash,
+        native_receipt=native_receipt, adapter_sha256="d" * 64,
+    )
+    with pytest.raises(NativeReceiverUtilityError, match="device_execution_receipt_sha256"):
+        build_native_receiver_task_score_receipt(**kwargs)
+    native_receipt["device_execution_receipt_sha256"] = _task_score_sha("private-device-receipt")
+    native_receipt["device_runtime_build_id"] = "redmi-runtime-build"
+    receipt = build_native_receiver_task_score_receipt(**kwargs)
+    assert receipt["native"]["environment"] == "REDMI"
+    assert receipt["native"]["device_execution_receipt_sha256"] == _task_score_sha("private-device-receipt")
+
+
+def test_task_score_holdout_gate_requires_minimum_per_session_and_family():
+    result = evaluate_native_receiver_task_utility(
+        _task_score_cohort(), min_tasks_per_session=11, min_tasks_per_family=11,
+    )
+    assert result["status"] == "FIXTURE_ONLY"
+    assert result["enough_holdout"] is False
+    assert result["tasks_per_session"] == {"session-0": 10, "session-1": 10}
+    assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
+
+
+def test_task_score_adapter_revision_must_be_stable_across_task_cohort():
+    rows = _task_score_cohort()
+    for index, item in enumerate(rows):
+        if item["task_group_id"] != "task-0" or item["condition"] not in {
+            "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
+        }:
+            continue
+        native_receipt = dict(item["native"])
+        rows[index] = build_native_receiver_task_score_receipt(
+            condition=item["condition"], task_group_id=item["task_group_id"],
+            task_family=item["task_family"], session_id=item["session_id"],
+            source_ref=item["source_ref"], message_source_ref=item["message_source_ref"],
+            receiver=item["receiver"], target_token_ids_sha256=item["target_token_ids_sha256"],
+            target_token_count=item["target_token_count"], context_sha256=item["context_sha256"],
+            input_sha256=item["input_sha256"], native_receipt=native_receipt,
+            adapter_sha256="e" * 64,
+        )
+    with pytest.raises(NativeReceiverUtilityError, match="adapter revision changed"):
+        evaluate_native_receiver_task_utility(rows)
