@@ -1798,3 +1798,6 @@ This strengthens the research gate but does not change the code claim: PR #2489 
 
 
 CI follow-up (2026-11-25): workflow run 45559754665 later completed with both staged-runtime and integrated-regression SUCCESS. The final docs-only head had no new workflow run visible; the code itself is unchanged from tested implementation commit 8ebc18b.
+
+
+Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-only on this branch. It now points to #2487 as the latest functional Perception candidate (focused 143/143 PASS; staged/integrated FAIL due the Core-owned stale recovery source pin; migration PARTIAL) and records #2489 as supporting read-only latent-audit evidence. V14-006 remains IN_PROGRESS_PARTIAL; the next step is Core pin rebinding and the signed RAW EAR/QA provider integration, not a claim of Android microphone proof.

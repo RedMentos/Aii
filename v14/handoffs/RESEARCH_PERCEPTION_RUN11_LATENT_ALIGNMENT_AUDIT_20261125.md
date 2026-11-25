@@ -49,3 +49,10 @@ Current tap vectors are final RMSNorm output embeddings, not middle-layer residu
 
 ## Next executable step
 Once Core's opt-in tap writer is integrated and an explicitly authorized local runtime is running, gather >=20 distinct paired B1/B2 source groups from matching event/generation receipts, run the audit, and retain only aggregate metrics. If alignment exceeds the permutation null, proceed to a separate pair-specific projector experiment with source-disjoint train/held-out sets and a receiver-side causal task test. Do not train or inject from this audit tool.
+
+
+## Shared queue / audio lane coordination — 2026-11-25
+
+The V14_WORK_BOARD.json V14-006 ticket was updated append-only: owner and IN_PROGRESS_PARTIAL status preserved; latest functional Perception candidate now points to PR #2487, with its exact focused 143/143 PASS and staged/integrated FAIL recorded. The failure is not in the speaker-window chronology patch: the composed Runtime still expects stale SHA-256 86ad7838... for scripts/record_only_controller_guard_20261116.py; two-checkout migration remains PARTIAL. Core must rebind the owned source pin and rerun the full composed matrix without weakening the hash gate.
+
+PR #2489 is recorded as supporting B3 evidence tooling, not as a production feature. The board's next step remains the RAW EAR/QA provider integration and explicit Android consent gate. No board status was promoted, no Redmi/microphone test claimed, and no user action is required.

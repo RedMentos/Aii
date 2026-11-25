@@ -197,18 +197,18 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "next_step": "Core must rebind the stale Termux recovery source pin without weakening its hash gate, then rerun #2487 staged-runtime, integrated-regression and two-checkout migration on the composed current head. After that, reconcile the signed one-shot RAW EAR consumer with QA's companion provider; test route/silence/revocation only after explicit device permission. Supporting research PR #2489 adds a read-only B1/B2 LatentTapPacket alignment audit (9/9 local synthetic tests) but has no real tap cohort; after #2488 is integrated and the runtime is explicitly resumed, collect >=20 paired source/event/generation taps and run it.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-25T06:03:17.000Z",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2487,
+        "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
+        "base": "research-perception/v14-a4-audio-source-outcomes-current-20261124-run16",
+        "state": "OPEN_DRAFT_PARTIAL_CI_FAILED",
+        "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
+        "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required."
     },
     {
       "id": "V14-007",
