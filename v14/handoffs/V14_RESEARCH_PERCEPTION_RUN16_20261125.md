@@ -66,3 +66,18 @@ PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/A
 Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
 
 Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+## Final code/test checkpoint (2026-11-25)
+
+Current code/test SHA: fa2673340f2dce78dcf7952b802957bf8b2f9212.
+
+- Adapter workflow: 47/47 PASS on Python 3.13 and 3.14; privacy scan CLEAN.
+- Runtime-deployment integrity: PASS on Python 3.11 and 3.14.
+- Staged/integrated regression: PASS — 424 passed, 3 skipped, 58 subtests; staged runtime 255 passed, 10 skipped, 47 subtests.
+- LOCAL_LINUX isolated helper reproduction: 10/10 PASS.
+- Full local Aii checkout: BLOCKED/NOT_RUN (no local checkout; github.com DNS unavailable).
+
+Added build_tokenwise_tap_manifest(): checks token-piece IDs against content token IDs, exact source bytes, unique contiguous content-token subsequence in add-special prefill IDs, and selects the exact matching activation rows. The runner and Cognition packet still do not call it. Core integration remains the next step.
+
+Three read-only private relay requests were created: PIPELINE_STATUS #915, DIAGNOSTICS #916, HEALTH #917 (created 2026-11-25T15:25:01Z; 10-minute expiry). No receipt had arrived at the last poll. Latest prior snapshot remains 2026-11-24T09:28:11Z and is historical only.
