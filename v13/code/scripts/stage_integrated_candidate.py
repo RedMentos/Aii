@@ -118,6 +118,9 @@ def stage(code_dir: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
                 raise ValueError('unsafe arithmetic guard output')
             target.write_bytes(payload)
+        staged_runtime = staging / 'v13/runtime.py'
+        if staged_runtime.is_symlink() or not staged_runtime.is_file() or b'guard_runtime_close(self)' not in staged_runtime.read_bytes():
+            raise ValueError('arithmetic overlay removed the native-probe Runtime close barrier')
         native_probe_overlay_path = code_dir / NATIVE_PROBE_OVERLAY
         if native_probe_overlay_path.is_symlink() or not native_probe_overlay_path.is_file():
             raise ValueError('native-probe approval overlay missing or unsafe')
