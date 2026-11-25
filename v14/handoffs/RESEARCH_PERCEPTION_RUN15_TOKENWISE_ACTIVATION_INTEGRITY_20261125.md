@@ -57,3 +57,8 @@ User action: NONE. Do not change installed models/weights or send a manual Termu
 ## Latest available private device boundary
 
 Read-only private V13OBS #115 snapshot (last device check 2026-11-24T09:22:33Z): auto-update enabled and dashboard/runtime UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; AI runtime STOPPED_BY_USER, autostart false, model process stopped. Recorded five-turn metadata has two failed native attempts and zero valid offers for each of B1/B2; native latent exchange and C3 semantic use are not proven. No newer receipt was available in this run. This does not validate PR #2501. No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission change or data mutation was performed. Redmi remains REDMI_UNVERIFIED / NOT_RELEASED.
+
+ 
+## Additional research note — R-146 S-JEPA
+
+Full main-paper review: Giakoumoglou et al., *A Stochastic Latent Variable Generalization of Joint-Embedding Predictive Architectures*, arXiv:2611.09302v1 (2026-11-06). The method uses a target-conditioned posterior during training and a context-conditioned prior at inference for one stochastic latent per image. Its reported experiments use ViT-B/L, 600 ImageNet epochs and four A100 GPUs; it is not an Android candidate. Uncertainty-error correlation is weak within images (mean Spearman about 0.16, positive in 76%), and uncertainty maps require repeated predictor passes. The paper's code URL was not retrievable and software/weight licenses remain unverified; no code or weights were reused. V14 may later test a tiny uncertainty-gated stochastic residual z for ambiguous temporal outcomes, only after source-bound taps exist, with deterministic/zero/shuffle controls and measured calibration/RSS/TTFT.
