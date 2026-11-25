@@ -228,3 +228,73 @@ def validate_native_input_embedding_tap_manifest(
     if dict(manifest) != rebuilt["manifest"]:
         raise LatentAdapterError("native input-embedding manifest digest/binding mismatch")
     return rebuilt
+
+
+_EXTRACTOR_OUTPUT_FIELDS = frozenset({
+    "status", "receipt", "rows", "model_sha256", "extractor_binary_sha256",
+})
+
+
+def build_native_input_embedding_tap_manifest_from_extractor_output(
+    role: str,
+    source_text: str,
+    content_token_ids,
+    content_token_pieces,
+    extractor_output: Mapping,
+    *,
+    source_id: str,
+    event_id: str,
+    brain_generation_id: str,
+    model_revision: str,
+    model_sha256: str,
+    tokenizer_revision: str,
+) -> dict:
+    """Build a tap manifest directly from the native extractor wrapper result.
+
+    Core's extract_native_input_embedding_rows() returns one object containing
+    status, receipt, rows, and the independently computed installed-file hashes.
+    Pass that object intact instead of separately forwarding rows and receipt:
+    this adapter rejects partial/extra output fields and any disagreement
+    between the wrapper's model/binary hashes and its native receipt.
+
+    This is a typed integration boundary, not a cryptographic signature. The
+    caller must invoke the verified native wrapper directly and retain the
+    existing source/event/generation authority checks. It does not persist
+    vectors or grant inference, training, injection, or production-B3 rights.
+    """
+    if (not isinstance(extractor_output, Mapping)
+            or set(extractor_output) != _EXTRACTOR_OUTPUT_FIELDS):
+        raise LatentAdapterError("native extractor output fields are not canonical")
+    if extractor_output.get("status") != "COMPLETE":
+        raise LatentAdapterError("native extractor output is not complete")
+
+    receipt = extractor_output.get("receipt")
+    if not isinstance(receipt, Mapping):
+        raise LatentAdapterError("native extractor output receipt is missing")
+    output_model_sha = _hex_digest(
+        extractor_output.get("model_sha256"), "result model SHA-256", 64,
+    )
+    output_binary_sha = _hex_digest(
+        extractor_output.get("extractor_binary_sha256"),
+        "result extractor binary SHA-256", 64,
+    )
+    if output_model_sha != model_sha256:
+        raise LatentAdapterError("native extractor result model SHA differs from installed manifest")
+    if (receipt.get("model_sha256") != output_model_sha
+            or receipt.get("extractor_binary_sha256") != output_binary_sha):
+        raise LatentAdapterError("native extractor output hashes differ from its receipt")
+
+    return build_native_input_embedding_tap_manifest(
+        role,
+        source_text,
+        content_token_ids,
+        content_token_pieces,
+        extractor_output.get("rows"),
+        source_id=source_id,
+        event_id=event_id,
+        brain_generation_id=brain_generation_id,
+        model_revision=model_revision,
+        model_sha256=output_model_sha,
+        tokenizer_revision=tokenizer_revision,
+        extractor_receipt=receipt,
+    )
