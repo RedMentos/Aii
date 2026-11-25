@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T05:09:25Z",
+  "updated_at": "2026-11-25T05:15:11Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -682,12 +682,12 @@
     },
     {
       "capability": "VOICE_AUDIO input and speech output",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_FEATURE_DECIMATOR; RESEARCH_ONLY_LIBFVAD_COMPARATOR; EXPLICIT_TTS_FALLBACK",
-      "wired": "STAGED_A5_A4_C3_SYNTHETIC_CONSENT_LEASE",
-      "tested_synthetic": "#2433 head a2662b9 has 3 failures: path/path_id assertion on Python 3.13/3.14 and stale attention.py staged pin",
-      "tested_android": "NO_AUDIORECORD_PROVIDER",
-      "active": "PARTIAL_FEATURE_ONLY / DRAFT",
-      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, raw acoustic weight learning or full-duplex."
+      "code": "CALLER_PCM16_RAW_EAR_FIR_FEATURE_DECIMATOR; SIGNED_ONE_SHOT_PCM16_CONSUMER_PR2312; RESEARCH_ONLY_LIBFVAD_COMPARATOR; EXPLICIT_TTS_FALLBACK",
+      "wired": "SIGNED_PCM16_RECEIPT→audio_input.submit_audio_only→RAW_EAR_RUNTIME (DRAFT_CONSUMER_ONLY; not integrated into current release)",
+      "tested_synthetic": "PR #2312 signed consumer PASS on Python 3.13/3.14; integrated-regression PASS; staged two-checkout migration FAIL (2 failures, last_result PARTIAL, runtime ERROR, last_error UPDATE)",
+      "tested_android": "NO_AUDIORECORD_PROVIDER; QA-final manifest has no RECORD_AUDIO permission; no microphone capture",
+      "active": "DRAFT_CONSUMER_ONLY / NO_ANDROID_CAPTURE / NOT_RELEASED",
+      "evidence": "One-shot consumer verifies P-256 receipt, request digest, Runtime generation, PCM hash/geometry, FINAL provenance, replay and two-phase consent. Current QA-final Java tree has no AudioRecord provider; no trainable speech decoder/vocoder, raw acoustic weight learning or full-duplex."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -1499,7 +1499,17 @@
     "branch_head": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
     "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
     "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_STORAGE_BUDGET_MOBILEMOE_20261125.md",
-    "branch_head_before_final_board_update": "21862a6e252b6b3c068b617338dc80885529a4e0"
+    "branch_head_before_final_board_update": "08aa2a810dd34eadefbc2c478a8f5585ff65d07d",
+    "audio_capture_consumer": {
+      "pr": 2312,
+      "code_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
+      "consumer_ci": "PASS Python 3.13/3.14",
+      "integrated_regression": "PASS",
+      "staged_migration": "FAIL_2; PARTIAL/RUNTIME_ERROR/UPDATE",
+      "qa_base_divergence": "81_AHEAD_73_BEHIND",
+      "android_provider": "ABSENT; no RECORD_AUDIO permission in current QA-final manifest",
+      "redmi": "UNVERIFIED_NO_AUDIORECORD_CAPTURE"
+    }
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
@@ -1587,13 +1597,27 @@
     },
     "device": "REDMI_UNVERIFIED_FOR_PR_2484; last private V13OBS #115 proves only base 8d93236 UP_TO_DATE; relay requests #895-897 returned NO_LIVE_RECEIPT.",
     "research": "R-150 MobileMoE-S-PTE: full paper and official PTE card reviewed; FAIR NC gated; no download/reuse; custom ExecuTorch runner and flagship-only results.",
-    "next_action": "Core/Integrator rebind exact vision.py and vision_projector_stats.py hashes in the immutable source-lifecycle closure, then rerun staged/integrated/consumer/migration. Perception continues A-plane/RAW EAR and model-lab research without editing Core-owned pins.",
+    "next_action": "Core/Integrator rebind the exact A3 source-lifecycle closure and rerun staged/integrated/consumer/migration. In parallel, QA/Core must reconcile the divergent QA branches, repair the inherited two-checkout migration, and implement the visible AudioRecord/RECORD_AUDIO provider before Perception rebases PR #2312. Perception does not edit Core/QA-owned provider/composer files or weaken pins.",
     "user_action_required": "NONE",
     "branch_head_after_docs": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
     "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
     "docs_and_board_commit": "b64d4b916dabe062657b2f649613b26ef33b57c1",
     "handoff_commit": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
-    "branch_head_before_final_board_update": "21862a6e252b6b3c068b617338dc80885529a4e0",
-    "latest_next_action_commit": "21862a6e252b6b3c068b617338dc80885529a4e0"
+    "branch_head_before_final_board_update": "08aa2a810dd34eadefbc2c478a8f5585ff65d07d",
+    "latest_next_action_commit": "21862a6e252b6b3c068b617338dc80885529a4e0",
+    "audio_consumer": {
+      "pr": 2312,
+      "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
+      "consumer_ci": "PASS Python 3.13 and 3.14",
+      "integrated_regression": "PASS",
+      "staged_runtime": "FAIL: 2 two-checkout migration assertions; last_result PARTIAL, runtime ERROR, last_error UPDATE",
+      "old_qa_branch": "qa/v14-companion-os-permission-contract-20261122",
+      "old_qa_head": "7650ae0c19e93e4b6cbb778abb2f5123e49c364f",
+      "current_qa_branch": "qa/v14-companion-final-qa-20261122",
+      "current_qa_head": "6dab323f1b59663682d0af65ffbd75c5de489578",
+      "branch_compare": "DIVERGED_81_AHEAD_73_BEHIND; do not retarget blindly",
+      "current_provider": "NO_AUDIORECORD_PROVIDER; AndroidManifest declares POST_NOTIFICATIONS only, no RECORD_AUDIO",
+      "next": "QA/Core publish a compatible current base, repair migration and implement visible AudioRecord provider; Perception then rebases signed consumer."
+    }
   }
 }
