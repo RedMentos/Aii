@@ -43,3 +43,8 @@ Latest authenticated private V13OBS #115 (2026-11-24 09:28:11 UTC): installed `8
 - Research & Perception: after that gate, run source/session-disjoint tests on explicitly consented real visual sequences; compare ALWAYS and ERROR_GATED across static screens, motion, brightness, codec and camera changes; measure parameter deltas, retention, restart and rollback.
 - Keep A4 gain 0.15 unchanged; do not switch the default predictor or production weights.
 - User action: **keine Aktion nötig**.
+
+
+## Final branch/readback checkpoint (2026-11-25T19:47:24.064Z)
+
+PR #2509 final documentation/ledger/board head: `47ccf435dcf66350ba6972b36a5df05341715256`. Exact-head runtime deployment and frame-ingress workflows SUCCESS; A3 temporal calibration, source-lineage and staged/integrated workflows IN_PROGRESS at last poll. Do not mark the PR accepted until all jobs and the shared source-lifecycle integration gate are resolved.
