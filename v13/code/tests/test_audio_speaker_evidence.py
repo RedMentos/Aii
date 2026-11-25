@@ -1392,3 +1392,76 @@ def test_audio_generation_scope_rejects_mismatched_borrowed_lease_before_ingress
     finally:
         runtime.store.close()
 
+def test_borrowed_audio_generation_scope_needs_no_provider_callbacks(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+
+    @contextmanager
+    def guard(source_id, receipt):
+        yield consent_ok(source_id, receipt)
+
+    class EmptyRunner:
+        def generate(self, messages, cancel, deadline, **kwargs):
+            assert messages == [{"role": "system", "content": "borrowed-without-callbacks"}]
+            return iter(())
+
+    try:
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, guard,
+        ) as lease:
+            with audio_consent_generation_scope(
+                runtime, tone(seconds=0.5),
+                runner=EmptyRunner(),
+                messages_factory=lambda result: [
+                    {"role": "system", "content": "borrowed-without-callbacks"}
+                ],
+                cancel=None,
+                deadline=1_000_000_000.0,
+                sample_rate=16000,
+                start_ms=0,
+                event_id=event["event_id"],
+                generation_id=generation,
+                source_id=SOURCE,
+                consent_receipt=RECEIPT,
+                consent_lease=lease,
+                finality="FINAL",
+            ) as (audio_result, token_stream):
+                assert lease.active
+                assert list(token_stream) == []
+                assert audio_result["a4"]["learning_authority"] is False
+            assert lease.active
+        assert not lease.active
+    finally:
+        runtime.store.close()
+
+
+def test_owned_audio_generation_scope_requires_provider_callbacks_before_ingress(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+
+    class NeverRunner:
+        def generate(self, *args, **kwargs):
+            raise AssertionError("owned scope must validate callbacks before C3")
+
+    try:
+        before = runtime.store.one("SELECT COUNT(*) AS n FROM packets")["n"]
+        with pytest.raises(TypeError, match="requires consent_check and consent_guard"):
+            with audio_consent_generation_scope(
+                runtime, tone(seconds=0.5),
+                runner=NeverRunner(),
+                messages_factory=lambda *_: [],
+                cancel=None,
+                deadline=1_000_000_000.0,
+                sample_rate=16000,
+                start_ms=0,
+                event_id=event["event_id"],
+                generation_id=event["brain_generation_id"],
+                source_id=SOURCE,
+                consent_receipt=RECEIPT,
+                finality="FINAL",
+            ):
+                raise AssertionError("owned scope unexpectedly admitted")
+        after = runtime.store.one("SELECT COUNT(*) AS n FROM packets")["n"]
+        assert after == before
+    finally:
+        runtime.store.close()
+
