@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T03:42:59.264Z",
+  "updated_at": "2026-11-25T03:52:13.616Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core PR #2462 is DRAFT / OPEN / NOT_RELEASED at latest branch HEAD ca269493a380232ef88ffa095ab5b82eaec7fce3 (code head d0a30b18cc629d7498373e01985f89df00fa7461; later commits are documentation-only). Fair B1/B2 slices plus late-watch budget/idempotent telemetry fixes exist; exact staged/same-turn/owner-read CI remains blocked by stale Runtime composition pins. Full local Aii suite NOT_RUN; Redmi branch proof unavailable and phone runtime is STOPPED_BY_USER.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "PARENT_CI_FAIL_EXACT_RUNTIME_GUARD_PIN_2c4c8ed8; CHILD_PR_2485_PIN_REBIND_CI_QUEUED; LOCAL_FULL_REPO_BLOCKED_DNS; REDMI_UNVERIFIED",
-      "next_step": "Poll exact-head PR #2485 Python 3.13/3.14 staged Runtime, integrated regression, controller guard, runtime-deploy, owner-read and two-checkout migration workflows. If green, independent-review and integrate #2485 into #2478; then run the complete same-turn/staged matrix and continue the Android receipt/consumed-body evidence path. Keep production B3 OFF and do not claim Redmi behavior without a fresh private receipt.",
+      "proof_environment": "CI_GREEN_STAGED_AND_INTEGRATED_ON_GITHUB_RUNNER; LOCAL_FULL_REPO_BLOCKED_DNS; REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
+      "next_step": "Obtain independent Boss/QA review for #2485 and coordinate one combined strict guard→recovery→stage→deployer chain with the A4 attention changes in #2482/#2483; do not merge parallel chains blindly. Then port the diagnostic native latent receiver/probe overlay from #2451 onto the current fair-budget base and rerun the full staged/integrated/native/migration matrix. After safe integration, obtain a fresh private device receipt before any updater request or device claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T03:42:59.264Z",
-      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.\n\n2026-11-25 Core Run 25: parent #2478 exact head 55db58ae exposed one common staged blocker: controller guard omitted the exact composed arithmetic/fair-budget Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0. Parent CI runs 45540305517 and 45540305597 failed at that same pin; direct same-turn B1/B2→C4→C3 tests passed 3/3 on Python 3.13 and 3.14 before staged composition. Child PR #2485 adds only this exact SHA to the finite allowlist and rebinds guard→recovery-12→recovery-21→stage→RuntimeDeploy bottom-up. Exact child head 1660a81281279a873bff676b4733ee62f14d37ba; six exact-head workflows queued (45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694). LOCAL_LINUX isolated arithmetic 21/21 PASS on CPython 3.13.5/pytest 9.0.2; full Aii checkout NOT_RUN/BLOCKED because GitHub DNS fails. No Redmi receipt, deployment, model/weight/permission/data change. PR remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-25T03:52:13.616Z",
+      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.\n\n2026-11-25 Core Run 25: parent #2478 exact head 55db58ae exposed one common staged blocker: controller guard omitted the exact composed arithmetic/fair-budget Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0. Parent CI runs 45540305517 and 45540305597 failed at that same pin; direct same-turn B1/B2→C4→C3 tests passed 3/3 on Python 3.13 and 3.14 before staged composition. Child PR #2485 adds only this exact SHA to the finite allowlist and rebinds guard→recovery-12→recovery-21→stage→RuntimeDeploy bottom-up. Exact child head 1660a81281279a873bff676b4733ee62f14d37ba; six exact-head workflows queued (45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694). LOCAL_LINUX isolated arithmetic 21/21 PASS on CPython 3.13.5/pytest 9.0.2; full Aii checkout NOT_RUN/BLOCKED because GitHub DNS fails. No Redmi receipt, deployment, model/weight/permission/data change. PR remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.\n\n2026-11-25 final Core Run 25 readback: child #2485 code/test SHA fd1c58e2998ad018dcafdf8ac3367eb45f543575 is exact-head CI GREEN. Controller guard 45542286279 SUCCESS; Lab Age/WebView 45542286382 SUCCESS; Runtime deployment integrity 45542286519 SUCCESS on Python 3.11/3.14; owner-read/bootstrap 45542286527 SUCCESS; two-checkout migration 45542286331 SUCCESS; staged/integrated 45542286369 SUCCESS. Staged Runtime: 288 passed, 10 skipped, 48 subtests; integrated regression: 424 passed, 3 skipped, 58 subtests; recovery shell syntax PASS. Isolated LOCAL_LINUX arithmetic module 21/21 PASS on CPython 3.13.5/pytest 9.0.2. This is CI/synthetic integration, not native model utility or Redmi proof. Child remains DRAFT/NOT_RELEASED, stacked on #2478. PRs #2482/#2483 modify the same pin chain for A4 attention and must be reconciled on one reviewed base. Private relay HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #888–890 have no device_status comments; latest available #115 snapshot (2026-11-24 09:28 UTC) is historical and reports STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers. No UPDATE_REQUEST, Termux command, model/weight/permission change or deployment occurred.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -161,21 +161,27 @@
         "branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
         "pull_request": 2485,
         "code_head": "1660a81281279a873bff676b4733ee62f14d37ba",
-        "status": "DRAFT_CI_QUEUED_NOT_RELEASED",
+        "status": "CI_GREEN_DRAFT_STACKED_NOT_RELEASED",
         "changes": [
           "Added exact Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0 to finite RECORD_ONLY guard allowlist; unknown source hashes remain rejected.",
           "Rebound guard loader SHA-256, recovery-12 Git blob, recovery-21 base blob, integrated-stage SHA-256 and RuntimeDeploy stage SHA-256 bottom-up."
         ],
         "tests": {
-          "local_linux": "PASS: exact arithmetic fastpath 21/21; CPython 3.13.5, pytest 9.0.2; py_compile PASS.",
-          "parent_ci": "FAIL before patch at the same exact Runtime guard pin; runs 45540305517 and 45540305597.",
-          "direct_same_turn": "PASS: 3/3 Python 3.13 and 3.14 in run 45540305358; final staged fair-budget composition failed at the same guard pin.",
-          "child_exact_head_ci": "QUEUED: 45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694.",
-          "full_local_checkout": "BLOCKED/NOT_RUN: no mounted checkout; git ls-remote failed DNS."
+          "local_linux": "PASS: exact arithmetic fastpath 21/21; CPython 3.13.5, pytest 9.0.2; py_compile PASS. Full Aii checkout BLOCKED by DNS.",
+          "parent_ci": "FAIL before patch at exact Runtime guard pin; runs 45540305517 and 45540305597.",
+          "direct_same_turn": "PASS: 3/3 on Python 3.13 and 3.14 in run 45540305358.",
+          "child_exact_head_ci": {
+            "controller_guard": "45542286279 SUCCESS",
+            "lab_age_webview": "45542286382 SUCCESS",
+            "runtime_deploy": "45542286519 SUCCESS (Python 3.11 and 3.14)",
+            "owner_read_bootstrap": "45542286527 SUCCESS",
+            "two_checkout_migration": "45542286331 SUCCESS",
+            "staged_integrated": "45542286369 SUCCESS; staged 288 passed / 10 skipped / 48 subtests; integrated 424 passed / 3 skipped / 58 subtests; recovery shell syntax PASS"
+          }
         },
-        "device": "REDMI_UNVERIFIED; no fresh private receipt or device action; no update request.",
+        "device": "REDMI_UNVERIFIED; private read-only relay issues #888 HEALTH, #889 PIPELINE_STATUS, #890 DIAGNOSTICS have no device_status response; latest available snapshot #115 is historical (2026-11-24 09:28 UTC) and says STOPPED_BY_USER; no device action.",
         "user_action_required": false,
-        "next_action": "Poll all six exact-head runs; fix any subsequent pin failure bottom-up, then independent review and integrate into #2478."
+        "next_action": "Independent Boss/QA review and shared pin-chain reconciliation with #2482/#2483; then port #2451 native receiver/probe onto the current fair-budget base."
       }
     },
     {
@@ -1508,19 +1514,19 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-25T03:42:59.264Z",
+    "timestamp": "2026-11-25T03:52:13.616Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2478,
     "pin_rebind_pr": 2485,
     "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2",
     "pin_rebind_branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
-    "primary_runtime_head": "55db58ae053c0e93430015a002ca620f8489bcc3",
-    "pin_rebind_head": "1660a81281279a873bff676b4733ee62f14d37ba",
-    "status": "OPEN_DRAFT_CI_QUEUED_NOT_RELEASED",
-    "local_linux": "CPython 3.13.5 isolated arithmetic fastpath 21/21 PASS; py_compile PASS. Full checkout BLOCKED by DNS.",
-    "exact_head_ci": "Six PR #2485 workflows queued; no post-rebind PASS claimed.",
-    "redmi": "REDMI_UNVERIFIED; no fresh private receipt or device action.",
-    "next_action": "Poll exact CI, fix source pins without weakening gates, then independent review/integration."
+    "tested_code_head": "fd1c58e2998ad018dcafdf8ac3367eb45f543575",
+    "documentation_head": "PENDING_READBACK",
+    "status": "CI_GREEN_DRAFT_STACKED_NOT_RELEASED",
+    "exact_ci": "Controller guard, Lab Age/WebView, runtime deployment, owner-read, two-checkout migration and staged/integrated all SUCCESS; staged 288/10/48, integrated 424/3/58.",
+    "local_linux": "Isolated arithmetic 21/21 PASS; full checkout BLOCKED by GitHub DNS.",
+    "redmi": "REDMI_UNVERIFIED; private relay #888-890 no response; last available #115 snapshot is historical and user-stopped.",
+    "next_action": "Review/reconcile #2485 with #2482/#2483 on one strict source chain; then port #2451 diagnostic native receiver overlay."
   },
   "core_run21_checkpoint": {
     "date": "2026-11-24T13:19:13Z",
@@ -1585,5 +1591,32 @@
     "device": "REDMI_UNVERIFIED; no fresh private receipt or device action; no update request.",
     "user_action_required": false,
     "next_action": "Poll all six exact-head runs; fix any subsequent pin failure bottom-up, then independent review and integrate into #2478."
+  },
+  "core_run25_final": {
+    "date": "2026-11-25T03:52:13.616Z",
+    "branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
+    "pull_request": 2485,
+    "code_test_sha": "fd1c58e2998ad018dcafdf8ac3367eb45f543575",
+    "result": "CI_GREEN_DRAFT_NOT_RELEASED",
+    "staged": {
+      "run": 45542286369,
+      "passed": 288,
+      "skipped": 10,
+      "subtests": 48
+    },
+    "integrated": {
+      "run": 45542286369,
+      "passed": 424,
+      "skipped": 3,
+      "subtests": 58
+    },
+    "other_runs": {
+      "controller_guard": 45542286279,
+      "lab_age_webview": 45542286382,
+      "runtime_deploy": 45542286519,
+      "owner_read": 45542286527,
+      "two_checkout_migration": 45542286331
+    },
+    "next": "Port #2451 native receiver/probe overlay onto current base after pin-chain review."
   }
 }
