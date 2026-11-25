@@ -65,7 +65,8 @@ final class ClaimedActionRecovery {
                     || args == null || args.length() != 1
                     || !action.packageName.equals(args.optString("package"))
                     || !Canonical.requestDigest("launch_app", action.packageName).equals(digest)
-                    || !Double.isFinite(request.optDouble("expires_at", Double.NaN))
+                    || Double.isNaN(request.optDouble("expires_at", Double.NaN))
+                    || Double.isInfinite(request.optDouble("expires_at", Double.NaN))
                     || Math.abs(request.optDouble("expires_at") * 1000.0 - action.expiresAt) > 1.0
                     || !request.optBoolean("companion_local_consent_required", false)
                     || request.optBoolean("android_os_permission_required", true)
