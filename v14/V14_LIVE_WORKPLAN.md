@@ -1555,3 +1555,8 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - New exact branch head: `369345769f89a655239813046196548e8c05d77b`. Python 3.11/3.14 offline workflows PASS; RAW EAR fastpath, VAD comparison and staged/integrated workflows were still IN_PROGRESS at this checkpoint. The prior failures were reproduced from exact CI logs; no local repository test is claimed because the full checkout is unavailable.
 - This is a test/verification repair around an already-wired consent-scoped A3 online predictor -> A4 novelty path. The predictor changes process-local numeric weights only; persistence requires explicit Runtime config `raw_ear_persist_prediction_weights=True`, and no persistence flag was changed. No PCM/transcript/speaker data is persisted by the predictor.
 - Core still owns the stale `scripts/integrated_audio_context_candidate_20261121.py` source-pin mismatch and old-phone migration PARTIAL. No microphone capture, Android AudioRecord provider or Redmi validation is enabled.
+
+
+### Run 35 CI status refresh — PR #2498
+
+At the latest poll on exact head `369345769f89a655239813046196548e8c05d77b`: RAW EAR fastpath passed on Python 3.13/3.14 (run 45723389394); VAD comparison passed on 3.13/3.14 (run 45723389184); offline runtime integrity passed on 3.11/3.14 (run 45723389226). Staged/integrated regression run 45723389826 remains IN_PROGRESS. No full-suite or Redmi claim.
