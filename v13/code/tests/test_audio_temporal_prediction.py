@@ -17,6 +17,7 @@ from v13.audio_temporal_prediction import (
     AudioTemporalPredictor,
     acoustic_feature_vector,
     predictive_attention_novelty,
+    predictive_omission_novelty,
     unavailable_prediction,
 )
 from v13.audio_voice_cues import (
@@ -340,6 +341,7 @@ def test_actual_provisional_consumer_does_not_train_or_admit(tmp_path, monkeypat
         )
         assert result["a4"]["audio_temporal_prediction"]["status"] == "PROVISIONAL_IGNORED"
         assert result["a4"]["audio_temporal_predictive_novelty"] == 0.0
+        assert result["a4"]["audio_temporal_omission_novelty"] == 0.0
         assert result["c3_admission"].selected == ()
         assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 0
     finally:
@@ -519,3 +521,64 @@ def test_persistent_reset_uses_literal_prefix_and_keeps_similar_unrelated_keys(t
         assert runtime.store.state(unrelated_key, None)[0] == unrelated_payload
     finally:
         runtime.store.close()
+
+
+def test_signed_negative_prediction_error_surfaces_an_omitted_expected_cue():
+    predictor = AudioTemporalPredictor(learning_rate=0.20, warmup_updates=1)
+    repeated_change = (1.0,) * FEATURE_COUNT
+    predictor.update(repeated_change)  # temporal warm-up
+    for _ in range(8):
+        predictor.update(repeated_change)
+    omitted = predictor.update((0.0,) * FEATURE_COUNT)
+    assert omitted["status"] == "SHADOW_MEASURED"
+    assert omitted["omission_prediction_error"] > 0.1
+    assert omitted["negative_prediction_error"] < 0.0
+    assert omitted["signed_prediction_error"] < 0.0
+    assert omitted["commission_prediction_error"] == 0.0
+    assert predictive_omission_novelty(omitted) > 0.0
+    # This omission can be better than the persistence baseline, so the old
+    # positive-only excess-error channel may correctly remain zero.
+    assert predictive_attention_novelty(omitted) == 0.0
+    assert predictive_omission_novelty(unavailable_prediction("PROVISIONAL_IGNORED")) == 0.0
+
+
+def test_a4_consumer_routes_audio_omission_to_novelty_not_interrupt(tmp_path, monkeypatch):
+    sequence = [
+        SILENCE, VOICED, SILENCE, VOICED, SILENCE,
+        VOICED, SILENCE, VOICED, VOICED,
+    ]
+    runtime, event = make_runtime(tmp_path)
+    predictor_attention = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            predicted = run_consumer_sequence(runtime, event, patch, sequence, predictor_attention)
+        last = predicted[-1]
+        prediction = last["a4"]["audio_temporal_prediction"]
+        assert prediction["status"] == "SHADOW_MEASURED"
+        assert prediction["negative_prediction_error"] < 0.0
+        omission_novelty = last["a4"]["audio_temporal_omission_novelty"]
+        assert omission_novelty > 0.0
+        assert omission_novelty <= ATTENTION_GAIN
+        assert predictor_attention.calls[-1]["novelty"] >= omission_novelty
+    finally:
+        runtime.store.close()
+
+    class DisabledRegistry:
+        def update(self, **_kwargs):
+            return unavailable_prediction("DISABLED_CONTROL")
+
+    control_runtime, control_event = make_runtime(tmp_path / "control")
+    control_attention = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            control = run_consumer_sequence(
+                control_runtime, control_event, patch, sequence,
+                control_attention, registry_override=DisabledRegistry(),
+            )
+        assert control[-1]["a4"]["audio_temporal_omission_novelty"] == 0.0
+        assert predictor_attention.calls[-1]["external_interrupt"] == pytest.approx(
+            control_attention.calls[-1]["external_interrupt"]
+        )
+        assert predictor_attention.calls[-1]["novelty"] > control_attention.calls[-1]["novelty"]
+    finally:
+        control_runtime.store.close()
