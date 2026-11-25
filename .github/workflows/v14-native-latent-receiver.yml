@@ -5,11 +5,13 @@ on:
       - boss/v14-native-latent-probe-rebase-20261122
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-target-score-20261125-run1
+      - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run33
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
       - core/v14-tokenwise-native-receiver-consumer-20261125-run1
+      - core/v14-native-target-score-20261125-run1
     paths:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native/latent_receiver/**"
@@ -19,6 +21,12 @@ on:
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/tests/test_native_latent_receiver*.py"
       - "v13/code/tests/test_callosum.py"
+      - "v13/code/tests/test_native_receiver_condition_matrix.py"
+      - "v13/code/tests/test_native_receiver_task_score.py"
+      - "v13/code/v13/native_receiver_condition_matrix.py"
+      - "v13/code/v13/native_receiver_task_matrix_bridge.py"
+      - "v13/code/v13/native_receiver_utility.py"
+      - "v13/code/v13/native_receiver_task_score.py"
       - ".github/workflows/v14-native-latent-receiver.yml"
 permissions:
   contents: read
@@ -40,13 +48,19 @@ jobs:
       - name: Install focused Runtime test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5 psutil PyYAML
       - name: Compile staged receiver and deploy chain
-        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_tokenwise_receiver_probe.py v13/code/v13/native_receiver_utility.py v13/code/v13/native_receiver_task_score.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_tokenwise_receiver_probe.py v13/code/tests/test_native_receiver_task_score.py
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_tokenwise_receiver_probe.py v13/code/v13/native_receiver_utility.py v13/code/v13/native_receiver_task_score.py v13/code/v13/native_receiver_condition_matrix.py v13/code/v13/native_receiver_task_matrix_bridge.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_tokenwise_receiver_probe.py v13/code/tests/test_native_receiver_task_score.py
+      - name: Focused source-bound matrix-to-native-score bridge tests
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q v13/code/tests/test_native_receiver_condition_matrix.py v13/code/tests/test_native_receiver_task_score.py
       - name: Test source tap identity and exact staged Runtime
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_tokenwise_receiver_probe.py v13/code/tests/test_native_receiver_task_score.py v13/code/tests/test_callosum.py
+        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_tokenwise_receiver_probe.py v13/code/tests/test_native_receiver_task_score.py v13/code/tests/test_native_receiver_condition_matrix.py v13/code/tests/test_callosum.py
       - name: Scan public diff for private data and secrets
+        if: always()
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
     runs-on: ubuntu-latest
