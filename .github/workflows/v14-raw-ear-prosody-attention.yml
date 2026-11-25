@@ -36,6 +36,80 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Report exact A4 and dependent Core source-pin chain
+        run: |
+          echo "HEAD=$(git rev-parse HEAD)"
+          python - <<'PY'
+          from hashlib import sha1, sha256
+          from pathlib import Path
+          import re
+
+          def raw(path):
+              return Path(path).read_bytes()
+
+          def git_blob_sha1(data):
+              return sha1(b"blob " + str(len(data)).encode("ascii") + b"\\0" + data).hexdigest()
+
+          paths = (
+              "v13/code/v13/runtime.py",
+              "v13/code/v13/audio_voice_cues.py",
+              "v13/code/v13/audio_speaker_evidence.py",
+              "v13/code/scripts/record_only_controller_guard_20261116.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
+              "v13/code/scripts/integrated_audio_context_candidate_20261121.py",
+              "v13/code/scripts/stage_integrated_candidate.py",
+              "v13/code/v13/runtime_deploy.py",
+          )
+          for name in paths:
+              data = raw(name)
+              print(f"SOURCE {name} blob_sha1={git_blob_sha1(data)} sha256={sha256(data).hexdigest()}")
+
+          guard = Path("v13/code/scripts/record_only_controller_guard_20261116.py").read_text()
+          runtime_block = guard.split("    'v13/runtime.py': {", 1)[1].split("}", 1)[0]
+          allowed_runtime = set(re.findall(r"[0-9a-f]{64}", runtime_block))
+          runtime_sha = sha256(raw("v13/code/v13/runtime.py")).hexdigest()
+          print(f"GUARD_RUNTIME_PIN actual={runtime_sha} allowed={sorted(allowed_runtime)} matches={runtime_sha in allowed_runtime}")
+
+          recovery = Path("v13/code/scripts/termux_runtime_recovery_candidate_20261112.py").read_text()
+          needle = "control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',"
+          start = recovery.find(needle)
+          if start < 0:
+              raise SystemExit("recovery candidate guard pin not found")
+          guard_expected = re.findall(r"[0-9a-f]{64}", recovery[start:start + 300])
+          if not guard_expected:
+              raise SystemExit("recovery candidate guard hash not found")
+          guard_actual = sha256(raw("v13/code/scripts/record_only_controller_guard_20261116.py")).hexdigest()
+          print(f"RECOVERY_GUARD_PIN expected={guard_expected[0]} actual={guard_actual} matches={guard_expected[0] == guard_actual}")
+
+          audio = Path("v13/code/scripts/integrated_audio_context_candidate_20261121.py").read_text()
+          audio_line = next(line for line in audio.splitlines() if '"v13/audio_voice_cues.py":' in line)
+          audio_expected = re.findall(r"[0-9a-f]{40}", audio_line)[0]
+          audio_actual = git_blob_sha1(raw("v13/code/v13/audio_voice_cues.py"))
+          print(f"AUDIO_VOICE_BLOB_PIN expected={audio_expected} actual={audio_actual} matches={audio_expected == audio_actual}")
+
+          audio_speaker_line = next(line for line in audio.splitlines() if '"v13/audio_speaker_evidence.py":' in line)
+          speaker_expected = re.findall(r"[0-9a-f]{40}", audio_speaker_line)[0]
+          speaker_actual = git_blob_sha1(raw("v13/code/v13/audio_speaker_evidence.py"))
+          print(f"AUDIO_SPEAKER_BLOB_PIN expected={speaker_expected} actual={speaker_actual} matches={speaker_expected == speaker_actual}")
+
+          recovery21 = Path("v13/code/scripts/termux_runtime_recovery_candidate_20261121.py").read_text()
+          base_expected = re.findall(r"[0-9a-f]{40}", next(line for line in recovery21.splitlines() if "BASE_BUILDER_BLOB_SHA1" in line))[0]
+          base_actual = git_blob_sha1(raw("v13/code/scripts/termux_runtime_recovery_candidate_20261112.py"))
+          audio_builder_expected = re.findall(r"[0-9a-f]{40}", next(line for line in recovery21.splitlines() if "AUDIO_BUILDER_BLOB_SHA1" in line))[0]
+          audio_builder_actual = git_blob_sha1(raw("v13/code/scripts/integrated_audio_context_candidate_20261121.py"))
+          print(f"RECOVERY_BASE_BLOB_PIN expected={base_expected} actual={base_actual} matches={base_expected == base_actual}")
+          print(f"RECOVERY_AUDIO_BLOB_PIN expected={audio_builder_expected} actual={audio_builder_actual} matches={audio_builder_expected == audio_builder_actual}")
+
+          stage = Path("v13/code/scripts/stage_integrated_candidate.py").read_text()
+          stage_builder_expected = re.findall(r"[0-9a-f]{64}", next(line for line in stage.splitlines() if "BUILDER_SHA" in line))[0]
+          stage_builder_actual = sha256(raw("v13/code/scripts/termux_runtime_recovery_candidate_20261121.py")).hexdigest()
+          deploy = Path("v13/code/v13/runtime_deploy.py").read_text()
+          deploy_stage_expected = re.findall(r"[0-9a-f]{64}", next(line for line in deploy.splitlines() if "STAGER_SHA256" in line))[0]
+          deploy_stage_actual = sha256(raw("v13/code/scripts/stage_integrated_candidate.py")).hexdigest()
+          print(f"STAGE_RECOVERY_BUILDER_PIN expected={stage_builder_expected} actual={stage_builder_actual} matches={stage_builder_expected == stage_builder_actual}")
+          print(f"DEPLOY_STAGER_PIN expected={deploy_stage_expected} actual={deploy_stage_actual} matches={deploy_stage_expected == deploy_stage_actual}")
+          PY
       - name: Install isolated CPU test dependencies
         run: |
           python -m pip install --upgrade pip
