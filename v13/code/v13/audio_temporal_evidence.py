@@ -214,14 +214,31 @@ class TemporalVoiceEvidenceRegistry:
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
+            # Validate the new epoch before evicting the old one. Malformed
+            # input must not destroy the last valid source-bound state.
             result = state.update(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
                 consent_scope_id=consent_scope_id,
             )
+            generation_keys = []
+            consent_scope_keys = []
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
-                    del self._states[old_key]
+                    generation_keys.append(old_key)
+                elif (
+                    old_key[0] == source_id
+                    and old_key[1] == generation_id
+                    and old_key != key
+                ):
+                    # A new provider-validated consent epoch replaces the
+                    # previous scalar A4 filter state for this source.
+                    consent_scope_keys.append(old_key)
+            for old_key in generation_keys + consent_scope_keys:
+                del self._states[old_key]
+            if consent_scope_keys:
+                result["state_reset"] = True
+                result["reset_reason"] = "CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:

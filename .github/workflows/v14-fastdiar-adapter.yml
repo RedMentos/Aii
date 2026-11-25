@@ -11,7 +11,8 @@ on:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/tests/test_audio_fastdiar_adapter.py"
-      - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_speaker_evidence.py v13/code/tests/test_audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
       - ".github/workflows/v14-fastdiar-adapter.yml"
   pull_request:
     paths:
@@ -22,6 +23,7 @@ on:
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/tests/test_audio_fastdiar_adapter.py"
       - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
       - ".github/workflows/v14-fastdiar-adapter.yml"
 
 permissions:
@@ -55,6 +57,6 @@ jobs:
         working-directory: v13/code
         env:
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q -s tests/test_audio_fastdiar_adapter.py tests/test_audio_speaker_evidence.py
+        run: python -m pytest -q -s tests/test_audio_fastdiar_adapter.py tests/test_audio_speaker_evidence.py tests/test_audio_temporal_evidence.py
       - name: Scan changed public content
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree

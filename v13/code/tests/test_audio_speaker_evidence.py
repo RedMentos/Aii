@@ -157,8 +157,10 @@ def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_pat
         # inherit the prior speaker vector history or the previous time origin.
         assert second["speaker_change_evidence"]["status"] == "WARMUP"
         assert second["speaker_change_evidence"]["history_frame_count"] == len(second_embeddings["frames"])
-        assert second["temporal_voice"]["state_reset"] is False
+        assert second["temporal_voice"]["state_reset"] is True
+        assert second["temporal_voice"]["reset_reason"] == "CONSENT_SCOPE_CHANGED"
         assert second["temporal_voice"]["gap_ms"] == 0
+        assert len(runtime._raw_ear_temporal_registry) == 1
         assert second["a4"]["speaker_change_decision"] == "DEFER"
         fingerprint = hashlib.sha256(active["receipt"].encode("utf-8")).hexdigest()
         packet_text = json.dumps(second["packet"], sort_keys=True)
