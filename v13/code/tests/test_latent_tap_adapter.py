@@ -195,12 +195,12 @@ def test_shuffled_source_pairing_is_rejected(tmp_path):
     home, _ = _home(tmp_path, shuffle_receiver=True)
     report = _fit(home)
     assert report["status"] == "REJECTED"
-    assert report["adapter"]["metrics"]["holdout_mse"] >= report["adapter"]["metrics"]["mean_baseline_mse"]
+    assert report["adapter"]["metrics"]["holdout_mse"] >= report["adapter"]["metrics"]["shuffled_train_mse"]
 
 
 def test_fit_requires_twenty_exact_source_pairs(tmp_path):
     home, _ = _home(tmp_path, count=19)
-    with pytest.raises(LatentAdapterError, match="at least 20"):
+    with pytest.raises(LatentAdapterError, match="insufficient valid source-disjoint pairs"):
         _fit(home)
 
 
