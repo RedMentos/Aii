@@ -3,8 +3,8 @@ Date: 2026-11-25
 Owner lane: Research & Perception
 Base: gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6
 Branch: research-perception/latent-alignment-audit-20261125-run11
-PR: pending first push/readback
-Implementation SHA: pending first push/readback
+PR: #2489 (OPEN / DRAFT / NOT_RELEASED)
+Implementation SHA: 8ebc18b322745dfb96b524e25933408597ae92eb
 
 ## Product gap addressed
 The current native probe can persist source-bound LatentTapPacket records, but no accepted method exists to screen whether B1 and B2 final-output tap spaces preserve the same source neighbourhoods. The research paper R-007 demonstrates why raw cosine/CKA or successful retrieval must not be treated as causal communication evidence. It also identifies position-0 domination in its tested causal decoders.

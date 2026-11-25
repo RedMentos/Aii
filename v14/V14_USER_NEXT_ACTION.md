@@ -1772,3 +1772,18 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception — run 11, 2026-11-25
+
+**Verified code checkpoint:** Draft PR #2489, branch research-perception/latent-alignment-audit-20261125-run11, implementation commit 8ebc18b322745dfb96b524e25933408597ae92eb. It adds a read-only audit of persisted LatentTapPacket records and updates R-007 from abstract-only to full-text review. The PR is OPEN / DRAFT / NOT_RELEASED. No CI workflow run was visible at the first exact-head poll; CI status is PENDING, not PASS.
+
+**Exact local evidence:** LOCAL_LINUX / CPython 3.13.5: py_compile PASS; focused tests 9/9 PASS; CLI help PASS. Synthetic SQLite/blob fixture uses the actual V13 packets table columns. DB file hash was unchanged by the audit. This is not a real tap cohort, native model run, full Aii suite, or Redmi test.
+
+**User-visible effect:** no new production Runtime behaviour yet. The tool can later read paired B1/B2 LatentTapPacket artifacts without reading source text, loading a model, writing the DB, exporting vectors, or changing weights. It reports alignment only; it does not establish causal transfer or meaning. Its tap writer dependency is Core draft PR #2488. The whole-canon blocker #1984 and real-chat failure #1904 remain OPEN.
+
+**Device/deployment boundary:** The latest available V14 Perception handoff records a V13OBS #115 snapshot at 2026-11-24 09:28:11 UTC: installed Runtime/Dashboard were reported UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6 and auto-update enabled, but AI runtime was STOPPED_BY_USER, autostart false, and model process STOPPED; B1/B2 still reported TIME_BUDGET. This run received no fresh private receipt. Therefore current Redmi installation, updater and runtime state are not freshly verified; keep REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight swap, permission change or device mutation was performed. GitHub push is not deployment.
+
+**Next internal action:** Core should preserve the LatentTapPacket fields used by #2489 while integrating #2488. After that, only when the user has explicitly resumed the local runtime and native probe consent is active, collect at least 20 paired B1/B2 source groups from matching event/generation receipts and run the read-only audit. Any projector training or receiver injection requires a separate pair-specific experiment and review. Boss/Integrator should reconcile this append-only note with the newer #2463/#2486 documentation branches and add the audit evidence tool to the shared board/workplan after review.
+
+**User action required: NONE.** No device action or model/permission change is needed.
