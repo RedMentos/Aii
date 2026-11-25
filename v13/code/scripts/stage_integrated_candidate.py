@@ -18,6 +18,8 @@ ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '94cf14f671f695efc1544f50c8edbc8d462c0cd5'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
 NATIVE_PROBE_OVERLAY_GIT_BLOB = '8be75cecf7b76865ea95b4cb60985d52d586edf6'
+RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_20261124.py'
+RUNTIME_CLOSE_OVERLAY_GIT_BLOB = '109bcb8ac2be5666f118f5266a1e6ba8f0ef6bfc'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -55,6 +57,18 @@ def stage(code_dir: Path, destination: Path) -> dict:
     spec.loader.exec_module(module)
     # Validate source pins before creating the destination.
     replacements = module.build_sources(code_dir)
+    close_overlay_path = code_dir / RUNTIME_CLOSE_OVERLAY
+    if close_overlay_path.is_symlink() or not close_overlay_path.is_file():
+        raise ValueError('native-probe Runtime close overlay missing or unsafe')
+    close_overlay_raw = close_overlay_path.read_bytes()
+    close_overlay_blob = hashlib.sha1(
+        b'blob ' + str(len(close_overlay_raw)).encode('ascii') + b'\0' + close_overlay_raw
+    ).hexdigest()
+    if close_overlay_blob != RUNTIME_CLOSE_OVERLAY_GIT_BLOB:
+        raise ValueError('native-probe Runtime close overlay source changed')
+    runtime_payload = replacements.get('v13/runtime.py')
+    if not isinstance(runtime_payload, bytes) or b'guard_runtime_close(self)' not in runtime_payload:
+        raise ValueError('integrated Runtime lacks the native-probe close barrier')
     for relative, payload in replacements.items():
         target = Path(relative)
         if (target.is_absolute() or '..' in target.parts or not target.parts
@@ -145,6 +159,12 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'training_authority': 0,
             'native_receiver_authority': 0,
         }
+        native_probe_close_overlay_manifest = {
+            'name': RUNTIME_CLOSE_OVERLAY,
+            'git_blob_sha1': RUNTIME_CLOSE_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'replaced_files': ['v13/runtime.py'],
+        }
         replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
@@ -161,6 +181,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'replaced_files': replaced_files,
             'arithmetic_overlay': arithmetic_overlay_manifest,
             'native_probe_overlay': native_probe_overlay_manifest,
+            'native_probe_close_overlay': native_probe_close_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
