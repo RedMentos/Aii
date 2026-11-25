@@ -25,7 +25,7 @@ Canon: A0/A-plane RAW EAR → A4 acoustic speaker-change evidence; consent/revoc
 - Code commit: `8162f40ff52688351dcf52ab50b1543ecbdfe5bd`; source blob `ffcd1ecb679f38ae5b6e90cdb3284d7f94990232`.
 - Regression commit / current code-test head before this handoff: `38f0ef5fa46651e157c365a490e5faa16c33feb9`; test blob `93425a42c6c8fd2c9d5cca16ae5255b659d340bd`.
 - Parent branch head at child-PR creation: `cbf3bca17797f52c889b672baef5b7fd5b7deb80`.
-- GitHub PR #2491 is DRAFT / NOT_RELEASED and explicitly targets the parent branch #2487, not the release branch.
+- GitHub PR #2491 is DRAFT / NOT_RELEASED and explicitly targets parent branch #2487, not the release branch. Tested code/test head is `38f0ef5fa46651e157c365a490e5faa16c33feb9`; docs-only follow-up commits are recorded in the PR.
 
 ## Tests
 
@@ -33,10 +33,10 @@ Canon: A0/A-plane RAW EAR → A4 acoustic speaker-change evidence; consent/revoc
 - This was an isolated reproduction of the state transition, not execution of the exact repository module.
 - Full local Aii checkout/pytest: **BLOCKED / NOT_RUN**. No repository checkout is mounted and `git ls-remote` cannot resolve GitHub DNS in this execution container.
 - Exact-head CI on #2491 head `38f0ef5fa46651e157c365a490e5faa16c33feb9`:
-  - RAW EAR fastpath run 45571203618: Python 3.13 PASS; Python 3.14 still running at last poll.
-  - FASTDIAR adapter-consumer run 45571203750: Python 3.13 and 3.14 PASS.
-  - RAW EAR/WebRTC/libfvad comparator run 45571203673: Python 3.14 PASS; Python 3.13 still running at last poll.
-  - staged/integrated run 45571203720: still running at last poll; do not claim success.
+  - RAW EAR fastpath run 45571203618: **PASS** on Python 3.13 and 3.14; each job reports 148 passed, exact py_compile, synthetic benchmark (`device_benchmark=false`) and clean privacy scan.
+  - FASTDIAR adapter-consumer run 45571203750: **PASS** on Python 3.13 and 3.14; each job reports 108 passed and exact py_compile.
+  - RAW EAR/WebRTC/libfvad comparator run 45571203673: **PASS** on Python 3.13 and 3.14, including pinned comparator/native-library build and synthetic ABI checks.
+  - staged/integrated run 45571203720: **FAIL**. Both staged-runtime and integrated-regression fail at the Core-owned recovery builder's controller-guard SHA mismatch (`86ad7838…`); two-checkout migration returns PARTIAL instead of UPDATED. This is the same Core pin dependency tracked by #2482/#2483, not a failure in the two Perception paths. Do not weaken the source hash.
 - CI is not local Linux or Android evidence.
 
 ## Research — R-121
