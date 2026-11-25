@@ -8,7 +8,7 @@ from v13.native_input_embedding_tap import (
     validate_native_input_embedding_tap_manifest as validate,
 )
 
-SOURCE = "A\\u00e1\\U0001f9e0e\\u0301"
+SOURCE = "A\u00e1\U0001f9e0e\u0301"
 PIECES = [
     {"id": 10, "piece": "A"}, {"id": 11, "piece": [0xC3]},
     {"id": 12, "piece": [0xA1, 0xF0]}, {"id": 13, "piece": [0x9F, 0xA7]},
