@@ -55,7 +55,9 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "budgeted=False" in staged_schedule
     assert "native_body_budgeted_for_c3" in cognition
     assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
-    assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
+    assert "'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (" in callosum
+    assert "production B3 remains OFF pending parity/zero/shuffle/OOD controls" in callosum
+    assert "'claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'" in callosum
     assert "native-probe <sender> <receiver>" in callosum
     assert "arm-probe-matrix --last-source --confirm" in operator
     assert "native-probe-matrix --last-source --confirm" in operator
