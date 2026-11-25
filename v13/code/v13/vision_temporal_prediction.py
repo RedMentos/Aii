@@ -5,9 +5,12 @@ model. It predicts the next 16-tile A3 cosine-delta vector from the previous
 vector using 256 transition weights plus a zero-context-only bias row (272
 parameters). The bias is active only when the previous delta vector is all
 zero, so it can learn zero-to-event transitions without shifting non-zero
-contexts. It reports pre-update error against a persistence baseline, then
-applies one bounded LMS update. State remains inside the existing
-consent-scoped TemporalVisualEvidence stream and is erased on reset/revocation.
+contexts. It reports pre-update error against a persistence baseline. The default
+ALWAYS policy preserves one bounded LMS update per observation; ERROR_GATED
+is an experimental ablation that updates only while residual MAE exceeds
+max(1e-8, 0.25 × persistence MAE). The ablation is exposed as SHADOW_ONLY and
+does not control A4. Both states remain consent-scoped and are erased on
+reset/revocation.
 """
 from __future__ import annotations
 
