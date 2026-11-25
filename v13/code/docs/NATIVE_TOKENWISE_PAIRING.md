@@ -90,3 +90,5 @@ plus a digest-bound fit manifest. It does not write the records or adapter,
 load a receiver model, run inference, update model weights, or prove semantic
 utility. The native receiver remains OFF pending real receiver-task utility,
 negative controls, retention and rollback.
+
+The session-disjoint fitter is covered by the same Python 3.13/3.14 latent-token alignment workflow on this stacked branch.
