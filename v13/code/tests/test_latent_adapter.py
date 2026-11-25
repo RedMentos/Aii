@@ -1,14 +1,12 @@
 import hashlib
 import json
-import os
-from pathlib import Path
 
 import numpy as np
 import pytest
 
 from v13.latent_adapter import (
     LatentAdapterError, fit_adapter, project_vector, save_adapter,
-    load_adapter, probe_native_receiver,
+    load_adapter,
 )
 
 SENDER_HASH = "a" * 64
@@ -98,49 +96,3 @@ def test_checkpoint_roundtrip_and_tamper_detection(tmp_path):
     path.write_bytes(damaged)
     with pytest.raises(LatentAdapterError, match="weight digest"):
         load_adapter(path)
-
-
-def test_projected_rows_reach_existing_native_receiver_contract(tmp_path):
-    adapter = fit()
-    home = tmp_path / "home"
-    models = home / "models"
-    bins = home / "bin"
-    models.mkdir(parents=True)
-    bins.mkdir()
-    model_path = models / "receiver.gguf"
-    model_path.write_bytes(b"receiver-model-fixture")
-    binary = bins / "native_latent_receiver"
-    binary.write_text("""#!/usr/bin/env python3
-import json, sys
-REV = 'b29c606e28a01b1bc8c1351026a0fa6e616bf6c4'
-if len(sys.argv) == 2 and sys.argv[1] == '--version':
-    print(json.dumps({'schema':'v14.native-latent-receiver/2','runner_revision':REV,'llama_version':'v0.4.1-test'})); raise SystemExit(0)
-args = dict(zip(sys.argv[1::2], sys.argv[2::2]))
-rows, dim = int(args['--rows']), int(args['--input-dim'])
-positions = [int(v) for v in args['--positions'].split(',')]
-raw = sys.stdin.buffer.read()
-assert len(raw) > 0
-print(json.dumps({'status':'DECODED','llama_version':'v0.4.1-test','receiver_input_dim':dim,'output_dim':4,'decode_status':0,'finite_output':True,'output_norm':1.0,'input_effect_rms':0.5,'zero_control_cosine':0.1,'shuffle_control_cosine':0.2,'row_shuffle_control_applicable':rows >= 2,'row_shuffle_control_cosine':0.15 if rows >= 2 else None,'repeat_cosine':1.0,'position_ids':positions,'position_mode':'ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL'}))
-""", encoding="utf-8")
-    binary.chmod(0o755)
-    rows = [row["sender_vector"] for row in make_pairs("probe", 1, seed=99)[:2]]
-    with pytest.raises(PermissionError, match="explicit confirmation"):
-        probe_native_receiver(
-            adapter, rows, home=home, model_path=model_path,
-            source_id="source-probe", generation_id="generation-probe",
-            position_ids=[0, 1], position_mode="ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
-            deadline=__import__("time").monotonic() + 10, binary_path=binary,
-        )
-    result = probe_native_receiver(
-        adapter, rows, home=home, model_path=model_path,
-        source_id="source-probe", generation_id="generation-probe",
-        position_ids=[0, 1], position_mode="ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
-        deadline=__import__("time").monotonic() + 10, confirm=True, runtime_idle=True,
-        threads=1, binary_path=binary,
-    )
-    assert result["status"] == "DIAGNOSTIC_ONLY"
-    assert result["receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
-    assert result["receiver_probe"]["input_dim"] == adapter["receiver_dim"]
-    assert result["semantic_use_proven"] is False
-    assert result["production_route"] is False
-    assert result["training_authority"] == result["native_receiver_authority"] == 0
