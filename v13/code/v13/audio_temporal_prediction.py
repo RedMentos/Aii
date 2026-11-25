@@ -1,4 +1,4 @@
-"""Consent-scoped, session-local A3 predictor for RAW EAR cue deltas.
+"""Consent-scoped, process-local A3 predictor for RAW EAR cue deltas.
 
 This is a tiny online shadow learner over already-extracted acoustic cues. It
 never receives or stores PCM, transcripts, speaker embeddings, or model weights.
@@ -94,7 +94,7 @@ def unavailable_prediction(status: str) -> dict:
         "improvement_mae": None,
         "excess_prediction_error": 0.0,
         "attention_novelty": 0.0,
-        "weight_scope": "EPHEMERAL_CONSENT_SCOPED_SESSION",
+        "weight_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
         "weight_persistence": False,
         "training_data_persisted": False,
         "learning_authority": False,
@@ -196,7 +196,7 @@ class AudioTemporalPredictor:
             "weight_delta_l2": round(math.sqrt(delta_sq), 8),
             "parameter_l2": round(self._parameter_l2(), 8),
             "learning_rate": self.learning_rate,
-            "weight_scope": "EPHEMERAL_CONSENT_SCOPED_SESSION",
+            "weight_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
             "weight_persistence": False,
             "training_data_persisted": False,
             "learning_authority": False,
