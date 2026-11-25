@@ -1555,3 +1555,16 @@ The previously pending staged/integrated run 45678205707 has now completed PASS:
 **V14 mapping:** preserve separate temporal-dynamics and semantic-context pathways, then test their interaction with matched budgets and ablations; do not import the repo under its custom attribution conditions unless a later concrete need justifies satisfying its user-facing notice and all third-party license obligations.
 
 **Status:** ABSTRACT_AND_OFFICIAL_REPO_REVIEWED / CUSTOM_ATTRIBUTION_LICENSE / THIRD_PARTY_NOTICES_REQUIRED / GPU_ORIENTED / NO_REUSE_OR_DOWNLOAD.
+
+
+## R-163 — Stronger native receiver utility cohort and Android provenance gates (2026-11-25)
+
+**Implementation update to the R-155/R-156 latent-coupling evaluation path:** the Perception task-score evaluator now requires a single adapter revision across the entire held-out cohort, not merely within each task. It also requires minimum task counts per session and task family (default >=5 tasks/session and >=4 tasks/family) in addition to >=20 task groups, >=2 sessions and >=2 families. This prevents a nominal two-session cohort from passing with only one task in the second session or a one-example family.
+
+For `TERMUX_ANDROID` and `REDMI` native receipts, the schema now additionally requires a digest of the private device-execution receipt and a runtime-build identifier. No raw device ID, path, log, conversation, token IDs or receipt body is persisted in the public evaluator. This is an evidence-shape gate, not cryptographic device attestation; the receipt must still be emitted by the actual native Android process and verified through the private owner path.
+
+**Code/test status:** added to `v13/code/v13/native_receiver_utility.py` on draft PR #2511, exact branch head `f1e84db9d3140c53927ff3ef301a1d981d96e69d`. The existing tokenwise test target has three additional tests for Redmi receipt requirements, per-session/family minima and cohort-wide adapter consistency. LOCAL_LINUX CPython 3.13.5 isolated contract harness: 10/10 PASS after the same gate changes. The full repository test target and exact-head CI for these latest additions remain NOT_YET_OBSERVED.
+
+**Acceptance boundary:** a REDMI-labelled receipt without a private execution-receipt digest and runtime-build identifier is rejected. Even with those fields, the evaluator only reports a target-logprob proxy; it does not prove semantic utility, generated answer correctness, real device execution or production B3 acceptance. B3 stays OFF until Core supplies genuine native target-score receipts and the independent held-out gates pass.
+
+**Status:** CODE_PUSHED / ISOLATED_CONTRACT_TESTS_10_OF_10_PASS / FULL_REPO_AND_NEW_HEAD_CI_NOT_YET_OBSERVED / NO_DEVICE_RECEIPT / REDMI_UNVERIFIED.
