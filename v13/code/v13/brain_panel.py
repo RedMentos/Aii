@@ -255,19 +255,27 @@ def _latest_native_evidence(r):
             c4_recorded = False
             c4_metrics = {}
 
-    native_offers = receipt.get("offers") if type(receipt.get("offers")) is list else []
-    native_ids = [
-        packet_id for item in native_offers if type(item) is dict
-        for packet_id in [_identifier(item.get("packet_id"))] if packet_id
-    ]
-    c4_ids = c4_metrics.get("selected_offer_ids")
-    if type(c4_ids) is not list:
-        c4_ids = []
-    c4_ids = [packet_id for value in c4_ids for packet_id in [_identifier(value)] if packet_id]
+    raw_native_offers = receipt.get("offers")
+    native_offers = raw_native_offers if type(raw_native_offers) is list else []
+    native_ids_valid = bool(native_offers) and all(
+        type(item) is dict and item.get("role") in _BODY_ROLES
+        and _identifier(item.get("packet_id"))
+        for item in native_offers
+    )
+    native_ids = (
+        [_identifier(item.get("packet_id")) for item in native_offers]
+        if native_ids_valid else []
+    )
+    raw_c4_ids = c4_metrics.get("selected_offer_ids")
+    c4_ids_valid = (
+        type(raw_c4_ids) is list and bool(raw_c4_ids)
+        and all(_identifier(value) for value in raw_c4_ids)
+    )
+    c4_ids = list(raw_c4_ids) if c4_ids_valid else []
     c4_accepted = bool(c4_recorded and c4_metrics.get("status") == "PASS"
                        and c4_metrics.get("role") == "C3_LANGUAGE")
     ids_match = bool(
-        c4_accepted and c4_ids and native_ids
+        c4_accepted and c4_ids_valid and native_ids_valid
         and len(c4_ids) == len(native_ids)
         and len(set(c4_ids)) == len(c4_ids)
         and len(set(native_ids)) == len(native_ids)
