@@ -1480,3 +1480,78 @@ The previously pending staged/integrated run 45678205707 has now completed PASS:
 - **Implementation:** draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), stacked on #2508. It (a) recomputes the receiver input-embedding manifest digest and extractor receipt, and checks every aligned receiver row digest/span against the manifest; (b) adds build_anchor_preserving_native_receiver_input(), which keeps exact receiver rows as the base and adds a per-token norm-capped residual toward the projected sender row. Default gain 0.10; gain is bounded to 0..0.5 and relative residual to 0..1. Existing replacement mode is unchanged. No persistence, inference call, gradient update, semantic authority or B3 promotion.
 - **Verification:** LOCAL_LINUX CPython 3.13.5 isolated harness: py_compile PASS and 4/4 positive/negative checks PASS (zero-gain exact-anchor identity, residual cap, detached-row rejection, invalid-gain refusal). This is not the full Aii repository suite. Full checkout is absent; exact repository tests and CI are pending. No real GGUF receiver inference, task utility, Android/Termux or Redmi proof.
 - **Next falsifiable step:** Core's native capture/receiver lane (#2510) must rebase/consume this helper under the existing probe approval. Evaluate held-out receiver tasks against exact-message, no-message, zero, shuffled, repeated, OOD and entity-substitution controls; require answer utility and old-task retention, then restart/rollback. Measure PSS/RSS/TTFT on the exact GGUF before any mobile claim. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
+
+
+## R-156 — Co-observation as a third continual-learning constraint (2026-11-25)
+
+**Primary source:** Timm Hess, Abhishek Jha, Gido M. van de Ven and Tinne Tuytelaars, *Forgetting, plasticity, and co-observation: a third facet of continual learning*, arXiv:2608.18803, submitted 2026-08-19: https://arxiv.org/abs/2608.18803 .
+
+**Read level / evidence:** primary arXiv abstract plus an accessible secondary experimental summary were inspected; the full primary paper and its appendices were not retrieved in this run. This is an arXiv preprint, not a verified peer-reviewed publication. Do not cite the secondary summary's detailed numeric results as primary-paper measurements without a full-text check. No maintained official implementation or software license was located in this scan.
+
+**Finding:** the authors distinguish data co-observation from catastrophic forgetting and loss of plasticity. Their central claim is that sequentially optimized chunks may fail to discover shared representations that become visible only when examples from different chunks are jointly observed. Their diagnostic uses a checkpoint ensemble to control for forgetting; the reported gap between this ensemble and incremental-joint learning is interpreted as a co-observation effect. The paper reframes replay as both retention and reintroducing cross-chunk co-observation, whereas distillation mainly preserves prior representations.
+
+**V14 mapping / falsifiable experiment:** in the JEPA/World/T8 path, compare (a) sequential per-session updates, (b) the same update budget with a small source-disjoint replay mixture that co-observes current and prior-session numeric latent/outcome windows, (c) distillation-only retention, and (d) a bounded joint-data diagnostic upper bound. Hold total examples, gradient steps and model capacity fixed; report next-state/outcome loss, old-session retention, representation drift and update count. Keep source/session splits and the existing forget/rollback gates. This is a research proposal, not a change to current learning authority; never replay private raw conversations without separate consent.
+
+**Status:** PRIMARY_ABSTRACT_REVIEWED / SECONDARY_SUMMARY_READ / FULL_TEXT_NOT_REVIEWED / NO_CODE_REUSE / NO_V14_REPRODUCTION.
+
+## R-157 — Memorized mistake-gated plasticity (2026-11-25)
+
+**Primary source:** Aaron Pache and Mark C. W. van Rossum, *Mistake gating leads to energy and memory efficient continual learning*, arXiv:2604.14336, submitted 2026-04-15: https://arxiv.org/abs/2604.14336 . The work is listed as an ahead-of-print Neural Computation article dated 2026-11-05, DOI 10.1162/NECO.a.1602, PMID 43057301: https://pubmed.ncbi.nlm.nih.gov/43057301/ .
+
+**Read level / evidence:** primary abstract and PubMed publication record inspected; full article/appendices and official code were not retrieved. The peer-reviewed journal record is ahead-of-print; detailed task-by-task results below the abstract remain unverified in this run.
+
+**Finding:** the proposed memorized mistake gate permits parameter updates only when current or remembered classification errors justify them. The abstract reports 50–80% fewer update steps, a smaller required replay buffer and improved robustness to class imbalance. This is not evidence that the same rule improves continuous JEPA prediction, language-model updates or multimodal learning.
+
+**V14 mapping / falsifiable experiment:** compare the existing A3 temporal hysteresis gate with (a) no gate, (b) current-error-only gate and (c) current-plus-recent-error gate on a deterministic numeric next-state/omission stream. Keep optimizer, examples, replay budget and initialization identical. Measure actual gradient/update counts, parameter-delta hashes, held-out prediction loss, old-session retention and restart/rollback. Only promote a gate if it saves measured updates without harming held-out utility or retention. No production weight updates are enabled by this research note.
+
+**Status:** PEER_REVIEWED_AHEAD_OF_PRINT_RECORD / PRIMARY_ABSTRACT_REVIEWED / FULL_TEXT_NOT_REVIEWED / NO_CODE_LICENSE_VERIFIED / NO_V14_REPRODUCTION.
+
+## R-158 — mzCache mobile model/KV restoration under multitasking (2026-11-25)
+
+**Primary source:** Hongseung Yu, Minsung Kim, Jongseok Park and Kyunghan Lee, *mzCache: On-Device LLM Memory Management under Multitasking*, arXiv:2609.01338, submitted 2026-09-01; ACM MobiCom 2026, DOI 10.1145/3795866.3844495: https://arxiv.org/abs/2609.01338 . Official artifact: https://github.com/HongseungYu/mzcache .
+
+**Source/revision/license inspection:** official README, EVALUATION.md and Android example README were inspected. The artifact repository is MIT-licensed and identifies its engine as a llama.cpp fork at upstream revision `fa4a9f2a`; vendored Khronos OpenCL headers are Apache-2.0. No code, model, state bundle or dependency was downloaded or reused.
+
+**Reported evidence and hard compatibility limits:** the paper/README report 2.1–5.5× lower TTFT than storage-backed partial offload by restoring KV/weight state while prefill runs. The reproduction guide requires a rooted phone and specifically supports Snapdragon 8 Elite or Snapdragon 8 Gen 3; other SoCs only run a fallback placement and are explicitly not reproductions. It recommends the Galaxy S25+ and OnePlus 12, each 12 GB, requires about 30 GB free on-device and about 70 GB on the Linux host, and uses Qwen3-0.6B / EXAONE-4.0-1.2B with long prefill-state bundles. The Android example needs OpenCL vendor libraries and model-specific weight-layer sizing.
+
+**V14 mapping / decision:** useful systems concept for restoring partially evicted weights/KV while prefill proceeds, but **not a direct Redmi Note 10 Pro candidate**: the documented SoC/root/storage requirements do not match the target environment. Do not transplant its fork, request root, download its 18 GB state bundle or change the current inference runtime. A later low-risk study may compare its eviction/restore state machine conceptually against V14's existing updater/runtime lifecycle, without importing the model-serving fork.
+
+**Status:** PAPER_ABSTRACT_REVIEWED / OFFICIAL_ARTIFACT_AND_EVALUATION_GUIDE_REVIEWED / MIT_CODE_AND_APACHE_HEADERS / ROOTED_8_ELITE_OR_GEN3_ONLY_REPRODUCTION / NOT_REDMI_COMPATIBLE / NO_REUSE.
+
+## R-159 — PowerBench: mobile inference is phase- and backend-dependent (2026-11-25)
+
+**Primary source:** Guanyu Cai, Ruiming Tian, Lang Yang, Zhouhong Ren, Jinliang Yuan, Lingkun Li and Jiliang Wang, *Is Your NPU Ready for LLMs? Dissecting the Hidden Efficiency Bottlenecks in Mobile LLM Inference*, arXiv:2607.05475v2 (2026-10-16): https://arxiv.org/abs/2607.05475 .
+
+**Read level / evidence:** primary arXiv abstract/version metadata inspected; full paper and a reproducible artifact were not retrieved. GitHub search did not locate a confirmed official PowerBench repository or software license in this run. A secondary technical reading reports more detailed framework/SoC measurements, but those details are not promoted to primary evidence here.
+
+**Finding:** the paper evaluates five inference frameworks and CPU/GPU/NPU backends. Its abstract reports a phase split: NPU is strongest for compute-heavy prefill while CPU can outperform it for memory-bound token decoding; framework/offload differences can create large NPU gaps, and host polling/thread/sleep configuration can waste substantial energy. The abstract estimates up to 54.8% energy reduction for a tuned NPU configuration across three datasets. These are paper results, not Redmi measurements.
+
+**V14 mapping / test:** do not assume an NPU path improves this CPU-oriented llama.cpp runtime. On the actual target phone, separately profile prefill and decode, thread placement, CPU utilization, TTFT, tokens/s, PSS/RSS, thermal drift and energy before choosing any backend or scheduling change. Preserve the existing model and runtime until measured. No backend or model switch is proposed by this entry.
+
+**Status:** PRIMARY_ABSTRACT_AND_VERSION_REVIEWED / FULL_TEXT_NOT_REVIEWED / OFFICIAL_CODE_AND_LICENSE_NOT_FOUND / NO_ANDROID_REPRODUCTION.
+
+## R-160 — V-JEPA-LM and counterfactual supervision for reading dynamics (2026-11-25)
+
+**Primary source:** Keuntae Kim, Dongjun Kim and Yong Suk Choi, *V-JEPA-LM: Video-Language Models That Read Dynamics Beyond Static, Text-Aligned Representations*, arXiv:2611.17831v1, submitted 2026-11-13: https://arxiv.org/abs/2611.17831 . Official code/technical report: https://github.com/kkt94/Llama-V-JEPA-LM .
+
+**Source/revision/license inspection:** official repository README/technical report and root LICENSE were inspected. The code repository is Apache-2.0. The linked model weights are separately hosted; their exact weight/data redistribution terms were not verified here. No model, dataset, checkpoint or dependency was downloaded.
+
+**Reported evidence:** the abstract/official report state that a frozen V-JEPA encoder exposes motion information that a language model trained on captions may fail to use: the paper reports an 87% speed linear-probe result on frozen V-JEPA features while the joined VLM is at chance on the same items. Counterfactual pixel transformations create balanced examples whose answer depends on the changed dynamics. The official report describes 4.53M public training samples and 32 visual tokens/frame; the 4B model reports 72.14 average over twelve scores, versus 61.08 for the best open 4B comparator, and the matched-budget supervision ablation reports +4.5 average points and +38 points on speed questions. These are the authors' reported benchmarks, not a V14 reproduction.
+
+**Mobile/resource limit:** the released family ranges from 1B to 30B parameters and its training report uses H100-scale compute. It is not an Android/Redmi model candidate. The useful part is the supervision/evaluation design, not the weights or runtime.
+
+**V14 mapping / falsifiable experiment:** build tiny, balanced A5/A3 counterfactual sequences where frame appearance is held constant but speed, direction, order or state transition changes. Compare a static-frame baseline, temporal JEPA predictor, and a small readout trained with counterfactual labels. Hold frame/token budget fixed; test unseen speed ratios, unseen source clips, entity substitutions and reversed order. The acceptance target is that downstream perception actually reads temporal change rather than static cues. No pretrained model or weight import is authorized or needed for this experiment.
+
+**Status:** PRIMARY_ABSTRACT_AND_OFFICIAL_TECHNICAL_REPORT_REVIEWED / CODE_APACHE_2_0 / MODEL_WEIGHT_LICENSE_NOT_VERIFIED / FULL_PAPER_NOT_FULLY_REVIEWED / NO_MODEL_OR_DATA_DOWNLOAD / NO_V14_REPRODUCTION.
+
+## R-161 — ThinkJEPA dual-temporal guidance and reuse constraints (2026-11-25)
+
+**Primary source:** Haichao Zhang et al., *ThinkJEPA: Empowering Latent World Models with Large Vision-Language Reasoning Model*, arXiv:2603.22281v2 (2026-06-16), presented at NeurIPS 2026: https://arxiv.org/abs/2603.22281 . Official implementation: https://github.com/Hai-chao-Zhang/ThinkJEPA .
+
+**Read level / license inspection:** paper abstract and official repository README, LICENSE and dependency guidance were inspected; full paper was not re-read in this run. The root code uses a custom BSD-3-Clause-based ThinkJEPA Attribution License, **not** standard BSD-3-Clause. The repository bundles third-party EgoDex and V-JEPA2 subtrees with separate notices/licenses. Its documented training stack uses PyTorch 2.10/CUDA 12.8, V-JEPA2 and Qwen3-VL feature extraction. No code, weights, cache or data were copied.
+
+**Architecture relevance:** the released method has a dense JEPA temporal/dynamics branch plus a VLM semantic-guidance branch, rather than forcing all temporal prediction through language. This is a useful conceptual comparison for V14's distributed parallel processing, but the published reproduction path is GPU/data-cache oriented and not an Android runtime candidate.
+
+**V14 mapping:** preserve separate temporal-dynamics and semantic-context pathways, then test their interaction with matched budgets and ablations; do not import the repo under its custom attribution conditions unless a later concrete need justifies satisfying its user-facing notice and all third-party license obligations.
+
+**Status:** ABSTRACT_AND_OFFICIAL_REPO_REVIEWED / CUSTOM_ATTRIBUTION_LICENSE / THIRD_PARTY_NOTICES_REQUIRED / GPU_ORIENTED / NO_REUSE_OR_DOWNLOAD.
