@@ -1405,3 +1405,11 @@ The receipt is copied into the manifest digest. It rejects ID/order drift, inval
 **Next integration.** Core must consume this receipt from its native selected-row wrapper, independently verify the model/extractor hashes and pin the API-bearing llama.cpp revision. Keep the sender final-RMSNorm tap distinct from the receiver input-embedding table. The event-pooled `LATENT_PREFIX_V1` route remains a separate experiment; neither contract proves learned semantic utility or production latent communication.
 
 **Sources.** Upstream commit mirror/diff: https://gitea.gnumetry.com/ggml-org/llama.cpp/commit/2851b3bcbf8d993a2243ae751c0a7dfa8e944a40 ; current upstream API/source documentation: https://fossies.org/dox/llama.cpp-1.0.0/llama-model_8cpp_source.html ; official upstream LICENSE: https://github.com/ggml-org/llama.cpp/blob/master/LICENSE ; unrelated commit correction: https://github.com/ggml-org/llama.cpp/commit/a8fad21e9949c20f6b21692c8d38a8aba422eafe .
+
+
+### R-149 exact-head CI readback — 2026-11-25
+
+The branch push workflow `V14 latent token-span alignment`, run `45657145905`, completed successfully on code/workflow commit `11b8e983523e2962752bd5129c377e597b886e39`:
+- Python 3.13: compile PASS; focused suite 65 passed; public privacy scan CLEAN.
+- Python 3.14: compile PASS; focused suite 65 passed; public privacy scan CLEAN.
+This is GitHub-hosted CI/Linux evidence, not local full-repository execution. The subsequent handoff/ledger-only commits do not change the tested module/test bytes. No native llama.cpp build, real GGUF row extraction, Android cross-compile, Termux or Redmi proof.
