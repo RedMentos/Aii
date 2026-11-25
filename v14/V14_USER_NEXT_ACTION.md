@@ -2042,3 +2042,16 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
 - Owner-read DIAGNOSTICS produced NO_LIVE_RECEIPT in this checkpoint. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but also AI STOPPED_BY_USER; this is historical, not proof of today's installed state. No release is ready to deploy. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
 - The native selected-row extractor and receiver still need real GGUF utility comparisons, exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.
+
+
+## Research & Perception — Run 23 verified handoff (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+- Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511) now includes the anchor-preserving tokenwise input path plus a source-bound target-token utility evaluator. Evaluator module commit: `7031958809b6479231d87d74631d79de359ebf73`; focused test commit: `be00992147f46165489684f82fba1891c86b986b`; research-ledger commit: `b4e0eef2a6cd208491d176f162accb2a32cbabc6`. The branch's latest SHA will advance with this handoff append; this is not a release SHA.
+- The evaluator defines a native target-logprob receipt contract and requires exact-message/no-message plus zero, shuffle, repeat, OOD and entity-substitution controls. It is a **target-logprob proxy**, not generated-answer correctness. Synthetic fixtures always report `FIXTURE_ONLY`; the helper never grants persistence, weight-learning, native receiver or production B3 authority.
+- LOCAL_LINUX CPython 3.13.5 / pytest 9.0.2 isolated harness: `py_compile` PASS and 8/8 focused tests PASS. Full local Aii pytest BLOCKED/NOT_RUN because no full checkout is mounted and repository clone/DNS is unavailable. Exact CI for the new branch head: NOT_YET_OBSERVED.
+- Core's current native receiver still returns decode/input-effect metrics only. It has no target-token score or generated-answer output, so no actual native task utility is yet measured and the new evaluator is not yet wired. Core PR #2510 is the next consumer owner. B3 remains OFF/SYMBOLIC; REDMI_UNVERIFIED; NOT_RELEASED.
+- Research notes R-156–R-161 were appended with explicit evidence levels and license/resource caveats. No code, weights, data or dependencies were imported.
+- Updater/deployment: no fresh private phone receipt in this run. The last available private snapshot is historical (2026-11-24) and reported auto-update enabled but AI runtime STOPPED_BY_USER at 8d93236; current installed SHA is unknown. No device action was attempted.
+- Next: Core adds a bounded native teacher-forced target-score operation and calls the Perception evaluator across all eight controls; then exact CI, independent review, held-out utility, restart/rollback and only later any separate device approval. Boss should update the shared board after review.
