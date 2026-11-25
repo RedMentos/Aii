@@ -15,6 +15,7 @@ on:
       - research-perception/v14-token-span-manifest-integrity-20261125-run16
       - research-perception/v14-native-input-tap-receipt-20261125-run18
       - research-perception/v14-native-input-bridge-20261125-run19
+      - research-perception/v14-native-tokenwise-pairing-20261125-run20
     paths:
       - "v13/code/v13/latent_adapter.py"
       - "v13/code/tests/test_latent_adapter.py"
