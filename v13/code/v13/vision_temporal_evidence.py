@@ -1,10 +1,12 @@
 """Ephemeral, consent-lease-scoped temporal RAW EYE feature evidence.
 
-This deterministic diagnostic compares the existing 37-value tile descriptor
-(RGB/hue/edge/orientation/4x4 luminance). It is not optical flow, OCR, object
-recognition, a calibrated probability, or a learned temporal model. Only the
-previous numeric tile descriptors are retained in bounded process memory.
-No frame bytes, images, text, or persistent model state are stored.
+The deterministic 37-value tile descriptor and A3 projected cosine delta are
+paired with a tiny 17x16 (272-parameter) online next-change predictor whose
+bias row is active only for a zero-change context. This is not optical flow,
+OCR, object recognition, a calibrated probability, or semantic motion
+understanding. Only numeric tile deltas and bounded session-local predictor
+weights are retained in process memory. No frame bytes, images, text, or
+persistent model state are stored.
 """
 from __future__ import annotations
 
@@ -19,6 +21,7 @@ from .vision_temporal_adaptation import (
     decompose_temporal_feature_change,
     weighted_tile_score,
 )
+from .vision_temporal_prediction import A3TemporalPredictor
 
 TILE_IDS = tuple(f"r{row}{col}" for row in range(4) for col in range(4))
 LUMINANCE_VALUES_PER_TILE = 16
@@ -35,6 +38,16 @@ A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FA
 MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
 DEFAULT_SURFACE_WINDOW_MS = 50
+
+
+def _a3_predictive_attention_novelty(prediction: dict) -> float:
+    """Map only measured excess prediction error to a capped A4 salience term."""
+    if type(prediction) is not dict or prediction.get("status") != "SHADOW_MEASURED":
+        return 0.0
+    surprise = prediction.get("shadow_surprise")
+    if type(surprise) not in (int, float) or not math.isfinite(float(surprise)):
+        return 0.0
+    return round(A3_TEMPORAL_ATTENTION_GAIN * max(0.0, min(1.0, float(surprise))), 6)
 
 
 class TemporalVisualEvidenceError(ValueError):
@@ -153,6 +166,7 @@ class TemporalVisualEvidence:
         self._previous_a3_embeddings = None
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
+        self._a3_temporal_predictor = A3TemporalPredictor()
 
     def reset(self) -> None:
         self._last_start_ms = None
@@ -166,6 +180,7 @@ class TemporalVisualEvidence:
         self._previous_a3_embeddings = None
         self._previous_a3_projector_sha256 = None
         self._previous_a3_source_ref = None
+        self._a3_temporal_predictor.reset()
 
     def _update_a3_projected_change(self, *, tile_embeddings, projector_sha256,
                                     frame_source_ref, unavailable_reason):
@@ -242,6 +257,18 @@ class TemporalVisualEvidence:
             "action_authority": False,
         }
 
+    def _update_a3_temporal_prediction(self, projected_change):
+        """Learn one bounded next-tile-delta step inside this consent-scoped stream."""
+        status = projected_change.get("status", "UNAVAILABLE")
+        if status != "MEASURED":
+            self._a3_temporal_predictor.reset()
+            return self._a3_temporal_predictor.unavailable(status)
+        tile_delta = projected_change.get("tile_delta")
+        if type(tile_delta) is not dict or set(tile_delta) != set(TILE_IDS):
+            self._a3_temporal_predictor.reset()
+            return self._a3_temporal_predictor.unavailable("MALFORMED_CHANGE")
+        return self._a3_temporal_predictor.update([tile_delta[tile] for tile in TILE_IDS])
+
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict,
                tile_features: dict | None = None,
                a3_tile_embeddings: dict | None = None,
@@ -270,6 +297,7 @@ class TemporalVisualEvidence:
             frame_source_ref=frame_source_ref,
             unavailable_reason=a3_unavailable_reason,
         )
+        a3_temporal_prediction = self._update_a3_temporal_prediction(a3_projected_change)
 
         if self._previous is None:
             self._previous = current
@@ -280,6 +308,7 @@ class TemporalVisualEvidence:
                 "method": METHOD if current_features is not None else LUMINANCE_METHOD,
                 "feature_method": FEATURE_METHOD if current_features is not None else None,
                 "a3_projected_change": a3_projected_change,
+                "a3_temporal_prediction": a3_temporal_prediction,
                 "status": "WARMUP",
                 "multichannel_status": "WARMUP" if current_features is not None else "UNAVAILABLE",
                 "multichannel_tile_delta": {}, "multichannel_changed_tile_ids": [],
@@ -295,6 +324,7 @@ class TemporalVisualEvidence:
                 "local_tile_delta": {}, "local_change_score": 0.0,
                 "local_temporal_activity_score": 0.0, "locally_changed_tile_ids": [],
                 "a3_attention_novelty": 0.0,
+                "a3_predictive_attention_novelty": 0.0,
                 "attention_novelty": 0.0,
                 "surface_expired": False, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
                 "gap_ms": gap_ms, "state_reset": reset_reason is not None,
@@ -391,12 +421,17 @@ class TemporalVisualEvidence:
             A3_TEMPORAL_ATTENTION_GAIN,
             A3_TEMPORAL_ATTENTION_GAIN * a3_change_score,
         ), 6)
+        a3_predictive_attention_novelty = _a3_predictive_attention_novelty(
+            a3_temporal_prediction,
+        )
+        # Max, not sum: the combined A3 contribution remains capped at 0.15.
         attention_novelty = round(max(
             base_attention_novelty,
             multichannel_change_score,
             0.15 * global_appearance_shift,
             0.15 * global_structure_shift,
             a3_attention_novelty,
+            a3_predictive_attention_novelty,
         ), 6)
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
@@ -407,6 +442,7 @@ class TemporalVisualEvidence:
             "method": METHOD if current_features is not None else LUMINANCE_METHOD,
             "feature_method": FEATURE_METHOD if current_features is not None else None,
             "a3_projected_change": a3_projected_change,
+            "a3_temporal_prediction": a3_temporal_prediction,
             "multichannel_status": multichannel_status,
             "multichannel_tile_delta": {k: round(v, 6) for k, v in multichannel_tile_delta.items()},
             "multichannel_changed_tile_ids": multichannel_changed_tile_ids,
@@ -430,6 +466,7 @@ class TemporalVisualEvidence:
             "local_temporal_activity_score": round(local_temporal_activity_score, 6),
             "locally_changed_tile_ids": [tile for tile in TILE_IDS if local_tile_delta[tile] >= self.changed_tile_threshold],
             "a3_attention_novelty": a3_attention_novelty,
+            "a3_predictive_attention_novelty": a3_predictive_attention_novelty,
             "attention_novelty": attention_novelty,
             "on_activity": round(on_activity, 6), "off_activity": round(off_activity, 6),
             "surface_expired": surface_expired, "tau_ms": self.tau_ms, "window_ms": self.window_ms,

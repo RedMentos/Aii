@@ -878,10 +878,14 @@ def consume_projected_frame(
             "a3_attention_novelty": round(
                 float(temporal_visual.get("a3_attention_novelty", 0.0)), 6,
             ),
+            "a3_predictive_attention_novelty": round(
+                float(temporal_visual.get("a3_predictive_attention_novelty", 0.0)), 6,
+            ),
             "attention_novelty": round(attention_novelty, 6),
             "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
             "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
             "a3_projected_change": temporal_visual["a3_projected_change"],
+            "a3_temporal_prediction": temporal_visual.get("a3_temporal_prediction", {}),
             "source_ref": dict(frame_ref),
             "truth_authority": 0,
         }
