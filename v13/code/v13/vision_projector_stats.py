@@ -57,6 +57,7 @@ def sufficient_statistics(X, Y):
 
 def _open_or_create_dir(parent_fd, name, flags):
     """Open one child directory without following links, creating it safely if absent."""
+    sync_parent = False
     try:
         fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
     except FileNotFoundError:
@@ -68,8 +69,13 @@ def _open_or_create_dir(parent_fd, name, flags):
             # Another creator may have won the race; the no-follow open below
             # still rejects a symlink or non-directory replacement.
             pass
+        # Sync even after FileExistsError: the competing creator may not yet
+        # have made the parent entry durable.
+        sync_parent = True
         fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
     try:
+        if sync_parent:
+            os.fsync(parent_fd)
         info = os.fstat(fd)
         if not stat.S_ISDIR(info.st_mode):
             raise OSError("A3 statistics path is not a directory")
@@ -80,6 +86,7 @@ def _open_or_create_dir(parent_fd, name, flags):
         # Tighten the already-open inode, never a path that could be swapped.
         if stat.S_IMODE(info.st_mode) != 0o700:
             os.fchmod(fd, 0o700)
+            os.fsync(fd)
             if stat.S_IMODE(os.fstat(fd).st_mode) != 0o700:
                 raise OSError("A3 statistics directory permissions are not private")
         return fd
