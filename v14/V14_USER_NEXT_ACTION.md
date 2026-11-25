@@ -1850,3 +1850,12 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - The predictor remains a 13-D, 182-parameter, process-local, consent-scoped shadow learner that adds at most 0.10 A4 novelty on FINAL acoustic windows. It does not alter C3, interrupts, persistent model weights, permissions or installed models.
 - Local isolated CPython 3.13.5 tests/microbenchmark from Run 13 remain the only local evidence. Full repository local tests, held-out real audio, Android microphone/AudioRecord, Termux and Redmi proof remain absent. REDMI_UNVERIFIED / NOT_RELEASED.
 - Next: complete the exact CI rerun, then add frozen-weight held-out tests against persistence/no-predictor/shuffled cues and verify source/voice retention and revocation. Only connect a phone microphone through QA's explicit AudioRecord provider/receipt contract.
+
+## Research & Perception — exact RAW EAR CI result (2026-11-25 13:46 UTC)
+
+**User action required: NONE.** No Termux command, microphone permission, model download/swap, runtime restart or device operation is requested.
+
+- PR #2498 code SHA 0cd31098110ee36bb63078947cfed1c444d3ff04: RAW EAR VAD comparison #595 PASS, optional NumPy backend #714 PASS, runtime deployment integrity #2522 PASS.
+- Staged/integrated regression #5065 FAIL in both jobs. The first stale pin (audio_voice_cues.py) was fixed; the failure moved to the next exact dependency: termux_runtime_recovery_candidate_20261121.py still expects integrated_audio_context_candidate_20261121.py blob 831080bceec90711bd42e0fa4eba47c669975c98, but the exact new blob is 598e9c12ad387a1b693ed9fdda2bd8101212d2e8. Core/QA own the recovery/stager/deployer chain; comment #7164267690 requests ordered hash recomputation. The strict hash gates remain intact.
+- V14-022 in V14_WORK_BOARD.json and the Run 13 handoff now record the blocker. The predictor itself remains a synthetic/process-local shadow feature; no held-out real acoustic cohort, Android AudioRecord, Termux or Redmi proof exists. REDMI_UNVERIFIED / NOT_RELEASED.
+- Next: Core/QA rebind the recovery builder's AUDIO_BUILDER_BLOB_SHA1 to the exact script blob, then recompute stage_integrated_candidate.py BUILDER_SHA and runtime_deploy.py STAGER_SHA256 in order. Rerun staged/integrated and two-checkout migration. After integration passes, Research adds frozen-weight held-out audio controls against persistence/no-predictor/shuffled cues and source/voice retention.
