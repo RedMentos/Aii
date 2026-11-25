@@ -27,7 +27,7 @@ def test_backward_start_is_rejected_even_when_end_advances_and_state_recovers():
     registry = TemporalVisualEvidenceRegistry()
     first = update(registry, 100, 140, "receipt-1")
     assert first["status"] == "WARMUP"
-    with pytest.raises(TemporalVisualEvidenceError, match="starts must be monotonic"):
+    with pytest.raises(TemporalVisualEvidenceError, match="starts must advance monotonically"):
         update(registry, 90, 180, "receipt-2")
     recovered = update(registry, 140, 180, "receipt-3")
     assert recovered["status"] == "MEASURED"
@@ -48,7 +48,7 @@ def test_end_order_rejection_keeps_both_interval_baselines():
     update(registry, 100, 140, "receipt-1")
     with pytest.raises(TemporalVisualEvidenceError, match="advance monotonically"):
         update(registry, 120, 130, "receipt-2")
-    with pytest.raises(TemporalVisualEvidenceError, match="starts must be monotonic"):
+    with pytest.raises(TemporalVisualEvidenceError, match="starts must advance monotonically"):
         update(registry, 90, 180, "receipt-3")
     recovered = update(registry, 120, 180, "receipt-4")
     assert recovered["status"] == "MEASURED"
