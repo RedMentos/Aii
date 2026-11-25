@@ -1891,3 +1891,14 @@ The latest available consented snapshot is timestamped 2026-11-24 09:22:33 UTC; 
 ### Research lead R-146 — S-JEPA (full main-paper review)
 
 Nikos Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06), introduces a stochastic per-image JEPA latent with a target-conditioned posterior during training and a context-conditioned prior at inference. It reports small representation gains over I-JEPA and useful uncertainty/diversity, but the uncertainty-error correlation is weak within images (mean Spearman about 0.16; positive in 76%), the latent is global per image rather than per target region, and uncertainty maps need repeated predictor passes. Training used ViT-B/L and four A100 GPUs; this is not a Redmi candidate. The paper's code URL was not retrievable and its license/weights are unverified, so nothing was reused. Potential V14 experiment only: a tiny gated stochastic residual z for ambiguous temporal outcomes after trusted B3 taps exist; deterministic fast path remains. Do not sample every turn or promote on uncertainty alone.
+
+
+## 2026-11-25 verified Research/Perception checkpoint — token-span provenance
+
+A follow-up to tokenwise adapter PR #2501 now adds exact UTF-8 byte-piece spans and validates the full sender/receiver span manifest plus recomputed overlap coverage. The code is on research-perception/v14-token-span-manifest-integrity-20261125-run16; local isolated Linux reproduction passed 6/6, while the exact repository workflow is pending. This is not a native latent-learning or Redmi result.
+
+The remaining integration is Core-owned: LlamaRunner.tap must request llama.cpp with_pieces=true, map content-token pieces to the exact activation rows while accounting for BOS/special tokens, and persist source/tokenizer/event/generation/blob provenance. Until that exists, there is no trusted tokenwise producer and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 receiver is a separate contract.
+
+**Redmi/deployment:** REDMI_UNVERIFIED; no newer device receipt was obtained in this run. No deployment, restart, model/weight swap, permission change or device-data change was performed. The previously available private receipt is historical only; do not infer that the app/runtime is currently running from the GitHub release head.
+
+**User action:** keine Aktion nötig. No Termux command, model download or approval is required for this research/code candidate.
