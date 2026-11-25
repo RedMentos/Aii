@@ -1358,3 +1358,20 @@ The implementation audit found an important distinction: `losses.py` implements 
 **Safety and reuse:** no upstream source code, model weights or datasets were copied. Keep `/slots` bound to the local authenticated runner; do not expose it through the dashboard, remote maintenance bridge or public diagnostics. Revalidate the exact pinned llama.cpp revision before relying on any upstream endpoint detail.
 
 **Status:** PRIMARY_DOC_REVIEWED_AT_EXACT_UPSTREAM_COMMIT / CODE_PATH_PRESENT_IN_DRAFT_PR_2464 / EXACT_CI_31_OF_32_SUCCESS_1_SKIPPED / NO_LOCAL_FULL_SUITE / NO_NATIVE_MODEL_RUN / NO_REDMI_PROOF.
+
+
+## R-116 — llama.cpp native input-embedding receiver API and license — 2026-11-25
+
+**Primary sources:** upstream `include/llama.h` and `LICENSE` at exact revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`:
+- https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/include/llama.h
+- https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/LICENSE
+
+**Verified API facts:** the pinned header documents `llama_batch.embd` as token embeddings used when `token` is NULL, with each input row sized to `n_embd`. It exposes per-token output through `llama_get_embeddings_ith` and `llama_get_logits_ith`. The exact pinned upstream LICENSE is MIT. The #2488 candidate compiles against this revision and its Linux native selftest passes; Android arm64 cross-compile also passes.
+
+**V14 relevance:** this makes a native input-embedding receiver technically executable without pretending a JSON message is latent coupling. It does not establish that B1/B2/C3 embedding spaces are aligned, that the receiver uses the signal meaningfully, or that any trainable projection has learned a useful mapping. Raw cross-model embeddings may be dimension-compatible but semantically incompatible.
+
+**Testable next adaptation:** only after authorized real paired sender/receiver runs, train a small bounded projection on source/session-disjoint pairs. Compare raw vs projected receiver input with zero, shuffled, repeated, parity and OOD controls; measure output/logit effect, held-out task utility, old-task retention, restart/rollback, RSS and TTFT. Keep the receiver diagnostic-only and production B3 OFF until these gates pass. No model or weight download/swap is implied.
+
+**License/provenance:** llama.cpp is pinned at the exact commit above and licensed MIT; no upstream source or model weights were copied by this research note.
+
+**Status:** PRIMARY_HEADER_AND_LICENSE_REVIEWED_AT_PINNED_REVISION / LINUX_NATIVE_BUILD_SELFTEST_CI_PASS / ANDROID_ARM64_CROSS_COMPILE_CI_PASS / NO_GGUF_MODEL_RUN / NO_LOCAL_FULL_SUITE / NO_REDMI_PROOF.
