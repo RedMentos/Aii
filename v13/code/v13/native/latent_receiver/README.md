@@ -14,3 +14,13 @@ The probe accepts source-bound B1/B2 tap vectors, uses `llama_batch.embd -> llam
 
 
 `LATENT_PREFIX_V1` is accepted only for an event-pooled adapter candidate whose receiver tap is the exact receiver `*.input-embedding.v1` space. The Runtime binds the adapter file hash/identity, both installed model revisions and hashes, the current source/event/generation, and the sender tap. The prefix vector is diagnostic-only: no production B3 route, no semantic-use proof, no training authority and no weight changes. A receiver-side task-utility experiment with exact/no-message/zero/shuffle/repeat/parity/OOD controls is still required before any production B3 decision.
+
+
+For an explicitly approved diagnostic, place the adapter checkpoint under `$HOME/v13/data/latent_adapters/<adapter-name>` and run:
+
+```text
+:callosum arm-probe B2_GIST C3_LANGUAGE --latent-prefix <adapter-name> --last-source --confirm
+:callosum native-probe B2_GIST C3_LANGUAGE --latent-prefix <adapter-name> --last-source --confirm
+```
+
+The adapter must be fitted to the receiver's exact `*.input-embedding.v1` tap and current model revision/hash. The existing B1/B2 final-RMSNorm tap-pair fitter does not by itself create a C3 input-embedding adapter; those candidates are deliberately rejected. No command here creates or downloads an adapter, and no adapter is promoted to a production route.
