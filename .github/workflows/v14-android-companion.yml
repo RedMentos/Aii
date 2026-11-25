@@ -9,6 +9,10 @@ on:
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
+      - "v13/code/v13/android_companion_ecdsa.py"
+      - "v13/code/v13/android_outcomes.py"
+      - "v13/code/tests/test_android_companion_ecdsa.py"
+      - "v13/code/tests/test_android_companion_runtime.py"
   pull_request:
     branches:
       - gpt6/v14-core-companion-outcome-20261121
@@ -40,3 +44,17 @@ jobs:
       - name: Build and test isolated companion
         run: |
           gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest
+
+  python-companion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install focused Python test runner
+        run: python -m pip install --upgrade pip pytest
+      - name: Test signed companion receipt recovery and Runtime polling
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_android_companion_ecdsa.py v13/code/tests/test_android_companion_runtime.py
