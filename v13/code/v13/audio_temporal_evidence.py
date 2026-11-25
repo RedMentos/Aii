@@ -206,7 +206,10 @@ class TemporalVoiceEvidenceRegistry:
             or any(char not in "0123456789abcdef" for char in consent_scope_id)
         ):
             raise ValueError("consent_scope_id must be a lowercase SHA-256 fingerprint")
-        key = (source_id, generation_id, consent_scope_id)
+        key = (
+            (source_id, generation_id) if consent_scope_id is None
+            else (source_id, generation_id, consent_scope_id)
+        )
         with self._lock:
             state = self._states.get(key)
             if state is None:
@@ -249,7 +252,7 @@ class TemporalVoiceEvidenceRegistry:
                 if source_id is None or (
                     key[0] == source_id and
                     (generation_id is None or key[1] == generation_id) and
-                    (consent_scope_id is None or key[2] == consent_scope_id)
+                    (consent_scope_id is None or (len(key) > 2 and key[2] == consent_scope_id))
                 )
             ]
             for key in keys:
