@@ -161,7 +161,7 @@ def test_real_runtime_sqlite_speech_action_path(tmp_path, monkeypatch):
         script = bin_dir / "termux-tts-speak"
         fake_tts(
             script,
-            "import os,sys\\nopen(os.environ['CAPTURE_FILE'],'w').write(sys.stdin.read())\\n",
+            "import os,sys\nopen(os.environ['CAPTURE_FILE'],'w').write(sys.stdin.read())\n",
         )
         monkeypatch.setenv("PATH", str(bin_dir) + os.pathsep + os.environ.get("PATH", ""))
         monkeypatch.setenv("CAPTURE_FILE", str(capture))
