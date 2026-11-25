@@ -25,12 +25,29 @@ MAX_TARGET_DIM = 1024
 MAX_ROWS_PER_SOURCE = 100_000
 MAX_ARTIFACT_BYTES = 8 * 1024 * 1024
 MAX_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
+# Bound the optional exact-delete statistics per projector. The estimate uses
+# raw fp64 array sizes plus a conservative 8 KiB for NPZ/NPY headers and metadata.
+# If it does not fit, normal A3 training continues but forget safely invalidates
+# the affected projector rather than consuming unbounded phone storage.
+MAX_SOURCE_STATS_SET_BYTES = 32 * 1024 * 1024
+_SOURCE_STATS_ARTIFACT_OVERHEAD_BYTES = 8 * 1024
 _EXPECTED_MEMBERS = {"meta.npy", "sx.npy", "sxx.npy", "sy.npy", "sxy.npy"}
 
 
 def _np():
     import numpy
     return numpy
+
+
+def _estimate_source_stats_set_bytes(feature_dim, target_dim, source_count):
+    if (type(feature_dim) is not int or feature_dim < 1
+            or type(target_dim) is not int or target_dim < 1
+            or type(source_count) is not int or source_count < 1):
+        raise ValueError("invalid A3 source-stat byte estimate dimensions")
+    array_bytes = 8 * (
+        feature_dim + feature_dim * feature_dim + target_dim + feature_dim * target_dim
+    )
+    return source_count * (array_bytes + _SOURCE_STATS_ARTIFACT_OVERHEAD_BYTES)
 
 
 def sufficient_statistics(X, Y):
@@ -287,6 +304,8 @@ def build_source_statistics(home, prefix, X, Y, keys, training_sources,
     Y = np.asarray(Y, dtype=np.float64)
     if X.ndim != 2 or Y.ndim != 2 or X.shape[0] != Y.shape[0] or X.shape[0] != len(keys):
         raise ValueError("A3 source statistics row mismatch")
+    if _estimate_source_stats_set_bytes(X.shape[1], Y.shape[1], len(source_map)) > MAX_SOURCE_STATS_SET_BYTES:
+        return [], "SOURCE_STATS_BUDGET_EXCEEDED"
     created = []
     try:
         for sid in sorted(source_map):
