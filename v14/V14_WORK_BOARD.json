@@ -1498,7 +1498,8 @@
     },
     "branch_head": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
     "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
-    "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_STORAGE_BUDGET_MOBILEMOE_20261125.md"
+    "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_STORAGE_BUDGET_MOBILEMOE_20261125.md",
+    "branch_head_before_final_board_update": "21862a6e252b6b3c068b617338dc80885529a4e0"
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
@@ -1591,6 +1592,8 @@
     "branch_head_after_docs": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
     "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
     "docs_and_board_commit": "b64d4b916dabe062657b2f649613b26ef33b57c1",
-    "handoff_commit": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c"
+    "handoff_commit": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
+    "branch_head_before_final_board_update": "21862a6e252b6b3c068b617338dc80885529a4e0",
+    "latest_next_action_commit": "21862a6e252b6b3c068b617338dc80885529a4e0"
   }
 }
