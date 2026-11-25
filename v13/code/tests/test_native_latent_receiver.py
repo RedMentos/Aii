@@ -12,10 +12,12 @@ import pytest
 from v13.native_latent_receiver import (
     NativeReceiverError,
     NativeReceiverUnavailable,
+    LATENT_PREFIX_MODE,
     PINNED_LLAMA_REVISION,
     POSITION_MODE,
     SCHEMA,
     probe,
+    probe_latent_prefix,
 )
 
 
@@ -25,6 +27,7 @@ import json, struct, sys, time
 from pathlib import Path
 REV = {PINNED_LLAMA_REVISION!r}
 SCHEMA = {SCHEMA!r}
+POSITION_MODE = {POSITION_MODE!r}
 if len(sys.argv) == 2 and sys.argv[1] == "--version":
     print(json.dumps({{"schema": SCHEMA, "runner_revision": REV, "llama_version": "b10964"}}))
     raise SystemExit(0)
@@ -34,6 +37,7 @@ args = dict(zip(sys.argv[1::2], sys.argv[2::2]))
 rows = int(args["--rows"])
 dim = int(args["--input-dim"])
 positions = [int(value) for value in args["--positions"].split(",")]
+position_mode = args.get("--position-mode", POSITION_MODE)
 raw = sys.stdin.buffer.read()
 assert len(raw) == rows * dim * 4
 status = {status!r}
@@ -47,7 +51,7 @@ if status == "DIMENSION_MISMATCH":
         "receiver_input_dim": receiver_dim, "output_dim": 8,
         "decode_status": -100, "finite_output": False,
         "position_ids": positions,
-        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "position_mode": position_mode,
         "row_shuffle_control_applicable": False,
         "row_shuffle_control_cosine": None,
         "receiver_vocab_size": 32000,
@@ -81,7 +85,7 @@ else:
         "next_token_changed_vs_row_shuffle": rows >= 2,
         "repeat_next_token_stable": True,
         "position_ids": positions,
-        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "position_mode": position_mode,
         "finite_output": True
     }}
 print(json.dumps(receipt))
@@ -104,7 +108,7 @@ def fixture(tmp_path, **binary_options):
     return home, model, binary, digest
 
 
-def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, position_ids=None):
+def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, position_ids=None, position_mode=POSITION_MODE):
     vectors = vectors or [[0.25, -0.5], [1.0, 0.75]]
     positions = list(range(len(vectors))) if position_ids is None else position_ids
     return probe(
@@ -121,7 +125,7 @@ def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, posit
         generation_id="generation-1",
         vectors=vectors,
         position_ids=positions,
-        position_mode=POSITION_MODE,
+        position_mode=position_mode,
         deadline=deadline or (time.monotonic() + 10),
         threads=2,
         binary_path=binary,
@@ -329,3 +333,69 @@ def test_cancel_event_terminates_native_receiver_process(tmp_path):
             binary_path=binary,
             cancel_event=cancelled,
         )
+
+
+def test_latent_prefix_v1_accepts_one_projected_event_vector(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    receipt = probe_latent_prefix(
+        home=home,
+        model_path=model,
+        expected_model_sha256=digest,
+        sender_role="B2_GIST",
+        receiver_role="C3_LANGUAGE",
+        sender_tap_id="b2.final-rmsnorm.v1",
+        sender_model_revision="b2-r1",
+        sender_model_sha256="b" * 64,
+        tokenizer_revision=None,
+        receiver_model_revision="lfm2-r1",
+        source_id="source-1",
+        generation_id="generation-1",
+        event_vector=[0.25, -0.5],
+        deadline=time.monotonic() + 10,
+        threads=2,
+        binary_path=binary,
+    )
+    assert receipt["status"] == "NATIVE_INPUT_EFFECT"
+    assert receipt["input_rows"] == 1
+    assert receipt["position_ids"] == [0]
+    assert receipt["position_mode"] == LATENT_PREFIX_MODE
+    assert receipt["row_shuffle_control_applicable"] is False
+    assert receipt["row_shuffle_control_cosine"] is None
+    assert receipt["next_token_changed_vs_row_shuffle"] is False
+    assert receipt["native_input_consumed"] is True
+    assert receipt["production_route"] is False
+    assert receipt["semantic_use_proven"] is False
+    assert receipt["training_authority"] == receipt["native_receiver_authority"] == 0
+
+
+def test_latent_prefix_v1_rejects_multiple_rows_bad_positions_and_overrides(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    common = dict(
+        home=home, model_path=model, expected_model_sha256=digest,
+        sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+        sender_tap_id="b2.final-rmsnorm.v1", sender_model_revision="b2-r1",
+        sender_model_sha256="b" * 64, tokenizer_revision=None,
+        receiver_model_revision="lfm2-r1", source_id="source-1",
+        generation_id="generation-1", deadline=time.monotonic() + 10,
+        threads=2, binary_path=binary,
+    )
+    with pytest.raises(NativeReceiverError, match="one finite bounded event vector"):
+        probe_latent_prefix(event_vector=[[0.25, -0.5], [1.0, 0.75]], **common)
+    with pytest.raises(NativeReceiverError, match="geometry and mode are fixed"):
+        probe_latent_prefix(event_vector=[0.25, -0.5], position_mode=POSITION_MODE, **common)
+    with pytest.raises(NativeReceiverError, match="exactly one event vector"):
+        probe(
+            vectors=[[0.25, -0.5], [1.0, 0.75]], position_ids=[0, 1],
+            position_mode=LATENT_PREFIX_MODE, **common,
+        )
+    with pytest.raises(NativeReceiverError, match="position zero"):
+        probe(
+            vectors=[[0.25, -0.5]], position_ids=[1],
+            position_mode=LATENT_PREFIX_MODE, **common,
+        )
+    with pytest.raises(NativeReceiverError, match="unsupported sender position mode"):
+        probe(
+            vectors=[[0.25, -0.5]], position_ids=[0],
+            position_mode="UNDECLARED_MODE", **common,
+        )
+
