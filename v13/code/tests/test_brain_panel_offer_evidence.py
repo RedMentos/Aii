@@ -588,9 +588,11 @@ def test_real_sqlite_offer_packet_and_source_ref_are_verified(tmp_path):
         assert body["source_bound"] is True
         assert body["source_count_matches"] is True
         assert body["verified_source_span_count"] == 1
-        assert body["consumption_state"] == (
-            "C4_SELECTED_C3_NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED"
-        )
+        # Store telemetry intentionally drops the runner's synthetic marker.
+        # Source/packet verification can pass, but native execution remains unverified.
+        assert body["evidence_environment"] == "UNVERIFIED"
+        assert body["native_prefill_observed"] is True
+        assert body["consumption_state"] == "BODY_ATTEMPT_ENVIRONMENT_UNVERIFIED"
 
         with store.tx() as conn:
             conn.execute("UPDATE sources SET deleted=1 WHERE id=?", (source_ref["source_id"],))
