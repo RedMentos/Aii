@@ -359,8 +359,10 @@ class AndroidControlBroker:
                         or any(ch not in "0123456789abcdef" for ch in digest)):
                     raise ValueError("invalid digest")
                 if args_json is None:
-                    if capability != "type_text":
+                    if capability not in {"type_text", "open_url"}:
                         raise ValueError("missing non-sensitive arguments")
+                    # Both capabilities intentionally discard sensitive payloads
+                    # after dispatch; receipt recovery needs only digest/source binding.
                     args = {}
                 else:
                     args = json.loads(args_json)
