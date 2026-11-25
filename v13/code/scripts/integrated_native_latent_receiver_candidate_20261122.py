@@ -18,7 +18,7 @@ NATIVE_FILES = {
     "v13/native_latent_receiver.py": "c57f31aefd8a1f7ac9def87e263c2155189fc3647145d35ec5d6ab9c3bc1f92f",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "62fd7e9e9b5315d3d10326925dde0410a941aef787a5ed50c86a8750beba827f",
-    "v13/native/latent_receiver/README.md": "57c28cbf319bbec23c1b94be178a52432a49590e07c2b0656f1bf53fea775218",
+    "v13/native/latent_receiver/README.md": "e565180e83c425437c151397e0d317ef8adcae7b937caa2682182fb9e23265bf",
     "v13/latent_adapter.py": "1113950f6382adcdda4741f53bec135fd6bca6acbc358a6b15bff9163edcaf33"
 }
 
