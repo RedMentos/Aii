@@ -15,10 +15,11 @@ BASE_PINS = {
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "60be5402d3fbaf8bc3d99da18a637a31f0c5aeb910c7e3996343db203a12f17c",
+    "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "7aa9b4699b0aa0d49c126c090f89ba3173e0bdd4d9af1de8cb2705610f3c99c4",
-    "v13/native/latent_receiver/README.md": "568757eed361977c60e18764476c1687b1584a8ce001e7847176f92cd84eee08"
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "34fa864077f45453d6316c33895800be63371a24babf03160cb01307ab278a7a",
+    "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
+    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
@@ -132,6 +133,12 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
             return {'status':'INVALID_STORED_RECEIPT'}
 
 '''
+CALL0SUM_LEARNING_GUARD = r'''    def _learning_enabled(self):
+        runtime=getattr(self,"r",None)
+        cfg=getattr(runtime,"cfg",None)
+        return isinstance(cfg,dict) and cfg.get("learning_mode","RECORD_ONLY") in {"SHADOW_UPDATE","APPROVED_COMMIT"}
+
+'''
 REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),\n"""
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
@@ -190,6 +197,9 @@ def apply_sources(code_dir,sources):
         raise ValueError("native receiver Callosum already patched or unavailable")
     callosum=_replace(callosum,b"import re\n",b"import re\nimport time\n","Callosum time import")
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
+    callosum=_replace(callosum,b"    def _load(self):\n",CALL0SUM_LEARNING_GUARD.encode("utf-8")+b"    def _load(self):\n","Callosum learning mode gate")
+    callosum=_replace(callosum,b"        st,_=self._load();msgs=st['pending'].get(event_id) or []\n",b"        if not self._learning_enabled():return {'scored':0,'status':'SKIPPED_RECORD_ONLY'}\n        st,_=self._load();msgs=st['pending'].get(event_id) or []\n","Callosum outcome RECORD_ONLY gate")
+    callosum=_replace(callosum,b"        u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)\n",b"        if not self._learning_enabled():return {'updated':0,'status':'SKIPPED_RECORD_ONLY'}\n        u=max(0.,min(1.,float(utility)));sc=step(self.n,PATH)\n","Callosum rating RECORD_ONLY gate")
     callosum=_replace(callosum,REPORT_PROBE_OLD.encode("utf-8"),REPORT_PROBE_NEW.encode("utf-8"),"Callosum report probe")
     callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
     callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")
