@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T21:32:00Z",
+  "updated_at": "2026-11-25T23:32:41Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness.",
@@ -175,9 +175,9 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android microphone",
-      "next_step": "Perception/QA: #2312 signed one-shot 44.1-kHz PCM consumer remains stacked on the QA companion branch; no AudioRecord provider, microphone capture or Redmi test. Keep capture OFF until the companion verifier/provider is reconciled and exact consent/revocation/zeroization tests pass. libfvad remains a BSD-3-Clause research comparator only.",
+      "next_step": "Keep MobileMoE-S/M as research-only candidates. Before any trial, verify exact QAT/PTE artifact and license/access, ARM64/Bionic runtime compatibility, tokenizer, real PSS/RSS/TTFT/decode, output quality, B1/B2 role complementarity and rollback on Redmi. Ask separately before experimental download and again before any productive swap; no action now.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-25T23:32:41Z",
       "latest_candidate_pr": {
         "pr": 2142,
         "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
@@ -185,7 +185,20 @@
         "ci": "PASS_44861145442_23_TESTS",
         "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
       },
-      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. Run 35: selected MobileMoE paper/model-card review; S/M/L INT4 weight estimates 0.68/1.48/2.75 GB; FAIR Noncommercial Research License; custom ExecuTorch/fused-kernel path; no code/weights downloaded, no Redmi measurement.",
+      "latest_research_candidate": {
+        "name": "MobileMoE-S / MobileMoE-M",
+        "paper": "arXiv:2605.27358 (2026-05-26; model card says NeurIPS 2026)",
+        "license": "FAIR Noncommercial Research License; no acceptance/download",
+        "int4_weight_estimates_gb": {
+          "S": 0.68,
+          "M": 1.48,
+          "L": 2.75
+        },
+        "runtime": "Custom fused MoE kernels / ExecuTorch PTE; not GGUF/llama.cpp drop-in",
+        "device_evidence": "Galaxy S25 and iPhone 16 Pro only; Redmi unverified",
+        "status": "RESEARCH_CANDIDATE_ONLY_NO_DOWNLOAD_NO_SWAP"
+      }
     },
     {
       "id": "V14-006",
@@ -196,19 +209,20 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Core must rebind the stale Termux recovery source pin without weakening its hash gate, then rerun #2487 staged-runtime, integrated-regression and two-checkout migration on the composed current head. After that, reconcile the signed one-shot RAW EAR consumer with QA's companion provider; test route/silence/revocation only after explicit device permission. Supporting research PR #2489 adds a read-only B1/B2 LatentTapPacket alignment audit (9/9 local synthetic tests) but has no real tap cohort; after #2488 is integrated and the runtime is explicitly resumed, collect >=20 paired source/event/generation taps and run it.",
+      "proof_environment": "CI focused tests PASS (Python 3.13/3.14); exact staged/native workflows FAIL; LOCAL_LINUX full checkout BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Core must repair the exact native receiver compile error (decode_embeddings uses undeclared model) and reconcile inherited staged source-pin/migration failures. Then rebase #2519 on the repaired exact Core head, rerun focused + staged + integrated + pinned Linux + Android arm64 CI, and run a real pinned-GGUF eight-condition cohort on LOCAL_LINUX before any device proposal.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T06:03:17.000Z",
+      "last_checkpoint": "2026-11-25T23:32:41Z",
       "latest_candidate_pr": {
-        "pr": 2487,
-        "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
-        "base": "research-perception/v14-a4-audio-source-outcomes-current-20261124-run16",
-        "state": "OPEN_DRAFT_PARTIAL_CI_FAILED",
-        "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
-        "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
+        "pr": 2519,
+        "head_sha": "bc954f358640388e45ca52c9aa47ac2f6b15bdfe",
+        "status": "OPEN_DRAFT_NOT_GREEN",
+        "scope": "Source-bound eight-condition native receiver matrix -> Core ephemeral task-score collector; diagnostic only, B3 OFF",
+        "ci": "FOCUSED_MATRIX_BRIDGE_PASS_PY313_PY314; STAGED_RUNTIME_FAIL_17_FAILED_236_PASSED_10_SKIPPED_2_ERRORS; INTEGRATED_BUILDER_HASH_MISMATCH; PINNED_NATIVE_BUILD_AND_ANDROID_ARM64_CROSS_COMPILE_FAIL_UNDECLARED_model",
+        "local_linux": "BLOCKED_NO_CHECKOUT_GITHUB_DNS_FAILURE",
+        "redmi": "NO_NEW_RECEIPT; REDMI_UNVERIFIED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required. Run 35 / PR #2519: focused source-bound matrix/bridge tests PASS on Python 3.13/3.14 CI; exact full workflow NOT_GREEN due inherited Core staged/runtime and native build failures. Core compile error posted to #2515. No local full suite, real GGUF, Android execution, weights or B3 proof."
     },
     {
       "id": "V14-007",
