@@ -97,6 +97,11 @@ def unavailable_prediction(status: str) -> dict:
         "persistence_baseline_mae": None,
         "improvement_mae": None,
         "excess_prediction_error": 0.0,
+        "signed_prediction_error": None,
+        "negative_prediction_error": None,
+        "omission_prediction_error": None,
+        "commission_prediction_error": None,
+        "omission_attention_novelty": 0.0,
         "attention_novelty": 0.0,
         "weight_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
         "weight_persistence": False,
@@ -181,7 +186,11 @@ class AudioTemporalPredictor:
             value = sum(inputs[row] * self._weights[row][col] for row in range(INPUT_COUNT))
             prediction.append(min(1.0, max(0.0, value)))
 
-        model_error = sum(abs(target[i] - prediction[i]) for i in range(FEATURE_COUNT)) / FEATURE_COUNT
+        signed_errors = [target[i] - prediction[i] for i in range(FEATURE_COUNT)]
+        signed_error = sum(signed_errors) / FEATURE_COUNT
+        omission_error = sum(max(0.0, -error) for error in signed_errors) / FEATURE_COUNT
+        commission_error = sum(max(0.0, error) for error in signed_errors) / FEATURE_COUNT
+        model_error = sum(abs(error) for error in signed_errors) / FEATURE_COUNT
         baseline_error = sum(abs(target[i] - previous[i]) for i in range(FEATURE_COUNT)) / FEATURE_COUNT
 
         gradients = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
@@ -222,6 +231,11 @@ class AudioTemporalPredictor:
             "persistence_baseline_mae": round(baseline_error, 8),
             "improvement_mae": round(baseline_error - model_error, 8),
             "excess_prediction_error": round(surprise, 8),
+            "signed_prediction_error": round(signed_error, 8),
+            "negative_prediction_error": round(-omission_error, 8),
+            "omission_prediction_error": round(omission_error, 8),
+            "commission_prediction_error": round(commission_error, 8),
+            "omission_attention_novelty": round(min(ATTENTION_GAIN, ATTENTION_GAIN * omission_error), 8) if measured else 0.0,
             "attention_novelty": round(min(ATTENTION_GAIN, ATTENTION_GAIN * surprise), 8) if measured else 0.0,
             "gradient_l2": round(gradient_l2, 8),
             "gradient_clip_scale": round(clip_scale, 8),
@@ -578,4 +592,12 @@ def predictive_attention_novelty(prediction: dict) -> float:
     if type(prediction) is not dict or prediction.get("status") != "SHADOW_MEASURED":
         return 0.0
     value = _unit(prediction.get("excess_prediction_error"), "excess_prediction_error")
+    return round(min(ATTENTION_GAIN, ATTENTION_GAIN * value), 8)
+
+
+def predictive_omission_novelty(prediction: dict) -> float:
+    """Capped A4 salience for a predicted acoustic change that did not occur."""
+    if type(prediction) is not dict or prediction.get("status") != "SHADOW_MEASURED":
+        return 0.0
+    value = _unit(prediction.get("omission_prediction_error"), "omission_prediction_error")
     return round(min(ATTENTION_GAIN, ATTENTION_GAIN * value), 8)
