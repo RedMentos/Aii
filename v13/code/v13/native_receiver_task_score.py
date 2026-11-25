@@ -154,7 +154,7 @@ def _environment_fields(environment, device_execution_receipt_sha256, device_run
 
 
 def probe_native_receiver_task_score(*, home, model_path, expected_model_sha256,
-        receiver_role, receiver_model_revision, tokenizer_revision, vectors,
+        receiver_role, receiver_model_revision, tokenizer_revision, vectors, expected_input_sha256,
         position_ids, position_mode, target_token_ids, deadline, environment,
         condition, task_group_id, task_family, session_id, source_ref,
         message_source_ref, context_sha256, adapter_sha256=None, threads=1,
@@ -182,6 +182,10 @@ def probe_native_receiver_task_score(*, home, model_path, expected_model_sha256,
     if condition not in native_receiver_utility.CONDITIONS or task_family not in native_receiver_utility.TASK_FAMILIES:
         raise NativeReceiverTaskScoreError("unsupported held-out task condition or family")
     rows, input_dim, input_bytes, input_sha256 = _vector_payload(vectors)
+    if type(expected_input_sha256) is not str or len(expected_input_sha256) != 64 or any(c not in "0123456789abcdef" for c in expected_input_sha256):
+        raise NativeReceiverTaskScoreError("expected candidate input hash must be lowercase SHA-256")
+    if input_sha256 != expected_input_sha256:
+        raise NativeReceiverTaskScoreError("native receiver vectors differ from the bound candidate input")
     positions = _positions(position_ids, rows, position_mode)
     target_bytes, target_sha256 = _target_payload(target_token_ids)
     if positions[-1] + len(target_token_ids) > MAX_POSITION:
