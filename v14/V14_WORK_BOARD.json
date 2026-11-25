@@ -203,13 +203,19 @@
       "latest_audio_pr": {
         "pr": 2498,
         "head_sha": "369345769f89a655239813046196548e8c05d77b",
-        "status": "CI_IN_PROGRESS",
+        "status": "FOCUSED_CI_PASS_STAGED_INTEGRATION_PENDING",
         "changes": [
           "A4 max-fusion test now allows existing voice evidence to dominate; still requires predictor novelty to be included and external_interrupt unchanged",
           "VAD comparison workflow expected RAW EAR source blob updated to exact current Git blob 0cbec2a9f424f177d7e6e783c28571b236612419"
         ],
         "local_linux": "BLOCKED_NO_CHECKOUT_GITHUB_DNS_FAILURE",
-        "redmi": "REDMI_UNVERIFIED"
+        "redmi": "REDMI_UNVERIFIED",
+        "ci": {
+          "raw_ear_fastpath": "PASS_PYTHON_3.13_AND_3.14_RUN_45723389394",
+          "vad_comparison": "PASS_PYTHON_3.13_AND_3.14_RUN_45723389184",
+          "offline_runtime_integrity": "PASS_PYTHON_3.11_AND_3.14_RUN_45723389226",
+          "staged_integrated": "IN_PROGRESS_RUN_45723389826"
+        }
       }
     },
     {
