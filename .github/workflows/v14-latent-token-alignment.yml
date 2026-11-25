@@ -14,6 +14,8 @@ on:
       - "v13/code/tests/test_latent_adapter.py"
       - "v13/code/tests/test_latent_tap_adapter.py"
       - "v13/code/tests/test_latent_alignment_audit.py"
+      - "v13/code/v13/native_input_embedding_tap.py"
+      - "v13/code/tests/test_native_input_embedding_tap.py"
       - ".github/workflows/v14-latent-token-alignment.yml"
 permissions:
   contents: read
@@ -35,11 +37,11 @@ jobs:
       - name: Install focused adapter test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5
       - name: Compile adapter and source-audit contracts
-        run: python -m py_compile v13/code/v13/latent_adapter.py v13/code/v13/latent_alignment_audit.py v13/code/tests/test_latent_adapter.py v13/code/tests/test_latent_tap_adapter.py v13/code/tests/test_latent_alignment_audit.py
+        run: python -m py_compile v13/code/v13/latent_adapter.py v13/code/v13/latent_alignment_audit.py v13/code/v13/native_input_embedding_tap.py v13/code/tests/test_latent_adapter.py v13/code/tests/test_latent_tap_adapter.py v13/code/tests/test_latent_alignment_audit.py v13/code/tests/test_native_input_embedding_tap.py
       - name: Test span alignment, adapter fitting, checkpoint, and source audit
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_latent_adapter.py v13/code/tests/test_latent_tap_adapter.py v13/code/tests/test_latent_alignment_audit.py
+        run: python -m pytest -q v13/code/tests/test_latent_adapter.py v13/code/tests/test_latent_tap_adapter.py v13/code/tests/test_latent_alignment_audit.py v13/code/tests/test_native_input_embedding_tap.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
