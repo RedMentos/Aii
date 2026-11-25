@@ -89,3 +89,12 @@ R-144 is not a drop-in Android design. Its positive results use 4B/8B/14B Qwen3 
 2. Coordinate with Core on the #2499 PENDING-approval/lease failure; rerun its exact dedicated workflow after repair.
 3. Extend the real native tap producer to emit tokenizer byte/character spans without storing source text. Current persisted tap packets do not yet provide those offsets, so tokenwise fitting is not yet fed by real paired tap data.
 4. Build the next receiver-utility experiment on source-disjoint task data: compare event-mean vector, multiple span vectors and tokenwise receiver-compatible state under both context-aware and context-unaware settings, with exact-forward parity, no-message, zero, shuffled, row-shuffled, mis-source, position and OOD controls. Keep B3 OFF until task utility, not just input/logit effect, is shown.
+
+
+## Cross-lane correction — Core PR #2499 (2026-11-25)
+
+The earlier comment on PR #2499 incorrectly described the failing test as arming and then losing a PENDING approval. Exact commit comparison showed that the test at df19e207 did not call arm-probe at all; the earlier read used a later branch snapshot. A correction was posted in PR comment #7164132935. Core commit 8502afe adds the missing explicit arm-probe step and corrects the preflight-unload call ordering. The dedicated V14 native latent receiver staged-runtime workflow #911 on 8502afe is PASS. The previous approval-state diagnosis is withdrawn. This is still staged Python/C++ control-path evidence, not a real GGUF semantic/task-utility test or Redmi proof.
+
+## Current branch CI poll
+
+At the latest poll, PR #2501 current head 64eb3cf693f97f3f44999912858d651a1b682a01 has focused V14 latent token-span alignment workflow #14 PASS and V13 runtime deployment integrity workflow #2519 PASS. V13 staged context and integrated regression workflow #5062 remained IN_PROGRESS; it must be polled again before the handoff is treated as fully green.
