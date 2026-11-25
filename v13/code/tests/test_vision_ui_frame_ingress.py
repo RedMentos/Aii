@@ -1155,6 +1155,11 @@ def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monk
     assert second_change["source_ref"] == second_result["frame_source_ref"]
     assert second_result["packet"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
     assert second_result["a4"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    a3_attention = second_result["temporal_visual_evidence"]["a3_attention_novelty"]
+    assert a3_attention > 0.0
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_attention_novelty"] == a3_attention
+    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == second_result["temporal_visual_evidence"]["attention_novelty"]
+    assert second_result["temporal_visual_evidence"]["attention_novelty"] >= a3_attention
     assert third_result["student_projector_used"] is True
     assert third_change["status"] == "MEASURED"
     assert third_change["change_score"] == 0.0
@@ -1210,23 +1215,40 @@ def test_a3_projected_change_rebaselines_on_projector_change_and_missing_project
     assert measured["a3_projected_change"]["change_score"] == 0.5
     assert measured["a3_projected_change"]["changed_tile_ids"] == list(TILE_IDS)
 
-    changed_projector = registry.update(
+    stable = registry.update(
         consent_receipt_ref="frame-3", start_ms=1066, end_ms=1099,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    changed_projector = registry.update(
+        consent_receipt_ref="frame-4", start_ms=1099, end_ms=1132,
         a3_tile_embeddings=changed_embeddings, a3_projector_sha256="d" * 64,
         frame_source_ref=second_ref, **common,
     )
     missing = registry.update(
-        consent_receipt_ref="frame-4", start_ms=1099, end_ms=1132,
+        consent_receipt_ref="frame-5", start_ms=1132, end_ms=1165,
         a3_unavailable_reason="NO_PROJECTOR", **common,
     )
     warm_after_missing = registry.update(
-        consent_receipt_ref="frame-5", start_ms=1132, end_ms=1165,
+        consent_receipt_ref="frame-6", start_ms=1165, end_ms=1198,
         a3_tile_embeddings=first_embeddings, a3_projector_sha256="d" * 64,
         frame_source_ref=first_ref, **common,
     )
+    assert first["a3_attention_novelty"] == 0.0
+    assert measured["a3_attention_novelty"] == pytest.approx(0.075)
+    assert measured["attention_novelty"] == pytest.approx(0.075)
+    assert stable["a3_projected_change"]["change_score"] == 0.0
+    assert stable["a3_attention_novelty"] == 0.0
+    assert stable["attention_novelty"] == 0.0
     assert changed_projector["a3_projected_change"]["status"] == "PROJECTOR_CHANGED"
+    assert changed_projector["a3_attention_novelty"] == 0.0
     assert missing["a3_projected_change"]["status"] == "NO_PROJECTOR"
+    assert missing["a3_attention_novelty"] == 0.0
     assert warm_after_missing["a3_projected_change"]["status"] == "WARMUP"
+    assert warm_after_missing["a3_attention_novelty"] == 0.0
+    assert measured["a3_projected_change"]["truth_authority"] == 0
+    assert measured["a3_projected_change"]["learning_authority"] is False
+    assert measured["a3_projected_change"]["action_authority"] is False
     assert registry.reset(capture_session_id="a3-session") == 1
     assert len(registry) == 0
 
