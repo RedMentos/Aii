@@ -1473,3 +1473,139 @@ Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTI
 **Local synthetic experiment:** CPython 3.13 isolated helper tests 8/8 PASS; py_compile PASS. On a 120-observation alternating 16-tile fixture, the final predictor parameter L2 was 1.08094; last-20 MAE was 0.01350 versus persistence MAE 0.10000 (0.08650 lower). After 100 updates on a second orthogonal pattern, old-pattern MAE changed 0.01350→0.01747 (+0.00397). 10,000 helper updates took 1,054.3 ms (~105.4 µs/update) on CPython 3.13.5 Linux. The 256 float64 weights are 2,048 raw bytes; measured Python list/tuple state including one previous 16-value vector was 9,824 bytes per stream (not a Redmi measurement). These are synthetic helper measurements only. Full Aii checkout/integration suite was unavailable locally. Exact-head CI on PR #2494: frame ingress 55/55 on Python 3.13 and 3.14; A3 temporal calibration/consumer 67/67 on both; vision source-lineage 39/39 on both; offline/runtime-deployment 3.11 and 3.14 PASS. Staged-runtime FAIL 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression FAIL 1. Both shared failures resolve to the Core-owned source-lifecycle composer rejecting vision.py; migration returned PARTIAL rather than UPDATED. No Redmi measurement or real user visual sequence was used.
 
 **Status:** RESEARCH_PREPRINT_FULL_HTML_REVIEWED / LICENSES_AUDITED / NO_REUSE / LOCAL_SYNTHETIC_HELPER_8_OF_8 / WIRED_SHADOW_CODE_PR_2494 / FOCUSED_CI_PASS / CORE_COMPOSITION_BLOCKED / REDMI_UNVERIFIED.
+
+
+## R-141 — Error-gated A3 temporal plasticity as a mobile shadow ablation (2026-11-25)
+
+**Primary source:** Aaron Pache and Mark C. W. van Rossum, *Mistake Gating Leads to Energy and Memory Efficient Continual Learning*, arXiv:2604.14336v2 (PDF dated 2026-07-14), subsequently listed as a *Neural Computation* journal article, ahead-of-print 2026-11-05, DOI 10.1162/NECO.a.1602. The full 19-page arXiv PDF was reviewed, not only the abstract: https://arxiv.org/abs/2604.14336 and https://pubmed.ncbi.nlm.nih.gov/43057301/
+
+**What the paper actually shows:** the authors compare ordinary SGD/backprop, pure mistake-gating, and memorized mistake-gating on MNIST/EMNIST and incremental CIFAR-10. The memorized rule stores one Boolean per training sample and continues updating when a sample was ever misclassified, even if it is currently correct. It reports 50–80% fewer updates in the abstract; EMNIST uses about 12% of ordinary updates, and incremental CIFAR-10 obtains similar learning curves with roughly half the updates in partly frozen networks. The paper explicitly shows that pure mistake-gating can have fragile test generalization, and that training a complex CIFAR-10 model from scratch yields no savings because nearly all early samples are mistakes. The experiments are supervised classification with sample identity/labels; they are not regression, A3 temporal prediction, Android, or a Redmi benchmark.
+
+**Reuse/licensing:** the referenced repository https://github.com/vanrossumlab/mistake-gating26 exposes a README but no LICENSE file was found. No code, data, weights or dependencies were copied; only the published method was used as research inspiration. The V14 adaptation below is deliberately not represented as the paper's memorized Boolean-per-sample algorithm.
+
+**V14 experiment:** A3 now supports an optional `ERROR_GATED` mode for its existing 16→16 next-tile-delta LMS predictor. It opens an update only when pre-update model MAE exceeds `max(1e-8, 0.25 × persistence MAE)`; the default `ALWAYS` predictor remains unchanged. A second predictor runs beside it in the existing consent-scoped `TemporalVisualEvidence` stream and is exposed as `a3_temporal_prediction.error_gated_shadow`. The A4 novelty helper reads only the original top-level predictor; the new shadow cannot change salience or action selection. Both states reset through the same temporal reset/unavailable/projector-change/consent-revocation lifecycle. No raw frame, sample, transcript, or persistent weight is stored.
+
+**Local deterministic ablation:** CPython 3.13.5 on LOCAL_LINUX, isolated predictor mirror (the full Aii checkout is unavailable): `py_compile` PASS; `pytest -q` 10/10 PASS. Across 2,299 synthetic observations, ALWAYS applied 2,299 updates; ERROR_GATED applied 773 (33.62% of observations, 66.38% fewer updates). ERROR_GATED mean MAE was 0.003816 vs persistence 0.012505; its final 100 old-pattern MAE was 0.024976 vs persistence 0.099500. However, it was worse than ALWAYS (mean MAE 0.003816 vs 0.003039; final old-pattern MAE 0.024976 vs 0.009499). Thus the update reduction has a measured quality/retention cost; this candidate remains a non-controlling shadow, not a replacement. An 8-stream / 16-predictor tracemalloc snapshot used 375,824 bytes (~47 KB per predictor pair); this is CPython/Linux memory, not Android RAM or PSS.
+
+**Code/CI status:** PR #2509, stacked on #2494, branch `research-perception/v14-a3-error-gated-plasticity-20261125-run11b`, code head before this documentation append `47de95db5a51541fdc3efee2bfb0ba332a15b544`. Exact PR CI was started after marking the draft ready for checks; at this ledger update the source-lineage, A3 temporal and frame-ingress jobs were IN_PROGRESS, not PASS. Parent #2494 still has focused Perception jobs green but staged/integrated composition blocked by the Core-owned strict source-lifecycle composer rejecting `vision.py`; this PR does not relax that pin. Full local Aii suite NOT_RUN. No release SHA; NOT_RELEASED.
+
+**Device/deployment:** latest authenticated private V13OBS #115, updated 2026-11-24 09:28:11 UTC, reports installed `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and pipeline UP_TO_DATE. The last turn was FINAL in 6.295 s, TTFT 2.046 s, 358 admitted prompt tokens and 7 generated tokens; semantic use/correctness was not proven. B1/B2 native probes remain TIME_BUDGET at 53.2/54.2 s; native model residency is unavailable and the model process is STOPPED / AI STOPPED_BY_USER. The newer b20e9 candidate has green CI but no installation receipt. No A3 visual provider or error-gated candidate has been tested on Redmi; REDMI_UNVERIFIED.
+
+**Next:** Core/Integrator must recompose the #2494 `vision.py` source-lifecycle closure and rerun staged/integrated/migration/consumer gates. Then rebase/retest #2494→#2509 on one exact release ancestor. Only after that, compare ALWAYS vs ERROR_GATED on explicitly consented real visual sequences with source/session-disjoint holdouts, static-screen and motion strata, brightness/codec/camera controls, retention and restart/rollback. Keep A4 gain 0.15 unchanged until those controls pass. Continue other Canon families; this ablation does not close A0–A5, voice, B1/B2, B3, World/Self/Memory/JEPA, persistent learning or Android control.
+
+User action: **keine Aktion nötig**.
+
+
+**Final branch/readback checkpoint (2026-11-25T19:47:24.064Z):** PR #2509 documentation/ledger/board head `47ccf435dcf66350ba6972b36a5df05341715256`. Exact-head runtime deployment and frame-ingress workflows SUCCESS; A3 temporal calibration, source-lineage and staged/integrated workflows IN_PROGRESS at last poll. No completion is claimed for in-progress jobs.
+
+
+### Exact-head CI completion — tested code SHA 6523b8c3c5e0b9b164023e63a190c2012fed07c9 (2026-11-25T19:50:27.191Z)
+
+- A3 temporal calibration / RAW EAR interval integrity: 74/74 PASS on Python 3.13.18 and 3.14.10.
+- MediaProjection RAW EAR frame ingress: 55/55 PASS on Python 3.13.18 and 3.14.10.
+- Vision source-lineage / forget regressions: 39/39 PASS on Python 3.13.18 and 3.14.10.
+- Runtime deployment integrity: PASS.
+- Staged runtime: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests passed; strict source lifecycle lock rejects `vision.py` at `scripts/source_lifecycle_lock_integration_candidate.py:172` with `unsupported lifecycle source`.
+- Integrated regression: FAIL, one failure at the same inherited Core-owned `vision.py` pin. This is not a failure in the new A3 unit/consumer tests; it prevents whole-runtime acceptance.
+- PR #2509 returned to DRAFT. It remains stacked on #2494 and NOT_RELEASED. Code-tested SHA is 6523b8; subsequent commits, if any, are documentation/board only.
+
+No user action required. Core/Integrator owns the source-lifecycle rebind; Perception will not weaken the exact pin.
+
+
+## R-142 — B3 tokenwise adapter evidence and RAW EAR → C3 consumer audit (2026-11-25)
+
+### B3 / cross-model alignment
+
+Perception PR #2508 (`research-perception/v14-native-tokenwise-session-fit-20261125-run21`) is now READY_FOR_REVIEW and mergeable on its stacked #2507 base. Exact code head `e333b5c3da2448ef6d188f2278672f7f692ac76e` has:
+- tokenwise adapter / source alignment: 83 passed on Python 3.13 and 83 on Python 3.14;
+- staged runtime: 255 passed, 10 skipped, 47 subtests passed;
+- integrated regression: 424 passed, 3 skipped, 58 subtests passed.
+
+The concrete improvement is whole-session holdout: pair records bind `session_id`; the fitter rejects overlap between train and holdout and emits a digest-bound fit manifest. This closes a session-leakage route that source-ID/source-hash separation alone did not close. It remains an **offline PCA+ridge adapter candidate**. It does not prove native GGUF hidden-state exchange, receiver inference/task utility, B1/B2 operation, or Android. The parent #2507 branch advanced one workflow-trigger commit; #2508 contains the same trigger line plus its own session-fit trigger and remains mergeable. No force-push was used.
+
+Core PR #2499 is the separate native-prefix receiver step; its latest branch head was `8502afe...` at this check and no exact workflow run was available. The receiver path must still be tested against exact-message, no-message, zero, shuffled, repeated and OOD controls, with restart/rollback. B3 remains OFF / NOT_ACCEPTED until real task-level receiver utility is demonstrated.
+
+Research caveat: the cross-model transfer paper cited in the current B3 work (`arXiv:2606.03280`) was not fully accessible in this run; only the existing PR's abstract-level note is available. Do not claim a full-paper review or use its abstract as proof of native utility.
+
+### Audio / A-plane consumer audit
+
+The active RAW EAR voice path in PR #2498 already validates and attaches the 13-cue nonverbal vector to the A5 acoustic segment, records a non-identifying `speaker_change_decision`, and rebuilds the final C3 admission summary with activity/voicing/F0/energy/prosody plus speaker-change evidence under the existing consent/finality gates. The older generic `audio_perception_bridge` remains RMS/ZCR-only, but it is not the richer RAW EAR voice path. A duplicate C3 bridge patch would be redundant, so none was made.
+
+The remaining #2498 blocker is its staged source-lifecycle lock rejecting the updated `audio_voice_cues.py` blob. Core/Integrator must recompose the strict source pin and rerun staged/integrated/migration/consumer. Android microphone feed and Redmi-native acoustic evidence remain unverified.
+
+### Relation to this run's A3 work
+
+PR #2509 remains DRAFT: exact A3 temporal 74/74, frame ingress 55/55, source-lineage 39/39 on Python 3.13/3.14 and runtime deployment PASS; staged/integrated fail only at the inherited Core `vision.py` source pin. The ERROR_GATED ablation still saves synthetic update steps at a measured MAE/retention cost, so it stays shadow-only.
+
+**Next:** Core/Integrator recompose both the #2494/#2509 `vision.py` and #2498 `audio_voice_cues.py` source-lifecycle closures. Core completes #2499 native-prefix receiver; Perception supplies source/session-disjoint real pairs and receiver utility controls after that. No model or Android permission change; user action **keine Aktion nötig**.
+
+
+## R-154 — Hysteretic prediction-error gating for A3 temporal plasticity (2026-11-25)
+
+**Primary-source access boundary:** Hiroki Sawada and Jun Tani, *Free-Energy-Gated Plasticity for Real-Time Online Motor Learning in Physical Human-Robot Interaction*, arXiv:2608.23000v2, submitted 2026-08-24: https://arxiv.org/abs/2608.23000 . In this run the official arXiv abstract was available, but the full primary text could not be retrieved; this entry is **not** marked full-paper reviewed. A structured Pith machine review was consulted as a secondary source, not treated as peer review. No official code repository or software/weight license was identified. The arXiv paper-distribution license is not a code/weight license; no code, data or weights were imported.
+
+**Method as supported by the accessible abstract/secondary notes:** FEGP scales the effective learning rate using a window-averaged variational-free-energy mismatch signal, with hysteretic open/close behavior. The abstract reports continuous online weight adaptation in a predictive-coding VRNN during physical human–robot interaction, without offline pretraining, replay or task-boundary signals, and controlled comparisons across ten teaching streams and five initializations. This is a motor-control PV-RNN result, not a vision-tile regression result. The secondary review flags two evaluation risks that require primary-text verification: time-reversal sensitivity in the trajectory evaluator and threshold selection on the same streams used for headline comparisons. Do not treat the review's numerical summaries as independently verified paper measurements.
+
+**V14 adaptation — deliberately narrower than FEGP:** A3 does not calculate variational free energy. The experiment therefore uses a persistence-relative prediction-error ratio only, not a claimed free-energy signal. ERROR_HYSTERESIS opens at model-MAE / persistence-MAE >= 0.10 and closes at <= 0.05; the default ALWAYS predictor remains unchanged. The third predictor is an ephemeral, consent-scoped shadow in the existing TemporalVisualEvidence consumer, exposed as a3_temporal_prediction.error_hysteresis_shadow. It does not feed A4, salience, actions, truth or persistent learning. Reset/unavailable/revocation clears its state.
+
+**Source-disjoint synthetic ablation:** LOCAL_LINUX CPython 3.13.5, 20 training seeds (0–19) selected the fixed 0.10/0.05 thresholds; 20 held-out seeds (20–39) evaluated them. Each generated stream has 1,799 observations, three disjoint two-state tile patterns, long static intervals and an A→B→C→A return. On held-out streams:
+- ALWAYS: 1,799 updates, mean MAE 0.00600822, final old-pattern MAE 0.01783551.
+- ERROR_HYSTERESIS: 1,564.35 updates (13.04% fewer), mean MAE 0.00601103, final old-pattern MAE 0.01788599.
+- Fixed 7/8 periodic update control: 1,575 updates, mean MAE 0.00621328, final old-pattern MAE 0.01925348.
+- Constant learning-rate control matched to the training-set average gate fraction (LR 0.26051973): 1,799 updates, mean MAE 0.00627414, final old-pattern MAE 0.01927936.
+- The old single-threshold ERROR_GATED baseline: 1,207.65 updates, mean MAE 0.00655297, final old-pattern MAE 0.02455583.
+
+These are synthetic generated vectors, not real camera frames, user data, pixel noise, or semantic visual accuracy. The held-out difference versus ALWAYS is small; the result supports only a candidate compute/quality trade-off, not a general learning improvement. A third predictor adds 272 parameters per active stream. A CPython tracemalloc comparison of 16 warmed streams measured +495,240 bytes when adding the third predictor to two existing predictors (~30.95 KB/stream); this is Linux Python allocation, not Android PSS/RSS.
+
+**Local tests:** isolated copy of the patched predictor module, CPython 3.13.5 / pytest 9.0.2: py_compile PASS; 5/5 focused tests PASS (hysteresis band, static no-op, invalid thresholds/errors, bounded shadow update behavior, reset erasure). The full Aii checkout and full repository pytest were unavailable locally; exact repository CI is tracked separately.
+
+**Runtime/Canon boundary:** the new shadow is wired into A3 TemporalVisualEvidence but does not alter the existing A4 output. This is WIRED_SYNTHETIC only. No native visual encoder, Android MediaProjection session, camera sequence, persistent weight change, native latent exchange, or Redmi test is established. PR #2509 remains DRAFT/NOT_RELEASED pending exact CI and the inherited Core-owned vision.py source-lifecycle recompose. P0 basic chat and B1/B2 delivery remain open; B3 remains OFF.
+
+**Next:** wait for exact-head PR #2509 A3/frame/source CI; Core/Integrator must recompose the strict vision.py lifecycle pin before staged/integrated acceptance. After that, compare ALWAYS and hysteresis on separately consented real visual sequences with source/session-disjoint holdouts, static/motion, brightness, codec and camera controls, old-pattern retention, restart and rollback. Do not promote the extra predictor or change A4 gain 0.15 until those tests pass.
+
+
+### R-154 addendum — absolute residual floor and matched-update control (2026-11-25)
+
+A second review of the gate exposed a small-noise corner case: a pure ratio can open when the persistence baseline is zero and the model residual is arbitrarily tiny. The implementation now uses separate absolute-floor thresholds:
+- open when model MAE >= max(1e-8, persistence MAE × 0.10);
+- close when model MAE <= max(1e-8, persistence MAE × 0.05).
+
+This keeps the relative-error telemetry but prevents sub-1e-8 noise from opening the gate when the baseline is zero. A negative test covers zero-baseline 1e-9 noise, a 2e-8 open, and a subsequent 1e-9 close.
+
+The matched-update control was changed from 7/8 to 3/4 updates because the corrected training gate fraction is about 0.738. On the same held-out seeds 20–39:
+- ALWAYS: 1,799 updates, mean MAE 0.00600822, old-pattern MAE 0.01783551.
+- ERROR_HYSTERESIS with absolute floor: 1,329.35 updates (26.11% fewer), mean MAE 0.00601103, old-pattern MAE 0.01788599.
+- Fixed 3/4 periodic updates: 1,350 updates, mean MAE 0.00649146, old-pattern MAE 0.02110532.
+- Constant learning rate matched to train-set gate fraction (0.22131462): 1,799 updates, mean MAE 0.00656588, old-pattern MAE 0.02101027.
+- ERROR_GATED: 1,207.65 updates, mean MAE 0.00655297, old-pattern MAE 0.02455583.
+
+The 20 train / 20 held-out seeds remain synthetic and generated. The hysteresis-vs-ALWAYS error difference is small; the evidence supports a possible update-efficiency trade-off only. No claim of Android energy savings or real visual quality is made.
+
+Exact CI on prior code/docs head 3dfd6573dbfb45e3149923b99415f4cf6c633c34: A3 temporal suite 80/80 PASS on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both versions; runtime deployment integrity PASS on Python 3.11 and 3.14. Staged-runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests) and integrated-regression FAIL at the same Core-owned strict vision.py source-lifecycle pin. This addendum's absolute-floor change is on a later code head and requires its own exact CI readback.
+
+
+## R-155 — Token/layer update–behavior interactions and readout transmission (2026-11-25)
+
+**Primary source fully reviewed:** Yi Ren, Wenlong Deng, Guanzhe Hong, Clare Lyle, Yarin Gal, *Learning Dynamics of Continual Learning: A Unified View of Data Attribution, Forgetting, and Plasticity Loss*, arXiv:2609.33620, submitted 2026-09-27 (preprint; no peer-reviewed venue identified in the source checked). Full 45-page PDF including Appendix C, limitations, data-attribution, forgetting and plasticity sections was read: https://arxiv.org/abs/2609.33620 and https://arxiv.org/pdf/2609.33620 .
+
+**Core contribution:** The paper decomposes a one-token update's predicted effect on another token's log-probability into (CH1) direct output-force alignment times final-hidden similarity and (CH2) a shared-readout-mediated interaction propagated through residual hidden-state similarities. Both are forward-computable from logits/token forces, hidden states, and the shared readout under a first-order/local identity-path approximation. It then uses the same object for positive update selection, negative interference analysis, and future learnability. The task-conditioned readout-transmission statistic is (R_D=E_{u\sim D}[\|W^T g_u\|_2^2/\|g_u\|_2^2]), measuring how much output-side force reaches the backbone for a task distribution.
+
+**Empirical results reported by the paper (authors' settings, not Android):**
+- Cross-lingual attribution on Qwen2.5-1.5B: CH1+CH2 raises MMLU retrieval accuracy 0.488→0.625 and GSM8K 0.445→0.600.
+- Multilingual agent-memory retrieval: Llama3.2-3B top-1 retrieval 0.861→1.000; downstream answer accuracy 0.944.
+- At a 5% GSM8K training subset, CH1+CH2 reports 0.636 on Qwen2.5-1.5B vs 0.610 random / 0.587 LESS; on Llama3.2-3B 0.313 vs 0.295 random / 0.301 LESS.
+- The paper separates concentrated high-energy collision from diffuse low-energy erosion. Masking only the extreme-energy tail (reported thresholds 1.5/1.8) had small downstream cost in their tasks; a lower threshold of 1.0 removed useful updates and substantially harmed learning. Response-format separation redirects erosion rather than suppressing learning.
+- Along an approximately 100M-token PubMed trajectory, task-conditioned readout transmission declined on held-out OOD tasks but not comparably on in-distribution PubMed. Readout restoration partially recovered OOD adaptation; the reported correlation between readout degeneration and reset gain was Spearman 0.83 overall / 0.73 OOD.
+
+**Limitations that matter for V14:** The behavioral-change estimate is first-order and local to one update. The forward CH2 approximation locally linearizes residual blocks and retains only the leading identity path; omitted residual paths can change signed estimates. The derivation starts with SGD; AdamW momentum, second-moment history and decoupled weight decay are only approximated, not jointly tracked. The decomposition is Transformer/shared-readout-specific and does not resolve MoE, QKV or circuit-level pathways. At cold start, magnitude estimates remain more reliable than signed CH2; signed fidelity improves after about 100 in-distribution auxiliary updates (<1% of the cited run). Top-K vocabulary approximations and selecting only a subset of layers reduce the O(n d L) CH2 cost.
+
+**OSS/license review:** Author repository https://github.com/Joshua-Ren/learning-dynamics-cl was inspected at tree b4962ccf5646754b800981f1b207ef65a1a89b6f. The default branch has no LICENSE file; its README says the paper is forthcoming and the implementation uses a large PyTorch/Transformers research stack. No code was copied or vendored. Public visibility is not a reuse license. The model/data benchmarks (Qwen2.5-1.5B, Qwen3-4B, Llama3.2-3B, PubMed/GSM8K/MMLU/MBPP) are not a Redmi deployment comparison.
+
+**Concrete V14 implication:** This is a strong candidate basis for the user's requested mini Update-Effect Predictor, complementary to JEPA rather than a replacement. Do not claim it works on the current tokenwise B3 path: PR #2510 currently binds sender final-RMSNorm rows to receiver input-embedding rows, not the token logits + final hidden + selected layer states + readout needed for CH1/CH2/R_D. The next interface should capture those quantities from a pinned native model process, with model/tap/source/session revisions and exact token targets; use CH1 first, then a small selected-layer/top-K CH2, and track R_D on source/session-disjoint future-task probes. Validate against exact one-step gradient/log-probability deltas on a tiny residual model, cold-start vs warm-start, zero/shuffle/OOD controls, and readout-reset rollback before connecting it to JEPA update selection or memory retrieval. Any adaptive action remains OFF until independent utility/retention gates pass.
+
+**Current code relationship:** No UEP implementation was added in this run. The A3 hysteresis shadow in PR #2509 is a separate low-dimensional temporal-perception ablation and is not an implementation of CH1/CH2 or the paper's free-energy/readout diagnostics.
+
+
+### R-154 negative control — unpredictable low-amplitude noise (2026-11-25)
+
+A further LOCAL_LINUX negative control used five deterministic seeds, 1,799 independent 16-D uniform-noise observations per seed, and amplitudes 1e-5, 1e-4, 1e-3 and 1e-2. ALWAYS, ERROR_GATED and ERROR_HYSTERESIS all updated on 100% of post-warmup observations at every amplitude. The hysteresis gate opened once and stayed open. This is an important limitation: the residual gate is not a camera-noise suppressor and cannot distinguish unpredictable sensor noise from a learnable surprise. The 1e-8 absolute floor only rejects extremely small numerical residuals; it is not a calibrated sensor noise floor. Do not promote this gate on live camera/audio streams without source-specific noise calibration and a held-out noise-vs-signal test.

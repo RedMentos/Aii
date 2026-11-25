@@ -1877,3 +1877,83 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - **Device:** REDMI_UNVERIFIED. Last known private V13OBS #115 (2026-11-24 09:28 UTC) reported installed 8d93236, auto-update enabled, AI STOPPED_BY_USER and native residency unavailable. No fresh receipt proves current updater status or installation.
 - **Next internal step:** poll exact CI; Core/Integrator recompose the #2465 strict vision.py source-lifecycle chain; then run source/session-disjoint tests on explicitly consented real visual sequences. No manual Termux command, model change or update request.
 - **User action:** **keine Aktion nötig**.
+
+
+## Research & Perception — run 11, 2026-11-25, PR #2509
+
+**New runtime path:** A3 now has an optional `ERROR_GATED` 16×16 next-delta LMS shadow alongside the default ALWAYS predictor. It is called by the existing consent-scoped `TemporalVisualEvidence` consumer and surfaced as `a3_temporal_prediction.error_gated_shadow`. A4 reads only the original predictor; no attention/action behavior changes. Both states reset through the existing stream reset/unavailable/projector-change/revocation path. No persistent weights or raw frames are stored.
+
+**Research:** Pache & van Rossum, *Mistake Gating Leads to Energy and Memory Efficient Continual Learning*, arXiv:2604.14336v2 (full PDF reviewed), *Neural Computation* ahead-of-print 2026-11-05, DOI 10.1162/NECO.a.1602. Their memorized rule is classification/sample-identity based; this is a fixed persistence-relative regression adaptation, not a reproduction. Pure gating's generalization caveat is relevant, so the new predictor remains shadow-only. No upstream code reused; the referenced repository has no LICENSE file.
+
+**LOCAL_LINUX:** CPython 3.13.5 isolated predictor mirror, `py_compile` PASS and `pytest -q` 10/10 PASS. On 2,299 deterministic synthetic observations, updates fell from 2,299 to 773 (66.38% fewer); ERROR_GATED mean MAE 0.003816 vs persistence 0.012505 and final old-pattern MAE 0.024976 vs persistence 0.099500. It is worse than ALWAYS (mean MAE 0.003039; final old-pattern MAE 0.009499), so the savings are not free. 8 streams / 16 predictors used 375,824 bytes in a CPython tracemalloc snapshot; not Android PSS. Full local Aii checkout/suite NOT_RUN.
+
+**PR:** [#2509](https://github.com/RedMentos/Aii/pull/2509), stacked on [#2494](https://github.com/RedMentos/Aii/pull/2494), head before docs `47de95db5a51541fdc3efee2bfb0ba332a15b544`. Exact-head workflows were IN_PROGRESS at last poll; no CI PASS claimed. Parent #2494 focused suites pass, but staged/integrated still fail at Core-owned `source_lifecycle_lock_integration_candidate.py:172` rejecting `vision.py`. No release SHA; NOT_RELEASED.
+
+**Device/updater:** latest authenticated private V13OBS #115 (2026-11-24 09:28:11 UTC) reports installed `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and pipeline UP_TO_DATE; AI STOPPED_BY_USER, model process STOPPED, native residency unavailable. Last turn 6.295 s / 2.046 s TTFT / 358 prompt tokens / 7 generated tokens; correctness/semantic use unproven. B1/B2 remain TIME_BUDGET 53.2/54.2 s. b20e9 has green 37/37 CI but no installation receipt. #2509 not deployed; REDMI_UNVERIFIED.
+
+**Next:** Core/Integrator recompose the #2494 `vision.py` lifecycle closure and rerun staged/integrated/migration/consumer. Then compare ALWAYS vs ERROR_GATED on explicitly consented real visual sequences with source/session-disjoint holdouts, static/motion, brightness/codec/camera controls, retention and restart/rollback. Keep A4 gain 0.15 unchanged. Continue other Canon families. User action: **keine Aktion nötig**.
+
+
+**Final branch/readback checkpoint (2026-11-25T19:47:24.064Z):** PR #2509 documentation, ledger and board are now on branch head `47ccf435dcf66350ba6972b36a5df05341715256`. Exact-head CI on that SHA: runtime deployment and frame-ingress workflows SUCCESS; A3 temporal calibration, source-lineage and staged/integrated workflows still IN_PROGRESS at last poll. No CI PASS is claimed for those in-progress jobs.
+
+### Exact-head CI completion — tested code SHA 6523b8c3c5e0b9b164023e63a190c2012fed07c9 (2026-11-25T19:50:27.191Z)
+
+- A3 temporal calibration / RAW EAR interval integrity: 74/74 PASS on Python 3.13.18 and 3.14.10.
+- MediaProjection RAW EAR frame ingress: 55/55 PASS on Python 3.13.18 and 3.14.10.
+- Vision source-lineage / forget regressions: 39/39 PASS on Python 3.13.18 and 3.14.10.
+- Runtime deployment integrity: PASS.
+- Staged runtime: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests passed; strict source lifecycle lock rejects `vision.py` at `scripts/source_lifecycle_lock_integration_candidate.py:172` with `unsupported lifecycle source`.
+- Integrated regression: FAIL, one failure at the same inherited Core-owned `vision.py` pin. This is not a failure in the new A3 unit/consumer tests; it prevents whole-runtime acceptance.
+- PR #2509 returned to DRAFT. It remains stacked on #2494 and NOT_RELEASED. Code-tested SHA is 6523b8; subsequent commits, if any, are documentation/board only.
+
+No user action required. Core/Integrator owns the source-lifecycle rebind; Perception will not weaken the exact pin.
+
+
+## Cross-organ perception checkpoint — B3 and RAW EAR (2026-11-25)
+
+- [PR #2508](https://github.com/RedMentos/Aii/pull/2508) is READY_FOR_REVIEW / mergeable. Exact head `e333b5c3da2448ef6d188f2278672f7f692ac76e`: tokenwise adapter 83/83 on Python 3.13 and 3.14; staged 255 passed / 10 skipped / 47 subtests; integrated 424 passed / 3 skipped / 58 subtests. It closes session leakage in an offline PCA+ridge fitter only. No native GGUF hidden-state exchange, receiver utility, B1/B2 or Android proof. B3 remains OFF / NOT_ACCEPTED pending Core #2499 receiver and task-utility controls.
+- [PR #2498](https://github.com/RedMentos/Aii/pull/2498) RAW EAR already carries the 13-cue nonverbal voice vector, a non-identifying speaker-change decision, and activity/voicing/F0/energy/prosody into the final C3 admission summary under consent/finality gates. The generic legacy audio bridge is RMS/ZCR-only; the richer RAW EAR path is not. No duplicate bridge patch was made. Its staged source-lifecycle pin still needs Core recompose.
+- [PR #2509](https://github.com/RedMentos/Aii/pull/2509) remains DRAFT; focused A3/frame/source tests pass, staged/integrated blocked at the inherited Core `vision.py` pin. ERROR_GATED remains shadow-only because the synthetic update savings come with worse MAE/retention than ALWAYS.
+- Next: Core recompose #2494/#2509 vision and #2498 audio source-lifecycle pins; Core completes #2499 native receiver; Perception runs source/session-disjoint native-pair and task-utility controls after the receiver exists. User action: **keine Aktion nötig**.
+
+
+---
+
+# Research & Perception — A3 hysteresis follow-up (2026-11-25)
+
+- PR #2509 now adds a third A3 predictor policy, ERROR_HYSTERESIS, beside the unchanged ALWAYS and prior ERROR_GATED shadows. It is wired into the existing consent-scoped TemporalVisualEvidence output as error_hysteresis_shadow; A4 does not read it. Default open/close ratios are 0.10 / 0.05.
+- Local isolated CPython 3.13.5 predictor copy: py_compile PASS; 5/5 focused tests PASS. The reproducible 20-train / 20-held-out synthetic ablation reports 13.04% fewer updates than ALWAYS with nearly identical held-out MAE and old-pattern MAE; periodic and matched-average-LR controls were worse. This is a candidate trade-off only, not real visual learning.
+- Incremental third-predictor allocation: 495,240 bytes across 16 warmed Python streams (~30.95 KB/stream) by tracemalloc; not Android PSS/RSS.
+- Exact GitHub CI for code SHA e9731237057fbf9df8805396960a690fae68e76c was started: A3 temporal calibration and runtime deployment completed SUCCESS; MediaProjection frame ingress completed SUCCESS; source-lineage and staged/integrated were still IN_PROGRESS at last poll. No PASS claim for in-progress workflows.
+- Existing blocker: staged/integrated still inherit Core's strict vision.py source-lifecycle mismatch from #2494. Do not weaken the pin. Full local Aii checkout NOT_RUN.
+- Device/updater: latest available consented private V13OBS #115 snapshot is 2026-11-24 09:28 UTC: auto-update enabled, installed 8d93236, but AI STOPPED_BY_USER and model process STOPPED; no fresh authenticated receipt after that snapshot. No device action or model/weight change.
+- Release: NOT_RELEASED. Redmi: REDMI_UNVERIFIED. P0 chat/B1/B2 remain open; B3 remains OFF. No user action required.
+
+**Next:** finish exact-head CI readback, then Core/Integrator recomposes the vision.py lifecycle chain. Perception keeps this shadow non-controlling until consented real visual holdout/retention/restart evidence exists.
+
+
+### A3 hysteresis correction — absolute error floor and matched control (2026-11-25)
+
+- The gate now opens/closes on max(1e-8, persistence_MAE × 0.10/0.05), preventing tiny residuals from opening against a zero baseline.
+- Added a negative test for zero-baseline 1e-9 noise; the 2e-8 residual opens, and the 1e-9 residual closes.
+- Recalibrated the fixed-rate control to 3/4 updates to match the corrected train-set gate fraction (~0.738). On held-out seeds 20–39, hysteresis uses 1,329.35 updates vs ALWAYS 1,799 (26.11% fewer) with mean MAE 0.00601103 vs 0.00600822 and old-pattern MAE 0.01788599 vs 0.01783551. The 3/4 periodic control and matched-average-LR control are worse in this synthetic task.
+- Prior exact CI head 3dfd657: A3 80/80 on Python 3.13/3.14, frame ingress 55/55, source-lineage 39/39, runtime deployment PASS; staged/integrated FAIL at Core-owned vision.py lifecycle pin. The absolute-floor change requires fresh exact CI.
+- Still shadow-only, NOT_RELEASED, REDMI_UNVERIFIED; no user action required.
+
+
+---
+
+# Research & Perception — full-paper review for Update-Effect Predictor (2026-11-25)
+
+R-155 records the full 45-page review of Ren et al., arXiv:2609.33620 (2026-09-27), including its token/layer CH1+CH2 update–behavior decomposition, collision vs erosion distinction, and task-conditioned readout-transmission R_D. The paper reports cross-lingual and memory-retrieval gains on Qwen/Llama research settings, plus OOD readout-transmission decay and partial recovery after readout restoration. It is an arXiv preprint, not a peer-reviewed Android result.
+
+The author repository Joshua-Ren/learning-dynamics-cl was inspected; no LICENSE file is present, so no code reuse. Its large PyTorch/Transformers experiments are not an Android model candidate.
+
+**Next cross-lane task:** JEPA & Memory + Core should specify a source-bound native Update-Effect tap containing target token IDs, logits/token-force top-K, final hidden state, selected layer states, readout revision/hash and optimizer/checkpoint revision. The current #2510 tokenwise tap path does not expose that contract. Prototype CH1 and selected-layer/top-K CH2 against exact one-step gradient/log-probability deltas on a tiny residual model; measure cold-start sign reliability, OOD readout transmission, zero/shuffle controls, retention and rollback. Keep any production learning selection OFF until those gates pass.
+
+No model candidate or model swap is recommended. No user action required.
+
+
+### A3 hysteresis noise limitation — 2026-11-25
+
+A five-seed negative control with independent 16-D noise at amplitudes 1e-5, 1e-4, 1e-3 and 1e-2 showed ALWAYS, ERROR_GATED and ERROR_HYSTERESIS all updating on 100% of post-warmup observations; the hysteresis gate opens once and stays open. The 1e-8 absolute floor is only a numerical floor, not a camera noise calibration. This candidate cannot suppress unpredictable sensor noise. Keep it SHADOW_ONLY until a source-specific noise-vs-signal threshold is learned and validated on consented camera sequences.
