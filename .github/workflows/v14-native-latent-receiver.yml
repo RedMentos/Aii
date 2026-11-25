@@ -5,13 +5,18 @@ on:
       - boss/v14-native-latent-probe-rebase-20261122
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-target-score-20261125-run1
+      - research-perception/v14-native-receiver-utility-core-sync-20261125-run31-r2
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
       - core/v14-tokenwise-native-receiver-consumer-20261125-run1
+      - core/v14-native-target-score-20261125-run1
     paths:
       - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/native_receiver_utility.py"
+      - "v13/code/v13/native_receiver_task_score.py"
+      - "v13/code/tests/test_native_receiver_task_score.py"
       - "v13/code/v13/native/latent_receiver/**"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
