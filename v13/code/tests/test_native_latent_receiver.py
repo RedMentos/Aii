@@ -31,6 +31,7 @@ if len(sys.argv) == 2 and sys.argv[1] == "--version":
 if {sleep!r}:
     time.sleep({sleep!r})
 args = dict(zip(sys.argv[1::2], sys.argv[2::2]))
+position_mode = args["--position-mode"]
 rows = int(args["--rows"])
 dim = int(args["--input-dim"])
 positions = [int(value) for value in args["--positions"].split(",")]
@@ -47,7 +48,7 @@ if status == "DIMENSION_MISMATCH":
         "receiver_input_dim": receiver_dim, "output_dim": 8,
         "decode_status": -100, "finite_output": False,
         "position_ids": positions,
-        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "position_mode": position_mode,
         "row_shuffle_control_applicable": False,
         "row_shuffle_control_cosine": None,
         "receiver_vocab_size": 32000,
@@ -81,7 +82,7 @@ else:
         "next_token_changed_vs_row_shuffle": rows >= 2,
         "repeat_next_token_stable": True,
         "position_ids": positions,
-        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "position_mode": position_mode,
         "finite_output": True
     }}
 print(json.dumps(receipt))
@@ -104,7 +105,8 @@ def fixture(tmp_path, **binary_options):
     return home, model, binary, digest
 
 
-def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, position_ids=None):
+def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, position_ids=None,
+              position_mode=POSITION_MODE, tokenizer_revision=None):
     vectors = vectors or [[0.25, -0.5], [1.0, 0.75]]
     positions = list(range(len(vectors))) if position_ids is None else position_ids
     return probe(
@@ -115,13 +117,13 @@ def run_probe(home, model, binary, digest, *, deadline=None, vectors=None, posit
         receiver_role="C3_LANGUAGE",
         sender_tap_id="qwen35.result_norm.final.v1",
         sender_model_revision="qwen35-r1",
-        sender_model_sha256="b" * 64, tokenizer_revision=None,
+        sender_model_sha256="b" * 64, tokenizer_revision=tokenizer_revision,
         receiver_model_revision="lfm2-r1",
         source_id="source-1",
         generation_id="generation-1",
         vectors=vectors,
         position_ids=positions,
-        position_mode=POSITION_MODE,
+        position_mode=position_mode,
         deadline=deadline or (time.monotonic() + 10),
         threads=2,
         binary_path=binary,
@@ -328,4 +330,85 @@ def test_cancel_event_terminates_native_receiver_process(tmp_path):
             deadline=time.monotonic() + 5,
             binary_path=binary,
             cancel_event=cancelled,
+        )
+
+
+def test_latent_prefix_v1_accepts_one_event_vector_and_reports_virtual_prefix(tmp_path):
+    from v13.native_latent_receiver import LATENT_PREFIX_MODE
+
+    home, model, binary, digest = fixture(tmp_path)
+    receipt = run_probe(
+        home, model, binary, digest,
+        vectors=[[0.25, -0.5, 1.0]],
+        position_ids=[0],
+        position_mode=LATENT_PREFIX_MODE,
+    )
+    assert receipt["input_rows"] == 1
+    assert receipt["position_ids"] == [0]
+    assert receipt["position_mode"] == LATENT_PREFIX_MODE
+    assert receipt["tokenizer_revision"] is None
+    assert receipt["row_shuffle_control_applicable"] is False
+    assert receipt["row_shuffle_control_cosine"] is None
+    assert receipt["row_shuffle_control_next_token_id"] is None
+    assert receipt["next_token_changed_vs_row_shuffle"] is False
+    assert receipt["native_input_consumed"] is True
+
+
+def test_latent_prefix_v1_rejects_multiple_rows_and_nonzero_position(tmp_path):
+    from v13.native_latent_receiver import LATENT_PREFIX_MODE
+
+    home, model, binary, digest = fixture(tmp_path)
+    with pytest.raises(NativeReceiverError, match="exactly one event vector"):
+        run_probe(
+            home, model, binary, digest,
+            vectors=[[1.0, 2.0], [3.0, 4.0]],
+            position_ids=[0, 1],
+            position_mode=LATENT_PREFIX_MODE,
+        )
+    with pytest.raises(NativeReceiverError, match="virtual position zero"):
+        run_probe(
+            home, model, binary, digest,
+            vectors=[[1.0, 2.0]],
+            position_ids=[1],
+            position_mode=LATENT_PREFIX_MODE,
+        )
+
+
+def test_latent_prefix_v1_requires_no_tokenizer_revision_and_nontrivial_shuffle(tmp_path):
+    from v13.native_latent_receiver import LATENT_PREFIX_MODE
+
+    home, model, binary, digest = fixture(tmp_path)
+    with pytest.raises(NativeReceiverError, match="cannot carry tokenizer revision"):
+        run_probe(
+            home, model, binary, digest,
+            vectors=[[1.0, 2.0]],
+            position_ids=[0],
+            position_mode=LATENT_PREFIX_MODE,
+            tokenizer_revision="tokenizer-r1",
+        )
+    with pytest.raises(NativeReceiverError, match="at least two dimensions"):
+        run_probe(
+            home, model, binary, digest,
+            vectors=[[1.0]],
+            position_ids=[0],
+            position_mode=LATENT_PREFIX_MODE,
+        )
+
+
+def test_latent_prefix_v1_rejects_native_receipt_with_different_position_mode(tmp_path):
+    from v13.native_latent_receiver import LATENT_PREFIX_MODE
+
+    home, model, binary, digest = fixture(tmp_path)
+    script = binary.read_text(encoding="utf-8").replace(
+        '"position_mode": position_mode',
+        '"position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"',
+    )
+    binary.write_text(script, encoding="utf-8")
+    binary.chmod(0o755)
+    with pytest.raises(NativeReceiverError, match="position mapping differs"):
+        run_probe(
+            home, model, binary, digest,
+            vectors=[[1.0, 2.0]],
+            position_ids=[0],
+            position_mode=LATENT_PREFIX_MODE,
         )
