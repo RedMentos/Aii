@@ -1360,3 +1360,15 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Full local Aii suite BLOCKED/NOT_RUN (no checkout/DNS); Android/Termux/Redmi tests NOT_RUN. Latest available V13OBS #115 (2026-11-24 09:28 UTC) reports 8d93236 installed, updater enabled, AI STOPPED_BY_USER; no new device operation.
 - Research ledger adds R-119 Palimpsa (metaplastic precision; GPU-heavy / repo license text unverified) and R-120 memorized mistake gating (supervised classification; repo lacks code/license). Both remain NO_REUSE; V14 experiment hypothesis is recorded, not activated.
 - Next: let Boss/Core integrate #2482/#2483, then re-evaluate whether the actual Runtime A4/A5 seam needs the borrowed scope. Keep the full audio/voice Canon open; no AudioRecord proof.
+
+
+## Research & Perception — run 29: consent-epoch speaker-state eviction (2026-11-25)
+
+- **Dependency / owner:** child PR #2491 on current Perception branch #2487 (parent branch head at child creation `cbf3bca17797f52c889b672baef5b7fd5b7deb80`). Does not modify Core-owned composers or weaken source pins.
+- **Defect:** source/generation/consent-scope keyed speaker vectors were logically isolated across receipts, but old same-source/same-generation scope keys stayed in the process-local LRU until unrelated eviction. TemporalVoiceEvidence already reset on scope rotation.
+- **Code:** #2491 deletes old scope keys before using the new state, including unscoped legacy keys; other sources remain untouched. Returns `CONSENT_SCOPE_CHANGED`. No receipt/fingerprint/vector/PCM is persisted or returned; no speaker identity, learning, interrupt or action authority.
+- **Exact code/test:** `8162f40ff52688351dcf52ab50b1543ecbdfe5bd` / `38f0ef5fa46651e157c365a490e5faa16c33feb9`. Local isolated state-machine reproduction 7/7 PASS; full local Aii suite BLOCKED/NOT_RUN due no checkout and DNS.
+- **CI:** FASTDIAR adapter Python 3.13/3.14 PASS (run 45571203750); RAW EAR fastpath Python 3.13 PASS / 3.14 pending (45571203618); comparator Python 3.14 PASS / 3.13 pending (45571203673); staged/integrated still pending (45571203720). Exact-head results must be re-read before review.
+- **Research R-121:** Yu et al., arXiv:2610.08828, full HTML review; detection/DER can improve while temporal speaker assignment worsens, and rehearsal has corpus-dependent transfer cost. No code/weights reused. Supports separate identity-retention evaluation and session-bound state, not model adaptation.
+- **Device/release:** REDMI_UNVERIFIED; no microphone, phone action, relay, UPDATE_REQUEST, model/weight/permission/data change. NOT_RELEASED.
+- **Next:** finish exact-head CI; independently review #2491, then merge only into #2487. Core/QA retain ownership of #2482/#2483 strict source-pin chain; staged integration remains a separate gate. No user action.
