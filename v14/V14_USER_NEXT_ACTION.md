@@ -1838,3 +1838,15 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Current Core receiver context: PR #2488 has reported 17/17 exact checks, pinned llama.cpp Linux build/selftest PASS and Android arm64 cross-compile PASS, but no GGUF model pair or Redmi test. The receiver still expects contiguous tokenizer-prefill rows; it has no `LATENT_PREFIX_V1` mode.
 - REDMI_UNVERIFIED / NOT_RELEASED. Latest available consented V13OBS #115 snapshot remains 2026-11-24 09:28 UTC: installed target `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled in that snapshot, runtime STOPPED_BY_USER, zero valid B1/B2 offers. No fresh authenticated receipt was obtained here; do not treat the snapshot as current.
 - Next: Core/Harness must choose between a real receiver input-embedding tap plus paired tokenwise cohort, or a separately typed `LATENT_PREFIX_V1` mode for pooled event vectors. Only then can a one-shot approved native receiver test be meaningful. Production B3 stays OFF until receiver-side task utility, negative controls, OOD and rollback pass.
+
+
+## Research & Perception — RAW EAR integration repair (2026-11-25 13:43 UTC)
+
+**User action required: NONE.** No manual Termux command, microphone permission, model download/swap, runtime restart or device operation is requested.
+
+- PR #2498 current code checkpoint: 0cd31098110ee36bb63078947cfed1c444d3ff04. The previous staged/integrated failure was a strict stale-source hash in integrated_audio_context_candidate_20261121.py (expected old audio_voice_cues.py blob b18e450..., actual a8fc1ab...). The exact pin was rebound; hash gates were not weakened.
+- Fresh exact CI is queued/running: RAW EAR VAD comparison #595, optional NumPy backend #714, staged/integrated regression #5065, runtime deployment integrity #2522. Do not treat them as PASS until final conclusions are read.
+- Prior exact RAW EAR fastpath 126/126 passed on Python 3.13/3.14; prior VAD comparison #594 and NumPy backend #713 passed before the staged integration pin was repaired.
+- The predictor remains a 13-D, 182-parameter, process-local, consent-scoped shadow learner that adds at most 0.10 A4 novelty on FINAL acoustic windows. It does not alter C3, interrupts, persistent model weights, permissions or installed models.
+- Local isolated CPython 3.13.5 tests/microbenchmark from Run 13 remain the only local evidence. Full repository local tests, held-out real audio, Android microphone/AudioRecord, Termux and Redmi proof remain absent. REDMI_UNVERIFIED / NOT_RELEASED.
+- Next: complete the exact CI rerun, then add frozen-weight held-out tests against persistence/no-predictor/shuffled cues and verify source/voice retention and revocation. Only connect a phone microphone through QA's explicit AudioRecord provider/receipt contract.
