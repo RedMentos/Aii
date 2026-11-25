@@ -13,14 +13,14 @@ from v13.callosum import controller, operator_command
 from v13 import native_latent_receiver as native
 
 
-def receipt(model_sha, sender_sha):
+def receipt(model_sha, sender_sha, tokenizer_revision="llama-server-sha256:" + "f" * 64 + ";model-manifest-sha256:" + "e" * 64):
     return {
         "sender_role": "B2_GIST",
         "receiver_role": "C3_LANGUAGE",
         "sender_tap_id": "qwen35.result_norm.final.v1",
         "sender_model_revision": "qwen35-r1",
         "sender_model_sha256": sender_sha,
-        "tokenizer_revision": None,
+        "tokenizer_revision": tokenizer_revision,
         "receiver_model_revision": "lfm2-r1",
         "receiver_model_sha256": model_sha,
         "runner_revision": native.PINNED_LLAMA_REVISION,
@@ -58,6 +58,40 @@ def receipt(model_sha, sender_sha):
         "input_effect_detected": True,
         "status": "NATIVE_INPUT_EFFECT",
     }
+
+
+def install_tokenwise_stubs(runtime, event, tap, sender_digest, *, order=None,
+                            token_ids=(101, 202), vectors=((0.25, -0.5), (1.0, 0.75)),
+                            prefill_token_count=4):
+    tokenwise = {
+        "packet_id": "tokenwise-packet-1",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "sender_tap_packet_id": tap["packet_id"],
+        "sender_tap_id": tap["tap_id"],
+        "model_revision": tap["model_revision"],
+        "model_sha256": sender_digest,
+        "tokenizer_revision": "llama-server-sha256:" + "f" * 64 + ";model-manifest-sha256:" + "e" * 64,
+        "token_ids": list(token_ids),
+        "token_spans": [[0, 5], [5, 10]],
+        "prefill_positions": [1, 2],
+        "prefill_token_count": prefill_token_count,
+        "special_prefix_tokens": 1,
+        "special_suffix_tokens": 1,
+        "manifest_sha256": "b" * 64,
+        "production_route": False,
+        "training_authority": 0,
+    }
+    data = {"token_ids": list(token_ids), "vectors": [list(row) for row in vectors]}
+    runtime.cognition.tokenwise_tap = lambda packet, deadline: (
+        order.append("tokenwise") if order is not None else None
+    ) or tokenwise
+    runtime.cognition.read_tokenwise_tap = lambda packet: (
+        order.append("read_tokenwise") if order is not None else None
+    ) or data
+    return tokenwise, data
 
 
 def setup_runtime(tmp_path):
@@ -105,26 +139,28 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda role, e, ref, deadline: (order.append("tap") or tap)
     runtime.cognition.read_tap = lambda packet: {
-        "token_ids": [101, 202],
-        "vectors": [[0.25, -0.5], [1.0, 0.75]],
+        "token_ids": [1, 101, 202, 2],
+        "vectors": [[9.0, 9.0], [0.25, -0.5], [1.0, 0.75], [8.0, 8.0]],
     }
+    tokenwise, tokenwise_data = install_tokenwise_stubs(runtime, event, tap, sender_digest, order=order)
     runtime.pool.unload = lambda: order.append("unload")
 
     def fake_probe(**kwargs):
-        assert order == ["tap", "unload"]
+        assert order == ["tap", "tokenwise", "unload", "read_tokenwise"]
         assert kwargs["model_path"] == model_path
         assert kwargs["expected_model_sha256"] == digest
         assert kwargs["sender_model_sha256"] == sender_digest
-        assert kwargs["tokenizer_revision"] is None
+        assert kwargs["tokenizer_revision"] == tokenwise["tokenizer_revision"]
         assert kwargs["position_ids"] == [0, 1]
+        assert kwargs["vectors"] == tokenwise_data["vectors"]
         assert kwargs["position_mode"] == native.POSITION_MODE
         assert kwargs["source_id"] == event["source_ref"]["source_id"]
         assert kwargs["generation_id"] == event["brain_generation_id"]
-        return receipt(digest, sender_digest)
+        return receipt(digest, sender_digest, kwargs["tokenizer_revision"])
 
     monkeypatch.setattr(native, "probe", fake_probe)
     before = model_path.read_bytes()
@@ -133,6 +169,8 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     )
     assert packet["status"] == "NATIVE_INPUT_EFFECT"
     assert packet["sender_tap_packet_id"] == "tap-packet-1"
+    assert packet["sender_tokenwise_packet_id"] == "tokenwise-packet-1"
+    assert packet["sender_tokenwise_manifest_sha256"] == "b" * 64
     assert packet["source_ref"] == event["source_ref"]
     assert packet["provenance"] == [event["source_ref"]]
     assert packet["native_input_consumed"] is True
@@ -153,6 +191,8 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     status = controller(runtime).report(runtime.cfg)
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
     assert status["native_receiver_probe"]["sender_tap_packet_id"] == "tap-packet-1"
+    assert status["native_receiver_probe"]["sender_tokenwise_packet_id"] == "tokenwise-packet-1"
+    assert status["native_receiver_probe"]["sender_tokenwise_manifest_sha256"] == "b" * 64
     assert status["native_receiver_probe"]["input_rows"] == 2
     assert status["native_receiver_probe"]["receiver_next_token_id"] == 42
     assert status["native_receiver_probe"]["logit_effect_rms"] == 0.5
@@ -184,13 +224,14 @@ def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatc
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": False, "pooling": "mean", "prompt_tokens": 1},
+        "metrics": {"whole_sequence_prefill": False, "pooling": "mean", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
-    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [1, 101, 202, 2], "vectors": [[0.0, 0.0], [1.0, 2.0], [3.0, 4.0], [0.0, 0.0]]}
+    install_tokenwise_stubs(runtime, event, tap, sender_digest)
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
-    with pytest.raises(ValueError, match="whole-sequence position map"):
+    with pytest.raises(ValueError, match="source-token/prefill row map"):
         runtime.cognition.native_receive(
             "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
         )
@@ -208,18 +249,19 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {
-        "token_ids": [101],
-        "vectors": [[1.0, 2.0]],
+        "token_ids": [1, 101, 202, 2],
+        "vectors": [[0.0, 0.0], [1.0, 2.0], [3.0, 4.0], [0.0, 0.0]],
     }
+    tokenwise, _ = install_tokenwise_stubs(runtime, event, tap, sender_digest)
     runtime.pool.unload = lambda: None
-    mismatch = receipt(digest, sender_digest)
+    mismatch = receipt(digest, sender_digest, tokenwise["tokenizer_revision"])
     mismatch.update({
-        "input_rows": 1,
-        "position_ids": [0],
+        "input_rows": 2,
+        "position_ids": [0, 1],
         "receiver_input_dim": 3,
         "decode_status": -100,
         "output_norm": 0.0,
@@ -267,7 +309,7 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
@@ -295,7 +337,7 @@ def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monke
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
@@ -326,7 +368,7 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 4},
     }
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
