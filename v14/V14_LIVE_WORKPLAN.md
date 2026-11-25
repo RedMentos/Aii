@@ -1505,6 +1505,6 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 
 **Product effect and Canon:** strengthens the B3/Enlightened-Space tokenwise provenance path and supplies an anchor-preserving native receiver input candidate. It does not make B3 live, replace symbolic exchange, prove shared meaning or complete any other Canon family. Core PR #2510 is the next runtime consumer candidate; it should rebase/consume the helper after review and retain explicit probe approval.
 
-**Device/deployment:** no fresh authenticated device receipt has been returned in this checkpoint; the last available private snapshot is historical (2026-11-24). REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No UPDATE_REQUEST, shell command, model/weight/permission/data change or deployment.
+**Device/deployment:** owner-read DIAGNOSTICS returned NO_LIVE_RECEIPT. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; this is historical only. No new release is ready. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No UPDATE_REQUEST, shell command, model/weight/permission/data change or deployment.
 
 **Next:** obtain exact PR #2511 CI, fix any failures, ask Core to integrate the helper into the native receiver utility path, then run held-out task tests with exact-message/no-message/zero/shuffle/repeat/OOD/entity-substitution controls plus retention/restart/rollback. No user action is required.
