@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 
+import org.json.JSONObject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +63,38 @@ public final class CompanionDbApprovalTest {
     private void insertPending(String actionId, long expiresAt) {
         assertTrue(first.insertPending(actionId, "{\"capability\":\"launch_app\"}",
                 "com.example.app", expiresAt));
+    }
+
+    private void insertValidPending(String actionId, long expiresAt) throws Exception {
+        JSONObject request = new JSONObject();
+        request.put("schema", "v14.android-action-request/1");
+        request.put("action_id", actionId);
+        request.put("capability", "launch_app");
+        request.put("digest", Canonical.requestDigest("launch_app", "com.example.app"));
+        request.put("args", new JSONObject().put("package", "com.example.app"));
+        request.put("expires_at", expiresAt / 1000.0);
+        request.put("companion_local_consent_required", true);
+        request.put("android_os_permission_required", false);
+        request.put("permission_bypass", false);
+        request.put("model_authority", false);
+        request.put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
+        assertTrue(first.insertPending(actionId, request.toString(), "com.example.app", expiresAt));
+    }
+
+    private ClaimedActionRecovery.Signer fakeSigner() {
+        return new ClaimedActionRecovery.Signer() {
+            @Override public JSONObject publicKeyInfo() throws Exception {
+                return new JSONObject()
+                        .put("key_id", "c".repeat(64))
+                        .put("key_storage_status", "ANDROID_KEYSTORE_SOFTWARE_BACKED");
+            }
+            @Override public JSONObject sign(JSONObject body) throws Exception {
+                return new JSONObject()
+                        .put("body", new JSONObject(body.toString()))
+                        .put("key_id", "c".repeat(64))
+                        .put("signature", "dGVzdA==");
+            }
+        };
     }
 
     @Test public void concurrentApproveAndDenyHaveExactlyOneWinner() throws Exception {
@@ -396,6 +430,105 @@ public final class CompanionDbApprovalTest {
         assertFalse(second.claimForDenial(ACTION_ID, NOW));
         assertEquals("CANCELLED", first.get(ACTION_ID).status);
     }
+    @Test public void claimedRowsRecoverToUnknownOrDenialAndAreIdempotent() throws Exception {
+        String executingId = "e".repeat(32);
+        String denyingId = "d".repeat(32);
+        String pendingId = "p".repeat(32);
+        insertValidPending(executingId, NOW + 10_000L);
+        insertValidPending(denyingId, NOW + 10_000L);
+        insertValidPending(pendingId, NOW + 10_000L);
+        assertTrue(first.claimForExecution(executingId, NOW));
+        assertTrue(first.claimForDenial(denyingId, NOW));
+
+        assertEquals(2, ClaimedActionRecovery.recoverAll(first, fakeSigner(), NOW + 2_000L));
+        CompanionDb.Action executing = first.get(executingId);
+        CompanionDb.Action denying = first.get(denyingId);
+        assertEquals("EXECUTION_OUTCOME_UNKNOWN", executing.status);
+        assertEquals("USER_DENIED", denying.status);
+        assertEquals("PENDING_USER_APPROVAL", first.get(pendingId).status);
+
+        JSONObject unknownBody = new JSONObject(first.receipt(executingId)).getJSONObject("body");
+        assertEquals("EXECUTION_OUTCOME_UNKNOWN", unknownBody.getString("status"));
+        assertTrue(unknownBody.getBoolean("local_consent"));
+        assertFalse(unknownBody.getBoolean("observed"));
+        JSONObject denialBody = new JSONObject(first.receipt(denyingId)).getJSONObject("body");
+        assertEquals("USER_DENIED", denialBody.getString("status"));
+        assertFalse(denialBody.getBoolean("local_consent"));
+        assertFalse(denialBody.getBoolean("observed"));
+
+        String unknownReceipt = first.receipt(executingId);
+        String denialReceipt = first.receipt(denyingId);
+        assertEquals(0, ClaimedActionRecovery.recoverAll(first, fakeSigner(), NOW + 3_000L));
+        assertEquals(unknownReceipt, first.receipt(executingId));
+        assertEquals(denialReceipt, first.receipt(denyingId));
+    }
+
+    @Test public void signerFailureLeavesClaimForReceiptOnlyRetry() throws Exception {
+        String actionId = "f".repeat(32);
+        insertValidPending(actionId, NOW + 10_000L);
+        assertTrue(first.claimForExecution(actionId, NOW));
+        AtomicBoolean failOnce = new AtomicBoolean(true);
+        ClaimedActionRecovery.Signer flaky = new ClaimedActionRecovery.Signer() {
+            @Override public JSONObject publicKeyInfo() throws Exception {
+                return fakeSigner().publicKeyInfo();
+            }
+            @Override public JSONObject sign(JSONObject body) throws Exception {
+                if (failOnce.getAndSet(false)) throw new IllegalStateException("injected signer failure");
+                return fakeSigner().sign(body);
+            }
+        };
+        assertEquals(0, ClaimedActionRecovery.recoverAll(first, flaky, NOW + 2_000L));
+        assertEquals("EXECUTING", first.get(actionId).status);
+        assertNull(first.receipt(actionId));
+        assertEquals(1, ClaimedActionRecovery.recoverAll(first, flaky, NOW + 3_000L));
+        assertEquals("EXECUTION_OUTCOME_UNKNOWN", first.get(actionId).status);
+    }
+
+    @Test public void databaseFailureLeavesClaimForReceiptOnlyRetry() throws Exception {
+        String actionId = "g".repeat(32);
+        FailOnceCompanionDb flakyDb = new FailOnceCompanionDb(context);
+        try {
+            assertTrue(flakyDb.insertPending(actionId, validRequest(actionId), "com.example.app", NOW + 10_000L));
+            assertTrue(flakyDb.claimForExecution(actionId, NOW));
+            assertEquals(0, ClaimedActionRecovery.recoverAll(flakyDb, fakeSigner(), NOW + 2_000L));
+            assertEquals("EXECUTING", flakyDb.get(actionId).status);
+            assertNull(flakyDb.receipt(actionId));
+            assertEquals(1, ClaimedActionRecovery.recoverAll(flakyDb, fakeSigner(), NOW + 3_000L));
+            assertEquals("EXECUTION_OUTCOME_UNKNOWN", flakyDb.get(actionId).status);
+        } finally {
+            flakyDb.close();
+        }
+    }
+
+    private String validRequest(String actionId) throws Exception {
+        return new JSONObject()
+                .put("schema", "v14.android-action-request/1")
+                .put("action_id", actionId)
+                .put("capability", "launch_app")
+                .put("digest", Canonical.requestDigest("launch_app", "com.example.app"))
+                .put("args", new JSONObject().put("package", "com.example.app"))
+                .put("expires_at", (NOW + 10_000L) / 1000.0)
+                .put("companion_local_consent_required", true)
+                .put("android_os_permission_required", false)
+                .put("permission_bypass", false)
+                .put("model_authority", false)
+                .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION")
+                .toString();
+    }
+
+    private static final class FailOnceCompanionDb extends CompanionDb {
+        private boolean fail = true;
+        FailOnceCompanionDb(Context context) { super(context); }
+        @Override synchronized boolean finishClaimed(String actionId, String expectedStatus,
+                                                       String status, String receiptJson) {
+            if (fail) {
+                fail = false;
+                throw new IllegalStateException("injected SQLite finalization failure");
+            }
+            return super.finishClaimed(actionId, expectedStatus, status, receiptJson);
+        }
+    }
+
     @Test public void companionDatabaseHasNoRawPcmOrAudioBlobStorage() {
         try (Cursor c = first.getReadableDatabase().rawQuery(
                 "SELECT name,sql FROM sqlite_master WHERE type='table'", null)) {
