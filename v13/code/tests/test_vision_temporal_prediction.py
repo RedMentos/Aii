@@ -4,7 +4,9 @@ import math
 import pytest
 
 from v13.vision_temporal_prediction import A3TemporalPredictor, A3TemporalPredictorError
-from v13.vision_temporal_evidence import _a3_predictive_attention_novelty
+from v13.vision_temporal_evidence import (
+    TILE_IDS, TemporalVisualEvidence, _a3_predictive_attention_novelty,
+)
 
 
 def patterns():
@@ -203,3 +205,86 @@ def test_output_is_shadow_only_and_never_claims_persistent_authority():
     assert result["truth_authority"] == 0
     assert result["learning_authority"] is False
     assert result["action_authority"] is False
+
+
+def test_error_gated_lms_reduces_updates_on_static_stream_without_losing_predictive_signal():
+    zero = [0.0] * 16
+    a, b = patterns()
+    c, d = [0.0] * 16, [0.0] * 16
+    c[8], d[9] = 0.7, 0.7
+    stream = (
+        [zero] * 500
+        + [a if i % 2 == 0 else b for i in range(100)]
+        + [zero] * 1000
+        + [c if i % 2 == 0 else d for i in range(100)]
+        + [zero] * 500
+        + [a if i % 2 == 0 else b for i in range(100)]
+    )
+    always = A3TemporalPredictor(learning_rate=0.3, warmup_updates=4)
+    gated = A3TemporalPredictor(
+        learning_rate=0.3, warmup_updates=4, update_policy="ERROR_GATED",
+    )
+    gated_errors, gated_baselines = [], []
+    for sample in stream:
+        always.update(sample)
+        row = gated.update(sample)
+        if row["status"] == "SHADOW_MEASURED":
+            gated_errors.append(row["prediction_error_mae"])
+            gated_baselines.append(row["persistence_baseline_mae"])
+    assert gated._updates < always._updates * 0.5
+    assert gated._parameter_l2() > 0.0
+    assert sum(gated_errors) / len(gated_errors) < sum(gated_baselines) / len(gated_baselines)
+    assert sum(gated_errors[-100:]) / 100 < sum(gated_baselines[-100:]) / 100
+
+
+def test_temporal_visual_consumer_runs_error_gated_shadow_without_a4_authority():
+    state = TemporalVisualEvidence()
+    luminance = {tile: [0.0] * 16 for tile in TILE_IDS}
+    projector_sha = "a" * 64
+    result = None
+    for index in range(8):
+        changed = TILE_IDS[index % len(TILE_IDS)] if index % 2 else None
+        embeddings = {
+            tile: ((0.0, 1.0) if tile == changed else (1.0, 0.0))
+            for tile in TILE_IDS
+        }
+        source_ref = {
+            "source_id": f"frame-{index}",
+            "sha256": f"{index + 1:064x}",
+            "char_start": 0,
+            "char_end": 0,
+            "modality": "image",
+        }
+        result = state.update(
+            start_ms=index * 10,
+            end_ms=(index + 1) * 10,
+            tile_luminance=luminance,
+            a3_tile_embeddings=embeddings,
+            a3_projector_sha256=projector_sha,
+            frame_source_ref=source_ref,
+        )
+    prediction = result["a3_temporal_prediction"]
+    shadow = prediction["error_gated_shadow"]
+    assert prediction["update_policy"] == "ALWAYS"
+    assert shadow["update_policy"] == "ERROR_GATED"
+    assert shadow["authority"] == "SHADOW_ONLY"
+    assert shadow["persistent_weights"] is False
+    assert shadow["truth_authority"] == 0
+    assert shadow["learning_authority"] is False
+    assert shadow["action_authority"] is False
+    original = _a3_predictive_attention_novelty(prediction)
+    changed_shadow = dict(prediction)
+    changed_shadow["error_gated_shadow"] = dict(shadow, shadow_surprise=1.0)
+    assert _a3_predictive_attention_novelty(changed_shadow) == original
+
+
+def test_temporal_visual_reset_clears_error_gated_shadow_weights():
+    state = TemporalVisualEvidence()
+    zero = [0.0] * 16
+    for index in range(40):
+        state._a3_error_gated_predictor.update(zero if index % 2 else [0.8] + [0.0] * 15)
+    assert state._a3_error_gated_predictor._observations > 0
+    state.reset()
+    assert state._a3_error_gated_predictor._observations == 0
+    assert state._a3_error_gated_predictor._updates == 0
+    assert state._a3_error_gated_predictor._parameter_l2() == 0.0
