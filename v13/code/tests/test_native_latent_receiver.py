@@ -19,14 +19,16 @@ from v13.native_latent_receiver import (
 )
 
 
-def fake_binary(path: Path, *, status="DECODED", receiver_input_dim=None, effect=0.5, sleep=0.0):
+def fake_binary(path: Path, *, status="DECODED", receiver_input_dim=None, effect=0.5, sleep=0.0, target_hash_mismatch=False):
     source = f'''#!/usr/bin/env python3
-import json, struct, sys, time
+import hashlib, json, struct, sys, time
 from pathlib import Path
 REV = {PINNED_LLAMA_REVISION!r}
 SCHEMA = {SCHEMA!r}
 if len(sys.argv) == 2 and sys.argv[1] == "--version":
-    print(json.dumps({{"schema": SCHEMA, "runner_revision": REV, "llama_version": "b10964"}}))
+    print(json.dumps({{"schema": SCHEMA, "runner_revision": REV, "llama_version": "b10964",
+                      "target_score_supported": True,
+                      "target_score_schema": "v14.native-receiver-target-score/1"}}))
     raise SystemExit(0)
 if {sleep!r}:
     time.sleep({sleep!r})
@@ -34,8 +36,16 @@ args = dict(zip(sys.argv[1::2], sys.argv[2::2]))
 rows = int(args["--rows"])
 dim = int(args["--input-dim"])
 positions = [int(value) for value in args["--positions"].split(",")]
+target_count = int(args.get("--target-count", "0"))
+target_hash = args.get("--target-token-ids-sha256")
 raw = sys.stdin.buffer.read()
-assert len(raw) == rows * dim * 4
+embedding_bytes = rows * dim * 4
+target_bytes = raw[embedding_bytes:]
+assert len(raw) == embedding_bytes + target_count * 4
+if target_count:
+    assert len(target_bytes) == target_count * 4
+    actual_target_hash = hashlib.sha256(target_bytes).hexdigest()
+    assert actual_target_hash == target_hash
 status = {status!r}
 receiver_dim = {receiver_input_dim if receiver_input_dim is not None else 0}
 if receiver_dim == 0:
@@ -66,6 +76,16 @@ else:
         "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
         "finite_output": True
     }}
+    if target_count:
+        receipt["target_score"] = {{
+            "schema": "v14.native-receiver-target-score/1",
+            "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+            "target_token_count": target_count,
+            "target_token_ids_sha256": ("0" * 64) if {target_hash_mismatch!r} else target_hash,
+            "token_logprobs": [-0.75 for _ in range(target_count)],
+            "decode_status": 0,
+            "native_input_consumed": True
+        }}
 print(json.dumps(receipt))
 '''
     path.write_text(source, encoding="utf-8")
@@ -269,3 +289,89 @@ def test_cancel_event_terminates_native_receiver_process(tmp_path):
             binary_path=binary,
             cancel_event=cancelled,
         )
+
+
+def test_teacher_forced_target_scores_are_hash_bound_and_fixture_labeled(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    target_ids = [17, 29, 31]
+    receipt = probe(
+        home=home,
+        model_path=model,
+        expected_model_sha256=digest,
+        sender_role="B2_GIST",
+        receiver_role="C3_LANGUAGE",
+        sender_tap_id="qwen35.result_norm.final.v1",
+        sender_model_revision="qwen35-r1",
+        sender_model_sha256="b" * 64,
+        tokenizer_revision=None,
+        receiver_model_revision="lfm2-r1",
+        source_id="source-1",
+        generation_id="generation-1",
+        vectors=[[0.25, -0.5], [1.0, 0.75]],
+        position_ids=[0, 1],
+        position_mode=POSITION_MODE,
+        deadline=time.monotonic() + 10,
+        threads=2,
+        binary_path=binary,
+        target_token_ids=target_ids,
+    )
+    target = receipt["target_score"]
+    assert target["schema"] == "v14.native-receiver-target-score/1"
+    assert target["execution_kind"] == "SYNTHETIC_FIXTURE"
+    assert target["environment"] == "SYNTHETIC"
+    assert target["llama_cpp_revision"] == PINNED_LLAMA_REVISION
+    assert target["binary_sha256"] == hashlib.sha256(binary.read_bytes()).hexdigest()
+    assert target["receiver_model_sha256"] == digest
+    assert target["input_sha256"] == receipt["input_sha256"]
+    assert target["target_token_ids_sha256"] == hashlib.sha256(struct.pack("<3i", *target_ids)).hexdigest()
+    assert target["target_token_count"] == 3
+    assert target["score_method"] == "TEACHER_FORCED_TARGET_LOGPROB_V1"
+    assert target["token_logprobs"] == [-0.75, -0.75, -0.75]
+    assert target["decode_status"] == 0
+    assert target["native_input_consumed"] is True
+
+
+def test_target_score_rejects_mismatched_target_hash(tmp_path):
+    home, model, binary, digest = fixture(tmp_path, target_hash_mismatch=True)
+    with pytest.raises(AssertionError):
+        probe(
+            home=home, model_path=model, expected_model_sha256=digest,
+            sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+            sender_tap_id="tap", sender_model_revision="r1", sender_model_sha256="b" * 64,
+            tokenizer_revision=None, receiver_model_revision="r2",
+            source_id="source-1", generation_id="generation-1",
+            vectors=[[1.0, 2.0]], position_ids=[0], position_mode=POSITION_MODE,
+            deadline=time.monotonic() + 5, binary_path=binary, target_token_ids=[1, 2],
+        )
+
+
+def test_native_target_score_requires_explicit_environment_and_device_receipt(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    common = dict(
+        home=home, model_path=model, expected_model_sha256=digest,
+        sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+        sender_tap_id="tap", sender_model_revision="r1", sender_model_sha256="b" * 64,
+        tokenizer_revision=None, receiver_model_revision="r2",
+        source_id="source-1", generation_id="generation-1",
+        vectors=[[1.0, 2.0]], position_ids=[0], position_mode=POSITION_MODE,
+        deadline=time.monotonic() + 5, target_token_ids=[1, 2],
+    )
+    with pytest.raises(NativeReceiverError, match="explicit execution environment"):
+        probe(**common)
+    with pytest.raises(NativeReceiverError, match="device receipt"):
+        probe(**common, target_environment="TERMUX_ANDROID")
+
+
+def test_target_score_rejects_invalid_token_ids_before_native_execution(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    for ids in ([True], [-1], [2**31], [], [1] * 513):
+        with pytest.raises(NativeReceiverError, match="target token IDs"):
+            probe(
+                home=home, model_path=model, expected_model_sha256=digest,
+                sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+                sender_tap_id="tap", sender_model_revision="r1", sender_model_sha256="b" * 64,
+                tokenizer_revision=None, receiver_model_revision="r2",
+                source_id="source-1", generation_id="generation-1",
+                vectors=[[1.0, 2.0]], position_ids=[0], position_mode=POSITION_MODE,
+                deadline=time.monotonic() + 5, binary_path=binary, target_token_ids=ids,
+            )
