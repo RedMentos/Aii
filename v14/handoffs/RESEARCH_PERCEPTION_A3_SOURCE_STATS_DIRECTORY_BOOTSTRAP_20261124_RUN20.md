@@ -109,3 +109,13 @@ The existing vision/source-lineage workflow's push path filter already included 
 - **Research added:** R-146 SGM-Diar (DEFER/session-only, no SGM repo, DiariZen weights CC BY-NC); R-147 Edge0 (Apache code but current Android engine 35B only, i8mm/ARMv8.6, 16GB OnePlus benchmark, 42GB disk); R-148 BigMoMo (under-review preprint, no official code/license, HMX/12–24GB devices, abstract/table speedup discrepancy). No model download or reuse.
 - **Coordination:** exact hash correction and Core-owned composer handoff posted on PR #2465. Perception does not modify Core-owned composer files or weaken pins.
 - **Next:** Core/Integrator pins the exact `vision.py` + `vision_projector_stats.py` closure, rebinds dependent pins, and reruns staged/integrated/consumer/migration. User action: none.
+
+
+## Run 25 — Core integration test-seam diagnosis (2026-11-25)
+
+- **Snapshot:** 2026-11-25T00:49:00Z; no wall-clock run-start/end instrumentation (UNKNOWN).
+- **Core PR #2465 head:** `c2fdfab67983cf58c96c89a653122f521eb69429`; integrated-regression run `45474789385`: 1 failed / 447 passed / 3 skipped. Failure: `Vision.test_reingest_serializes_with_last_source_blob_cleanup` waits for `unlink_entered` and times out at `tests/test_vision.py:697`.
+- **Diagnosis:** `source_lifecycle_lock_integration_candidate.py` replaces the original `vision.unlink_source_blob` cleanup call with `source_lifecycle_candidate.cleanup_unreferenced(store, sid)`. The test still monkeypatches `vision.unlink_source_blob`, so the event is never triggered. The replacement helper holds `store.tx()` across the committed-deletion check, live-reference check and blob unlink. This is a test seam mismatch; no production lock bypass is indicated by this failure.
+- **Core action:** patch the staged regression to intercept `cleanup_unreferenced` (or a stable wrapper) and assert re-ingest remains blocked until cleanup is released. Keep production lock and hash checks intact.
+- **Separate A3 stack blocker:** #2484 still fails staged integration on the older source pin because Core's source closure does not yet include the new `vision_projector_stats.py` importer dependency. These two integration issues must both be resolved before full acceptance.
+- **No code change from Perception:** Core owns the builder and staged test. No release, device test, model change or user action.
