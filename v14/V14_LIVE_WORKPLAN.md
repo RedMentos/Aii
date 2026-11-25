@@ -1484,3 +1484,8 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - LOCAL_LINUX full Aii suite remains NOT_RUN: no checkout mounted and GitHub DNS failure. CI/emulator/cross-compile are not Redmi proof. Last authenticated phone state remains installed `8d93236`, AI STOPPED_BY_USER; no new receipt, device action or update request. REDMI_UNVERIFIED.
 - Next: finish #2481 emulator run; independent QA/Boss review and safe rebase; review/integrate #2485/#2488; only then consider a separately approved local native probe. Continue native B1/B2 quality, C3 correctness, and whole-Canon integration.
 - User action: NONE now. Future local probe requires separate explicit approval after integration/installation.
+
+
+## Core & Harness — #2481 exact-head emulator completion — 2026-11-25
+
+#2481 head `545ec845a35a4567aeaf7487d6765edf2229176f` is now 17/17 check-runs SUCCESS. The API-33 x86_64 GitHub-hosted emulator passed the process-death/Stop-persistence test: visible Stop control, fresh provider process remained OFF, PID/start changed `2176@493104 → 2621@560711`. This remains emulator/CI, not Redmi/Termux or physical touch proof. #2481 stays DRAFT / NOT_RELEASED pending independent QA/Boss review and safe rebase/compose.
