@@ -298,7 +298,7 @@ def _validate_native_pair_record(record: Mapping) -> dict:
     source_id = _required_id(source_ref.get("source_id"), "source_ref.source_id")
     source_sha = _sha256(source_ref.get("sha256"), "source_ref.sha256")
     if (type(source_ref.get("char_start")) is not int or source_ref["char_start"] != 0
-            or type(source_ref.get("char_end")) is not int or source_ref["char_end"] < 1):
+            or type(source_ref.get("char_end")) is not int or not 1 <= source_ref["char_end"] <= 1_048_576):
         raise LatentAdapterError("native tokenwise pair record SourceRef range is invalid")
     session_id = _required_id(record.get("session_id"), "session_id")
     _required_id(record.get("event_id"), "event_id")
