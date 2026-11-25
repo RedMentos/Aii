@@ -439,6 +439,8 @@ def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_i
             raise ValueError("runtime RAW EAR speaker registry has an invalid type")
         speaker_registry.reset(source_id=source_id, generation_id=generation_id)
     prediction_registry = getattr(runtime, "_raw_ear_prediction_registry", None)
+    if prediction_registry is None and _raw_ear_prediction_persistence_enabled(runtime):
+        prediction_registry = _runtime_audio_temporal_prediction_registry(runtime)
     if prediction_registry is not None:
         if not isinstance(prediction_registry, AudioTemporalPredictionRegistry):
             raise ValueError("runtime RAW EAR prediction registry has an invalid type")
@@ -480,13 +482,24 @@ def _runtime_speaker_evidence_registry(runtime):
     return registry
 
 
+def _raw_ear_prediction_persistence_enabled(runtime):
+    cfg = getattr(runtime, "cfg", None)
+    return isinstance(cfg, dict) and cfg.get("raw_ear_persist_prediction_weights") is True
+
+
 def _runtime_audio_temporal_prediction_registry(runtime):
     registry = getattr(runtime, "_raw_ear_prediction_registry", None)
     if registry is None:
         with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
             registry = getattr(runtime, "_raw_ear_prediction_registry", None)
             if registry is None:
-                registry = AudioTemporalPredictionRegistry()
+                if _raw_ear_prediction_persistence_enabled(runtime):
+                    store = getattr(runtime, "store", None)
+                    if store is None:
+                        raise ValueError("persistent RAW EAR weights require the local Runtime Store")
+                    registry = AudioTemporalPredictionRegistry(store=store)
+                else:
+                    registry = AudioTemporalPredictionRegistry()
                 try:
                     setattr(runtime, "_raw_ear_prediction_registry", registry)
                 except Exception as exc:
