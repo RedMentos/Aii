@@ -52,7 +52,8 @@ def apply_staged_tokenwise(code_dir: Path, staging: Path) -> dict[str, bytes]:
     staging = Path(staging).resolve(strict=True)
     for relative in SOURCE_PINS:
         source = _read_regular(code_dir, relative)
-        compile(source, str(code_dir / relative), "exec")
+        if relative.endswith(".py"):
+            compile(source, str(code_dir / relative), "exec")
 
     runner_path = staging / "v13/runners.py"
     cognition_path = staging / "v13/cognition.py"
