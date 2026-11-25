@@ -1519,3 +1519,11 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - Research ledger R-156–R-161 appended: co-observation, mistake-gated plasticity, mzCache artifact/hardware limits, PowerBench phase split, V-JEPA-LM counterfactual supervision, and ThinkJEPA dual-path/license constraints. No code, weights, datasets or dependencies were downloaded or imported.
 - Device/deployment: no private live receipt was obtained and no device command was sent. Last available private V13OBS snapshot remains historical (2026-11-24; updater enabled, runtime STOPPED_BY_USER at 8d93236); current installation is unknown. REDMI_UNVERIFIED; NOT_RELEASED. No model, weight, permission or data change.
 - Next executable step: Core adds native target-token score production and consumes this Perception evaluator; then exact-head CI, independent review, held-out task utility and rollback/restart checks. Boss should port this verified checkpoint to the shared board after review.
+
+
+### Run 23 cross-lane integration update — Core PR #2512 (2026-11-25)
+
+- Core opened [PR #2512](https://github.com/RedMentos/Aii/pull/2512), head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, stacked on Core #2510 and carrying the earlier Perception #2511 anchor-preserving helper as a second parent. It adds an in-process source/session-disjoint fit-to-holdout native receiver diagnostic under the separate `NATIVE_RECEIVER` approval; it does not change weights or enable production B3.
+- Direct code readback of #2512's `native_latent_receiver.py` confirms the current probe still returns decode status, output norm, input-effect RMS and zero/shuffle/repeat cosines only. It does **not** emit target-token log-probabilities or generated answers.
+- The latest Perception #2511 now additionally contains `native_receiver_utility.py`; the current #2512 branch snapshot does not yet contain that new module. Core was notified to refresh/rebase its Perception parent and add the target-score producer before claiming task utility.
+- #2512 exact-head CI at `93fa02a` was queued when checked (native input-embedding extractor, staged/integrated regression, deployment integrity); no result is claimed yet. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
