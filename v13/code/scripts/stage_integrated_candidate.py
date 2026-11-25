@@ -22,6 +22,8 @@ RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_2
 RUNTIME_CLOSE_OVERLAY_GIT_BLOB = 'fc32dc9c350e36b76c54bf8f1e26186370ccb133'
 ACTION_SELECTION_LINEAGE_OVERLAY = 'scripts/integrated_actionselection_broadcast_lineage_candidate_20261125.py'
 ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB = '8b527bdcf5447ae1058ef9b3e9126dd706e2e37d'
+TOKENWISE_PAIR_OVERLAY = 'scripts/integrated_native_tokenwise_pair_overlay_20261125.py'
+TOKENWISE_PAIR_OVERLAY_GIT_BLOB = '7a19de1970251ef6f3cecd260cafaa37f1a720af'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -204,13 +206,52 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'training_authority': 0,
             'world_learning_eligible': False,
         }
+        tokenwise_overlay_path = code_dir / TOKENWISE_PAIR_OVERLAY
+        if tokenwise_overlay_path.is_symlink() or not tokenwise_overlay_path.is_file():
+            raise ValueError('native tokenwise runtime overlay missing or unsafe')
+        tokenwise_overlay_raw = tokenwise_overlay_path.read_bytes()
+        tokenwise_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(tokenwise_overlay_raw)).encode('ascii') + b'\\0' + tokenwise_overlay_raw
+        ).hexdigest()
+        if tokenwise_overlay_blob != TOKENWISE_PAIR_OVERLAY_GIT_BLOB:
+            raise ValueError('native tokenwise runtime overlay source changed')
+        tokenwise_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_checked_native_tokenwise_overlay', tokenwise_overlay_path)
+        if tokenwise_overlay_spec is None or tokenwise_overlay_spec.loader is None:
+            raise RuntimeError('native tokenwise runtime overlay is not loadable')
+        tokenwise_overlay_module = importlib.util.module_from_spec(tokenwise_overlay_spec)
+        tokenwise_overlay_spec.loader.exec_module(tokenwise_overlay_module)
+        tokenwise_files = tokenwise_overlay_module.apply_staged_tokenwise(code_dir, staging)
+        expected_tokenwise_files = {
+            'v13/runners.py', 'v13/cognition.py', 'v13/callosum.py', 'v13/native_probe_approval.py'
+        }
+        if not isinstance(tokenwise_files, dict) or set(tokenwise_files) != expected_tokenwise_files:
+            raise ValueError('native tokenwise runtime overlay produced an unexpected staged file set')
+        for relative, payload in tokenwise_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe native tokenwise runtime overlay output')
+            target.write_bytes(payload)
+        tokenwise_overlay_manifest = {
+            'name': TOKENWISE_PAIR_OVERLAY,
+            'git_blob_sha1': TOKENWISE_PAIR_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'source_pins': tokenwise_overlay_module.SOURCE_PINS,
+            'replaced_files': sorted(tokenwise_files),
+            'production_route': False,
+            'semantic_use_proven': False,
+            'training_authority': 0,
+            'native_receiver_authority': 0,
+            'pair_vectors_persisted': False,
+            'raw_receiver_rows_persisted': False,
+        }
         native_probe_close_overlay_manifest = {
             'name': RUNTIME_CLOSE_OVERLAY,
             'git_blob_sha1': RUNTIME_CLOSE_OVERLAY_GIT_BLOB,
             'status': 'SHADOW_REVIEW_ONLY',
             'replaced_files': ['v13/runtime.py'],
         }
-        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files) | set(action_lineage_files))
+        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files) | set(action_lineage_files) | set(tokenwise_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
             'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
@@ -228,9 +269,12 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'native_probe_overlay': native_probe_overlay_manifest,
             'native_probe_close_overlay': native_probe_close_overlay_manifest,
             'action_selection_lineage_overlay': action_selection_lineage_overlay_manifest,
+            'native_tokenwise_pair_overlay': tokenwise_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
+                            'native input extractor must be explicitly built locally before use',
+                            'tokenwise pair vectors are not persisted or fitted',
                             'no automatic learning permission'],
         }
         (staging / 'INTEGRATION_STAGE.json').write_text(json.dumps(manifest, indent=2) + '\n')
