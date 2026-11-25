@@ -172,7 +172,10 @@ class SpeakerChangeEvidenceRegistry:
         # The exact current consent receipt is hashed by the RAW EAR consumer;
         # the opaque fingerprint partitions process-local history without
         # persisting or returning the receipt or its fingerprint.
-        key = (source_id, generation_id, consent_scope_id)
+        key = (
+            (source_id, generation_id) if consent_scope_id is None
+            else (source_id, generation_id, consent_scope_id)
+        )
         with self._lock:
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
@@ -375,7 +378,7 @@ class SpeakerChangeEvidenceRegistry:
                 if source_id is None or (
                     key[0] == source_id and
                     (generation_id is None or key[1] == generation_id) and
-                    (consent_scope_id is None or key[2] == consent_scope_id)
+                    (consent_scope_id is None or (len(key) > 2 and key[2] == consent_scope_id))
                 )
             ]
             for key in keys:
