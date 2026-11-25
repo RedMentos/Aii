@@ -58,7 +58,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (" in callosum
     assert "production B3 remains OFF pending parity/zero/shuffle/OOD controls" in callosum
     assert "'claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'" in callosum
-    assert "native-probe <sender> <receiver>" in callosum
+    assert "native-probe <sender> <receiver>" in operator
     assert "arm-probe-matrix --last-source --confirm" in operator
     assert "native-probe-matrix --last-source --confirm" in operator
     assert "guard_runtime_close(self)" in runtime
