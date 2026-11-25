@@ -1,12 +1,14 @@
 """Ephemeral, consent-lease-scoped temporal RAW EYE feature evidence.
 
 The deterministic 37-value tile descriptor and A3 projected cosine delta are
-paired with a tiny 17x16 (272-parameter) online next-change predictor whose
-bias row is active only for a zero-change context. This is not optical flow,
-OCR, object recognition, a calibrated probability, or semantic motion
-understanding. Only numeric tile deltas and bounded session-local predictor
-weights are retained in process memory. No frame bytes, images, text, or
-persistent model state are stored.
+paired with the default 17x16 (272-parameter) online next-change predictor and
+a second ERROR_GATED predictor used only as a non-controlling ablation. Both
+use a zero-context-only bias row. The error-gated shadow is not read by A4 and
+cannot change salience or actions. This is not optical flow, OCR, object
+recognition, a calibrated probability, or semantic motion understanding. Only
+numeric tile deltas and bounded session-local predictor weights are retained
+in process memory. No frame bytes, images, text, or persistent model state
+are stored.
 """
 from __future__ import annotations
 
