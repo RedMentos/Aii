@@ -35,53 +35,21 @@ def _receipt_buffer(runtime):
     return value
 
 
-MIN_TASK_GROUPS = 20
-MIN_SESSIONS = 2
-MIN_TASK_FAMILIES = 2
-MIN_TASKS_PER_SESSION = 5
-MIN_TASKS_PER_FAMILY = 4
-
-
-def _status_for_receipts(receipts):
+def task_score_status(runtime):
+    """Return counts only; never expose token scores or source content."""
+    receipts = _receipt_buffer(runtime)
     groups = defaultdict(set)
-    metadata = {}
     for item in receipts:
         checked = _check_receipt(item)
-        task_id = checked["task_group_id"]
-        groups[task_id].add(checked["condition"])
-        metadata[task_id] = (checked["session_id"], checked["task_family"])
-    complete = {
-        task_id for task_id, conditions in groups.items()
-        if conditions == set(CONDITIONS)
-    }
-    incomplete = len(groups) - len(complete)
-    sessions = defaultdict(int)
-    families = defaultdict(int)
-    for task_id in complete:
-        session_id, task_family = metadata[task_id]
-        sessions[session_id] += 1
-        families[task_family] += 1
-    ready = (
-        not incomplete
-        and len(complete) >= MIN_TASK_GROUPS
-        and len(sessions) >= MIN_SESSIONS
-        and len(families) >= MIN_TASK_FAMILIES
-        and all(count >= MIN_TASKS_PER_SESSION for count in sessions.values())
-        and all(count >= MIN_TASKS_PER_FAMILY for count in families.values())
-    )
+        groups[checked["task_group_id"]].add(checked["condition"])
+    complete = sum(conditions == set(CONDITIONS) for conditions in groups.values())
+    incomplete = len(groups) - complete
     return {
-        "status": "EMPTY" if not groups else ("COHORT_READY" if ready else "COLLECTING"),
+        "status": "COLLECTING" if incomplete else ("EMPTY" if not groups else "COHORT_READY"),
         "receipt_count": len(receipts),
         "task_group_count": len(groups),
-        "complete_task_group_count": len(complete),
+        "complete_task_group_count": complete,
         "incomplete_task_group_count": incomplete,
-        "session_count": len(sessions),
-        "task_family_count": len(families),
-        "minimum_task_groups": MIN_TASK_GROUPS,
-        "minimum_sessions": MIN_SESSIONS,
-        "minimum_task_families": MIN_TASK_FAMILIES,
-        "minimum_tasks_per_session": MIN_TASKS_PER_SESSION,
-        "minimum_tasks_per_family": MIN_TASKS_PER_FAMILY,
         "required_conditions_per_task": len(CONDITIONS),
         "maximum_receipts": MAX_TASK_SCORE_RECEIPTS,
         "persisted": False,
@@ -90,14 +58,9 @@ def _status_for_receipts(receipts):
     }
 
 
-def task_score_status(runtime):
-    """Return counts only; never expose token scores or source content."""
-    return _status_for_receipts(_receipt_buffer(runtime))
-
-
 def record_task_score_receipts(runtime, receipts):
-    """Atomically add a bounded receipt batch; evaluate only a fully qualified cohort."""
-    if not isinstance(receipts, (list, tuple)) or not receipts or len(receipts) > len(CONDITIONS):
+    """Atomically add a bounded batch; failed validation leaves the buffer unchanged."""
+    if not isinstance(receipts, (list, tuple)) or not 1 <= len(receipts) <= len(CONDITIONS):
         raise NativeReceiverTaskScoreError("task-score batch must contain 1..8 receipts")
     try:
         checked = [_check_receipt(item) for item in receipts]
@@ -111,21 +74,33 @@ def record_task_score_receipts(runtime, receipts):
     if len(set(batch_keys)) != len(batch_keys) or any(key in existing_keys for key in batch_keys):
         raise NativeReceiverTaskScoreError("duplicate task group/condition receipt")
     candidate = existing + checked
-    status = _status_for_receipts(candidate)
-    if status["status"] == "COHORT_READY":
-        try:
-            result = evaluate_native_receiver_task_utility(candidate)
-        except NativeReceiverUtilityError as exc:
-            raise NativeReceiverTaskScoreError("complete task-score cohort failed validation") from exc
+    groups = defaultdict(set)
+    for item in candidate:
+        groups[item["task_group_id"]].add(item["condition"])
+    incomplete = sum(conditions != set(CONDITIONS) for conditions in groups.values())
+    if incomplete:
         existing.extend(checked)
-        return result
+        return task_score_status(runtime)
+    try:
+        result = evaluate_native_receiver_task_utility(candidate)
+    except NativeReceiverUtilityError as exc:
+        raise NativeReceiverTaskScoreError("complete task-score cohort failed validation") from exc
     existing.extend(checked)
-    return status
+    return result
 
 
 def record_task_score_receipt(runtime, receipt):
-    """Add one verified ephemeral receipt; evaluate only a fully qualified cohort."""
+    """Add one verified ephemeral receipt; evaluate only complete condition groups."""
     return record_task_score_receipts(runtime, [receipt])
+
+
+def remove_task_score_group(runtime, task_group_id):
+    """Rollback one just-recorded in-memory task group if its audit write fails."""
+    receipts = _receipt_buffer(runtime)
+    before = len(receipts)
+    receipts[:] = [item for item in receipts if item.get("task_group_id") != task_group_id]
+    return {"status": "ROLLED_BACK", "removed_receipt_count": before - len(receipts),
+            "persisted": False, "training_authority": 0, "native_receiver_authority": 0}
 
 
 def build_and_record_task_score_receipt(runtime, *, condition, task_group_id, task_family,
