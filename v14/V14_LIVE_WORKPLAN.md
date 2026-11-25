@@ -1369,3 +1369,39 @@ No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission 
 Full main-paper review: Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06). S-JEPA uses a target-conditioned posterior and context-conditioned stochastic prior for a per-image z, trained as a representation-space CVAE with KL regularisation and EMA target. Reported ViT-B/L results use 600 ImageNet epochs and four A100 GPUs; ViT-L linear probe 78.3 vs I-JEPA 77.5. The paper's uncertainty-error correlation is weak within images (mean Spearman 0.16; positive in 76%), and uncertainty maps require repeated predictor passes. Latent is per image, not per target region. The listed code URL was not retrievable and its license/weights are unverified; no reuse.
 
 V14 experiment only after trusted B3 taps exist: add a tiny gated stochastic residual z for ambiguous temporal outcomes, keep deterministic fast path, compare deterministic/sample/zero/shuffle on held-out receiver utility and calibration, and measure added passes/RSS/TTFT. Not a mobile model recommendation; no model download/swap.
+
+
+### 2026-11-25 — Research/Perception Run 16: token-span provenance hardening
+
+- **Gap:** PR #2501's tokenwise alignment bound each activation row and pair ID, but the validator did not reconstruct alignment_id from the sender/receiver span manifests or recompute alignment_coverage. Caller-supplied hashes/coverage could be internally re-hashed without proving the span geometry. Character spans also cannot represent llama.cpp byte-fallback pieces that split a UTF-8 code point.
+- **Code:** follow-up branch research-perception/v14-token-span-manifest-integrity-20261125-run16; latent_adapter.py now verifies the complete sender-span manifest and ordered receiver spans, recomputes the alignment digest and overlap coverage, and adds an exact byte-piece path based on pinned llama.cpp /tokenize with_pieces=true output. The new path requires add_special=false piece streams to reconstruct the exact source bytes and stores source hash, byte length and byte spans. Existing char-span alignment remains supported.
+- **Tests:** local isolated Linux helper reproduction 6/6 PASS; exact repo workflow is pending; full local Aii checkout unavailable. CI must run the exact repository module and adjacent adapter/audit tests before this candidate is reviewed.
+- **Research:** Deng et al., arXiv:2610.22026 (2026-10-15) reviewed through main-text methods/results/limitations. Same-family activation replacement relies on oracle layer/position; tested cross-family transfer collapses. Do not generalize this to V14's final-RMSNorm-to-input-embedding mapping.
+- **Integration/acceptance:** the native tap producer still does not persist trusted token pieces/spans. Core must connect with_pieces=true to the exact embedding-row indices, explicitly account for BOS/special tokens, and persist source/event/generation/model/tokenizer/blob bindings. The separate event-pooled LATENT_PREFIX_V1 route remains separate. No semantic transfer or B3 acceptance.
+- **Device/release:** REDMI_UNVERIFIED; no device receipt, no deployment, no release. B3 remains OFF.
+- **Next:** run exact CI; then coordinate the token-piece producer contract with Core and request a source-disjoint native tap cohort only after the producer is wired.
+
+
+#### Run 16 CI/device follow-up (2026-11-25)
+
+PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/Aii/pull/2502. Current code/test SHA: 408c074d3d07339d3d8f4bab47139a5279a13d40. Exact adapter workflow RUN_45643108802: 42/42 PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Runtime-deployment integrity RUN_45643108912: PASS on Python 3.11 and 3.14. The broader staged/integrated regression RUN_45643108732 was still IN_PROGRESS at the last check. The first attempt on 6955caf failed one shuffled-pairing negative fixture; the fixture was corrected and the new exact head passed.
+
+Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
+
+Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+#### Run 16 final code/test checkpoint — 2026-11-25
+
+PR #2502 (draft, stacked on #2501) now also provides build_tokenwise_tap_manifest(): exact llama.cpp token-piece IDs must match the no-special content token IDs; the content sequence must occur exactly once in the add-special prefill token IDs; and the helper selects the corresponding native activation rows while recording prefix/suffix special-token counts, exact UTF-8 source hash/length and byte spans. This gives Core a concrete producer-side helper but does not mean the runner or Cognition packet currently calls it.
+
+Code/test SHA fa2673340f2dce78dcf7952b802957bf8b2f9212:
+- Adapter workflow: 47/47 PASS on Python 3.13 and 3.14; privacy scan CLEAN.
+- Runtime-deployment integrity: PASS on Python 3.11 and 3.14.
+- Staged/integrated regression: PASS — 424 passed, 3 skipped, 58 subtests in integrated regression; 255 passed, 10 skipped, 47 subtests in staged runtime.
+- LOCAL_LINUX isolated helper reproduction: 10/10 PASS.
+- Full local Aii checkout: BLOCKED/NOT_RUN (no checkout; github.com DNS unavailable).
+
+Initial fixture failures were not hidden: 6955caf failed the shuffled-pairing negative control because the shuffle was within-source; 9cbefd failed three new manifest tests because they used raw pieces instead of llama.cpp token objects with matching IDs. Both were corrected; exact fa267 is green.
+
+Core integration remains outstanding: LlamaRunner.tap must call the helper, and Cognition.tap must persist the returned source/token/row manifest with event/generation/model/tap/tokenizer/blob bindings. No native GGUF, task utility, weight update, or Redmi proof.

@@ -5,9 +5,11 @@ import numpy as np
 import pytest
 
 from v13.latent_adapter import (
-    LatentAdapterError, _activation_vector_sha256, _token_pair_id,
-    align_token_rows_by_char_span, build_native_receiver_input, fit_adapter,
-    project_event, project_rows, project_vector, save_adapter, load_adapter,
+    LatentAdapterError, _activation_vector_sha256, _alignment_manifest_sha256, _token_pair_id,
+    align_token_rows_by_byte_pieces, align_token_rows_by_char_span, build_native_receiver_input,
+    fit_adapter, token_piece_byte_spans, build_tokenwise_tap_manifest,
+    project_event, project_rows, project_vector,
+    save_adapter, load_adapter,
 )
 
 SENDER_HASH = "a" * 64
@@ -18,55 +20,37 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
     rng = np.random.default_rng(seed)
     basis = np.asarray([[1.0, 0.0], [0.0, 1.0], [0.5, 0.3], [-0.2, 0.4], [0.1, -0.3], [0.2, 0.1]])
     target = np.asarray([[1.2, -0.4, 0.7, 0.2], [0.3, 0.8, -0.6, 1.0]])
-    rows = []
+    spans = [[sample * 2, sample * 2 + 2] for sample in range(4)]
+    source_groups = []
     for group in range(groups):
         source_id = f"{prefix}-source-{group}"
-        spans = [[sample * 2, sample * 2 + 2] for sample in range(4)]
         source_sha256 = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
-        alignment_id = hashlib.sha256(json.dumps({
-            "method": "CHAR_SPAN_OVERLAP_V1", "source_id": source_id,
-            "source_sha256": source_sha256,
-            "sender_spans": spans, "receiver_spans": spans,
-        }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
-        for sample in range(4):
+        sender_rows = []
+        receiver_rows = []
+        for _sample in range(4):
             z = rng.normal(size=2)
             x = z @ basis.T + rng.normal(scale=0.001, size=6)
             y = z @ target + np.asarray([0.2, -0.1, 0.3, 0.05]) + rng.normal(scale=0.001, size=4)
-            sender_vector = x.tolist()
-            receiver_vector = y.tolist()
-            sender_vector_sha256 = _activation_vector_sha256(sender_vector)
-            receiver_vector_sha256 = _activation_vector_sha256(receiver_vector)
-            pair_id = _token_pair_id(
-                source_id=source_id,
-                source_sha256=source_sha256,
-                token_position=sample,
-                source_span=spans[sample],
-                alignment_id=alignment_id,
-                alignment_coverage=1.0,
-                sender_vector_sha256=sender_vector_sha256,
-                receiver_vector_sha256=receiver_vector_sha256,
-            )
-            rows.append({
-                "pair_id": pair_id,
-                "source_id": source_id,
-                "source_sha256": source_sha256,
-                "token_position": sample,
-                "source_span": spans[sample],
-                "alignment_method": "CHAR_SPAN_OVERLAP_V1",
-                "alignment_id": alignment_id,
-                "alignment_coverage": 1.0,
-                "sender_vector": sender_vector,
-                "receiver_vector": receiver_vector,
-                "sender_vector_sha256": sender_vector_sha256,
-                "receiver_vector_sha256": receiver_vector_sha256,
-            })
+            sender_rows.append(x.tolist())
+            receiver_rows.append(y.tolist())
+        source_groups.append((source_id, source_sha256, sender_rows, receiver_rows))
     if shuffled:
-        values = [row["receiver_vector"] for row in rows]
-        rng.shuffle(values)
-        for row, value in zip(rows, values):
-            row["receiver_vector"] = value
-    return rows
-
+        receiver_rows = [row for _source_id, _source_hash, _senders, rows in source_groups for row in rows]
+        rng.shuffle(receiver_rows)
+        cursor = 0
+        rebuilt = []
+        for source_id, source_sha256, sender_rows, rows in source_groups:
+            count = len(rows)
+            rebuilt.append((source_id, source_sha256, sender_rows, receiver_rows[cursor:cursor + count]))
+            cursor += count
+        source_groups = rebuilt
+    result = []
+    for source_id, source_sha256, sender_rows, receiver_rows in source_groups:
+        result.extend(align_token_rows_by_char_span(
+            sender_rows, spans, receiver_rows, spans,
+            source_id=source_id, source_sha256=source_sha256,
+        ))
+    return result
 
 def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
     rng = np.random.default_rng(seed)
@@ -367,13 +351,14 @@ def test_tokenwise_fit_rejects_source_hash_leakage_across_holdout():
     holdout = make_aligned_tokenwise_pairs("hold", 5, seed=22)
     leaked_source = holdout[0]["source_id"]
     leaked_hash = train[0]["source_sha256"]
-    leaked_alignment = hashlib.sha256(json.dumps({
-        "method": "CHAR_SPAN_OVERLAP_V1",
-        "source_id": leaked_source,
-        "source_sha256": leaked_hash,
-        "sender_spans": [[0, 2], [2, 4], [4, 6]],
-        "receiver_spans": [[0, 3], [3, 6]],
-    }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    leaked_alignment = _alignment_manifest_sha256(
+        method="CHAR_SPAN_OVERLAP_V1",
+        source_id=leaked_source,
+        source_sha256=leaked_hash,
+        sender_spans=[[0, 2], [2, 4], [4, 6]],
+        receiver_spans=[[0, 3], [3, 6]],
+        source_span_unit="CHARACTER",
+    )
     for row in holdout:
         if row["source_id"] == leaked_source:
             row["source_sha256"] = leaked_hash
@@ -413,6 +398,9 @@ def test_tokenwise_fit_rejects_position_only_pairs_without_span_proof():
         row.pop("alignment_method")
         row.pop("alignment_id")
         row.pop("alignment_coverage")
+        row.pop("source_span_unit")
+        row.pop("source_length")
+        row.pop("sender_spans")
     with pytest.raises(LatentAdapterError, match="source_span alignment"):
         fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
 
@@ -433,3 +421,178 @@ def test_tokenwise_fit_requires_source_local_contiguous_positions(mutation, matc
         train[0]["token_position"] = 7
     with pytest.raises(LatentAdapterError, match=match):
         fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
+
+
+def _byte_piece_groups(prefix, groups):
+    source_prefix = "A\u00e1\U0001f9e0e\u0301"
+    result = []
+    for group in range(groups):
+        source_text = f"{prefix}-{group}: {source_prefix}"
+        source_bytes = source_text.encode("utf-8")
+        sender_pieces = [{"id": index + 1, "piece": [byte]} for index, byte in enumerate(source_bytes)]
+        receiver_chunks = [source_bytes[:4], source_bytes[4:9], source_bytes[9:]]
+        receiver_pieces = [{"id": index + 100, "piece": list(chunk)}
+                           for index, chunk in enumerate(receiver_chunks) if chunk]
+        sender_vectors = [[float(i), float(i + 1)] for i in range(len(sender_pieces))]
+        receiver_vectors = [[float(i + 1), float(i + 2), float(i + 3)]
+                            for i in range(len(receiver_pieces))]
+        result.extend(align_token_rows_by_byte_pieces(
+            sender_vectors, sender_pieces, receiver_vectors, receiver_pieces,
+            source_id=f"{prefix}-byte-source-{group}", source_text=source_text,
+        ))
+    return result
+
+
+def test_token_piece_byte_spans_accept_llama_cpp_raw_byte_pieces_and_unicode_splits():
+    source = "A\u00e1\U0001f9e0e\u0301"
+    pieces = [
+        {"id": 1, "piece": "A"},
+        {"id": 2, "piece": [0xC3]},
+        {"id": 3, "piece": [0xA1, 0xF0]},
+        {"id": 4, "piece": [0x9F, 0xA7]},
+        {"id": 5, "piece": [0xA0]},
+        {"id": 6, "piece": "e"},
+        {"id": 7, "piece": [0xCC]},
+        {"id": 8, "piece": [0x81]},
+    ]
+    metadata = token_piece_byte_spans(pieces, source)
+    assert metadata["source_sha256"] == hashlib.sha256(source.encode("utf-8")).hexdigest()
+    assert metadata["source_length"] == len(source.encode("utf-8"))
+    assert metadata["token_spans"][1] == [1, 2]
+    assert metadata["token_spans"][2] == [2, 4]
+    assert metadata["token_spans"][-1][1] == metadata["source_length"]
+
+
+def test_utf8_byte_piece_alignment_fits_a_tokenwise_adapter_with_distinct_segmentations():
+    adapter = fit_adapter(
+        _byte_piece_groups("byte-train", 10),
+        _byte_piece_groups("byte-hold", 5),
+        sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+        sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+        sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+        sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+        sender_tokenizer_revision="sender-tokenizer-r1",
+        receiver_tokenizer_revision="tokenizer-r1",
+        rank=2, projection_scope="TOKENWISE",
+    )
+    assert adapter["alignment_method"] == "UTF8_BYTE_PIECE_OVERLAP_V1"
+    assert adapter["schema"] == "v14.cross-organ-latent-adapter/3"
+    assert adapter["semantic_use_proven"] is False
+    assert adapter["training_authority"] == adapter["native_receiver_authority"] == 0
+
+
+def test_token_piece_byte_spans_reject_non_exact_or_empty_piece_streams():
+    with pytest.raises(LatentAdapterError, match="do not reconstruct"):
+        token_piece_byte_spans([b"not", b"the source"], "source")
+    with pytest.raises(LatentAdapterError, match="empty/special"):
+        token_piece_byte_spans([b"source", b""], "source")
+
+
+def test_tokenwise_manifest_digest_rejects_sender_span_tampering():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=31)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=32)
+    tampered = [dict(row) for row in train]
+    for row in tampered:
+        row["sender_spans"] = [[0, 1], [1, 4], [4, 6]]
+    with pytest.raises(LatentAdapterError, match="manifest digest"):
+        fit_adapter(
+            tampered, holdout,
+            sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+            sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+            sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+            sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            projection_scope="TOKENWISE",
+            sender_tokenizer_revision="sender-tokenizer-r1",
+            receiver_tokenizer_revision="tokenizer-r1",
+            rank=2, ridge=1e-5,
+        )
+
+
+def test_tokenwise_fit_recomputes_alignment_coverage_instead_of_trusting_metadata():
+    train = make_aligned_tokenwise_pairs("train", 10, seed=41)
+    holdout = make_aligned_tokenwise_pairs("hold", 5, seed=42)
+    item = train[0]
+    item["alignment_coverage"] = 0.80
+    item["pair_id"] = _token_pair_id(
+        source_id=item["source_id"], source_sha256=item["source_sha256"],
+        token_position=item["token_position"], source_span=item["source_span"],
+        alignment_id=item["alignment_id"], alignment_coverage=item["alignment_coverage"],
+        sender_vector_sha256=item["sender_vector_sha256"],
+        receiver_vector_sha256=item["receiver_vector_sha256"],
+    )
+    with pytest.raises(LatentAdapterError, match="coverage mismatch"):
+        fit_adapter(
+            train, holdout,
+            sender_role="B2_GIST", receiver_role="C3_LANGUAGE",
+            sender_tap_id="b2.gist.layer-final.v1", receiver_tap_id="c3.input-embedding.v1",
+            sender_model_revision="b2-test-r1", receiver_model_revision="c3-test-r1",
+            sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+            projection_scope="TOKENWISE",
+            sender_tokenizer_revision="sender-tokenizer-r1",
+            receiver_tokenizer_revision="tokenizer-r1",
+            rank=2, ridge=1e-5,
+        )
+
+
+def test_build_tokenwise_tap_manifest_maps_content_tokens_to_prefill_rows():
+    source = "A\u00e1\U0001f9e0e\u0301"
+    pieces = [
+        {"id": 10, "piece": "A"},
+        {"id": 11, "piece": [0xC3]},
+        {"id": 12, "piece": [0xA1, 0xF0]},
+        {"id": 13, "piece": [0x9F, 0xA7]},
+        {"id": 14, "piece": [0xA0]},
+        {"id": 15, "piece": "e"},
+        {"id": 16, "piece": [0xCC]},
+        {"id": 17, "piece": [0x81]},
+    ]
+    content_ids = list(range(10, 18))
+    prefill_ids = [1] + content_ids
+    activation_rows = [[float(i), float(i + 1)] for i in range(len(prefill_ids))]
+    manifest = build_tokenwise_tap_manifest(
+        source, content_ids, pieces, prefill_ids, activation_rows,
+    )
+    assert manifest["schema"] == "v14.source-bound-tokenwise-tap/1"
+    assert manifest["prefill_positions"] == list(range(1, 9))
+    assert manifest["special_prefix_tokens"] == 1
+    assert manifest["special_suffix_tokens"] == 0
+    assert manifest["vectors"] == activation_rows[1:]
+    assert len(manifest["token_spans"]) == len(content_ids)
+    assert manifest["source_sha256"] == hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
+def test_build_tokenwise_tap_manifest_rejects_ambiguous_content_token_subsequence():
+    with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
+        build_tokenwise_tap_manifest(
+            "ab", [10, 11], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}], [10, 11, 10, 11],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_unmatched_content_tokens():
+    with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 10, 12, 11],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_excess_special_tokens_and_row_mismatch():
+    with pytest.raises(LatentAdapterError, match="invalid token count"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 2, 3, 10, 11, 12],
+            [[float(i), float(i + 1)] for i in range(6)],
+        )
+    with pytest.raises(LatentAdapterError, match="do not match native prefill"):
+        build_tokenwise_tap_manifest(
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 10, 11, 12],
+            [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0]],
+        )
+
+
+def test_build_tokenwise_tap_manifest_rejects_piece_ids_that_do_not_match_native_tokens():
+    with pytest.raises(LatentAdapterError, match="piece ID differs"):
+        build_tokenwise_tap_manifest(
+            "ab", [10, 11], [{"id": 11, "piece": "a"}, {"id": 10, "piece": "b"}],
+            [10, 11], [[1.0, 2.0], [2.0, 3.0]],
+        )

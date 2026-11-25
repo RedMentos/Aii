@@ -1891,3 +1891,37 @@ The latest available consented snapshot is timestamped 2026-11-24 09:22:33 UTC; 
 ### Research lead R-146 — S-JEPA (full main-paper review)
 
 Nikos Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06), introduces a stochastic per-image JEPA latent with a target-conditioned posterior during training and a context-conditioned prior at inference. It reports small representation gains over I-JEPA and useful uncertainty/diversity, but the uncertainty-error correlation is weak within images (mean Spearman about 0.16; positive in 76%), the latent is global per image rather than per target region, and uncertainty maps need repeated predictor passes. Training used ViT-B/L and four A100 GPUs; this is not a Redmi candidate. The paper's code URL was not retrievable and its license/weights are unverified, so nothing was reused. Potential V14 experiment only: a tiny gated stochastic residual z for ambiguous temporal outcomes after trusted B3 taps exist; deterministic fast path remains. Do not sample every turn or promote on uncertainty alone.
+
+
+## 2026-11-25 verified Research/Perception checkpoint — token-span provenance
+
+A follow-up to tokenwise adapter PR #2501 now adds exact UTF-8 byte-piece spans and validates the full sender/receiver span manifest plus recomputed overlap coverage. The code is on research-perception/v14-token-span-manifest-integrity-20261125-run16; local isolated Linux reproduction passed 6/6, while the exact repository workflow is pending. This is not a native latent-learning or Redmi result.
+
+The remaining integration is Core-owned: LlamaRunner.tap must request llama.cpp with_pieces=true, map content-token pieces to the exact activation rows while accounting for BOS/special tokens, and persist source/tokenizer/event/generation/blob provenance. Until that exists, there is no trusted tokenwise producer and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 receiver is a separate contract.
+
+**Redmi/deployment:** REDMI_UNVERIFIED; no newer device receipt was obtained in this run. No deployment, restart, model/weight swap, permission change or device-data change was performed. The previously available private receipt is historical only; do not infer that the app/runtime is currently running from the GitHub release head.
+
+**User action:** keine Aktion nötig. No Termux command, model download or approval is required for this research/code candidate.
+
+#### Run 16 CI/device follow-up (2026-11-25)
+
+PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/Aii/pull/2502. Current code/test SHA: 408c074d3d07339d3d8f4bab47139a5279a13d40. Exact adapter workflow RUN_45643108802: 42/42 PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Runtime-deployment integrity RUN_45643108912: PASS on Python 3.11 and 3.14. The broader staged/integrated regression RUN_45643108732 was still IN_PROGRESS at the last check. The first attempt on 6955caf failed one shuffled-pairing negative fixture; the fixture was corrected and the new exact head passed.
+
+Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
+
+Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+## 2026-11-25 Run 16 final checkpoint — PR #2502
+
+PR: https://github.com/RedMentos/Aii/pull/2502
+Branch: research-perception/v14-token-span-manifest-integrity-20261125-run16
+Code/test SHA: fa2673340f2dce78dcf7952b802957bf8b2f9212
+
+The adapter now verifies exact UTF-8 byte pieces, llama.cpp token IDs, unique content-token-to-prefill-row mapping, the full alignment manifest and recomputed overlap coverage. Exact CI: 47/47 adapter tests on Python 3.13/3.14; privacy scan CLEAN; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (424 passed/3 skipped/58 subtests; staged runtime 255 passed/10 skipped/47 subtests). Local isolated helper reproduction 10/10 PASS. Full local Aii checkout remains BLOCKED/NOT_RUN.
+
+Core still needs to call build_tokenwise_tap_manifest() from LlamaRunner.tap and persist the result in Cognition.tap; until then the trusted tap producer is NOT_IMPLEMENTED and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 route remains separate.
+
+Latest available private V13OBS snapshot: 2026-11-24T09:28:11Z, historical only. Three read-only private relay requests were created at 2026-11-25T15:25:01Z: PIPELINE_STATUS #915, DIAGNOSTICS #916, HEALTH #917; no receipt had arrived at the last poll. Do not treat the old receipt as live. No device command, update request, restart, model/weight/permission/data change was performed.
+
+**User action:** keine Aktion nötig. No Termux command, model download or swap is needed.
