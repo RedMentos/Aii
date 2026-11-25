@@ -125,6 +125,11 @@ class _Stream:
         # may become speaker-reference history.
         self.last_end_ms = None
         self.last_voiced_end_ms = None
+        # Window chronology is independent of model/calibration resets. It
+        # prevents a later, wider window from moving its start backwards while
+        # still presenting embedding frames whose end timestamps advance.
+        self.last_window_start_ms = None
+        self.last_window_end_ms = None
 
 
 class SpeakerChangeEvidenceRegistry:
@@ -166,13 +171,27 @@ class SpeakerChangeEvidenceRegistry:
                     del self._states[old_key]
             state = self._states.get(key)
             reset_reason = None
+            previous_window_start_ms = None if state is None else state.last_window_start_ms
+            previous_window_end_ms = None if state is None else state.last_window_end_ms
+            # Validate the whole audio-window interval, not just the timestamps
+            # of optional speaker-embedding frames. A caller can otherwise move
+            # start_ms backwards while keeping every supplied frame_end_ms
+            # greater than the previous batch's last frame.
+            if previous_window_start_ms is not None and start_ms < previous_window_start_ms:
+                raise SpeakerEvidenceError("speaker window starts must advance monotonically")
+            if previous_window_end_ms is not None and end_ms <= previous_window_end_ms:
+                raise SpeakerEvidenceError("speaker window ends must advance monotonically")
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
                 state = _Stream(metadata, self.max_frames)
+                state.last_window_start_ms = previous_window_start_ms
+                state.last_window_end_ms = previous_window_end_ms
                 reset_reason = "MODEL_OR_CALIBRATION_CHANGED"
             elif state.last_voiced_end_ms is not None and start_ms - state.last_voiced_end_ms > self.reset_gap_ms:
                 state = _Stream(metadata, self.max_frames)
+                state.last_window_start_ms = previous_window_start_ms
+                state.last_window_end_ms = previous_window_end_ms
                 reset_reason = "STREAM_GAP"
 
             latest = None
@@ -268,6 +287,8 @@ class SpeakerChangeEvidenceRegistry:
             # All input windows advance ordering; only VOICED windows advance
             # the separate speaker-reference clock and history.
             state.last_end_ms = batch["frames"][-1][0]
+            state.last_window_start_ms = start_ms
+            state.last_window_end_ms = end_ms
 
             self._states.pop(key, None)
             self._states[key] = state
