@@ -1353,3 +1353,22 @@ Exact CI on this head: vision/source-lineage 39/39 on Python 3.13 and 3.14; RAW 
 Local Linux Python 3.13.5 isolated helper harness: 3/3 PASS. Full Aii checkout/suite not run locally; GitHub DNS/clone access unavailable. This is a synthetic Store/CI result, not a neural JEPA update, trained latent transfer, Android capture or Redmi test. The latest private V13OBS #115 snapshot still says STOPPED_BY_USER and model process STOPPED; auto-update is enabled on installed base `8d93236`, but candidate #2463 is not installed. No device command or update request.
 
 Next: Boss/Integrator rebind the current exact source hashes and include the full imported dependency closure, then rerun staged/integrated/consumer/migration. Perception then measures near-duplicate source grouping and source-level uncertainty. User action: NONE.
+
+
+## Research & Perception — run 11, 2026-11-25
+
+### A3 predictive error as an adaptive shadow signal
+
+PR #2494, branch research-perception/v14-a3-online-prediction-shadow-20261125-run11, is a draft child of #2486 → #2470. It adds A3TemporalPredictor, a 16×16 (256-parameter) online LMS model over the existing A3 16-tile cosine-delta stream. It predicts the next delta vector from the previous vector, records pre-update MAE against a persistence baseline, and applies a bounded gradient update. The predictor is part of the existing consent/session-scoped temporal evidence object; gaps, missing/changed projectors, consent rotation and revocation reset it.
+
+The result is attached to the source-bound PerceptPacket and A4 evidence readout as SHADOW_ONLY. A4's existing 0.15 novelty gain and action modulation are unchanged. No persistent weights, raw frame storage, model download or permission change.
+
+**LOCAL_LINUX:** isolated CPython 3.13 helper py_compile PASS; 8/8 pytest PASS. Synthetic 120-observation alternating-pattern result: parameter L2 1.08094; last-20 MAE 0.01350 vs persistence 0.10000. Orthogonal-pattern retention: 0.01350→0.01747 (+0.00397) after 100 second-pattern updates. 10,000 updates ~1,054.3 ms (~105.4 µs/update). This is helper-only synthetic evidence; the full Aii repository checkout and full local consumer suite remain BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
+
+**CI at checkpoint:** PR #2494 exact-head workflows had started; the final exact-head result must be read back from GitHub before any promotion. Parent #2486 focused temporal calibration and MediaProjection frame-ingress matrices were 58/58 and 54/54 on Python 3.13/3.14 respectively; its staged/integrated composition remains blocked at the Core-owned strict vision.py source-lifecycle pin. This PR does not bypass that pin.
+
+**Research:** R-140 reviews Kim et al., *V-JEPA-LM*, arXiv:2611.17831v1 (2026-11-13), full HTML. Counterfactual paired supervision improves temporal reading in large 1B–30B models, but training requires hundreds of H100-hours and the released weights are research/non-commercial. The small A3 predictor is only a testable V14 hypothesis, not a reproduction or a mobile model recommendation.
+
+**Device/release:** no fresh private Redmi receipt; last known V13OBS snapshot (2026-11-24 09:28 UTC) said installed base 8d93236, auto-update enabled, AI STOPPED_BY_USER, model process STOPPED, native residency unavailable. It does not establish current updater state or candidate installation. REDMI_UNVERIFIED; NOT_RELEASED. No device action or update request.
+
+**Next:** poll exact PR #2494 CI; Core/Integrator recompose #2465's current vision.py source-lifecycle chain and rerun staged/integrated/migration/consumer on a single composed SHA; only then evaluate on explicitly consented real visual sequences with source/session-disjoint, codec, brightness and camera controls. Do not change A4 gain or persist thresholds from synthetic results. User action: **keine Aktion nötig**.
