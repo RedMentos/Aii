@@ -186,7 +186,8 @@ def test_collector_rejects_sparse_session_family_cross_even_when_totals_pass():
         else:
             family = "ARITHMETIC" if task_index == 10 else "ENTITY_RECALL"
         result = complete_group(runtime, task_index, session_id, family)
-    assert result["status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["status"] == "COLLECTING"
+    assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["tasks_per_session"] == {"session-A": 10, "session-B": 10}
     assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
     assert result["tasks_per_session_family"] == {

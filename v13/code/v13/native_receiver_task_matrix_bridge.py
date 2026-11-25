@@ -379,6 +379,7 @@ def score_and_record_native_receiver_condition_matrix(
             "duration_s": float(duration),
             "score_method": SCORE_METHOD,
             "enough_holdout": cohort.get("enough_holdout", False),
+            "holdout_status": cohort.get("holdout_status"),
             "candidate_beats_all_controls": cohort.get("candidate_beats_all_controls", False),
             "semantic_use_proven": False,
             "generated_answer_correctness_proven": False,

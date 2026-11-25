@@ -211,7 +211,7 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None):
 
     calls = []
     def fake_probe(**kwargs):
-        calls.append(kwargs)
+        calls.append({**kwargs, "condition_inputs": [dict(item) for item in kwargs["condition_inputs"]]})
         ids = kwargs["target_token_ids"]
         target_sha = sha(struct.pack("<" + "i" * len(ids), *ids))
         receiver_sha = kwargs["expected_model_sha256"]
@@ -293,7 +293,8 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     result, phases, runtime = _run_bridge(monkeypatch, matrix, task)
 
     assert result["status"] == "TASK_GROUP_SCORED"
-    assert result["cohort_status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["cohort_status"] == "COLLECTING"
+    assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["condition_count"] == 8
     assert result["execution_kind"] == "SYNTHETIC_FIXTURE"
     assert result["environment"] == "SYNTHETIC"

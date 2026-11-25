@@ -326,7 +326,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     # A synthetic fixture must not hide missing holdout coverage.
     # FIXTURE_ONLY is valid only after the session/family minima are met.
     if not enough:
-        status, evidence = "INSUFFICIENT_HOLDOUT", "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else env
+        status, evidence = "COLLECTING", "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else env
     elif kind == "SYNTHETIC_FIXTURE":
         status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
     elif not all_pass:
@@ -343,6 +343,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "source_group_count": len(source_hashes),
         "balanced_session_family_coverage": balanced_session_family_coverage,
         "enough_holdout": enough,
+        "holdout_status": "SUFFICIENT_HOLDOUT" if enough else "INSUFFICIENT_HOLDOUT",
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
