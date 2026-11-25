@@ -488,7 +488,7 @@ def operator_command(runtime, args, *, approval_module=None, capture_fn=None):
             "event_id": record["event_id"],
             "pair_count": record["pair_count"],
             "in_memory_record_count": len(records),
-            "estimated_vector_bytes": existing_bytes + estimated_bytes,
+            "estimated_in_memory_bytes": existing_bytes + estimated_bytes,
             "persisted": False,
             "pair_vectors_persisted": False,
             "notice": "Pair vectors remain in bounded Runtime memory only; use fit-tokenwise-cohort for an explicit session-disjoint candidate."
