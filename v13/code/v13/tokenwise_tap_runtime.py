@@ -291,10 +291,9 @@ def capture_tokenwise_tap(cognition, tap_packet, deadline):
     atomic_write(path, dumps(blob))
     relative = str(path.relative_to(Path(runtime.home)))
     packet_value = packet(
-        "TokenwiseTapPacket", "B3_TOKENWISE_TAP",
+        "TokenwiseTapPacket", role,
         tap_packet["event_id"], tap_packet["brain_generation_id"],
         [tap_packet["source_ref"]],
-        role=role,
         source_ref=tap_packet["source_ref"],
         sender_tap_packet_id=tap_packet["packet_id"],
         sender_tap_id=tap_packet["tap_id"],
