@@ -141,8 +141,6 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
 '''
 REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),\n"""
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
-REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
-REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
 def _replace(raw,old,new,label):
@@ -164,10 +162,8 @@ def apply_sources(code_dir,sources):
     callosum=result.get("v13/callosum.py",(code_dir/"v13/callosum.py").read_bytes())
     if not isinstance(callosum,bytes) or b"def native_receiver_probe(" in callosum:
         raise ValueError("native receiver Callosum already patched or unavailable")
-    callosum=_replace(callosum,b"import re\n",b"import re\nimport time\n","Callosum time import")
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
     callosum=_replace(callosum,REPORT_PROBE_OLD.encode("utf-8"),REPORT_PROBE_NEW.encode("utf-8"),"Callosum report probe")
-    callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
     compile(callosum,"v13/callosum.py","exec")
     result["v13/cognition.py"]=cognition
     result["v13/callosum.py"]=callosum
