@@ -52,6 +52,23 @@ def _roles(sender_role, receiver_role):
         raise ValueError("native probe receiver must be a distinct B1/B2/C3 role")
 
 
+PROBE_KINDS = frozenset({"NATIVE_RECEIVER", "INPUT_EMBEDDING_TAP"})
+
+
+def _validate_probe_kind(value):
+    if type(value) is not str or value not in PROBE_KINDS:
+        raise ValueError("native probe kind is unsupported")
+    return value
+
+
+def _require_probe_kind(record, requested):
+    requested = _validate_probe_kind(requested)
+    stored = record.get("probe_kind", "NATIVE_RECEIVER") if isinstance(record, dict) else None
+    if stored != requested:
+        raise PermissionError("native approval kind differs from the requested diagnostic")
+    return requested
+
+
 
 def _verify_model_file(path, expected_size, expected_digest):
     """Stream the actual model bytes and bind them to the installed manifest."""
@@ -297,11 +314,12 @@ def _require_local_tty():
         raise PermissionError("native probe approval requires an interactive local TTY")
 
 
-def arm(runtime, sender_role, receiver_role, *, now=None, adapter_name=None):
+def arm(runtime, sender_role, receiver_role, *, now=None, adapter_name=None, probe_kind="NATIVE_RECEIVER"):
     """Arm one exact probe only from an interactive local terminal."""
     _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
+    probe_kind = _validate_probe_kind(probe_kind)
     event, source_ref = _current_event(runtime)
     models = {
         sender_role: _model_binding(runtime, sender_role),
@@ -335,6 +353,7 @@ def arm(runtime, sender_role, receiver_role, *, now=None, adapter_name=None):
         "source_ref": dict(source_ref),
         "sender_role": sender_role,
         "receiver_role": receiver_role,
+        "probe_kind": probe_kind,
         "models": models,
     }
     if adapter_binding is not None:
@@ -350,6 +369,7 @@ def arm(runtime, sender_role, receiver_role, *, now=None, adapter_name=None):
         "expires_in_seconds": TTL_SECONDS,
         "sender_role": sender_role,
         "receiver_role": receiver_role,
+        "probe_kind": probe_kind,
         "source_bound": True,
         "model_revisions_and_hashes_bound": True,
         "model_paths_and_file_identity_bound": True,
@@ -561,7 +581,7 @@ def _resource_preflight(runtime, receiver_binding):
     }
 
 
-def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None, adapter_name=None):
+def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None, adapter_name=None, probe_kind="NATIVE_RECEIVER"):
     """Consume the local approval atomically before any native receiver work."""
     _require_local_tty()
     if lease_token is None:
@@ -569,10 +589,12 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None,
     else:
         _require_runtime_probe_lease(runtime, lease_token)
     _roles(sender_role, receiver_role)
+    probe_kind = _validate_probe_kind(probe_kind)
     clock = _clock(now)
     record, version = runtime.store.state(KEY, None)
     if not isinstance(record, dict) or record.get("schema") != SCHEMA or record.get("status") != "PENDING":
         raise PermissionError("native probe requires a fresh local :callosum arm-probe approval")
+    _require_probe_kind(record, probe_kind)
     if record.get("runtime_nonce") != _runtime_nonce(runtime):
         raise PermissionError("native probe approval expired across Runtime restart")
     expires = record.get("expires_at")
@@ -624,6 +646,7 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None,
         "approval_id": record["nonce"][:12],
         "sender_role": sender_role,
         "receiver_role": receiver_role,
+        "probe_kind": probe_kind,
         "event_id": record["event_id"],
         "consumed": True,
         "resource_preflight": resource_preflight,
