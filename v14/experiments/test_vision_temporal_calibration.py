@@ -50,7 +50,7 @@ def test_noise_and_shuffle_controls_are_deterministic_and_reported():
     assert first["shuffle_ge_order_fraction_mean"] > 0.5
 
 
-def test_rejects_invalid_shapes_labels_noise_and_zero_projector_embeddings():
+def test_rejects_invalid_shapes_labels_noise_nonfinite_and_zero_projector_embeddings():
     features, labels, sources = synthetic_sequences(sources=5)
     with pytest.raises(ValueError, match="16-tile"):
         calibrate_a3_temporal_change(lambda x: x, features[:, :, :8], labels, sources, folds=5)
@@ -58,11 +58,15 @@ def test_rejects_invalid_shapes_labels_noise_and_zero_projector_embeddings():
         calibrate_a3_temporal_change(lambda x: x, features, labels + 2, sources, folds=5)
     with pytest.raises(ValueError, match="noise_std"):
         calibrate_a3_temporal_change(lambda x: x, features, labels, sources, folds=5, noise_std=0)
+    nonfinite = features.copy()
+    nonfinite[0, 0, 0, 0] = np.nan
+    with pytest.raises(ValueError, match="finite"):
+        calibrate_a3_temporal_change(lambda x: x, nonfinite, labels, sources, folds=5)
     with pytest.raises(ValueError, match="nonzero"):
         calibrate_a3_temporal_change(lambda x: np.zeros_like(x), features, labels, sources, folds=5)
 
 
-def test_rejects_source_leakage_insufficient_groups_and_missing_class_per_fold():
+def test_rejects_insufficient_and_repeated_source_groups():
     features, labels, sources = synthetic_sequences(sources=4)
     with pytest.raises(ValueError, match="not enough distinct"):
         calibrate_a3_temporal_change(lambda x: x, features, labels, sources, folds=5)
