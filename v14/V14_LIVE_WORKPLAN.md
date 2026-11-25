@@ -1389,3 +1389,19 @@ PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/A
 Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
 
 Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+#### Run 16 final code/test checkpoint — 2026-11-25
+
+PR #2502 (draft, stacked on #2501) now also provides build_tokenwise_tap_manifest(): exact llama.cpp token-piece IDs must match the no-special content token IDs; the content sequence must occur exactly once in the add-special prefill token IDs; and the helper selects the corresponding native activation rows while recording prefix/suffix special-token counts, exact UTF-8 source hash/length and byte spans. This gives Core a concrete producer-side helper but does not mean the runner or Cognition packet currently calls it.
+
+Code/test SHA fa2673340f2dce78dcf7952b802957bf8b2f9212:
+- Adapter workflow: 47/47 PASS on Python 3.13 and 3.14; privacy scan CLEAN.
+- Runtime-deployment integrity: PASS on Python 3.11 and 3.14.
+- Staged/integrated regression: PASS — 424 passed, 3 skipped, 58 subtests in integrated regression; 255 passed, 10 skipped, 47 subtests in staged runtime.
+- LOCAL_LINUX isolated helper reproduction: 10/10 PASS.
+- Full local Aii checkout: BLOCKED/NOT_RUN (no checkout; github.com DNS unavailable).
+
+Initial fixture failures were not hidden: 6955caf failed the shuffled-pairing negative control because the shuffle was within-source; 9cbefd failed three new manifest tests because they used raw pieces instead of llama.cpp token objects with matching IDs. Both were corrected; exact fa267 is green.
+
+Core integration remains outstanding: LlamaRunner.tap must call the helper, and Cognition.tap must persist the returned source/token/row manifest with event/generation/model/tap/tokenizer/blob bindings. No native GGUF, task utility, weight update, or Redmi proof.
