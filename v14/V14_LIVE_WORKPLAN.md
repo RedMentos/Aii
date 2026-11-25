@@ -1362,3 +1362,10 @@ Core owns the separate LATENT_PREFIX_V1 event-pooled receiver integration in #24
 Private V13OBS #115 was read without creating a new relay request. Its last device check is 2026-11-24T09:22:33Z: auto-update enabled; dashboard/runtime UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; AI runtime STOPPED_BY_USER; autostart false; model process stopped. The five-turn metadata sample records two failed native attempts and zero valid offers for each of B1/B2. Native latent exchange and C3 semantic use are not proven. No newer receipt exists in this run. Do not infer that the device is running because the dashboard is UP_TO_DATE.
 
 No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission change or data mutation was performed. The updater is reported up to date for the old release, but PR #2501 is a draft and NOT_RELEASED. Redmi acceptance remains REDMI_UNVERIFIED.
+
+ 
+### Research follow-up R-146 — stochastic latent uncertainty
+
+Full main-paper review: Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06). S-JEPA uses a target-conditioned posterior and context-conditioned stochastic prior for a per-image z, trained as a representation-space CVAE with KL regularisation and EMA target. Reported ViT-B/L results use 600 ImageNet epochs and four A100 GPUs; ViT-L linear probe 78.3 vs I-JEPA 77.5. The paper's uncertainty-error correlation is weak within images (mean Spearman 0.16; positive in 76%), and uncertainty maps require repeated predictor passes. Latent is per image, not per target region. The listed code URL was not retrievable and its license/weights are unverified; no reuse.
+
+V14 experiment only after trusted B3 taps exist: add a tiny gated stochastic residual z for ambiguous temporal outcomes, keep deterministic fast path, compare deterministic/sample/zero/shuffle on held-out receiver utility and calibration, and measure added passes/RSS/TTFT. Not a mobile model recommendation; no model download/swap.
