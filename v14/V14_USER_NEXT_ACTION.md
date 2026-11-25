@@ -2003,3 +2003,6 @@ The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visi
 - Core integration is still missing: native tokenizer piece streams and selected receiver rows must be wired into Cognition.tap, then consent-gated source/session-disjoint utility and negative controls must run.
 - Latest available consented Redmi snapshot remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236, but AI runtime STOPPED_BY_USER, autostart false, model process stopped; no fresh authenticated device receipt. REDMI_UNVERIFIED. No automatic deployment from this draft PR.
 - Keep LATENT_PREFIX_V1 event pooling separate from tokenwise input-row pairing. Do not install or swap models; the selected-row API remains staging/WIP and the native memory cost is unmeasured.
+
+
+Research note: Core may evaluate co-locating selected-row extraction and native receiver decode in one model process to avoid a second model load. This is not implemented or measured; no user/device action is needed.

@@ -1453,3 +1453,8 @@ Draft PR #2507, branch research-perception/v14-native-tokenwise-pairing-20261125
 **Known limitations:** Core has not yet called this helper from Cognition.tap/receiver execution. The extractor's row-output bound is not a peak-RSS bound; its CPU mmap/lazy model load remains unmeasured. The selected-row API is in a staging/WIP header and the extractor/receiver llama.cpp pins differ. Model-weight license remains unverified until the actual model is chosen.
 
 **Next owner/action:** Core must supply both exact native tokenizer piece streams, invoke the selected-row extractor for the already-installed receiver GGUF, call this helper after Cognition.read_tap, and persist only under the existing explicit local consent/lab gate. Then run source/session-disjoint receiver utility and zero/shuffle/repeat/OOD/retention/restart/rollback tests. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
+
+
+### R-152 follow-up — native selected-row process co-location (research only)
+
+Source inspection shows the current Core receiver and selected-row extractor independently call llama_model_load_from_file on the same GGUF in separate executables. The receiver pin is b29c606; the selected-row API extractor pin is 2851b3b. Core should evaluate one receiver executable at the selected-row API pin that extracts requested input rows and performs receiver decode with the same loaded llama_model pointer. This may remove a duplicate process/model load, but mmap means the RSS effect is unknown. Benchmark peak RSS/PSS, load/TTFT, selected-row latency and receiver-task utility on the exact GGUF before adoption. This is a Core-owned candidate only; no implementation or device measurement was made.
