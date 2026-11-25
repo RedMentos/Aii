@@ -391,3 +391,194 @@ def load_adapter(path: str | os.PathLike) -> dict:
     })
     _validate_adapter(adapter, require_candidate=False)
     return adapter
+
+def fit_from_tap_records(
+    home,
+    *,
+    sender_role: str,
+    receiver_role: str,
+    sender_model_revision: str,
+    receiver_model_revision: str,
+    sender_tap_id: str,
+    receiver_tap_id: str,
+    sender_model_sha256: str,
+    receiver_model_sha256: str,
+    min_pairs: int = 20,
+    max_pairs: int = 32,
+    holdout_fraction: float = 0.25,
+    split_seed: int = 17,
+    rank: int = 16,
+    ridge: float = 1e-4,
+    min_relative_improvement: float = 0.02,
+    fit_seed: int = 7,
+) -> dict:
+    """Fit from persisted, exact-paired B1/B2 tap packets without reading source text.
+
+    Pairing requires the same full SourceRef, event and generation. At most one
+    pair is retained per opaque source_id, so source groups cannot cross the
+    deterministic train/holdout split. Model hashes must be supplied by a
+    caller that has independently read the installed model manifest; tap
+    packets store revisions and tap IDs but not model-file hashes.
+
+    The returned adapter is a closed-form PCA+ridge alignment candidate. It is
+    not gradient-based JEPA learning, semantic transfer, or a production B3
+    route. The caller may persist an accepted adapter separately with
+    save_adapter(); this function never writes to Runtime or SQLite.
+    """
+    from .latent_alignment_audit import (
+        MAX_SAMPLES, _packet_order, _pool_without_position0, _read_tap_blob,
+        _validate_packet, load_tap_records,
+    )
+
+    if sender_role not in _ROLES or receiver_role not in _ROLES or sender_role == receiver_role:
+        raise LatentAdapterError("persisted tap fitting supports distinct B1/B2 roles only")
+    if type(min_pairs) is not int or min_pairs < 20:
+        raise LatentAdapterError("latent adapter fitting requires at least 20 source-disjoint pairs")
+    if type(max_pairs) is not int or not min_pairs <= max_pairs <= MAX_SAMPLES:
+        raise LatentAdapterError("max_pairs must cover min_pairs and stay within the audit bound")
+    if (type(holdout_fraction) not in (int, float)
+            or not math.isfinite(float(holdout_fraction))
+            or not 0.15 <= float(holdout_fraction) <= 0.40):
+        raise LatentAdapterError("holdout_fraction must be between 0.15 and 0.40")
+    if type(split_seed) is not int:
+        raise LatentAdapterError("split_seed must be an integer")
+    for key, value in (
+        ("sender_model_revision", sender_model_revision),
+        ("receiver_model_revision", receiver_model_revision),
+        ("sender_tap_id", sender_tap_id),
+        ("receiver_tap_id", receiver_tap_id),
+    ):
+        if type(value) is not str or not value or len(value) > 160:
+            raise LatentAdapterError("invalid tap/model binding: " + key)
+    sender_model_sha256 = _sha256_text(sender_model_sha256, "sender_model_sha256")
+    receiver_model_sha256 = _sha256_text(receiver_model_sha256, "receiver_model_sha256")
+
+    latest = {}
+    invalid_metadata = 0
+    for record in load_tap_records(Path(home)):
+        packet = record.get("payload") if isinstance(record, dict) else None
+        try:
+            source_key, role, revision, event_id, generation_id = _validate_packet(packet)
+            if role not in {sender_role, receiver_role}:
+                continue
+            order = _packet_order(record.get("created"))
+            key = (source_key, role, revision, event_id, generation_id)
+            if key not in latest or order > latest[key][0]:
+                latest[key] = (order, packet)
+        except (TypeError, KeyError, ValueError):
+            invalid_metadata += 1
+
+    by_event_source = {}
+    for (source_key, role, revision, event_id, generation_id), value in latest.items():
+        group = (source_key, event_id, generation_id)
+        by_event_source.setdefault(group, {}).setdefault(role, {})[revision] = value
+
+    # Source IDs, not spans, define the split unit. If a source has multiple
+    # spans/events/generations, only its newest exact-paired observation wins.
+    by_source = {}
+    for (source_key, event_id, generation_id), roles in by_event_source.items():
+        sender_value = roles.get(sender_role, {}).get(sender_model_revision)
+        receiver_value = roles.get(receiver_role, {}).get(receiver_model_revision)
+        if sender_value is None or receiver_value is None:
+            continue
+        pair_order = max(sender_value[0], receiver_value[0])
+        source_id = source_key[0]
+        existing = by_source.get(source_id)
+        if existing is None or pair_order > existing[0]:
+            by_source[source_id] = (
+                pair_order, source_key, event_id, generation_id,
+                sender_value[1], receiver_value[1],
+            )
+
+    if not by_source:
+        raise LatentAdapterError("no exact paired taps for the requested model revisions")
+
+    candidate_pairs = []
+    invalid_blobs = 0
+    for source_id, (_order, source_key, event_id, generation_id, sender_packet, receiver_packet) in by_source.items():
+        if sender_packet.get("tap_id") != sender_tap_id or receiver_packet.get("tap_id") != receiver_tap_id:
+            invalid_metadata += 1
+            continue
+        try:
+            sender_vectors, _ = _read_tap_blob(Path(home), sender_packet)
+            receiver_vectors, _ = _read_tap_blob(Path(home), receiver_packet)
+            sender_vector, _, _ = _pool_without_position0(sender_vectors)
+            receiver_vector, _, _ = _pool_without_position0(receiver_vectors)
+        except (OSError, TypeError, ValueError):
+            invalid_blobs += 1
+            continue
+        source_group = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        pair_material = json.dumps(
+            [source_key, event_id, generation_id], separators=(",", ":"), ensure_ascii=True,
+        ).encode("utf-8")
+        pair_id = hashlib.sha256(pair_material).hexdigest()
+        candidate_pairs.append({
+            "pair_id": pair_id,
+            "source_id": source_group,
+            "sender_vector": sender_vector,
+            "receiver_vector": receiver_vector,
+        })
+
+    if len(candidate_pairs) < min_pairs:
+        raise LatentAdapterError(
+            "insufficient valid source-disjoint pairs: "
+            + str(len(candidate_pairs)) + "/" + str(min_pairs)
+            + "; invalid_metadata=" + str(invalid_metadata)
+            + "; invalid_blobs=" + str(invalid_blobs)
+        )
+
+    rng = __import__("random").Random(split_seed)
+    candidate_pairs.sort(key=lambda item: item["pair_id"])
+    rng.shuffle(candidate_pairs)
+    selected = candidate_pairs[:max_pairs]
+    holdout_count = max(4, int(math.ceil(len(selected) * float(holdout_fraction))))
+    if len(selected) - holdout_count < 8:
+        raise LatentAdapterError("source-disjoint split leaves fewer than eight training pairs")
+    train_pairs = selected[:-holdout_count]
+    holdout_pairs = selected[-holdout_count:]
+
+    adapter = fit_adapter(
+        train_pairs, holdout_pairs,
+        sender_role=sender_role,
+        receiver_role=receiver_role,
+        sender_tap_id=sender_tap_id,
+        receiver_tap_id=receiver_tap_id,
+        sender_model_revision=sender_model_revision,
+        receiver_model_revision=receiver_model_revision,
+        sender_model_sha256=sender_model_sha256,
+        receiver_model_sha256=receiver_model_sha256,
+        rank=rank,
+        ridge=ridge,
+        min_relative_improvement=min_relative_improvement,
+        seed=fit_seed,
+    )
+    return {
+        "schema": "v14.latent-tap-adapter-fit/1",
+        "status": adapter["status"],
+        "adapter": adapter,
+        "paired_source_count": len(candidate_pairs),
+        "selected_pair_count": len(selected),
+        "train_source_count": len(train_pairs),
+        "holdout_source_count": len(holdout_pairs),
+        "split_seed": split_seed,
+        "split_policy": "ONE_PAIR_PER_SOURCE_ID;DETERMINISTIC_SOURCE_DISJOINT_HOLDOUT",
+        "invalid_metadata_or_tap_bindings": invalid_metadata,
+        "invalid_or_unreadable_blobs": invalid_blobs,
+        "model_hashes_supplied_by_caller": True,
+        "model_manifest_verified_here": False,
+        "model_weight_license_verified_by_this_tool": False,
+        "adapter_code_license": "project-owned; no third-party implementation imported",
+        "source_text_read": False,
+        "raw_activation_vectors_exported": False,
+        "sqlite_written": False,
+        "model_loaded": False,
+        "gradient_based_training": False,
+        "old_task_retention_measured": False,
+        "adapter_parameters_fitted": True,
+        "adapter_persisted": False,
+        "body_weights_modified": False,
+        "semantic_use_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
