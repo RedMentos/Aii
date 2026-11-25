@@ -70,3 +70,23 @@ Android deployment is claimed here.
   synthetic fixtures and native compile do not count as a phone proof.
 
 Current classification: CODE_PRESENT / WIRED_SYNTHETIC_ONLY / NATIVE_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF.
+
+
+## Session-disjoint offline fitting (schema v4)
+
+Each native tokenwise pair now carries its capture/session ID. A tokenwise fit
+must use at least two independent sessions in both train and holdout, with no
+session overlap in addition to the existing source-ID and source-hash split.
+The session ID is included in the alignment digest and is required to remain
+constant across all token rows belonging to one source.
+
+After collecting a set of in-memory `PAIRED_DIAGNOSTIC` records, the lab can
+call `fit_adapter_from_native_pair_records(records, train_session_ids=...,
+holdout_session_ids=...)`. It verifies each record digest and pair/source/
+session binding, requires one unique source per record and consistent sender/
+receiver model/tap/tokenizer revisions, then invokes the low-rank PCA+ridge
+fitter with the declared whole-session split. It returns an adapter candidate
+plus a digest-bound fit manifest. It does not write the records or adapter,
+load a receiver model, run inference, update model weights, or prove semantic
+utility. The native receiver remains OFF pending real receiver-task utility,
+negative controls, retention and rollback.
