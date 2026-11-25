@@ -55,8 +55,9 @@ def _in_memory_pair_record_bytes(record):
             or record.get("native_receiver_authority") != 0):
         raise NativeTokenwisePairCaptureError("only authority-zero in-memory pair records may be staged")
     pairs = record.get("pairs")
-    if not isinstance(pairs, list) or not 1 <= len(pairs) <= 64:
-        raise NativeTokenwisePairCaptureError("in-memory pair record must contain 1..64 aligned rows")
+    if (not isinstance(pairs, list) or not 1 <= len(pairs) <= 64
+            or record.get("pair_count") != len(pairs)):
+        raise NativeTokenwisePairCaptureError("in-memory pair record must contain 1..64 aligned rows with an exact count")
     vector_bytes = 0
     for pair in pairs:
         if not isinstance(pair, dict):

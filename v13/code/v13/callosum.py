@@ -275,11 +275,13 @@ def _fit_tokenwise_candidate(runtime, args):
             or adapter.get("native_receiver_authority") != 0
             or type(adapter.get("adapter_sha256")) is not str
             or len(adapter["adapter_sha256"]) != 64
+            or any(ch not in "0123456789abcdef" for ch in adapter["adapter_sha256"])
             or not isinstance(manifest, dict)
             or manifest.get("session_disjoint") is not True
             or manifest.get("source_disjoint") is not True
             or type(manifest.get("manifest_sha256")) is not str
-            or len(manifest["manifest_sha256"]) != 64):
+            or len(manifest["manifest_sha256"]) != 64
+            or any(ch not in "0123456789abcdef" for ch in manifest["manifest_sha256"])):
         raise ValueError("fitter did not return a source/session-disjoint authority-zero TOKENWISE candidate")
     runtime._native_tokenwise_candidate = {
         "adapter": adapter,

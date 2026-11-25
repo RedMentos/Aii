@@ -291,10 +291,15 @@ def probe_native_tokenwise_candidate(
             raise NativeTokenwiseReceiverProbeError("native receiver status or pinned runner evidence is invalid")
         if (native_result.get("sender_role") != sender_role
                 or native_result.get("receiver_role") != receiver_role
+                or native_result.get("sender_tap_id") != sender_record["tap_id"]
+                or native_result.get("sender_model_revision") != sender_binding["revision"]
                 or native_result.get("sender_model_sha256") != sender_binding["sha256"]
+                or native_result.get("receiver_model_revision") != receiver_binding["revision"]
                 or native_result.get("receiver_model_sha256") != receiver_binding["sha256"]
+                or native_result.get("tokenizer_revision") != packet["tokenizer_revision"]
                 or native_result.get("input_sha256") != packet["input_sha256"]
                 or native_result.get("position_ids") != packet["position_ids"]
+                or native_result.get("position_mode") != packet["position_mode"]
                 or native_result.get("input_rows") != packet["input_rows"]
                 or native_result.get("input_dim") != packet["input_dim"]
                 or type(native_result.get("native_input_consumed")) is not bool):
@@ -329,6 +334,9 @@ def probe_native_tokenwise_candidate(
             "native_input_consumed": native_result.get("native_input_consumed"),
             "input_effect_detected": native_result.get("input_effect_detected"),
             "input_effect_rms": native_result.get("input_effect_rms"),
+            "output_norm": native_result.get("output_norm"),
+            "decode_status": native_result.get("decode_status"),
+            "row_shuffle_control_applicable": native_result.get("row_shuffle_control_applicable"),
             "zero_control_cosine": native_result.get("zero_control_cosine"),
             "shuffle_control_cosine": native_result.get("shuffle_control_cosine"),
             "row_shuffle_control_cosine": native_result.get("row_shuffle_control_cosine"),
@@ -364,6 +372,9 @@ def probe_native_tokenwise_candidate(
             "native_input_consumed": native_result.get("native_input_consumed"),
             "input_effect_detected": native_result.get("input_effect_detected"),
             "input_effect_rms": native_result.get("input_effect_rms"),
+            "output_norm": native_result.get("output_norm"),
+            "decode_status": native_result.get("decode_status"),
+            "row_shuffle_control_applicable": native_result.get("row_shuffle_control_applicable"),
             "zero_control_cosine": native_result.get("zero_control_cosine"),
             "shuffle_control_cosine": native_result.get("shuffle_control_cosine"),
             "row_shuffle_control_cosine": native_result.get("row_shuffle_control_cosine"),
