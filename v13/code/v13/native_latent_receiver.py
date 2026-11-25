@@ -217,7 +217,9 @@ def _run_cancelable(command, payload, deadline, cancel_event):
 def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
           sender_tap_id, sender_model_revision, sender_model_sha256, tokenizer_revision,
           receiver_model_revision, source_id, generation_id, vectors, position_ids,
-          position_mode, deadline, threads=1, binary_path=None, cancel_event=None):
+          position_mode, deadline, threads=1, binary_path=None, cancel_event=None,
+          target_token_ids=None, target_environment=None,
+          device_execution_receipt_sha256=None, device_runtime_build_id=None):
     """Inject a source-bound tap into a separate receiver context and return metrics only.
 
     Production callers omit binary_path; tests may inject a temporary fake executable.
@@ -241,6 +243,21 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     sender_model_sha256 = sender_model_sha256.lower()
     rows, input_dim, payload, input_sha256 = _vector_payload(vectors)
     positions = _validate_positions(position_ids, rows, position_mode)
+    target_ids = None
+    target_payload = b""
+    target_sha256 = None
+    if target_token_ids is not None:
+        if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
+                or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
+            raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
+        target_ids = tuple(target_token_ids)
+        try:
+            target_payload = struct.pack("<" + "i" * len(target_ids), *target_ids)
+        except (OverflowError, struct.error) as exc:
+            raise NativeReceiverError("target token IDs cannot be encoded as int32") from exc
+        target_sha256 = hashlib.sha256(target_payload).hexdigest()
+    elif any(value is not None for value in (target_environment, device_execution_receipt_sha256, device_runtime_build_id)):
+        raise NativeReceiverError("target execution metadata requires target token IDs")
 
     root = Path(home).resolve()
     model = Path(model_path)
@@ -260,6 +277,25 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     binary = binary.resolve(strict=True)
     if not injected_binary and not binary.is_relative_to((root / "bin").resolve()):
         raise NativeReceiverError("native receiver executable escaped home/bin")
+    binary_sha256_before = _sha256_file(binary)
+
+    if target_ids is not None:
+        if injected_binary:
+            if target_environment not in (None, "SYNTHETIC") or device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+                raise NativeReceiverError("injected target-score binaries are synthetic fixtures only")
+            target_execution_kind, target_env = "SYNTHETIC_FIXTURE", "SYNTHETIC"
+        else:
+            if target_environment not in {"LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+                raise NativeReceiverError("native target scoring requires an explicit execution environment")
+            target_execution_kind, target_env = "NATIVE_LLAMA_CPP_GGUF", target_environment
+            if target_env in {"TERMUX_ANDROID", "REDMI"}:
+                if (type(device_execution_receipt_sha256) is not str or len(device_execution_receipt_sha256) != 64
+                        or any(ch not in "0123456789abcdef" for ch in device_execution_receipt_sha256)
+                        or type(device_runtime_build_id) is not str or not device_runtime_build_id
+                        or len(device_runtime_build_id) > 128):
+                    raise NativeReceiverError("Android target scoring requires a verified device receipt and runtime build ID")
+            elif device_execution_receipt_sha256 is not None or device_runtime_build_id is not None:
+                raise NativeReceiverError("local Linux target scoring must not carry Android device metadata")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
@@ -277,19 +313,54 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     if version.returncode != 0:
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
+    if target_ids is not None and version_data.get("target_score_supported") is not True:
+        raise NativeReceiverUnavailable("native receiver binary does not advertise teacher-forced target scoring")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
         raise TimeoutError("native receiver probe deadline expired")
-    returncode, stdout, stderr = _run_cancelable(
-        [str(binary), "--model", str(model), "--rows", str(rows),
-         "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
-         "--threads", str(max(1, min(int(threads), 2)))],
-        payload, deadline, cancel_event,
-    )
+    command = [str(binary), "--model", str(model), "--rows", str(rows),
+               "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
+               "--threads", str(max(1, min(int(threads), 2)))]
+    if target_ids is not None:
+        command.extend(["--target-count", str(len(target_ids)), "--target-token-ids-sha256", target_sha256])
+        payload += target_payload
+    returncode, stdout, stderr = _run_cancelable(command, payload, deadline, cancel_event)
     if returncode != 0:
         raise NativeReceiverError("native receiver model probe failed")
     raw = _json_output(stdout, "probe")
+    target_score = None
+    if target_ids is not None:
+        score = raw.get("target_score")
+        token_scores = score.get("token_logprobs") if isinstance(score, dict) else None
+        if (not isinstance(score, dict) or score.get("schema") != "v14.native-receiver-target-score/1"
+                or score.get("score_method") != "TEACHER_FORCED_TARGET_LOGPROB_V1"
+                or score.get("target_token_count") != len(target_ids)
+                or score.get("target_token_ids_sha256") != target_sha256
+                or not isinstance(token_scores, list) or len(token_scores) != len(target_ids)
+                or any(type(value) not in (int, float) or not math.isfinite(float(value)) or float(value) > 1e-7 for value in token_scores)
+                or type(score.get("decode_status")) is not int or score.get("decode_status") != 0
+                or score.get("native_input_consumed") is not True):
+            raise NativeReceiverError("native target-score receipt is missing, malformed or unbound")
+        target_score = {
+            "schema": "v14.native-receiver-target-score/1",
+            "execution_kind": target_execution_kind,
+            "environment": target_env,
+            "llama_cpp_revision": PINNED_LLAMA_REVISION,
+            "binary_sha256": binary_sha256_before,
+            "receiver_model_sha256": expected_model_sha256,
+            "input_sha256": input_sha256,
+            "target_token_ids_sha256": target_sha256,
+            "target_token_count": len(target_ids),
+            "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+            "token_logprobs": [float(value) for value in token_scores],
+            "decode_status": 0,
+            "native_input_consumed": True,
+            "llama_version": str(raw.get("llama_version", ""))[:120],
+        }
+        if target_env in {"TERMUX_ANDROID", "REDMI"}:
+            target_score["device_execution_receipt_sha256"] = device_execution_receipt_sha256
+            target_score["device_runtime_build_id"] = device_runtime_build_id
     if raw.get("llama_version") != version_data.get("llama_version"):
         raise NativeReceiverError("native receiver version changed between invocations")
     if raw.get("position_ids") != positions or raw.get("position_mode") != position_mode:
@@ -343,6 +414,8 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
 
     if _sha256_file(model) != expected_model_sha256:
         raise NativeReceiverError("receiver model changed during native probe")
+    if _sha256_file(binary) != binary_sha256_before:
+        raise NativeReceiverError("native receiver binary changed during probe")
 
     return {
         "sender_role": sender_role,
@@ -372,5 +445,6 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         "repeat_cosine": None if repeat_cosine is None else float(repeat_cosine),
         "native_input_consumed": consumed,
         "input_effect_detected": effect,
+        "target_score": target_score,
         "status": status,
     }
