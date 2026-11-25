@@ -176,6 +176,20 @@ def test_missing_cache_counter_and_synthetic_receipts_fail_closed():
     assert accounting["status"] == "SYNTHETIC_NOT_NATIVE"
     assert accounting["tokenized_prompt_tokens"] is None
 
+def test_native_output_token_count_mismatch_is_separate_from_prompt_accounting():
+    _, store = _evidence()
+    metadata = json.loads(store.message["metadata"])
+    metadata["runner"]["timings"]["predicted_n"] = 11
+    store.message["metadata"] = json.dumps(metadata)
+
+    evidence = brain_panel._latest_native_evidence(_Runtime(store))
+    accounting = evidence["offer_flow"]["native_prompt_accounting"]
+    assert accounting["verified"] is True
+    assert accounting["native_predicted_tokens"] == 11
+    assert accounting["runner_generated_tokens"] == 12
+    assert accounting["generation_token_count_match"] is False
+
+
 
 def test_attempt_deadline_cannot_inherit_a_stale_final_runner_receipt():
     evidence, store = _evidence()
