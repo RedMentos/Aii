@@ -378,3 +378,79 @@ def test_consent_scope_rotation_and_explicit_reset_clear_consumer_state(tmp_path
         assert registry._states[(SOURCE, event["brain_generation_id"])].predictor.updates == 0
     finally:
         runtime.store.close()
+
+
+def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, monkeypatch):
+    sequence = [SILENCE, UNCERTAIN, UNCERTAIN, SILENCE, SILENCE,
+                UNCERTAIN, UNCERTAIN, SILENCE, SILENCE, UNCERTAIN, UNCERTAIN, UNCERTAIN]
+    runtime, event = make_runtime(tmp_path)
+    runtime.cfg = {"raw_ear_persist_prediction_weights": True}
+    capture = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            first = run_consumer_sequence(runtime, event, patch, sequence, capture)
+        prediction = first[-1]["a4"]["audio_temporal_prediction"]
+        assert prediction["status"] == "SHADOW_MEASURED"
+        assert prediction["weight_persistence"] is True
+        assert prediction["training_data_persisted"] is False
+        state = runtime._raw_ear_prediction_registry._states[(SOURCE, event["brain_generation_id"])]
+        before = state.predictor.state_dict()
+        assert before["updates"] > 0
+        assert any(abs(value) > 0 for row in before["weights"] for value in row)
+        rows = runtime.store.rows(
+            "SELECT key,payload FROM states WHERE key LIKE ?",
+            ("raw_ear_prediction.v1.%",),
+        )
+        assert len(rows) == 1
+        payload, _version = runtime.store.state(rows[0]["key"], None)
+        assert set(payload) == {
+            "schema", "status", "source_scope_sha256", "generation_scope_sha256",
+            "consent_scope_id", "weights", "updates", "last_touched_ns", "state_sha256",
+        }
+        assert "previous_features" not in payload and "pcm" not in payload and "transcript" not in payload
+    finally:
+        runtime.store.close()
+
+    restarted, event2 = make_runtime(tmp_path)
+    restarted.cfg = {"raw_ear_persist_prediction_weights": True}
+    assert event2["brain_generation_id"] == event["brain_generation_id"]
+    capture2 = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            second = run_consumer_sequence(restarted, event2, patch, sequence, capture2)
+        assert second[-1]["a4"]["audio_temporal_prediction"]["weight_persistence"] is True
+        after = restarted._raw_ear_prediction_registry._states[
+            (SOURCE, event2["brain_generation_id"])
+        ].predictor.state_dict()
+        assert after["updates"] > before["updates"]
+        assert after["weights"] != before["weights"]
+
+        rotated = restarted._raw_ear_prediction_registry.update(
+            source_id=SOURCE,
+            generation_id=event2["brain_generation_id"],
+            consent_scope_id="b" * 64,
+            start_ms=20000,
+            end_ms=21000,
+            cues=VOICED,
+            finality="FINAL",
+        )
+        assert rotated["status"] == "RESET_CONSENT_SCOPE"
+        reset_state = restarted._raw_ear_prediction_registry._states[
+            (SOURCE, event2["brain_generation_id"])
+        ].predictor.state_dict()
+        assert reset_state["updates"] == 0
+        assert not any(abs(value) > 0 for row in reset_state["weights"] for value in row)
+    finally:
+        restarted.store.close()
+
+    # Revocation after restart must clear persisted weights even before a registry exists.
+    revoked, _event3 = make_runtime(tmp_path)
+    revoked.cfg = {"raw_ear_persist_prediction_weights": True}
+    reset_runtime_temporal_voice_states(
+        revoked, source_id=SOURCE, generation_id=event["brain_generation_id"]
+    )
+    assert revoked.store.rows(
+        "SELECT key FROM states WHERE key LIKE ?",
+        ("raw_ear_prediction.v1.%",),
+    ) == []
+    revoked.store.close()
