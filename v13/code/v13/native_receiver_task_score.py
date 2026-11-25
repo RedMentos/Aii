@@ -14,6 +14,7 @@ from pathlib import Path
 import struct
 import subprocess
 import time
+from collections.abc import Mapping
 
 SCHEMA = "v14.native-receiver-target-score/1"
 SCORE_METHOD = "TEACHER_FORCED_TARGET_LOGPROB_V1"
@@ -286,3 +287,60 @@ def probe_native_receiver_task_score(*, home, model_path, expected_model_sha256,
         "input_rows": rows, "input_dim": input_dim, "input_sha256": input_sha256,
         "target_token_count": len(target_token_ids), "target_token_ids_sha256": target_sha256,
         "persisted": False, "training_authority": 0, "native_receiver_authority": 0}
+
+
+def probe_anchor_preserving_candidate(candidate, *, home, model_path, target_token_ids,
+        task_group_id, task_family, context_sha256, deadline, environment,
+        threads=1, binary_path=None, cancel_event=None,
+        device_execution_receipt_sha256=None, device_runtime_build_id=None):
+    """Score the exact output of build_anchor_preserving_native_receiver_input.
+
+    This helper is intentionally limited to LATENT_CANDIDATE. Control conditions
+    must be built independently by the cohort owner; they cannot be relabeled
+    from this candidate.
+    """
+    if not isinstance(candidate, Mapping):
+        raise NativeReceiverTaskScoreError("anchor-preserving candidate must be a mapping")
+    if (candidate.get("schema") != "v14.native-tokenwise-anchor-residual-input/1"
+            or candidate.get("input_strategy") != "ANCHOR_PLUS_CAPPED_RESIDUAL_V1"):
+        raise NativeReceiverTaskScoreError("unsupported anchor-preserving candidate schema")
+    if (candidate.get("production_route") is not False
+            or candidate.get("semantic_use_proven") is not False
+            or candidate.get("training_authority") != 0
+            or candidate.get("native_receiver_authority") != 0
+            or candidate.get("persisted") is not False
+            or candidate.get("anchor_rows_preserved_as_base") is not True):
+        raise NativeReceiverTaskScoreError("candidate carries unexpected production or authority flags")
+    source_ref = candidate.get("source_ref")
+    if not isinstance(source_ref, Mapping) or context_sha256 != source_ref.get("sha256"):
+        raise NativeReceiverTaskScoreError("candidate context hash is not bound to its exact source reference")
+    if not isinstance(candidate.get("session_id"), str) or not candidate["session_id"]:
+        raise NativeReceiverTaskScoreError("candidate session binding is missing")
+    return probe_native_receiver_task_score(
+        home=home,
+        model_path=model_path,
+        expected_model_sha256=candidate.get("receiver_model_sha256"),
+        receiver_role=candidate.get("receiver_role"),
+        receiver_model_revision=candidate.get("receiver_model_revision"),
+        tokenizer_revision=candidate.get("tokenizer_revision"),
+        vectors=candidate.get("vectors"),
+        expected_input_sha256=candidate.get("input_sha256"),
+        position_ids=candidate.get("position_ids"),
+        position_mode=candidate.get("position_mode"),
+        target_token_ids=target_token_ids,
+        deadline=deadline,
+        environment=environment,
+        condition="LATENT_CANDIDATE",
+        task_group_id=task_group_id,
+        task_family=task_family,
+        session_id=candidate["session_id"],
+        source_ref=source_ref,
+        message_source_ref=source_ref,
+        context_sha256=context_sha256,
+        adapter_sha256=candidate.get("adapter_sha256"),
+        threads=threads,
+        binary_path=binary_path,
+        cancel_event=cancel_event,
+        device_execution_receipt_sha256=device_execution_receipt_sha256,
+        device_runtime_build_id=device_runtime_build_id,
+    )
