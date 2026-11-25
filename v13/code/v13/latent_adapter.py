@@ -1,9 +1,12 @@
-"""Low-rank cross-organ activation adapter for the native B3 diagnostic receiver.
+"""Typed low-rank cross-organ activation adapter for B3 research.
 
-The adapter maps paired sender activations into a receiver's input-embedding
-width. Training is an opt-in offline operation (NumPy is optional); projection
-uses only the Python standard library. Alignment metrics are NOT semantic
-utility: every result remains diagnostic, non-promoted and authority-zero.
+Generic paired-vector fitting can target an explicitly declared receiver space.
+The persisted B1/B2 tap fitter instead mean-pools non-position-zero final-RMSNorm
+rows and therefore produces an EVENT_POOLED_NONZERO_MEAN adapter, not a tokenwise
+native input-embedding adapter. Native receiver input construction requires a
+separately trained TOKENWISE adapter bound to the receiver input-embedding tap.
+Alignment metrics are not semantic utility; all results remain diagnostic,
+non-promoted and authority-zero.
 """
 from __future__ import annotations
 
@@ -27,6 +30,11 @@ _MAX_FILE_BYTES = 64 * 1024 * 1024
 _ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 _RECEIVERS = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 _PROJECTION_SCOPES = frozenset({"PAIRED_VECTOR", "EVENT_POOLED_NONZERO_MEAN", "TOKENWISE"})
+_NATIVE_INPUT_TAP_IDS = {
+    "B1_DETAIL": "b1.input-embedding.v1",
+    "B2_GIST": "b2.input-embedding.v1",
+    "C3_LANGUAGE": "c3.input-embedding.v1",
+}
 
 
 class LatentAdapterError(ValueError):
@@ -331,6 +339,51 @@ def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[floa
     if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
         raise LatentAdapterError("sender tap must contain 1..64 activation rows")
     return [_project_vector_validated(adapter, row, **bindings) for row in sender_vectors]
+
+
+def build_native_receiver_input(adapter: Mapping, sender_vectors, *, token_ids,
+                                tokenizer_revision: str, **bindings) -> dict:
+    """Build the exact token-row input contract accepted by native receiver v3.
+
+    This requires a TOKENWISE adapter trained against the receiver's actual
+    input-embedding tap. Event-pooled adapters are refused: the current receiver
+    has no LATENT_PREFIX position mode for a single pooled event vector.
+    Token IDs are used only to verify row count and are not returned.
+    """
+    _validate_adapter(adapter)
+    if adapter["projection_scope"] != "TOKENWISE":
+        raise LatentAdapterError("native receiver requires a tokenwise adapter; pooled event vectors need a latent-prefix contract")
+    expected_tap = _NATIVE_INPUT_TAP_IDS.get(adapter["receiver_role"])
+    if expected_tap is None or adapter["receiver_tap_id"] != expected_tap or bindings.get("receiver_tap_id") != expected_tap:
+        raise LatentAdapterError("native receiver adapter is not bound to the receiver input-embedding tap")
+    if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
+        raise LatentAdapterError("sender tap must contain 1..64 token rows")
+    if not isinstance(token_ids, (list, tuple)) or len(token_ids) != len(sender_vectors):
+        raise LatentAdapterError("token ID count differs from token-aligned activation rows")
+    if any(type(token_id) is not int or token_id < 0 for token_id in token_ids):
+        raise LatentAdapterError("token IDs must be non-negative integers")
+    if type(tokenizer_revision) is not str or not tokenizer_revision or len(tokenizer_revision) > 160:
+        raise LatentAdapterError("tokenizer revision is required for native input alignment")
+
+    projected = project_rows(adapter, sender_vectors, **bindings)
+    from . import native_latent_receiver
+    rows, input_dim, _payload, input_sha256 = native_latent_receiver._vector_payload(projected)
+    positions = native_latent_receiver._validate_positions(
+        list(range(rows)), rows, native_latent_receiver.POSITION_MODE,
+    )
+    return {
+        "vectors": projected,
+        "position_ids": positions,
+        "position_mode": native_latent_receiver.POSITION_MODE,
+        "input_rows": rows,
+        "input_dim": input_dim,
+        "input_sha256": input_sha256,
+        "tokenizer_revision": tokenizer_revision,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
 
 
 def save_adapter(adapter: Mapping, path: str | os.PathLike) -> str:
