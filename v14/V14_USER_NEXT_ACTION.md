@@ -1910,3 +1910,18 @@ PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/A
 Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
 
 Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+## 2026-11-25 Run 16 final checkpoint — PR #2502
+
+PR: https://github.com/RedMentos/Aii/pull/2502
+Branch: research-perception/v14-token-span-manifest-integrity-20261125-run16
+Code/test SHA: fa2673340f2dce78dcf7952b802957bf8b2f9212
+
+The adapter now verifies exact UTF-8 byte pieces, llama.cpp token IDs, unique content-token-to-prefill-row mapping, the full alignment manifest and recomputed overlap coverage. Exact CI: 47/47 adapter tests on Python 3.13/3.14; privacy scan CLEAN; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (424 passed/3 skipped/58 subtests; staged runtime 255 passed/10 skipped/47 subtests). Local isolated helper reproduction 10/10 PASS. Full local Aii checkout remains BLOCKED/NOT_RUN.
+
+Core still needs to call build_tokenwise_tap_manifest() from LlamaRunner.tap and persist the result in Cognition.tap; until then the trusted tap producer is NOT_IMPLEMENTED and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 route remains separate.
+
+Latest available private V13OBS snapshot: 2026-11-24T09:28:11Z, historical only. Three read-only private relay requests were created at 2026-11-25T15:25:01Z: PIPELINE_STATUS #915, DIAGNOSTICS #916, HEALTH #917; no receipt had arrived at the last poll. Do not treat the old receipt as live. No device command, update request, restart, model/weight/permission/data change was performed.
+
+**User action:** keine Aktion nötig. No Termux command, model download or swap is needed.
