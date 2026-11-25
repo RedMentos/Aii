@@ -145,7 +145,7 @@ public final class ConsentActivity extends Activity {
             db.finish(action.actionId, expectedStatus, status, receipt.toString());
             Toast.makeText(this, status, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Receipt finalization failed; recovery will retry on the next outcome check", Toast.LENGTH_LONG).show();
         } finally {
             // The decision claim is terminal even if signing/Store finalization
             // fails; do not leave a notification advertising a pending action.
