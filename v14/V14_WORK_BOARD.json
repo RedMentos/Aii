@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T05:24:23.201Z",
+  "updated_at": "2026-11-25T05:28:48.887Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -15,7 +15,7 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI exact-head staged/integrated PENDING after source-pin recompose; prior diagnostic runs identified exact Runtime/loader pin mismatches; LOCAL_LINUX full repository BLOCKED/NOT_RUN; REDMI_UNVERIFIED",
-      "next_step": "Current Core chain: #2478 head 55db58ae has 28 check-runs (13 SUCCESS / 14 FAIL / 1 SKIPPED); #2485 rebinding head 358b0893 is 11/11 SUCCESS; child #2488 head b8b43910 is 17/17 SUCCESS and is the current tested fair-budget/native-receiver candidate. Do not call #2478 alone green. #2488 CI proves synthetic/integrated runtime and native build, not Redmi B1/B2 offers. Boss review/integration is required before any release/device action.",
+      "next_step": "Current Core chain: #2478 head 55db58ae has 28 check-runs (13 SUCCESS / 14 FAIL / 1 SKIPPED); #2485 rebinding head 358b0893 is 11/11 SUCCESS; child #2488 head b8b43910 is 17/17 SUCCESS and is the current tested fair-budget/native-receiver candidate. Do not call #2478 alone green. #2488 CI proves synthetic/integrated runtime and native build, not Redmi B1/B2 offers. Boss review/integration is required before any release/device action. Exact-arithmetic staged candidate in #2488 also proves 2+2→4 and German/English two-integer prompts through Runtime/C5/Broker/ExperienceRecord without native model load; date-shaped inputs are held unless explicitly calculated. The overlay remains SHADOW_REVIEW_ONLY and NOT_RELEASED.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-24T20:22:36.292Z",
       "proof": "Active code PR #2478 is based on release 8d93236 and uses head 4fb95610c5593803419b5dbaaa82fc6e709d6543. C4 focal anchor now validates the bounded arithmetic/C5 direct_action shape; fair-slice regression asserts B1 expiry -> B2 pre-answer slice -> C3 with no duplicate postcommit B2 offer. Controller guard pins exact composed Runtime SHA c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65 and reports rejected hashes. Recovery loader diagnostics report expected/actual hash and symlink state; loader regression verifies mismatch and symlink rejection. Guard SHA-256 f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d; recovery-12 blob e949631f88892dc8815e5e06eaa6d4b21e153093; wrapper SHA-256 ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5; stage SHA-256 f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc. Exact-head CI has 58 check-runs: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Full LOCAL_LINUX Aii suite NOT_RUN (no checkout/DNS); Redmi REDMI_UNVERIFIED, last receipt AI STOPPED_BY_USER; no device action.",
@@ -279,7 +279,7 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "SOURCE_WIRED + SYNTHETIC CLI TEST; PR #2479 real Runtime/SQLite/Operator integration test queued; NO_NATIVE_TERMUX_OR_REDM I_PROOF",
-      "next_step": "Poll exact PR #2479 CI. After it passes, obtain an explicitly user-run Termux :voice status/speak receipt on the installed Redmi only if the device is active and consented; do not send a remote device command. Then implement the separate trainable speech decoder/vocoder and raw acoustic-feature learning path, with source-bound replay/retention and full-duplex/barging-in. QA continues #2450 process-death harness port from #2427.",
+      "next_step": "Release branch 8d932 already contains explicit Termux system-TTS fallback (:voice status/on/off/speak), OFF by default and explicit-command only. PR #2479 adds test coverage only; head dce46db has 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED, with 53 passed + 26 subtests on both Python 3.13 and 3.14, staged runtime 255 passed / 10 skipped / 47 subtests, integrated regression 424 passed / 3 skipped / 58 subtests. This is fake-CLI Runtime/SQLite evidence, not real Android audio or audibility. Next: only a user-run local :voice status/speak test if the device is active and consented; no remote command. Raw-ear learning, trainable decoder/vocoder, microphone permission, full-duplex and retention remain OPEN.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-24T20:26:03.098Z",
       "proof": "Release branch 8d932 contains v13/speech_intent.py (source-bound FINAL C3 text hash; explicit user command only), v13/speech_output.py (TermuxTtsAdapter, serialized/locked CLI, timeout degradation, ActionIntent/ActionOutcome persistence, audibility_verified=false) and operator.py :voice dispatch. Existing test_speech_output.py verifies explicit playback, OFF default, TTY-only, no microphone, no automatic playback and no raw text in outcome using a fake CLI and stub Runtime/Store. New PR #2479 adds a real Runtime + SQLite + Operator integration test using a fake local termux-tts-speak executable; exact head bcc99e8 has 5/5 checks QUEUED at last poll. This is not native Android audio proof, not a trained speech decoder/vocoder, not acoustic learning and not full duplex. Redmi remains REDMI_UNVERIFIED."
@@ -324,7 +324,7 @@
       "scope": "Fixed Context OS header and bounded context; exact episodic memory; semantic/world graph with temporal validity and source revocation; additive overflow/missing-context companion with source pointers and query-sensitive connections; role-specific readers/writers",
       "acceptance": "Actual runtime consumers retrieve source-grounded memories; overflow companion runs only when context is missing/overflowed and never replaces the canonical memory or user-visible history; restart, forget/revoke, privacy, query-relevance and resource-cost tests pass.",
       "proof_environment": "Context OS source pointers remain partial; Memorilla #1983 remains additive SHADOW with no production overflow consumer or role-specific reader/writer learning. No archive/forget/revocation replacement is accepted.",
-      "next_step": "Core/JEPA: make the production ActionSelection producer attach all source refs for admitted Memory, observer and Enlightened-Space context. Then connect query-sensitive episodic recall to Context OS with source/session exclusions and forget/revoke/restart tests. Memorilla stays additive and SHADOW.",
+      "next_step": "Core candidate #2488 now attaches the current event plus admitted Memory/observer, B1/B2 OfferPacket and QueryPacket, Context OS, Enlightened-Space and body-view source refs to ActionSelection; same-session/digest/readability, T8 consumer and Runtime-restart tests pass in the integrated suite. This is provenance, not semantic attention or JEPA learning. After Boss integration, continue query-sensitive episodic recall into Context OS with source/session exclusions and forget/revoke/restart tests; Memorilla remains additive/SHADOW.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T20:58:33.465Z",
       "proof": "#2429 adds multi-SourceRef validation and checkpoint provenance; multi-source context is tested with injected packets. Production focal.py still records only event source. Memorilla #1983 has no production overflow consumer."
@@ -612,10 +612,10 @@
       "capability": "VOICE_AUDIO input and speech output",
       "code": "CALLER_PCM16_RAW_EAR_FIR_FEATURE_DECIMATOR; RESEARCH_ONLY_LIBFVAD_COMPARATOR; EXPLICIT_TTS_FALLBACK",
       "wired": "STAGED_A5_A4_C3_SYNTHETIC_CONSENT_LEASE",
-      "tested_synthetic": "#2433 head a2662b9 has 3 failures: path/path_id assertion on Python 3.13/3.14 and stale attention.py staged pin",
+      "tested_synthetic": "#2479 test-only PR exact head dce46db: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED; 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Explicit Termux TTS CLI path is tested with a fake CLI only.",
       "tested_android": "NO_AUDIORECORD_PROVIDER",
       "active": "PARTIAL_FEATURE_ONLY / DRAFT",
-      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, raw acoustic weight learning or full-duplex."
+      "evidence": "Release code contains explicit :voice fallback, OFF by default; no real Android TTS, audibility, microphone, raw-ear learning or Redmi proof. #2433 raw-ear feature path still has its separate outstanding failures."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -682,12 +682,12 @@
     },
     {
       "capability": "C5 deterministic exact-arithmetic reflex",
-      "code": "Exact arithmetic and date-disambiguation Runtime overlay in #2258",
+      "code": "DATE_SAFE_LOCAL_EXACT_ARITHMETIC_RUNTIME_OVERLAY_IN_PR2488",
       "wired": "Staged Runtime consumer with source-bound outcome",
-      "tested_synthetic": "Combined Core audio/arithmetic workflow queued on #2258; no combined PASS yet",
+      "tested_synthetic": "#2488 staged arithmetic overlay test: 2+2 and English/German two-integer questions return 4 through Runtime/C5/ActionSelection/Broker/Egress/ExperienceRecord; date-shaped inputs require explicit calculation; no native model or normal B1/B2 route is loaded.",
       "tested_android": "NOT_TESTED",
-      "active": "NOT_RELEASED",
-      "evidence": "Earlier Core #2254 head passed its own 3.13/3.14 staged checks; the final Core+Perception+QA composition must pass again. No Redmi 2+2 proof."
+      "active": "SHADOW_REVIEW_ONLY / NOT_RELEASED",
+      "evidence": "The exact test asserts stage manifest SHADOW_REVIEW_ONLY. No Redmi result; do not claim the installed 2+2 defect is fixed until Boss integrates and a real phone receipt verifies it."
     },
     {
       "capability": "REMOTE_MAINTENANCE",
@@ -1498,7 +1498,7 @@
     }
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-25T05:24:23.201Z",
+    "timestamp": "2026-11-25T05:28:48.887Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2488,
     "primary_runtime_branch": "core/v14-native-probe-fair-budget-20261125-run1",
@@ -1509,7 +1509,10 @@
     "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN; ANDROID_API33_EMULATOR_PROCESS_DEATH_AND_STOP_PERSISTENCE_PASS; REDMI_UNVERIFIED",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
     "redmi": "INSTALLED_8D93236_LAST_RECEIPT_AI_STOPPED_BY_USER_REDMI_UNVERIFIED",
-    "next_action": "Independent QA/Boss review/rebase of #2481; Boss review of #2485/#2488. No device update or native probe without explicit approval."
+    "next_action": "Independent QA/Boss review/rebase of #2481 and #2485/#2488; #2479 test-only review. No device action or model probe without explicit approval.",
+    "voice_test_pr": 2479,
+    "voice_test_head": "dce46db13068d95443db060327202dec45b6701e",
+    "voice_test_status": "DRAFT_TEST_ONLY_7_SUCCESS_2_SKIPPED_NOT_RELEASED"
   },
   "previous_core_checkpoint": {
     "timestamp": "2026-11-24T20:18:58.353Z",
@@ -1629,7 +1632,27 @@
       "auto_update": "ENABLED (last authenticated pipeline receipt)",
       "actions": "NONE: no CHAT_SEND, UPDATE_REQUEST, restart, LOG_PAGE, shell, model/weight/permission/data mutation."
     },
-    "next_action": "Request independent QA/Boss review and safe rebase/compose of #2481 onto the newest compatible companion integration base. Separately request Boss review of #2485/#2488 and integrate only after exact chain review. No native probe until integrated/installed and the user explicitly approves a single local one-shot run. Continue whole-Canon work; B3 remains OFF.",
-    "user_action_required": "NONE_NOW; a future local native model probe requires separate explicit user approval after safe integration and installation."
+    "next_action": "Independent QA/Boss review/rebase of #2481 and #2485/#2488 integration; #2479 test-only PR can be reviewed separately. Keep B3 OFF. Do not send device commands. If the user later wants a real voice or native model probe, obtain explicit user-run consent only while the device is active. Continue whole-Canon integration.",
+    "user_action_required": "NONE_NOW; a future local native model probe requires separate explicit user approval after safe integration and installation.",
+    "pr_2479_voice_output_tests": {
+      "branch": "core/v14-speech-output-runtime-sqlite-20261124",
+      "head_sha": "dce46db13068d95443db060327202dec45b6701e",
+      "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+      "status": "DRAFT_CI_GREEN_TEST_ONLY_NOT_RELEASED",
+      "checks": {
+        "total": 9,
+        "success": 7,
+        "failure": 0,
+        "skipped": 2
+      },
+      "verified": {
+        "python313": "53 passed + 26 subtests.",
+        "python314": "53 passed + 26 subtests.",
+        "staged_runtime": "255 passed, 10 skipped, 47 subtests.",
+        "integrated_regression": "424 passed, 3 skipped, 58 subtests.",
+        "negative_fixes": "Correct OPERATOR_TTY origin and actual newlines in fake TTS CLI fixture."
+      },
+      "boundary": "PR changes tests only; explicit TTS fallback code already exists in release base. Fake CLI proves Runtime/SQLite intent/outcome, not real Android audio, audibility, microphone or voice learning."
+    }
   }
 }
