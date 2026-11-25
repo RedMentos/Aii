@@ -21,6 +21,7 @@ on:
       - "boss/v14-audio-antialias-integration-20261122"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
