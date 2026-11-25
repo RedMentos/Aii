@@ -94,6 +94,7 @@ print(json.dumps({
             [7, 12, 12],
             model_root=self.root,
             expected_model_sha256=expected,
+            prepare_idle=kwargs.pop("prepare_idle", lambda: None),
             **kwargs,
         )
 
@@ -148,6 +149,7 @@ print(json.dumps({
             extract_native_input_embedding_rows(
                 self.binary, model_link, "rev", [1, 2], model_root=self.root,
                 expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
+                prepare_idle=lambda: None,
             )
         binary_link = self.root / "binary-link"
         binary_link.symlink_to(self.binary)
