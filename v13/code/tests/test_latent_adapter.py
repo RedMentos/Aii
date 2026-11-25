@@ -23,7 +23,7 @@ def make_pairs(prefix, groups, *, seed, shuffled=False):
             z = rng.normal(size=2)
             x = z @ basis.T + rng.normal(scale=0.001, size=6)
             y = z @ target + np.asarray([0.2, -0.1, 0.3, 0.05]) + rng.normal(scale=0.001, size=4)
-            rows.append({"pair_id": f"{prefix}-pair-{group}-{sample}", "source_id": f"{prefix}-source-{group}", "sender_vector": x.tolist(), "receiver_vector": y.tolist()})
+            rows.append({"pair_id": f"{prefix}-pair-{group}-{sample}", "source_id": f"{prefix}-source-{group}", "token_position": sample, "sender_vector": x.tolist(), "receiver_vector": y.tolist()})
     if shuffled:
         values = [row["receiver_vector"] for row in rows]
         rng.shuffle(values)
@@ -173,3 +173,22 @@ def test_native_receiver_builder_rejects_tokenizer_row_mismatch():
         build_native_receiver_input(
             adapter, vectors, token_ids=[101, 102], tokenizer_revision="tokenizer-r1", **bindings,
         )
+
+
+
+@pytest.mark.parametrize("mutation,match", [
+    ("missing", "require bounded token_position"),
+    ("duplicate", "duplicate token position"),
+    ("gap", "contiguous rows"),
+])
+def test_tokenwise_fit_requires_source_local_contiguous_positions(mutation, match):
+    train = make_pairs("train", 10, seed=1)
+    holdout = make_pairs("hold", 5, seed=2)
+    if mutation == "missing":
+        del train[0]["token_position"]
+    elif mutation == "duplicate":
+        train[1]["token_position"] = train[0]["token_position"]
+    else:
+        train[0]["token_position"] = 7
+    with pytest.raises(LatentAdapterError, match=match):
+        fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
