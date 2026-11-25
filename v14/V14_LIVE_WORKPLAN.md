@@ -1447,7 +1447,7 @@ Draft PR #2507, branch research-perception/v14-native-tokenwise-pairing-20261125
 - LOCAL_LINUX, CPython 3.13.5: isolated harness with stubbed existing dependencies 7/7 PASS; py_compile PASS. Full Aii checkout NOT_RUN because no checkout is mounted and local GitHub DNS is unavailable.
 - GitHub Actions PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; py_compile PASS; public privacy scan CLEAN.
 - GitHub Actions push run 45678196840: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; privacy scan CLEAN.
-- Staged/integrated regression run 45678205707 was IN_PROGRESS at this checkpoint. No claim of staged integration acceptance.
+- Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded. No claim of staged integration acceptance.
 - No real GGUF selected-row extraction, native receiver-task utility, Android arm64/Termux or Redmi test.
 
 **Known limitations:** Core has not yet called this helper from Cognition.tap/receiver execution. The extractor's row-output bound is not a peak-RSS bound; its CPU mmap/lazy model load remains unmeasured. The selected-row API is in a staging/WIP header and the extractor/receiver llama.cpp pins differ. Model-weight license remains unverified until the actual model is chosen.
@@ -1463,3 +1463,8 @@ Source inspection shows the current Core receiver and selected-row extractor ind
 ### R-153 cross-lane finding — synthetic WorldJEPA A→B→A ablation
 
 The staged/integrated CI run 45678205707 completed successfully (staged runtime 255 passed/10 skipped/47 subtests; integrated regression 424 passed/3 skipped/58 subtests). Its synthetic WorldJEPA A→B→A ablation covered 12 source-disjoint arms. A reacquisition gain was positive in 6/12, B forgetting after A return in 9/12, and B actual-action holdout loss was worse than both zero and shuffled-action controls in 12/12. Uniform replay reduced mean B loss-delta from 0.25041 to −0.00493 but also shifted mean A reacquisition gain from 0.21055 to −0.06044; it did not fix B action utility. Parameter deltas and exact rollback were verified, but all data/model inputs were synthetic 4D WorldJEPA cohorts. This is a cross-lane research risk for V14-004/V14-011, not native model or Redmi proof. JEPA & Memory should test selective plasticity, task/organ-specific adapters, eligibility × error × modulator and stronger replay/retention gates without globally freezing weights.
+
+
+### Run 20 final regression status
+
+Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. This validates the selected CI test matrix only, not the new native tokenwise pair helper on a real GGUF or any Redmi runtime.

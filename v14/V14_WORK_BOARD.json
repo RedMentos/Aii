@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T18:51:37.824Z",
+  "updated_at": "2026-11-25T18:52:29.980Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.",
@@ -470,11 +470,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Core native selected-row extractor output → Perception source/token/event/generation/model-bound input-embedding manifest → source-bound tokenwise sender/receiver byte-span pair record → Cognition.tap/receiver integration.",
       "acceptance": "Core runtime calls the Perception pair builder after Cognition.read_tap, exact native tokenizer piece streams and native selected-row extraction; persists only with explicit local consent and trusted SourceRef/event/generation/model/tap/tokenizer/binary/blob bindings; then demonstrates real GGUF row read and source/session-disjoint receiver-task utility with zero/shuffle/repeat/OOD, retention and rollback controls.",
-      "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated harness with stubbed existing dependencies: 7/7 PASS; py_compile PASS. Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; exact push CI 45678196840: same; privacy scan CLEAN. Staged/integrated regression 45678205707 was IN_PROGRESS at checkpoint. Full local Aii checkout NOT_RUN; no native GGUF row read, Android/Termux or Redmi proof.",
+      "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated harness with stubbed existing dependencies: 7/7 PASS; py_compile PASS. Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; exact push CI 45678196840: same; privacy scan CLEAN. Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded. Full local Aii checkout NOT_RUN; no native GGUF row read, Android/Termux or Redmi proof.",
       "next_step": "Core: wire both exact /tokenize with_pieces=true streams, consume the stored sender LatentTapPacket through Cognition.read_tap, run selected-row extraction on the already-installed receiver GGUF, call build_native_tokenwise_pair_record(), then persist/fitting only under explicit local consent. Evaluate co-locating selected-row extraction and receiver decode in one native executable at the exact WIP API pin to avoid a duplicate model load, but measure PSS/RSS/TTFT before adopting. Run source/session-disjoint receiver utility, no-message/zero/shuffle/repeat/OOD, retention and restart/rollback. Keep LATENT_PREFIX_V1 event-pooled and B3 OFF until utility passes.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T18:49:11.762Z",
-      "proof": "Draft Perception PR #2507: https://github.com/RedMentos/Aii/pull/2507; code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; module blob 723a26c30524b6bc44794bb34c09c3841b526b56; test blob 0f24a47f4d52f00e5e59fcf5597452cb5b71537d. Exact adapter PR CI 45678205802: 80/80 on Python 3.13 and 80/80 on Python 3.14; exact push CI 45678196840 same; privacy scan CLEAN. LOCAL_LINUX isolated stub-bound 7/7 PASS. No runtime wiring, real GGUF row read, receiver utility, Android or Redmi proof; NOT_RELEASED.",
+      "last_checkpoint": "2026-11-25T18:52:29.980Z",
+      "proof": "Draft Perception PR #2507: https://github.com/RedMentos/Aii/pull/2507; code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; module blob 723a26c30524b6bc44794bb34c09c3841b526b56; test blob 0f24a47f4d52f00e5e59fcf5597452cb5b71537d. Exact adapter PR CI 45678205802: 80/80 on Python 3.13 and 80/80 on Python 3.14; exact push CI 45678196840 same; privacy scan CLEAN. LOCAL_LINUX isolated stub-bound 7/7 PASS. Staged/integrated CI 45678205707 PASS (staged 255 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests). No runtime wiring, real GGUF row read, receiver utility, Android or Redmi proof; NOT_RELEASED.",
       "parent_ticket": "V14-021",
       "related_prs": [
         2502,
@@ -1386,14 +1386,14 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
-    "timestamp": "2026-11-25T18:51:37.824Z",
+    "timestamp": "2026-11-25T18:52:29.980Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-native-tokenwise-pairing-20261125-run20",
     "pr": 2507,
     "base_pr": 2506,
     "base_sha": "3b8e66ca99323b138257fc28069a8e4cb9540c13",
     "local": "LOCAL_LINUX CPython 3.13.5 isolated harness with stubbed dependencies 7/7 PASS; py_compile PASS; full local Aii checkout NOT_RUN.",
-    "ci": "PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; push run 45678196840 same; privacy CLEAN. Staged/integrated run 45678205707 IN_PROGRESS at checkpoint.",
+    "ci": "PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; push run 45678196840 same; privacy CLEAN. Staged/integrated run 45678205707 PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests.",
     "consumer": "NOT_RUNTIME_WIRED. Core must obtain exact sender/receiver tokenizer piece streams, call selected-row extractor, consume Cognition.read_tap output through build_native_tokenwise_pair_record, and persist/fitting only under explicit local consent.",
     "device": "REDMI_UNVERIFIED; latest available consented V13OBS #115 is historical 2026-11-24 09:28 UTC and reports STOPPED_BY_USER, autostart=false, model process stopped. No fresh receipt; B3 OFF; NOT_RELEASED.",
     "next_action": "Core runtime producer/consumer integration; evaluate one-process selected-row extraction + receiver decode at the exact WIP llama.cpp pin, then measure PSS/RSS/TTFT and real GGUF receiver utility with negative controls, retention and rollback.",
@@ -1401,6 +1401,7 @@
     "tested_sha": "29cda16ef3e3ce436e5f0d59eb418c030626f024",
     "pr_url": "https://github.com/RedMentos/Aii/pull/2507",
     "mobile_optimization": "RESEARCHED_NOT_IMPLEMENTED: current extractor and receiver are separate processes and independently load the GGUF at different llama.cpp pins; one-process same-model-pointer extraction/decode may avoid duplicate loading, but RSS/PSS/TTFT must be measured.",
-    "cross_lane_research_finding": "Synthetic WorldJEPA A→B→A (run 45678205707): 12 source-disjoint arms; B actual-action loss worse than zero/shuffled in 12/12; B forgetting positive in 9/12; A reacquisition positive in 6/12; exact rollback all. Uniform replay lowered B forgetting metric but did not fix B action utility. See R-153; not native model/device proof."
+    "cross_lane_research_finding": "Synthetic WorldJEPA A→B→A (run 45678205707): 12 source-disjoint arms; B actual-action loss worse than zero/shuffled in 12/12; B forgetting positive in 9/12; A reacquisition positive in 6/12; exact rollback all. Uniform replay lowered B forgetting metric but did not fix B action utility. See R-153; not native model/device proof.",
+    "staged_integration": "PASS — staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests (run 45678205707)."
   }
 }

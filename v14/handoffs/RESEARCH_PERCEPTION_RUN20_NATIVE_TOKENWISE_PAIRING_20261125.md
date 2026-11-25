@@ -38,3 +38,8 @@ Pinned-source review found the selected-row extractor and native receiver each l
 ## R-153 — synthetic WorldJEPA interference handoff
 
 The completed staged/integrated CI run 45678205707 included synthetic 4D WorldJEPA A→B→A ablation across 12 source-disjoint arms. B actual-action holdout loss was worse than both zero and shuffled controls in 12/12; B forgetting after A return was positive in 9/12; A reacquisition gain positive in 6/12. Uniform replay reduced mean B forgetting but also reduced A reacquisition and did not fix B action utility. Parameter/EMA/optimizer changes and exact rollback were observed in this synthetic harness. This is not native LLM or Redmi learning proof. Hand off to JEPA & Memory for selective plasticity, task-specific adapters, eligibility/error/modulator gating, and stronger replay/retention controls.
+
+
+## Final staged CI readback
+
+The previously pending run 45678205707 completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. The A→B→A metrics in R-153 are therefore from the completed staged run, but remain synthetic WorldJEPA evidence only.

@@ -1998,7 +1998,7 @@ The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visi
 
 - Code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; PR #2507.
 - LOCAL_LINUX CPython 3.13.5 isolated stub-bound tests 7/7 PASS; py_compile PASS. Full local Aii checkout NOT_RUN.
-- Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 3.14; exact push CI 45678196840: 80/80 PASS on both; privacy scan CLEAN. Staged/integrated run 45678205707 was still in progress at the last poll.
+- Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 3.14; exact push CI 45678196840: 80/80 PASS on both; privacy scan CLEAN. Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded.
 - The helper pairs the stored sender final-RMSNorm prefill tap with the receiver's selected input-embedding rows using exact UTF-8 byte-piece overlap. It is in-memory diagnostic only; no training, persistence, inference or B3 enablement.
 - Core integration is still missing: native tokenizer piece streams and selected receiver rows must be wired into Cognition.tap, then consent-gated source/session-disjoint utility and negative controls must run.
 - Latest available consented Redmi snapshot remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236, but AI runtime STOPPED_BY_USER, autostart false, model process stopped; no fresh authenticated device receipt. REDMI_UNVERIFIED. No automatic deployment from this draft PR.
@@ -2011,3 +2011,6 @@ Research note: Core may evaluate co-locating selected-row extraction and native 
 ## Research & Perception Run 20 — cross-lane learning evidence
 
 No user action required. The staged/integrated CI run 45678205707 passed its selected regression jobs, but its WorldJEPA A→B→A cohort is synthetic. It showed numeric updates and exact rollback alongside B-task interference: B actual-action loss was worse than zero and shuffled controls in all 12 arms. Uniform replay reduced one forgetting metric but did not restore action utility. This is a research handoff to JEPA & Memory, not a request to change installed models or device settings.
+
+
+Final status correction: staged/integrated CI run 45678205707 completed PASS (staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests). This is CI evidence only; no real GGUF or Redmi test, no release and no user action.
