@@ -159,11 +159,12 @@ def _installed_model_binding(runtime, role, expected_revision):
         raise TokenwiseTapError("sender main model hash is missing")
     normalized_files = {}
     for name, item in sorted(files.items()):
+        size = item.get("size") if isinstance(item, dict) else None
         if (not isinstance(name, str) or not isinstance(item, dict)
                 or not _hex_digest(item.get("sha256"))
-                or type(item.get("size")) is not int or item["size"] < 1):
+                or (size is not None and (type(size) is not int or size < 0))):
             raise TokenwiseTapError("sender model manifest entry is invalid")
-        normalized_files[name] = {"sha256": item["sha256"], "size": item["size"]}
+        normalized_files[name] = {"sha256": item["sha256"], "size": size}
     manifest_sha = _json_sha256({
         "model_id": installed.get("model_id"),
         "exact_revision": revision,
@@ -186,9 +187,12 @@ def _runner_binary(runtime, runner=None):
     if not raw:
         raw = os.environ.get("V13_LLAMA_SERVER", str(Path(runtime.home) / "bin" / "llama-server"))
     path = Path(raw)
-    if path.is_symlink() or not path.is_file():
-        raise TokenwiseTapError("pinned llama-server binary is unavailable or unsafe")
-    return path.resolve(strict=True)
+    if not path.exists():
+        raise TokenwiseTapError("pinned llama-server binary is unavailable")
+    path = path.resolve(strict=True)
+    if not path.is_file():
+        raise TokenwiseTapError("pinned llama-server binary is not a regular file")
+    return path
 
 
 def _tokenizer_revision(runtime, model_manifest_sha256, runner=None):
