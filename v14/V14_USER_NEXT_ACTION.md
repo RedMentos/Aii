@@ -2037,7 +2037,7 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 **Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, data mutation or deployment was performed.
 
 - Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), stacked on #2508, adds receiver-manifest row binding and an opt-in anchor-preserving residual input builder. Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae.
-- LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Exact PR CI is pending.
+- LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Latest PR head 33b6ada2 has exact adapter-contract 3.13/3.14, staged/integrated, offline and privacy checks QUEUED.
 - The new builder returns native receiver prefill geometry but is not yet called by Core's runtime capture/receiver lane. It does not prove semantic utility or trained latent exchange.
 - Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
 - Owner-read DIAGNOSTICS produced NO_LIVE_RECEIPT in this checkpoint. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but also AI STOPPED_BY_USER; this is historical, not proof of today's installed state. No release is ready to deploy. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
