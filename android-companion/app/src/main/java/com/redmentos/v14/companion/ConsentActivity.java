@@ -125,25 +125,29 @@ public final class ConsentActivity extends Activity {
 
     private void finishWithReceipt(String status, boolean localConsent, String expectedStatus) {
         try {
-            JSONObject key = signer.publicKeyInfo();
-            JSONObject body = new JSONObject();
-            body.put("schema", "v14.android-companion-receipt/1");
-            body.put("nonce", randomHex(16));
-            body.put("action_id", action.actionId);
-            body.put("capability", "launch_app");
-            body.put("digest", request.getString("digest"));
-            long nowSeconds = System.currentTimeMillis() / 1000L;
-            body.put("issued_at", nowSeconds);
-            body.put("expires_at", receiptExpiresAt(nowSeconds));
-            body.put("status", status);
-            body.put("local_consent", localConsent);
-            body.put("observed", false);
-            body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
-            body.put("key_storage_status", key.getString("key_storage_status"));
-            body.put("key_id", key.getString("key_id"));
-            JSONObject receipt = signer.sign(body);
-            db.finish(action.actionId, expectedStatus, status, receipt.toString());
-            Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+            // Serialize normal finalization with provider recovery. If this path
+            // is active, recovery must not prematurely sign an UNKNOWN receipt.
+            synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                JSONObject key = signer.publicKeyInfo();
+                JSONObject body = new JSONObject();
+                body.put("schema", "v14.android-companion-receipt/1");
+                body.put("nonce", randomHex(16));
+                body.put("action_id", action.actionId);
+                body.put("capability", "launch_app");
+                body.put("digest", request.getString("digest"));
+                long nowSeconds = System.currentTimeMillis() / 1000L;
+                body.put("issued_at", nowSeconds);
+                body.put("expires_at", receiptExpiresAt(nowSeconds));
+                body.put("status", status);
+                body.put("local_consent", localConsent);
+                body.put("observed", false);
+                body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
+                body.put("key_storage_status", key.getString("key_storage_status"));
+                body.put("key_id", key.getString("key_id"));
+                JSONObject receipt = signer.sign(body);
+                db.finish(action.actionId, expectedStatus, status, receipt.toString());
+                Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Receipt finalization failed; recovery will retry on the next outcome check", Toast.LENGTH_LONG).show();
         } finally {
