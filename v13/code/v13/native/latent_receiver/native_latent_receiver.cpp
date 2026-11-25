@@ -17,6 +17,7 @@
 
 #ifdef V14_WITH_LLAMA
 #include <llama.h>
+#include "position_layout.hpp"
 #endif
 
 namespace v14 {
@@ -191,6 +192,53 @@ bool parse_positions(const std::string & raw, int rows, std::vector<int> & posit
     return valid_positions(rows, positions, kMaxPosition);
 }
 
+#ifdef V14_WITH_LLAMA
+int selftest_embedding_positions() {
+    const std::vector<int> positions{0, 1, 2};
+    const enum llama_rope_type rope_types[] = {
+        LLAMA_ROPE_TYPE_NORM, LLAMA_ROPE_TYPE_MROPE, LLAMA_ROPE_TYPE_IMROPE
+    };
+    for (enum llama_rope_type rope_type : rope_types) {
+        llama_batch batch = llama_batch_init(3, 2, 1);
+        if (batch.pos == nullptr) {
+            llama_batch_free(batch);
+            return 21;
+        }
+        if (!prepare_embedding_positions(batch, rope_type, 3, positions)) {
+            llama_batch_free(batch);
+            return 22;
+        }
+        const std::size_t sections = positions_per_embedding(rope_type);
+        const std::size_t expected = rope_type == LLAMA_ROPE_TYPE_NORM ? 1u : 4u;
+        if (sections != expected) {
+            llama_batch_free(batch);
+            return 23;
+        }
+        for (std::size_t section = 0; section < sections; ++section) {
+            for (int row = 0; row < 3; ++row) {
+                if (batch.pos[section * 3u + static_cast<std::size_t>(row)] != positions[static_cast<std::size_t>(row)]) {
+                    llama_batch_free(batch);
+                    return 24;
+                }
+            }
+        }
+        llama_batch_free(batch);
+    }
+
+    llama_batch invalid = llama_batch_init(3, 2, 1);
+    if (invalid.pos == nullptr) {
+        llama_batch_free(invalid);
+        return 25;
+    }
+    if (prepare_embedding_positions(invalid, LLAMA_ROPE_TYPE_MROPE, 3, std::vector<int>{0, 1})) {
+        llama_batch_free(invalid);
+        return 26;
+    }
+    llama_batch_free(invalid);
+    return 0;
+}
+#endif
+
 int selftest() {
     const std::vector<float> input{1.0f, 2.0f, 3.0f, 4.0f};
     if (!valid_batch(2, 2, input)) return 1;
@@ -222,6 +270,10 @@ int selftest() {
     if (logprob_from_logits(equal_logits, 2, 2, logprob)) return 19;
     const float nan_logits[] = {std::numeric_limits<float>::quiet_NaN(), 0.0f};
     if (logprob_from_logits(nan_logits, 2, 0, logprob)) return 20;
+#ifdef V14_WITH_LLAMA
+    const int position_layout_status = selftest_embedding_positions();
+    if (position_layout_status != 0) return position_layout_status;
+#endif
     const float positive_infinity_logits[] = {std::numeric_limits<float>::infinity(), 0.0f};
     if (logprob_from_logits(positive_infinity_logits, 2, 0, logprob)) return 21;
     const float negative_infinity_logits[] = {-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()};
@@ -263,10 +315,10 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
     if (!batch.value.embd || !batch.value.pos || !batch.value.n_seq_id ||
         !batch.value.seq_id || !batch.value.logits) return false;
     batch.value.n_tokens = rows;
+    if (!v14::prepare_embedding_positions(batch.value, llama_model_rope_type(model), rows, positions)) return false;
     for (int row = 0; row < rows; ++row) {
         const std::size_t offset = static_cast<std::size_t>(row) * input_dim;
         std::copy_n(input.data() + offset, input_dim, batch.value.embd + offset);
-        batch.value.pos[row] = positions[static_cast<std::size_t>(row)];
         batch.value.n_seq_id[row] = 1;
         if (!batch.value.seq_id[row]) return false;
         batch.value.seq_id[row][0] = 0;
