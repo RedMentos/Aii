@@ -1,12 +1,14 @@
 ## 2026-11-25 Perception checkpoint — PR #2484 (NOT_RELEASED)
 
-- Candidate head: `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`; A3 source-lineage/A3 forget CI PASS on Python 3.13/3.14, RAW EYE frame-ingress PASS on 3.13/3.14, runtime-deployment integrity PASS on 3.11/3.14.
-- Staged-runtime and integrated-regression FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179` (`unsupported lifecycle source: vision.py`). Core must pin exact `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper `vision_projector_stats.py` SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f`, then rebind downstream pins and rerun integration/consumer/migration.
+- Current branch head: `37baae12f27a1457bbff14496f5caf6611d7e451`; code/test commit: `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`. Commits after the tested code SHA only update V14 documentation/board/handoff; no runtime code changed. PR #2484 remains OPEN/DRAFT, stacked on #2477 and Core #2465.
+- CI on code/test commit `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`: A3 source-lineage/forget PASS on Python 3.13/3.14; RAW EYE frame-ingress PASS on 3.13/3.14; runtime-deployment integrity PASS on 3.11/3.14. Staged-runtime and integrated-regression FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179` (`unsupported lifecycle source: vision.py`).
+- Exact pins required by Core: `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d`; `vision_projector_stats.py` SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f`.
 - LOCAL_LINUX algorithm-level ridge deletion math PASS 24/24; full Aii suite BLOCKED / NOT_RUN. Redmi REDMI_UNVERIFIED; no fresh receipt or deployment.
-- R-146 SGM-Diar, R-147 Edge0, R-148 BigMoMo recorded in Research Ledger. None is a model swap candidate for Redmi; no downloads or weight changes.
+- R-146 SGM-Diar, R-147 Edge0 and R-148 BigMoMo recorded in the Research Ledger. None is a model swap candidate for Redmi; no downloads or weight changes.
 - User action: none. Perception will not modify Core-owned composer files or weaken source pins.
 
 ---
+
 
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
