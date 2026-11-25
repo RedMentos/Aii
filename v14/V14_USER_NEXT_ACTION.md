@@ -1,3 +1,18 @@
+# Core & Harness — Run 2 checkpoint (2026-11-26)
+
+**No user action required.** No Termux command, UPDATE_REQUEST, restart, model/weight download or swap, permission change, or device-data mutation is required.
+
+- Draft repair PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, current handoff SHA `024c88a8e2c2bae77bb354d25038ef7ee4e5bfee`; code checkpoint before handoff `5476ae6148e455fb30e06cc2b87c7eef93f6737c`. Parent is Core PR #2515 at `13cfe43a7a94d4b35d4a3be0249bd725b6f06c23`. DRAFT / NOT_RELEASED.
+- Repaired the pinned C++ compile failure: `decode_embeddings` now receives the loaded `const llama_model *`, checks non-null context/model, and all six call sites pass `model.value`. Refreshed the full native-builder → recovery → stage-builder → RuntimeDeploy hash chain; no pin check was weakened.
+- Corrected CI scope: the Cognition/Callosum native-receiver test is already executed inside the staged-runtime subprocess, so the workflow no longer runs it directly against the unpatched source Runtime. The synthetic one-task evaluator test now expects the parent helper's current `FIXTURE_ONLY` result and still asserts insufficient holdout, no semantic proof, zero authority and no persistence.
+- Parent exact-head workflow run 45721544481 failed on the undeclared `model` symbol (Linux and Android arm64 cross-compile) plus 7 Python assertions caused by the staged/source test mismatch and the synthetic-status expectation. PR #2520 exact-head CI is pending/not yet observed.
+- LOCAL_LINUX full checkout/pytest: BLOCKED / NOT_RUN because `git ls-remote` cannot resolve `github.com`. No full local native llama.cpp build is claimed. The six call-site/source changes were inspected; this is not a compiler pass.
+- Redmi: **REDMI_UNVERIFIED**. No fresh private phone receipt, native GGUF score, install, restart, model/weight/permission change, or deployment. GitHub push/PR is not phone deployment. B3 remains OFF; target-token likelihood is only a proxy, not generated-answer correctness or trained latent utility.
+- Research boundary: arXiv:2608.16347v2 remains relevant—activation/likelihood alignment can fail to produce correct generated answers. Keep generated-answer correctness separate from receiver-input and target-logprob evidence.
+
+**Next executable action:** poll exact PR #2520 checks; fix any failures and re-test. If green, coordinate Perception's #2517/#2519 rebase onto the repaired Core head, then continue the full source/session-bound eight-condition real-GGUF matrix. Do not activate B3 or claim semantic utility from compile success.
+---
+
 # Current V14 handoff — Core & Harness Run 1 (2026-11-25)
 
 **User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
