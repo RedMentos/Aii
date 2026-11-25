@@ -28,6 +28,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Print exact Git blob and SHA-256 pins
+        run: |
+          for path in \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261112.py \
+            v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py; do
+            printf 'PIN_HASH %s sha256=%s git_blob_sha1=%s\n' "$path" "$(sha256sum "$path" | awk '{print $1}')" "$(git hash-object "$path")"
+          done
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
