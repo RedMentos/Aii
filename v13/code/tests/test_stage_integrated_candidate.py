@@ -108,6 +108,7 @@ class StageTest(unittest.TestCase):
         self.assertIn(b'TOKENWISE_TOKENIZER', (out / 'v13/runners.py').read_bytes())
         self.assertIn(b'TOKENWISE_CONSUMER', (out / 'v13/cognition.py').read_bytes())
         self.assertIn(b'TOKENWISE_COMMAND', (out / 'v13/callosum.py').read_bytes())
+        self.assertIn(b'TOKENWISE_PURPOSE', (out / 'v13/native_probe_approval.py').read_bytes())
         self.assertEqual((self.code / 'v13/focal.py').read_bytes(), source_focal)
         self.assertIn(b'ACTION_SELECTION_C1_BROADCAST_LINEAGE_V1', (out / 'v13/focal.py').read_bytes())
         self.assertTrue((out / 'specs/test.json').exists())
