@@ -1,6 +1,7 @@
 """Unit and A5/A4 consumer tests for the session-local RAW EAR A3 predictor."""
 from array import array
 from contextlib import contextmanager
+import json
 import math
 import struct
 from types import SimpleNamespace
@@ -478,5 +479,44 @@ def test_persistent_mode_does_not_write_provisional_windows(tmp_path):
             "SELECT key FROM states WHERE key LIKE ?",
             ("raw_ear_prediction.v1.%",),
         ) == []
+    finally:
+        runtime.store.close()
+
+
+def _insert_state_fixture(store, key, payload):
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    with store.tx() as connection:
+        connection.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)", (key, 1, encoded))
+
+
+def test_persistent_pruning_uses_literal_prefix_and_keeps_similar_unrelated_keys(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    registry = AudioTemporalPredictionRegistry(max_streams=1, store=runtime.store)
+    unrelated_key = "rawXearYprediction.v1.foreign"
+    unrelated_payload = {"last_touched_ns": 0}
+    _insert_state_fixture(runtime.store, unrelated_key, unrelated_payload)
+    try:
+        registry.update(
+            source_id="source-a", generation_id="generation-a",
+            consent_scope_id="a" * 64, start_ms=0, end_ms=1000,
+            cues=SILENCE, finality="FINAL",
+        )
+        assert runtime.store.state(unrelated_key, None)[0] == unrelated_payload
+    finally:
+        runtime.store.close()
+
+
+def test_persistent_reset_uses_literal_prefix_and_keeps_similar_unrelated_keys(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    registry = AudioTemporalPredictionRegistry(store=runtime.store)
+    unrelated_key = "rawXearYprediction.v1.foreign"
+    unrelated_payload = {
+        "source_scope_sha256": registry._scope_hash("source-a"),
+        "generation_scope_sha256": registry._scope_hash("generation-other"),
+    }
+    _insert_state_fixture(runtime.store, unrelated_key, unrelated_payload)
+    try:
+        assert registry.reset(source_id="source-a") == 0
+        assert runtime.store.state(unrelated_key, None)[0] == unrelated_payload
     finally:
         runtime.store.close()
