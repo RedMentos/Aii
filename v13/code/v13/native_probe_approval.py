@@ -797,6 +797,7 @@ def operator_command(runtime, args):
                 "runtime_exclusive": True,
                 "requires_explicit_confirmation": False,
                 "input_mode": "LATENT_PREFIX_V1" if adapter_name is not None else "TOKEN_PREFILL",
+                **({"adapter_sha256": approval["adapter_sha256"]} if adapter_name is not None else {}),
                 "production_route": False,
                 "semantic_use_proven": False,
                 "training_authority": 0,
