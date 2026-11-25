@@ -1521,7 +1521,7 @@
     "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2",
     "pin_rebind_branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
     "tested_code_head": "fd1c58e2998ad018dcafdf8ac3367eb45f543575",
-    "documentation_head": "PENDING_READBACK",
+    "documentation_head": "213708d1c7a0fea2cd6a7db6e3c720fa1032cda6",
     "status": "CI_GREEN_DRAFT_STACKED_NOT_RELEASED",
     "exact_ci": "Controller guard, Lab Age/WebView, runtime deployment, owner-read, two-checkout migration and staged/integrated all SUCCESS; staged 288/10/48, integrated 424/3/58.",
     "local_linux": "Isolated arithmetic 21/21 PASS; full checkout BLOCKED by GitHub DNS.",
@@ -1575,7 +1575,7 @@
     "parent_head": "55db58ae053c0e93430015a002ca620f8489bcc3",
     "branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
     "pull_request": 2485,
-    "code_head": "1660a81281279a873bff676b4733ee62f14d37ba",
+    "code_head": "fd1c58e2998ad018dcafdf8ac3367eb45f543575",
     "status": "DRAFT_CI_QUEUED_NOT_RELEASED",
     "changes": [
       "Added exact Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0 to finite RECORD_ONLY guard allowlist; unknown source hashes remain rejected.",
@@ -1590,7 +1590,8 @@
     },
     "device": "REDMI_UNVERIFIED; no fresh private receipt or device action; no update request.",
     "user_action_required": false,
-    "next_action": "Poll all six exact-head runs; fix any subsequent pin failure bottom-up, then independent review and integrate into #2478."
+    "next_action": "Poll all six exact-head runs; fix any subsequent pin failure bottom-up, then independent review and integrate into #2478.",
+    "documentation_head": "213708d1c7a0fea2cd6a7db6e3c720fa1032cda6"
   },
   "core_run25_final": {
     "date": "2026-11-25T03:52:13.616Z",
@@ -1617,6 +1618,7 @@
       "owner_read": 45542286527,
       "two_checkout_migration": 45542286331
     },
-    "next": "Port #2451 native receiver/probe overlay onto current base after pin-chain review."
+    "next": "Port #2451 native receiver/probe overlay onto current base after pin-chain review.",
+    "documentation_head": "213708d1c7a0fea2cd6a7db6e3c720fa1032cda6"
   }
 }
