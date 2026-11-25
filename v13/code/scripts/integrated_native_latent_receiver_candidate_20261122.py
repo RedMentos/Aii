@@ -15,10 +15,11 @@ BASE_PINS = {
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "6ec80446feec4a0f709992db15e0b1b9986f4b4f5fe1f85106e95c0dbb203056",
+    "v13/native_latent_receiver.py": "d9c11bbaba05f9d436223022e39ea112164f3317a044724f2f636de43d1665f8",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "4aafc21483d156f122b2edcd3eb2990cdecb744538aa6b783e6556604e6fbc08",
-    "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0"
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "62fd7e9e9b5315d3d10326925dde0410a941aef787a5ed50c86a8750beba827f",
+    "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0",
+    "v13/latent_adapter.py": "1113950f6382adcdda4741f53bec135fd6bca6acbc358a6b15bff9163edcaf33"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
@@ -115,6 +116,140 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             "semantic_use_proven":False,"training_authority":0,"native_receiver_authority":0,
         })
         return p'''
+NATIVE_PREFIX_RECEIVE = r'''    def native_receive_prefix(self,sender_role,receiver_role,e,source_ref,adapter_name,deadline):
+        """Consume one source-bound event-pooled adapter through LATENT_PREFIX_V1."""
+        from pathlib import Path
+        import math
+        from .models import model_key
+        from .common import file_hash
+        from .latent_adapter import load_adapter, project_event
+        from .native_latent_receiver import LATENT_PREFIX_MODE, probe as native_probe, validate_packet
+        from .native_probe_approval import (
+            KEY, SCHEMA as APPROVAL_SCHEMA, _adapter_binding, _model_binding, _runtime_nonce,
+        )
+        if (sender_role not in {"B1_DETAIL","B2_GIST"}
+                or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"}
+                or sender_role==receiver_role):
+            raise ValueError("Latent-prefix roles must be distinct B1/B2 -> B1/B2/C3")
+        if not isinstance(e,dict) or not isinstance(source_ref,dict) or source_ref!=e.get("source_ref"):
+            raise ValueError("Latent-prefix source must exactly match this event")
+        if (not getattr(self.r,"_native_probe_active",False) or self.r.current!="probe"
+                or getattr(self.r,"_native_probe_lease_nonce",None) is None):
+            raise PermissionError("Latent-prefix receiver requires its exclusive approved Runtime lease")
+        approval,_=self.s.state(KEY,None)
+        if (not isinstance(approval,dict) or approval.get("schema")!=APPROVAL_SCHEMA
+                or approval.get("status")!="CONSUMED"
+                or approval.get("runtime_nonce")!=_runtime_nonce(self.r)
+                or approval.get("input_mode")!="LATENT_PREFIX_V1"
+                or approval.get("adapter_name")!=adapter_name
+                or approval.get("session_id")!=self.r.session
+                or approval.get("event_id")!=e.get("event_id")
+                or approval.get("brain_generation_id")!=e.get("brain_generation_id")
+                or approval.get("source_ref")!=source_ref
+                or approval.get("sender_role")!=sender_role
+                or approval.get("receiver_role")!=receiver_role):
+            raise PermissionError("Latent-prefix receiver lacks the consumed source-bound approval")
+        models={
+            sender_role:_model_binding(self.r,sender_role),
+            receiver_role:_model_binding(self.r,receiver_role),
+        }
+        if approval.get("models")!=models:
+            raise PermissionError("Latent-prefix model binding changed after approval")
+        binding=_adapter_binding(self.r,adapter_name,sender_role,receiver_role,models)
+        if approval.get("adapter")!=binding:
+            raise PermissionError("Latent-prefix adapter changed after approval")
+        adapter_path=Path(self.r.home)/"data"/"latent_adapters"/adapter_name
+        adapter=load_adapter(adapter_path)
+        if adapter.get("adapter_sha256")!=binding["sha256"]:
+            raise ValueError("Latent-prefix adapter digest differs from approval")
+        tap=self.tap(sender_role,e,source_ref,deadline)
+        if (tap.get("role")!=sender_role or tap.get("event_id")!=e.get("event_id")
+                or tap.get("brain_generation_id")!=e.get("brain_generation_id")
+                or tap.get("source_ref")!=source_ref
+                or tap.get("tap_id")!=adapter.get("sender_tap_id")
+                or tap.get("model_revision")!=adapter.get("sender_model_revision")):
+            raise ValueError("Sender tap identity/source/model differs from latent adapter")
+        # Reap the sender runner before loading the receiver model.
+        self.r.pool.unload()
+        data=self.read_tap(tap)
+        token_ids=data.get("token_ids")
+        vectors=data.get("vectors")
+        metrics=tap.get("metrics")
+        if (type(token_ids) is not list or not 2<=len(token_ids)<=64
+                or any(type(token_id) is not int or token_id<0 for token_id in token_ids)
+                or type(vectors) is not list or len(vectors)!=len(token_ids)
+                or type(metrics) is not dict
+                or metrics.get("whole_sequence_prefill") is not True
+                or metrics.get("pooling")!="none"
+                or metrics.get("prompt_tokens")!=len(token_ids)):
+            raise ValueError("Sender tap lacks a verified whole-sequence event-pooling source")
+        rows=vectors[1:]  # exact same non-position-zero mean used by persisted tap fitting
+        if not rows or not isinstance(rows[0],(list,tuple)) or not rows[0]:
+            raise ValueError("Sender tap has no non-position-zero activation rows")
+        dim=len(rows[0])
+        if not 1<=dim<=8192 or any(not isinstance(row,(list,tuple)) or len(row)!=dim for row in rows):
+            raise ValueError("Sender event-pooling geometry is invalid")
+        pooled=[]
+        for column in range(dim):
+            values=[row[column] for row in rows]
+            if any(type(value) not in (int,float) or not math.isfinite(float(value)) for value in values):
+                raise ValueError("Sender event-pooling vector contains non-finite values")
+            pooled.append(sum(float(value) for value in values)/len(values))
+        sender_installed=self.r.models.installed.get(model_key(sender_role,self.r.models.b2_control))
+        receiver_installed=self.r.models.installed.get(model_key(receiver_role,self.r.models.b2_control))
+        if (not isinstance(sender_installed,dict) or not isinstance(receiver_installed,dict)
+                or sender_installed.get("exact_revision")!=adapter.get("sender_model_revision")
+                or receiver_installed.get("exact_revision")!=adapter.get("receiver_model_revision")):
+            raise ValueError("Latent adapter revisions differ from installed model manifests")
+        sender_path=Path(models[sender_role]["canonical_path"])
+        receiver_path=Path(models[receiver_role]["canonical_path"])
+        if file_hash(sender_path)!=models[sender_role]["sha256"] or file_hash(receiver_path)!=models[receiver_role]["sha256"]:
+            raise ValueError("Sender or receiver model changed after latent-prefix approval")
+        expected_input_tap={
+            "B1_DETAIL":"b1.input-embedding.v1",
+            "B2_GIST":"b2.input-embedding.v1",
+            "C3_LANGUAGE":"c3.input-embedding.v1",
+        }[receiver_role]
+        if adapter.get("receiver_tap_id")!=expected_input_tap:
+            raise ValueError("Latent adapter is not trained against the receiver input-embedding space")
+        projected=project_event(
+            adapter,pooled,
+            sender_model_sha256=models[sender_role]["sha256"],
+            receiver_model_sha256=models[receiver_role]["sha256"],
+            sender_tap_id=tap["tap_id"],
+            receiver_tap_id=adapter["receiver_tap_id"],
+        )
+        receipt=native_probe(
+            home=self.r.home,model_path=receiver_path,
+            expected_model_sha256=models[receiver_role]["sha256"],
+            sender_role=sender_role,receiver_role=receiver_role,
+            sender_tap_id=tap["tap_id"],sender_model_revision=adapter["sender_model_revision"],
+            sender_model_sha256=models[sender_role]["sha256"],tokenizer_revision=None,
+            receiver_model_revision=adapter["receiver_model_revision"],
+            source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
+            vectors=[projected],position_ids=[0],position_mode=LATENT_PREFIX_MODE,
+            deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
+            cancel_event=self.r.cancel_event,
+        )
+        p=packet("LatentReceiverPacket","B3_NATIVE_LATENT_PREFIX_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
+                 source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
+                 adapter_sha256=adapter["adapter_sha256"],adapter_status=adapter["status"],
+                 projection_scope=adapter["projection_scope"],input_semantics="SINGLE_EVENT_PREFIX",
+                 production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0,
+                 **receipt)
+        validate_packet(p)
+        self.s.add_packet("LatentReceiverPacket",p)
+        self.s.log("native_latent_prefix_receiver_probe",e["event_id"],{
+            "sender_role":sender_role,"receiver_role":receiver_role,"status":p["status"],
+            "adapter_sha256":adapter["adapter_sha256"],"projection_scope":adapter["projection_scope"],
+            "input_rows":p["input_rows"],"input_dim":p["input_dim"],
+            "receiver_input_dim":p["receiver_input_dim"],"decode_status":p["decode_status"],
+            "native_input_consumed":p["native_input_consumed"],"input_effect_detected":p["input_effect_detected"],
+            "production_route":False,"semantic_use_proven":False,
+            "training_authority":0,"native_receiver_authority":0,
+        })
+        return p
+'''
 NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
         row=self.s.one("SELECT payload FROM packets WHERE kind='LatentReceiverPacket' ORDER BY rowid DESC LIMIT 1")
         if not row:return None
@@ -125,6 +260,7 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
                 'sender_model_revision','sender_model_sha256','tokenizer_revision',
                 'receiver_model_revision','receiver_model_sha256','runner_revision','llama_version',
                 'status','input_rows','input_dim','input_sha256','position_ids','position_mode',
+                'adapter_sha256','adapter_status','projection_scope','input_semantics',
                 'receiver_input_dim','output_dim','receiver_vocab_size','decode_status',
                 'receiver_next_token_id','zero_control_next_token_id','shuffle_control_next_token_id',
                 'row_shuffle_control_next_token_id','repeat_next_token_id','receiver_next_token_margin',
@@ -157,7 +293,7 @@ def apply_sources(code_dir,sources):
     cognition=result.get("v13/cognition.py",(code_dir/"v13/cognition.py").read_bytes())
     if not isinstance(cognition,bytes) or b"def native_receive(" in cognition:
         raise ValueError("native receiver Cognition already patched or unavailable")
-    cognition=_replace(cognition,b"    def body_context(self,role,e):\n",NATIVE_RECEIVE.encode("utf-8")+b"\n    def body_context(self,role,e):\n","Cognition.native_receive")
+    cognition=_replace(cognition,b"    def body_context(self,role,e):\n",NATIVE_RECEIVE.encode("utf-8")+b"\n"+NATIVE_PREFIX_RECEIVE.encode("utf-8")+b"\n    def body_context(self,role,e):\n","Cognition.native_receive")
     compile(cognition,"v13/cognition.py","exec")
     callosum=result.get("v13/callosum.py",(code_dir/"v13/callosum.py").read_bytes())
     if not isinstance(callosum,bytes) or b"def native_receiver_probe(" in callosum:
