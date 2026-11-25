@@ -147,9 +147,27 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
+        redactCompletedOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=?", new String[]{actionId, expectedStatus});
         if (changed != 1) throw new IllegalStateException("action is no longer in expected state");
+    }
+
+    private void redactCompletedOpenUrl(ContentValues values, String actionId) {
+        Action action = get(actionId);
+        if (action == null) throw new IllegalStateException("completed action disappeared");
+        try {
+            JSONObject request = new JSONObject(action.requestJson);
+            if (!"open_url".equals(request.optString("capability"))) return;
+            String host = Canonical.httpsHost(action.targetValue);
+            request.put("args", new JSONObject().put("url_host", host));
+            // The v1 package_name column remains for on-device DB compatibility.
+            // Once a signed receipt is durable, the full URL is no longer needed.
+            values.put("request_json", request.toString());
+            values.put("package_name", host);
+        } catch (Exception failure) {
+            throw new IllegalStateException("could not redact completed HTTPS target", failure);
+        }
     }
 
     synchronized List<Action> claimedWithoutReceipt() {
@@ -174,6 +192,7 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
+        redactCompletedOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=? AND receipt_json IS NULL",
                 new String[]{actionId, expectedStatus});
