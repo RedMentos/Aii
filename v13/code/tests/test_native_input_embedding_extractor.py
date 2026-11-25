@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -88,6 +89,7 @@ print(json.dumps({
             "installed-model-rev-1",
             [7, 12, 12],
             model_root=self.root,
+            expected_model_sha256=hashlib.sha256(self.model.read_bytes()).hexdigest(),
             **kwargs,
         )
 
