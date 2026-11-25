@@ -1568,3 +1568,26 @@ For `TERMUX_ANDROID` and `REDMI` native receipts, the schema now additionally re
 **Acceptance boundary:** a REDMI-labelled receipt without a private execution-receipt digest and runtime-build identifier is rejected. Even with those fields, the evaluator only reports a target-logprob proxy; it does not prove semantic utility, generated answer correctness, real device execution or production B3 acceptance. B3 stays OFF until Core supplies genuine native target-score receipts and the independent held-out gates pass.
 
 **Status:** CODE_PUSHED / ISOLATED_CONTRACT_TESTS_10_OF_10_PASS / FULL_REPO_AND_NEW_HEAD_CI_NOT_YET_OBSERVED / NO_DEVICE_RECEIPT / REDMI_UNVERIFIED.
+
+
+## R-164 — Stability and plasticity must be measured separately (2026-11-25)
+
+- **Primary source:** Jinjun Peng, Weiliang Zhao, Baishakhi Ray, Zhou Yu and Junfeng Yang, *Stability Does Not Mirror Plasticity: A Fundamental Trade-off in Continual Learning*, arXiv:2611.23427v1, submitted 2026-11-17: https://arxiv.org/html/2611.23427v1
+- **Review status:** full HTML main-text sections on definitions, experiments and discussion reviewed; appendices not fully re-audited. Preprint, not peer-reviewed. Paper license stated as CC BY 4.0. The paper references an anonymous code repository; no public, independently licensed implementation was verified.
+- **Measured setup:** a 25M-parameter Transformer on permuted/rotated MNIST and Qwen2.5-0.5B with LoRA over five NLP tasks. The paper separates stability (retention on previously seen tasks) from plasticity (prequential likelihood on incoming data). It reports that the two can diverge: replay/regularization may preserve old-task performance while reducing adaptation to new data.
+- **Limits:** not an Android/on-device study; no Redmi or 6-GB-class memory evidence; not a JEPA experiment; no proof that any specific replay policy is best for V14. The reported models/tasks do not establish cross-organ latent learning.
+- **V14 application:** do not compress learning quality into a single retention/forgetting number. For every authorized update cohort, log new-stream prequential NLL separately from old-task retention; also record gradient norm, parameter/adaptor diff, update-gate scale, and post-restart retention. Compare no-replay, bounded replay and eligibility-gated local updates on the same held-out tasks. Keep the result observational until real persistent weight diffs and restart retention are measured.
+
+## R-165 — MobileFineTuner: relevant on-device LoRA OSS, not yet a V14 drop-in (2026-11-25)
+
+- **Primary repository:** https://github.com/Edge-Intelligence-Lab/MobileFineTuner
+- **Reviewed revision:** be95a289d9cd5ecd93b6fab7fdc3c4551c3f9fb1, main, committed 2026-11-13.
+- **Code license:** Apache-2.0. No model weights are bundled; any downloaded weights retain their own separate license and provenance requirements.
+- **Verified from repository docs:** C++17/CMake native training path and Android AAR; documented arm64-only package, NDK 26.1.10909125, Android API 35 and JDK 17. Stable public API exposes one-step LoRA operations (forward/loss/backward/gradient clipping/Adam/zero-grad). The docs explicitly leave dataset orchestration and checkpoint management outside the stable API. Supported model examples are GPT-2/Gemma/Qwen; no GGUF or current LFM2.5 path was verified.
+- **Evidence boundary:** repository describes an Android synthetic Qwen LoRA smoke path; no Redmi Note 10 Pro execution receipt or persistent before/after/restart retention evidence was found. Not adopted, not downloaded, and not used to alter V14 models.
+- **V14 application:** retain as a possible future adapter-training backend only after a separate compatibility branch proves model architecture, safetensors/quantized export, optimizer-state/checkpoint persistence, memory/thermal budget and rollback. It is not a replacement for the current llama.cpp/GGUF inference path.
+- **Related native inference dependency:** the new task-score producer pins ggml-org/llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 (MIT); no upstream source files or weights are copied into the repository.
+
+### 2026-11-25 research sweep note
+
+No new JEPA paper with a verifiable full-text empirical result was confirmed in this sweep; retain the previously reviewed JEPA references rather than relabeling an abstract as a new finding. No new Redmi-native continual-learning or Android training evidence was obtained. R-164 changes the evaluation proposal, not the V14 architecture or model weights.
