@@ -10,8 +10,10 @@ continue to be named `v13`). It is not installed by the V13 updater.
   dispatches Android `ACTION_VIEW` with `CATEGORY_BROWSABLE`; it never observes the
   browser result or submits forms.
 - Full URL query/path values stay inside the companion's private approval record and
-  visible consent screen. Termux stores only the URL digest and host label, not the
-  full URL, so query tokens are not copied into its audit database or Store packets.
+  visible consent screen only while approval/receipt recovery is pending. The companion
+  atomically redacts the URL to its host when a signed receipt becomes durable. Termux
+  stores only the URL digest and host label, never the full URL in its audit database or
+  Store packets.
 - Termux caller pairing is explicit and bound to the installed package signing-certificate
   SHA-256 digest.
 - A local stop switch disables new requests; the default state is OFF.
