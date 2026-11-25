@@ -433,7 +433,7 @@ public final class CompanionDbApprovalTest {
     @Test public void claimedRowsRecoverToUnknownOrDenialAndAreIdempotent() throws Exception {
         String executingId = "e".repeat(32);
         String denyingId = "d".repeat(32);
-        String pendingId = "p".repeat(32);
+        String pendingId = "8".repeat(32);
         insertValidPending(executingId, NOW + 10_000L);
         insertValidPending(denyingId, NOW + 10_000L);
         insertValidPending(pendingId, NOW + 10_000L);
@@ -485,7 +485,7 @@ public final class CompanionDbApprovalTest {
     }
 
     @Test public void databaseFailureLeavesClaimForReceiptOnlyRetry() throws Exception {
-        String actionId = "g".repeat(32);
+        String actionId = "9".repeat(32);
         insertValidPending(actionId, NOW + 10_000L);
         assertTrue(first.claimForExecution(actionId, NOW));
         AtomicBoolean failOnce = new AtomicBoolean(true);
