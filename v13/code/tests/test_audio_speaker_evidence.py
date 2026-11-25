@@ -1563,3 +1563,33 @@ def test_owned_audio_generation_scope_requires_provider_callbacks_before_ingress
     finally:
         runtime.store.close()
 
+
+
+@pytest.mark.parametrize("previous_scope", [None, "a" * 64])
+def test_new_consent_scope_evicts_previous_speaker_vectors(previous_scope):
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-consent", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-consent", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first, consent_scope_id=previous_scope,
+    )
+    assert len(registry) == 1
+
+    second_scope = "b" * 64
+    second = speaker_batch(
+        SOURCE, "gen-consent", 100, 1100, lambda _: (0.0, 1.0, 0.0),
+    )
+    evidence = registry.update(
+        source_id=SOURCE, generation_id="gen-consent", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=second, consent_scope_id=second_scope,
+    )
+
+    assert evidence["status"] == "WARMUP"
+    assert evidence["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert evidence["history_frame_count"] == len(second["frames"])
+    assert len(registry) == 1
+    assert list(registry._states) == [(SOURCE, "gen-consent", second_scope)]
