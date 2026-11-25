@@ -74,6 +74,6 @@ jobs:
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: c353e2d5150dcbb516be8085e47d520a712f7b4b
-          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 8de9bb2a9f927ecc2cd509b1735e032d614e5c82
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 35f26ce6c3c9dd29f3d0dd11a7f31714417a5152
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 9e65d2332ef500e75c87bb984c9b9b3aec66f11c
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
