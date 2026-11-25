@@ -18,7 +18,7 @@ Added native_tokenwise_pairing.py and its tests/docs. It composes the stored sen
 - LOCAL_LINUX CPython 3.13.5 isolated harness with stubbed dependencies: 7/7 PASS; py_compile PASS.
 - GitHub Actions PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; privacy scan CLEAN.
 - GitHub Actions push run 45678196840: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; privacy scan CLEAN.
-- Staged/integrated regression 45678205707 was still in progress at checkpoint.
+- Staged/integrated regression 45678205707 completed PASS: staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests.
 - Full local Aii checkout NOT_RUN; no real GGUF row read or Redmi proof.
 
 ## Research notes
