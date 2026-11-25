@@ -20,6 +20,14 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
+    assert "v13/native_probe_approval.py" in manifest["files_sha256"]
+    assert manifest["native_probe_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
+    assert manifest["native_probe_overlay"]["production_route"] is False
+    assert manifest["native_probe_overlay"]["training_authority"] == 0
+    assert "arm-probe <sender> <receiver>" in operator
+    assert "from .native_probe_approval import operator_command as probe_operator_command" in operator
+    assert operator.index("if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}") < operator.index("if cmd=='callosum':")
     assert "def native_receive(" in cognition
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
@@ -44,6 +52,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
         [sys.executable, "-m", "pytest", "-q",
          str(CODE / "tests/test_native_latent_receiver.py"),
          str(CODE / "tests/test_native_latent_receiver_runtime.py"),
+         str(CODE / "tests/test_native_latent_receiver_approval.py"),
          str(CODE / "tests/test_callosum.py"),
          str(CODE / "tests/observer_fair_budget_disposable_cases_20261116.py")],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=150,
