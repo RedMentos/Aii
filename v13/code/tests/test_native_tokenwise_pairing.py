@@ -700,3 +700,70 @@ def test_task_score_adapter_revision_must_be_stable_across_task_cohort():
         )
     with pytest.raises(NativeReceiverUtilityError, match="adapter revision changed"):
         evaluate_native_receiver_task_utility(rows)
+
+
+def _rebuild_task_score_receipt(item, *, source_ref=None, task_family=None):
+    source = item["source_ref"] if source_ref is None else source_ref
+    family = item["task_family"] if task_family is None else task_family
+    condition = item["condition"]
+    if condition == "NO_MESSAGE":
+        message_source = None
+    elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+        message_source = item["message_source_ref"]
+    else:
+        message_source = source
+    return build_native_receiver_task_score_receipt(
+        condition=condition,
+        task_group_id=item["task_group_id"],
+        task_family=family,
+        session_id=item["session_id"],
+        source_ref=source,
+        message_source_ref=message_source,
+        receiver=item["receiver"],
+        target_token_ids_sha256=item["target_token_ids_sha256"],
+        target_token_count=item["target_token_count"],
+        context_sha256=item["context_sha256"],
+        input_sha256=item["input_sha256"],
+        native_receipt=item["native"],
+        adapter_sha256=item["adapter_sha256"],
+    )
+
+
+def test_task_score_cohort_rejects_duplicate_source_content_across_task_groups():
+    rows = _task_score_cohort()
+    shared_source = next(
+        item["source_ref"] for item in rows
+        if item["task_group_id"] == "task-0" and item["condition"] == "NO_MESSAGE"
+    )
+    rows = [
+        _rebuild_task_score_receipt(item, source_ref=shared_source)
+        if item["task_group_id"] == "task-1" else item
+        for item in rows
+    ]
+    with pytest.raises(NativeReceiverUtilityError, match="duplicate source content"):
+        evaluate_native_receiver_task_utility(rows)
+
+
+def test_task_score_holdout_requires_crossed_session_by_family_coverage():
+    rows = _task_score_cohort()
+    rows = [
+        _rebuild_task_score_receipt(item, task_family="ARITHMETIC")
+        if item["session_id"] == "session-1" else item
+        for item in rows
+    ]
+    result = evaluate_native_receiver_task_utility(rows)
+    assert result["balanced_session_family_coverage"] is False
+    assert result["tasks_per_session_family"] == {
+        "session-0": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
+        "session-1": {"ARITHMETIC": 10, "ENTITY_RECALL": 0},
+    }
+    assert result["enough_holdout"] is False
+
+
+def test_task_score_holdout_minimum_is_enforced_per_session_family_cell():
+    result = evaluate_native_receiver_task_utility(
+        _task_score_cohort(), min_tasks_per_session_family=6,
+    )
+    assert result["balanced_session_family_coverage"] is False
+    assert result["tasks_per_session_family"]["session-0"]["ARITHMETIC"] == 5
+    assert result["enough_holdout"] is False
