@@ -2292,3 +2292,12 @@ Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8b
 | Whole Canon / integration | No historical V13 Canon or V14 master edits. | Current release base `8d93236`; candidate PR #2463 remains DRAFT. | Boss/Integrator must recompose the strict source-lifecycle dependency closure; staged runtime 19 failures / 2 errors, integrated regression 1 failure, consumer 3.13 3 failures / 2 passes; 3.14 consumer was pending at last poll. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
 
 Latest private V13OBS #115 snapshot: installed base `8d93236`, auto-update enabled/UP_TO_DATE/no error; AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE. Candidate #2463 NOT_INSTALLED. No device update request or user action.
+
+
+## Research & Perception run 11 — A3 session-local predictive error overlay (2026-11-25)
+
+| Canon path | Runtime connection / evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A3 temporal prediction → A4 / PerceptPacket | PR #2494 adds a 16×16 online LMS next-tile-delta predictor inside consent-scoped TemporalVisualEvidence. The source-bound packet and A4 evidence readout expose pre-update prediction error, persistence baseline, gradient/parameter delta and warmup state as SHADOW_ONLY. Local isolated helper: 8/8 tests, py_compile PASS; synthetic 120-step fixture MAE 0.01350 vs 0.10000 persistence baseline. | Exact integrated CI pending at checkpoint; full local Aii suite unavailable; no real MediaProjection sequence, native A3 model/embeddings, persistent weights, JEPA loss, source-disjoint real cohort, Redmi CPU/RSS/TTFT or rollback/restart proof. | CODE_PRESENT / WIRED_SHADOW_SYNTHETIC / LOCAL_HELPER_PASS / CI_PENDING / REDMI_UNVERIFIED |
+
+No A4 gain change, production learning authority, raw-frame persistence, model swap, Android permission change or device action. This does not satisfy Canon acceptance for active persistent neural plasticity or trained latent coupling. See V14 research ledger R-140 and PR #2494.
