@@ -98,3 +98,19 @@ The earlier comment on PR #2499 incorrectly described the failing test as arming
 ## Current branch CI poll
 
 At the latest poll, PR #2501 current head 64eb3cf693f97f3f44999912858d651a1b682a01 has focused V14 latent token-span alignment workflow #14 PASS and V13 runtime deployment integrity workflow #2519 PASS. V13 staged context and integrated regression workflow #5062 remained IN_PROGRESS; it must be polled again before the handoff is treated as fully green.
+
+
+## Final Run 14b CI readback — 2026-11-25 13:47 UTC
+
+Exact code/test head 64eb3cf693f97f3f44999912858d651a1b682a01 completed all three relevant workflows:
+- V14 latent token-span alignment #14: PASS.
+- V13 runtime deployment integrity #2519: PASS.
+- V13 staged context and integrated regression #5062: PASS.
+
+The branch then received documentation-only handoff/user-action updates; current branch head is 48ac201df126b4ae73218c42f6ce390d7e65d7c8. No code or test file changed after the 64eb3cf CI run. PR #2501 remains OPEN / DRAFT, stacked on PR #2496; no merge or release. Full local Aii repository pytest remains NOT_RUN because no checkout is mounted. Isolated Python formula reproductions PASS, but are not a substitute for the exact CI.
+
+Cross-lane state at this readback: Core PR #2499 head 8502afe has dedicated native latent receiver staged-runtime workflow #911 PASS after adding the missing explicit arm-probe call and correcting preflight-unload expectations. This still uses fake model-runner fixtures; no GGUF semantic/task utility or Redmi proof.
+
+RAW EAR PR #2498 remains partially blocked: VAD comparator #595, optional NumPy backend #714 and runtime integrity #2522 PASS; staged/integrated #5065 FAIL because the recovery builder's pin of the updated audio-composition script is stale. Core/QA own the next recovery→stager→deployer pin chain; exact details are in the Run 13b handoff and V14-022 board ticket.
+
+Research status: R-143 and R-144 are recorded. The event-pool residual-energy metric is a diagnostic of within-event variance only. The tokenwise adapter v3 still lacks real producer-supplied token offsets and a paired source-disjoint cohort; no semantic transfer, gradients, persistent weights, task utility or production B3 acceptance is established. REDMI_UNVERIFIED / NOT_RELEASED.
