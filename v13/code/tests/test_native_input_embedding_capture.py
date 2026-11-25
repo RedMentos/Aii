@@ -116,9 +116,11 @@ class FakeApproval:
         runtime.events.append("current_event")
         return runtime.event, runtime.store.source_ref
 
-    def consume(self, runtime, sender, receiver, event, source_ref, *, lease_token):
+    def consume(self, runtime, sender, receiver, event, source_ref, *, lease_token, probe_kind):
         self.runtime.events.append("approval_consumed")
-        if lease_token != "lease-test" or event != runtime.event or source_ref != runtime.store.source_ref:
+        if (lease_token != "lease-test" or event != runtime.event
+                or source_ref != runtime.store.source_ref
+                or probe_kind != "INPUT_EMBEDDING_TAP"):
             raise PermissionError("approval binding mismatch")
         return {"approval_id": "approval-123", "resource_preflight": {"status": "PASS"}}
 
@@ -313,6 +315,24 @@ class NativeInputEmbeddingCaptureTest(unittest.TestCase):
         self.assertFalse(any(item.startswith("get_tap:") for item in self.runtime.events))
 
 
+
+    def test_probe_kind_is_not_interchangeable_with_native_receiver_approval(self):
+        from v13.native_probe_approval import _require_probe_kind
+        self.assertEqual(
+            _require_probe_kind({"probe_kind": "INPUT_EMBEDDING_TAP"}, "INPUT_EMBEDDING_TAP"),
+            "INPUT_EMBEDDING_TAP",
+        )
+        self.assertEqual(
+            _require_probe_kind({"probe_kind": "NATIVE_RECEIVER"}, "NATIVE_RECEIVER"),
+            "NATIVE_RECEIVER",
+        )
+        # Older persisted approvals have no kind and remain native-receiver only.
+        self.assertEqual(_require_probe_kind({}, "NATIVE_RECEIVER"), "NATIVE_RECEIVER")
+        with self.assertRaises(PermissionError):
+            _require_probe_kind({"probe_kind": "INPUT_EMBEDDING_TAP"}, "NATIVE_RECEIVER")
+        with self.assertRaises(PermissionError):
+            _require_probe_kind({"probe_kind": "NATIVE_RECEIVER"}, "INPUT_EMBEDDING_TAP")
+
     def test_callosum_dispatches_input_tap_before_production_controller(self):
         from v13 import callosum
         with patch("v13.native_input_embedding_capture.operator_command", return_value="input-tap-routed") as routed:
@@ -330,8 +350,8 @@ class NativeInputEmbeddingCaptureTest(unittest.TestCase):
         class Commands:
             def __init__(self):
                 self.calls = []
-            def arm(self, runtime, sender, receiver):
-                self.calls.append(("arm", sender, receiver))
+            def arm(self, runtime, sender, receiver, *, probe_kind):
+                self.calls.append(("arm", sender, receiver, probe_kind))
                 return {"status": "ARMED"}
             def revoke(self, runtime):
                 self.calls.append(("revoke",))
@@ -352,7 +372,7 @@ class NativeInputEmbeddingCaptureTest(unittest.TestCase):
         )
         self.assertEqual(json.loads(ran)["status"], "DIAGNOSTIC_ONLY")
         self.assertEqual(commands.calls, [
-            ("arm", "B1_DETAIL", "C3_LANGUAGE"),
+            ("arm", "B1_DETAIL", "C3_LANGUAGE", "INPUT_EMBEDDING_TAP"),
             ("revoke",),
         ])
         with self.assertRaises(ValueError):
