@@ -17,7 +17,7 @@ from v13.native_tokenwise_pair_capture import (
     operator_command,
 )
 
-SOURCE = "abcd"
+SOURCE = "wxyz"
 
 
 class FakeStore:
@@ -63,15 +63,15 @@ class FakeRunner:
         self.runtime.events.append("tokenize:" + self.role)
         if self.role == "B1_DETAIL":
             pieces = [
-                {"id": 10, "piece": "a"},
-                {"id": 11, "piece": "b"},
-                {"id": 12, "piece": "c"},
-                {"id": 13, "piece": "d"},
+                {"id": 10, "piece": "w"},
+                {"id": 11, "piece": "x"},
+                {"id": 12, "piece": "y"},
+                {"id": 13, "piece": "z"},
             ]
         else:
             pieces = [
-                {"id": 20, "piece": "ab"},
-                {"id": 21, "piece": "cd"},
+                {"id": 20, "piece": "wx"},
+                {"id": 21, "piece": "yz"},
             ]
         return {"tokens": pieces}
 
@@ -322,10 +322,10 @@ def test_capture_composes_cognition_tap_exact_piece_streams_and_native_extractor
         assert args[1] == runtime.source_ref
         assert args[2] == [10, 11, 12, 13]
         assert args[3] == [
-            {"id": 10, "piece": "a"},
-            {"id": 11, "piece": "b"},
-            {"id": 12, "piece": "c"},
-            {"id": 13, "piece": "d"},
+            {"id": 10, "piece": "w"},
+            {"id": 11, "piece": "x"},
+            {"id": 12, "piece": "y"},
+            {"id": 13, "piece": "z"},
         ]
         assert args[4] is cognition.packet
         assert args[5] is cognition.data
