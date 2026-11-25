@@ -155,6 +155,7 @@ def extract_native_input_embedding_rows(
     *,
     model_root=None,
     expected_model_sha256=None,
+    prepare_idle=None,
     timeout_seconds=120,
 ):
     """Read selected receiver token-embedding rows from an already-installed GGUF.
@@ -175,8 +176,8 @@ def extract_native_input_embedding_rows(
     if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= MAX_TIMEOUT_SECONDS:
         raise NativeInputEmbeddingError("native extractor timeout is outside the bounded limit")
 
-    if model_root is None or expected_model_sha256 is None:
-        raise NativeInputEmbeddingError("registered model root and manifest hash are required")
+    if model_root is None or expected_model_sha256 is None or not callable(prepare_idle):
+        raise NativeInputEmbeddingError("registered model root, manifest hash and idle guard are required")
     binary = _safe_file(binary_path, "native extractor", executable=True)
     model = _safe_file(model_path, "installed model")
     if model_root is not None:
@@ -193,6 +194,11 @@ def extract_native_input_embedding_rows(
         expected_model_sha256 = _hex_digest(expected_model_sha256, "installed model hash")
         if model_sha != expected_model_sha256:
             raise NativeInputEmbeddingError("installed model hash differs from its manifest")
+
+    try:
+        prepare_idle()
+    except Exception as exc:
+        raise NativeInputEmbeddingError("runtime must be idle and native model pool released") from exc
 
     argv = [
         str(binary), "--extract",
