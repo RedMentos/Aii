@@ -30,7 +30,7 @@ final class Canonical {
 
     static boolean isSafeHttpsUrl(String value) {
         if (value == null || value.length() < 9 || value.length() > 2048
-                || !value.startsWith("https://") || value.indexOf('\\\\') >= 0
+                || !value.startsWith("https://") || value.indexOf('\\') >= 0
                 || value.matches(".*%(?![0-9A-Fa-f]{2}).*")) return false;
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
