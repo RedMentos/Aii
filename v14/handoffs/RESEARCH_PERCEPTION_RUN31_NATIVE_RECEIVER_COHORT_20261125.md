@@ -31,7 +31,7 @@ Commits:
 
 ## Actual consumer and user effect
 
-Core PR [#2515](https://github.com/RedMentos/Aii/pull/2515) carries the Perception evaluator and is adding the native teacher-forced target-token score producer. It currently reports only the LATENT_CANDIDATE condition and remains COLLECTING; it does not yet produce the other seven conditions. Core must rebase/refresh its copied helper onto this #2511 head before using the new cohort checks.
+Core PR [#2515](https://github.com/RedMentos/Aii/pull/2515) is the intended consumer and is adding the native teacher-forced target-token score producer. It currently reports only the LATENT_CANDIDATE condition and remains COLLECTING; it does not yet produce the other seven conditions. A branch comparison shows Core head 10c2f66f8c110516e02d165e2b60183199527116 is DIVERGED from the Perception branch, with merge-base 68ce8ca8122fba9b0063a4da89a117377a1b9e92 (Core 35 behind / 41 ahead); fetching v13/code/v13/native_receiver_utility.py from the Core branch returns 404. The evaluator consumer is therefore NOT YET WIRED despite the PR body wording. Core must rebase/merge the exact helper and tests before claiming the collector invokes it.
 
 The change improves the validity of the eventual B3 native-receiver likelihood comparison. It does **not** establish semantic understanding, generated-answer correctness, trained cross-model latent coupling, production B3, model learning or a user-visible chat improvement. B3 remains OFF.
 
