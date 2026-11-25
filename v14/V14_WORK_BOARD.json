@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T21:32:00Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
+  "updated_at": "2026-11-26",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness.",
   "tickets": [
@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "next_step": "Poll exact PR #2520 CI (Python 3.13/3.14 staged Runtime, pinned llama.cpp Linux build/selftest, Android arm64 cross-compile, privacy scan); repair any failures. If green, coordinate Perception #2517/#2519 rebase, then implement/execute the remaining seven native receiver matrix conditions against a pinned real GGUF. No B3 promotion from compile/likelihood proxy.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-26",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.\\nCore Run 2: PR #2520 (DRAFT, head 024c88a8e2c2bae77bb354d25038ef7ee4e5bfee; code 5476ae6148e455fb30e06cc2b87c7eef93f6737c) fixes the undeclared native receiver model pointer and staged-only test invocation. Parent exact CI 45721544481 had Linux/Android compile failure and 7 Python assertions; child exact CI pending. Full local checkout NOT_RUN (GitHub DNS); REDMI_UNVERIFIED.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -34,6 +34,22 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run26_checkpoint": {
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-target-score-repair-20261126-run1",
+        "base_sha": "13cfe43a7a94d4b35d4a3be0249bd725b6f06c23",
+        "code_sha": "5476ae6148e455fb30e06cc2b87c7eef93f6737c",
+        "handoff_sha": "024c88a8e2c2bae77bb354d25038ef7ee4e5bfee",
+        "pull_request": 2520,
+        "status": "DRAFT_CI_PENDING",
+        "tests": {
+          "local_full_checkout": "BLOCKED: github.com DNS resolution failed; full pytest/native build NOT_RUN",
+          "parent_exact_ci": "FAIL: native decode_embeddings undeclared model; 7 Python assertions from staged/source test mismatch and fixture status",
+          "child_exact_ci": "PENDING / NOT_OBSERVED"
+        },
+        "device": "REDMI_UNVERIFIED; no device receipt or deployment",
+        "next_action": "Poll exact PR #2520 CI, repair failures, then coordinate Perception child rebase and execute the eight-condition real-GGUF matrix"
       }
     },
     {
