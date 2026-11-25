@@ -1,3 +1,38 @@
+# Latest Core & Harness checkpoint — 2026-11-24T20:18:58.353Z
+
+- **Repository:** `RedMentos/Aii`
+- **Release base:** `gpt6/v13-private-remote-bridge-20261111` @ `8d93236c753f0194224c19edc7411d8d7082b1d6`
+- **Core P0 PR:** [#2478](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2`, current head `4fb95610c5593803419b5dbaaa82fc6e709d6543`, DRAFT / NOT_RELEASED.
+- **New stacked repair:** the branch was recomposed in-place with exact source hashes; the prior temporary repair PR #2474 is superseded by the fast-forwarded #2462 branch.
+
+## Code changes now present on #2462
+
+1. `integrated_focal_scale_diversity_candidate_20261121.py` validates the current bounded arithmetic/C5 `direct_action` shape instead of the obsolete pre-arithmetic `SOURCE_COPY` line. The original Focal source blob pin remains strict.
+2. The post-commit regression now reflects the fair sequential schedule: B1 may expire, B2 receives its own bounded pre-answer slice, and a B2 offer already produced there is not duplicated post-commit.
+3. `record_only_controller_guard_20261116.py` reports the exact rejected Runtime SHA and pins the measured composed Runtime output `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65`. No controller guard was bypassed.
+4. Recovery-loader diagnostics now report expected/actual SHA and symlink state. Its guard-file pin is `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`.
+5. Downstream pins were rebound bottom-up: recovery-12 blob `e949631f88892dc8815e5e06eaa6d4b21e153093`; recovery-21 wrapper SHA-256 `ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5`; integrated-stage SHA-256 `f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc`; RuntimeDeploy pins that exact stage.
+
+## Verification — do not overstate
+
+- Diagnostic PR run on earlier head `6747a26`: FAIL at controller guard, and it exposed the exact composed Runtime SHA above.
+- Intermediate PR run on `c39d42a`: its verify job failed at the recovery loader because the expected guard hash was stale (`38584…)); the loader now prints both hashes and its pin has been rebound to the current exact guard bytes. This run is stale relative to the current tree.
+- Current code head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: 58 exact-head check-runs were registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at the last poll. Push-only checks on the identical tree at `5a838dd` were queued (consumer Python 3.13/3.14 and offline-bridge-security); the earlier staged/integrated PR run `45478352959` was still running on the stale `c39d42a` head. Exact current staged/integrated acceptance is therefore **PENDING / NOT_VERIFIED**.
+- LOCAL_LINUX full repository suite: **BLOCKED / NOT_RUN**; no checkout is mounted and `git ls-remote` failed DNS resolution.
+- Redmi: **REDMI_UNVERIFIED**. The latest shared receipt remains AI `STOPPED_BY_USER`, autostart OFF, release `8d93236` installed; no fresh private receipt was obtained and no device action was taken.
+- Release: **NOT_RELEASED**. A GitHub push is not deployment.
+
+## Cross-lane state and next executable work
+
+- #2464 C3 prefill/C4 receipt/warm retention/exact greeting fastpath: 31/32 check-runs SUCCESS, 1 SKIPPED, no failures; DRAFT / NOT_RELEASED.
+- #2451 guarded native receiver probe: 21/22 SUCCESS, 1 SKIPPED, no failures; probe not run and production B3 OFF.
+- #2450 Android ActionIntent/ActionOutcome: 11/12 SUCCESS; Android process-restart check still fails. QA #2427's ActivityScenario harness is green only on a separate stack; combined port/rebase remains pending.
+- First trigger the exact current #2462 pull-request matrix and inspect the loader/guard diagnostics. Repair only exact measured pins; keep B1 and B2, C4/C3 receipts and the C3 reserve. Once the fair path is green, coordinate Boss integration with #2464/#2451 and the QA-owned #2450 harness. Then continue the next unblocked whole-Canon path.
+- **Voice path (partial, not full voice learning):** the release branch already contains `speech_intent.py`, `speech_output.py` and the TTY-only `:voice status|on|off|speak` operator route. `:voice on` only enables the Termux system-TTS fallback; playback still requires explicit `:voice speak`. The path persists typed `ActionIntent`/`ActionOutcome`, reports `audibility_verified=false`, records no microphone data and uses no trainable vocoder. New PR #2479 adds a real Runtime/SQLite/Operator test with a fake local TTS executable; its 5 exact-head checks are QUEUED. Redmi audibility, trainable speech decoder/vocoder, raw acoustic learning and full-duplex/barging-in remain OPEN.
+- **User action:** NONE. No manual Termux command, restart, model/weight swap or permission change is requested.
+
+---
+
 # CURRENT USER ACTION / RELEASE STATUS — Core & Harness run 22 (2026-11-24 19:24 UTC)
 
 **No user action is required. No manual Termux command, restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell access, model/weight swap or permission change is requested.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`.
@@ -1879,3 +1914,74 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Core & Harness — 2026-11-25 checkpoint
+
+**Release base remains** `gpt6/v13-private-remote-bridge-20261111` @ `8d93236c753f0194224c19edc7411d8d7082b1d6`. Nothing in this checkpoint is released or installed.
+
+### Fair B1/B2 runtime and native receiver chain
+
+- PR #2478 head `55db58ae053c0e93430015a002ca620f8489bcc3`: 28 exact check-runs, 13 SUCCESS / 14 FAILURE / 1 SKIPPED. Do not call this head green.
+- PR #2485 source-pin rebind head `358b08934f3f36c37562dea02449fea649adb1a9`: 11/11 check-runs SUCCESS; based on #2478.
+- PR #2488 native receiver v3 head `b8b43910a67a1b706be22e42f4e9cbcfa6de1fa6`: 17/17 check-runs SUCCESS; based on #2485. It carries the fair-budget runtime chain and adds a bounded four-pair B1/B2→B2/B1/C3 native input-embedding diagnostic matrix, exact model/source binding, one-shot local TTY approval, cancellation/deadline and a Runtime-close lease.
+- Exact CI evidence on #2488: pinned llama.cpp `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` Linux x86_64 CMake Release build; `native_latent_receiver --selftest` PASS and `--version` PASS; Android `arm64-v8a` / API 26 cross-compile PASS; staged/integrated regression 424 passed, 3 skipped, 58 subtests passed; Python 3.13/3.14, owner-read and offline-security checks PASS.
+- **Not proven:** no GGUF was loaded, no real sender/receiver model pair was executed, no trained alignment, gradient, semantic utility, retention or Redmi result. Production B3 remains OFF. Cross-compile is not a Redmi test.
+
+### Source lineage and Android ActionOutcome
+
+- On the #2488 composed code path, `focal.py::_action_provenance` binds ActionSelection to the current event plus admitted Memory/observer sources and the B1/B2 OfferPacket + QueryPacket provenance, including Context OS, Enlightened Space and body-view refs. It checks same-session origin, source readability/digest and the exact offer/query binding. `test_action_selection_binds_offer_query_context_and_survives_restart` verifies the complete ref set reaches the T8 source consumer and survives Runtime restart. This is lineage evidence, not semantic attention or JEPA weight-learning proof.
+- PR #2481 Android ActionIntent/ActionOutcome head `545ec845a35a4567aeaf7487d6765edf2229176f` remains DRAFT and stacked on #2450/#2356, not on the release branch. At last readback it had 16/17 checks SUCCESS and one Android process-death emulator job IN_PROGRESS. Companion-outcome tests: 64 passed on Python 3.13 and 64 on Python 3.14; staged-runtime and integrated-regression PASS; Android companion assemble/unit PASS.
+- New regression verifies that a signed receipt is exposed to B1_DETAIL, B2_GIST and C3_LANGUAGE only as CONTROL_ONLY context on the immediately following event, and is not force-included after that event. A dispatch receipt does not prove the app became visible or that the device observed the result.
+- No APK installation, pairing, accessibility/screen action, CHAT_SEND, update request or Redmi action was performed.
+
+### Environment and deployment boundary
+
+- LOCAL_LINUX full checkout/compile/pytest: BLOCKED / NOT_RUN. No repository checkout is mounted; `git ls-remote` failed because GitHub DNS could not resolve.
+- CI is CI evidence only. Android emulator/cross-compile is not TERMUX/REDMI proof.
+- Last authenticated phone baseline remains release `8d93236` installed, updater enabled, AI STOPPED_BY_USER. No fresh private receipt was requested this run. REDMI_UNVERIFIED; no candidate deployed. The existing updater was not used because neither candidate is integrated/released.
+- No model, weight, permission, user data or installed runtime was changed.
+
+### Research note
+
+R-116 audits the pinned upstream `llama.cpp` C API: `llama_batch.embd` is documented as embedding input when token IDs are NULL; `llama_get_embeddings_ith` and `llama_get_logits_ith` expose per-token receiver outputs. The pinned upstream LICENSE is MIT. This validates the API and dependency license, not cross-model semantic alignment. No source or weights were copied.
+
+### Next executable steps
+
+1. Finish the exact #2481 Android process-death emulator check; fix only a reproduced failure, then request independent QA/Boss review and compose it onto the newest compatible companion integration base.
+2. Request independent Boss review of #2485/#2488 and integrate the fair B1/B2 + receiver diagnostic chain only after the exact combined source-pin and consumer matrix is green.
+3. Keep production B3 OFF. Only after safe integration and a verified installed build may a separate explicit user decision authorize one local one-shot model probe. Preserve zero/shuffle/repeat/parity/OOD, source-disjoint holdout, cancellation and rollback gates.
+4. Continue whole-Canon work after the checkpoint: actual Redmi B1/B2 offer quality/latency, correct C3 output, native consumed-organ telemetry, and real learned latent/weight paths remain open.
+
+**User action required now: NONE.** A future local native-model probe requires a separate explicit approval after integration/installation.
+
+
+### Exact-head update — PR #2481 Android process-death result — 2026-11-25
+
+The previously pending #2481 emulator job has now completed. Head `545ec845a35a4567aeaf7487d6765edf2229176f` is **17/17 check-runs SUCCESS**. The Android API-33 x86_64 GitHub-hosted emulator test passed: Espresso verified the visible Stop control; after Activity teardown and provider restart, the new process remained STOPPED; PID/start identity changed from `2176@493104` to `2621@560711`. The test invokes the real button listener with `View.performClick()` after view-visibility checks; it does not claim physical touch injection.
+
+This is emulator/CI evidence only. It is not a Redmi install, Termux run, signer pairing, Accessibility/screen capture, real-device action or user-visible phone confirmation. #2481 remains DRAFT / NOT_RELEASED, stacked on #2450/#2356, and awaits independent QA/Boss review and safe rebase/compose.
+
+
+### Exact-arithmetic fastpath candidate — #2488
+
+The #2488 composed staged Runtime test `test_exact_arithmetic_is_date_safe_and_reaches_runtime_c5_broker_world` verifies `2+2`, `Was ist 2+2?` and `Wie viel ist 2+2?` return `4`, date-shaped subtraction/division is held unless explicitly requested, and the result reaches ActionSelection, C5, OutputBroker, EgressCheck and ExperienceRecord. The test asserts no native model load, no normal B1/B2 route, no semantic retrieval, and no optional recall. **Important:** the staged manifest is still `SHADOW_REVIEW_ONLY`; this is not released or installed and does not yet prove the reported Redmi 2+2 defect is fixed.
+
+### Voice output test-only PR #2479
+
+The current release base already contains the explicit Termux system-TTS fallback (`:voice status|on|off|speak`), OFF by default and explicit-command only. PR #2479 changes tests only. Exact head `dce46db13068d95443db060327202dec45b6701e`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED. Staged audio/arithmetic: 53 passed + 26 subtests on Python 3.13 and the same on Python 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Two test-fixture defects were corrected (operator origin and fake TTS script newlines). This is fake-CLI Runtime/SQLite evidence only; no real Android audio, audibility, microphone, raw-ear learning, trainable decoder/vocoder or full-duplex proof. No device command was sent.
+
+
+---
+
+# Core & Harness — run 26 — 2026-11-25
+
+- **Code PR:** [#2488](https://github.com/RedMentos/Aii/pull/2488), branch `core/v14-native-probe-fair-budget-20261125-run1`, exact head `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e`, DRAFT / NOT_RELEASED.
+- **New function:** `brain_panel.status` now exposes B1/B2 native attempt metrics and correlates persisted OfferPackets → C4 selected IDs → C3's native rendered-offer receipt. It compares `prompt_n + cache_n` with the exact `LLAMA_SERVER_TOKENIZE` count and reports `predicted_n` against generated-token count. The output excludes raw prompt text, offer summaries, source refs and resource samples. It explicitly does not prove semantic attention/use.
+- **Tests:** local isolated Python checks 5/5 accounting cases + 1/1 body-delivery/privacy case; GitHub exact-head CI 7 workflow runs / 13 jobs SUCCESS; new panel tests 5 passed on Python 3.13 and 3.14; native receiver tests 27 passed; staged/integrated regression 424 passed, 3 skipped, 58 subtests passed; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a/API 26 cross-compile PASS; public privacy scan CLEAN.
+- **Environment limits:** full local Aii checkout/suite BLOCKED / NOT_RUN because GitHub DNS resolution failed. Android cross-compile and GitHub emulator are not Redmi tests. Redmi remains REDMI_UNVERIFIED; no fresh receipt or device action was taken. Preserve the prior AI STOPPED_BY_USER state.
+- **Release:** NOT_RELEASED. PR #2488 remains DRAFT and stacked on #2485/#2478. A GitHub push is not deployment. Production B3 remains OFF; no GGUF was loaded and no native model-pair probe was run.
+- **Related Android branch:** #2481 head `545ec845a35a4567aeaf7487d6765edf2229176f` is 17/17 green with API-33 x86_64 emulator process-death/Stop-persistence PASS; still DRAFT / NOT_RELEASED, QA/Boss review and safe compose pending.
+- **Next:** Boss/QA review and compose the fair B1/B2 + native receiver chain, then continue Android action/outcome integration. Any local native probe requires reviewed installation, a fresh installed-SHA receipt and separate explicit user approval.
+
+**User action: NONE.** No Termux command, restart, update request, model download/swap, permission change or device action is requested.

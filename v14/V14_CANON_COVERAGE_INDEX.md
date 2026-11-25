@@ -7,6 +7,20 @@
 
 **Default pro Eintrag:** `CANON_REQUIREMENT / IMPLEMENTATION_UNVERIFIED / COVERAGE_REVIEW_PENDING`. Eine Zuordnung oder `DONE` verlangt konkrete Datei/Funktionspfad + Consumer + Test + Evidenz und kompatible Nutzerentscheidung. Ein Quellabschnitt kann mehrere atomare Anforderungen enthalten und später aufgeteilt werden.
 
+## Current P0 evidence overlay — Core fair B1/B2 recovery — run 23 (2026-11-24T20:18:58.353Z)
+
+- PR #2478 current branch head `4fb95610c5593803419b5dbaaa82fc6e709d6543`, based on release `8d93236c753f0194224c19edc7411d8d7082b1d6`; DRAFT / NOT_RELEASED.
+- Added the exact composed Runtime SHA `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65` to the fail-closed controller guard. The guard reports rejected hashes; the recovery loader reports expected/actual hash and symlink state. Exact guard file SHA-256: `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`.
+- Fixed the C4 focal overlay's stale arithmetic/C5 anchor and updated the fair-scheduler postcommit regression to verify B2's bounded pre-answer slice after B1 expiry, without duplicating a delivered offer.
+- Downstream recovery/stage/deployer pins are rebound bottom-up. Exact-head PR #2478 has 58 check-runs registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Staged-runtime/integrated-regression and all required consumers are pending; do not promote the prior c39d42 loader failure or queued status to acceptance.
+- LOCAL_LINUX full suite **BLOCKED / NOT_RUN** (no checkout; DNS failure). Redmi **REDMI_UNVERIFIED**, last shared receipt AI STOPPED_BY_USER; no device action. Correct native B1/B2 offers, consumed C4/C3 contribution and 20-turn acceptance remain OPEN.
+
+## Voice I/O evidence overlay — run 23 (2026-11-24T20:26:03.098Z)
+
+- Existing code: `v13/speech_intent.py` binds FINAL C3 text to message/event identity and a SHA-256; `v13/speech_output.py` uses a serialized Termux system-TTS fallback and persists typed `ActionIntent`/`ActionOutcome`; `v13/operator.py` exposes TTY-only `:voice` commands. Playback requires both `:voice on` and explicit `:voice speak`; no automatic playback, microphone access or trainable vocoder is claimed.
+- Existing `test_speech_output.py` uses a fake CLI and stub Runtime/Store. PR #2479 adds a real Runtime/SQLite/Operator test with a fake local TTS executable; exact head `bcc99e8f9620c7162aae218324a611e2fdf7730c` has 5/5 checks QUEUED at last poll.
+- Status: **WIRED_SYNTHETIC / NOT_NATIVE_VERIFIED**. Redmi audibility, separate trainable speech decoder/vocoder, raw acoustic learning, full-duplex/barging-in and retention/restart remain OPEN. No device command or APK install was performed.
+
 ## Historische Quellblöcke
 
 - HISTORICAL: **1** Überschriften
@@ -2376,3 +2390,46 @@ This is a dated evidence overlay, not a change to the 1,255-heading historical i
 | Voice output contract | `v13/code/v13/speech_intent.py`, `speech_output.py` | Existing explicit TTY-only Termux system-TTS fallback remains source-bound and does not auto-play or capture audio. | Not a trainable speech decoder/vocoder, not full duplex, no microphone capture or Redmi voice proof. |
 
 **Platform boundary:** last authenticated private metadata still reports release 8d932 installed, auto-update enabled, AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE and B1/B2 TIME_BUDGET. Fresh read-only refresh had NO_LIVE_RECEIPT. Full LOCAL_LINUX repository suite NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. All PRs above remain draft/candidate; none is a release or proof of complete V14/V13 behavior.
+
+
+## Candidate evidence overlay — Core & Harness — 2026-11-25
+
+This overlay preserves the 1,255-heading historical inventory and does not promote any Canon family to COMPLETE.
+
+| Canon family / contract | Current candidate path | Exact evidence | Remaining acceptance boundary |
+|---|---|---|---|
+| B1_DETAIL / B2_GIST fair pre-answer path | #2478 → #2485 → #2488 | #2478 head 55db58a: 13/28 success, 14 fail, 1 skipped. #2485 head 358b089: 11/11 success. #2488 head b8b4391: 17/17 success; integrated regression 424 passed, 3 skipped, 58 subtests. | CI/synthetic only; no Redmi native offer success, no quality/latency acceptance. |
+| C5 ActionSelection source lineage | `v13/code/v13/focal.py::_action_provenance`; `test_focal.py::test_action_selection_binds_offer_query_context_and_survives_restart` | Exact event + admitted Memory/observer + B1/B2 OfferPacket/QueryPacket + Context OS + Enlightened Space + body-view refs; same-session/digest/readability validation; T8 source consumer and Runtime restart regression included in #2488 integrated suite. | Source lineage does not prove semantic use, learned reward, numeric JEPA update or retention. |
+| B3 / native receiver | `native_latent_receiver.cpp`, `native_latent_receiver.py`, pair-matrix operator; PR #2488 | Pinned llama.cpp b29c606 Linux x86_64 build/selftest PASS; Android arm64-v8a cross-compile PASS; 17/17 exact check-runs. | No GGUF/model execution, no sender→receiver utility, gradients, held-out retention, OOD or Redmi proof. Production B3 OFF. |
+| Android ActionIntent / ActionOutcome | #2450/#2481 companion runtime, signed receipt and next-event JEF context | #2481 head 545ec845: 64 companion-outcome tests pass on Python 3.13 and 3.14; staged/integrated and companion assemble/unit pass; 16/17 checks at last read, emulator process-death job pending. | DRAFT/NOT_RELEASED; emulator pending at last poll; no APK install, signer pairing, Redmi action or device proof. Receipt remains CONTROL_ONLY, not observation/reward. |
+| Local / device evidence | Current runtime and release branch | No local checkout; git ls-remote DNS failure. Last authenticated device baseline remains installed 8d93236, AI STOPPED_BY_USER. | LOCAL_LINUX full suite NOT_RUN; REDMI_UNVERIFIED; no update request or device action. |
+
+No model/weight swap, permission change, private log access or user-data mutation occurred. No result here promotes B3, native body learning, Android control, or whole-system acceptance.
+
+
+## Candidate evidence overlay — Android ActionOutcome emulator completion — 2026-11-25
+
+| Canon family / contract | Exact evidence | Remaining acceptance boundary |
+|---|---|---|
+| Android companion Stop/persisted-OFF/process-death | PR #2481 head `545ec845`, 17/17 exact checks SUCCESS. API-33 x86_64 GitHub emulator passed Espresso visible Stop, process teardown/restart, new PID/start identity `2176@493104 → 2621@560711`, provider state remained OFF. | Emulator only; no Redmi/Termux install, signer pairing, physical touch, Accessibility, screen capture or real-device action. Draft stack #2450/#2356 awaits independent review and integration. |
+| Android ActionOutcome → B1/B2/C3 | Same head: 64 tests on Python 3.13 and 64 on 3.14; CONTROL_ONLY receipt reaches B1/B2/C3 on the immediate next event and expires after that event. | Does not prove observation, reward, T8 learning, app visibility on real phone or model-weight updates. |
+
+
+## Candidate evidence overlay — exact arithmetic and voice output tests — 2026-11-25
+
+| Canon family / contract | Exact evidence | Remaining acceptance boundary |
+|---|---|---|
+| C5 deterministic arithmetic / correct obvious-answer path | #2488 staged Runtime test verifies `2+2`, `Was ist 2+2?`, `Wie viel ist 2+2?` → `4`; date-shaped inputs require explicit math cue; ActionSelection/C5/Broker/Egress/ExperienceRecord; no model load or normal B1/B2 route. | Manifest explicitly SHADOW_REVIEW_ONLY; no release or Redmi receipt. Does not yet prove the reported installed 2+2 defect is fixed. |
+| Voice output fallback | #2479 test-only PR head `dce46db`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED; 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. | Fake Termux TTS CLI only; no real audio/audibility/microphone/raw-ear learning/trainable decoder/full duplex/Redmi. TTS implementation already exists in release base; PR adds tests only. |
+
+
+## Evidence overlay — Core run 26 (2026-11-25): native input accounting and same-turn organ delivery
+
+- **Canon family:** B1_DETAIL / B2_GIST offer generation → C4 focal selection → C3_LANGUAGE prompt input; F10 native prompt accounting and user-facing diagnostics.
+- **Implementation:** PR #2488 `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e`, `v13/code/v13/brain_panel.py`; consumer: `:brain status` / WebView brain status.
+- **Measured path:** per-role B1/B2 attempt status and native prompt counters; persisted OfferPacket existence; C4 selected-offer IDs; C3 native template offer IDs; llama.cpp `prompt_n + cache_n` versus exact tokenizer count; `predicted_n` versus generated tokens.
+- **Tests:** `test_brain_panel_native_evidence.py` 5/5 on Python 3.13/3.14; native receiver tests 27 passed; staged/integrated regression 424 passed / 3 skipped / 58 subtests; pinned Linux native build/selftest; Android arm64 cross-compile; public privacy scan CLEAN.
+- **Negative/privacy controls:** prompt-token mismatch, missing cache count, synthetic runner, non-FINAL attempt, packet-ID correlation and private text/source/resource sentinels. No raw prompt, offer text, source refs or resource samples are returned.
+- **Environment:** LOCAL_PYTHON isolated snippets PASS; CI PASS; CI Linux native build PASS; Android arm64 cross-compile PASS; full LOCAL_LINUX Aii suite BLOCKED by GitHub DNS; REDMI_UNVERIFIED.
+- **Acceptance:** PARTIAL / CI_VERIFIED_DIAGNOSTIC_ONLY. Packet selection and template inclusion are not semantic attention/use. No native GGUF pair, learned B3, weight update, Redmi runtime, release or user-data mutation is proven.
+- **Rollback:** revert the PR/commit before integration; the panel is read-only and adds no persistent user data or device-side state.
