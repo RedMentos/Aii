@@ -2421,3 +2421,15 @@ No model/weight swap, permission change, private log access or user-data mutatio
 |---|---|---|
 | C5 deterministic arithmetic / correct obvious-answer path | #2488 staged Runtime test verifies `2+2`, `Was ist 2+2?`, `Wie viel ist 2+2?` → `4`; date-shaped inputs require explicit math cue; ActionSelection/C5/Broker/Egress/ExperienceRecord; no model load or normal B1/B2 route. | Manifest explicitly SHADOW_REVIEW_ONLY; no release or Redmi receipt. Does not yet prove the reported installed 2+2 defect is fixed. |
 | Voice output fallback | #2479 test-only PR head `dce46db`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED; 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. | Fake Termux TTS CLI only; no real audio/audibility/microphone/raw-ear learning/trainable decoder/full duplex/Redmi. TTS implementation already exists in release base; PR adds tests only. |
+
+
+## Evidence overlay — Core run 26 (2026-11-25): native input accounting and same-turn organ delivery
+
+- **Canon family:** B1_DETAIL / B2_GIST offer generation → C4 focal selection → C3_LANGUAGE prompt input; F10 native prompt accounting and user-facing diagnostics.
+- **Implementation:** PR #2488 `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e`, `v13/code/v13/brain_panel.py`; consumer: `:brain status` / WebView brain status.
+- **Measured path:** per-role B1/B2 attempt status and native prompt counters; persisted OfferPacket existence; C4 selected-offer IDs; C3 native template offer IDs; llama.cpp `prompt_n + cache_n` versus exact tokenizer count; `predicted_n` versus generated tokens.
+- **Tests:** `test_brain_panel_native_evidence.py` 5/5 on Python 3.13/3.14; native receiver tests 27 passed; staged/integrated regression 424 passed / 3 skipped / 58 subtests; pinned Linux native build/selftest; Android arm64 cross-compile; public privacy scan CLEAN.
+- **Negative/privacy controls:** prompt-token mismatch, missing cache count, synthetic runner, non-FINAL attempt, packet-ID correlation and private text/source/resource sentinels. No raw prompt, offer text, source refs or resource samples are returned.
+- **Environment:** LOCAL_PYTHON isolated snippets PASS; CI PASS; CI Linux native build PASS; Android arm64 cross-compile PASS; full LOCAL_LINUX Aii suite BLOCKED by GitHub DNS; REDMI_UNVERIFIED.
+- **Acceptance:** PARTIAL / CI_VERIFIED_DIAGNOSTIC_ONLY. Packet selection and template inclusion are not semantic attention/use. No native GGUF pair, learned B3, weight update, Redmi runtime, release or user-data mutation is proven.
+- **Rollback:** revert the PR/commit before integration; the panel is read-only and adds no persistent user data or device-side state.
