@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T12:13:14Z",
+  "updated_at": "2026-11-25T13:43:43Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -468,16 +468,16 @@
       "scope": "13-D bounded RAW EAR cue deltas; 182-parameter process-local LMS; FINAL-only updates; consent-scoped reset; capped A4 novelty",
       "acceptance": "Frozen-weight held-out utility beats persistence/no-predictor/shuffled controls; revocation/reset; no C3/external_interrupt side effects; Android microphone only through explicit AudioRecord provider",
       "proof_environment": "LOCAL_LINUX_ISOLATED + CI_SYNTHETIC; REDMI_UNVERIFIED",
-      "next_step": "Complete exact VAD comparison and staged/integrated CI for #2498; then add frozen-weight held-out acoustic controls and source/voice retention checks; integrate with QA AudioRecord provider only after its explicit consent/receipt contract exists.",
+      "next_step": "Re-run exact VAD comparison, staged/integrated regression, runtime deployment integrity and two-checkout migration after rebinding integrated_audio_context_candidate.py to the exact audio_voice_cues.py blob a8fc1ab23b79231b44738892e3c120771c072687. Then add frozen-weight held-out acoustic controls against persistence/no-predictor/shuffled cues and source/voice retention; Android AudioRecord only after QA's explicit provider/receipt contract.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T12:13:14Z",
+      "last_checkpoint": "2026-11-25T13:43:43Z",
       "latest_candidate_pr": {
         "pr": 2498,
-        "head_sha": "58aee47736ddddde7d19c390bd878b37481f5fe1",
+        "head_sha": "0cd31098110ee36bb63078947cfed1c444d3ff04",
         "base": "research-perception/latent-event-scope-20261125-run12",
-        "state": "OPEN_DRAFT_CI_PARTIAL",
+        "state": "OPEN_DRAFT_CI_RERUN_AFTER_SOURCE_PIN_FIX",
         "scope": "A3 RAW EAR next-delta predictor; process-local/consent-scoped; A4 novelty cap 0.10; no persistent weights",
-        "ci": "RAW_EAR_FASTPATH 126/126 PASS on Python 3.13/3.14; first VAD comparison failure was stale audio_voice_cues.py blob pin, now rebound; exact compare retest and staged/integrated pending"
+        "ci": "Prior exact staged/integrated run #5037 failed because integrated_audio_context_candidate_20261121.py still pinned audio_voice_cues.py to b18e450162b062b09368a12b1ca18924ed8c5025; exact current source blob is a8fc1ab23b79231b44738892e3c120771c072687. This single stale pin was rebound in commit 0cd31098110ee36bb63078947cfed1c444d3ff04. RAW EAR fastpath 126/126 and VAD comparator #594/#713 previously passed; fresh compare #595, staged/integrated #5065, runtime integrity #2522 and NumPy backend #714 are now IN_PROGRESS."
       }
     }
   ],
