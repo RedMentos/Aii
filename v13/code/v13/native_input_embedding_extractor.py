@@ -157,6 +157,8 @@ def extract_native_input_embedding_rows(
     if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= MAX_TIMEOUT_SECONDS:
         raise NativeInputEmbeddingError("native extractor timeout is outside the bounded limit")
 
+    if model_root is None or expected_model_sha256 is None:
+        raise NativeInputEmbeddingError("registered model root and manifest hash are required")
     binary = _safe_file(binary_path, "native extractor", executable=True)
     model = _safe_file(model_path, "installed model")
     if model_root is not None:
@@ -244,7 +246,10 @@ def extract_native_input_embedding_rows(
         raise NativeInputEmbeddingError("native extractor vocabulary size is invalid")
     if any(token_id >= vocab_size for token_id in token_ids):
         raise NativeInputEmbeddingError("native extractor token ID is outside its vocabulary")
-    if receipt.get("requested_token_ids") != list(token_ids):
+    returned_ids = receipt.get("requested_token_ids")
+    if (not isinstance(returned_ids, list)
+            or any(type(token_id) is not int for token_id in returned_ids)
+            or returned_ids != list(token_ids)):
         raise NativeInputEmbeddingError("native extractor token IDs/order differ from request")
     dimension = receipt.get("embedding_dim")
     expected_elements = len(token_ids) * dimension if type(dimension) is int else 0
