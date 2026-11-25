@@ -61,3 +61,31 @@ PR #2509 final documentation/ledger/board head: `47ccf435dcf66350ba6972b36a5df05
 - PR #2509 returned to DRAFT. It remains stacked on #2494 and NOT_RELEASED. Code-tested SHA is 6523b8; subsequent commits, if any, are documentation/board only.
 
 No user action required. Core/Integrator owns the source-lifecycle rebind; Perception will not weaken the exact pin.
+
+
+## R-142 — B3 tokenwise adapter evidence and RAW EAR → C3 consumer audit (2026-11-25)
+
+### B3 / cross-model alignment
+
+Perception PR #2508 (`research-perception/v14-native-tokenwise-session-fit-20261125-run21`) is now READY_FOR_REVIEW and mergeable on its stacked #2507 base. Exact code head `e333b5c3da2448ef6d188f2278672f7f692ac76e` has:
+- tokenwise adapter / source alignment: 83 passed on Python 3.13 and 83 on Python 3.14;
+- staged runtime: 255 passed, 10 skipped, 47 subtests passed;
+- integrated regression: 424 passed, 3 skipped, 58 subtests passed.
+
+The concrete improvement is whole-session holdout: pair records bind `session_id`; the fitter rejects overlap between train and holdout and emits a digest-bound fit manifest. This closes a session-leakage route that source-ID/source-hash separation alone did not close. It remains an **offline PCA+ridge adapter candidate**. It does not prove native GGUF hidden-state exchange, receiver inference/task utility, B1/B2 operation, or Android. The parent #2507 branch advanced one workflow-trigger commit; #2508 contains the same trigger line plus its own session-fit trigger and remains mergeable. No force-push was used.
+
+Core PR #2499 is the separate native-prefix receiver step; its latest branch head was `8502afe...` at this check and no exact workflow run was available. The receiver path must still be tested against exact-message, no-message, zero, shuffled, repeated and OOD controls, with restart/rollback. B3 remains OFF / NOT_ACCEPTED until real task-level receiver utility is demonstrated.
+
+Research caveat: the cross-model transfer paper cited in the current B3 work (`arXiv:2606.03280`) was not fully accessible in this run; only the existing PR's abstract-level note is available. Do not claim a full-paper review or use its abstract as proof of native utility.
+
+### Audio / A-plane consumer audit
+
+The active RAW EAR voice path in PR #2498 already validates and attaches the 13-cue nonverbal vector to the A5 acoustic segment, records a non-identifying `speaker_change_decision`, and rebuilds the final C3 admission summary with activity/voicing/F0/energy/prosody plus speaker-change evidence under the existing consent/finality gates. The older generic `audio_perception_bridge` remains RMS/ZCR-only, but it is not the richer RAW EAR voice path. A duplicate C3 bridge patch would be redundant, so none was made.
+
+The remaining #2498 blocker is its staged source-lifecycle lock rejecting the updated `audio_voice_cues.py` blob. Core/Integrator must recompose the strict source pin and rerun staged/integrated/migration/consumer. Android microphone feed and Redmi-native acoustic evidence remain unverified.
+
+### Relation to this run's A3 work
+
+PR #2509 remains DRAFT: exact A3 temporal 74/74, frame ingress 55/55, source-lineage 39/39 on Python 3.13/3.14 and runtime deployment PASS; staged/integrated fail only at the inherited Core `vision.py` source pin. The ERROR_GATED ablation still saves synthetic update steps at a measured MAE/retention cost, so it stays shadow-only.
+
+**Next:** Core/Integrator recompose both the #2494/#2509 `vision.py` and #2498 `audio_voice_cues.py` source-lifecycle closures. Core completes #2499 native-prefix receiver; Perception supplies source/session-disjoint real pairs and receiver utility controls after that. No model or Android permission change; user action **keine Aktion nötig**.
