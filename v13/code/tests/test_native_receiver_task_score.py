@@ -190,6 +190,6 @@ def test_anchor_candidate_helper_consumes_exact_perception_output(tmp_path):
         environment="SYNTHETIC", binary_path=binary,
     )
     assert result["task_score_receipt"]["status"] == "SCORED"
-    assert result["task_score_receipt"]["arguments"]["condition"] == "LATENT_CANDIDATE"
-    assert result["task_score_receipt"]["arguments"]["message_source_ref"] == SOURCE
-    assert result["task_score_receipt"]["arguments"]["input_sha256"] == input_sha
+    assert result["task_score_receipt"]["condition"] == "LATENT_CANDIDATE"
+    assert result["task_score_receipt"]["message_source_ref"] == SOURCE
+    assert result["task_score_receipt"]["input_sha256"] == input_sha
