@@ -2040,5 +2040,5 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Exact PR CI is pending.
 - The new builder returns native receiver prefill geometry but is not yet called by Core's runtime capture/receiver lane. It does not prove semantic utility or trained latent exchange.
 - Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
-- No fresh authenticated device receipt arrived in this checkpoint. Last available private snapshot is 2026-11-24 and is historical. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
+- Owner-read DIAGNOSTICS produced NO_LIVE_RECEIPT in this checkpoint. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but also AI STOPPED_BY_USER; this is historical, not proof of today's installed state. No release is ready to deploy. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
 - The native selected-row extractor and receiver still need real GGUF utility comparisons, exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.
