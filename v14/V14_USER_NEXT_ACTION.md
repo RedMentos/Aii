@@ -1,3 +1,26 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-25 03:21 CET (Research & Perception Run 25)
+
+**Current product result:** PR [#2470](https://github.com/RedMentos/Aii/pull/2470) now connects source-bound A3 projected temporal change to the existing A4 attention-modulation consumer. When A3 status is `MEASURED`, its contribution is `min(0.15, 0.15 * change_score)`; it is capped, attention-only, and grants no truth, learning or action authority. No weights changed.
+
+- Code/test SHA: `2b96fb9ce919fd5de1ee0ead6c5c5f1e2fbc4a55`.
+- Code commits: `1fe511a` (temporal evidence), `ad6e3eb` (A4 readout), `2b96fb9` (consumer/negative-control tests).
+- Handoff: `v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_A4_TEMPORAL_SALIENCE_20261125.md`.
+- CI PASS: [run 45532096806](https://github.com/RedMentos/Aii/actions/runs/45532096806), Python 3.13 + 3.14, `py_compile` and 54/54 frame-ingress tests each.
+- CI PASS: privacy scan [45532097200](https://github.com/RedMentos/Aii/actions/runs/45532097200); private-bridge security [45532096814](https://github.com/RedMentos/Aii/actions/runs/45532096814).
+- CI FAIL: [A5 UI lease run 45532096819](https://github.com/RedMentos/Aii/actions/runs/45532096819), both Python 3.13 and 3.14. 17 passed, 5 subtests passed, 1 failed: `unsupported lifecycle source: vision.py` in the Core-owned `source_lifecycle_lock_integration_candidate.py`. Do not weaken or bypass the source pin.
+- LOCAL_LINUX: isolated formula/negative-control harness 6/6 PASS on Python 3.13.5. Full local repo pytest BLOCKED: no checkout mounted and GitHub clone failed at DNS/network.
+- Release: NOT_RELEASED; PR #2470 remains open. Redmi: REDMI_UNVERIFIED; no fresh phone receipt. Existing STOPPED_BY_USER state respected; no UPDATE_REQUEST, device command, model/weight change or permission change. User action: NONE.
+
+**Next executable action:** Core/Integrator rebinds the exact current `vision.py` hash and full lifecycle dependency closure; then reruns A5 UI lease, staged runtime, integrated regression, both consumers and migration. Perception follows with noise/shuffled-frame and source-disjoint calibration of the A3→A4 gain. Do not promote this attention signal to truth, learning or action authority.
+
+**Research:** R-150 now contains a full review of Future-OPSD (arXiv:2611.26954v1, 2026-11-20). It supports a later source-bound true-outcome vs shuffled/unrelated-outcome contrast with a distillation/KL anchor, but the published Qwen3-VL-8B/9B setup requires 8×B200 and is not a Redmi candidate. No model or dataset was downloaded.
+
+**Source-of-truth naming issue:** the current `gpt6/v13-private-remote-bridge-20261111` refs expose `V14_LIVE_WORKPLAN.md`, `V14_TEAM_OPERATING_SYSTEM.md`, `V14_WORK_BOARD.json`, `V14_USER_NEXT_ACTION.md`, `V14_RESEARCH_LEDGER.md` and `V14_CANON_COVERAGE_INDEX.md`, but the exact requested `v14/README.md` and `V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` were not found there. The `v14/full-rewrite-20261119` branch instead contains `V14_MASTER_BLUEPRINT_RESEARCH_FULL_20261119.md` and its root `AGENTS.md` points to that filename. Boss/Integrator must reconcile the authoritative master filename/ref before any material master edit; no master was changed in this run.
+
+Run started: 2026-11-25 03:06:51 Europe/Berlin. Last verified checkpoint: 03:21:30. Completion time: UNKNOWN.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
