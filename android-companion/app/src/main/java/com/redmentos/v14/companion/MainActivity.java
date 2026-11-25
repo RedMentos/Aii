@@ -161,7 +161,11 @@ public final class MainActivity extends Activity {
         String[] labels = new String[pending.size()];
         for (int i = 0; i < pending.size(); i++) {
             CompanionDb.Action a = pending.get(i);
-            labels[i] = a.targetValue + " — " + a.actionId.substring(0, 8);
+            String capability = new JSONObject(a.requestJson).optString("capability");
+            String targetLabel = "open_url".equals(capability)
+                    ? "Open " + Canonical.httpsHost(a.targetValue)
+                    : "Launch " + a.targetValue;
+            labels[i] = targetLabel + " — " + a.actionId.substring(0, 8);
         }
         new AlertDialog.Builder(this).setTitle("Pending actions")
                 .setItems(labels, (dialog, which) -> {
