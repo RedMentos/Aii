@@ -256,6 +256,32 @@ def test_body_telemetry_is_bounded_and_invalid_store_shapes_fail_closed():
     assert brain_panel._body_offer_evidence(RaisingStore(), None) == []
 
 
+def test_missing_body_environment_marker_stays_unverified_even_with_native_c3_receipt():
+    query_id, packet_id = _id("pkt", "9"), _id("pkt", "a")
+    rows = _body_rows("B1_DETAIL", query_id, packet_id=packet_id)
+    attempt = json.loads(rows[0]["metrics"])
+    # Store.telemetry_metrics currently drops the nested synthetic marker.
+    # A missing marker must not be promoted to a native body execution claim.
+    attempt["runner"].pop("synthetic", None)
+    rows[0]["metrics"] = json.dumps(attempt)
+    runtime = _runtime(
+        receipt=_native_receipt(packet_id),
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=rows,
+    )
+    body = brain_panel._latest_native_evidence(runtime)["offer_flow"]["body_attempts"][0]
+    assert body["evidence_environment"] == "UNVERIFIED"
+    assert body["native_prefill_observed"] is True
+    assert body["native_generation_completed"] is True
+    assert body["consumption_state"] == "BODY_ATTEMPT_ENVIRONMENT_UNVERIFIED"
+    assert body["semantic_use_proven"] is False
+
+
 def test_duplicate_or_malformed_c4_and_template_ids_do_not_match():
     query_id, packet_id = _id("pkt", "7"), _id("pkt", "8")
     runtime = _runtime(
