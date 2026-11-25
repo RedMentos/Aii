@@ -68,13 +68,14 @@ jobs:
               print(f"{name} sha256={sha256(Path(name).read_bytes()).hexdigest()}")
           import re
           recovery = Path("v13/code/scripts/termux_runtime_recovery_candidate_20261112.py").read_text()
-          match = re.search(
-              r"load\\(code_dir, 'scripts/record_only_controller_guard_20261116\\.py',\\s*'([0-9a-f]{64})'\\)",
-              recovery,
-          )
-          if not match:
+          needle = "control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',"
+          start = recovery.find(needle)
+          if start < 0:
               raise SystemExit("recovery candidate guard pin not found")
-          expected = match.group(1)
+          match = re.search(r"[0-9a-f]{64}", recovery[start:start + 300])
+          if not match:
+              raise SystemExit("recovery candidate guard hash not found")
+          expected = match.group(0)
           actual = sha256(Path("v13/code/scripts/record_only_controller_guard_20261116.py").read_bytes()).hexdigest()
           print(f"CORE_RECOVERY_GUARD_PIN expected={expected} actual={actual} matches={expected == actual}")
           PY
