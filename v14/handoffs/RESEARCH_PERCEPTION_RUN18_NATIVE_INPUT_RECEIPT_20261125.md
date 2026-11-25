@@ -39,4 +39,4 @@ Core owns the native selected-row wrapper and runtime consumer. It must independ
 
 ## Next action
 
-Run the exact PR CI, then hand the schema-v2 receipt to Core for native wrapper integration. Do not change the installed llama.cpp pin or any model on the Redmi without separate reviewed evidence and consent.
+CI is green. Core should now consume the schema-v2 receipt in its native selected-row wrapper and runtime producer, independently verify the model/extractor hashes, prevalidate all token IDs, and require the exact element count. Then run real GGUF sender/receiver task controls and learning/retention gates before any Redmi validation. Do not change the installed llama.cpp pin or any model on the Redmi without separate reviewed evidence and consent.
