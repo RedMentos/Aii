@@ -161,8 +161,7 @@ public final class MainActivity extends Activity {
         String[] labels = new String[pending.size()];
         for (int i = 0; i < pending.size(); i++) {
             CompanionDb.Action a = pending.get(i);
-            String capability = new JSONObject(a.requestJson).optString("capability");
-            String targetLabel = "open_url".equals(capability)
+            String targetLabel = a.targetValue.startsWith("https://")
                     ? "Open " + Canonical.httpsHost(a.targetValue)
                     : "Launch " + a.targetValue;
             labels[i] = targetLabel + " — " + a.actionId.substring(0, 8);
