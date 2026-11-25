@@ -1866,3 +1866,14 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 **Research:** R-133 reviews Geras & Sutton, “Multiple-source cross-validation,” ICML 2013/PMLR 28:1292–1300. The full paper supports source-level holdouts as a better estimate of out-of-source generalization than row-wise splits under source shift; its Amazon review-domain experiments are not an image or Android study. No code, dataset, weights or dependency were imported. Next research: near-duplicate image/source grouping and source-level uncertainty; do not treat distinct IDs as automatically independent.
 
 **Next internal action:** Boss/Integrator must recompose the exact current Perception source closure and strict pins, then rerun staged/integrated/consumer/migration. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.
+
+
+## Research & Perception checkpoint — 2026-11-25, PR #2494
+
+- **New code path:** session-local 16×16 A3 next-change LMS predictor, source/consent scoped; numeric pre-update prediction error and gradient/parameter-delta telemetry are exposed to A4 and the source-bound PerceptPacket as SHADOW_ONLY.
+- **Evidence:** LOCAL_LINUX isolated helper 8/8 PASS + py_compile PASS; synthetic 120-step predictor MAE 0.01350 vs persistence baseline 0.10000; orthogonal-pattern retention delta +0.00397 after 100 second-pattern updates. Full repository local suite BLOCKED/NOT_RUN. Exact PR CI must be read back before promotion.
+- **Current PR:** https://github.com/RedMentos/Aii/pull/2494, draft, stacked on #2486 → #2470. No release SHA; NOT_RELEASED.
+- **A4 remains unchanged:** 0.15 gain is not modified; predictive error does not yet modulate attention or action. No persistent model weights.
+- **Device:** REDMI_UNVERIFIED. Last known private V13OBS #115 (2026-11-24 09:28 UTC) reported installed 8d93236, auto-update enabled, AI STOPPED_BY_USER and native residency unavailable. No fresh receipt proves current updater status or installation.
+- **Next internal step:** poll exact CI; Core/Integrator recompose the #2465 strict vision.py source-lifecycle chain; then run source/session-disjoint tests on explicitly consented real visual sequences. No manual Termux command, model change or update request.
+- **User action:** **keine Aktion nötig**.
