@@ -57,3 +57,12 @@ PR #2501 added source-span alignment, but its validator only checked that alignm
 ## User action
 
 Keine Aktion nötig. No Termux command, model download, model swap or permission change is requested.
+
+
+#### Run 16 CI/device follow-up (2026-11-25)
+
+PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/Aii/pull/2502. Current code/test SHA: 408c074d3d07339d3d8f4bab47139a5279a13d40. Exact adapter workflow RUN_45643108802: 42/42 PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Runtime-deployment integrity RUN_45643108912: PASS on Python 3.11 and 3.14. The broader staged/integrated regression RUN_45643108732 was still IN_PROGRESS at the last check. The first attempt on 6955caf failed one shuffled-pairing negative fixture; the fixture was corrected and the new exact head passed.
+
+Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
+
+Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
