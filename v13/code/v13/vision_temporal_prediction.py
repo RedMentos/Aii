@@ -8,9 +8,10 @@ zero, so it can learn zero-to-event transitions without shifting non-zero
 contexts. It reports pre-update error against a persistence baseline. The default
 ALWAYS policy preserves one bounded LMS update per observation; ERROR_GATED
 is an experimental ablation that updates only while residual MAE exceeds
-max(1e-8, 0.25 × persistence MAE). The ablation is exposed as SHADOW_ONLY and
-does not control A4. Both states remain consent-scoped and are erased on
-reset/revocation.
+max(1e-8, 0.25 × persistence MAE). ERROR_HYSTERESIS uses separate persistence-
+relative open/close thresholds (0.10 / 0.05) to avoid threshold-band chatter.
+Both ablations are SHADOW_ONLY and do not control A4; all states reset on
+stream reset/revocation.
 """
 from __future__ import annotations
 
@@ -32,8 +33,8 @@ class A3TemporalPredictor:
     def __init__(self, *, learning_rate: float = 0.25,
                  warmup_updates: int = 4, max_gradient_norm: float = 1.0,
                  max_abs_weight: float = 2.0, update_policy: str = "ALWAYS",
-                 gate_open_ratio: float = 0.50,
-                 gate_close_ratio: float = 0.25) -> None:
+                 gate_open_ratio: float = 0.10,
+                 gate_close_ratio: float = 0.05) -> None:
         if (type(learning_rate) not in (int, float)
                 or not math.isfinite(float(learning_rate))
                 or not 0.0 < float(learning_rate) <= 1.0):

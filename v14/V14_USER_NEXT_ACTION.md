@@ -1915,3 +1915,18 @@ No user action required. Core/Integrator owns the source-lifecycle rebind; Perce
 - [PR #2498](https://github.com/RedMentos/Aii/pull/2498) RAW EAR already carries the 13-cue nonverbal voice vector, a non-identifying speaker-change decision, and activity/voicing/F0/energy/prosody into the final C3 admission summary under consent/finality gates. The generic legacy audio bridge is RMS/ZCR-only; the richer RAW EAR path is not. No duplicate bridge patch was made. Its staged source-lifecycle pin still needs Core recompose.
 - [PR #2509](https://github.com/RedMentos/Aii/pull/2509) remains DRAFT; focused A3/frame/source tests pass, staged/integrated blocked at the inherited Core `vision.py` pin. ERROR_GATED remains shadow-only because the synthetic update savings come with worse MAE/retention than ALWAYS.
 - Next: Core recompose #2494/#2509 vision and #2498 audio source-lifecycle pins; Core completes #2499 native receiver; Perception runs source/session-disjoint native-pair and task-utility controls after the receiver exists. User action: **keine Aktion nötig**.
+
+
+---
+
+# Research & Perception — A3 hysteresis follow-up (2026-11-25)
+
+- PR #2509 now adds a third A3 predictor policy, ERROR_HYSTERESIS, beside the unchanged ALWAYS and prior ERROR_GATED shadows. It is wired into the existing consent-scoped TemporalVisualEvidence output as error_hysteresis_shadow; A4 does not read it. Default open/close ratios are 0.10 / 0.05.
+- Local isolated CPython 3.13.5 predictor copy: py_compile PASS; 5/5 focused tests PASS. The reproducible 20-train / 20-held-out synthetic ablation reports 13.04% fewer updates than ALWAYS with nearly identical held-out MAE and old-pattern MAE; periodic and matched-average-LR controls were worse. This is a candidate trade-off only, not real visual learning.
+- Incremental third-predictor allocation: 495,240 bytes across 16 warmed Python streams (~30.95 KB/stream) by tracemalloc; not Android PSS/RSS.
+- Exact GitHub CI for code SHA e9731237057fbf9df8805396960a690fae68e76c was started: A3 temporal calibration and runtime deployment completed SUCCESS; MediaProjection frame ingress completed SUCCESS; source-lineage and staged/integrated were still IN_PROGRESS at last poll. No PASS claim for in-progress workflows.
+- Existing blocker: staged/integrated still inherit Core's strict vision.py source-lifecycle mismatch from #2494. Do not weaken the pin. Full local Aii checkout NOT_RUN.
+- Device/updater: latest available consented private V13OBS #115 snapshot is 2026-11-24 09:28 UTC: auto-update enabled, installed 8d93236, but AI STOPPED_BY_USER and model process STOPPED; no fresh authenticated receipt after that snapshot. No device action or model/weight change.
+- Release: NOT_RELEASED. Redmi: REDMI_UNVERIFIED. P0 chat/B1/B2 remain open; B3 remains OFF. No user action required.
+
+**Next:** finish exact-head CI readback, then Core/Integrator recomposes the vision.py lifecycle chain. Perception keeps this shadow non-controlling until consented real visual holdout/retention/restart evidence exists.
