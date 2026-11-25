@@ -25,6 +25,12 @@ The exact-delete code is not yet in the integrated Runtime because the Core sour
 
 ## Next concrete action
 
+
+## Downstream Core integration blocker discovered — 2026-11-25
+
+The latest Core #2465 head `c2fdfab67983cf58c96c89a653122f521eb69429` has a separate integrated-regression failure (run 45474789385): `Vision.test_reingest_serializes_with_last_source_blob_cleanup` times out waiting for `unlink_entered` (1 failed / 447 passed / 3 skipped). Source inspection shows the staged builder replaces `vision.forget()`'s `vision.unlink_source_blob` call with `source_lifecycle_candidate.cleanup_unreferenced(store, sid)`; the test still patches the old symbol, so its event can never fire. The new helper holds `store.tx()` across the committed-deletion check, live-reference check and unlink. This is a staged-test seam mismatch, not evidence that the production lock is missing. Core should patch the actual `cleanup_unreferenced` consumer seam (or expose a stable wrapper) and keep the lock/hash checks intact. This is separate from the #2477/#2484 source-pin mismatch; both must be resolved before integrated acceptance.
+
+
 Core/Integrator must pin the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper `vision_projector_stats.py` SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f` in the strict source-lifecycle closure, rebind dependent pins bottom-up, and rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken hash gates.
 
 **User action: none.** No manual Termux command or model consent is needed for this blocked integration step.
