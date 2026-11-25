@@ -1,5 +1,5 @@
 # Research & Perception handoff — latent alignment audit
-Date: 2026-11-25
+Date: 2026-11-25; research source v2 revised 2026-11-09
 Owner lane: Research & Perception
 Base: gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6
 Branch: research-perception/latent-alignment-audit-20261125-run11
@@ -14,7 +14,7 @@ The current native probe can persist source-bound LatentTapPacket records, but n
 - Added v13/code/tests/test_latent_alignment_audit.py.
 - Updated R-007 in v14/V14_RESEARCH_LEDGER.md from abstract-only to full-text review and linked the executable audit.
 
-The audit reads the existing packets table and data/blobs in read-only mode. It accepts only B1_DETAIL/B2_GIST taps with matching source_ref, event_id and generation_id; verifies packet authority flags and final-RMSNorm tap metadata, token IDs, shapes, hashes and blob containment; and caps memory/work for mobile use. It excludes position 0 from the pooled alignment vectors, reports its norm ratio and all-vs-excluded cosine, then calculates cross-space kNN-neighbourhood overlap with a permutation null. It does not reproduce the paper's exact MNN implementation.
+The audit reads the existing packets table and data/blobs in read-only mode. It accepts only B1_DETAIL/B2_GIST taps with matching source_ref, event_id and generation_id; verifies packet authority flags and final-RMSNorm tap metadata, token IDs, shapes, hashes and blob containment; and caps memory/work for mobile use. It excludes position 0 from the pooled alignment vectors, reports its norm ratio and all-vs-excluded cosine, then calculates cross-space kNN-neighbourhood overlap with a permutation null. It does not reproduce the paper's exact MNN implementation; the paper's Zenodo archive must be inspected before claiming an exact replication.
 
 ## Exact local tests
 Environment: LOCAL_LINUX container, CPython 3.13.5.
@@ -25,7 +25,10 @@ Environment: LOCAL_LINUX container, CPython 3.13.5.
 - Synthetic Store/blob fixture uses the real V13 packets table column layout; DB file hash unchanged across audit.
 - Negative checks: mismatched event, missing counterpart, tampered blob, authority escalation, path traversal, symlinked blob root — PASS.
 
-The full Aii checkout and full repository test suite were not run locally: GitHub DNS/network access from the container is unavailable. CI is separate and pending.
+The full Aii checkout and full repository test suite were not run locally: GitHub DNS/network access from the container is unavailable. The Zenodo archive was also inaccessible from this environment. CI is separate and pending.
+
+## Research update and licensing
+The v2 full text says the archive includes concept-pair sets, extraction/projection scripts, the injection mechanism, raw results for all 180 generation trials, logs, pre-registration, and a recomputation script. It explicitly describes the activation-level channel as a monitoring/interpretability risk because it removes human-readable text and can evade ordinary filters/logs. V14 must keep future latent exchange opt-in, source/age/consent-bound and control-plane-auditable. The paper's explicitly open research item is a formal information-theoretic channel characterization (capacity, coding scheme, error rate) compared against token-path cost. The Zenodo archive should be inspected before adapting its code.
 
 ## Runtime and claim boundary
 This tool consumes the same persisted LatentTapPacket/blob contract produced by Cognition.tap and the opt-in native-probe path being developed in PR #2488. It is a read-only research diagnostic, not a production Runtime route. No real tap cohort was available in this run. No native model was loaded; no weights, model files, permissions, or runtime state were changed.

@@ -1787,3 +1787,11 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Next internal action:** Core should preserve the LatentTapPacket fields used by #2489 while integrating #2488. After that, only when the user has explicitly resumed the local runtime and native probe consent is active, collect at least 20 paired B1/B2 source groups from matching event/generation receipts and run the read-only audit. Any projector training or receiver injection requires a separate pair-specific experiment and review. Boss/Integrator should reconcile this append-only note with the newer #2463/#2486 documentation branches and add the audit evidence tool to the shared board/workplan after review.
 
 **User action required: NONE.** No device action or model/permission change is needed.
+
+
+## Research & Perception correction — R-007 v2 source verification, 2026-11-25
+
+The full v2 HTML is now confirmed as arXiv:2608.16347v2, revised 2026-11-09 (not the August v1). It explicitly links Zenodo DOI 10.5281/zenodo.24088479 and states: code MIT; data/documentation CC BY 4.0; archive includes concept-pair sets, extraction/projection/injection scripts, all 180 end-to-end trial texts, logs, pre-registration, and a result-recomputation script. The paper itself is CC BY 4.0. The Zenodo record was inaccessible from this run, so no archive files were inspected or reused; do not infer its dependencies or model-weight licences.
+
+This strengthens the research gate but does not change the code claim: PR #2489 implements a bounded read-only kNN-overlap proxy, not the paper's exact MNN or causal injection. The paper itself reports only one modest positive causal pair and warns that activation-level transfer removes the human-readable audit surface. Future V14 latent exchange must remain explicitly authorized, source/age/consent-bound and control-plane-auditable.
+
