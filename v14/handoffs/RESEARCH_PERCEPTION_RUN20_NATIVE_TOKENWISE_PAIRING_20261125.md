@@ -33,3 +33,8 @@ Core must wire the two native tokenizer piece streams and selected-row extractor
 ## R-152 — mobile native-load optimization candidate
 
 Pinned-source review found the selected-row extractor and native receiver each load the same GGUF in separate native executables. The receiver uses llama.cpp b29c606; the extractor uses 2851b3b for the staging/WIP selected-row API. Core could evaluate one executable and one loaded model pointer for both extraction and decode, after unifying the pin. This may avoid duplicate load/startup work, but mmap means RSS/PSS improvement is unknown. Benchmark exact GGUF PSS/RSS/TTFT and receiver utility; preserve all current controls. This is research only, not implemented or device-tested.
+
+
+## R-153 — synthetic WorldJEPA interference handoff
+
+The completed staged/integrated CI run 45678205707 included synthetic 4D WorldJEPA A→B→A ablation across 12 source-disjoint arms. B actual-action holdout loss was worse than both zero and shuffled controls in 12/12; B forgetting after A return was positive in 9/12; A reacquisition gain positive in 6/12. Uniform replay reduced mean B forgetting but also reduced A reacquisition and did not fix B action utility. Parameter/EMA/optimizer changes and exact rollback were observed in this synthetic harness. This is not native LLM or Redmi learning proof. Hand off to JEPA & Memory for selective plasticity, task-specific adapters, eligibility/error/modulator gating, and stronger replay/retention controls.

@@ -2006,3 +2006,8 @@ The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visi
 
 
 Research note: Core may evaluate co-locating selected-row extraction and native receiver decode in one model process to avoid a second model load. This is not implemented or measured; no user/device action is needed.
+
+
+## Research & Perception Run 20 — cross-lane learning evidence
+
+No user action required. The staged/integrated CI run 45678205707 passed its selected regression jobs, but its WorldJEPA A→B→A cohort is synthetic. It showed numeric updates and exact rollback alongside B-task interference: B actual-action loss was worse than zero and shuffled controls in all 12 arms. Uniform replay reduced one forgetting metric but did not restore action utility. This is a research handoff to JEPA & Memory, not a request to change installed models or device settings.

@@ -2295,3 +2295,10 @@ This overlay does not promote the full B3 path or change any other Canon family.
 ### Mobile resource risk discovered in Run 20
 
 The current selected-row extractor and native receiver are separate executables and independently call llama_model_load_from_file for the same GGUF, at different llama.cpp pins. A one-process/one-model-pointer implementation is a Core-owned optimization candidate only. No RSS/PSS or TTFT reduction is claimed; the current classification and B3 gates above remain unchanged.
+
+
+## Cross-lane learning-risk overlay — Run 20 (2026-11-25)
+
+| Canon family | Evidence | Interpretation | Next acceptance |
+|---|---|---|---|
+| JEPA / continual learning / replay | Staged/integrated CI 45678205707: synthetic WorldJEPA A→B→A, 12 source-disjoint arms; parameter deltas 2.447–3.583; exact rollback all arms; B actual-action holdout worse than zero and shuffled controls in 12/12. Uniform replay reduced mean B forgetting delta but did not restore B action utility. | Numeric learning and checkpoint persistence exist in this synthetic 4D harness, but cross-task interference remains. Not native B1/B2/C3 weights, not real user data, not Android. | JEPA & Memory: selective plasticity, per-organ/task adapters, eligibility × error × modulator, balanced/importance replay, and simultaneous new-task gain + old-task retention gates. Require actual-action holdout to beat zero and shuffled controls across seeds. No blanket freeze. |
