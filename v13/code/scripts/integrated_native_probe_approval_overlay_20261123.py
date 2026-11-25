@@ -13,15 +13,15 @@ MATRIX_PATH = "v13/native_probe_matrix.py"
 
 SOURCE_PINS = {
     OPERATOR_PATH: "8d59efa1bfb7dea7bbb2fd1af2cf7d2e25adebc4",
-    APPROVAL_PATH: "4ed93963094e1d482654741d1ca81cc6ae247eea",
+    APPROVAL_PATH: "3404cccb64abd94c9cc4e568b53a3fdbdcce969a",
     MATRIX_PATH: "5fd7f6b4dc83001ef8948bb8d0c52d07c02e31fb",
 }
 
 HELP_OLD = b":callosum [status|shadow|active|degrade|promote <Richtung>]"
 HELP_NEW = (
     b":callosum [status|shadow|active|degrade|promote <Richtung>|"
-    b"arm-probe <sender> <receiver> --last-source --confirm|"
-    b"native-probe <sender> <receiver> --last-source --confirm|revoke-probe|"
+    b"arm-probe <sender> <receiver> [--latent-prefix <adapter-name>] --last-source --confirm|"
+    b"native-probe <sender> <receiver> [--latent-prefix <adapter-name>] --last-source --confirm|revoke-probe|"
     b"arm-probe-matrix --last-source --confirm|native-probe-matrix --last-source --confirm|revoke-probe-matrix]"
 )
 
