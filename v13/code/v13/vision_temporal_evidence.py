@@ -1,7 +1,8 @@
 """Ephemeral, consent-lease-scoped temporal RAW EYE feature evidence.
 
 The deterministic 37-value tile descriptor and A3 projected cosine delta are
-paired with a tiny 16x16 online next-change predictor. This is not optical flow,
+paired with a tiny 17x16 (272-parameter) online next-change predictor whose
+bias row is active only for a zero-change context. This is not optical flow,
 OCR, object recognition, a calibrated probability, or semantic motion
 understanding. Only numeric tile deltas and bounded session-local predictor
 weights are retained in process memory. No frame bytes, images, text, or
@@ -37,6 +38,16 @@ A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FA
 MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
 DEFAULT_SURFACE_WINDOW_MS = 50
+
+
+def _a3_predictive_attention_novelty(prediction: dict) -> float:
+    """Map only measured excess prediction error to a capped A4 salience term."""
+    if type(prediction) is not dict or prediction.get("status") != "SHADOW_MEASURED":
+        return 0.0
+    surprise = prediction.get("shadow_surprise")
+    if type(surprise) not in (int, float) or not math.isfinite(float(surprise)):
+        return 0.0
+    return round(A3_TEMPORAL_ATTENTION_GAIN * max(0.0, min(1.0, float(surprise))), 6)
 
 
 class TemporalVisualEvidenceError(ValueError):
@@ -313,6 +324,7 @@ class TemporalVisualEvidence:
                 "local_tile_delta": {}, "local_change_score": 0.0,
                 "local_temporal_activity_score": 0.0, "locally_changed_tile_ids": [],
                 "a3_attention_novelty": 0.0,
+                "a3_predictive_attention_novelty": 0.0,
                 "attention_novelty": 0.0,
                 "surface_expired": False, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
                 "gap_ms": gap_ms, "state_reset": reset_reason is not None,
@@ -409,12 +421,17 @@ class TemporalVisualEvidence:
             A3_TEMPORAL_ATTENTION_GAIN,
             A3_TEMPORAL_ATTENTION_GAIN * a3_change_score,
         ), 6)
+        a3_predictive_attention_novelty = _a3_predictive_attention_novelty(
+            a3_temporal_prediction,
+        )
+        # Max, not sum: the combined A3 contribution remains capped at 0.15.
         attention_novelty = round(max(
             base_attention_novelty,
             multichannel_change_score,
             0.15 * global_appearance_shift,
             0.15 * global_structure_shift,
             a3_attention_novelty,
+            a3_predictive_attention_novelty,
         ), 6)
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
@@ -449,6 +466,7 @@ class TemporalVisualEvidence:
             "local_temporal_activity_score": round(local_temporal_activity_score, 6),
             "locally_changed_tile_ids": [tile for tile in TILE_IDS if local_tile_delta[tile] >= self.changed_tile_threshold],
             "a3_attention_novelty": a3_attention_novelty,
+            "a3_predictive_attention_novelty": a3_predictive_attention_novelty,
             "attention_novelty": attention_novelty,
             "on_activity": round(on_activity, 6), "off_activity": round(off_activity, 6),
             "surface_expired": surface_expired, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
