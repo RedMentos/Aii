@@ -564,7 +564,7 @@ def test_build_tokenwise_tap_manifest_maps_content_tokens_to_prefill_rows():
 def test_build_tokenwise_tap_manifest_rejects_ambiguous_content_token_subsequence():
     with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
         build_tokenwise_tap_manifest(
-            "ab", [10, 11], ["a", "b"], [10, 11, 10, 11],
+            "ab", [10, 11], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}], [10, 11, 10, 11],
             [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
         )
 
@@ -572,7 +572,7 @@ def test_build_tokenwise_tap_manifest_rejects_ambiguous_content_token_subsequenc
 def test_build_tokenwise_tap_manifest_rejects_unmatched_content_tokens():
     with pytest.raises(LatentAdapterError, match="exactly one contiguous"):
         build_tokenwise_tap_manifest(
-            "abc", [10, 11, 12], ["a", "b", "c"], [1, 10, 12, 11],
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 10, 12, 11],
             [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]],
         )
 
@@ -580,12 +580,12 @@ def test_build_tokenwise_tap_manifest_rejects_unmatched_content_tokens():
 def test_build_tokenwise_tap_manifest_rejects_excess_special_tokens_and_row_mismatch():
     with pytest.raises(LatentAdapterError, match="invalid token count"):
         build_tokenwise_tap_manifest(
-            "abc", [10, 11, 12], ["a", "b", "c"], [1, 2, 3, 10, 11, 12],
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 2, 3, 10, 11, 12],
             [[float(i), float(i + 1)] for i in range(6)],
         )
     with pytest.raises(LatentAdapterError, match="do not match native prefill"):
         build_tokenwise_tap_manifest(
-            "abc", [10, 11, 12], ["a", "b", "c"], [1, 10, 11, 12],
+            "abc", [10, 11, 12], [{"id": 10, "piece": "a"}, {"id": 11, "piece": "b"}, {"id": 12, "piece": "c"}], [1, 10, 11, 12],
             [[1.0, 2.0], [2.0, 3.0], [3.0, 4.0]],
         )
 
