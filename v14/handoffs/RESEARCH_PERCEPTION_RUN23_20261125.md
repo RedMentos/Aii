@@ -55,3 +55,8 @@ No private live phone receipt was obtained and no device command was sent. The l
 User action: **keine Aktion nötig**. No Termux command or model decision.
 
 Next executable step: Core adds native target-score production and consumes this evaluator; then exact-head CI, independent review, native held-out utility and restart/rollback. Boss should port the verified checkpoint to the shared board after review.
+
+
+## Cross-lane update — Core PR #2512
+
+Core PR #2512 was opened on head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, stacked on #2510 and carrying the earlier anchor-preserving helper. It connects the fitted adapter to the native receiver under the separate `NATIVE_RECEIVER` approval and validates the current Runtime source/session. Direct source readback confirms the probe still reports only decode/input-effect metrics; it does not score target tokens or generate an answer. The #2512 snapshot does not yet include the new #2511 task-score evaluator. Core was notified to refresh/rebase #2511 and add a bounded target-score producer before task utility can be measured. Exact-head CI was queued; no PASS claimed.
