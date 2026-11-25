@@ -24,6 +24,8 @@ class StageTest(unittest.TestCase):
         self.addCleanup(setattr, module, 'NATIVE_PROBE_OVERLAY_GIT_BLOB', original_probe_pin)
         original_close_pin = module.RUNTIME_CLOSE_OVERLAY_GIT_BLOB
         self.addCleanup(setattr, module, 'RUNTIME_CLOSE_OVERLAY_GIT_BLOB', original_close_pin)
+        original_action_pin = module.ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB
+        self.addCleanup(setattr, module, 'ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB', original_action_pin)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -32,11 +34,13 @@ class StageTest(unittest.TestCase):
         (self.code / 'v13').mkdir()
         (self.code / 'v13/runtime.py').write_text('ORIGINAL')
         source_code = Path(__file__).resolve().parents[1]
+        shutil.copy2(source_code / 'v13/focal.py', self.code / 'v13/focal.py')
         shutil.copy2(source_code / 'v13/operator.py', self.code / 'v13/operator.py')
         shutil.copy2(source_code / 'v13/native_probe_approval.py', self.code / 'v13/native_probe_approval.py')
         shutil.copy2(source_code / 'v13/native_probe_matrix.py', self.code / 'v13/native_probe_matrix.py')
         shutil.copy2(source_code / module.NATIVE_PROBE_OVERLAY, self.code / module.NATIVE_PROBE_OVERLAY)
         shutil.copy2(source_code / module.RUNTIME_CLOSE_OVERLAY, self.code / module.RUNTIME_CLOSE_OVERLAY)
+        shutil.copy2(source_code / module.ACTION_SELECTION_LINEAGE_OVERLAY, self.code / module.ACTION_SELECTION_LINEAGE_OVERLAY)
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
@@ -54,6 +58,7 @@ class StageTest(unittest.TestCase):
         indented = ''.join('    ' + line for line in body.splitlines(True))
         source = ('def build_sources(code_dir):\n'
                   '    result = {"v13/runtime.py": b"guard_runtime_close(self)"}\n'
+                  '    result["v13/focal.py"] = (code_dir / "v13/focal.py").read_bytes() + b"\\n# SCALE_AWARE_C4_RULE\\n"\n'
                   '    def custom(code_dir):\n' + indented +
                   '    extra = custom(code_dir)\n'
                   '    if isinstance(extra, dict): result.update(extra)\n'
@@ -64,6 +69,7 @@ class StageTest(unittest.TestCase):
     def test_stages_replacement_without_mutating_source(self):
         self.builder("    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n")
         out = self.root / 'candidate'
+        source_focal = (self.code / 'v13/focal.py').read_bytes()
         result = module.stage(self.code, out)
         self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED guard_runtime_close(self)')
         self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
@@ -76,6 +82,10 @@ class StageTest(unittest.TestCase):
         self.assertEqual(result['native_probe_overlay']['replaced_files'], ['v13/operator.py'])
         self.assertEqual(result['native_probe_close_overlay']['status'], 'SHADOW_REVIEW_ONLY')
         self.assertEqual(result['native_probe_close_overlay']['replaced_files'], ['v13/runtime.py'])
+        self.assertEqual(result['action_selection_lineage_overlay']['status'], 'SHADOW_REVIEW_ONLY')
+        self.assertEqual(result['action_selection_lineage_overlay']['replaced_files'], ['v13/focal.py'])
+        self.assertEqual((self.code / 'v13/focal.py').read_bytes(), source_focal)
+        self.assertIn(b'ACTION_SELECTION_C1_BROADCAST_LINEAGE_V1', (out / 'v13/focal.py').read_bytes())
         self.assertTrue((out / 'specs/test.json').exists())
         with self.assertRaises(FileExistsError):
             module.stage(self.code, out)
@@ -127,8 +137,9 @@ class StageTest(unittest.TestCase):
         result = module.stage(self.code, dest)
         self.assertEqual(set(result['files_sha256']), {
             'v13/runtime.py', 'v13/operator.py', 'v13/native_probe_approval.py',
-            'v13/native_probe_matrix.py', 'specs/test.json', module.BUILDER,
-            module.ARITHMETIC_OVERLAY, module.NATIVE_PROBE_OVERLAY, module.RUNTIME_CLOSE_OVERLAY})
+            'v13/native_probe_matrix.py', 'v13/focal.py', 'specs/test.json', module.BUILDER,
+            module.ARITHMETIC_OVERLAY, module.NATIVE_PROBE_OVERLAY, module.RUNTIME_CLOSE_OVERLAY,
+            module.ACTION_SELECTION_LINEAGE_OVERLAY})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):
