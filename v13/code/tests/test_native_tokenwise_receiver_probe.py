@@ -591,7 +591,7 @@ def test_probe_builds_ephemeral_native_target_score_receipt(tmp_path):
         runtime, approval, pair_record(runtime),
         receiver_fn=scored_receiver,
         target_token_ids=target_ids,
-        target_environment="LOCAL_LINUX",
+        target_environment="SYNTHETIC",
         task_score_metadata={
             "condition": "LATENT_CANDIDATE",
             "task_group_id": "task-0001",
