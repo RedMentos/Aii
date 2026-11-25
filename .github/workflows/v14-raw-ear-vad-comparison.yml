@@ -6,6 +6,7 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
@@ -66,6 +67,7 @@ jobs:
       - name: Compile exact V3 source and benchmark
         run: |
           python -m py_compile \
+            v13/code/v13/audio_temporal_prediction.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_temporal_evidence.py \
@@ -74,6 +76,6 @@ jobs:
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
+          V14_EXPECTED_RAW_EAR_V3_BLOB: a8fc1ab23b79231b44738892e3c120771c072687
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
