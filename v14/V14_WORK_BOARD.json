@@ -1506,7 +1506,7 @@
     "primary_runtime_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN_NOT_RELEASED",
     "secondary_android_pr": 2481,
     "secondary_android_head": "545ec845a35a4567aeaf7487d6765edf2229176f",
-    "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN; ANDROID_API33_EMULATOR_PROCESS_DEATH_AND_STOP_PERSISTENCE_PASS; NOT_REDM I",
+    "secondary_android_status": "DRAFT_EXACT_HEAD_CI_17_OF_17_GREEN; ANDROID_API33_EMULATOR_PROCESS_DEATH_AND_STOP_PERSISTENCE_PASS; REDMI_UNVERIFIED",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
     "redmi": "INSTALLED_8D93236_LAST_RECEIPT_AI_STOPPED_BY_USER_REDMI_UNVERIFIED",
     "next_action": "Independent QA/Boss review/rebase of #2481; Boss review of #2485/#2488. No device update or native probe without explicit approval."
