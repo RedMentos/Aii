@@ -227,11 +227,6 @@ def test_native_receiver_builder_rejects_tokenizer_row_mismatch():
 
 
 
-@pytest.mark.parametrize("mutation,match", [
-    ("missing", "require bounded token_position"),
-    ("duplicate", "duplicate token position"),
-    ("gap", "contiguous rows"),
-])
 def test_char_span_alignment_handles_different_tokenizer_segmentations():
     aligned = align_token_rows_by_char_span(
         sender_vectors=[[1.0, 0.0], [3.0, 0.0], [5.0, 0.0]],
@@ -326,6 +321,11 @@ def test_tokenwise_fit_rejects_position_only_pairs_without_span_proof():
         fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
 
 
+@pytest.mark.parametrize("mutation,match", [
+    ("missing", "require bounded token_position"),
+    ("duplicate", "duplicate token position"),
+    ("gap", "contiguous rows"),
+])
 def test_tokenwise_fit_requires_source_local_contiguous_positions(mutation, match):
     train = make_pairs("train", 10, seed=1)
     holdout = make_pairs("hold", 5, seed=2)
