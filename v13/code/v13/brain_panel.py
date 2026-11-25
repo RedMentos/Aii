@@ -71,174 +71,6 @@ def _sha256(value):
     return value
 
 
-
-def _native_prompt_accounting(runner, receipt=None, *, synthetic=False, attempt_status=None):
-    """Compare llama.cpp's final prompt/cache counts with the exact tokenized input.
-
-    This verifies native token accounting only. It does not prove attention,
-    representation quality, or semantic use of any supplied organ signal.
-    """
-    runner = _mapping(runner)
-    receipt = _mapping(receipt)
-    if synthetic or runner.get("synthetic") is True or receipt.get("synthetic") is True:
-        return {
-            "status": "SYNTHETIC_NOT_NATIVE",
-            "verified": False,
-            "tokenized_prompt_tokens": None,
-            "native_processed_prompt_tokens": None,
-            "native_cached_prompt_tokens": None,
-            "native_accounted_prompt_tokens": None,
-            "native_predicted_tokens": None,
-            "generation_token_count_match": None,
-            "prompt_ms": None,
-            "prompt_tokens_per_second": None,
-            "generation_completed": False,
-            "semantic_attention_proven": False,
-        }
-
-    admission = _mapping(runner.get("prompt_admission"))
-    expected = _count(receipt.get("native_prompt_tokens"))
-    if expected is None:
-        expected = _count(admission.get("native_prompt_tokens"))
-    tokenizer = receipt.get("native_tokenizer")
-    if type(tokenizer) is not str:
-        tokenizer = admission.get("native_tokenizer")
-
-    timings = _mapping(runner.get("timings"))
-    processed = _count(timings.get("prompt_n"))
-    cached = _count(timings.get("cache_n"))
-    predicted = _count(timings.get("predicted_n"))
-    generated = _count(runner.get("generated_tokens"))
-    if "native_generation_completed" in receipt:
-        completed = receipt.get("native_generation_completed") is True
-    else:
-        completed = runner.get("status") == "FINAL" and generated is not None and generated > 0
-    if attempt_status is not None:
-        completed = completed and attempt_status == "FINAL"
-
-    accounted = processed + cached if processed is not None and cached is not None else None
-    if tokenizer != "LLAMA_SERVER_TOKENIZE":
-        status = "TOKENIZER_UNVERIFIED"
-    elif not completed:
-        status = "GENERATION_NOT_COMPLETED"
-    elif expected is None or processed is None or cached is None:
-        status = "TIMING_FIELDS_UNAVAILABLE"
-    else:
-        status = "MATCHED" if accounted == expected else "MISMATCH"
-
-    return {
-        "status": status,
-        "verified": status == "MATCHED",
-        "tokenizer": "LLAMA_SERVER_TOKENIZE" if tokenizer == "LLAMA_SERVER_TOKENIZE" else None,
-        "tokenized_prompt_tokens": expected,
-        "native_processed_prompt_tokens": processed,
-        "native_cached_prompt_tokens": cached,
-        "native_accounted_prompt_tokens": accounted,
-        "native_predicted_tokens": predicted,
-        "runner_generated_tokens": generated,
-        "generation_token_count_match": (
-            predicted == generated if predicted is not None and generated is not None else None
-        ),
-        "prompt_ms": _seconds(timings.get("prompt_ms")),
-        "prompt_tokens_per_second": _seconds(timings.get("prompt_per_second")),
-        "generation_completed": completed,
-        "semantic_attention_proven": False,
-    }
-
-
-def _native_runner_summary(metrics, *, attempt_status=None):
-    metrics = _mapping(metrics)
-    if not metrics:
-        return {
-            "runner_status": "UNAVAILABLE",
-            "prompt_accounting": _native_prompt_accounting({}),
-        }
-    status = metrics.get("status")
-    if status not in {"FINAL", "DEADLINE", "CANCELLED", "ERROR", "INTERRUPTED"}:
-        status = "UNKNOWN"
-    return {
-        "runner_status": status,
-        "prompt_tokens": _count(metrics.get("prompt_tokens")),
-        "generated_tokens": _count(metrics.get("generated_tokens")),
-        "ttft_s": _seconds(metrics.get("ttft_s")),
-        "duration_s": _seconds(metrics.get("duration_s")),
-        "sampled_peak_pss_bytes": _count(metrics.get("sampled_peak_pss_bytes")),
-        "prompt_accounting": _native_prompt_accounting(
-            metrics, attempt_status=attempt_status
-        ),
-    }
-
-
-def _body_offer_evidence(store, event_id, c4_ids, native_ids, *, c4_recorded):
-    """Expose counts and delivery edges only; never return body or source text."""
-    attempts = []
-    packet_rows = []
-    if type(event_id) is str and event_id:
-        try:
-            rows = store.rows(
-                "SELECT metrics FROM telemetry WHERE event_id=? AND kind='body_offer_attempt' ORDER BY id",
-                (event_id,),
-            )
-        except Exception:
-            rows = []
-        for row in list(rows)[-6:]:
-            metrics = _mapping(row.get("metrics"))
-            role = metrics.get("role")
-            if role not in ("B1_DETAIL", "B2_GIST"):
-                continue
-            attempt_status = metrics.get("status")
-            if attempt_status not in {"FINAL", "DEADLINE", "CANCELLED", "ERROR", "INTERRUPTED"}:
-                attempt_status = "UNKNOWN"
-            attempts.append({
-                "role": role,
-                "attempt_status": attempt_status,
-                "native": _native_runner_summary(
-                    metrics.get("runner"), attempt_status=attempt_status
-                ),
-            })
-        try:
-            packet_rows = store.rows(
-                "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY rowid DESC LIMIT 8",
-                (event_id,),
-            )
-        except Exception:
-            packet_rows = []
-
-    c4_set = set(c4_ids)
-    c3_set = set(native_ids)
-    packet_ids = set()
-    offers = []
-    for row in packet_rows:
-        payload = _mapping(row.get("payload"))
-        packet_id = payload.get("packet_id")
-        role = payload.get("role")
-        if type(packet_id) is not str or role not in ("B1_DETAIL", "B2_GIST"):
-            continue
-        packet_ids.add(packet_id)
-        evidence_refs = payload.get("evidence_refs")
-        offers.append({
-            "role": role,
-            "model_revision": payload.get("model_revision") if type(payload.get("model_revision")) is str else None,
-            "verified_quote_count": len(evidence_refs) if type(evidence_refs) is list else None,
-            "selected_by_c4": packet_id in c4_set,
-            "rendered_in_c3_template": packet_id in c3_set,
-            "native": _native_runner_summary(payload.get("native_metrics")),
-        })
-
-    return {
-        "attempt_count": len(attempts),
-        "offer_packet_count": len(offers),
-        "c4_selected_offer_count": len(c4_ids),
-        "c3_rendered_offer_count": len(native_ids),
-        "c4_selected_packets_persisted": (
-            bool(c4_set and c4_set.issubset(packet_ids)) if c4_recorded else None
-        ),
-        "c3_rendered_packets_persisted": bool(c3_set and c3_set.issubset(packet_ids)),
-        "attempts": attempts,
-        "offers": offers[:4],
-        "semantic_use_proven": False,
-    }
-
 def _latest_native_evidence(r):
     """Read the last persisted runner/receipt summary; never return chat text."""
     try:
@@ -290,7 +122,6 @@ def _latest_native_evidence(r):
     native_generation_completed = receipt.get("native_generation_completed") is True
 
     synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
-    native_accounting = _native_prompt_accounting(runner, receipt, synthetic=synthetic)
     native_submitted = receipt.get("native_template_submitted") is True
     synthetic_submitted = synthetic and receipt.get("synthetic_template_submitted") is True
     submitted = native_submitted or synthetic_submitted
@@ -302,12 +133,6 @@ def _latest_native_evidence(r):
             native_prompt_sha256 and native_token_ids_sha256
             and native_prompt_tokens is not None and native_prompt_tokens > 0)
         if (not synthetic and fingerprint_complete
-                and native_accounting["verified"] and native_generation_completed):
-            flow_status = "NATIVE_PROMPT_ACCOUNTING_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
-        elif (not synthetic and fingerprint_complete
-                and native_accounting["status"] == "MISMATCH" and native_generation_completed):
-            flow_status = "NATIVE_PROMPT_ACCOUNTING_MISMATCH_MATCHED_C4"
-        elif (not synthetic and fingerprint_complete
                 and native_prefill_verified and native_generation_completed):
             flow_status = "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
         elif (not synthetic and fingerprint_complete
@@ -333,9 +158,6 @@ def _latest_native_evidence(r):
             continue
         offers.append({"role": role, "rendered_quote_count": _count(item.get("rendered_quote_count"))})
 
-    body_offer_flow = _body_offer_evidence(
-        r.store, event_id, c4_ids, native_ids, c4_recorded=c4_recorded
-    )
     return {
         "turn_status": row.get("status"),
         "runner_role": runner.get("role"),
@@ -362,7 +184,6 @@ def _latest_native_evidence(r):
             "native_prompt_sha256": native_prompt_sha256 if not synthetic else None,
             "native_token_ids_sha256": native_token_ids_sha256 if not synthetic else None,
             "native_prompt_tokens": native_prompt_tokens if not synthetic else None,
-            "native_prompt_accounting": native_accounting,
             "native_tokenizer": receipt.get("native_tokenizer") if not synthetic and receipt.get("native_tokenizer") == "LLAMA_SERVER_TOKENIZE" else None,
             "native_template_submitted": native_submitted,
             "template_submitted": submitted,
@@ -373,7 +194,6 @@ def _latest_native_evidence(r):
             "offers": offers,
             "semantic_use_proven": False,
         },
-        "body_offer_flow": body_offer_flow,
     }
 
 
@@ -407,7 +227,7 @@ def status(r):
             "world_jepa_instantiated":hasattr(r, "_world_jepa_online"),
             "latest_turn":_latest_native_evidence(r),
             "native_model_training_proven":False,
-            "meaning":"Geladen heißt nicht, dass ein Modell etwas gelernt hat. prompt_n + cache_n belegen native Prompt-Token-Abrechnung, nicht Aufmerksamkeit oder semantische Nutzung.",
+            "meaning":"Geladen heißt nicht, dass ein Modell nachweislich etwas gelernt hat; ein nativer Prompt-Receipt beweist keine semantische Nutzung.",
             "checks":":doctor und :gates summary; Lernmessung auf echten Gewichten separat."}
 
 def operator_command(r,args):
