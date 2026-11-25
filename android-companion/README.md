@@ -10,6 +10,15 @@ continue to be named `v13`). It is not installed by the V13 updater.
   SHA-256 digest.
 - A local stop switch disables new requests; the default state is OFF.
 - Receipts are signed with a non-exportable Android Keystore P-256 key.
+- If a process dies after a one-shot decision claim but before the receipt is durably
+  stored, provider startup and later `outcome`/`pending` calls retry **receipt-only**
+  recovery. A claimed `EXECUTING` row becomes signed
+  `EXECUTION_OUTCOME_UNKNOWN`; a claimed `DENYING` row becomes signed
+  `USER_DENIED`. Recovery never calls `startActivity` or re-dispatches.
+- `EXECUTION_OUTCOME_UNKNOWN` means the dispatch result cannot be established after
+  process loss. It is not a success, observed device state, trusted WorldAction, or
+  learning transition. If signing or SQLite finalization fails, the claimed row remains
+  available for another receipt-only retry.
 - A successful `startActivity` dispatch is reported as
   `DISPATCHED_UNVERIFIED`, never as observed foreground state or a trusted WorldAction.
 - UI observation, Accessibility, screen capture, tap/swipe/type/back, notifications as
