@@ -767,3 +767,24 @@ def test_task_score_holdout_minimum_is_enforced_per_session_family_cell():
     assert result["balanced_session_family_coverage"] is False
     assert result["tasks_per_session_family"]["session-0"]["ARITHMETIC"] == 5
     assert result["enough_holdout"] is False
+
+
+def test_task_score_holdout_requires_two_examples_per_session_family_by_default():
+    rows = _task_score_cohort()
+    sparse_cross = []
+    for item in rows:
+        task_id = item["task_group_id"]
+        if item["session_id"] == "session-0":
+            family = "ENTITY_RECALL" if task_id == "task-1" else "ARITHMETIC"
+        else:
+            family = "ARITHMETIC" if task_id == "task-10" else "ENTITY_RECALL"
+        sparse_cross.append(_rebuild_task_score_receipt(item, task_family=family))
+    result = evaluate_native_receiver_task_utility(sparse_cross)
+    assert result["tasks_per_session"] == {"session-0": 10, "session-1": 10}
+    assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
+    assert result["tasks_per_session_family"] == {
+        "session-0": {"ARITHMETIC": 9, "ENTITY_RECALL": 1},
+        "session-1": {"ARITHMETIC": 1, "ENTITY_RECALL": 9},
+    }
+    assert result["balanced_session_family_coverage"] is False
+    assert result["enough_holdout"] is False
