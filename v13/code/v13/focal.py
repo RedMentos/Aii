@@ -586,6 +586,34 @@ class ActionGate:
         if not event_row or event_row["source_id"]!=event_ref.get("source_id"):
             raise ValueError("ActionSelection event/source binding")
 
+        # C1 executive memory/context is already admitted before C5 chooses an
+        # action. Preserve those exact source pointers even when no B1/B2 offer
+        # reaches the coalition; otherwise the learner sees only the current
+        # user event and loses the memory sources that shaped the decision.
+        broadcast_rows=self.s.rows(
+            "SELECT payload FROM packets WHERE kind='JEFBroadcastPacket' AND event_id=? ORDER BY rowid DESC LIMIT 2",
+            (event_id,))
+        if type(broadcast_rows) is not list or len(broadcast_rows)>1:
+            raise ValueError("ActionSelection executive broadcast cardinality")
+        broadcast_payload=None
+        if broadcast_rows:
+            try:broadcast_payload=json.loads(broadcast_rows[0]["payload"])
+            except (TypeError,ValueError,KeyError) as exc:
+                raise ValueError("ActionSelection executive broadcast malformed") from exc
+            if type(broadcast_payload) is not dict:
+                raise ValueError("ActionSelection executive broadcast malformed")
+            broadcast_refs=broadcast_payload.get("source_refs")
+            if (type(broadcast_payload.get("packet_id")) is not str or not broadcast_payload["packet_id"]
+                    or broadcast_payload.get("producer_component")!="C1_EXEC"
+                    or broadcast_payload.get("event_id")!=event_id
+                    or broadcast_payload.get("brain_generation_id")!=generation_id
+                    or type(broadcast_payload.get("state_version")) is not int
+                    or broadcast_payload.get("state_version")<0
+                    or type(broadcast_refs) is not list
+                    or broadcast_payload.get("provenance")!=broadcast_refs):
+                raise ValueError("ActionSelection executive broadcast binding")
+            for ref in broadcast_refs:add(ref)
+
         for item in coalition:
             if type(item) is not dict:
                 raise ValueError("ActionSelection coalition item")
@@ -640,9 +668,16 @@ class ActionGate:
                         or query.get("brain_generation_id")!=offer.get("brain_generation_id")
                         or query.get("target_role")!=kind
                         or query.get("based_on_state_version")!=offer.get("based_on_state_version")
+                        or query.get("broadcast_packet_id")!=offer.get("broadcast_packet_id")
                         or query.get("context_source_refs",[])!=offer.get("context_source_refs",[])
                         or query.get("enlightened_source_refs",[])!=offer.get("enlightened_source_refs",[])):
                     raise ValueError("ActionSelection query binding")
+                query_broadcast_id=query.get("broadcast_packet_id")
+                if query_broadcast_id is not None:
+                    if (broadcast_payload is None
+                            or broadcast_payload.get("packet_id")!=query_broadcast_id
+                            or broadcast_payload.get("state_version")!=query.get("based_on_state_version")):
+                        raise ValueError("ActionSelection query broadcast binding")
                 for field in ("provenance","source_refs","context_source_refs","enlightened_source_refs"):
                     values=query.get(field,[])
                     if type(values) is not list:
