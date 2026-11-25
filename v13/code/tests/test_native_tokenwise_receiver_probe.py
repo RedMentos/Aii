@@ -544,7 +544,7 @@ def test_callosum_fit_tokenwise_cohort_refuses_missing_local_tty(tmp_path):
 def test_top_level_operator_parses_and_routes_callosum_tokenwise_probe():
     from v13.operator import Operator
 
-    runtime = object()
+    runtime = SimpleNamespace(store=object())
     with patch("v13.callosum.operator_command", return_value="native-probe-routed") as routed:
         result = Operator(runtime).run(":callosum native-tokenwise-probe --confirm")
     assert result == "native-probe-routed"

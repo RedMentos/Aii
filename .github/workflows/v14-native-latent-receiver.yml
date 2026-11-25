@@ -9,6 +9,7 @@ on:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
+      - core/v14-tokenwise-native-receiver-consumer-20261125-run1
     paths:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native/latent_receiver/**"

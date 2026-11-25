@@ -94,13 +94,7 @@ class Operator:
             self._implicit_feedback(line)
             self._user_rules(line)
             return self.r.submit(line)
-        parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r
-        # Route callosum before eagerly touching Store so isolated operator dispatch
-        # and the non-TTY rejection path remain side-effect-free.
-        if cmd=='callosum':
-            from .callosum import operator_command
-            return operator_command(r,args)
-        s=r.store
+        parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
         if cmd in {'voice','speak'}:
             from .speech_output import operator_command
@@ -158,6 +152,9 @@ class Operator:
             return dumps(objective_report(r.cfg))
         if cmd=='self' and args:  # bare :self keeps the F3 self_state view below
             from .selfmodel import operator_command
+            return operator_command(r,args)
+        if cmd=='callosum':
+            from .callosum import operator_command
             return operator_command(r,args)
         if cmd=='gist':
             from .gist import operator_command
