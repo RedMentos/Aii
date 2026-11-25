@@ -23,7 +23,7 @@ Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae
 
 - LOCAL_LINUX CPython 3.13.5: python3 -m py_compile /tmp/anchor_residual_harness.py PASS; isolated harness 4/4 PASS.
 - Full local Aii checkout: NOT_AVAILABLE / NOT_RUN.
-- Exact PR #2511 CI: pending at checkpoint.
+- Exact PR #2511 CI: offline 3.11/3.14 and privacy passed on the earlier code/test head; staged-runtime and integrated-regression remain IN_PROGRESS. The v14-latent-token-alignment workflow initially omitted this new head/base branch, so the workflow filter was corrected in commit e8b8d95229f3c17db099468f4767ccfad18be612; exact adapter-contract 3.13/3.14 checks are now QUEUED on that head.
 - Native GGUF receiver inference, task utility, Android arm64/Termux and Redmi: NOT_RUN / UNVERIFIED.
 
 ## Integration and next owner
@@ -32,4 +32,4 @@ Core PR #2510 is the runtime capture lane. It should rebase/consume this helper 
 
 ## Device and user action
 
-No fresh authenticated device receipt arrived in this checkpoint; the last available private snapshot is historical (2026-11-24). REDMI_UNVERIFIED; NOT_RELEASED. No update request, shell command, model/weight/permission/data change or deployment. No user action is required.
+Owner-read DIAGNOSTICS returned NO_LIVE_RECEIPT. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only. Current installation remains unverified. REDMI_UNVERIFIED; NOT_RELEASED. No update request, shell command, model/weight/permission/data change or deployment. No user action is required.
