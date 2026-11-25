@@ -68,6 +68,7 @@ class StageTest(unittest.TestCase):
     def test_stages_replacement_without_mutating_source(self):
         self.builder("    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n")
         out = self.root / 'candidate'
+        source_focal = (self.code / 'v13/focal.py').read_bytes()
         result = module.stage(self.code, out)
         self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED guard_runtime_close(self)')
         self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
@@ -82,7 +83,7 @@ class StageTest(unittest.TestCase):
         self.assertEqual(result['native_probe_close_overlay']['replaced_files'], ['v13/runtime.py'])
         self.assertEqual(result['action_selection_lineage_overlay']['status'], 'SHADOW_REVIEW_ONLY')
         self.assertEqual(result['action_selection_lineage_overlay']['replaced_files'], ['v13/focal.py'])
-        self.assertEqual((self.code / 'v13/focal.py').read_bytes(), source_operator if False else (source_code / 'v13/focal.py').read_bytes())
+        self.assertEqual((self.code / 'v13/focal.py').read_bytes(), source_focal)
         self.assertIn(b'ACTION_SELECTION_C1_BROADCAST_LINEAGE_V1', (out / 'v13/focal.py').read_bytes())
         self.assertTrue((out / 'specs/test.json').exists())
         with self.assertRaises(FileExistsError):
