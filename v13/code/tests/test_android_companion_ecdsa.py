@@ -68,6 +68,44 @@ def verifier(path, clock=lambda: 1000.0):
     return value
 
 
+def test_open_url_receipt_requires_matching_capability_and_os_status(tmp_path):
+    url = "https://example.com/path?q=1"
+    broker = android_control.AndroidControlBroker(tmp_path / "open-url-broker.sqlite")
+    broker.start()
+    proposal = broker.propose("open_url", {"url": url}, ttl=30)
+    envelope = {
+        "action_id": proposal.action_id,
+        "capability": "open_url",
+        "digest": proposal.digest,
+    }
+    body = {
+        **BODY,
+        "nonce": "6" * 32,
+        "action_id": proposal.action_id,
+        "capability": "open_url",
+        "digest": proposal.digest,
+        "os_permission_status": "NOT_REQUIRED_FOR_OPEN_URL",
+    }
+    receipt = {"body": body, "key_id": KEY_ID, "signature": _sign_test_body(body)}
+    value = verifier(tmp_path / "open-url-verifier.sqlite")
+    attestation = value.verify(envelope, receipt, consume_nonce=False)
+    assert attestation["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert attestation["android_os_permission_status"] == "NOT_REQUIRED_FOR_OPEN_URL"
+    assert attestation["t8_authoritative"] is False
+
+    wrong_permission = {**body, "nonce": "7" * 32,
+                        "os_permission_status": "NOT_REQUIRED_FOR_LAUNCH_APP"}
+    wrong_receipt = {
+        "body": wrong_permission,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(wrong_permission),
+    }
+    with pytest.raises(CompanionDenied, match="unsupported capability receipt"):
+        value.verify(envelope, wrong_receipt, consume_nonce=False)
+    value.close()
+    broker.close()
+
+
 def test_pinned_android_keystore_signature_verifies(tmp_path):
     value = verifier(tmp_path / "ecdsa.sqlite")
     attestation = value.verify(ENVELOPE, RECEIPT, consume_nonce=False)
