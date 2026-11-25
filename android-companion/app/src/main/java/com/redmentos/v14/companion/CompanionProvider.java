@@ -42,7 +42,9 @@ public final class CompanionProvider extends ContentProvider {
         signer = new ReceiptSigner();
         // Receipt-only recovery is safe after process death: it never re-dispatches.
         // A failed signer/SQLite write leaves the claim intact for the next provider call.
-        ClaimedActionRecovery.recoverAll(db, signer, System.currentTimeMillis());
+        synchronized (ACTION_GATE_LOCK) {
+            ClaimedActionRecovery.recoverAll(db, signer, System.currentTimeMillis());
+        }
         ensureChannel(context);
         return true;
     }
@@ -231,8 +233,11 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
-        ClaimedActionRecovery.recoverAction(db, signer, actionId, System.currentTimeMillis());
-        CompanionDb.Action action = db.get(actionId);
+        CompanionDb.Action action;
+        synchronized (ACTION_GATE_LOCK) {
+            ClaimedActionRecovery.recoverAction(db, signer, actionId, System.currentTimeMillis());
+            action = db.get(actionId);
+        }
         JSONObject out = new JSONObject();
         if (action == null) {
             out.put("status", "NOT_FOUND");
@@ -285,18 +290,20 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private JSONObject pending(Context context) throws Exception {
-        ClaimedActionRecovery.recoverAll(db, signer, System.currentTimeMillis());
         org.json.JSONArray values = new org.json.JSONArray();
-        for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
-            JSONObject item = new JSONObject();
-            item.put("action_id", action.actionId);
-            item.put("package", action.packageName);
-            item.put("expires_at_ms", action.expiresAt);
-            values.put(item);
-        }
         org.json.JSONArray recoveryPending = new org.json.JSONArray();
-        for (CompanionDb.Action action : db.claimedWithoutReceipt()) {
-            recoveryPending.put(action.actionId);
+        synchronized (ACTION_GATE_LOCK) {
+            ClaimedActionRecovery.recoverAll(db, signer, System.currentTimeMillis());
+            for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
+                JSONObject item = new JSONObject();
+                item.put("action_id", action.actionId);
+                item.put("package", action.packageName);
+                item.put("expires_at_ms", action.expiresAt);
+                values.put(item);
+            }
+            for (CompanionDb.Action action : db.claimedWithoutReceipt()) {
+                recoveryPending.put(action.actionId);
+            }
         }
         JSONObject out = new JSONObject();
         out.put("status", "OK");
