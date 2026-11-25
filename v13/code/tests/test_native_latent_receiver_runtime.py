@@ -353,7 +353,7 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
 
 def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
-    runtime.last_answer = lambda: {"event_id": event["event_id"]}
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": event["event_id"]}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
     packet = {
@@ -433,7 +433,7 @@ def _make_event_pooled_c3_adapter(runtime, sender_digest, receiver_digest):
 
 
 def test_native_receive_prefix_projects_one_event_vector_into_virtual_receiver_prefix(tmp_path, monkeypatch):
-    from v13.latent_adapter import project_event
+    from v13.latent_adapter import load_adapter, project_event
 
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     adapter_name, adapter, adapter_digest = _make_event_pooled_c3_adapter(
@@ -461,8 +461,11 @@ def test_native_receive_prefix_projects_one_event_vector_into_virtual_receiver_p
     runtime.memory.semantic_keys.encoder.pids = lambda: []
     runtime.resources = lambda: {"mem_available_bytes": 10**12}
     monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    # Runtime reloads the float32-persisted adapter; compute the expected
+    # vector from the same durable bytes rather than the pre-serialization fit.
+    persisted_adapter = load_adapter(runtime.home / "data" / "latent_adapters" / adapter_name)
     expected = project_event(
-        adapter, [2.0, 3.0],
+        persisted_adapter, [2.0, 3.0],
         sender_model_sha256=sender_digest,
         receiver_model_sha256=digest,
         sender_tap_id="qwen35.result_norm.final.v1",
