@@ -62,8 +62,11 @@ final class ClaimedActionRecovery {
             if (!"v14.android-action-request/1".equals(request.optString("schema"))
                     || !action.actionId.equals(request.optString("action_id"))
                     || !"launch_app".equals(request.optString("capability"))
-                    || args == null || !action.packageName.equals(args.optString("package"))
+                    || args == null || args.length() != 1
+                    || !action.packageName.equals(args.optString("package"))
                     || !Canonical.requestDigest("launch_app", action.packageName).equals(digest)
+                    || !Double.isFinite(request.optDouble("expires_at", Double.NaN))
+                    || Math.abs(request.optDouble("expires_at") * 1000.0 - action.expiresAt) > 1.0
                     || !request.optBoolean("companion_local_consent_required", false)
                     || request.optBoolean("android_os_permission_required", true)
                     || request.optBoolean("permission_bypass", true)
