@@ -20,6 +20,8 @@ NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_2026112
 NATIVE_PROBE_OVERLAY_GIT_BLOB = '8b38e484172d1db863ceb4e4ed383f8508281851'
 RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_20261124.py'
 RUNTIME_CLOSE_OVERLAY_GIT_BLOB = 'fc32dc9c350e36b76c54bf8f1e26186370ccb133'
+ACTION_SELECTION_LINEAGE_OVERLAY = 'scripts/integrated_actionselection_broadcast_lineage_candidate_20261125.py'
+ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB = '8b527bdcf5447ae1058ef9b3e9126dd706e2e37d'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -162,13 +164,53 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'training_authority': 0,
             'native_receiver_authority': 0,
         }
+        action_lineage_path = code_dir / ACTION_SELECTION_LINEAGE_OVERLAY
+        if action_lineage_path.is_symlink() or not action_lineage_path.is_file():
+            raise ValueError('ActionSelection lineage overlay missing or unsafe')
+        action_lineage_raw = action_lineage_path.read_bytes()
+        action_lineage_blob = hashlib.sha1(
+            b'blob ' + str(len(action_lineage_raw)).encode('ascii') + b'\0' + action_lineage_raw
+        ).hexdigest()
+        if action_lineage_blob != ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB:
+            raise ValueError('ActionSelection lineage overlay source changed')
+        action_lineage_spec = importlib.util.spec_from_file_location(
+            'v14_checked_actionselection_lineage_overlay', action_lineage_path)
+        if action_lineage_spec is None or action_lineage_spec.loader is None:
+            raise RuntimeError('ActionSelection lineage overlay is not loadable')
+        action_lineage_module = importlib.util.module_from_spec(action_lineage_spec)
+        action_lineage_spec.loader.exec_module(action_lineage_module)
+        staged_focal_before = (staging / 'v13/focal.py').read_bytes()
+        action_lineage_files = action_lineage_module.apply_staged_actionselection_lineage(code_dir, staging)
+        if not isinstance(action_lineage_files, dict) or set(action_lineage_files) != {'v13/focal.py'}:
+            raise ValueError('ActionSelection lineage overlay produced an unexpected staged file set')
+        for relative, payload in action_lineage_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe ActionSelection lineage overlay output')
+            target.write_bytes(payload)
+        staged_focal_after = (staging / 'v13/focal.py').read_bytes()
+        if staged_focal_after == staged_focal_before:
+            raise ValueError('ActionSelection lineage overlay did not change staged focal consumer')
+        action_selection_lineage_overlay_manifest = {
+            'name': ACTION_SELECTION_LINEAGE_OVERLAY,
+            'git_blob_sha1': ACTION_SELECTION_LINEAGE_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'replaced_files': sorted(action_lineage_files),
+            'source_focal_sha256': hashlib.sha256((code_dir / 'v13/focal.py').read_bytes()).hexdigest(),
+            'staged_before_sha256': hashlib.sha256(staged_focal_before).hexdigest(),
+            'staged_after_sha256': hashlib.sha256(staged_focal_after).hexdigest(),
+            'source_file_preserved': True,
+            'production_route': False,
+            'training_authority': 0,
+            'world_learning_eligible': False,
+        }
         native_probe_close_overlay_manifest = {
             'name': RUNTIME_CLOSE_OVERLAY,
             'git_blob_sha1': RUNTIME_CLOSE_OVERLAY_GIT_BLOB,
             'status': 'SHADOW_REVIEW_ONLY',
             'replaced_files': ['v13/runtime.py'],
         }
-        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files))
+        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files) | set(action_lineage_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
             'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
@@ -185,6 +227,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'arithmetic_overlay': arithmetic_overlay_manifest,
             'native_probe_overlay': native_probe_overlay_manifest,
             'native_probe_close_overlay': native_probe_close_overlay_manifest,
+            'action_selection_lineage_overlay': action_selection_lineage_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
