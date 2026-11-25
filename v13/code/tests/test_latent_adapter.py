@@ -291,7 +291,24 @@ def test_char_span_alignment_feeds_source_disjoint_tokenwise_adapter_fit():
 def test_tokenwise_fit_rejects_source_hash_leakage_across_holdout():
     train = make_aligned_tokenwise_pairs("train", 10, seed=21)
     holdout = make_aligned_tokenwise_pairs("hold", 5, seed=22)
-    holdout[0]["source_sha256"] = train[0]["source_sha256"]
+    leaked_source = holdout[0]["source_id"]
+    leaked_hash = train[0]["source_sha256"]
+    leaked_alignment = hashlib.sha256(json.dumps({
+        "method": "CHAR_SPAN_OVERLAP_V1",
+        "source_id": leaked_source,
+        "source_sha256": leaked_hash,
+        "sender_spans": [[0, 2], [2, 4], [4, 6]],
+        "receiver_spans": [[0, 3], [3, 6]],
+    }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    for row in holdout:
+        if row["source_id"] == leaked_source:
+            row["source_sha256"] = leaked_hash
+            row["alignment_id"] = leaked_alignment
+            start, end = row["source_span"]
+            row["pair_id"] = hashlib.sha256(json.dumps(
+                [leaked_source, leaked_hash, row["token_position"], start, end, leaked_alignment],
+                separators=(",", ":"), ensure_ascii=True,
+            ).encode("utf-8")).hexdigest()
     with pytest.raises(LatentAdapterError, match="source hash leakage"):
         fit(train=train, holdout=holdout, projection_scope="TOKENWISE")
 
