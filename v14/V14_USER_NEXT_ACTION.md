@@ -1824,3 +1824,70 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Current Core receiver context: PR #2488 has reported 17/17 exact checks, pinned llama.cpp Linux build/selftest PASS and Android arm64 cross-compile PASS, but no GGUF model pair or Redmi test. The receiver still expects contiguous tokenizer-prefill rows; it has no `LATENT_PREFIX_V1` mode.
 - REDMI_UNVERIFIED / NOT_RELEASED. Latest available consented V13OBS #115 snapshot remains 2026-11-24 09:28 UTC: installed target `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled in that snapshot, runtime STOPPED_BY_USER, zero valid B1/B2 offers. No fresh authenticated receipt was obtained here; do not treat the snapshot as current.
 - Next: Core/Harness must choose between a real receiver input-embedding tap plus paired tokenwise cohort, or a separately typed `LATENT_PREFIX_V1` mode for pooled event vectors. Only then can a one-shot approved native receiver test be meaningful. Production B3 stays OFF until receiver-side task utility, negative controls, OOD and rollback pass.
+
+
+## Research & Perception checkpoint — 2026-11-25 (Run 14)
+
+**No user action required.** No model download/swap, new permission, device command, native probe, runtime restart or deployment was requested or performed.
+
+- Research branch: research-perception/v14-token-span-alignment-20261125-run14b, based on #2496 head ace68f1fa44989101849a2c78087aaa03010b5d8. Current rebased branch checkpoint: a4ea0704af84f9567f6c0b7a750848198e794f74.
+- Code: latent_adapter.py now has a tokenwise schema-v3 path that aligns sender activations to receiver token spans by character overlap, requires at least 0.80 span coverage, binds each sequence to a source SHA-256 and records both tokenizer revisions. The native-input builder rejects a receiver tokenizer revision mismatch. The existing event-pooled schema-v2 path is unchanged and remains the only path fed by current persisted tap records.
+- Research R-143: full review of Deng, Liu & Zhu, arXiv:2610.22026v1 (2026-10-15). Its positive activation result depends on oracle layer/position alignment and one Qwen family; cross-family GPT-Neo→Qwen transfer collapses to controls. This supports adding source-span/tokenizer evidence, but does not prove our adapter semantically transfers.
+- Evidence boundary: the new span helper is a geometric alignment prerequisite, not task utility. Current persisted tap records do not contain per-token character offsets, so fit_from_tap_records() still produces event-pooled v2 adapters; the new v3 tokenwise path is not yet fed by real tap cohorts. Production B3 remains OFF, semantic_use_proven=false, and training/native authority remains 0.
+- Tests: exact repository tests have not yet run in this automation environment; the new Python 3.13/3.14 CI workflow is pending. No LOCAL_LINUX full-repository PASS is claimed.
+- Device/deployment: REDMI_UNVERIFIED / NOT_RELEASED. No fresh authenticated phone receipt, model pair, native task-utility test or updater deployment was performed. A GitHub push is not a deployment.
+- Next executable step: after focused CI, extend the native tap producer to emit verified tokenizer byte/character spans (without storing source text), then build a real paired cohort and run receiver-side task utility with answer-disjoint, mis-source, no-op, zero, shuffled, parity and OOD controls. Do not promote the adapter based on MSE/logit changes alone.
+
+
+## Research & Perception update — 2026-11-25 (Run 14b)
+
+**No user action required.** No model download/swap, device command, new permission, native probe, runtime restart or deployment was requested or performed.
+
+- Research branch: research-perception/v14-token-span-alignment-20261125-run14b. Latest verified code/test checkpoint before documentation-only updates: 10b07cedd60db0b61dcbd7fdc493ceb6f6c48d84. The branch then appended R-144 and this handoff/user-action update; re-read current HEAD before any further work.
+- Tokenwise adapter schema v3 remains a geometric candidate only. Test fixtures now use the declared list-vector input contract, and the holdout source-hash leakage test now mutates a complete source group consistently so it reaches the intended train/holdout leakage guard.
+- The read-only latent alignment audit now measures sender/receiver nonzero-position residual-energy ratios after event mean pooling. It quantifies within-event activation variation not reconstructed by one mean; it is not semantic information loss, task utility, native transfer or learning proof.
+- Local isolated Python reproductions: PASS for token-span helper input normalization and event-pool residual-energy arithmetic. Full repository local pytest NOT_RUN because no checkout is mounted in this execution environment.
+- Exact CI on code/test SHA 10b07ced: V14 latent token-span alignment #12 PASS; V13 runtime deployment integrity #2517 PASS. Current docs-only branch head must be rechecked. V13 staged context/integrated regression #5060 was still IN_PROGRESS at last poll.
+- Research R-144: full review of Chen et al., arXiv:2606.13594v2 (v2 2026-10-05). The method is dense per-layer/per-KV-group KV-cache alignment with reconstruction then generation training, not a one-vector hidden-state adapter. It reports 33/36 context-unaware Qwen3 task/pair wins but uses 4B/8B/14B models, 30k+2k training steps and estimated 27.2–30.2 MB/example cache payload. No official code release or model/data license reuse was verified. See V14_RESEARCH_LEDGER R-144.
+- Core PR #2499: the exact failure on df19e207 was a missing arm-probe call in its runtime test, not a lost PENDING record. This correction is posted in comment #7164132935. Core commit 8502afe adds the explicit arm step and updates expected preflight unload ordering; dedicated V14 native latent receiver staged-runtime workflow #911 PASS. This is staged control-path evidence, not a real GGUF task-utility test.
+- B3 remains OFF. No native GGUF task-utility, gradient/parameter diff, retention/restart, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. A GitHub push is not a deployment.
+
+**Next executable step:** after the exact integrated CI finishes, coordinate with Core on the real tap producer's tokenizer byte/character offsets, then form a source-disjoint paired cohort and compare one-vector vs span/tokenwise receiver utility under context-aware and context-unaware conditions with zero, shuffled, mis-source, position, parity and OOD controls.
+
+## Research & Perception — final Run 14b integration CI (2026-11-25 13:47 UTC)
+
+**User action required: NONE.** No device action, model download/swap, permission change, runtime restart or deployment is requested.
+
+- PR #2501 code/test SHA 64eb3cf693f97f3f44999912858d651a1b682a01: focused V14 latent token-span alignment #14 PASS; V13 runtime deployment integrity #2519 PASS; V13 staged context/integrated regression #5062 PASS. The branch then received documentation-only updates; current head dfb954331c6fc41987ca4a7cb306dff976f20b75 contains no further code/test change.
+- PR #2501 remains OPEN / DRAFT, stacked on #2496; NOT_RELEASED. The adapter's tokenwise schema-v3 path is still a geometric candidate only. Current persisted taps do not provide the token offsets required to feed it with a real paired cohort.
+- Research R-144 reviewed dense cross-model KV-cache alignment. Its context-unaware results use large Qwen3 models, dense per-layer/KV-group transformations and substantial training; it is not a drop-in Redmi solution. The read-only event-pool residual-energy audit reports within-event variance only, not semantic utility.
+- Core PR #2499 head 8502afe: dedicated native receiver staged-runtime #911 PASS after its test added the missing explicit arm-probe call. This is fake-runner/staged control-path evidence, not native GGUF task utility or Redmi proof.
+- RAW EAR PR #2498: VAD comparator #595, optional NumPy backend #714 and runtime integrity #2522 PASS; staged/integrated #5065 FAIL at the next exact pin in Core/QA's recovery→stager→deployer chain. Details and ownership are recorded in V14-022 and the Run 13b handoff.
+- Full repository local pytest NOT_RUN; isolated Python formula reproductions PASS. No native model, persistent weight diff/retention, Android microphone, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Next internal step:** Core/QA rebind the recovery builder's audio-composition pin, then recompute the stager and deployer hashes in order and rerun staged/integrated/migration. Research then works with Core on a producer-side token-span contract and source-disjoint receiver task-utility evaluation. No user action is needed.
+ 
+## Research & Perception — Run 15, 2026-11-25
+
+**No user action required.** No model download/swap, native probe, device command, runtime restart, permission change, user-data mutation or deployment was requested or performed.
+
+- PR [#2501](https://github.com/RedMentos/Aii/pull/2501), branch research-perception/v14-token-span-alignment-20261125-run14b, exact code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2.
+- Tokenwise latent fit now binds sender and receiver activation rows to canonical SHA-256 digests; pair IDs and the aggregate alignment digest include those hashes. Tests reject a vector changed after alignment and a stale pair ID after an activation digest is recomputed.
+- Exact GitHub Actions: 45630124154 — 37/37 adapter tests PASS on Python 3.13 and 3.14, compile PASS, privacy scan CLEAN; 45630124121 — runtime-deployment integrity PASS on Python 3.11 and 3.14. LOCAL_LINUX isolated helper reproduction 3/3 PASS. Full local Aii suite BLOCKED/NOT_RUN: no checkout is mounted and git ls-remote fails because github.com DNS cannot resolve.
+- This remains a draft research candidate: no trusted tokenwise tap producer, real paired activation cohort, native GGUF pair, gradient/retention proof, receiver task utility or B3 production route. B3 stays OFF.
+- Latest available device information remains historical, not refreshed in this run: the consented V13OBS #115 snapshot from 2026-11-24 reported installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, auto-update enabled, and AI runtime STOPPED_BY_USER with model process stopped. No fresh private receipt was obtained; Redmi and current updater state are therefore REDMI_UNVERIFIED. GitHub push/PR is not deployment.
+- Next: Core to finish/review the separately typed LATENT_PREFIX_V1 event-pooled receiver in #2499; Research + Core to add a trusted tokenwise tap producer with packet/blob/event/generation/model/tokenizer/source-span provenance before any native receiver utility experiment.
+
+**User action required: NONE.** Do not run a manual Termux command or change models/weights. A future native probe requires a separate explicit local approval and fresh device receipt.
+
+ 
+### Device receipt refresh — latest available private V13OBS #115
+
+The latest available consented snapshot is timestamped 2026-11-24 09:22:33 UTC; no newer receipt was available in this run. It reports auto-update enabled and dashboard/runtime UP_TO_DATE at release SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but the AI runtime is STOPPED_BY_USER, autostart is false and the model process is stopped. Across the recorded five-turn sample, B1 and B2 each had two failed native attempts and zero valid offers; native latent exchange and C3 semantic use remain unproven. This does not validate PR #2501 or any new device behavior.
+
+**Updater/deployment:** the installed release is reported up to date; PR #2501 is still a draft research PR and is not a release. No UPDATE_REQUEST, restart, CHAT_SEND, shell, model/weight swap, permission change or data mutation was performed. Do not send a manual Termux command or restart the user-stopped runtime. Redmi acceptance for this candidate remains REDMI_UNVERIFIED.
+
+ 
+### Research lead R-146 — S-JEPA (full main-paper review)
+
+Nikos Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06), introduces a stochastic per-image JEPA latent with a target-conditioned posterior during training and a context-conditioned prior at inference. It reports small representation gains over I-JEPA and useful uncertainty/diversity, but the uncertainty-error correlation is weak within images (mean Spearman about 0.16; positive in 76%), the latent is global per image rather than per target region, and uncertainty maps need repeated predictor passes. Training used ViT-B/L and four A100 GPUs; this is not a Redmi candidate. The paper's code URL was not retrievable and its license/weights are unverified, so nothing was reused. Potential V14 experiment only: a tiny gated stochastic residual z for ambiguous temporal outcomes after trusted B3 taps exist; deterministic fast path remains. Do not sample every turn or promote on uncertainty alone.

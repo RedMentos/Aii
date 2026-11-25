@@ -1328,3 +1328,44 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+ 
+## Research & Perception — Run 15: tokenwise activation integrity — 2026-11-25
+
+### Implemented
+
+PR #2501 adds canonical content binding to the existing tokenwise latent adapter. Sender and receiver rows are hashed as little-endian float64 vectors. Pair IDs bind source ID/hash, token position/span, alignment ID/coverage and both row hashes. The aggregate token-alignment digest includes both hashes. Fitting rejects post-alignment activation mutation and stale pair IDs. Event-pooled schema-v2 is unchanged.
+
+### Exact evidence
+
+- Code/test SHA: 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2 on research-perception/v14-token-span-alignment-20261125-run14b.
+- Adapter contract workflow 45630124154: 37/37 PASS on Python 3.13 and 3.14; exact compile PASS; privacy scan CLEAN.
+- Runtime deployment integrity 45630124121: offline Python 3.11 and 3.14 PASS.
+- LOCAL_LINUX isolated helper reproduction: 3/3 PASS. Full local Aii checkout/pytest BLOCKED/NOT_RUN because no checkout is mounted and local GitHub DNS fails.
+- First code/test attempt 4477cb7 exposed four fixture errors; the fixtures were corrected and the exact 6cc34b1 head is green. No source pin or gate was weakened.
+
+### User effect and limits
+
+No production route changed. The adapter remains diagnostic-only, authority-zero and synthetic-tokenwise. The hashes establish content self-consistency, not authentic source provenance. No persisted tokenwise tap producer/cohort, native GGUF model pair, receiver task-utility, gradient, retention, restart/rollback, Redmi/Termux, release or deployment proof exists. Production B3 remains OFF. REDMI_UNVERIFIED / NOT_RELEASED.
+
+### Research mapping
+
+R-007 (Cardenas Piepereit, arXiv:2608.16347v2, full-paper review) and R-144 (dense KV-cache latent communication, full-PDF review) both support separating activation alignment from causal receiver/task utility. No upstream code, weights or dataset was reused. A future tokenwise path needs a trusted tap producer carrying exact packet/blob hashes, event/generation, model/tap/tokenizer revisions, source hash and character offsets; then run source-disjoint receiver tasks against event-prefix, exact-text and no-message/zero/shuffle/repeat/OOD controls.
+
+### Next owner handoff
+
+Core owns the separate LATENT_PREFIX_V1 event-pooled receiver integration in #2499. Research + Core own the missing trusted tokenwise tap producer. Keep both modes distinct; do not call either semantic transfer or production B3 until held-out receiver utility and rollback gates pass. No user action required.
+
+ 
+### Latest available private device receipt (read-only)
+
+Private V13OBS #115 was read without creating a new relay request. Its last device check is 2026-11-24T09:22:33Z: auto-update enabled; dashboard/runtime UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; AI runtime STOPPED_BY_USER; autostart false; model process stopped. The five-turn metadata sample records two failed native attempts and zero valid offers for each of B1/B2. Native latent exchange and C3 semantic use are not proven. No newer receipt exists in this run. Do not infer that the device is running because the dashboard is UP_TO_DATE.
+
+No UPDATE_REQUEST, CHAT_SEND, restart, shell, LOG_PAGE, model/weight/permission change or data mutation was performed. The updater is reported up to date for the old release, but PR #2501 is a draft and NOT_RELEASED. Redmi acceptance remains REDMI_UNVERIFIED.
+
+ 
+### Research follow-up R-146 — stochastic latent uncertainty
+
+Full main-paper review: Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06). S-JEPA uses a target-conditioned posterior and context-conditioned stochastic prior for a per-image z, trained as a representation-space CVAE with KL regularisation and EMA target. Reported ViT-B/L results use 600 ImageNet epochs and four A100 GPUs; ViT-L linear probe 78.3 vs I-JEPA 77.5. The paper's uncertainty-error correlation is weak within images (mean Spearman 0.16; positive in 76%), and uncertainty maps require repeated predictor passes. Latent is per image, not per target region. The listed code URL was not retrievable and its license/weights are unverified; no reuse.
+
+V14 experiment only after trusted B3 taps exist: add a tiny gated stochastic residual z for ambiguous temporal outcomes, keep deterministic fast path, compare deterministic/sample/zero/shuffle on held-out receiver utility and calibration, and measure added passes/RSS/TTFT. Not a mobile model recommendation; no model download/swap.

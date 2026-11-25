@@ -8,6 +8,7 @@ import pytest
 from v13.latent_alignment_audit import (
     AuditError,
     _pool_without_position0,
+    _event_pool_discarded_energy_ratio,
     audit_home,
     audit_records,
     cross_space_knn_overlap,
@@ -76,6 +77,20 @@ def test_pool_excludes_position_zero_and_reports_its_dominance():
     assert cosine is not None and cosine < 1.0
 
 
+def test_event_pool_discarded_energy_ratio_measures_only_within_event_variation():
+    assert _event_pool_discarded_energy_ratio([
+        [999.0, -999.0],
+        [2.0, 4.0],
+        [2.0, 4.0],
+    ]) == pytest.approx(0.0)
+    varied = _event_pool_discarded_energy_ratio([
+        [999.0, -999.0],
+        [1.0, 0.0],
+        [0.0, 1.0],
+    ])
+    assert varied is not None and 0.0 < varied < 1.0
+
+
 def test_cross_space_knn_overlap_detects_same_neighborhoods_across_dimensions():
     source = [[float(i), float(i * i + 1)] for i in range(12)]
     target = [[row[0], row[1], 0.0] for row in source]
@@ -118,6 +133,9 @@ def test_audit_reads_only_paired_source_bound_taps(tmp_path):
     cohort = result["cohorts"][0]
     assert cohort["paired_sources"] == 12
     assert cohort["alignment"]["observed_overlap"] == 1.0
+    assert cohort["sender_event_pool_discarded_energy_ratio"]["median"] > 0.0
+    assert cohort["receiver_event_pool_discarded_energy_ratio"]["median"] > 0.0
+    assert cohort["event_pool_metric_semantics"].startswith("descriptive within-event activation variance only")
     assert cohort["position0_excluded_from_alignment_pool"] is True
     assert cohort["causal_transfer_proven"] is False
     assert result["limits"]["source_text_read"] is False

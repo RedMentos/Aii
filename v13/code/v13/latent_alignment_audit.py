@@ -187,6 +187,31 @@ def _pool_without_position0(vectors: list[list[float]]) -> tuple[list[float], fl
     return pooled_rest, ratio, cosine
 
 
+def _event_pool_discarded_energy_ratio(vectors: list[list[float]]) -> float | None:
+    """Measure nonzero-position activation energy not reconstructable by one mean vector.
+
+    This is a within-event variance diagnostic, not semantic information loss or
+    task utility. It uses the same position-zero exclusion as event-pooled fitting.
+    """
+    if len(vectors) < 2:
+        raise AuditError("at least two tap rows are required for event-pool diagnostics")
+    rows = vectors[1:]
+    if not rows:
+        raise AuditError("event-pool diagnostic has no nonzero-position rows")
+    dim = len(rows[0])
+    if dim < 1 or any(len(row) != dim for row in rows):
+        raise AuditError("event-pool diagnostic vector geometry is invalid")
+    mean = [math.fsum(row[col] for row in rows) / len(rows) for col in range(dim)]
+    total_energy = math.fsum(value * value for row in rows for value in row)
+    if total_energy <= 0.0:
+        return None
+    residual_energy = math.fsum(
+        (row[col] - mean[col]) ** 2
+        for row in rows for col in range(dim)
+    )
+    return min(1.0, max(0.0, residual_energy / total_energy))
+
+
 def _cosine(a: list[float], b: list[float]) -> float | None:
     if len(a) != len(b) or not a:
         return None
@@ -372,6 +397,8 @@ def audit_records(home: Path, records: list[dict[str, Any]], *, sender: str = "B
         receiver_ratios: list[float | None] = []
         sender_cosines: list[float | None] = []
         receiver_cosines: list[float | None] = []
+        sender_event_pool_losses: list[float | None] = []
+        receiver_event_pool_losses: list[float | None] = []
         for source_key in keys:
             _, sender_packet, receiver_packet = candidates[source_key]
             try:
@@ -379,6 +406,8 @@ def audit_records(home: Path, records: list[dict[str, Any]], *, sender: str = "B
                 receiver_vectors, _ = _read_tap_blob(home, receiver_packet)
                 sender_pooled, sender_ratio, sender_cosine = _pool_without_position0(sender_vectors)
                 receiver_pooled, receiver_ratio, receiver_cosine = _pool_without_position0(receiver_vectors)
+                sender_event_pool_losses.append(_event_pool_discarded_energy_ratio(sender_vectors))
+                receiver_event_pool_losses.append(_event_pool_discarded_energy_ratio(receiver_vectors))
                 sender_rows.append(sender_pooled)
                 receiver_rows.append(receiver_pooled)
                 sender_ratios.append(sender_ratio)
@@ -400,6 +429,10 @@ def audit_records(home: Path, records: list[dict[str, Any]], *, sender: str = "B
             "receiver_position0_norm_ratio": _quantiles(receiver_ratios),
             "sender_all_vs_without_position0_cosine": _quantiles(sender_cosines),
             "receiver_all_vs_without_position0_cosine": _quantiles(receiver_cosines),
+            "sender_event_pool_discarded_energy_ratio": _quantiles(sender_event_pool_losses),
+            "receiver_event_pool_discarded_energy_ratio": _quantiles(receiver_event_pool_losses),
+            "event_pool_metric": "nonzero-position residual energy / total energy",
+            "event_pool_metric_semantics": "descriptive within-event activation variance only; not semantic information loss or task utility",
             "activation_kind": EXPECTED_NORMALIZATION,
             "position0_excluded_from_alignment_pool": True,
             "special_token_filter": "UNAVAILABLE_TOKENIZER_METADATA_NOT_STORED",
@@ -449,6 +482,7 @@ def audit_records(home: Path, records: list[dict[str, Any]], *, sender: str = "B
             "native_receiver_authority": 0,
             "alignment_is_not_semantic_utility": True,
             "alignment_is_not_causal_generation_transfer": True,
+            "event_pool_metric_is_not_semantic_utility": True,
             "not_the_paper_exact_mutual_knn_implementation": True,
         },
     }
