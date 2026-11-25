@@ -9,6 +9,7 @@ deterministic heuristics, not a trained VAD, speech classifier, or calibrated pr
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import struct
 from contextlib import contextmanager, nullcontext
@@ -715,6 +716,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         runtime, source_id, generation_id, consent_receipt,
         consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
     ) as lease_active:
+        if type(consent_receipt) is not str or not consent_receipt:
+            raise PermissionError("audio consent receipt is invalid")
+        # This fingerprint is process-local only. It partitions all temporal
+        # audio state by the exact provider-validated receipt without storing
+        # the receipt or exposing a cross-session identifier in packets.
+        consent_scope_id = hashlib.sha256(consent_receipt.encode("utf-8")).hexdigest()
+        vad_scope_id = hashlib.sha256(
+            "\0".join((source_id, generation_id, consent_scope_id)).encode("utf-8")
+        ).hexdigest()
         raw = observe_pcm16(
             pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
         )
@@ -724,7 +734,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if vad_stream is not None:
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
-                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+                stream_id=vad_scope_id, start_ms=start_ms,
             )
             cues["vad"] = validate_vad_evidence(vad_evidence)
             cues = validate_voice_cues(cues)
@@ -778,6 +788,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
                     current_chunk_sha256=raw["source_ref"]["sha256"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                    consent_scope_id=consent_scope_id,
                 )
             except SpeakerEvidenceError as exc:
                 runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
@@ -829,6 +840,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
+                consent_scope_id=consent_scope_id,
             )
         else:
             if not isinstance(temporal_state, TemporalVoiceEvidence):
@@ -839,6 +851,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
+                consent_scope_id=consent_scope_id,
             )
         speaker_change_score = 0.0
         speaker_change_candidate = None
@@ -846,7 +859,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
             if speaker_change_candidate is None:
                 speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
-            if speaker_change_candidate is True:
+            if (
+                speaker_change_decision == "CHANGE_OR_OVERLAP_CANDIDATE"
+                and speaker_change_candidate is True
+            ):
                 speaker_change_score = float(
                     speaker_evidence.get("peak_candidate_change_score")
                     or speaker_evidence.get("change_score")
@@ -913,7 +929,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-            if speaker_change_candidate is not None:
+            if (
+                speaker_change_decision == "CHANGE_OR_OVERLAP_CANDIDATE"
+                and speaker_change_candidate is not None
+            ):
                 summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
                 summary += f" speaker_change_score={speaker_change_score:.2f}"
                 if speaker_change_candidate:

@@ -125,6 +125,11 @@ class _Stream:
         # may become speaker-reference history.
         self.last_end_ms = None
         self.last_voiced_end_ms = None
+        # Window chronology is independent of model/calibration resets. It
+        # prevents a later, wider window from moving its start backwards while
+        # still presenting embedding frames whose end timestamps advance.
+        self.last_window_start_ms = None
+        self.last_window_end_ms = None
 
 
 class SpeakerChangeEvidenceRegistry:
@@ -144,7 +149,8 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               current_chunk_sha256, activity_hint, embeddings):
+               current_chunk_sha256, activity_hint, embeddings,
+               consent_scope_id=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -153,26 +159,50 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or not _SHA256.fullmatch(consent_scope_id)
+        ):
+            raise SpeakerEvidenceError("speaker consent scope fingerprint is invalid")
         batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms, current_chunk_sha256)
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
             "frame_step_ms", "lookback_frames", "lookback_ms",
             "confidence_threshold", "calibration_id",
         )}
-        key = (source_id, generation_id)
+        # The exact current consent receipt is hashed by the RAW EAR consumer;
+        # the opaque fingerprint partitions process-local history without
+        # persisting or returning the receipt or its fingerprint.
+        key = (
+            (source_id, generation_id) if consent_scope_id is None
+            else (source_id, generation_id, consent_scope_id)
+        )
         with self._lock:
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
                     del self._states[old_key]
             state = self._states.get(key)
             reset_reason = None
+            previous_window_start_ms = None if state is None else state.last_window_start_ms
+            previous_window_end_ms = None if state is None else state.last_window_end_ms
+            # Validate the whole audio-window interval, not just the timestamps
+            # of optional speaker-embedding frames. A caller can otherwise move
+            # start_ms backwards while keeping every supplied frame_end_ms
+            # greater than the previous batch's last frame.
+            if previous_window_start_ms is not None and start_ms < previous_window_start_ms:
+                raise SpeakerEvidenceError("speaker window starts must advance monotonically")
+            if previous_window_end_ms is not None and end_ms <= previous_window_end_ms:
+                raise SpeakerEvidenceError("speaker window ends must advance monotonically")
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
                 state = _Stream(metadata, self.max_frames)
+                state.last_window_start_ms = previous_window_start_ms
+                state.last_window_end_ms = previous_window_end_ms
                 reset_reason = "MODEL_OR_CALIBRATION_CHANGED"
             elif state.last_voiced_end_ms is not None and start_ms - state.last_voiced_end_ms > self.reset_gap_ms:
                 state = _Stream(metadata, self.max_frames)
+                state.last_window_start_ms = previous_window_start_ms
+                state.last_window_end_ms = previous_window_end_ms
                 reset_reason = "STREAM_GAP"
 
             latest = None
@@ -268,6 +298,8 @@ class SpeakerChangeEvidenceRegistry:
             # All input windows advance ordering; only VOICED windows advance
             # the separate speaker-reference clock and history.
             state.last_end_ms = batch["frames"][-1][0]
+            state.last_window_start_ms = start_ms
+            state.last_window_end_ms = end_ms
 
             self._states.pop(key, None)
             self._states[key] = state
@@ -300,6 +332,7 @@ class SpeakerChangeEvidenceRegistry:
                 "model_sha256": batch["model_sha256"],
                 "current_chunk_sha256": batch["current_chunk_sha256"],
                 "source_binding_status": "CURRENT_PCM_CHUNK_SHA256_MATCH",
+                "consent_scope_bound": consent_scope_id is not None,
                 "embedding_dim": batch["embedding_dim"],
                 "frame_step_ms": batch["frame_step_ms"],
                 "lookback_frames": batch["lookback_frames"],
@@ -324,9 +357,13 @@ class SpeakerChangeEvidenceRegistry:
                 "action_authority": False,
             }
 
-    def reset(self, *, source_id=None, generation_id=None):
-        if source_id is None and generation_id is not None:
-            raise ValueError("generation_id requires source_id")
+    def reset(self, *, source_id=None, generation_id=None, consent_scope_id=None):
+        if source_id is None and (generation_id is not None or consent_scope_id is not None):
+            raise ValueError("generation_id/consent_scope_id requires source_id")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or not _SHA256.fullmatch(consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id is invalid")
         if source_id is not None and (
             type(source_id) is not str or not source_id.strip() or len(source_id) > 128
         ):
@@ -340,7 +377,8 @@ class SpeakerChangeEvidenceRegistry:
                 key for key in self._states
                 if source_id is None or (
                     key[0] == source_id and
-                    (generation_id is None or key[1] == generation_id)
+                    (generation_id is None or key[1] == generation_id) and
+                    (consent_scope_id is None or (len(key) > 2 and key[2] == consent_scope_id))
                 )
             ]
             for key in keys:

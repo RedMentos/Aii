@@ -26,6 +26,7 @@ from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     reset_runtime_temporal_voice_states,
 )
+from v13.audio_temporal_evidence import TemporalVoiceEvidence
 from v13.store import Store
 
 
@@ -100,6 +101,243 @@ def test_audio_window_hash_mismatch_is_rejected_before_history_changes():
             embeddings=batch,
         )
     assert len(registry) == 0
+
+
+def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_path):
+    runtime, first_event = make_runtime(tmp_path)
+    active = {"receipt": "fixture:consented-speaker-a"}
+
+    def current_consent(source_id, receipt):
+        return source_id == SOURCE and receipt == active["receipt"]
+
+    try:
+        first_pcm = tone(frequency=140)
+        first_embeddings = speaker_batch(
+            SOURCE, first_event["brain_generation_id"], 100, 1100,
+            lambda _: (1.0, 0.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(first_pcm).hexdigest(),
+        )
+        first = consume_pcm16_voice_window(
+            runtime, first_pcm, sample_rate=16000, start_ms=100,
+            event_id=first_event["event_id"],
+            generation_id=first_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=active["receipt"],
+            consent_check=current_consent,
+            consent_guard=consent_guard(current_consent),
+            finality="FINAL", speaker_embeddings=first_embeddings,
+        )
+        assert first["speaker_change_evidence"]["status"] == "WARMUP"
+        assert first["speaker_change_evidence"]["consent_scope_bound"] is True
+        assert first["temporal_voice"]["consent_scope_bound"] is True
+
+        active["receipt"] = "fixture:consented-speaker-b"
+        session_id = runtime.store.one(
+            "SELECT session_id FROM events WHERE id=?",
+            (first_event["event_id"],),
+        )["session_id"]
+        second_event = runtime.store.event(session_id, "new consent scope")
+        assert second_event["brain_generation_id"] == first_event["brain_generation_id"]
+        second_pcm = tone(frequency=180)
+        second_embeddings = speaker_batch(
+            SOURCE, second_event["brain_generation_id"], 100, 1100,
+            lambda _: (1.0, 0.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(second_pcm).hexdigest(),
+        )
+        second = consume_pcm16_voice_window(
+            runtime, second_pcm, sample_rate=16000, start_ms=100,
+            event_id=second_event["event_id"],
+            generation_id=first_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=active["receipt"],
+            consent_check=current_consent,
+            consent_guard=consent_guard(current_consent),
+            finality="FINAL", speaker_embeddings=second_embeddings,
+        )
+
+        # Reusing a source and brain generation with a fresh receipt must not
+        # inherit the prior speaker vector history or the previous time origin.
+        assert second["speaker_change_evidence"]["status"] == "WARMUP"
+        assert second["speaker_change_evidence"]["history_frame_count"] == len(second_embeddings["frames"])
+        assert second["temporal_voice"]["state_reset"] is False
+        assert second["temporal_voice"]["gap_ms"] == 0
+        assert second["a4"]["speaker_change_decision"] == "DEFER"
+        fingerprint = hashlib.sha256(active["receipt"].encode("utf-8")).hexdigest()
+        packet_text = json.dumps(second["packet"], sort_keys=True)
+        assert fingerprint not in packet_text
+        assert "consent_scope_id" not in packet_text
+    finally:
+        runtime.store.close()
+
+
+def test_external_temporal_voice_state_resets_when_receipt_scope_changes():
+    state = TemporalVoiceEvidence()
+    cues = {"activity_hint": "VOICED", "activity_score": 0.9}
+    state.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        cues=cues, consent_scope_id="a" * 64,
+    )
+    changed = state.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        cues=cues, consent_scope_id="b" * 64,
+    )
+    assert changed["state_reset"] is True
+    assert changed["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert changed["consent_scope_bound"] is True
+
+
+def test_uncalibrated_speaker_candidate_cannot_modulate_a4(monkeypatch, tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    captured = {}
+
+    class UncalibratedCandidateRegistry(SpeakerChangeEvidenceRegistry):
+        def update(self, **kwargs):
+            return {
+                "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                "status": "MEASURED",
+                "source_id": kwargs["source_id"],
+                "generation_id": kwargs["generation_id"],
+                "change_score": 1.0,
+                "peak_candidate_change_score": 1.0,
+                "peak_speaker_change_candidate": True,
+                "speaker_change_candidate": True,
+                "candidate_count": 1,
+                "threshold_status": "CALLER_ASSERTED_UNVERIFIED",
+                "speaker_label": None,
+                "identity_authority": False,
+                "learning_authority": False,
+                "action_authority": False,
+            }
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal):
+            captured.update(sal)
+            return dict(sal)
+
+    runtime._raw_ear_speaker_registry = UncalibratedCandidateRegistry()
+    monkeypatch.setattr(audio_voice_module.attctl, "controller", lambda _: CaptureAttention())
+    pcm = tone()
+    embeddings = speaker_batch(
+        SOURCE, event["brain_generation_id"], 100, 1100,
+        lambda _: (1.0, 0.0, 0.0),
+        current_chunk_sha256=hashlib.sha256(pcm).hexdigest(),
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=embeddings,
+        )
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        expected = max(
+            result["packet"]["segments"][0]["acoustic"]["rms"] * 0.5,
+            0.25 * result["a4"]["prosody_change_score"]
+                if result["temporal_voice"]["voice_active"] else 0.0,
+            0.5 if result["temporal_voice"]["voice_onset"] else 0.0,
+        )
+        assert captured["external_interrupt"] == pytest.approx(min(1.0, expected))
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" not in result["c3_admission"].selected[0].summary
+    finally:
+        runtime.store.close()
+
+
+def test_speaker_window_start_cannot_move_backwards_when_frame_times_advance_and_state_recovers():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    state = registry._states[(SOURCE, "gen-a")]
+    before_frames = tuple(state.frames)
+    later_frames = speaker_batch(
+        SOURCE, "gen-a", 1100, 1200, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    # Every embedding frame is newer than the previous frame, but the supplied
+    # window itself starts before the previously accepted window.
+    with pytest.raises(SpeakerEvidenceError, match="window starts must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=90, end_ms=1200,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later_frames,
+        )
+    assert state.last_window_start_ms == 100
+    assert state.last_window_end_ms == 1100
+    assert tuple(state.frames) == before_frames
+
+    accepted = registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1200,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=later_frames,
+    )
+    assert accepted["status"] == "MEASURED"
+    assert registry._states[(SOURCE, "gen-a")].last_window_start_ms == 100
+    assert registry._states[(SOURCE, "gen-a")].last_window_end_ms == 1200
+
+
+def test_speaker_window_end_must_advance_even_when_embedding_frames_do():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    first["frames"] = first["frames"][:-1]
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    later_frame = speaker_batch(
+        SOURCE, "gen-a", 1040, 1080, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="window ends must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1090,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later_frame,
+        )
+    state = registry._states[(SOURCE, "gen-a")]
+    assert state.last_window_start_ms == 100
+    assert state.last_window_end_ms == 1100
+
+
+def test_speaker_window_chronology_survives_model_revision_reset():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    later = speaker_batch(
+        SOURCE, "gen-a", 1100, 1200, lambda _: (1.0, 0.0, 0.0),
+        revision="fixture-embedding-v2", frame_step_ms=40, lookback_frames=1,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="window starts must advance monotonically"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=90, end_ms=1200,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=later,
+        )
+    accepted = registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1200,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=later,
+    )
+    assert accepted["reset_reason"] == "MODEL_OR_CALIBRATION_CHANGED"
+    assert accepted["status"] == "WARMUP"
+    assert accepted["interpretation"] == "LOOKBACK_NOT_YET_AVAILABLE"
+    assert accepted["history_frame_count"] == 2
 
 
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
