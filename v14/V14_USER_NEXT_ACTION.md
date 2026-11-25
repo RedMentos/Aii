@@ -1866,3 +1866,16 @@ Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-on
 - Full repository local pytest NOT_RUN; isolated Python formula reproductions PASS. No native model, persistent weight diff/retention, Android microphone, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED.
 
 **Next internal step:** Core/QA rebind the recovery builder's audio-composition pin, then recompute the stager and deployer hashes in order and rerun staged/integrated/migration. Research then works with Core on a producer-side token-span contract and source-disjoint receiver task-utility evaluation. No user action is needed.
+ 
+## Research & Perception — Run 15, 2026-11-25
+
+**No user action required.** No model download/swap, native probe, device command, runtime restart, permission change, user-data mutation or deployment was requested or performed.
+
+- PR [#2501](https://github.com/RedMentos/Aii/pull/2501), branch research-perception/v14-token-span-alignment-20261125-run14b, exact code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2.
+- Tokenwise latent fit now binds sender and receiver activation rows to canonical SHA-256 digests; pair IDs and the aggregate alignment digest include those hashes. Tests reject a vector changed after alignment and a stale pair ID after an activation digest is recomputed.
+- Exact GitHub Actions: 45630124154 — 37/37 adapter tests PASS on Python 3.13 and 3.14, compile PASS, privacy scan CLEAN; 45630124121 — runtime-deployment integrity PASS on Python 3.11 and 3.14. LOCAL_LINUX isolated helper reproduction 3/3 PASS. Full local Aii suite BLOCKED/NOT_RUN: no checkout is mounted and git ls-remote fails because github.com DNS cannot resolve.
+- This remains a draft research candidate: no trusted tokenwise tap producer, real paired activation cohort, native GGUF pair, gradient/retention proof, receiver task utility or B3 production route. B3 stays OFF.
+- Latest available device information remains historical, not refreshed in this run: the consented V13OBS #115 snapshot from 2026-11-24 reported installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, auto-update enabled, and AI runtime STOPPED_BY_USER with model process stopped. No fresh private receipt was obtained; Redmi and current updater state are therefore REDMI_UNVERIFIED. GitHub push/PR is not deployment.
+- Next: Core to finish/review the separately typed LATENT_PREFIX_V1 event-pooled receiver in #2499; Research + Core to add a trusted tokenwise tap producer with packet/blob/event/generation/model/tokenizer/source-span provenance before any native receiver utility experiment.
+
+**User action required: NONE.** Do not run a manual Termux command or change models/weights. A future native probe requires a separate explicit local approval and fresh device receipt.
