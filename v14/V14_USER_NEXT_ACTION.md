@@ -1885,3 +1885,12 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Release branch HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`: 22/22 observed workflow runs SUCCESS. Latest authenticated V13OBS #115 (2026-11-24 09:28 UTC) reports this SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE; AI STOPPED_BY_USER, model process STOPPED.
 - Last stored C3 turn is not a new test: 6.30 s total / 2.05 s TTFT / 1.87 s prefill / 358 admitted tokens / 7 generated; correctness UNKNOWN. B1/B2 each had two failed attempts and zero valid offers. No 20-turn acceptance.
 - PR #2472 remains DRAFT / NOT_RELEASED; no deployment, no Redmi test, no AudioRecord/microphone capture, no model/weight/permission/data mutation. User action: NONE.
+
+
+## Research & Perception — run 29 (2026-11-25)
+
+- PR [#2491](https://github.com/RedMentos/Aii/pull/2491) (tested code/test head `38f0ef5`), stacked on Perception #2487, evicts prior same-source/same-generation RAW EAR speaker vectors immediately when the consent-scope fingerprint changes. It also removes legacy unscoped state when switching to a scoped call. A4 remains DEFER; no identity, learning or action authority is added.
+- Exact code/test commits: `8162f40ff52688351dcf52ab50b1543ecbdfe5bd` / `38f0ef5fa46651e157c365a490e5faa16c33feb9`. LOCAL_LINUX isolated state-machine reproduction: **7/7 PASS**. Exact CI on code/test head `38f0ef5`: RAW EAR fastpath **148/148 PASS** on Python 3.13 and 3.14; FASTDIAR adapter/consumer **108/108 PASS** on both; WebRTC/libfvad comparator **PASS** on both. Staged/integrated **FAIL** at Core-owned recovery builder guard SHA `86ad7838…`; two-checkout migration returns `PARTIAL`. No hash gate was weakened. Full local Aii suite BLOCKED/NOT_RUN (no checkout/DNS).
+- R-121 reviews the 2026-09-26 streaming-diarizer adaptation study: aggregate detection improvement can conceal temporal speaker-identity inconsistency; rehearsal trades retention against transfer. No code/weights reused.
+- Redmi/Termux: **REDMI_UNVERIFIED**; no microphone, device action, model/weight or permission change. Release: **NOT_RELEASED**. GitHub PR is not deployment.
+- Next: finish exact-head CI and independent review of #2491; then Core/QA resolve #2482/#2483 source pins before staged integration. **User action: NONE.** No model download/swap or Termux command is needed.

@@ -157,8 +157,10 @@ def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_pat
         # inherit the prior speaker vector history or the previous time origin.
         assert second["speaker_change_evidence"]["status"] == "WARMUP"
         assert second["speaker_change_evidence"]["history_frame_count"] == len(second_embeddings["frames"])
-        assert second["temporal_voice"]["state_reset"] is False
+        assert second["temporal_voice"]["state_reset"] is True
+        assert second["temporal_voice"]["reset_reason"] == "CONSENT_SCOPE_CHANGED"
         assert second["temporal_voice"]["gap_ms"] == 0
+        assert len(runtime._raw_ear_temporal_registry) == 1
         assert second["a4"]["speaker_change_decision"] == "DEFER"
         fingerprint = hashlib.sha256(active["receipt"].encode("utf-8")).hexdigest()
         packet_text = json.dumps(second["packet"], sort_keys=True)
@@ -1703,3 +1705,66 @@ def test_owned_audio_generation_scope_requires_provider_callbacks_before_ingress
     finally:
         runtime.store.close()
 
+
+
+@pytest.mark.parametrize("previous_scope", [None, "a" * 64])
+def test_new_consent_scope_evicts_previous_speaker_vectors(previous_scope):
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-consent", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-consent", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first, consent_scope_id=previous_scope,
+    )
+    assert len(registry) == 1
+
+    second_scope = "b" * 64
+    second = speaker_batch(
+        SOURCE, "gen-consent", 100, 1100, lambda _: (0.0, 1.0, 0.0),
+    )
+    evidence = registry.update(
+        source_id=SOURCE, generation_id="gen-consent", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=second, consent_scope_id=second_scope,
+    )
+
+    assert evidence["status"] == "WARMUP"
+    assert evidence["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert evidence["history_frame_count"] == len(second["frames"])
+    assert len(registry) == 1
+    assert list(registry._states) == [(SOURCE, "gen-consent", second_scope)]
+
+
+def test_invalid_new_consent_scope_does_not_evict_previous_speaker_vectors():
+    registry = SpeakerChangeEvidenceRegistry(max_frames=16)
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        frame_step_ms=40, lookback_frames=1,
+    )
+    registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first, consent_scope_id="a" * 64,
+    )
+    previous_key = (SOURCE, "gen-a", "a" * 64)
+    previous_state = registry._states[previous_key]
+    previous_frames = tuple(previous_state.frames)
+
+    # The packet is otherwise well-formed, but this registry cannot retain
+    # lookback_frames + 2. The new receipt must not evict the old valid epoch.
+    invalid_new_scope = speaker_batch(
+        SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0),
+        frame_step_ms=40, lookback_frames=16,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="history bound"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=invalid_new_scope, consent_scope_id="b" * 64,
+        )
+
+    assert tuple(registry._states) == (previous_key,)
+    assert registry._states[previous_key] is previous_state
+    assert tuple(previous_state.frames) == previous_frames

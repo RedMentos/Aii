@@ -219,3 +219,80 @@ def test_registry_replaces_old_generation_and_supports_explicit_reset():
     )
     assert registry.reset() == 1
     assert len(registry) == 0
+
+
+
+def test_registry_purges_previous_consent_scope_and_reports_reset():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=4)
+    scope_a = "a" * 64
+    scope_b = "b" * 64
+    registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id=scope_a,
+    )
+    active = registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80,
+        cues=cue("VOICED"), consent_scope_id=scope_a,
+    )
+    assert active["voice_active"] is True
+
+    rotated = registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id=scope_b,
+    )
+    assert rotated["state_reset"] is True
+    assert rotated["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert rotated["voice_evidence"] == pytest.approx(0.393469, abs=1e-6)
+    assert len(registry) == 1
+    assert tuple(registry._states) == (("mic-a", "g1", scope_b),)
+
+
+def test_registry_purges_scoped_state_when_returning_to_legacy_unscoped_key():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=4)
+    registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id="a" * 64,
+    )
+    unscoped = registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert unscoped["state_reset"] is True
+    assert unscoped["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert tuple(registry._states) == (("mic-a", "g1"),)
+
+
+def test_invalid_new_scope_does_not_evict_previous_valid_scope():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=4)
+    registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id="a" * 64,
+    )
+    before_keys = tuple(registry._states)
+    with pytest.raises(ValueError, match="activity_hint"):
+        registry.update(
+            source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+            cues=cue("INVALID"), consent_scope_id="b" * 64,
+        )
+    assert tuple(registry._states) == before_keys
+
+
+def test_consent_rotation_preserves_other_sources_and_replaces_old_generation():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=4)
+    registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id="a" * 64,
+    )
+    registry.update(
+        source_id="mic-b", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id="c" * 64,
+    )
+    rotated = registry.update(
+        source_id="mic-a", generation_id="g2", start_ms=0, end_ms=40,
+        cues=cue("VOICED"), consent_scope_id="b" * 64,
+    )
+    assert rotated["state_reset"] is False
+    assert len(registry) == 2
+    assert ("mic-b", "g1", "c" * 64) in registry._states
+    assert ("mic-a", "g2", "b" * 64) in registry._states
+    assert ("mic-a", "g1", "a" * 64) not in registry._states
