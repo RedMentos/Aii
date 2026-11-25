@@ -6,8 +6,8 @@
 - Completion timestamp: UNKNOWN.
 - Repository: RedMentos/Aii.
 - Base: PR #2496 head `ace68f1fa44989101849a2c78087aaa03010b5d8` (itself stacked on #2489).
-- Working branch: `research-perception/v14-token-span-alignment-20261125-run14`.
-- Latest code/document checkpoint before PR creation: `e99f116a17e272d53c29a17faecdbcc3c0de0172`.
+- Working branch: `research-perception/v14-token-span-alignment-20261125-run14b`.
+- Latest code/document checkpoint on the rebased branch: `a4ea0704af84f9567f6c0b7a750848198e794f74`.
 - No force-push, merge, release, deployment, model download or device action.
 
 ## Functional change
@@ -24,7 +24,7 @@ Changed:
   - Event-pooled schema-v2 fit and projection are unchanged.
 - `v13/code/tests/test_latent_adapter.py`
   - Added different-segmentation alignment, coverage failure, span-overlap failure, missing-proof rejection, source-hash leakage, tokenwise adapter fit, tokenizer mismatch, and checkpoint metadata round-trip tests.
-- `.github/workflows/v14-latent-token-alignment.yml`
+- `.github/workflows/v14-latent-token-alignment.yml` (shared with parent branch #2496 so it is present in the PR base)
   - Added focused Python 3.13/3.14 compile + adapter/tap/audit tests + public-repo privacy scan.
 
 The alignment helper is a geometric prerequisite only. It does not establish semantic transfer, gradient learning, task utility, native execution or production readiness. Current persisted tap records still lack per-token character offsets; `fit_from_tap_records()` therefore remains event-pooled schema v2. The new v3 path is not yet fed by a real paired tap cohort.
