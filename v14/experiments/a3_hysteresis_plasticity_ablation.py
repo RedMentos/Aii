@@ -51,7 +51,7 @@ class PeriodicMatchedUpdates(A3TemporalPredictor):
         super().__init__(learning_rate=BASE_LR, warmup_updates=4, update_policy="ERROR_HYSTERESIS")
 
     def _update_hysteresis_gate(self, model_error: float, baseline_error: float):
-        opened = (self._observations % 8) != 7
+        opened = (self._observations % 4) != 3
         if opened != self._gate_open:
             self._gate_transitions += 1
         self._gate_open = opened
@@ -133,7 +133,7 @@ def run_experiment() -> dict:
         "gate_open_ratio": OPEN_RATIO,
         "gate_close_ratio": CLOSE_RATIO,
         "matched_average_learning_rate": round(matched_lr, 8),
-        "periodic_control": "7 updates per 8 observations",
+        "periodic_control": "3 updates per 4 observations",
         "train": {
             "ALWAYS": _aggregate(train_always),
             "ERROR_HYSTERESIS": _aggregate(train_hysteresis),

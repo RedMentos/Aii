@@ -1930,3 +1930,12 @@ No user action required. Core/Integrator owns the source-lifecycle rebind; Perce
 - Release: NOT_RELEASED. Redmi: REDMI_UNVERIFIED. P0 chat/B1/B2 remain open; B3 remains OFF. No user action required.
 
 **Next:** finish exact-head CI readback, then Core/Integrator recomposes the vision.py lifecycle chain. Perception keeps this shadow non-controlling until consented real visual holdout/retention/restart evidence exists.
+
+
+### A3 hysteresis correction — absolute error floor and matched control (2026-11-25)
+
+- The gate now opens/closes on max(1e-8, persistence_MAE × 0.10/0.05), preventing tiny residuals from opening against a zero baseline.
+- Added a negative test for zero-baseline 1e-9 noise; the 2e-8 residual opens, and the 1e-9 residual closes.
+- Recalibrated the fixed-rate control to 3/4 updates to match the corrected train-set gate fraction (~0.738). On held-out seeds 20–39, hysteresis uses 1,329.35 updates vs ALWAYS 1,799 (26.11% fewer) with mean MAE 0.00601103 vs 0.00600822 and old-pattern MAE 0.01788599 vs 0.01783551. The 3/4 periodic control and matched-average-LR control are worse in this synthetic task.
+- Prior exact CI head 3dfd657: A3 80/80 on Python 3.13/3.14, frame ingress 55/55, source-lineage 39/39, runtime deployment PASS; staged/integrated FAIL at Core-owned vision.py lifecycle pin. The absolute-floor change requires fresh exact CI.
+- Still shadow-only, NOT_RELEASED, REDMI_UNVERIFIED; no user action required.

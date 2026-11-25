@@ -51,3 +51,25 @@ Release: NOT_RELEASED. Redmi: REDMI_UNVERIFIED. B3: OFF. P0 basic chat and B1/B2
 Next: Core/Integrator owns the exact vision.py source-lifecycle recompose. After staged/integrated gates are green, Perception can run this comparison on explicitly consented real visual sequences with source/session-disjoint holdouts, static/motion, brightness/codec/camera controls, retention and restart/rollback. Keep the third predictor shadow-only and A4 gain 0.15 unchanged until then.
 
 User action: keine Aktion nötig.
+
+
+## Run 12 correction — absolute residual floor and matched-update control
+
+The first gate version used only a residual ratio. Review showed that with a zero persistence baseline, an arbitrarily tiny residual could open the gate. The code now requires:
+- open: model MAE >= max(1e-8, baseline MAE × 0.10)
+- close: model MAE <= max(1e-8, baseline MAE × 0.05)
+
+The negative control verifies that 1e-9 against a zero baseline stays closed, 2e-8 opens, and 1e-9 closes again.
+
+The periodic matched-update control is now 3/4, matching the corrected training update fraction (~0.738). Held-out results (seeds 20–39):
+| Policy | Updates | Mean MAE | Final old-pattern MAE |
+|---|---:|---:|---:|
+| ALWAYS | 1,799 | 0.00600822 | 0.01783551 |
+| ERROR_HYSTERESIS | 1,329.35 | 0.00601103 | 0.01788599 |
+| Periodic 3/4 updates | 1,350 | 0.00649146 | 0.02110532 |
+| Matched average LR 0.22131462 | 1,799 | 0.00656588 | 0.02101027 |
+| ERROR_GATED | 1,207.65 | 0.00655297 | 0.02455583 |
+
+This is still synthetic generated data. The difference versus ALWAYS is small and does not establish real visual utility or Android energy savings.
+
+Exact CI for the preceding code head 3dfd657: A3 80/80 on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both; runtime deployment integrity PASS; staged/integrated FAIL at the Core-owned strict vision.py lifecycle pin. This correction needs a new exact CI run.

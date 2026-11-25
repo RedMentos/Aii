@@ -313,6 +313,15 @@ def test_hysteresis_defaults_are_the_source_disjoint_sweep_choice():
     assert predictor.gate_close_ratio == pytest.approx(0.05)
 
 
+
+def test_hysteresis_gate_absolute_floor_blocks_tiny_zero_baseline_noise():
+    predictor = A3TemporalPredictor(update_policy="ERROR_HYSTERESIS")
+    assert predictor._update_hysteresis_gate(1e-9, 0.0)[0] is False
+    assert predictor._update_hysteresis_gate(2e-8, 0.0)[0] is True
+    assert predictor._update_hysteresis_gate(1e-9, 0.0)[0] is False
+    assert predictor._gate_transitions == 2
+
+
 def test_hysteresis_gate_rejects_invalid_thresholds_and_error_values():
     with pytest.raises(ValueError, match="gate_open_ratio"):
         A3TemporalPredictor(update_policy="ERROR_HYSTERESIS", gate_open_ratio=0.0)

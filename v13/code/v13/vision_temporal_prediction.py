@@ -109,10 +109,12 @@ class A3TemporalPredictor:
                 or not math.isfinite(float(baseline_error)) or float(baseline_error) < 0.0):
             raise A3TemporalPredictorError("hysteresis gate errors must be finite nonnegative numbers")
         relative_error = float(model_error) / max(1e-8, float(baseline_error))
+        open_threshold = max(1e-8, float(baseline_error) * self.gate_open_ratio)
+        close_threshold = max(1e-8, float(baseline_error) * self.gate_close_ratio)
         was_open = self._gate_open
-        if not was_open and relative_error >= self.gate_open_ratio:
+        if not was_open and float(model_error) >= open_threshold:
             self._gate_open = True
-        elif was_open and relative_error <= self.gate_close_ratio:
+        elif was_open and float(model_error) <= close_threshold:
             self._gate_open = False
         if self._gate_open != was_open:
             self._gate_transitions += 1

@@ -1562,3 +1562,23 @@ These are synthetic generated vectors, not real camera frames, user data, pixel 
 **Runtime/Canon boundary:** the new shadow is wired into A3 TemporalVisualEvidence but does not alter the existing A4 output. This is WIRED_SYNTHETIC only. No native visual encoder, Android MediaProjection session, camera sequence, persistent weight change, native latent exchange, or Redmi test is established. PR #2509 remains DRAFT/NOT_RELEASED pending exact CI and the inherited Core-owned vision.py source-lifecycle recompose. P0 basic chat and B1/B2 delivery remain open; B3 remains OFF.
 
 **Next:** wait for exact-head PR #2509 A3/frame/source CI; Core/Integrator must recompose the strict vision.py lifecycle pin before staged/integrated acceptance. After that, compare ALWAYS and hysteresis on separately consented real visual sequences with source/session-disjoint holdouts, static/motion, brightness, codec and camera controls, old-pattern retention, restart and rollback. Do not promote the extra predictor or change A4 gain 0.15 until those tests pass.
+
+
+### R-154 addendum — absolute residual floor and matched-update control (2026-11-25)
+
+A second review of the gate exposed a small-noise corner case: a pure ratio can open when the persistence baseline is zero and the model residual is arbitrarily tiny. The implementation now uses separate absolute-floor thresholds:
+- open when model MAE >= max(1e-8, persistence MAE × 0.10);
+- close when model MAE <= max(1e-8, persistence MAE × 0.05).
+
+This keeps the relative-error telemetry but prevents sub-1e-8 noise from opening the gate when the baseline is zero. A negative test covers zero-baseline 1e-9 noise, a 2e-8 open, and a subsequent 1e-9 close.
+
+The matched-update control was changed from 7/8 to 3/4 updates because the corrected training gate fraction is about 0.738. On the same held-out seeds 20–39:
+- ALWAYS: 1,799 updates, mean MAE 0.00600822, old-pattern MAE 0.01783551.
+- ERROR_HYSTERESIS with absolute floor: 1,329.35 updates (26.11% fewer), mean MAE 0.00601103, old-pattern MAE 0.01788599.
+- Fixed 3/4 periodic updates: 1,350 updates, mean MAE 0.00649146, old-pattern MAE 0.02110532.
+- Constant learning rate matched to train-set gate fraction (0.22131462): 1,799 updates, mean MAE 0.00656588, old-pattern MAE 0.02101027.
+- ERROR_GATED: 1,207.65 updates, mean MAE 0.00655297, old-pattern MAE 0.02455583.
+
+The 20 train / 20 held-out seeds remain synthetic and generated. The hysteresis-vs-ALWAYS error difference is small; the evidence supports a possible update-efficiency trade-off only. No claim of Android energy savings or real visual quality is made.
+
+Exact CI on prior code/docs head 3dfd6573dbfb45e3149923b99415f4cf6c633c34: A3 temporal suite 80/80 PASS on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both versions; runtime deployment integrity PASS on Python 3.11 and 3.14. Staged-runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests) and integrated-regression FAIL at the same Core-owned strict vision.py source-lifecycle pin. This addendum's absolute-floor change is on a later code head and requires its own exact CI readback.
