@@ -17,6 +17,7 @@ from pathlib import Path
 
 SCHEMA = "v14.native-latent-receiver/3"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
+LATENT_PREFIX_MODE = "LATENT_PREFIX_V1"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
@@ -52,10 +53,8 @@ def _finite_number(value) -> bool:
 
 
 def _validate_positions(position_ids, rows, position_mode):
-    if position_mode != POSITION_MODE:
-        raise NativeReceiverError("unsupported sender position mode")
     if not isinstance(position_ids, (list, tuple)) or len(position_ids) != rows:
-        raise NativeReceiverError("position row count differs from tap rows")
+        raise NativeReceiverError("position row count differs from input rows")
     positions = []
     previous = -1
     for value in position_ids:
@@ -63,6 +62,12 @@ def _validate_positions(position_ids, rows, position_mode):
             raise NativeReceiverError("position IDs must be bounded, unique and strictly increasing")
         positions.append(value)
         previous = value
+    if position_mode == LATENT_PREFIX_MODE:
+        if rows != 1 or positions != [0]:
+            raise NativeReceiverError("LATENT_PREFIX_V1 requires exactly one event vector at position zero")
+        return positions
+    if position_mode != POSITION_MODE:
+        raise NativeReceiverError("unsupported sender position mode")
     if positions != list(range(rows)):
         raise NativeReceiverError("position IDs are not the verified zero-based tokenizer-prefill sequence")
     return positions
@@ -354,11 +359,17 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
         raise TimeoutError("native receiver probe deadline expired")
+    command = [
+        str(binary), "--model", str(model), "--rows", str(rows),
+        "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
+        "--threads", str(max(1, min(int(threads), 2))),
+    ]
+    # Keep the legacy tokenwise invocation compatible with an already-installed
+    # v3 binary. LATENT_PREFIX_V1 is explicit and fails closed on an older binary.
+    if position_mode != POSITION_MODE:
+        command.extend(["--position-mode", position_mode])
     returncode, stdout, stderr = _run_cancelable(
-        [str(binary), "--model", str(model), "--rows", str(rows),
-         "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
-         "--threads", str(max(1, min(int(threads), 2)))],
-        payload, deadline, cancel_event,
+        command, payload, deadline, cancel_event,
     )
     if returncode != 0:
         raise NativeReceiverError("native receiver model probe failed")
@@ -477,3 +488,25 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         **token_metrics,
         "status": status,
     }
+
+def probe_latent_prefix(*, event_vector, **kwargs):
+    """Probe one pooled event vector as an explicit LATENT_PREFIX_V1 virtual token.
+
+    The caller must first project a source-bound EVENT_POOLED_NONZERO_MEAN
+    adapter into the installed receiver's input-embedding width. This function
+    does not fit/project weights, infer token IDs, alter routing, or grant
+    semantic/production/learning authority.
+    """
+    if (not isinstance(event_vector, (list, tuple)) or not event_vector
+            or any(not _finite_number(value) or abs(float(value)) > 1.0e6
+                   for value in event_vector)):
+        raise NativeReceiverError("LATENT_PREFIX_V1 requires one finite bounded event vector")
+    if any(name in kwargs for name in ("vectors", "position_ids", "position_mode")):
+        raise NativeReceiverError("LATENT_PREFIX_V1 geometry and mode are fixed by the receiver API")
+    return probe(
+        vectors=[event_vector],
+        position_ids=[0],
+        position_mode=LATENT_PREFIX_MODE,
+        **kwargs,
+    )
+
