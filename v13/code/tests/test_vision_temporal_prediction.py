@@ -4,6 +4,7 @@ import math
 import pytest
 
 from v13.vision_temporal_prediction import A3TemporalPredictor, A3TemporalPredictorError
+from v13.vision_temporal_evidence import _a3_predictive_attention_novelty
 
 
 def patterns():
@@ -55,6 +56,69 @@ def test_static_zero_change_has_no_false_prediction_surprise():
     assert measured
     assert all(row["prediction_error_mae"] == 0.0 for row in measured)
     assert all(row["shadow_surprise"] == 0.0 for row in measured)
+    assert all(_a3_predictive_attention_novelty(row) == 0.0 for row in measured)
+
+
+def test_zero_context_bias_learns_a_nonzero_transition_without_touching_nonzero_contexts():
+    predictor = A3TemporalPredictor(warmup_updates=2)
+    zero = [0.0] * 16
+    event = [0.8] + [0.0] * 15
+    predictor.update(zero)
+    transition = predictor.update(event)
+    assert transition["parameter_delta_l2"] > 0.0
+    assert any(abs(value) > 0.0 for value in predictor._weights[-1])
+    bias_before = list(predictor._weights[-1])
+    other_a = [0.0] * 16
+    other_b = [0.0] * 16
+    other_a[8], other_b[9] = 0.7, 0.7
+    for index in range(100):
+        predictor.update(other_a if index % 2 == 0 else other_b)
+    assert predictor._weights[-1] == bias_before
+    assert len(predictor._weights) == 17
+    assert all(len(row) == 16 for row in predictor._weights)
+
+
+def test_unexpected_delta_sequence_emits_bounded_attention_novelty():
+    masks = [
+        0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x0005, 0x00A5, 0x0B4F,
+        0x1E37, 0x0000, 0xFFFF, 0x1234, 0xABCD, 0x0F0F, 0xF0F0, 0x3333,
+        0xAAAA, 0x5555, 0x9696, 0x6969,
+    ]
+    predictor = A3TemporalPredictor(warmup_updates=4)
+    previous = None
+    measured = []
+    for mask in masks:
+        delta = [0.0] * 16 if previous is None else [
+            0.5 if ((previous >> index) & 1) != ((mask >> index) & 1) else 0.0
+            for index in range(16)
+        ]
+        result = predictor.update(delta)
+        if result["status"] == "SHADOW_MEASURED":
+            measured.append(result)
+        previous = mask
+    assert any(row["shadow_surprise"] > 0.0 for row in measured)
+    assert all(
+        0.0 <= _a3_predictive_attention_novelty(row) <= 0.15
+        for row in measured
+    )
+
+
+def test_predictive_attention_novelty_requires_measured_finite_error_and_is_capped():
+    assert _a3_predictive_attention_novelty({
+        "status": "SHADOW_MEASURED", "shadow_surprise": 0.4,
+    }) == pytest.approx(0.06)
+    assert _a3_predictive_attention_novelty({
+        "status": "SHADOW_MEASURED", "shadow_surprise": 2.0,
+    }) == pytest.approx(0.15)
+    assert _a3_predictive_attention_novelty({
+        "status": "SHADOW_MEASURED", "shadow_surprise": -1.0,
+    }) == 0.0
+    assert _a3_predictive_attention_novelty({
+        "status": "WARMUP", "shadow_surprise": 0.4,
+    }) == 0.0
+    assert _a3_predictive_attention_novelty({
+        "status": "SHADOW_MEASURED", "shadow_surprise": float("nan"),
+    }) == 0.0
 
 
 def test_reset_erases_all_session_weights_and_history():
@@ -85,8 +149,10 @@ def test_old_pattern_retention_survives_disjoint_second_pattern():
         row = probe.update(a if index % 2 == 0 else b)
         if row["status"] == "SHADOW_MEASURED":
             old_error_before.append(row["prediction_error_mae"])
+    bias_before = list(predictor._weights[-1])
     for index in range(100):
         predictor.update(c if index % 2 == 0 else d)
+    assert predictor._weights[-1] == bias_before
     retained = copy.deepcopy(predictor)
     old_error_after = []
     for index in range(20):
@@ -119,7 +185,7 @@ def test_weight_and_gradient_norms_remain_bounded():
     predictor.update(a)
     for _ in range(100):
         result = predictor.update(b)
-        assert result["gradient_l2"] <= math.sqrt(16 * 16) + 1e-8
+        assert result["gradient_l2"] <= math.sqrt(17 * 16) + 1e-8
         assert result["parameter_l2"] < 10.0
         assert all(abs(weight) <= 2.0 for row in predictor._weights for weight in row)
 
