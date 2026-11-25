@@ -168,9 +168,11 @@ def _body_offer_evidence(
             item["ttft_s"] = _seconds(runner.get("ttft_s"))
             item["duration_s"] = _seconds(runner.get("duration_s"))
             item["sampled_peak_pss_bytes"] = _count(runner.get("sampled_peak_pss_bytes"))
+            runner_synthetic = runner.get("synthetic")
             item["evidence_environment"] = (
-                "SYNTHETIC" if synthetic or runner.get("synthetic") is True
-                else "RUNNER_REPORTED"
+                "SYNTHETIC" if synthetic or runner_synthetic is True
+                else "RUNNER_REPORTED" if runner_synthetic is False
+                else "UNVERIFIED"
             )
         else:
             item["delivered"] = True
@@ -205,6 +207,8 @@ def _body_offer_evidence(
                 )
             elif not item["body_attempt_recorded"]:
                 state = "BODY_ATTEMPT_METRICS_UNAVAILABLE"
+            elif item["evidence_environment"] == "UNVERIFIED":
+                state = "BODY_ATTEMPT_ENVIRONMENT_UNVERIFIED"
             elif native_prefill_verified and native_generation_completed:
                 state = "C4_SELECTED_C3_NATIVE_PREFILL_AND_GENERATION_VERIFIED"
             elif native_prefill_observed and native_generation_completed:
