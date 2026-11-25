@@ -204,6 +204,89 @@ class Store(unittest.TestCase):
         resumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
         self.assertEqual(resumed,consumed)
 
+    def test_action_selection_includes_current_jef_broadcast_sources_without_body_offer(self):
+        event_ref=self.e['source_ref']
+        memory_ref=self.s.source('Remembered executive fact','MEMORY')
+        refs=[event_ref,memory_ref]
+        broadcast=packet('JEFBroadcastPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],refs,
+            state_version=7,goal='Compute the total budget',constraints=['Use admitted memory only'],
+            source_refs=refs,active_task=None,memory_refs=[],open_questions=[],permission_flags={})
+        self.s.add_packet('JEFBroadcastPacket',broadcast)
+
+        focal.ActionGate(self.s).select(self.e,route='simple',direct=False,
+                                        resource_state='NORMAL',coalition=[])
+        selection=json.loads(self.s.one(
+            "SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",
+            (self.e['event_id'],))['payload'])
+        validate('ActionSelection',selection)
+        self.assertEqual(selection['provenance'],refs)
+        from v13.world_jepa_store_authority import _selection_source_refs
+        consumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        key=(memory_ref['source_id'],memory_ref['sha256'],memory_ref['char_start'],
+             memory_ref['char_end'],memory_ref['modality'])
+        self.assertIn(key,consumed)
+
+    def test_action_selection_binds_selected_body_offer_to_the_exact_jef_broadcast(self):
+        event_ref=self.e['source_ref']
+        memory_ref=self.s.source('Executive memory source','MEMORY')
+        refs=[event_ref,memory_ref]
+        broadcast=packet('JEFBroadcastPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],refs,
+            state_version=9,goal='Find the current budget',constraints=['Prefer current source'],
+            source_refs=refs,active_task=None,memory_refs=[],open_questions=[],permission_flags={})
+        self.s.add_packet('JEFBroadcastPacket',broadcast)
+        query=packet('QueryPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],[event_ref],
+            target_role='B1_DETAIL',goal='Find the current budget',source_refs=[event_ref],
+            broadcast_packet_id=broadcast['packet_id'],based_on_state_version=9,
+            context_source_refs=[],enlightened_source_refs=[])
+        self.s.add_packet('QueryPacket',query)
+        offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],[event_ref],
+            role='B1_DETAIL',based_on_state_version=9,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+            evidence_refs=[],offer={'summary':'Current budget detail','quotes':[],
+            'uncertainty':'low','needs_reentry':False},confidence=.5,rejected_quotes=0,
+            model_revision='test',query_packet_id=query['packet_id'],
+            broadcast_packet_id=broadcast['packet_id'],context_source_refs=[],enlightened_source_refs=[])
+        self.s.add_packet('OfferPacket',offer)
+        selected=focal.item('B1_DETAIL',offer['packet_id'],[event_ref],'Current budget detail',
+            self.e['event_id'],uncertainty=.1,salience=0.,goal=.5,utility=.5,sq=1.,cost=.05)
+
+        focal.ActionGate(self.s).select(self.e,route='detail',direct=False,
+            resource_state='NORMAL',coalition=[selected])
+        selection=json.loads(self.s.one(
+            "SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",
+            (self.e['event_id'],))['payload'])
+        self.assertEqual(selection['provenance'],refs)
+
+    def test_action_selection_rejects_offer_query_broadcast_id_mismatch(self):
+        event_ref=self.e['source_ref']
+        memory_ref=self.s.source('Executive memory source','MEMORY')
+        refs=[event_ref,memory_ref]
+        broadcast=packet('JEFBroadcastPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],refs,
+            state_version=11,goal='Check exact broadcast',constraints=[],
+            source_refs=refs,active_task=None,memory_refs=[],open_questions=[],permission_flags={})
+        self.s.add_packet('JEFBroadcastPacket',broadcast)
+        query=packet('QueryPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],[event_ref],
+            target_role='B1_DETAIL',goal='Check exact broadcast',source_refs=[event_ref],
+            broadcast_packet_id=broadcast['packet_id'],based_on_state_version=11,
+            context_source_refs=[],enlightened_source_refs=[])
+        self.s.add_packet('QueryPacket',query)
+        offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],[event_ref],
+            role='B1_DETAIL',based_on_state_version=11,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+            evidence_refs=[],offer={'summary':'Detail','quotes':[],
+            'uncertainty':'low','needs_reentry':False},confidence=.5,rejected_quotes=0,
+            model_revision='test',query_packet_id=query['packet_id'],
+            broadcast_packet_id='wrong-broadcast-id',context_source_refs=[],enlightened_source_refs=[])
+        self.s.add_packet('OfferPacket',offer)
+        selected=focal.item('B1_DETAIL',offer['packet_id'],[event_ref],'Detail',
+            self.e['event_id'],uncertainty=.1,salience=0.,goal=.5,utility=.5,sq=1.,cost=.05)
+        before=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                          (self.e['event_id'],))['n']
+        with self.assertRaisesRegex(ValueError,'query binding'):
+            focal.ActionGate(self.s).select(self.e,route='detail',direct=False,
+                resource_state='NORMAL',coalition=[selected])
+        after=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                         (self.e['event_id'],))['n']
+        self.assertEqual(after,before)
+
     def test_action_selection_rejects_unreadable_offer_context_before_commit(self):
         event_ref=self.e['source_ref']
         bad_ref=self.s.source('Revoked context source','CONTEXT_OS')|{'sha256':'0'*64}
