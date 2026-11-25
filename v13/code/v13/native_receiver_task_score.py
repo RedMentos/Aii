@@ -170,10 +170,10 @@ def probe_native_receiver_task_score(*, home, model_path, expected_model_sha256,
         raise NativeReceiverTaskScoreError("unsupported receiver role")
     if not all(type(value) is str and value for value in (receiver_model_revision, tokenizer_revision)):
         raise NativeReceiverTaskScoreError("receiver model and tokenizer revisions are required")
-    if not tokenizer_revision.startswith("llama-server:") or not tokenizer_revision.endswith(";gguf:" + expected_model_sha256):
-        raise NativeReceiverTaskScoreError("receiver tokenizer revision is not bound to the exact GGUF")
     if type(expected_model_sha256) is not str or len(expected_model_sha256) != 64 or any(c not in "0123456789abcdef" for c in expected_model_sha256):
         raise NativeReceiverTaskScoreError("receiver model hash must be lowercase SHA-256")
+    if not tokenizer_revision.startswith("llama-server:") or not tokenizer_revision.endswith(";gguf:" + expected_model_sha256):
+        raise NativeReceiverTaskScoreError("receiver tokenizer revision is not bound to the exact GGUF")
     if type(threads) is not int or not 1 <= threads <= 2:
         raise NativeReceiverTaskScoreError("native receiver task scorer supports one or two threads")
     if cancel_event is not None and cancel_event.is_set():
