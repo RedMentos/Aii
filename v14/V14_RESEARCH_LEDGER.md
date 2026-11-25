@@ -1479,3 +1479,106 @@ Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTI
 **Mobile implication:** DINOv2-style pairwise inference is not an acceptable default for the Redmi budget without a real on-device benchmark. A cheap hash can be a retrieval prefilter, not a final duplicate verdict. The next implementation should compare CPU cost, RSS and false-positive/false-negative rates against actual user-consented image fixtures before changing the A3 source-disjoint split.
 
 **Status:** RESEARCH_REVIEWED / SYNTHETIC_HASH_PROBE_PASS / NO_RUNTIME_CHANGE / REDMI_UNVERIFIED.
+
+
+## R-141 — Quantized Sufficient Statistics: exact deletion beyond linear ridge (2026-11-24)
+
+**Primary paper read in full:** Ami Tavory, Shripad Gade, Tal Sarig, Noam Touitou & Ido Guy, *Exact Unlearning via Quantized Sufficient Statistics*, arXiv:2610.07197, submitted 2026-10-05; accepted at NeurIPS 2026 (as stated by the paper). Full HTML paper, main method, proofs, experiments, limitations and code pointer were reviewed.
+
+**Method and evidence:** QSS separates a retained schema (base model + frozen residual-quantization codebook) from additive content statistics. QSS-E gives exact instance deletion for content examples; deletion of a retained-schema example still requires rebuilding. QSS-L gives exact label deletion only: the unlabelled input remains in the codebook. QSS-DP adds label-level DP to published cell means, not instance DP. On 15 datasets with n >= 50K and retained fraction rho=0.5%, QSS-L is within 2 percentage points of SISA on 11 tasks and reports 4–483x lower expected deletion latency on low-class-count tasks; high-class-count ImageNet is a stated outlier. The reported maximum accumulator storage is 51 MB on ImageNet. These are paper benchmarks, not Redmi measurements.
+
+**V14 consequence:** Keep the current A3 source-scoped fp64 ridge statistics for modest fixed feature dimensions: they are simpler and have an exact fresh-ridge-rebuild equivalence target. QSS is a future candidate only if A3 needs a nonlinear local residual correction beyond the linear head; compare memory, codebook stability, deletion exactness, rebuild probability and prediction quality before adoption. The paper's code pointer is https://github.com/atavory/rqu, but the public repository has no LICENSE file (LICENSE fetch returned 404), and algs/qss.py contains a Meta Platforms copyright header stating 'Confidential and proprietary'. README dependencies include numpy, scipy, faiss-cpu, scikit-learn and lightgbm; source also imports torch. **No code, weights or data reused; no reuse authorized absent a clear license.**
+
+**Status:** FULL_PAPER_REVIEWED / RESEARCH_ONLY / NO_CODE_REUSE / NO_ANDROID_MEASUREMENT.
+
+## R-142 — Exact ridge deletion state can leak through repeated model broadcasts (2026-11-24)
+
+**Primary paper read in full:** Yijun Quan & Giovanni Montana, *Client-Side Probing of Deleted Ridge Statistics in Federated Unlearning*, arXiv:2609.04475v1, 2026-09-03. Preprint; no peer-reviewed venue identified in the paper. Full HTML paper, threat model, derivations, experiments and limitations were reviewed.
+
+**Evidence and threat model:** A malicious federated client that can submit chosen/additive updates and receive the complete high-precision ridge classifier after each update can identify hidden sufficient statistics, compare states across an isolated deletion, recover deleted sample/class/client aggregates, and potentially replay them. The designed float64 attack recovered all 2,220 tested states; 52 logical responses were sufficient for d=512,c=10 in the unrestricted probe construction. Attacker-data probes needed 104 responses per state in the evaluated setup. Float32 sharply reduced some sample-level recovery but did not uniformly protect aggregates; the paper reports 92/100 MNIST and 100/100 CIFAR-10 sample labels in one designed float32 setting. The attack requires the stated active-client/full-head-broadcast/quiet-interval assumptions; it is not a passive local-file attack.
+
+**V14 consequence:** A3 sufficient-stat artifacts and full head deltas are derived sensitive state. Keep them local; do not put matrices, per-source artifact paths/hashes, classifier weights or deletion deltas into telemetry, public GitHub, PR bodies, private relay responses, or chat. Ownership checks, duplicate rejection and authenticated replay matter if a future cross-device/federated lane is ever introduced. The current A3 status endpoint already exposes only a bounded count/mode summary. A new full Runtime regression in test_vision.py asserts that status does not contain source_stats, paths, hashes or artifact identifiers; this is a negative control, not a privacy proof.
+
+**Status:** FULL_PREPRINT_REVIEWED / PRIVACY_REQUIREMENT_ADDED / REGRESSION_ADDED / CI_PENDING / REDMI_UNVERIFIED.
+
+## R-143 — Peak-memory-aware CNN design for constrained vision/audio perception (2026-11-24)
+
+**Primary paper read in full:** Yoel Park, Jaewook Lee & Seulki Lee, *Designing Extremely Memory-Efficient CNNs for On-device Vision and Audio Tasks*, International Journal of Computer Vision 134(3), article 91; version of record 2026-01-29; DOI https://doi.org/10.1007/s11263-025-02688-w. Open access CC BY 4.0. Full article, methods, ablations, device experiments and limitations were reviewed.
+
+**Evidence:** Input segmentation, independent patch tunnels, bottleneck reordering, quantized BatchNorm/ReLU6 integration and element-wise requantization accumulation reduce peak activation memory. The paper reports 63 KB peak memory and 61.58% ImageNet top-1, 65 KB and 50.7% PASCAL-VOC mAP, and 42 KB / 79.1% UrbanSound8K accuracy. Audio experiments use 32 kHz and sequential Mel-spectrogram extraction; shortening the input reduces peak memory but also degrades accuracy. The paper reports 3.34M parameters for its ImageNet model, so peak activation reduction is not equivalent to a smaller model. The physical target was an STM32H7, not an Android phone. No maintained code repository was linked or located.
+
+**V14 consequence:** The streaming/segmented feature-extraction idea may inform a future bounded A0 RAW EAR path, but must preserve timestamps, prosody, speaker and non-speech cues; it is not an ASR replacement and does not satisfy the full voice architecture. Do not port the CNN or claim Redmi suitability without ARM/Linux and actual Redmi RSS/latency/quality measurements. No code or weights reused.
+
+**Status:** FULL_PEER_REVIEWED_ARTICLE / CC-BY-4.0-PAPER / NO_CODE_REUSE / RESEARCH_ONLY / REDMI_UNVERIFIED.
+
+
+## R-144 — Continual-learning rules shape representational drift (2026-11-25)
+
+**Primary paper read in full:** Yikai Si & Shanshan Qin, *Continual-learning rules shape representational drift*, arXiv:2608.16141, submitted 2026-08-17; preprint, no peer-reviewed venue identified in the paper. Full HTML text, experiments, methods, code availability and limitations were reviewed: https://arxiv.org/abs/2608.16141.
+
+**Evidence:** The CNN experiment used ResNet-18-GN/WS trained end-to-end on the first 100 ImageNet-1k classes as 20 sequential five-class tasks, with the same task-1 probe set evaluated at every checkpoint. Replay used 300 examples per class. Replay preserved earlier-task performance while individual probe representations drifted with task separation; later visual stages drifted faster than early stages while coarse class geometry remained more stable. LwF produced intermediate drift. Strong EWC (λ=5×10^5) nearly froze representations but acquired later tasks poorly; directly anchoring task-1 activations during replay also suppressed drift and impaired later acquisition. The RNN track used 18 cognitive tasks and replay; EWC/LwF did not yield sufficiently reliable RNN continual-learning performance for an interpretable comparison.
+
+**Limitations:** The CNN protocol was task-incremental with task identity available at evaluation; EWC was a freezing reference, not a performance-matched control; RNN evidence is only naive-vs-replay; task order was not varied. These are ImageNet/controlled cognitive-task experiments, not mobile or multimodal Android measurements.
+
+**OSS/license:** Reproduction code is at https://github.com/yksi2023/cl-drift, latest inspected commit `236cda6aff92030d43dd61c585259742a8aff181` (2026-08-15). README says CUDA GPU required for training and ImageNet is required for CNN experiments. No LICENSE file was found (404); no code/data/weights reused.
+
+**V14 consequence:** For future genuinely trainable organs, evaluate functional retention and new-task acquisition alongside layer-/organ-wise representation drift on a fixed, source-disjoint probe set. Drift is not automatically failure; zero drift is not a valid universal objective. Keep this separate from the current A3 linear ridge head, which is not a deep representation learner. Do not freeze teacher/target weights permanently on this basis.
+
+**Status:** FULL_PREPRINT_REVIEWED / OSS_LICENSE_UNVERIFIED_NO_REUSE / RESEARCH_ONLY / NO_ANDROID_MEASUREMENT.
+
+## R-145 — FlyGCL: brain-inspired hierarchical modularity for general continual learning (2026-11-25)
+
+**Primary paper read in full:** Hongwei Yan et al., *Brain-inspired hierarchical modularity for general continual learning*, arXiv:2609.25146, submitted 2026-09-21; preprint. Full HTML paper, methods, experiments and limitations/open directions were reviewed: https://arxiv.org/abs/2609.25146.
+
+**Method/evidence:** FlyGCL combines sparse/random expansion for instance-level expert routing (specialization) with spatially and temporally diversified prediction heads (ensemble integration) over pretrained representations. It evaluates online, blurry streams across visual recognition, vision-language, ego-exo video and vision-language-action. The paper reports >49 percentage-point improvements over the strongest replay-free baselines on LIBERO Spatial/Object in its setup; this is benchmark-specific, not an Android result. The biological-mechanism package uses a fixed 50-D odor input → 1,300 ORNs → 50 PNs → 2,000 KCs (top 5%) → spatial experts → one/three temporal heads; only downstream bias-free linear heads train, and the experiment reports no replay. The broader vision/VLM/VLA packages use ViT-B/16, CLIP ViT-B/16 and a DiT flow-matching policy.
+
+**OSS/license/revision:** Official implementation https://github.com/THU-NeuroML/FlyGCL, MIT License (LICENSE blob `c2db55a05f6698337940722954d3fe277bad56c9`), latest inspected commit `f099faca684799e75f67f9f7fe6b6ee728167652` (2026-11-23). Packages are deliberately separate; biological demo requirements include NumPy/SciPy/PyTorch, visual recognition pins PyTorch 2.5.1, torchvision/torchaudio 0.20.1, timm, OpenCV, scikit-learn, pandas, matplotlib and W&B. The README's ~15 s CPU demo was measured on Apple M4 Pro, Python 3.12, two CPU threads; it is not a Redmi benchmark. No code, weights or datasets were imported.
+
+**V14 consequence:** This is a useful research reference for coordinating specialization and multi-timescale integration rather than treating MoE and ensemble learning as isolated alternatives. It does not supply trained B1/B2 bodies, true cross-organ latent coupling, or a mobile-ready implementation. Keep as a candidate for a later bounded B1/B2 synthetic/CPU ablation only after dependency and memory costs are measured; no direct port or model swap.
+
+**Status:** FULL_PREPRINT_REVIEWED / OSS_MIT_VERIFIED / RESEARCH_ONLY / NO_ANDROID_MEASUREMENT.
+
+
+## R-146 — Surprise-Gated Memory for Live Speaker Diarization (2026-11-25)
+
+**Primary source:** Louis Mouchon & Alexis Lainault, [arXiv:2611.20819](https://arxiv.org/abs/2611.20819), submitted 2026-11-16; full text reviewed. This is a preprint/proof-of-concept, not a peer-reviewed result. It applies a calibrated known-versus-novel gate to a frozen DiariZen encoder and a one-shot episodic speaker store with periodic replay. The paper reports recovering 4.8/9.2 DER points on AMI-SDM and 1.9/2.3 on VoxConverse in end-of-meeting revisable mode; the reported runs are single-seed, three AMI meetings and five VoxConverse sessions. The runtime performs no gradient updates and wipes its memory at meeting end.
+
+**V14 implication:** this supports preserving an explicit uncertain/DEFER region rather than forcing every speaker cue into continuity or change, and supports strict session-scoped evidence. It does not justify persistent cross-session speaker identities or a new model download. No official SGM-Diar implementation repository was found. The upstream [BUTSpeechFIT/DiariZen code](https://github.com/BUTSpeechFIT/DiariZen) is MIT, but its published pretrained weights are CC BY-NC 4.0; the paper's WavLM/Conformer/ResNet/VBx stack is not a drop-in low-RAM Android path. **No code or weights reused; no runtime threshold activated.**
+
+## R-147 — Edge0 streaming MoE: current Android engine and ABI gate (2026-11-25)
+
+**Primary sources:** Lin et al., [The Other Half of the Memory Wall](https://arxiv.org/abs/2609.18063), v2 dated 2026-09-17; official [Edge0-AI/Edge0](https://github.com/Edge0-AI/Edge0) main at `2e5d284983e3f286a0ef8c94947e6c9db2c86eb3`; [Android benchmark protocol](https://github.com/Edge0-AI/Edge0/blob/main/edge0-infer/docs/benchmarking.md); [Android build requirements](https://github.com/Edge0-AI/Edge0/blob/main/edge0-infer/docs/getting-started.md). Full report and current source/docs were reviewed. Framework code is Apache-2.0; vendored GGML is MIT. Model-specific contributions are under the separate Edge0 Community Model License 1.0, with upstream Qwen rights preserved.
+
+The current unified native engine supports Edge0 35B on Android CPU; Edge0 8B native-engine support is still planned. The Android preset uses `armv8.6-a+dotprod+i8mm+fp16`; the documented device is OnePlus PKR110 / Snapdragon 8 Elite / 16 GB. On a 627-token prompt it reports 18.4–18.8 s TTFT, 11.4–11.8 tok/s decode and 2.82 GiB RSS. The 35B requires about 42 GB free disk (19.7 GB source weights + 22 GB converted assets). The public Redmi Note 10 Pro / Snapdragon 732G Geekbench record lists NEON/dotprod/fp16 but not i8mm; this is a public benchmark observation, not a native probe of the user's phone. The recorded Redmi budget is 6 GB RAM and roughly 2.85 GB free disk. **Not compatible as a current Redmi candidate; no download, build or model swap.** Useful only as a systems reference for SSD expert streaming, prerouting and immutable base/adapters.
+
+## R-148 — BigMoMo: speculative-window expert movement on mobile NPUs (2026-11-25)
+
+**Primary source:** Li et al., [arXiv:2609.14643](https://arxiv.org/abs/2609.14643), submitted 2026-09-13; full text reviewed. Preprint under review. It combines acceptance-aware speculative-node/expert pruning, runtime-adaptive flash placement and cross-hierarchy movement/computation scheduling. The full paper evaluates Qwen3-30B-A3B, LFM2-24B-A2B, Gemma-4-26B-A4B and ERNIE-4.5-21B-A3B on OnePlus 15/13/Ace 5 (12–24 GB, Snapdragon 8 Gen 3 / 8 Elite generations, Hexagon HMX, UFS 4.x). It reports 4.83x mean TPOT speedup over on-demand inference and 1.76x mean over the best speculative baseline. The abstract's 1.82x mean wording conflicts with §5.2; Table 9 shows 1.82x specifically for OnePlus 15. No official code repository or code/weight license was located.
+
+**V14 implication:** multi-token verification can expose expert co-loading and transfer overlap, but this implementation depends on a draft model, Hexagon HMX and substantially newer phone hardware; it is not a Snapdragon 732G / Hexagon 688 port. Do not import code, weights or claim the paper's speedups for Redmi. Any later experiment must measure TTFT, TPOT, total I/O, energy, quality and tail latency on the actual target.
+
+
+## R-149 — Speaker-agnostic activity streams for efficient conversational multi-talker ASR (2026-11-25)
+
+**Primary source reviewed in full:** Xiluo He, Magdalena Rybicka, Laureano Moro-Velazquez, Jesús Villalba, Thomas Thebaud & Najim Dehak, *Efficient Conversational Multi-Talker ASR with Predicted Speaker-Agnostic Activity Streams*, arXiv:2611.26796v1, submitted 2026-11-19. This is an arXiv preprint, not a peer-reviewed venue in the source. The arXiv HTML paper, method, experimental setup, tables, ablations and limitations were reviewed. The paper is CC BY 4.0; no official implementation repository or model-weight license was linked in the paper, so no code or weights were reused.
+
+**Method:** HEAT maps any number of diarized speakers into two speaker-agnostic activity streams. A continuity-aware assignment keeps streams balanced and locally continuous; each speaker's first utterance takes an empty stream when available. A four-state silence/target/non-target/overlap mask then conditions the same ASR interface twice, independent of speaker count. The direct H-Dir variant predicts the two-stream mask from audio with a WavLM-Large + Conformer backbone. Its objective combines permutation-invariant cross-entropy with arrival-order sorted cross-entropy and a stream-error term; permutation-invariant loss alone can collapse to VAD-like or one-empty-stream solutions.
+
+**Evidence and limits:** On AMI/ICSI, H-Casc is 1.4×/1.9× faster than per-speaker D-Casc with 1.7%/0.8% relative WER cost. H-Dir is another 1.2× faster than H-Casc on AMI, with an 8.0% relative WER cost there and 20.2% on ICSI. The two-stream assumption cannot represent three-or-more simultaneous speakers; this affected 1.4% of AMI-SDM test speech time, 0.5% of ICSI, and 8.4% of CHiME-6. The mask predictor uses a frozen WavLM-Large 24-layer, 1024-dimension encoder and a four-layer Conformer; the recognizer is Whisper-large-v3-turbo with two conditioned passes. These are not low-resource Redmi components. The result is a useful architecture/ablation, not evidence of a lightweight Android-ready model.
+
+**V14 mapping:** Keep RAW EAR's timestamped prosody, voice onset/offset, non-speech and overlap evidence separate from transcript text and persistent speaker identity. If a future optional Teacher Ear needs multi-talker recognition, a source-bound two-stream activity mask may cap ASR passes at two, but only under an explicit ≤2-active-speaker operating assumption and a measured fallback for 3+ overlap. Do not substitute speaker-agnostic stream IDs for speaker identity or treat a stream assignment as a learned latent channel. Candidate experiment: compare continuity-aware/first-use-empty assignment against standard first-available assignment and a one-stream collapse control; measure stream balance, swaps, overlap coverage, transcript quality, and total front-end + ASR latency. No ASR model, code, data, or weights were downloaded; no Android microphone or model change was performed.
+
+**Status:** FULL_ARXIV_HTML_REVIEWED / PREPRINT / CC-BY-4.0-PAPER / NO_CODE_OR_WEIGHT_REUSE / HEAVY_BACKBONES / REDMI_UNVERIFIED / EXPERIMENT_PROPOSED.
+## R-150 — MobileMoE-S-PTE: actual Android artifact and deployment gate (2026-11-25)
+
+**Primary source:** Chen et al., *MobileMoE: Scaling On-Device Mixture of Experts*, arXiv:2605.27358v1 (2026-05-26; the official model card cites NeurIPS 2026). Full paper HTML, including the mobile latency and peak-RSS tables, and Meta's official MobileMoE-S-PTE model card were reviewed.
+
+**Measured scope:** the paper's Android result is a Samsung Galaxy S25 / Snapdragon 8 Elite, four CPU threads, ExecuTorch + XNNPACK, batch 1. MobileMoE-S uses 272M active / 1.3B total parameters, 0.68 GB projected INT4 weights. The paper reports 2.01 s prefill TTFT and 112 tok/s decode at 1k context; at 8k, 50.33 s TTFT, 25.8 tok/s and 1.49 GB peak RSS. These are flagship-phone results, not Redmi Note 10 Pro measurements.
+
+**Artifact and integration constraints:** the official PTE card publishes a 0.95 GB model.pte for ExecuTorch 1.6.0, 8,192-token context, English text I/O, arm64 CPU. It is not GGUF and cannot be loaded by the current llama.cpp path. The prebuilt Maven ExecuTorch Android artifact lacks the required torchao INT4 and fused quantized-MoE kernels. The documented runner requires a custom llama_main build with Android NDK r28c, CPU PyTorch 2.15.0, CMake 3.31.10, XNNPACK and those kernels, then ADB transfer. This is not a Termux drop-in and the published procedure requires an x86-64 Linux build host.
+
+**License/privacy:** model and PTE card specify the FAIR Noncommercial Research License; access is gated and requires agreeing to share Hugging Face account information with Meta. This is not a permissive product-distribution candidate. No account access, download, code/weight reuse, build, model swap or device action occurred.
+
+**V14 decision:** keep as a research-only architecture candidate, not a production recommendation. A future isolated experiment would need an independently built/pinned arm64 runner, explicit user approval for the gated download, license review, real prompt-quality comparison, cold/warm TTFT, TPOT, RSS, disk and rollback on the Redmi. The paper's S25 RSS leaves little margin to infer suitability for the older Snapdragon 732G. It is one model family, not proof of two independently differentiated sparse-MoE bodies.
+
+**Status:** FULL_PAPER_REVIEWED / OFFICIAL_PTE_CARD_REVIEWED / FAIR_NC_GATED / NO_DOWNLOAD_OR_REUSE / REDMI_UNVERIFIED / NOT_PRODUCTION_READY.

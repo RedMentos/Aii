@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
+from v13 import vision_projector_stats as stats_module
 from v13.vision_projector_stats import (
     MAX_SOURCE_STATS, SOURCE_STATS_MODE, build_source_statistics,
     load_source_statistics, rebuild_without_source,
@@ -30,6 +31,35 @@ def _fixture(seed=17, d=117, c=256, sources=6, rows_per=8):
 
 def _build(home, X, Y, keys, lineage, feature="vision.features.v1", encoder="hashed_bow"):
     return build_source_statistics(home, "projector", X, Y, keys, lineage, feature, encoder, 1.)
+
+
+def test_first_use_creates_private_stats_directories_without_following_symlinks(tmp_path):
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    assert not (tmp_path/"data").exists()
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == 4
+    data_dir = tmp_path/"data"
+    vision_dir = data_dir/"vision"
+    assert data_dir.is_dir() and vision_dir.is_dir()
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path/item["path"]).stat().st_mode & 0o777 == 0o600 for item in records)
+
+
+def test_existing_permissive_stats_directories_are_hardened(tmp_path):
+    data_dir = tmp_path/"data"
+    vision_dir = data_dir/"vision"
+    vision_dir.mkdir(parents=True)
+    data_dir.chmod(0o755)
+    vision_dir.chmod(0o755)
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == 4
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path/item["path"]).stat().st_mode & 0o777 == 0o600 for item in records)
 
 
 def test_delete_rebuild_matches_fresh_production_ridge_fit(tmp_path):
@@ -151,3 +181,136 @@ def test_global_rebuild_requires_complete_caption_provenance(tmp_path):
                                         if not key.startswith("src0:")})
     result, reason = rebuild_without_source(home, incomplete, "src1", lineage[1]["sha256"], retained, Projector, 4)
     assert result is None and "caption" in reason
+
+
+def test_concurrent_first_use_builders_share_private_directories(tmp_path):
+    """Concurrent A3 training calls must converge on one private directory inode."""
+    import concurrent.futures
+
+    X, Y, keys, lineage, _ = _fixture(sources=4, rows_per=4)
+
+    def build(_):
+        return _build(tmp_path, X, Y, keys, lineage)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(build, range(8)))
+
+    assert all(mode == SOURCE_STATS_MODE and len(records) == 4 for records, mode in results)
+    paths = [item["path"] for records, _ in results for item in records]
+    assert len(paths) == 32
+    assert len(paths) == len(set(paths))
+    data_dir = tmp_path / "data"
+    vision_dir = data_dir / "vision"
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path / path).stat().st_mode & 0o777 == 0o600 for path in paths)
+
+
+def test_first_use_rejects_symlink_winning_directory_creation_race(tmp_path, monkeypatch):
+    """A symlink created after ENOENT must not become the A3 statistics root."""
+    import os
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    real_mkdir = os.mkdir
+    installed = False
+
+    def racing_mkdir(name, mode=0o777, *, dir_fd=None):
+        nonlocal installed
+        if name == "data" and dir_fd is not None and not installed:
+            os.symlink(str(outside), name, dir_fd=dir_fd)
+            installed = True
+            raise FileExistsError(name)
+        return real_mkdir(name, mode, dir_fd=dir_fd)
+
+    # Preserve the helper's capability check while replacing only the syscall
+    # behavior for this controlled interleaving.
+    monkeypatch.setattr(os, "mkdir", racing_mkdir)
+    monkeypatch.setattr(os, "supports_dir_fd", set(os.supports_dir_fd) | {racing_mkdir})
+
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert installed
+    assert records == []
+    assert mode == "UNAVAILABLE_STORAGE"
+    assert (tmp_path / "data").is_symlink()
+    assert list(outside.iterdir()) == []
+
+
+def test_first_use_directory_entries_are_fsynced(tmp_path, monkeypatch):
+    """New A3 directory entries are durable before statistics are returned."""
+    import os
+    import v13.vision_projector_stats as stats
+
+    real_fsync = os.fsync
+    synced_inodes = set()
+
+    def recording_fsync(fd):
+        synced_inodes.add(os.fstat(fd).st_ino)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(stats.os, "fsync", recording_fsync)
+    root_inode = tmp_path.stat().st_ino
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+
+    assert mode == SOURCE_STATS_MODE and len(records) == 4
+    data_inode = (tmp_path / "data").stat().st_ino
+    vision_inode = (tmp_path / "data" / "vision").stat().st_ino
+    assert root_inode in synced_inodes
+    assert data_inode in synced_inodes
+    assert vision_inode in synced_inodes
+
+
+def test_hardening_existing_directory_modes_fsyncs_metadata(tmp_path, monkeypatch):
+    """The 0700 privacy correction is durable, not only visible in the live inode."""
+    import os
+    import v13.vision_projector_stats as stats
+
+    data_dir = tmp_path / "data"
+    vision_dir = data_dir / "vision"
+    vision_dir.mkdir(parents=True)
+    data_dir.chmod(0o755)
+    vision_dir.chmod(0o755)
+    data_inode = data_dir.stat().st_ino
+    vision_inode = vision_dir.stat().st_ino
+
+    real_fsync = os.fsync
+    synced_inodes = set()
+
+    def recording_fsync(fd):
+        synced_inodes.add(os.fstat(fd).st_ino)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(stats.os, "fsync", recording_fsync)
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+
+    assert mode == SOURCE_STATS_MODE and len(records) == 4
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert data_inode in synced_inodes
+    assert vision_inode in synced_inodes
+
+def test_aggregate_byte_budget_refuses_before_writing_any_stats(tmp_path, monkeypatch):
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    monkeypatch.setattr(stats_module, "MAX_SOURCE_STATS_SET_BYTES", 1)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert records == []
+    assert mode == "SOURCE_STATS_BUDGET_EXCEEDED"
+    # Budget rejection happens before opening/creating the private directory tree.
+    assert not (tmp_path / "data").exists()
+
+
+def test_aggregate_byte_estimate_covers_actual_npz_artifacts(tmp_path, monkeypatch):
+    X, Y, keys, lineage, _ = _fixture(seed=43, d=37, c=768, sources=4, rows_per=8)
+    budget = stats_module._estimate_source_stats_set_bytes(
+        X.shape[1], Y.shape[1], len(lineage),
+    )
+    monkeypatch.setattr(stats_module, "MAX_SOURCE_STATS_SET_BYTES", budget)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == len(lineage)
+    actual_bytes = sum((tmp_path / record["path"]).stat().st_size for record in records)
+    assert actual_bytes <= budget
+

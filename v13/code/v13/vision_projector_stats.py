@@ -25,12 +25,29 @@ MAX_TARGET_DIM = 1024
 MAX_ROWS_PER_SOURCE = 100_000
 MAX_ARTIFACT_BYTES = 8 * 1024 * 1024
 MAX_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
+# Bound the optional exact-delete statistics per projector. The estimate uses
+# raw fp64 array sizes plus a conservative 8 KiB for NPZ/NPY headers and metadata.
+# If it does not fit, normal A3 training continues but forget safely invalidates
+# the affected projector rather than consuming unbounded phone storage.
+MAX_SOURCE_STATS_SET_BYTES = 32 * 1024 * 1024
+_SOURCE_STATS_ARTIFACT_OVERHEAD_BYTES = 8 * 1024
 _EXPECTED_MEMBERS = {"meta.npy", "sx.npy", "sxx.npy", "sy.npy", "sxy.npy"}
 
 
 def _np():
     import numpy
     return numpy
+
+
+def _estimate_source_stats_set_bytes(feature_dim, target_dim, source_count):
+    if (type(feature_dim) is not int or feature_dim < 1
+            or type(target_dim) is not int or target_dim < 1
+            or type(source_count) is not int or source_count < 1):
+        raise ValueError("invalid A3 source-stat byte estimate dimensions")
+    array_bytes = 8 * (
+        feature_dim + feature_dim * feature_dim + target_dim + feature_dim * target_dim
+    )
+    return source_count * (array_bytes + _SOURCE_STATS_ARTIFACT_OVERHEAD_BYTES)
 
 
 def sufficient_statistics(X, Y):
@@ -55,6 +72,46 @@ def sufficient_statistics(X, Y):
     }
 
 
+def _open_or_create_dir(parent_fd, name, flags):
+    """Open one child directory without following links, creating it safely if absent."""
+    sync_parent = False
+    try:
+        fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
+    except FileNotFoundError:
+        if os.mkdir not in getattr(os, "supports_dir_fd", set()):
+            raise OSError("descriptor-relative mkdir unavailable")
+        try:
+            os.mkdir(name, 0o700, dir_fd=parent_fd)
+        except FileExistsError:
+            # Another creator may have won the race; the no-follow open below
+            # still rejects a symlink or non-directory replacement.
+            pass
+        # Sync even after FileExistsError: the competing creator may not yet
+        # have made the parent entry durable.
+        sync_parent = True
+        fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
+    try:
+        if sync_parent:
+            os.fsync(parent_fd)
+        info = os.fstat(fd)
+        if not stat.S_ISDIR(info.st_mode):
+            raise OSError("A3 statistics path is not a directory")
+        if info.st_uid != os.geteuid():
+            raise OSError("A3 statistics directory is not owned by current user")
+        # Existing data/vision directories may predate source statistics and
+        # have been created with permissive defaults (for example 0755).
+        # Tighten the already-open inode, never a path that could be swapped.
+        if stat.S_IMODE(info.st_mode) != 0o700:
+            os.fchmod(fd, 0o700)
+            os.fsync(fd)
+            if stat.S_IMODE(os.fstat(fd).st_mode) != 0o700:
+                raise OSError("A3 statistics directory permissions are not private")
+        return fd
+    except Exception:
+        os.close(fd)
+        raise
+
+
 def _vision_dir_fd(home):
     if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
         raise OSError("no-follow directory operations unavailable")
@@ -65,8 +122,10 @@ def _vision_dir_fd(home):
     root_fd = os.open(str(root), flags)
     data_fd = vision_fd = None
     try:
-        data_fd = os.open("data", flags | os.O_NOFOLLOW, dir_fd=root_fd)
-        vision_fd = os.open("vision", flags | os.O_NOFOLLOW, dir_fd=data_fd)
+        # Training writes source statistics before Projector.save() creates
+        # data/vision. Create both missing levels through dir-fd operations.
+        data_fd = _open_or_create_dir(root_fd, "data", flags)
+        vision_fd = _open_or_create_dir(data_fd, "vision", flags)
         return root_fd, data_fd, vision_fd
     except Exception:
         if vision_fd is not None:
@@ -245,6 +304,8 @@ def build_source_statistics(home, prefix, X, Y, keys, training_sources,
     Y = np.asarray(Y, dtype=np.float64)
     if X.ndim != 2 or Y.ndim != 2 or X.shape[0] != Y.shape[0] or X.shape[0] != len(keys):
         raise ValueError("A3 source statistics row mismatch")
+    if _estimate_source_stats_set_bytes(X.shape[1], Y.shape[1], len(source_map)) > MAX_SOURCE_STATS_SET_BYTES:
+        return [], "SOURCE_STATS_BUDGET_EXCEEDED"
     created = []
     try:
         for sid in sorted(source_map):

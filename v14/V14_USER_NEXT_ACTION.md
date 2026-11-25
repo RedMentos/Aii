@@ -1,3 +1,83 @@
+# CURRENT VERIFIED PERCEPTION NEXT ACTION — 2026-11-25
+
+## Latest verified checkpoint — 2026-11-25T05:09:25Z (supersedes the older run snapshot below)
+
+**Current release base:** `gpt6/v13-private-remote-bridge-20261111` HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. Private V13OBS #115 (2026-11-24 09:28:11Z) reports this base installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. This does not install or accept PR #2484.
+
+**Current Perception candidate:** PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, current branch head `afdbbfc00770ca1620cca04b370a67af8bd3e3be`; tested code SHA `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b` (NOT_RELEASED / not installed; later commits are documentation/handoff only).
+
+### New runtime behavior on that candidate
+
+A3 source-stat storage now has a conservative **32 MiB per-projector budget**. The estimate uses fp64 sufficient-stat array sizes plus 8 KiB per source for NPZ/NPY headers and metadata. If it exceeds the budget, ordinary A3 global/tile training still publishes the projector with `SOURCE_STATS_BUDGET_EXCEEDED`; source-forget does not pretend an exact rebuild is available and instead takes the existing conservative projector-invalidation path. This bounds optional exact-delete artifacts without changing installed models, weights, permissions or user data.
+
+### Exact test evidence
+
+- GitHub Actions run `45551382106`: vision/source-lineage and A3 source-forget **58/58 PASS on CPython 3.13 and 58/58 PASS on 3.14**; exact `py_compile` passed on both. This includes the new byte-budget rejection, conservative NPZ-size estimate, and full Runtime consumer test covering both global and tile projectors.
+- Run `45551381858`: RAW EYE / MediaProjection frame-ingress passed on Python 3.13 and 3.14.
+- Run `45551381910`: offline runtime-deployment integrity passed on Python 3.11 and 3.14.
+- Run `45551381822`: staged-runtime **FAIL** (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests); integrated-regression **FAIL** (1 test). Both stop at the Core-owned strict source-lifecycle composer with `ValueError: unsupported lifecycle source: vision.py`. No hash gate was bypassed.
+- LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated formula+NPZ reproduction: **PASS**; the 8 KiB-per-source estimate exceeded actual NPZ sizes for the tested `d=37/c=768`, `d=117/c=768`, and `d=512/c=1024` shapes. This is not a full repository test.
+- Full local Aii pytest/compile: **BLOCKED / NOT_RUN** because no checkout is mounted and the local raw-GitHub download is unavailable.
+
+### Device, updater and release
+
+- Redmi acceptance for PR #2484: **REDMI_UNVERIFIED**. Latest available private pipeline receipt is #115 (2026-11-24 09:28:11Z), installed base `8d93236`, auto-update enabled and base Runtime/Dashboard UP_TO_DATE.
+- Fresh read-only owner-relay requests #895 HEALTH, #896 PIPELINE_STATUS and #897 DIAGNOSTICS have **NO_LIVE_RECEIPT**; no fresh health, native residency, learning status or current-turn correctness claim is available.
+- GitHub push/CI is not deployment. PR #2484 remains DRAFT / NOT_RELEASED, so no UPDATE_REQUEST was sent and no model, weight, permission or data change was made.
+
+### Research update
+
+R-150 audits MobileMoE-S-PTE (arXiv:2605.27358v1; official Meta PTE card). It offers 272M active / 1.3B total parameters, 0.68 GB projected INT4 weights and a 0.95 GB ExecuTorch 1.6.0 PTE, but is FAIR Noncommercial Research licensed and gated; it requires a custom NDK r28c / torchao / fused-MoE runner, not the current GGUF/Termux path. The paper's Android numbers are from Galaxy S25, not Redmi. No download or reuse; not a production recommendation.
+
+### Next concrete action
+
+1. **A3 source lifecycle:** Core/Integrator must rebind the immutable source-lifecycle closure to the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and `vision_projector_stats.py` SHA-256 `bb987ff4b12f7c5622e3890a62a3afc145d82d7401f5a0518d9f04d2786ad10f`, include the helper in the materialized closure, then rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken pins.
+2. **Audio RAW EAR consumer:** PR #2312 signed one-shot PCM16 consumer CI passes on Python 3.13/3.14 and integrated-regression passes, but the inherited two-checkout migration fails (`PARTIAL`, Runtime `ERROR`, `last_error=UPDATE`). Its old QA base and the current QA-final branch are diverged 81/73, so do not retarget blindly. The current QA-final Android tree still has no AudioRecord provider and its manifest has no RECORD_AUDIO permission. QA/Core must publish one current compatible base, repair migration, and implement the visible provider; then Perception can rebase the consumer and run the composed tests. No microphone or Redmi proof exists.
+3. After those gates, continue the next independent RAW EAR/A-plane integration slice.
+
+**User action: none.** No manual Termux command, model download/swap, restart, permission change or device action is needed for this blocked candidate.
+
+---
+
+## Previous snapshot (historical; superseded by the checkpoint above)
+**Run timing:** start/end wall-clock instrumentation unavailable (UNKNOWN). Evidence snapshot: 2026-11-25T00:29:18Z.  
+**Code/test commit:** `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`. **Current PR branch head:** `37baae12f27a1457bbff14496f5caf6611d7e451` (subsequent commits are documentation/handoff/board only; no code changed after the tested commit). [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, stacked on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867` and Core #2465. **NOT_RELEASED / not installed.**
+
+## What now works on the tested code commit
+
+A3 global/tile training writes bounded, per-source fp64 ridge sufficient statistics using descriptor-relative creation of missing `data/` and `data/vision/`, owner-only 0700 directories and 0600 artifacts. The exact source-forget path can reconstruct the same standardized ridge optimum after excluding one source. This only updates the A3 linear projector; it does not unlearn the feature extractor, teacher, encoder or other organs.
+
+- CI on code commit `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`: source-lineage/A3 forget PASS on Python 3.13 and 3.14; RAW EYE / MediaProjection frame-ingress PASS on Python 3.13 and 3.14; runtime-deployment integrity PASS on Python 3.11 and 3.14.
+- Staged-runtime and integrated-regression CI on that code commit: FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`.
+- LOCAL_LINUX algorithm-level check: PASS, 24/24 source-deletion reconstructions; max absolute errors `mu=2.78e-16`, `sd=4.44e-16`, `W=2.67e-13`. This is not a full Aii package test.
+- Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS/network unavailable).
+- The later branch-head commits are documentation-only; no new CI run was triggered for `37baae12f27a1457bbff14496f5caf6611d7e451`.
+
+## Actual user effect and deployment
+
+The exact-delete code is not yet in the integrated Runtime because the Core source-lifecycle materializer does not yet pin the new helper. No end-to-end app behavior is claimed. No new device receipt was obtained; Redmi remains **REDMI_UNVERIFIED**. The last shared device snapshot (2026-11-24 09:28:11Z) recorded the model process STOPPED_BY_USER and no native-residency proof. No UPDATE_REQUEST, model download, model/weight swap, permission change, microphone capture or deployment was performed. Existing updater state was not freshly reverified.
+
+## Research and model-lab conclusion
+
+- R-146 SGM-Diar: useful evidence for a calibrated known/change/**DEFER** gate and strictly session-scoped memory; proof-of-concept only, no code repo found, DiariZen weights CC BY-NC 4.0.
+- R-147 Edge0: Apache-2.0 framework, but current Android engine is 35B only, requires i8mm/ARMv8.6-A, and the documented 16-GB OnePlus benchmark has 18.4–18.8 s TTFT for 627 tokens; model assets require about 42 GB disk. Not a Redmi candidate.
+- R-148 BigMoMo: promising expert-movement scheduling, but preprint-only/no official code found; tests require newer Snapdragon Hexagon HMX devices and 12–24 GB RAM. Not a Redmi port.
+
+## Next concrete action
+
+
+## Downstream Core integration blocker discovered — 2026-11-25
+
+The latest Core #2465 head `c2fdfab67983cf58c96c89a653122f521eb69429` has a separate integrated-regression failure (run 45474789385): `Vision.test_reingest_serializes_with_last_source_blob_cleanup` times out waiting for `unlink_entered` (1 failed / 447 passed / 3 skipped). Source inspection shows the staged builder replaces `vision.forget()`'s `vision.unlink_source_blob` call with `source_lifecycle_candidate.cleanup_unreferenced(store, sid)`; the test still patches the old symbol, so its event can never fire. The new helper holds `store.tx()` across the committed-deletion check, live-reference check and unlink. This is a staged-test seam mismatch, not evidence that the production lock is missing. Core should patch the actual `cleanup_unreferenced` consumer seam (or expose a stable wrapper) and keep the lock/hash checks intact. This is separate from the #2477/#2484 source-pin mismatch; both must be resolved before integrated acceptance.
+
+
+Core/Integrator must pin the exact current `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper `vision_projector_stats.py` SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f` in the strict source-lifecycle closure, rebind dependent pins bottom-up, and rerun staged/integrated/consumer/migration. Perception will not edit Core-owned composer files or weaken hash gates.
+
+**User action: none.** No manual Termux command or model consent is needed for this blocked integration step.
+
+---
+
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
@@ -1871,3 +1951,103 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - No AudioRecord provider or live microphone capture is present. Android audio and Redmi remain unverified; no update or device action was performed.
 - User action: **none**. Keep microphone capture OFF and do not issue a manual Termux command.
 - Next internal action: Core/QA rebind the exact controller-guard hash in recovery/stage/deployer; Core/Boss rebind the audio temporal module; rerun staged/integrated and migration tests before considering an Android provider.
+
+
+## Research & Perception — run 20, 2026-11-24
+
+**PR [#2484](https://github.com/RedMentos/Aii/pull/2484)** is a draft follow-up stacked on A3 source-forget PR #2477 and Core source-lifecycle PR #2465.
+
+- Exact #2477 vision/source-lineage CI on Python 3.13 and 3.14 exposed four failures: fresh Store training writes per-source statistics before Projector.save() creates data/vision, so the writer returned UNAVAILABLE_STORAGE and the A3 global/tile forget/rebuild path had no statistics.
+- The fix uses descriptor-relative mkdir/open for missing data/ and data/vision, O_NOFOLLOW, O_DIRECTORY, fstat checks, 0700 directories, 0600 files, fsync and atomic rename. A new exact helper test verifies first-use creation and file/directory modes; existing symlink/tamper tests remain.
+- LOCAL_LINUX CPython 3.13.5 isolated reproduction: old FileNotFoundError reproduced; new dir-fd harness PASS for directory creation, 0700/0600 modes, fsync and symlink rejection. This is not the full Aii package.
+- Exact #2484 CI is pending after PR creation. Full local Aii pytest remains BLOCKED/NOT_RUN (no checkout mounted; prior GitHub DNS failure).
+- Core/QA still must add vision_projector_stats.py to the materialized source closure and rebind exact vision.py/helper pins before staged/integrated consumers pass. #2477/#2484 remain NOT_RELEASED.
+- Redmi/Termux remains REDMI_UNVERIFIED. No device action, update request, model/weight/permission change, microphone capture or deployment occurred.
+- User action: **none**. No manual Termux command or model download/swap is required.
+
+### Research update — 24 Nov 2026
+
+- R-141: full NeurIPS 2026 QSS paper reviewed. Quantized residual accumulators are a possible future nonlinear correction, not a drop-in replacement for the current low-dimensional A3 ridge stats. The linked repository has no LICENSE file and its qss.py carries a proprietary Meta header; no code reuse.
+- R-142: full arXiv preprint on ridge-statistics probing reviewed. Repeated full-head broadcasts can expose exact deletion statistics under an active-client threat model. Keep A3 sufficient statistics local-only; a Runtime status negative-control test was added to exclude paths/hashes/matrices.
+- R-143: full IJCV 2026 memory-efficient CNN article reviewed (CC BY 4.0). Its 63 KB/42 KB peak-activation results are from STM32H7, with 3.34M parameters in the ImageNet model; it is a future feature-extraction idea, not Redmi evidence or an LFM replacement.
+- QSS OSS check: atavory/rqu has no LICENSE file; algs/qss.py has a Meta 'Confidential and proprietary' header; dependencies include FAISS, NumPy, SciPy, scikit-learn, LightGBM and Torch. No code/weights/data were imported.
+
+### Final exact-head and device readback — 24 Nov 2026
+
+- PR #2477 exact head dd7e841 ran 49 tests on each version: Python 3.13 **4 failed / 45 passed**, Python 3.14 **4 failed / 45 passed**. The four failures were the corrupt-stat fallback setup, global exact rebuild, global+tile restart rebuild, and tile exact rebuild; the common symptom was an empty source_stats list because data/vision did not yet exist.
+- PR #2484 head is 3ef4471603831103717631bf2b12a24b96307cac. The helper/test path was added to the pull_request workflow filter, but the exact-head PR workflow readback returned **no runs**. No CI PASS is claimed; an authorized owner-triggered Actions run or normal push evidence is still required.
+- Latest private device metadata snapshot (2026-11-24 09:28:11Z): LOCAL_METADATA_ONLY, 5 turns, 0 valid B1/B2 offers, 2 B1 and 2 B2 native attempts failed, no semantic-use proof and no native latent exchange. Two later C3 prefill phases were 33–37 seconds. No raw transcript is copied.
+- Last authenticated PIPELINE_STATUS (2026-11-23 14:24Z) said auto-update enabled and runtime/dashboard UP_TO_DATE at installed SHA fb563d771fe2d493c4ec25abe94280981d24ef5c. Current release-development HEAD is 8d93236c753f0194224c19edc7411d8d7082b1d6, so current-head installation is unverified. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests expired without a device_status reply: NO_LIVE_RECEIPT.
+- No UPDATE_REQUEST, shell, LOG_PAGE, chat send, model/weight/permission change, user-data mutation or deployment was performed. No user action is needed.
+
+
+### PR head reconciliation
+
+- PR #2484 latest exact metadata readback: head dbf9221e1abc579ab298441020fdc28a24cfa737, DRAFT and mergeable. Last functional code commit is 621f42db8953acf7a512d8a4164341bc9bbc7683; subsequent commits only updated handoff/board evidence. No PR-triggered workflow runs are returned for the exact PR head, so CI remains unverified.
+
+
+## Research & Perception — run 21, 2026-11-25
+
+**PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact code/test commit `8d0861188a61290366cd2aa377edcfac0c625610` (NOT_RELEASED).**
+
+- A3 source-stat bootstrap now also hardens pre-existing `data/` and `data/vision/` directories. It verifies the opened inode is a directory owned by the effective user, applies `fchmod(0700)` through the already-open descriptor, and verifies the resulting mode. This closes the legacy-directory case where a previous Projector save may have left a 0755 directory; no path-based chmod or symlink following is used.
+- Added `test_existing_permissive_stats_directories_are_hardened`: starts with both directories at 0755, runs the production source-stat builder, and requires 0700 directories plus 0600 artifacts.
+- **LOCAL_LINUX, CPython 3.13.5:** isolated dir-fd helper harness PASS 4/4: fresh directory creation/modes, legacy 0755 hardening, first-level `data` symlink rejection, and second-level `vision` symlink rejection. This executes the exact helper logic in an isolated harness, not the full Aii package. Full repository pytest/py_compile remains NOT_RUN because no local Aii checkout is mounted.
+- **GitHub exact-head readback:** PR #2484 is OPEN/DRAFT/MERGEABLE at `8d0861188a61290366cd2aa377edcfac0c625610`, based on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867`. Four relevant workflows were observed IN_PROGRESS: vision source-lineage run 45506945163, staged context/integrated regression 45506945574, runtime deployment integrity 45506945185, and MediaProjection RAW EYE ingress 45506945923. No CI PASS is claimed until exact results are read back.
+- **Consumer:** `vision.train()` / `train_tiles()` → `build_source_statistics()` → descriptor-relative A3 stats storage. The files remain local-only; Runtime status exposes only bounded count/mode fields. This is A3 ridge-head deletion support, not feature-extractor or model-weight unlearning.
+- **Integration:** #2484 remains stacked on #2477, then Core #2465. Core/QA still owns the materialized source closure and exact hash rebinds; do not relax pins or merge this stack before staged/integrated/consumer/migration checks pass.
+- **Device/release:** REDMI_UNVERIFIED; no connected phone receipt, Termux test, model/weight/permission change, UPDATE_REQUEST, or deployment. The latest available private device evidence remains the 2026-11-24 metadata-only snapshot; current release-development SHA 8d93236 is not confirmed installed.
+- **User action:** none. No manual Termux command or model download/swap is required.
+
+
+## Research & Perception — run 22 exact-head readback (2026-11-25)
+
+**Current code/test head:** `177f72364440519f6d38cecdb7dca7629ae2304b` on PR [#2484](https://github.com/RedMentos/Aii/pull/2484), still OPEN/DRAFT/NOT_RELEASED.
+
+- The source-stat helper hardens both fresh and pre-existing `data/` + `data/vision/` directories: owner check, descriptor-relative `fchmod(0700)`, post-change mode verification; artifacts remain 0600. The added regression starts with 0755 directories and verifies 0700 after the production builder.
+- **LOCAL_LINUX CPython 3.13.5 isolated helper harness:** PASS 4/4 (fresh creation, legacy 0755 hardening, `data` symlink rejection, `vision` symlink rejection). Full local Aii checkout pytest/py_compile was NOT_RUN because this worker has no repository checkout.
+- **CI exact head:** source-lineage + A3 forget suite PASS 51/51 on Python 3.13 and 51/51 on Python 3.14; exact compile step passed. RAW EYE frame-ingress PASS on 3.13 and 3.14. Runtime deployment-integrity offline checks PASS on 3.11 and 3.14.
+- **Integration remains blocked:** staged-runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression FAIL: 1 failed. Both stop at `scripts/source_lifecycle_lock_integration_candidate.py:179` with `unsupported lifecycle source: vision.py`. Core PR #2465 currently pins `vision.py` to `350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728` and does not include `vision_projector_stats.py`; the exact #2484 source workflow reports `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f`. Core/Integrator was given this exact evidence in a comment on #2465. No hash check was weakened.
+- **Runtime consumer:** A3 `vision.train()` / `train_tiles()` → source-stat builder → local secure storage; explicit source forget rebuilds only exact full-fit ridge heads. It does not unlearn the image feature extractor, teacher or other organs.
+- **Device/release:** REDMI_UNVERIFIED; no phone receipt, Termux test, model/weight/permission change, UPDATE_REQUEST or deployment. Last available private updater receipt is older than the current release-development HEAD, so current installation remains unverified.
+- **Research:** R-144 full preprint review (replay can preserve function while representations drift; don't make zero drift a universal objective; no code reuse due absent license). R-145 full FlyGCL preprint and MIT OSS audit (hierarchical expert specialization + temporal integration; full visual/VLA stacks are heavyweight; no port or code/weights imported).
+- **User action:** none. No manual Termux command or model download/swap.
+- **Next internal step:** Core/Integrator updates the strict source-lifecycle composer to include the helper and pin exact current bytes, then reruns staged/integrated/consumer/migration. Perception should not edit Core-owned composer files.
+
+
+
+## Run 23 — latest private updater/device metadata (2026-11-25)
+
+- Latest available private metadata snapshot was updated 2026-11-24 09:28:11Z. Its pipeline reports `auto_enabled=true`, `runtime=UP_TO_DATE`, `dashboard=UP_TO_DATE`, `last_error=NONE`, and `updated_commit=8d93236c753f0194224c19edc7411d8d7082b1d6`. Thus the **existing base release** is reported installed/up to date; this does not include or deploy PR #2484.
+- The AI service is running, but the model process is `STOPPED`, AI state is `STOPPED_BY_USER`, autostart is false, and native-residency telemetry is unavailable because no verified model supervisor is present.
+- Latest recorded turn: C3 generated 7 tokens from a 358-token admitted prompt; TTFT 2.046 s and total turn 6.295 s. B1 and B2 each had 2 native attempts, both failed with TIME_BUDGET (53.2 s / 54.2 s); valid offers 0 for both. No semantic-use or native latent-exchange proof.
+- New read-only owner-relay requests for HEALTH / PIPELINE_STATUS / DIAGNOSTICS have not returned a device_status receipt yet: NO_LIVE_RECEIPT. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell, or device action.
+- **Deployment:** updater is available and reports the current base release up to date, but #2484 is still an unmerged draft and its staged/integrated CI fails on the Core source-lifecycle pin. No update request is appropriate. PR-specific Redmi behavior remains REDMI_UNVERIFIED.
+- **User action:** none. Do not start the stopped model or change settings solely for this A3 storage PR.
+
+
+## Research & Perception — run 24 verified next action (2026-11-25)
+
+**Current PR:** [#2484](https://github.com/RedMentos/Aii/pull/2484), branch head `cf7abbef5936124f5d97b61056a90ad0fa486e61` (handoff-only latest commit); tested code/test commit `5d1983a11dabdea2147016d98386f3123679793c`. **OPEN / DRAFT / NOT_RELEASED**.
+
+### What works on the tested code/test commit
+
+- A3 source-stat first-use directory creation is descriptor-relative and no-follow, checks owner/type, uses 0700 directories and 0600 files, fsyncs parent directory entries after create/concurrent-create races, and fsyncs directory metadata after hardening an existing directory to 0700.
+- Consumer path: `vision.train()` / `train_tiles()` → `build_source_statistics()` → source-scoped ridge-stat storage; source-forget rebuilds only the exact A3 ridge head.
+- Exact focused source-lineage/forget CI: **55/55 PASS on CPython 3.13 and 55/55 PASS on 3.14**, with exact `py_compile` PASS on both. RAW EYE MediaProjection ingress PASS on 3.13/3.14. Offline runtime deployment integrity PASS on 3.11/3.14.
+- LOCAL_LINUX CPython 3.13.5 helper-level checks: 32/32 concurrent artifact creation PASS; symlink-wins race FAIL_CLOSED PASS; new parent-entry fsync PASS; 0755→0700 permission-metadata fsync PASS. Full local Aii pytest NOT_RUN because no checkout is mounted.
+
+### Remaining blockers and actual device state
+
+- Staged runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression FAIL: 1 test. Both stop at the Core-owned strict source-lifecycle composer with `unsupported lifecycle source: vision.py`; migration reports PARTIAL because staging does not complete.
+- Exact source hashes to pin/materialize in Core's immutable closure: `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d`; `vision_projector_stats.py` SHA-256 `eaecab5afde50eae5bb41de959a04473e40cb55bca2a6bc265cbebc3cc59a9f4`. Core/Integrator has these in #2465 comments 7149883105 and 7149910139; no hash gate was weakened.
+- Redmi: **REDMI_UNVERIFIED**. Latest available consented snapshot is private V13OBS #115 (2026-11-24 09:28 UTC); later read-only relay requests have NO_LIVE_RECEIPT. The last snapshot records the AI runtime/model process STOPPED_BY_USER, B1/B2 zero valid offers and TIME_BUDGET failures. No new device turn or hardware measurement.
+- Updater: the latest recorded base release `8d93236c753f0194224c19edc7411d8d7082b1d6` was reported UP_TO_DATE with auto-update enabled, but this does not include or deploy PR #2484. No UPDATE_REQUEST is appropriate while staged/integrated CI fails.
+
+### Research and next internal step
+
+- R-149 full paper review: He et al., *Efficient Conversational Multi-Talker ASR with Predicted Speaker-Agnostic Activity Streams*, arXiv:2611.26796v1 (2026-11-19), CC BY 4.0 preprint. Two-stream HEAT may cap future ASR passes, but its ≤2-concurrent-speaker assumption and WavLM-Large/Whisper-large-v3-turbo backbones are not a Redmi candidate. No code/weights imported.
+- Next owner: Core/Integrator must add both exact Perception files to the immutable source lifecycle manifest and rebind strict composer/wrapper/stage/deployer pins bottom-up; then rerun staged/integrated/consumer/migration. Perception must not edit Core-owned composer files. After that, continue the independent RAW EAR signed-provider/consumer work; keep microphone capture OFF until QA companion verifier, revocation and zeroization integration is verified.
+- **User action: none.** No manual Termux command, model download/swap, runtime restart or permission change is needed for this blocked PR.
+- Detailed evidence: `v14/handoffs/RESEARCH_PERCEPTION_RUN24_A3_DIRFD_RACE_20261125.md`; whole-Canon issue: [#1984](https://github.com/RedMentos/Aii/issues/1984).
+
