@@ -166,11 +166,18 @@ class SpeakerChangeEvidenceRegistry:
         )}
         key = (source_id, generation_id)
         with self._lock:
+            consent_epoch_changed = False
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
                     del self._states[old_key]
+                elif old_key[0] == source_id and old_key[1] == generation_id and old_key != key:
+                    # A new provider-validated consent scope replaces the old
+                    # session. Drop its vectors immediately instead of leaving
+                    # them resident in the bounded LRU until later eviction.
+                    del self._states[old_key]
+                    consent_epoch_changed = True
             state = self._states.get(key)
-            reset_reason = None
+            reset_reason = "CONSENT_SCOPE_CHANGED" if consent_epoch_changed else None
             previous_window_start_ms = None if state is None else state.last_window_start_ms
             previous_window_end_ms = None if state is None else state.last_window_end_ms
             # Validate the whole audio-window interval, not just the timestamps
