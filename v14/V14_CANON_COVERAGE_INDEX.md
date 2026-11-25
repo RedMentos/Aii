@@ -2281,3 +2281,24 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+## Research & Perception Run 20 — B3 tokenwise pairing evidence overlay (2026-11-25)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — tokenwise path | Perception diagnostic pair builder composes the stored sender final-RMSNorm LatentTapPacket with the receiver selected input-embedding extractor output, aligned by UTF-8 byte-piece spans. Event-pooled LATENT_PREFIX_V1 remains a separate one-vector contract. | Draft PR #2507 code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; LOCAL_LINUX isolated stub-bound 7/7 PASS; exact PR CI 45678205802 80/80 PASS on Python 3.13/3.14; push CI 45678196840 80/80 PASS; privacy scan CLEAN. | Core runtime wiring, actual installed GGUF selected-row read, pair-specific source/session-disjoint adapter fit under explicit consent, receiver-task utility, no-message/zero/shuffle/repeat/OOD controls, retention, restart/rollback and Redmi measurement. | CODE_PRESENT / WIRED_SYNTHETIC_ONLY / NATIVE_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+
+This overlay does not promote the full B3 path or change any other Canon family. The current helper is an in-memory diagnostic assembly step only; Core still owns the runtime producer/consumer integration.
+
+
+### Mobile resource risk discovered in Run 20
+
+The current selected-row extractor and native receiver are separate executables and independently call llama_model_load_from_file for the same GGUF, at different llama.cpp pins. A one-process/one-model-pointer implementation is a Core-owned optimization candidate only. No RSS/PSS or TTFT reduction is claimed; the current classification and B3 gates above remain unchanged.
+
+
+## Cross-lane learning-risk overlay — Run 20 (2026-11-25)
+
+| Canon family | Evidence | Interpretation | Next acceptance |
+|---|---|---|---|
+| JEPA / continual learning / replay | Staged/integrated CI 45678205707: synthetic WorldJEPA A→B→A, 12 source-disjoint arms; parameter deltas 2.447–3.583; exact rollback all arms; B actual-action holdout worse than zero and shuffled controls in 12/12. Uniform replay reduced mean B forgetting delta but did not restore B action utility. | Numeric learning and checkpoint persistence exist in this synthetic 4D harness, but cross-task interference remains. Not native B1/B2/C3 weights, not real user data, not Android. | JEPA & Memory: selective plasticity, per-organ/task adapters, eligibility × error × modulator, balanced/importance replay, and simultaneous new-task gain + old-task retention gates. Require actual-action holdout to beat zero and shuffled controls across seeds. No blanket freeze. |

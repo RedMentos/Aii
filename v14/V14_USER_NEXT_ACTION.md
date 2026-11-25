@@ -1990,3 +1990,27 @@ The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visi
 - **Core next action:** implement the native selected-row producer against an exact API-bearing llama.cpp revision; prevalidate all token IDs before the upstream call, verify actual model/extractor hashes, echo the requested IDs, tensor type and pinned revision, and emit a receipt only when the API returns exactly `n_tokens × n_embd`. Then test real GGUF sender/receiver pairs, source-disjoint receiver utility, zero/shuffle/OOD controls, gradients/parameter diff, retention, restart/rollback, and only then request consented Redmi validation. Keep final-RMSNorm sender activations distinct from receiver input embeddings and keep event-pooled `LATENT_PREFIX_V1` separate.
 - Latest consented private device evidence available to this run is not fresh enough to claim deployment or functional chat. No new HEALTH/PIPELINE_STATUS/DIAGNOSTICS receipt arrived during this run; keep `REDMI_UNVERIFIED`. Do not issue a manual Termux command or infer device installation from GitHub push.
 
+
+
+## Research & Perception Run 20 — verified next action (2026-11-25)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change or data mutation was performed. PR #2507 is a draft stacked Perception change, not a release or deployment.
+
+- Code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; PR #2507.
+- LOCAL_LINUX CPython 3.13.5 isolated stub-bound tests 7/7 PASS; py_compile PASS. Full local Aii checkout NOT_RUN.
+- Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 3.14; exact push CI 45678196840: 80/80 PASS on both; privacy scan CLEAN. Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded.
+- The helper pairs the stored sender final-RMSNorm prefill tap with the receiver's selected input-embedding rows using exact UTF-8 byte-piece overlap. It is in-memory diagnostic only; no training, persistence, inference or B3 enablement.
+- Core integration is still missing: native tokenizer piece streams and selected receiver rows must be wired into Cognition.tap, then consent-gated source/session-disjoint utility and negative controls must run.
+- No fresh authenticated device receipt was obtained during this run. Prior device evidence is historical and is not treated as current; REDMI_UNVERIFIED. No automatic deployment from this draft PR.
+- Keep LATENT_PREFIX_V1 event pooling separate from tokenwise input-row pairing. Do not install or swap models; the selected-row API remains staging/WIP and the native memory cost is unmeasured.
+
+
+Research note: Core may evaluate co-locating selected-row extraction and native receiver decode in one model process to avoid a second model load. This is not implemented or measured; no user/device action is needed.
+
+
+## Research & Perception Run 20 — cross-lane learning evidence
+
+No user action required. The staged/integrated CI run 45678205707 passed its selected regression jobs, but its WorldJEPA A→B→A cohort is synthetic. It showed numeric updates and exact rollback alongside B-task interference: B actual-action loss was worse than zero and shuffled controls in all 12 arms. Uniform replay reduced one forgetting metric but did not restore action utility. This is a research handoff to JEPA & Memory, not a request to change installed models or device settings.
+
+
+Final status correction: staged/integrated CI run 45678205707 completed PASS (staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests). This is CI evidence only; no real GGUF or Redmi test, no release and no user action.
