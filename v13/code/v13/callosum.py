@@ -376,9 +376,6 @@ def operator_command(r,args):
     if args and args[0] in {"arm-tokenwise-pair", "native-tokenwise-pair", "revoke-tokenwise-pair"}:
         from .native_tokenwise_pair_capture import operator_command as pair_command
         return pair_command(r,args)
-    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
-        from .native_probe_approval import operator_command as native_probe_command
-        return native_probe_command(r,args)
     if args and args[0] == "fit-tokenwise-cohort":
         return _fit_tokenwise_candidate(r,args)
     if args and args[0] == "native-tokenwise-probe":

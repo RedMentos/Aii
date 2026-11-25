@@ -425,17 +425,6 @@ def test_cohort_wrapper_refuses_record_outside_holdout_before_fit(tmp_path):
     assert calls == []
 
 
-def test_callosum_routes_arm_probe_to_native_approval_handler():
-    from v13 import callosum
-
-    with patch("v13.native_probe_approval.operator_command", return_value="approval-routed") as routed:
-        result = callosum.operator_command(
-            object(), ["arm-probe", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"]
-        )
-    assert result == "approval-routed"
-    routed.assert_called_once()
-
-
 def test_callosum_native_tokenwise_probe_fails_closed_without_local_approval(tmp_path):
     from v13 import callosum
 
