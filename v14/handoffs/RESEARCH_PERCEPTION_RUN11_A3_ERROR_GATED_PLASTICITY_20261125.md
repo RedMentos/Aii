@@ -48,3 +48,16 @@ Latest authenticated private V13OBS #115 (2026-11-24 09:28:11 UTC): installed `8
 ## Final branch/readback checkpoint (2026-11-25T19:47:24.064Z)
 
 PR #2509 final documentation/ledger/board head: `47ccf435dcf66350ba6972b36a5df05341715256`. Exact-head runtime deployment and frame-ingress workflows SUCCESS; A3 temporal calibration, source-lineage and staged/integrated workflows IN_PROGRESS at last poll. Do not mark the PR accepted until all jobs and the shared source-lifecycle integration gate are resolved.
+
+
+### Exact-head CI completion — tested code SHA 6523b8c3c5e0b9b164023e63a190c2012fed07c9 (2026-11-25T19:50:27.191Z)
+
+- A3 temporal calibration / RAW EAR interval integrity: 74/74 PASS on Python 3.13.18 and 3.14.10.
+- MediaProjection RAW EAR frame ingress: 55/55 PASS on Python 3.13.18 and 3.14.10.
+- Vision source-lineage / forget regressions: 39/39 PASS on Python 3.13.18 and 3.14.10.
+- Runtime deployment integrity: PASS.
+- Staged runtime: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests passed; strict source lifecycle lock rejects `vision.py` at `scripts/source_lifecycle_lock_integration_candidate.py:172` with `unsupported lifecycle source`.
+- Integrated regression: FAIL, one failure at the same inherited Core-owned `vision.py` pin. This is not a failure in the new A3 unit/consumer tests; it prevents whole-runtime acceptance.
+- PR #2509 returned to DRAFT. It remains stacked on #2494 and NOT_RELEASED. Code-tested SHA is 6523b8; subsequent commits, if any, are documentation/board only.
+
+No user action required. Core/Integrator owns the source-lifecycle rebind; Perception will not weaken the exact pin.
