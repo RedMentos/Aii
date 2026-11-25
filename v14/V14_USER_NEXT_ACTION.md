@@ -1,18 +1,17 @@
 # CURRENT VERIFIED PERCEPTION NEXT ACTION — 2026-11-25
 
 **Run timing:** start/end wall-clock instrumentation unavailable (UNKNOWN). Evidence snapshot: 2026-11-25T00:29:18Z.  
-**Code candidate:** [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact head `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`, stacked on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867` and Core #2465. **NOT_RELEASED / not installed.**
+**Code/test commit:** `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`. **Current PR branch head:** `37baae12f27a1457bbff14496f5caf6611d7e451` (subsequent commits are documentation/handoff/board only; no code changed after the tested commit). [PR #2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, stacked on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867` and Core #2465. **NOT_RELEASED / not installed.**
 
-## What now works on that candidate
+## What now works on the tested code commit
 
 A3 global/tile training writes bounded, per-source fp64 ridge sufficient statistics using descriptor-relative creation of missing `data/` and `data/vision/`, owner-only 0700 directories and 0600 artifacts. The exact source-forget path can reconstruct the same standardized ridge optimum after excluding one source. This only updates the A3 linear projector; it does not unlearn the feature extractor, teacher, encoder or other organs.
 
-- Exact source-lineage/A3 forget CI: PASS on Python 3.13 and 3.14.
-- RAW EYE / MediaProjection frame-ingress CI: PASS on Python 3.13 and 3.14.
-- Runtime-deployment integrity CI: PASS on Python 3.11 and 3.14.
-- Staged-runtime and integrated-regression CI: FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`.
+- CI on code commit `1080ed4f3809ae318124146ddcb6d6b8fe7e707c`: source-lineage/A3 forget PASS on Python 3.13 and 3.14; RAW EYE / MediaProjection frame-ingress PASS on Python 3.13 and 3.14; runtime-deployment integrity PASS on Python 3.11 and 3.14.
+- Staged-runtime and integrated-regression CI on that code commit: FAIL at Core-owned `scripts/source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`.
 - LOCAL_LINUX algorithm-level check: PASS, 24/24 source-deletion reconstructions; max absolute errors `mu=2.78e-16`, `sd=4.44e-16`, `W=2.67e-13`. This is not a full Aii package test.
 - Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS/network unavailable).
+- The later branch-head commits are documentation-only; no new CI run was triggered for `37baae12f27a1457bbff14496f5caf6611d7e451`.
 
 ## Actual user effect and deployment
 
@@ -31,6 +30,7 @@ Core/Integrator must pin the exact current `vision.py` SHA-256 `329bdacc068bf705
 **User action: none.** No manual Termux command or model consent is needed for this blocked integration step.
 
 ---
+
 
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
