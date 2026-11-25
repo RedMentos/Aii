@@ -39,3 +39,8 @@ Core should review a compatible llama.cpp pin update, include the exact staging 
 ## Device / release boundary
 
 Latest available consented private V13OBS #115 metadata remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI runtime STOPPED_BY_USER, autostart false and model process stopped. No newer authenticated device receipt was available in this run. No device command, update request, restart, model/weight change or permission change was performed. PR #2502 is OPEN/DRAFT and NOT_RELEASED; GitHub push is not deployment. REDMI_UNVERIFIED; production B3 OFF.
+
+
+## Final CI and branch readback correction
+
+The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is fully CI-green: adapter 53/53 PASS on Python 3.13/3.14; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (integrated 424 passed, 3 skipped, 58 subtests; staged 255 passed, 10 skipped, 47 subtests). The later docs-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is read back on the branch ref, but PR #2502 API still showed the old head `2f74fa94...` at last poll. Do not claim PR synchronization until verified.

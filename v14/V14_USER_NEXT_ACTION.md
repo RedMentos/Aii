@@ -1936,3 +1936,10 @@ Latest available private V13OBS snapshot: 2026-11-24T09:28:11Z, historical only.
 - The new module validates rows returned by a native receiver input-embedding extractor; it does not implement that extractor or wire `Cognition.tap`. Core PR #2499 currently pins llama.cpp `b29c606e...6c4`, which lacks the row-select API. R-148 identifies the MIT upstream row API at `a8fad21e...`, but it lives in a staging/WIP header and requires exact pin/build/ABI review.
 - The next executable step is Core's native row extractor + producer integration, then a source-disjoint paired cohort and receiver-task controls. Keep final-RMSNorm taps, input-embedding taps and event-pooled LATENT_PREFIX_V1 separate.
 - Latest available consented private V13OBS #115 metadata remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, autostart false and model process stopped. No newer authenticated device receipt was available in this run; REDMI_UNVERIFIED. The release branch HEAD is 8d93236; PR #2502 is not a release or deployment. No UPDATE_REQUEST or restart was sent.
+
+
+### Run 17 final CI and PR-ref correction — 2026-11-25
+
+The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is fully CI-green: adapter 53/53 PASS on Python 3.13/3.14; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (integrated 424 passed, 3 skipped, 58 subtests; staged 255 passed, 10 skipped, 47 subtests). These are CI/Linux checks only; no local full checkout, native GGUF, Android build or Redmi test was performed.
+
+The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visible via the branch ref and the updated ledger/workplan/next-action/handoff files were read back. However, GitHub's PR #2502 API still returned head `2f74fa94...` rather than `8f057c3d...` at the last poll. Treat PR synchronization as UNVERIFIED; do not claim the docs commit is part of the PR until the PR head readback agrees. No user action is needed.

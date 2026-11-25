@@ -1375,3 +1375,12 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Required integration experiment.** Core should review a pin update to a compatible revision containing the row-select API, include the exact staging header, extract only no-special content-token rows after `/tokenize` with `with_pieces=true`, then persist them with the new manifest and the existing SourceRef/event/generation/blob bindings. Run Linux native compile/selftest and Android arm64 cross-compile; then a consented real GGUF pair, source-disjoint receiver task, exact-text/no-message/zero/shuffle/repeat/OOD controls, gradient/parameter diff, old-task retention, restart and rollback. Keep the event-pooled `LATENT_PREFIX_V1` receiver separate. No production B3 activation until independent review and utility gates pass.
 
 **Evidence boundary.** PR #2502 exact head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569`: adapter contract 53/53 PASS on Python 3.13 and 3.14; public privacy scan CLEAN; runtime-deployment integrity PASS on Python 3.11 and 3.14; staged/integrated regression was still running at checkpoint. Full local Aii checkout unavailable. No native GGUF, Android/Termux or Redmi test; no model/weight download or swap. B3 remains OFF; REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+### R-148 evidence correction — final CI readback (2026-11-25)
+
+The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is now fully green in CI:
+- Adapter workflow `45648811640`: 53/53 tests PASS on Python 3.13 and 3.14; privacy scan CLEAN.
+- Runtime-deployment integrity `45648811730`: PASS on Python 3.11 and 3.14.
+- Staged/integrated regression `45648811577`: PASS. Integrated regression: 424 passed, 3 skipped, 58 subtests; staged runtime: 255 passed, 10 skipped, 47 subtests.
+These are CI/Linux results, not local checkout, native GGUF, Android or Redmi proof. The subsequent documentation-only branch commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` was read back from the branch ref; the GitHub PR API still reported the prior PR head `2f74fa94...` at last poll, so PR-head synchronization of the docs commit remains unverified.
