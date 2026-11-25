@@ -1961,3 +1961,12 @@ R-116 audits the pinned upstream `llama.cpp` C API: `llama_batch.embd` is docume
 The previously pending #2481 emulator job has now completed. Head `545ec845a35a4567aeaf7487d6765edf2229176f` is **17/17 check-runs SUCCESS**. The Android API-33 x86_64 GitHub-hosted emulator test passed: Espresso verified the visible Stop control; after Activity teardown and provider restart, the new process remained STOPPED; PID/start identity changed from `2176@493104` to `2621@560711`. The test invokes the real button listener with `View.performClick()` after view-visibility checks; it does not claim physical touch injection.
 
 This is emulator/CI evidence only. It is not a Redmi install, Termux run, signer pairing, Accessibility/screen capture, real-device action or user-visible phone confirmation. #2481 remains DRAFT / NOT_RELEASED, stacked on #2450/#2356, and awaits independent QA/Boss review and safe rebase/compose.
+
+
+### Exact-arithmetic fastpath candidate — #2488
+
+The #2488 composed staged Runtime test `test_exact_arithmetic_is_date_safe_and_reaches_runtime_c5_broker_world` verifies `2+2`, `Was ist 2+2?` and `Wie viel ist 2+2?` return `4`, date-shaped subtraction/division is held unless explicitly requested, and the result reaches ActionSelection, C5, OutputBroker, EgressCheck and ExperienceRecord. The test asserts no native model load, no normal B1/B2 route, no semantic retrieval, and no optional recall. **Important:** the staged manifest is still `SHADOW_REVIEW_ONLY`; this is not released or installed and does not yet prove the reported Redmi 2+2 defect is fixed.
+
+### Voice output test-only PR #2479
+
+The current release base already contains the explicit Termux system-TTS fallback (`:voice status|on|off|speak`), OFF by default and explicit-command only. PR #2479 changes tests only. Exact head `dce46db13068d95443db060327202dec45b6701e`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED. Staged audio/arithmetic: 53 passed + 26 subtests on Python 3.13 and the same on Python 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Two test-fixture defects were corrected (operator origin and fake TTS script newlines). This is fake-CLI Runtime/SQLite evidence only; no real Android audio, audibility, microphone, raw-ear learning, trainable decoder/vocoder or full-duplex proof. No device command was sent.
