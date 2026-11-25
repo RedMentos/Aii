@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import math
 import struct
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from functools import lru_cache
 import threading
 from statistics import median
@@ -968,6 +968,7 @@ def audio_consent_generation_scope(
     voice_backend="python", speaker_embeddings=None, teacher_result=None,
     teacher_opt_in=False, teacher_transcript_consent=False,
     temporal_state=None, vad_stream=None, runner_kwargs=None,
+    consent_lease: AudioConsentLease | None = None,
 ):
     """Hold one revocation lease across RAW EAR, A4, body/context composition and C3.
 
@@ -976,6 +977,11 @@ def audio_consent_generation_scope(
     provider lease remains held until iterator exhaustion, explicit close, or
     an exception. The callback receives the structured A4/A5 result so the
     Runtime can preserve source refs and add the bounded C3 admission.
+
+    If Runtime already owns the provider lease for the complete turn, pass that
+    exact ephemeral handle as consent_lease. It is validated against Runtime,
+    source, generation, receipt, temporal state and VAD stream without re-entering
+    the provider guard. The outer Runtime scope remains its sole owner.
     """
     if not callable(messages_factory):
         raise TypeError("audio generation requires a Runtime messages factory")
@@ -987,10 +993,25 @@ def audio_consent_generation_scope(
     if type(runner_kwargs) is not dict:
         raise TypeError("audio runner kwargs must be a dictionary")
 
-    with audio_consent_lease(
-        runtime, source_id, generation_id, consent_receipt,
-        consent_check, consent_guard, temporal_state, vad_stream,
-    ) as lease:
+    if consent_lease is None:
+        lease_scope = audio_consent_lease(
+            runtime, source_id, generation_id, consent_receipt,
+            consent_check, consent_guard, temporal_state, vad_stream,
+        )
+    else:
+        if not isinstance(consent_lease, AudioConsentLease) or not consent_lease.matches(
+            runtime, source_id, generation_id, consent_receipt,
+            temporal_state=temporal_state, vad_stream=vad_stream,
+            require_state=True,
+        ):
+            _reset_audio_temporal_state(
+                runtime, source_id, generation_id, temporal_state, vad_stream,
+            )
+            raise PermissionError("a live source-bound audio consent lease is required")
+        # Runtime already owns the provider lock. Borrow, never reacquire it.
+        lease_scope = nullcontext(consent_lease)
+
+    with lease_scope as lease:
         audio_result = consume_pcm16_voice_window(
             runtime, pcm,
             sample_rate=sample_rate,
