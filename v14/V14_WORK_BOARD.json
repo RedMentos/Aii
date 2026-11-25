@@ -1495,7 +1495,10 @@
           "action": "patch actual consumer seam; preserve Store.tx lock and hash gates"
         }
       }
-    }
+    },
+    "branch_head": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
+    "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
+    "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN25_A3_STORAGE_BUDGET_MOBILEMOE_20261125.md"
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
@@ -1553,7 +1556,7 @@
     "role": "Research & Perception",
     "branch": "research-perception/v14-a3-source-stats-dirfd-create-20261124-run20",
     "pr": 2484,
-    "head_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
+    "head_sha": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
     "base_release_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
     "code_change": "Per-projector A3 source-stat storage cap: 32 MiB conservative fp64 estimate plus 8 KiB metadata/header budget per source; overflow keeps normal A3 training but disables exact source-stat rebuild and falls back to safe projector invalidation on forget.",
     "changed_files": [
@@ -1584,6 +1587,10 @@
     "device": "REDMI_UNVERIFIED_FOR_PR_2484; last private V13OBS #115 proves only base 8d93236 UP_TO_DATE; relay requests #895-897 returned NO_LIVE_RECEIPT.",
     "research": "R-150 MobileMoE-S-PTE: full paper and official PTE card reviewed; FAIR NC gated; no download/reuse; custom ExecuTorch runner and flagship-only results.",
     "next_action": "Core/Integrator rebind exact vision.py and vision_projector_stats.py hashes in the immutable source-lifecycle closure, then rerun staged/integrated/consumer/migration. Perception continues A-plane/RAW EAR and model-lab research without editing Core-owned pins.",
-    "user_action_required": "NONE"
+    "user_action_required": "NONE",
+    "branch_head_after_docs": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c",
+    "code_test_sha": "1e10e7d92a9b5eb3d48d29689763dc5b04d9989b",
+    "docs_and_board_commit": "b64d4b916dabe062657b2f649613b26ef33b57c1",
+    "handoff_commit": "68a435aa8da6b86de35a1fcec9e9c0cc3fac543c"
   }
 }
