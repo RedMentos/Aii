@@ -1,3 +1,4 @@
+# CI coverage: v14-raw-ear-fastpath and v14-raw-ear-vad-comparison validate this module and its A5/A4 consumer.
 """Consent-scoped, process-local A3 predictor for RAW EAR cue deltas.
 
 This is a tiny online shadow learner over already-extracted acoustic cues. It
