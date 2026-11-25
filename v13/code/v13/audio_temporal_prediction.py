@@ -343,6 +343,14 @@ class AudioTemporalPredictionRegistry:
             return None, version, "INVALID"
         return state, version, "OK"
 
+    def _persistent_rows(self, connection):
+        """Select only exact predictor keys; SQL LIKE would treat '_' in the prefix as wildcards."""
+        prefix = self.PERSISTENCE_PREFIX
+        return connection.execute(
+            "SELECT key,payload FROM states WHERE substr(key,1,?)=?",
+            (len(prefix), prefix),
+        ).fetchall()
+
     def _save_persistent(self, source_id, generation_id, consent_scope_id, predictor, expected_version):
         source_hash, generation_hash, key = self._persistent_key(source_id, generation_id)
         material = {
@@ -365,10 +373,7 @@ class AudioTemporalPredictionRegistry:
                 raise ValueError("Stale persistent predictor state write")
             version = current + 1
             connection.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)", (key, version, encoded))
-            rows = connection.execute(
-                "SELECT key,payload FROM states WHERE key LIKE ?",
-                (self.PERSISTENCE_PREFIX + "%",),
-            ).fetchall()
+            rows = self._persistent_rows(connection)
             touched = []
             for row in rows:
                 try:
@@ -388,10 +393,7 @@ class AudioTemporalPredictionRegistry:
         source_hash = self._scope_hash(source_id) if source_id is not None else None
         generation_hash = self._scope_hash(generation_id) if generation_id is not None else None
         with self._store.tx() as connection:
-            rows = connection.execute(
-                "SELECT key,payload FROM states WHERE key LIKE ?",
-                (self.PERSISTENCE_PREFIX + "%",),
-            ).fetchall()
+            rows = self._persistent_rows(connection)
             keys = []
             expected_key = (
                 self._persistent_key(source_id, generation_id)[2]
