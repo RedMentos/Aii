@@ -40,7 +40,7 @@ class StageTest(unittest.TestCase):
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
-            "    return {'v13/runtime.py': b'INTEGRATED'}\n"
+            "    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n"
         ).encode('utf-8')
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
@@ -65,7 +65,7 @@ class StageTest(unittest.TestCase):
         self.builder("    return {'v13/runtime.py': b'INTEGRATED guard_runtime_close(self)'}\n")
         out = self.root / 'candidate'
         result = module.stage(self.code, out)
-        self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED')
+        self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED guard_runtime_close(self)')
         self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
         self.assertEqual(result['status'], 'SHADOW_REVIEW_ONLY')
         source_operator = (self.code / 'v13/operator.py').read_bytes()
