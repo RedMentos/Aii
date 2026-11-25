@@ -28,6 +28,35 @@ class NativeReceiverUtilityError(ValueError):
     pass
 
 
+def _validate_duplicate_input_digests(group):
+    """Identical receiver inputs must have identical teacher-forced token scores.
+
+    A collapsed control is a valid negative result (for example, an identity
+    adapter or a candidate that ignores an entity change). Rejecting every
+    duplicate digest would discard that evidence. Different scores for the
+    same input digest, target and native runner indicate a corrupt receipt.
+    """
+    by_digest = defaultdict(list)
+    for condition in CONDITIONS:
+        item = group[condition]
+        by_digest[item["input_sha256"]].append(item)
+    for items in by_digest.values():
+        if len(items) < 2:
+            continue
+        reference = items[0]["native"].get("token_logprobs")
+        if not isinstance(reference, list):
+            raise NativeReceiverUtilityError("identical input receipt lacks tokenwise scores")
+        for item in items[1:]:
+            scores = item["native"].get("token_logprobs")
+            if (not isinstance(scores, list) or len(scores) != len(reference)
+                    or any(type(a) not in (int, float) or type(b) not in (int, float)
+                           or not math.isclose(float(a), float(b), rel_tol=0.0, abs_tol=1.0e-6)
+                           for a, b in zip(reference, scores))):
+                raise NativeReceiverUtilityError(
+                    "identical input digest produced different target scores"
+                )
+
+
 def _digest(value: Mapping) -> str:
     try:
         raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()
@@ -257,8 +286,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             elif item["message_source_ref"] != item["source_ref"]:
                 raise NativeReceiverUtilityError("in-distribution message source mismatch")
             scores[condition].append(item["mean_target_logprob"])
-        if len({group[name]["input_sha256"] for name in CONDITIONS}) != len(CONDITIONS):
-            raise NativeReceiverUtilityError("task controls reused an input digest")
+        _validate_duplicate_input_digests(group)
         adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
         if len(adapter_hashes) != 1:
             raise NativeReceiverUtilityError("latent controls use different adapter revisions")
