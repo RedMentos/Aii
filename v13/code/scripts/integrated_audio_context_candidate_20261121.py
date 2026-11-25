@@ -246,7 +246,7 @@ class Runtime:
         raise ValueError("upstream integrated Cognition candidate missing")
     cognition = _replace(
         cognition,
-        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n",
+        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n",
         b"    def _audio_context_query(self,e,role):\n"
         b"        \"\"\"Return consent-rechecked acoustic context separately from quotable text evidence.\"\"\"\n"
         b"        view=self.r._audio_context_view(e['event_id'],consumer=role)\n"
@@ -254,7 +254,7 @@ class Runtime:
         b"        ref=view.get('summary_source_ref')\n"
         b"        if type(ref) is not dict:return None,[]\n"
         b"        return view,[ref]\n"
-        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n",
+        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n",
         "body audio context accessor",
     )
     cognition = _replace(
