@@ -11,6 +11,7 @@ import unittest
 
 from v13 import native_prompt_admission as admission
 from v13.config import DEFAULTS
+from v13.common import digest, dumps
 from v13.prompts import text as prompt
 from v13.runners import LlamaRunner
 
@@ -51,6 +52,20 @@ class NativePrefillAdmissionTests(unittest.TestCase):
         self.assertTrue(removed)
         self.assertEqual(r._prompt_admission["status"],"ADMITTED")
         self.assertFalse(r._prompt_admission["source_text_rewritten"])
+
+    def test_c3_prompt_admission_records_exact_native_input_fingerprints(self):
+        r=fake_runner()
+        source="Private test phrase: the exact amount is 120 euros."
+        messages=[{"role":"system","content":stable(r.cfg)},
+                  {"role":"user","content":source}]
+        rendered,n,_=r._prompt(messages,threading.Event(),time.monotonic()+30,48)
+        expected_ids=list(range(max(1,len(rendered)//4)))
+        admission_row=r._prompt_admission
+        self.assertEqual(admission_row["rendered_prompt_sha256"],digest(rendered))
+        self.assertEqual(admission_row["native_token_ids_sha256"],digest(dumps(expected_ids)))
+        self.assertEqual(admission_row["native_prompt_tokens"],n)
+        self.assertEqual(admission_row["native_tokenizer"],"LLAMA_SERVER_TOKENIZE")
+        self.assertNotIn(source,dumps(admission_row))
 
     def test_body_preserves_exact_segment_and_peer_but_strips_opaque_addresses(self):
         r=fake_runner("B1_DETAIL")

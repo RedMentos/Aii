@@ -88,6 +88,16 @@ def test_real_arithmetic_source_action_egress_and_restart(runtime):
         restored.close()
 
 
+def test_native_fastpath_computed_expression_keeps_local_arithmetic_authority(runtime):
+    row, meta = turn(runtime, 'calculate (2+3)*4')
+    assert row['text'] == '20'
+    assert meta['output_authority'] == 'LOCAL_EXACT_ARITHMETIC'
+    assert meta['model_generated'] is False
+    assert meta['arithmetic_fastpath']['expression'] == '(2+3)*4'
+    assert meta['arithmetic_reflex']['result'] == '20'
+    assert not meta.get('exact_policy_matched', False)
+
+
 @pytest.mark.parametrize('question, answer', [('0*123', '0'), ('1/3', '1/3'), ('calculate -12 * 3', '-36')])
 def test_zero_fraction_and_signed_output(runtime, question, answer):
     row, meta = turn(runtime, question)

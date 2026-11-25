@@ -8,10 +8,10 @@ from pathlib import Path
 
 
 SOURCE_PINS = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    'v13/runtime.py': '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
     'v13/broker.py': 'ec70ef8c27ca2513bf3feb54faad3588029cb4f5d8a14bfa89394e26e118c9f7',
     'v13/contracts.py': '25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1',
-    'v13/focal.py': 'e1f17b7865c35a268feb898551c1fd8d190f63a68819fec3b0c07dd21ceef6cf',
+    'v13/focal.py': 'c87cb83f05140267f7ae5924431a1ff98afb279b853e6df1a180b8ce597cc39d',
     'v13/arithmetic_reflex.py': '93486e8e5e7e9c9c66178833d3c25218e57172688623fb2a29af8e45b6246927',
 }
 UPSTREAM_RUNTIME_SHA = '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d'
@@ -35,8 +35,20 @@ def apply_sources(code_dir, sources):
         original[name] = raw
     result = dict(sources)
     runtime = result['v13/runtime.py']
-    if hashlib.sha256(runtime).hexdigest() != UPSTREAM_RUNTIME_SHA:
-        raise ValueError('upstream arithmetic Runtime changed; review composition')
+    runtime_hash = hashlib.sha256(runtime).hexdigest()
+    if runtime_hash != UPSTREAM_RUNTIME_SHA:
+        # The reviewed upstream chain now includes the exact text-only arithmetic
+        # fastpath. Accept that newer source-pinned composition only when its
+        # current control anchors are present; every replacement below still
+        # requires one unique exact anchor and the generated modules are compiled.
+        required = (
+            b"mark('policy_check');fixed_policy=match(self.store,text)\n",
+            b'from .arithmetic_fastpath import match as arithmetic_match',
+            b"mark('perception_and_state')",
+            b"mark('routing');exact=re.fullmatch",
+        )
+        if not all(anchor in runtime for anchor in required):
+            raise ValueError('upstream arithmetic Runtime changed; review composition: ' + runtime_hash)
     for name in ('v13/broker.py', 'v13/contracts.py', 'v13/focal.py'):
         if result.get(name, original[name]) != original[name]:
             raise ValueError('upstream arithmetic source changed: ' + name)
@@ -47,6 +59,18 @@ def apply_sources(code_dir, sources):
         "            from .arithmetic_reflex import exact_arithmetic\n"
         "            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)\n",
         'bounded source computation')
+    runtime = _replace(runtime,
+        "            mark('perception_and_state')\n",
+        "            if isinstance(fixed_policy,dict) and fixed_policy.get('rule_id')=='BUILTIN_ARITHMETIC_EXACT_V1':\n"
+        "                if fixed_policy.get('kind')!='FIXED_EXACT' or fixed_policy.get('query_ref')!=e['source_ref'] or type(fixed_policy.get('answer')) is not str:\n"
+        "                    raise ValueError('built-in arithmetic receipt is not source-bound')\n"
+        "                answer_ref=fixed_policy.get('answer_ref')\n"
+        "                if not isinstance(answer_ref,dict) or self.store.read_source(answer_ref)!=fixed_policy['answer']:\n"
+        "                    raise ValueError('built-in arithmetic answer source mismatch')\n"
+        "                arithmetic_answer=fixed_policy['answer']\n"
+        "                fixed_policy=None\n"
+        "            mark('perception_and_state')\n",
+        'preserve built-in arithmetic authority')
     # Like approved exact output, the narrow arithmetic path needs the current
     # A5 source and executive state, without optional native perception/recall.
     runtime = _replace(runtime,

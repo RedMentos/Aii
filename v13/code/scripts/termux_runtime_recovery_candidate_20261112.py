@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'd203a691f356049eb197b5cf14212e2afc5e36846512077bc47eff010b441269',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -17,12 +17,48 @@ BUILDERS = {
 
 def load(code_dir, relative, expected):
     path = code_dir / relative
-    if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
-        raise ValueError('Termux recovery builder source changed: ' + relative)
+    symlink = path.is_symlink()
+    actual = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() and not symlink else None
+    if symlink or not path.is_file() or actual != expected:
+        raise ValueError(
+            'Termux recovery builder source changed: ' + relative
+            + ' expected=' + expected + ' actual=' + str(actual)
+            + ' symlink=' + str(symlink)
+        )
     spec = importlib.util.spec_from_file_location('recovery_' + path.stem, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _observer_budget_is_composed(code_dir, sources):
+    """Recognize current fair-budget consumers without reapplying the older overlay."""
+    def source(name):
+        raw = sources.get(name)
+        if isinstance(raw, bytes):
+            return raw
+        path = code_dir / name
+        if path.is_symlink() or not path.is_file():
+            return b''
+        return path.read_bytes()
+
+    runtime = source('v13/runtime.py')
+    schedule = source('v13/observer_schedule.py')
+    budget = source('v13/native_turn_budget.py')
+    cognition = source('v13/cognition.py')
+    return all((
+        b'def ask(role,focus=None,use_peer=True,role_end=None,preanswer=False):' in runtime,
+        b"budgeted=not sched['parallel']" in runtime,
+        b'role_end=role_end,preanswer=True' in runtime,
+        b'def run(p,ask,end,on_error,clock=time.monotonic,cancelled=(),budgeted=False):' in schedule,
+        b'role_end=min(end,now+max(0.,end-now)/(len(roles)-index))' in schedule,
+        b'observer_deadline=None' in budget,
+        b'MIN_ROLE_SLICE_S = 2.0' in budget,
+        b'preanswer_budgeted=None' in cognition,
+        b'observer_deadline=deadline' in cognition,
+        b'native_body_budgeted_for_c3' in cognition,
+        b'register_store_telemetry()' in budget,
+    ))
 
 
 def build_sources(code_dir, *, include_postcommit=True):
@@ -40,7 +76,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '1bc838137d8c20e558b5d843b88c9fd058c545a5ad3b5ebc0b5ec9667c45134d')
+                      '5c17b575ea5083df2972593b8c104dcb10018aae16f7c27f69f962b7c393ad47')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -127,8 +163,16 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'ed8b0e0bec5d1a929e2956af8e76f7bb039254fa04318010b2db12c6831465f4')
-    result = observers.apply_sources(code_dir, result)
+                     '65b2939533fe4de16d2b003c4ac908e425aae10f6fa16b575d7ac79c9a519ae3')
+    # Preserve the exact source pins even when this Runtime already carries the
+    # fair-budget implementation; the legacy overlay must not be applied twice.
+    for name, expected in observers.PINS.items():
+        source_path = code_dir / name
+        if (source_path.is_symlink() or not source_path.is_file()
+                or hashlib.sha256(source_path.read_bytes()).hexdigest() != expected):
+            raise ValueError('observer fairness source changed: ' + name)
+    if not _observer_budget_is_composed(code_dir, result):
+        result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
     path = code_dir / 'scripts/context_offer_budget_candidate_20261116.py'
@@ -173,13 +217,13 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
+        if hashlib.sha256(raw_candidate).hexdigest() != '39827b0eb64a2e52d633f98b06fd1fb7cba5701bf6fa667e05a42f2d78f77bcf':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
-            raise ValueError('Integrated observer Runtime source changed')
+        if hashlib.sha256(runtime).hexdigest() != 'e2d0802a5a8173c13f827f0cbd4532184d8fd34c69b539f16ee3579bf5eede2b':
+            raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.
@@ -192,7 +236,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late_path.is_symlink() or not late_path.is_file():
             raise ValueError('LateWatch source missing or unsafe')
         late = late_path.read_bytes()
-        if hashlib.sha256(late).hexdigest() != 'fc2e86be3f2f3e629a9e54c3f1c31266f495060e60a42e636f7a924f5ffadfc0':
+        if hashlib.sha256(late).hexdigest() != '11b27558bb125557dcf7687e26c5e460b6c19a8a3e6f7cac4cee398be32a5916':
             raise ValueError('LateWatch source changed')
         old_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True):\n"
         new_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True,allowed_roles=None):\n"
@@ -216,11 +260,11 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late.count(old_sig) != 1 or late.count(old_roles) != 1:
             raise ValueError('LateWatch role anchor changed')
         late = late.replace(old_sig, new_sig, 1).replace(old_roles, new_roles, 1)
-        if hashlib.sha256(late).hexdigest() != '841aeaa9d7d0b0950b6c3ad799d2b8f8dd44fcee93159bd2a48c66f341460b12':
+        if hashlib.sha256(late).hexdigest() != 'f8e52c56385df2224afd3da3764a9f76f379cd0245d0450e4f85fa5877c3eda1':
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9')
+                             '0c5d4af434c066ee7887125c9effaac197975793adfc2e2afa90069584c00324')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
@@ -232,7 +276,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                          '2aff2027bc66caa2e0ac909c433ee6f34e458a4cc0690d831ba5cf782d70fd54')
+                          'fdbf7627a3b9f677e9ca3cfe482a32c9f2299152f7f52cb71999df0cfdc75f32')
         result = laboratory.apply_sources(code_dir, result)
     # Integrate the reviewed C4 source-span rule into the ordinary pinned stage.
     # The overlay is exact-blob-pinned and changes only the FocalLoop redundancy calculation.
@@ -243,7 +287,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     focal_overlay_blob = hashlib.sha1(
         b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\0' + focal_overlay_raw
     ).hexdigest()
-    if focal_overlay_blob != '9987525960ba0955dd2fd57d421e32f4b76b892c':
+    if focal_overlay_blob != '665f91caf90355d10638566d9fa0639d2748c3bf':
         raise ValueError('C4 source-span overlay source changed')
     focal_overlay_ns = {
         '__name__': 'v14_checked_focal_scale_overlay',

@@ -6,15 +6,21 @@ neither model quality nor native or Android behaviour is established here.
 """
 
 from hashlib import sha256
+import json
 from pathlib import Path
 
 
 SOURCE_SHA256 = {
     # Exact release, reviewed World builder, and reviewed Termux builder output.
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
+    '7447240c5ebb98e9bb5c33f7ffe6c9f4a154766de346c5c4af1ee135855f13c7',
+    'e2d0802a5a8173c13f827f0cbd4532184d8fd34c69b539f16ee3579bf5eede2b',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+    '48603d6f44d8fa60532dd3a522e2c7e73f41f410ee793445d3c9d07e151b5575',
+    '4f60383dbb225760142172c01ea44d1c35a83249781748c17a3e0ecd24b83a50',
 }
 
 REPLACEMENTS = (
@@ -53,15 +59,29 @@ REPLACEMENTS = (
         "            delivered={p.get('role') for p in offers if isinstance(p,dict)}\n"
         "            late_role=(meta.get('late_watch') or {}).get('offered')\n"
         "            background_roles=[role for role in background_roles if role not in delivered and role!=late_role]\n"
+        "            # A body that exhausted this turn's hard deadline must not\n"
+        "            # be retried after C3 has already committed its answer.\n"
+        "            try:\n"
+        "                deadline_roles=set()\n"
+        "                for row in self.store.rows(\"SELECT metrics FROM telemetry WHERE event_id=? AND kind='body_offer_attempt'\",(eid,)):\n"
+        "                    metrics=row.get('metrics') if isinstance(row,dict) else None\n"
+        "                    if isinstance(metrics,str):\n"
+        "                        try:metrics=json.loads(metrics)\n"
+        "                        except (TypeError,ValueError):metrics={}\n"
+        "                    if isinstance(metrics,dict) and metrics.get('role') in ('B1_DETAIL','B2_GIST') and metrics.get('status') in ('DEADLINE','CANCELLED','INTERRUPTED'):\n"
+        "                        deadline_roles.add(metrics['role'])\n"
+        "                background_roles=[role for role in background_roles if role not in deadline_roles]\n"
+        "            except Exception:pass\n"
         "            # If the first foreground attempt exhausted its budget, give\n"
         "            # the as-yet unattempted eligible body the first opportunity.\n"
         "            background_roles.sort(key=lambda role:role in foreground_body_attempts)\n"
         "            background_attempts=0\n",
     ),
     (
-        "                if role==(meta.get('late_watch') or {}).get('offered'):continue  # WP-U3: this body already ran during the output\n"
+        "                if latewatch.postcommit_consumed(meta,role):continue  # WP-U3: retry failed late-watch offers; avoid duplicate or concurrent body work\n"
         "                if self.guard.update(self.resources())!='NORMAL' or not rmodes.policy(self.guard.mode)['background_observers']:break\n"
         "                if not self.jobs.empty() or self.cancel_event.is_set():break\n",
+        "                if latewatch.postcommit_consumed(meta,role):continue  # WP-U3: retry failed late-watch offers; avoid duplicate or concurrent body work\n"
         "                # Re-evaluate the live cap after *each* attempt. A switch\n"
         "                # from GREEN to YELLOW stops after one, including failure.\n"
         "                if self.guard.update(self.resources())!='NORMAL':break\n"
@@ -91,12 +111,34 @@ def apply_source(raw):
     if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
     for before, after in REPLACEMENTS:
-        # The reviewed #1990 stage already adds per-role deadline support.
-        # Preserve that signature while adding foreground-attempt tracking.
-        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
-                and before == "                def ask(role,focus=None,use_peer=True):\n"):
-            before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
-            after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+        # Preserve any already-reviewed per-role deadline/preanswer parameters
+        # while adding foreground-attempt tracking. SOURCE_SHA256 above still
+        # restricts this patch to known Runtime source variants.
+        if before == "                def ask(role,focus=None,use_peer=True):\n":
+            variants = (
+                before,
+                "                def ask(role,focus=None,use_peer=True,role_end=None):\n",
+                "                def ask(role,focus=None,use_peer=True,role_end=None,preanswer=False):\n",
+            )
+            counts = [raw.count(item.encode('utf-8')) for item in variants]
+            if sum(counts) != 1:
+                raise ValueError('postcommit observer ask signature mismatch')
+            selected = variants[counts.index(1)]
+            if selected != before:
+                after = after.replace(before, selected, 1)
+                before = selected
+        if before.startswith("        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background'"):
+            variants = (
+                before,
+                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\n",
+            )
+            counts = [raw.count(item.encode('utf-8')) for item in variants]
+            if sum(counts) != 1:
+                raise ValueError('postcommit observer status signature mismatch')
+            selected = variants[counts.index(1)]
+            if selected != before:
+                after = after.replace(before, selected, 1)
+                before = selected
         old, new = before.encode('utf-8'), after.encode('utf-8')
         if raw.count(old) != 1:
             raise ValueError('postcommit observer anchor mismatch')

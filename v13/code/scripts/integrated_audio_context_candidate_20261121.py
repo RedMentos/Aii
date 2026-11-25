@@ -10,8 +10,8 @@ import hashlib
 from pathlib import Path
 
 SOURCE_BLOBS = {
-    "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
-    "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
+    "v13/runtime.py": "7a803bae06e3bca606ffb7cd3103b74148c8cbf8",
+    "v13/cognition.py": "e2117b3372af325dea23f4e77ed7afd51bc31c7e",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
     "v13/audio_voice_cues.py": "b18e450162b062b09368a12b1ca18924ed8c5025",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
@@ -246,7 +246,7 @@ class Runtime:
         raise ValueError("upstream integrated Cognition candidate missing")
     cognition = _replace(
         cognition,
-        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n",
+        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n",
         b"    def _audio_context_query(self,e,role):\n"
         b"        \"\"\"Return consent-rechecked acoustic context separately from quotable text evidence.\"\"\"\n"
         b"        view=self.r._audio_context_view(e['event_id'],consumer=role)\n"
@@ -254,7 +254,7 @@ class Runtime:
         b"        ref=view.get('summary_source_ref')\n"
         b"        if type(ref) is not dict:return None,[]\n"
         b"        return view,[ref]\n"
-        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n",
+        b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n",
         "body audio context accessor",
     )
     cognition = _replace(

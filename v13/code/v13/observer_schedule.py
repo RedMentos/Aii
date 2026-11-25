@@ -49,7 +49,7 @@ def plan(schedule,roles,event_id,rate=.5,parallel_ok=False):
     elif schedule=='ON_DEMAND_REENTRY':out.update(pre=[],post=[],reason='ON_DEMAND_ONLY')
     return out
 
-def run(p,ask,end,on_error,clock=time.monotonic,cancelled=()):
+def run(p,ask,end,on_error,clock=time.monotonic,cancelled=(),budgeted=False):
     """Run the pre-answer passes of plan ``p``. ``ask(role, use_peer)`` returns an offer.
 
     Sequential passes see the peer message of the earlier body (as before); parallel passes start
@@ -57,9 +57,15 @@ def run(p,ask,end,on_error,clock=time.monotonic,cancelled=()):
     """
     offers=[];roles=list(p['pre'])
     if not p['parallel']:
-        for role in roles:
-            if clock()+1>=end:break
-            try:offers.append(ask(role,True))
+        for index,role in enumerate(roles):
+            now=clock()
+            if now>=end or (not budgeted and now+1>=end):break
+            try:
+                if budgeted:
+                    role_end=min(end,now+max(0.,end-now)/(len(roles)-index))
+                    offers.append(ask(role,True,role_end))
+                else:
+                    offers.append(ask(role,True))
             except cancelled:raise
             except Exception as exc:on_error(role,exc)
         return offers

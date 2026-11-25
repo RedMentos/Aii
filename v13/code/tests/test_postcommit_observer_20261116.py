@@ -39,8 +39,9 @@ class PinValidation(unittest.TestCase):
         raw = (CODE / 'v13/runtime.py').read_bytes()
         sources = (raw, world.build_sources(CODE)['v13/runtime.py'],
                    termux.build_sources(CODE, include_postcommit=False)['v13/runtime.py'])
-        self.assertTrue({hashlib.sha256(x).hexdigest() for x in sources}
-                        <= patch.SOURCE_SHA256)
+        source_hashes = {hashlib.sha256(x).hexdigest() for x in sources}
+        missing = source_hashes - patch.SOURCE_SHA256
+        self.assertFalse(missing, 'postcommit observer source pins missing: ' + ','.join(sorted(missing)))
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
@@ -128,19 +129,28 @@ class RuntimePostcommit(unittest.TestCase):
         self.assertEqual((answer['status'], answer['text']), ('FINAL', 'One combined response.'))
         return event, json.loads(answer['metadata'])
 
-    def test_timed_out_first_foreground_body_gives_other_first_postcommit(self):
+    def test_timed_out_first_body_still_gives_other_a_fair_preanswer_slice(self):
         self.runtime.cfg.update(deadline_seconds=10, observer_seconds=4.4)
         self.behavior = lambda role, status: ('expire' if status != 'FINAL' else 'fail') if role == 'B1_DETAIL' else 'ok'
         event, meta = self.turn()
-        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('C3_LANGUAGE', 'DRAFT'),
-                                      ('B2_GIST', 'FINAL'), ('B1_DETAIL', 'FINAL')])
-        self.assertEqual(meta['selected_offer_ids'], [])
+        # The fair sequential scheduler gives B2 its own bounded pre-answer
+        # slice after B1 expires. A successful B2 offer must not be retried as
+        # a post-commit offer; the committed C3 answer remains untouched.
+        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('B2_GIST', 'DRAFT'),
+                                      ('C3_LANGUAGE', 'DRAFT')])
+        attempts = [json.loads(row['metrics']) for row in self.runtime.store.rows(
+            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='body_offer_attempt'", (event,))]
+        b1_attempt = next(row for row in attempts if row.get('role') == 'B1_DETAIL')
+        self.assertEqual(b1_attempt.get('status'), 'DEADLINE')
         offers = [json.loads(r['payload']) for r in self.runtime.store.rows(
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
-        row = self.runtime.store.one(
+        # The fair B2 offer is allowed to reach C4 and be selected; it must not
+        # be re-run after C3 has committed the answer.
+        self.assertEqual(meta['selected_offer_ids'], [offers[0]['packet_id']])
+        postcommit = self.runtime.store.rows(
             "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
-        self.assertFalse(json.loads(row['metrics'])['affects_committed_output'])
+        self.assertEqual(postcommit, [])
 
     def test_one_foreground_offer_only_retries_the_missing_body(self):
         count = 0

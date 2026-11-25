@@ -1,3 +1,49 @@
+## Core #2462 exact-head follow-up - 2026-11-24T05:16:34Z
+
+- Direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step: PASS on Python 3.13 and 3.14. Both verify same-turn body summaries in synthetic C3 context, C4/template ID equality and tamper rejection.
+- Overall same-turn workflows remain FAIL at final staged composition. Staged-runtime: 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests; integrated-regression: 1 selected test failed. Both fail because the shared integrated_online_world and observer-fair-budget composers reject the current Runtime source hash.
+- Owner-read tests PASS; Python 3.14 staged installer self-test FAILs at the same source pin. No hash gate relaxed.
+- This supersedes the previous note that Python 3.14 was pending. PR #2462 remains OPEN / NOT_RELEASED; Redmi REDMI_UNVERIFIED; no device action.
+- Next: Boss/Integrator recompose the four Runtime consumers and downstream stage/deployer; QA reruns the exact staged/integrated/owner-read/migration matrix.
+
+---
+
+## Core C4-to-C3 receipt checkpoint - 2026-11-24T05:14:43Z
+
+- PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the exact C4-selected OfferPacket ID receipt before C3 context assembly. Both B1/B2 summaries are verified in the same synthetic C3 system prompt.
+- CI Python 3.13 direct Runtime consumer step: PASS, including C4/C3 ID match and tamper negative control. The overall workflow remains FAIL at final staged composition because the shared source-pinned builder chain rejects the current Runtime SHA.
+- Python 3.14 focused dependency installation was still in progress at the last poll. Staged-runtime failed 32/243/10-skipped/2-errors at immutable Runtime pins; integrated-regression was still running; owner-read unit checks passed but Python 3.14 staged bootstrap failed at the same pin.
+- LOCAL_LINUX isolated telemetry/ID-match contract checks PASS; full Aii checkout NOT_RUN/BLOCKED because no checkout is mounted and GitHub DNS fails.
+- Runtime file remains blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0, SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Four Boss/QA-owned consumers still pin the prior Runtime SHA; no pin was changed or relaxed.
+- Coordination comments: Boss #2443 comment 7122728300; QA #2455 comment 7122728809. Core PR #2462 remains OPEN / NOT_RELEASED.
+- Redmi: last stored observation STOPPED_BY_USER/autostart OFF; no fresh device read, update, restart, model/weight/permission change or data mutation. REDMI_UNVERIFIED.
+- Next: Boss/Integrator recompose the four Runtime consumers plus downstream stage/deployer chain; QA reruns exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and migration checks. No user action required.
+
+---
+
+## Core fair B1/B2 recovery follow-up — 2026-11-24T04:38:22Z
+
+- PR #2462 code head `d0a30b18cc629d7498373e01985f89df00fa7461` (latest docs/handoff branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3`) adds two runtime corrections: late-watch offers explicitly bypass the pre-answer recovery budget, and one late-watch event/status is recorded once even when `check()` closes it before `finish()`.
+- Added a focused late-watch regression and corrected the Runtime test double for `preanswer_budgeted`.
+- LOCAL_LINUX / CPython 3.13.5 isolated contract test: `py_compile` PASS, 2/2 assertions PASS. Full local Aii suite NOT_RUN because the full checkout is unavailable and GitHub DNS resolution failed.
+- Exact-head CI remains FAIL in the same-turn, staged/integrated, and owner-read bootstrap workflows. Six other workflows pass and one is skipped. The common failure is stale/overlapping Runtime composition in `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard`; runtime deployment and migration fail downstream. No hash gate was relaxed.
+- Coordination finding posted to Boss PR #2443; Core did not edit Boss/QA lifecycle/audio composer files. #2462 remains OPEN / NOT_RELEASED.
+- Latest private device observation: AI runtime STOPPED_BY_USER, autostart OFF, and no valid B1/B2 offers in the last diagnostic. Latest authenticated updater receipt is older (2026-11-23 19:32 UTC), reports auto-update enabled and runtime/dashboard at `8d93236c`; no newer installation receipt exists. No device action was taken.
+- Next: Boss/Integrator recompose the shared pinned stage against current Runtime; then rerun exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and migration checks. Redmi remains unverified until a user-authorized service run.
+
+---
+
+## Core runtime checkpoint — failed late-watch peer retry — 2026-11-24T03:18:51.264Z
+
+- PR #2462 / `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1` preserves fair sequential B1/B2 pre-answer slices, the C3 reserve and the separate C4/Focal reserve, and fixes the post-commit starvation case where a failed late-watch attempt was treated as a completed body observation.
+- `latewatch.postcommit_consumed(meta, role)` now distinguishes a delivered `offer_id`, a still-running native generation, and a failed `NO_OFFER`. Failed attempts are eligible for post-commit retry; delivered or still-running attempts are not duplicated.
+- Local Linux CPython 3.13.5 isolated helper compile + six-case retry matrix PASS. Full repository tests NOT_RUN locally because no checkout is available and GitHub DNS resolution fails.
+- Exact prior-head staged CI on `1c6df` failed at immutable nested Runtime pins (33 failed, 240 passed, 10 skipped, 2 errors); two migration tests returned PARTIAL because staging failed. The missing-peer fixture also failed and is now deterministic on `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16`; rerun pending. Other exact workflows passed: JEPA transactional update, JEPA receipt integrity, and native tap provenance (3.11/3.13); deployment 3.11 passed / 3.14 pending; Core same-turn 3.13/3.14 in progress.
+- No source pin was weakened. Boss/Integrator owns bottom-up pin recomposition; QA owns exact staged/integrated/migration reruns. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device action. Candidate remains NOT_RELEASED.
+- Next Core step: verify the deterministic missing-peer regression at the new head, then continue source-bound B1/B2→C4→C3 consumer integration. Research idea: use authenticated device-specific p95 prefill/TTFT only; do not substitute synthetic or unknown profiles.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.

@@ -1,4 +1,5 @@
 """Real staged Runtime checks for specific RECORD_ONLY controller paths."""
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -170,9 +171,33 @@ if __name__=='__main__':unittest.main()
 class StageControllerChecks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from scripts import record_only_controller_guard_20261116 as guard
+        guard_file = CODE / 'scripts/record_only_controller_guard_20261116.py'
+        print('V14_GUARD_SHA256', hashlib.sha256(guard_file.read_bytes()).hexdigest(), flush=True)
+        postcommit_file = CODE / 'scripts/postcommit_observer_candidate_20261116.py'
+        print('V14_POSTCOMMIT_SHA256', hashlib.sha256(postcommit_file.read_bytes()).hexdigest(), flush=True)
+        for name, allowed in guard.PINS.items():
+            source = CODE / name
+            if source.is_file() and not source.is_symlink():
+                actual = hashlib.sha256(source.read_bytes()).hexdigest()
+                if actual not in allowed:
+                    print('V14_PIN_DIAGNOSTIC', name, actual, flush=True)
         cls.temp = tempfile.TemporaryDirectory(prefix='v13-record-only-stage-')
         cls.stage = Path(cls.temp.name) / 'stage'
-        stage_integrated_candidate.stage(CODE, cls.stage)
+        real_sha256 = hashlib.sha256
+        observed_hashes = []
+        def capture_sha256(data=b'', *args, **kwargs):
+            digest = real_sha256(data, *args, **kwargs).hexdigest()
+            observed_hashes.append((len(data), digest))
+            return real_sha256(data, *args, **kwargs)
+        try:
+            hashlib.sha256 = capture_sha256
+            stage_integrated_candidate.stage(CODE, cls.stage)
+        except Exception:
+            print('V14_GUARD_HASH_DIAGNOSTIC', observed_hashes[-12:], flush=True)
+            raise
+        finally:
+            hashlib.sha256 = real_sha256
 
     @classmethod
     def tearDownClass(cls):

@@ -86,6 +86,7 @@ jobs:
           tests/test_prefill_timing_evidence.py
           tests/test_mobile_prefill_admission.py
           tests/test_native_turn_budget.py
+          tests/test_observer_schedule.py
           tests/test_phone_offer_delivery_audit.py
           tests/test_phone_runtime_diagnostics.py
           tests/test_native_sampling_policy.py

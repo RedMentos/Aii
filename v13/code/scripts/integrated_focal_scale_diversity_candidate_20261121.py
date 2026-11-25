@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-SOURCE_FOCAL_GIT_BLOB = "a0588a768cc91266ef02243bcfda2e631860d8ad"
+SOURCE_FOCAL_GIT_BLOB = "41c850b4a4b6de356a7e1049a9df56b085f76f9f"
 CROSS_SCALE_RULE = "DISJOINT_SAME_SOURCE_SPANS_AND_LOW_LEXICAL_OVERLAP"
 
 BODY_MARKER = b"BODY=('B1_DETAIL','B2_GIST')\n"
@@ -36,8 +36,12 @@ def apply_staged_focal(code_dir: Path, raw: bytes) -> bytes:
         raise ValueError("frozen focal.py missing or unsafe")
     if git_blob_sha1(source.read_bytes()) != SOURCE_FOCAL_GIT_BLOB:
         raise ValueError("frozen focal.py source changed; review a new overlay")
-    if b"direct_action='SOURCE_COPY'" not in raw:
-        raise ValueError("base stage is not the reviewed arithmetic/C5 candidate")
+    if not (
+        b"def candidates(self,route,direct,coalition,view,age,tool=None,direct_action='SOURCE_COPY'):" in raw
+        and b"add(direct_action,1.,0.,'local_text_only',1.,'TEXT_REPORT' if direct_action=='LOCAL_EXACT_ARITHMETIC' else 'EXACT_RENDER')" in raw
+        and b"direct_action not in {'SOURCE_COPY','LOCAL_EXACT_ARITHMETIC'}" in raw
+    ):
+        raise ValueError("base stage is not the reviewed bounded arithmetic/C5 candidate")
     if raw.count(BODY_MARKER) != 1 or raw.count(REDUNDANCY_LINE) != 1:
         raise ValueError("focal scale-diversity anchors changed")
     if b"SCALE_AWARE_C4_RULE" in raw or b"_scale_aware_redundancy" in raw:

@@ -81,19 +81,31 @@ class Watcher:
     """One late body offer per turn. check() runs in the token loop and must stay cheap."""
     def __init__(self,r,e,meta,m,role=None,status='OFF'):
         self.r=r;self.e=e;self.meta=meta;self.mode=m;self.role=role;self.status=status
-        self.offer=None;self.error=None;self.thread=None;self.done=threading.Event();self.decided=False;self.cut=None
+        self.offer=None;self.error=None;self.thread=None;self.done=threading.Event();self.decided=False;self.cut=None;self.recorded=False
+        self._deferred_lock=threading.Lock();self._deferred_started=False;self._deferred_delivered=False;self.deferred_output=None
         self.info=meta.setdefault('late_watch',{'mode':m,'status':status,**({'role':role} if role else {})})
     def _run(self,version,offer_deadline,valid_until):
-        try:self.offer=self.r.cognition.offer(self.role,self.e,version,offer_deadline,None,valid_until=valid_until)
+        # This is a post-answer-start late-watch pass, not a pre-answer body slice.
+        # Explicitly opt out of the recovery pre-answer budget so a completed
+        # C3 recovery reservation cannot suppress the late offer as already expired.
+        try:self.offer=self.r.cognition.offer(self.role,self.e,version,offer_deadline,None,valid_until=valid_until,preanswer_budgeted=False)
         except BaseException as exc:self.error=type(exc).__name__
         finally:self.done.set()
+
+    def _record_once(self,row):
+        if self.recorded:return
+        _record(self.r.store,row)
+        self.recorded=True
     def start(self,version,offer_deadline,valid_until):
         self.thread=threading.Thread(target=self._run,args=(version,offer_deadline,valid_until),daemon=True,name='latewatch')
         self.status=self.info['status']='RUNNING';self.info['offered']=self.role;self.thread.start();return self
     def check(self,output):
         """True = stop the stream now (ACTIVE and a disagreeing offer arrived)."""
         if self.decided or self.thread is None or not self.done.is_set():return False
-        if self.offer is None:self.decided=True;return False
+        if self.offer is None:
+            self.decided=True;self._close('NO_OFFER',len(output))
+            if self.error:self.info['error']=self.error
+            return False
         reason=disagreement(self.offer,output,self.r.store.read_source(self.e['source_ref']))
         if reason is None:
             if len(output)<REENTRY_CHARS:return False  # too early to judge: look again when more text exists
@@ -104,12 +116,75 @@ class Watcher:
     def _close(self,status,at_char,reason=None):
         self.status=status;self.info.update(status=status,at_char=at_char,**({'reason':reason} if reason else {}))
         if self.offer:self.info['offer_id']=self.offer.get('packet_id')
+        self._record_once({'event_id':self.e['event_id'],'status':status,'mode':self.mode,
+                           'role':self.role,'at_char':at_char,**({'reason':reason} if reason else {}),
+                           **({'offer_id':self.offer.get('packet_id')} if self.offer else {})})
+    def _deliver_deferred_after_output(self):
+        """Consume an offer that completed after finish() returned, without rewriting the committed answer."""
+        with self._deferred_lock:
+            if self._deferred_delivered:
+                return
+            self._deferred_delivered=True
+            offer=self.offer
+            output=self.deferred_output or ''
+        valid=(isinstance(offer,dict) and offer.get('role')==self.role
+               and isinstance(offer.get('packet_id'),str) and bool(offer.get('packet_id')))
+        if not valid:
+            self.status=self.info['status']='DEFERRED_NO_OFFER'
+            row={'event_id':self.e['event_id'],'status':'DEFERRED_NO_OFFER','mode':self.mode,
+                 'role':self.role,'at_char':len(output),'deferred':True,
+                 **({'error':self.error} if self.error else {})}
+            _record(self.r.store,row)
+            try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+            except Exception:pass
+            return
+        self.status=self.info['status']='AFTER_OUTPUT'
+        self.info['offer_id']=offer['packet_id']
+        try:
+            source=self.r.store.read_source(self.e['source_ref'])
+        except Exception:
+            self.status=self.info['status']='DEFERRED_SOURCE_UNAVAILABLE'
+            row={'event_id':self.e['event_id'],'status':'DEFERRED_SOURCE_UNAVAILABLE','mode':self.mode,
+                 'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True}
+            _record(self.r.store,row)
+            try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+            except Exception:pass
+            return
+        if type(source) is not str:
+            self.status=self.info['status']='DEFERRED_SOURCE_UNAVAILABLE'
+            row={'event_id':self.e['event_id'],'status':'DEFERRED_SOURCE_UNAVAILABLE','mode':self.mode,
+                 'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True}
+            _record(self.r.store,row)
+            try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+            except Exception:pass
+            return
+        reason=disagreement(offer,output,source)
+        if reason:self.info['reason']=reason
+        row={'event_id':self.e['event_id'],'status':'AFTER_OUTPUT','mode':self.mode,
+             'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True,
+             **({'reason':reason} if reason else {})}
+        _record(self.r.store,row)
+        try:
+            from . import selfmodel
+            selfmodel.controller(self.r).late_offer(self.e['event_id'],offer,output)
+        except Exception as exc:
+            try:self.r.store.log('self_unavailable',self.e['event_id'],
+                                 {'stage':'late_offer_deferred','error':type(exc).__name__})
+            except Exception:pass
+        try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+        except Exception:pass
+
+    def _wait_for_deferred_after_output(self):
+        self.done.wait()
+        self._deliver_deferred_after_output()
+
     def finish(self,runner,messages,output,deadline,mid):
         """After the stream. ACTIVE cut: C3 continues with the late finding (appended, returned). Otherwise an offer that
         arrived too late for the stream goes the old post-commit way (gated self-message, answer kept)."""
         extra=''
         if self.thread is None:
-            _record(self.r.store,{'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'ts':time.time()});return extra
+            self._record_once({'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'ts':time.time()})
+            return extra
         if not self.decided:
             self.done.wait(max(0.,min(JOIN_S,deadline-time.monotonic())))
             if self.offer is not None and not self.decided:
@@ -137,9 +212,34 @@ class Watcher:
                     self.r.store.append_message(mid,clean);extra+=clean
             except Exception as exc:self.info['revision_error']=type(exc).__name__
             self.info.update(provisional_chars=self.cut['at_char'],revision_chars=len(extra))
-        _record(self.r.store,{'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'role':self.role,'ts':time.time(),
-                              **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
+        self._record_once({'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'role':self.role,'ts':time.time(),
+                           **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
+        if self.status=='STILL_RUNNING':
+            self.deferred_output=output
+            self.info['deferred_delivery']='PENDING'
+            with self._deferred_lock:
+                if not self._deferred_started:
+                    self._deferred_started=True
+                    self._deferred_thread=threading.Thread(target=self._wait_for_deferred_after_output,
+                                                           daemon=True,name='latewatch-deferred')
+                    self._deferred_thread.start()
         return extra
+
+def postcommit_consumed(meta,role):
+    """Skip post-commit only when late-watch delivered the role or is still running it.
+
+    A failed late-watch attempt has no offer_id and must not suppress the normal
+    post-commit retry. STILL_RUNNING is kept exclusive to avoid concurrent
+    native generations of the same body.
+    """
+    info=meta.get('late_watch') if isinstance(meta,dict) else None
+    if not isinstance(info,dict) or info.get('offered')!=role:
+        return False
+    offer_id=info.get('offer_id')
+    if isinstance(offer_id,str) and offer_id:
+        return True
+    return info.get('status')=='STILL_RUNNING'
+
 
 def start(r,e,version,offers,deadline,meta,runner,eligible=True):
     """Called right before the C3 token loop. Never raises; always returns a Watcher (inert unless a body runs)."""

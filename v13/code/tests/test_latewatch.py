@@ -34,6 +34,33 @@ class Pure(unittest.TestCase):
         self.assertEqual(lw.disagreement(off,'The result is 1,300, because I added them',src),'RESULT_CONFLICT')
         self.assertIsNone(lw.disagreement(OFFER,'The answer is 10',  'What is 46 plus 62?'))  # number still streaming
         self.assertIsNone(lw.disagreement(OFFER,'Well, the answer to it is 10','What is 46 plus 62?'))
+    def test_completed_empty_watcher_closes_no_offer_and_records_it(self):
+        class Store:
+            def __init__(self):self.value=None;self.version=0
+            def state(self,key,default=None):return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def log(self,*args):pass
+        store=Store();meta={};r=SimpleNamespace(store=store)
+        watcher=lw.Watcher(r,{'event_id':'evt-1'},meta,'shadow',role='B2_GIST',status='RUNNING')
+        watcher.thread=object();watcher.done.set()
+        self.assertFalse(watcher.check('C3 answer has finished'))
+        self.assertTrue(watcher.decided)
+        self.assertEqual(meta['late_watch']['status'],'NO_OFFER')
+        self.assertFalse(meta['late_watch'].get('offer_id'))
+        self.assertEqual(store.value['counts']['NO_OFFER'],1)
+
+    def test_postcommit_retry_only_skips_delivered_or_still_running_late_offer(self):
+        failed={'late_watch':{'offered':'B2_GIST','status':'NO_OFFER','error':'Limits'}}
+        delivered={'late_watch':{'offered':'B2_GIST','status':'AFTER_OUTPUT','offer_id':'pkt_b2'}}
+        running={'late_watch':{'offered':'B2_GIST','status':'STILL_RUNNING'}}
+        self.assertFalse(lw.postcommit_consumed(failed,'B2_GIST'))
+        self.assertTrue(lw.postcommit_consumed(delivered,'B2_GIST'))
+        self.assertTrue(lw.postcommit_consumed(running,'B2_GIST'))
+        self.assertFalse(lw.postcommit_consumed(failed,'B1_DETAIL'))
+        self.assertFalse(lw.postcommit_consumed({},'B2_GIST'))
+
     def test_residency_never_evicts_c3(self):
         def r(experts,resident,budget=1800,guard='NORMAL',decode='server',enabled=True):
             box=SimpleNamespace(load=lambda:({'experts':experts,'resident':resident,'budget_mb':budget},0))
@@ -86,5 +113,118 @@ class Turn(unittest.TestCase):
         self.p.start();self.assertEqual(meta['late_watch']['status'],'NO_RESIDENCY')
         self.assertEqual(self.calls,[]);self.assertNotIn('offered',meta['late_watch'])
         with self.assertRaises(ValueError):Operator(self.r).run(':latewatch maybe')
+
+
+
+class LatewatchBudget(unittest.TestCase):
+    def test_latewatch_offer_is_not_charged_to_preanswer_recovery_window(self):
+        class Cognition:
+            def __init__(self):
+                self.kwargs = None
+            def offer(self, *args, **kwargs):
+                self.kwargs = kwargs
+                return OFFER
+
+        cognition = Cognition()
+        watcher = lw.Watcher(
+            SimpleNamespace(cognition=cognition),
+            {"event_id": "evt-late"}, {}, "shadow", role="B2_GIST"
+        )
+        watcher._run(1, time.monotonic() + 1.0, time.monotonic() + 10.0)
+        self.assertIs(watcher.offer, OFFER)
+        self.assertIs(cognition.kwargs.get("preanswer_budgeted"), False)
+        self.assertTrue(watcher.done.is_set())
+
+
+
+class LatewatchDeferred(unittest.TestCase):
+    def test_offer_finishing_after_c3_return_is_delivered_once_as_after_output(self):
+        from v13 import selfmodel
+
+        class Store:
+            def __init__(self):
+                self.value=None;self.version=0;self.logs=[]
+            def state(self,key,default=None):
+                return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def read_source(self,ref):
+                return 'What is 46 plus 62?'
+            def log(self,*args):
+                self.logs.append(args)
+
+        entered=threading.Event();release=threading.Event();delivered=threading.Event();calls=[]
+        class Controller:
+            def late_offer(self,event_id,offer,output):
+                calls.append((event_id,offer,output));delivered.set()
+        store=Store()
+        def offer(role,e,version,deadline,peer=None,**kwargs):
+            entered.set()
+            if not release.wait(2):raise TimeoutError('test did not release late body')
+            return dict(OFFER,role=role)
+        runtime=SimpleNamespace(store=store,cognition=SimpleNamespace(offer=offer))
+        event={'event_id':'evt-deferred','source_ref':{'source_id':'src-1'}}
+        meta={}
+        watcher=lw.Watcher(runtime,event,meta,'shadow',role='B1_DETAIL',status='RUNNING')
+        with mock.patch.object(lw,'JOIN_S',0.01), mock.patch.object(selfmodel,'controller',return_value=Controller()):
+            watcher.start(1,time.monotonic()+1,time.monotonic()+2)
+            self.assertTrue(entered.wait(1))
+            output='The answer is 100, because I added the numbers'
+            watcher.finish(None,[],output,time.monotonic()+0.05,1)
+            self.assertEqual(meta['late_watch']['status'],'STILL_RUNNING')
+            self.assertTrue(lw.postcommit_consumed(meta,'B1_DETAIL'))
+            release.set()
+            self.assertTrue(delivered.wait(1))
+            self.assertEqual(len(calls),1)
+            self.assertEqual(calls[0],('evt-deferred',dict(OFFER,role='B1_DETAIL'),output))
+            self.assertEqual(meta['late_watch']['status'],'AFTER_OUTPUT')
+            self.assertEqual(meta['late_watch']['offer_id'],'pkt_late')
+            self.assertEqual(store.value['counts']['STILL_RUNNING'],1)
+            self.assertEqual(store.value['counts']['AFTER_OUTPUT'],1)
+
+
+
+    def test_deferred_offer_is_not_delivered_after_source_revocation(self):
+        from v13 import selfmodel
+
+        class Store:
+            def __init__(self):
+                self.value=None;self.version=0;self.logs=[];self.logged=threading.Event()
+            def state(self,key,default=None):
+                return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def read_source(self,ref):
+                raise KeyError('source revoked')
+            def log(self,*args):
+                self.logs.append(args)
+                if args and args[0]=='latewatch_deferred_complete':self.logged.set()
+
+        entered=threading.Event();release=threading.Event();calls=[]
+        class Controller:
+            def late_offer(self,event_id,offer,output):
+                calls.append((event_id,offer,output))
+        store=Store()
+        def offer(role,e,version,deadline,peer=None,**kwargs):
+            entered.set()
+            if not release.wait(2):raise TimeoutError('test did not release late body')
+            return dict(OFFER,role=role)
+        runtime=SimpleNamespace(store=store,cognition=SimpleNamespace(offer=offer))
+        event={'event_id':'evt-revoked','source_ref':{'source_id':'src-revoked'}}
+        meta={}
+        watcher=lw.Watcher(runtime,event,meta,'shadow',role='B1_DETAIL',status='RUNNING')
+        with mock.patch.object(lw,'JOIN_S',0.01), mock.patch.object(selfmodel,'controller',return_value=Controller()):
+            watcher.start(1,time.monotonic()+1,time.monotonic()+2)
+            self.assertTrue(entered.wait(1))
+            watcher.finish(None,[],'The answer is 100, because I added the numbers',time.monotonic()+0.05,1)
+            release.set()
+            self.assertTrue(store.logged.wait(1))
+            self.assertEqual(calls,[])
+            self.assertEqual(meta['late_watch']['status'],'DEFERRED_SOURCE_UNAVAILABLE')
+            self.assertEqual(store.value['counts']['STILL_RUNNING'],1)
+            self.assertEqual(store.value['counts']['DEFERRED_SOURCE_UNAVAILABLE'],1)
+
 
 if __name__=='__main__':unittest.main()

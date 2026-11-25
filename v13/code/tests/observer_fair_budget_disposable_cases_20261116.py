@@ -47,12 +47,12 @@ class SchedulingTests(unittest.TestCase):
             return role
 
         plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
-        offers = obs.run(plan, ask, 1.5, lambda role, exc: errors.append((role, type(exc).__name__)),
+        offers = obs.run(plan, ask, 3.0, lambda role, exc: errors.append((role, type(exc).__name__)),
                          clock=lambda: now[0], budgeted=True)
         self.assertEqual(offers, ['B2_GIST'])
         self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
-        self.assertAlmostEqual(seen[0][1], .75, places=2)
-        self.assertAlmostEqual(seen[1][1], 1.5, places=2)
+        self.assertAlmostEqual(seen[0][1], 1.5, places=2)
+        self.assertAlmostEqual(seen[1][1], 3.0, places=2)
         self.assertEqual(errors, [('B1_DETAIL', 'Limits')])
 
     def test_budgeted_scheduler_runs_both_roles_at_exact_minimum_slice(self):
@@ -70,7 +70,7 @@ class SchedulingTests(unittest.TestCase):
             return role
 
         plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
-        offers = obs.run(plan, ask, 2.0, lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
+        offers = obs.run(plan, ask, 2.0 * minimum, lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
                          clock=lambda: now[0], budgeted=True)
         self.assertEqual(offers, ['B1_DETAIL', 'B2_GIST'])
         self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
@@ -139,14 +139,18 @@ class SchedulingTests(unittest.TestCase):
         fair = native_budget.plan(100, 130, 104, recent=[failed, failed],
                                   background_enabled=True, observer_deadline=113.5)
         self.assertTrue(fair['recovery'])
-        self.assertEqual(fair['preanswer_end_monotonic'], 113.5)
+        self.assertEqual(fair['preanswer_end_monotonic'], 120.0)
         self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
-        self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
-        self.assertEqual(fair['minimum_role_slice_s'], 1.0)
+        self.assertAlmostEqual(fair['c3_reserved_seconds'], 10.0, places=2)
+        self.assertEqual(fair['minimum_role_slice_s'], 2.0)
         first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
                                         background_enabled=True, observer_deadline=106.75)
         self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
-        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 16.5, places=2)
+        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 10.0, places=2)
+        self.assertFalse(first_slot['postcommit_body_eligible'])
+        below_minimum = native_budget.plan(100, 130, 104, recent=[failed, failed],
+                                          background_enabled=True, observer_deadline=105.99)
+        self.assertTrue(below_minimum['postcommit_body_eligible'])
 
 
 class RuntimeObserverTests(unittest.TestCase):
@@ -340,7 +344,7 @@ class RuntimeObserverTests(unittest.TestCase):
                 budgets = [json.loads(row['metrics']) for row in budget_rows]
                 self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
                 self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
-                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 10.0) < .01 for item in budgets))
                 self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())

@@ -9,10 +9,10 @@ import hashlib
 from pathlib import Path
 
 PINS = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
-    'v13/observer_schedule.py': '343a4544b873e13f3549556ee52849a46dc2b55242536535b56f959022272943',
-    'v13/native_turn_budget.py': '172bf70b05e21fd3c117273473446d0f77a11f625cc2665df1f4991708a1505c',
-    'v13/cognition.py': '6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b',
+    'v13/runtime.py': '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
+    'v13/observer_schedule.py': '879a76528d2d35c519ecf585a583046cecb84609fc35c09901a2e85045e88ca6',
+    'v13/native_turn_budget.py': '302fbbfdcae366ef5a98784a42c7614632ba1b214286dc7fb99a021d8febd213',
+    'v13/cognition.py': '8b82b989c1d5a973e8b0b5aa9b24b610bb233e69fc9f063f1f7f9f17c94c215f',
     'v13/store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
 }
 

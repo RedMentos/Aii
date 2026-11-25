@@ -1,3 +1,215 @@
+# Latest Core & Harness checkpoint — 2026-11-24T20:20:29.992Z
+
+- PR #2462 current head is `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07` (release base `8d93236c753f0194224c19edc7411d8d7082b1d6`), DRAFT / NOT_RELEASED.
+- Core repaired the C4 focal overlay anchor for the bounded arithmetic/C5 `direct_action` output, updated the fair-slice postcommit regression (B1 expiry → B2 bounded pre-answer slice → C3; no duplicate postcommit B2 offer), added exact rejected-SHA diagnostics to the controller guard, and pinned the measured composed Runtime SHA `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65`.
+- Current controller-guard file SHA-256: `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`. Recovery-12 builder blob `e949631f88892dc8815e5e06eaa6d4b21e153093`; Recovery-21 wrapper SHA-256 `ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5`; integrated-stage SHA-256 `f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc`; RuntimeDeploy pins that exact stage.
+- Exact current PR staged/integrated CI is **PENDING / NOT_VERIFIED**. The prior `c39d42a` loader failure used a stale guard hash and is superseded by the subsequent diagnostic/pin rebind. Push-only consumer and offline checks were queued on the same tree; they are not staged/integrated acceptance.
+- LOCAL_LINUX full Aii suite: **BLOCKED / NOT_RUN** (no checkout mounted; GitHub DNS failed). Redmi: **REDMI_UNVERIFIED**; last shared receipt says AI `STOPPED_BY_USER`, autostart OFF. No device action.
+- Next: obtain a fresh exact PR matrix, inspect staged-runtime/integrated-regression, and repair only measured hashes. Then coordinate Boss integration with #2464/#2451; QA owns the #2427 process-death harness port into #2450.
+- **User action:** NONE.
+
+---
+
+# Latest Core & Harness checkpoint — 2026-11-24T13:24:14Z
+
+- PR #2462, branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact code head `85fda5fbc0997da5d495a023967d0ce7eadc44ff`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`; OPEN / NOT_RELEASED.
+- New behavior: a B1/B2 late-watch OfferPacket that finishes after C3 returns is delivered once to the existing gated `selfmodel.late_offer` path; the already committed C3 answer is never rewritten. If the original source_ref is revoked/unavailable before delivery, the offer is dropped and recorded as `DEFERRED_SOURCE_UNAVAILABLE`.
+- Exact CI Python 3.13 and 3.14: Core regression step **99 passed, 7 subtests passed** on each; direct same-turn B1/B2→C4→C3 consumer **3 passed** on each.
+- Overall staged/integrated remains FAIL, not a product pass: final staged fair-budget step 3 failed / 2 passed; separate staged-runtime 23 failed / 146 passed / 1 skipped / 2 errors / 33 subtests; integrated regression and phone-offer receipt checks fail at the same immutable Runtime source pin.
+- Runtime SHA-256 is `7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186`; four shared consumers still expect `a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38`. No hash gate was relaxed. Boss/Integrator and QA were notified in #2443 comment 7132621604 and #2455 comment 7132622370.
+- LOCAL_LINUX full Aii suite remains BLOCKED (no checkout mounted; GitHub DNS failure). Redmi remains REDMI_UNVERIFIED; last stored private observation was STOPPED_BY_USER/autostart OFF. No fresh device read, update, shell, APK install, model/weight/permission or data change occurred.
+- Next internal step: Boss/Integrator recompose the four Runtime consumers and downstream stage/deployer chain; QA reruns Python 3.13/3.14 staged/integrated/owner-read/migration. Core then continues native receiver pair-matrix and Android ActionIntent/ActionOutcome integration. No model alternative is recommended without real Redmi TTFT/prefill/PSS/quality comparisons.
+
+**User action: none required.** Do not restart the user-stopped service or run a manual Termux command.
+
+---
+
+## Core #2462 exact-head follow-up - 2026-11-24T05:16:34Z
+
+- The direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step now PASSes on both Python 3.13 and 3.14. Each run confirms both body summaries reach the synthetic C3 context, C4-selected IDs match the template receipt, and tampered IDs are rejected.
+- Both same-turn workflow jobs still FAIL overall at the separate final staged-composition step. The staged-runtime job fails on the same immutable Runtime source pins; integrated-regression fails its single selected stage test for the same integrated_online_world Runtime pin mismatch.
+- Staged-runtime exact result: 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests. Integrated-regression: 1 selected test failed at the same pin. Owner-read tests PASS; the Python 3.14 staged installer self-test FAILs at the same source pin.
+- This supersedes the earlier 05:14 note that Python 3.14 was still pending. No pin was relaxed; no Redmi test or device action occurred. PR #2462 remains OPEN / NOT_RELEASED; Redmi remains REDMI_UNVERIFIED.
+
+---
+
+# Core & Harness - C4-to-C3 receipt checkpoint (2026-11-24T05:14:43Z)
+
+**Current code/test checkpoint:** PR #2462, branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1, code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f, based on release-development 8d93236c753f0194224c19edc7411d8d7082b1d6. The PR is DRAFT / OPEN / NOT_RELEASED.
+
+## What now works
+
+- FocalLoop persists c4_offer_context_ready immediately after its source/freshness-checked coalition selection and before Runtime builds the C3 hypotheses context.
+- The receipt records only C3 role, PASS/REJECTED, count and exact selected OfferPacket IDs. It is a delivery/selection receipt, not proof of native attention, semantic use or trained latent exchange.
+- The direct same-turn Runtime test verifies both B1_DETAIL and B2_GIST in the same C4 coalition, both summaries in the C3 system context, exact C4/template receipt ID equality, and rejection of a tampered offer without a second C4 receipt.
+
+## Evidence and blockers
+
+- LOCAL_LINUX isolated Python checks: telemetry sanitization and C4/template ID-match plus tamper-negative contracts PASS. These are isolated checks, not the full repository suite.
+- CI Python 3.13: the direct Runtime same-turn B1/B2-to-C4-to-C3 step PASS. The overall workflow FAILS at the separate final staged-composition step.
+- CI Python 3.14: focused dependency installation was still in progress at the last poll; no result is claimed.
+- Staged-runtime failed: 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests passed. The integrated-regression job was still running at the last poll.
+- Owner-read unit tests passed, but the Python 3.14 staged bootstrap failed at the same immutable Runtime source pin. Other exact-head workflows observed PASS: runtime deployment integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity and release-event integration. Safe-additive validation was policy-skipped.
+- The full local Aii suite is BLOCKED / NOT_RUN: no checkout is mounted and git ls-remote fails because GitHub DNS cannot resolve.
+- Runtime bytes are unchanged: Git blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0; SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Four shared consumers still expect old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No source pin was relaxed.
+- Exact coordination notes were posted to Boss PR #2443 (comment 7122728300) and QA PR #2455 (comment 7122728809). Core did not edit their pin files.
+
+## Redmi and user action
+
+The last stored private observation says the runtime is STOPPED_BY_USER and autostart is OFF. No fresh device read or action was made in this run. Redmi remains REDMI_UNVERIFIED; PR #2462 is not installed. No update request, service restart, shell, model/weight/permission change or user-data mutation occurred.
+
+No model alternative is recommended without measured device TTFT/prefill/PSS and output-quality comparison. After a verified release and a separately authorized service run, the next useful measurement is per-role cold/warm load, prefill, TTFT, generated tokens and peak PSS under the same source-bound prompt.
+
+**Next internal step:** Boss/Integrator recompose the four pinned Runtime consumers and downstream recovery/stage/deployer chain against the reviewed exact source bytes. QA then reruns Python 3.13/3.14 same-turn, staged, integrated, owner-read and two-checkout migration checks.
+
+**User action:** none required. Do not restart the user-stopped service or run a manual Termux command.
+
+---
+
+# Core & Harness — fair B1/B2 recovery follow-up (2026-11-24 04:38 UTC)
+
+**PR #2462** remains DRAFT / OPEN / NOT_RELEASED on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, latest branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3` (documentation/handoff only after code head `d0a30b18cc629d7498373e01985f89df00fa7461`), based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+## New code on this head
+
+- `latewatch.py` explicitly marks post-answer-start offers as `preanswer_budgeted=False`; they are not charged against the already-finished C3 pre-answer window.
+- `Watcher._record_once()` makes status telemetry idempotent across `check()` and `finish()`, fixing the duplicate `WOULD_INTERRUPT: 2` count.
+- `test_latewatch.py` now covers the late-watch budget contract; `test_effort.py`'s Runtime test double accepts the explicit pre-answer flag.
+
+## Evidence and blockers
+
+- **LOCAL_LINUX / CPython 3.13.5:** isolated contract script `py_compile` PASS; 2/2 behavior assertions PASS. This is an isolated contract check, not the full Aii suite.
+- **Full local Aii suite:** NOT_RUN / BLOCKED. `git ls-remote` still fails DNS resolution for GitHub; no full checkout is available.
+- **Exact code-head CI (`d0a30b18cc629d7498373e01985f89df00fa7461`; later commits are documentation-only): same-turn consumer FAIL, staged/integrated regression FAIL, private owner-read bootstrap FAIL. Six other workflows SUCCESS and one is SKIPPED. The remaining failures are the shared staged-source chain: `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard` still reject the Core Runtime bytes/anchors. Runtime deployment and two-checkout migration consequently fail at staging. Do not weaken any hash gate.
+- The shared source-composition finding is posted on Boss PR #2443 (comment 7122336075); Core has not edited Boss/QA lifecycle or audio composer files. The #2462 PR also records the exact state in its own discussion (comment 7122338229).
+
+## Redmi / deployment
+
+- Latest private V13 observation says the AI runtime is **STOPPED_BY_USER** and autostart is OFF. The last recorded turn was FINAL, but the latest diagnostic still showed zero valid B1/B2 offers; no new turn was triggered by this run.
+- The latest authenticated updater receipt (2026-11-23 19:32 UTC) reported auto-update enabled and runtime/dashboard UP_TO_DATE at `8d93236c`. A newer read request has no receipt. PR #2462 is not installed; REDMI_UNVERIFIED for this branch.
+- No manual Termux command, update request, service restart, model/weight change, or permission change was made.
+
+## Next executable step
+
+Boss/Integrator must recompose the shared source-pinned builder chain against the current Core Runtime without relaxing pins or reapplying already-present fair-slice code. Then rerun exact Python 3.13/3.14 staged-runtime, integrated-regression, same-turn, owner-read and two-checkout migration tests. Only after the exact release path is green and the user has restarted the device service should Redmi E2E be attempted.
+
+**User action: none required.** Do not restart the stopped phone service or run a manual Termux command.
+---
+
+# Core & Harness — fair B1/B2 recovery checkpoint (2026-11-24 03:42 UTC)
+
+**PR #2462** is open on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact HEAD `201bd5419613e3f997ba9c58b7d2b97c3576d3df`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It preserves sequential B1_DETAIL/B2_GIST pre-answer slices and the C3/Focal reserves, and changes post-commit observer suppression so a failed late-watch NO_OFFER can be retried instead of being treated as delivered.
+
+**Current evidence:** Runtime file Git blob `80eddec84f7a5ef06c1c72007ca08c44b694ace0`, exact UTF-8 SHA-256 `7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186`. CI at the prior code head `23863dbe8fa84f51cba99914aa9eb80e777dbfc9` still failed: staged-runtime 33 failed / 240 passed / 10 skipped / 2 errors; integrated-regression failed; same-turn consumer Python 3.13 failed; Python 3.14 was still running at the last poll. Combined online JEPA, JEPA receipt integrity, JEPA Runtime transaction, runtime deployment integrity and Core native-tap provenance passed. Owner-read bootstrap failed. The new diagnostic-only test commit `201bd...` had its exact-head workflows queued/in progress at this checkpoint; no pass is claimed.
+
+**Blocking integration:** four exact consumers still pin the prior Runtime SHA `a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38`: `integrated_online_world_candidate_20261110.py`, `postcommit_observer_candidate_20261116.py`, `record_only_online_guard_candidate_20261116.py`, and `integrated_observer_fair_budget_candidate_20261116.py`. The current two-checkout migration result is PARTIAL because staging fails. Boss/Integrator must recompose these source-pinned consumers and downstream recovery/stage/deployer pins against the exact Core Runtime bytes; no hash gate may be relaxed. QA #2455 rebinds the Memory/Context/JEPA chain on an older Boss base and does not yet contain this Core Runtime delta.
+
+**Still open:** the missing-peer Runtime regression failed at `23863...` because the B2 post-commit retry was not observed. Commit `201bd...` adds diagnostic state to that assertion; exact-head CI is pending. Full local Aii tests are BLOCKED because no checkout is mounted and GitHub DNS resolution fails. Redmi remains **REDMI_UNVERIFIED**; no private relay, device action, updater request, model/weight/permission change or deployment was performed.
+
+**Next:** poll exact-head CI for `201bd...`; use the diagnostic state to repair the Core-owned retry path; coordinate the four Runtime pin rebinds with Boss/Integrator; rerun Python 3.13/3.14 staged, integrated, same-turn and migration checks. Continue with the next unblocked Core E2E path after the checkpoint. **User action: none.** No model swap is proposed without measured comparison.
+
+Detailed handoff: [CORE_FAIR_B1_B2_RECOVERY_20261124.md](handoffs/CORE_FAIR_B1_B2_RECOVERY_20261124.md).
+
+---
+
+# Core & Harness — failed late-watch peer retry checkpoint (2026-11-24T03:18:51.264Z)
+
+**Candidate:** [PR #2462](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, current code/test head `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It is the clean replacement for draft PR #2458, which is now closed as superseded.
+
+**New connected runtime defect:** the post-commit observer loop previously skipped any role named by `late_watch.offered`, even if the late-watch thread failed and produced no OfferPacket. The new `latewatch.postcommit_consumed(meta, role)` skips only a delivered offer (valid `offer_id`) or a still-running native generation; a failed `NO_OFFER` now remains eligible for the normal post-commit retry. A still-running thread is not duplicated concurrently.
+
+**Tests / evidence:**
+- LOCAL_LINUX / CPython 3.13.5: isolated helper compile + six-case failed/delivered/still-running/other-role/empty/None metadata matrix PASS.
+- Full Aii local pytest/compile/integration NOT_RUN: `git ls-remote` failed with DNS resolution error; no checkout is available.
+- Prior exact-head CI at `1c6df9d9ab70e17d1e28c41564e243eaf7b43cc4`: staged-runtime FAIL (33 failed, 240 passed, 10 skipped, 2 errors). The dominant failures are immutable nested runtime pins in `integrated_online_world_candidate_20261110.py`, `postcommit_observer_candidate_20261116.py`, `record_only_online_guard_candidate_20261116.py` and `integrated_observer_fair_budget_candidate_20261116.py`. Two migration tests return PARTIAL because staging fails. The missing-peer regression also failed because the fixture did not explicitly control learned wake/residency; current head `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16` makes those conditions deterministic and exact-head rerun is pending.
+- On `1c6df`: JEPA transactional update PASS, JEPA receipt integrity PASS, role-specific native-tap provenance PASS on Python 3.11/3.13, deployment-integrity Python 3.11 PASS / 3.14 pending, Core same-turn consumer 3.13/3.14 in progress, combined JEPA queued. No full CI pass claimed.
+- Redmi: STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay query, chat, shell, update, APK, permission, model, weight or data action.
+
+**User effect / Canon path:** preserves both distinct B1/B2 opportunities, C4/Focal selection and C3 answer time; when a late B2 check fails, it no longer silently suppresses the post-commit peer attempt. The code does not prove that either native body can finish inside its budget, nor that C3 output is correct. Relevant Canon path: B1_DETAIL + B2_GIST → C4/Focal → C3, plus F2 late-watch and post-commit observer recovery.
+
+**Current blockers:** exact staged/integrated consumer is blocked by immutable source-pin chain; no pins were weakened. The deterministic missing-peer test at `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16` has not yet been rerun by Actions. The PR is OPEN / NOT_RELEASED; no release SHA and no Redmi proof.
+
+**Next actions:**
+1. Boss/Integrator recomposes the nested Runtime/JEPA/staged-consumer builders bottom-up against exact current bytes.
+2. QA reruns Python 3.13/3.14 staged, integrated and two-checkout migration tests.
+3. Core verifies the new failed-late-watch retry regression on the exact head and continues source-bound B1/B2→C4→C3 integration.
+4. Research candidate: derive per-role p95 prefill/TTFT and C3 reserve only from matching authenticated DEVICE_RECEIPT samples; replace BOOT time fractions only after sufficient samples. No model alternative or swap is recommended now.
+
+**User action:** none. No manual Termux command or update request.
+---
+
+# Core & Harness — B1/B2 → C4 → C3 recovery-window checkpoint (2026-11-23T23:44:56.033Z)
+
+**Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED. Branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, code/test checkpoint `e27c035bd6ba4679919a36dff0dda04bc77cb09e`; branch tip at last readback `eec84757077d4fc23df5e6079692254cd7080d5f` (documentation-only commits followed), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+**New connected runtime behavior:** repeated C3 zero-token prefill failures now leave a distinct 1.0 s C4/Focal selection and re-entry window after the fair initial B1/B2 slices. In the 30 s recovery example: 26 s reserved for C3, 3 s for initial B1/B2, 1 s for C4. Focal re-entry is explicitly distinguished from the initial pre-answer observer so it can use that final second. This does not prove that either native body can finish inside its slice.
+
+**Tests:** LOCAL_SYNTHETIC Python plan/slice prototype PASS (26/3/1 split, role deadline cap, expired-slice negative, fair allocation). Exact repository pytest/compile/integration tests NOT_RUN because this environment has no full checkout and GitHub DNS/clone access failed. Exact-head PR run [45291011985](https://github.com/RedMentos/Aii/actions/runs/45291011985) and push run [45291005230](https://github.com/RedMentos/Aii/actions/runs/45291005230) both ended `startup_failure` with zero jobs; neither is a test PASS or code-failure diagnosis.
+
+**User effect / Canon:** preserves the initial B1_DETAIL and B2_GIST opportunities, the C4 coalition/focal consumer, C3 time reserve, and existing post-commit observation path. Relevant path: B1/B2 → C4/Focal → C3, under the V14 distributed graph. Actual useful native offers, correct C3 output, TTFT improvement and real Redmi behavior remain UNVERIFIED.
+
+**Deployment:** PR #2458 is DRAFT / NOT_RELEASED; no release SHA. The Redmi was STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay read, APK install, update request, chat send, shell, model/weight change or permission change was performed. Updater/device state was not re-queried in this run; no deployment is claimed.
+
+**Next:** Boss/Integrator must rebind nested Runtime/JEPA/staged-consumer pins and review the exact head; QA must obtain executable Python 3.13/3.14 staged and integrated CI. Next Core idea: use the existing native prefill profile only when device/model/thread/batch match authenticated DEVICE_RECEIPT samples; never use synthetic or unknown profiles as device evidence. No model alternative or swap is recommended without real comparisons and separate approval.
+
+**User action required:** none. No manual Termux command or update request.
+
+Handoff: `v14/handoffs/CORE_B1_B2_C4_FOCAL_RESERVE_20261124_RUN1.md`.
+
+---
+
+# Core & Harness — Android companion SQLite-recovery checkpoint (2026-11-23 22:56 UTC)
+
+**Candidate:** [PR #2406](https://github.com/RedMentos/Aii/pull/2406), DRAFT / NOT_RELEASED, branch `core/v14-capability-registry-mediaprojection-20261123`, exact code/test head `dc848768c6797b60c329d5d7485545b579d232f8`; handoff commit `3aa31af4aac90caefd85f7ca3c41bac9419fb0a0`. Added a Robolectric regression that injects SQLite receipt-write failure for both `EXECUTING → OUTCOME_UNKNOWN` and `DENYING → USER_DENIED`, verifies claims/notifications remain recoverable, then simulates restart, receipt-only finalization and idempotency without redispatch.
+
+**Evidence:** LOCAL_LINUX / CPython 3.13.5 SQLite trigger semantics PASS; Android Java/Robolectric test NOT_RUN locally (JDK 21 exists, but Android SDK/Gradle/full checkout are absent). Prior head `429f62a` had Gradle/unit-test job PASS; its separate emulator process-restart job failed on System UI non-responsiveness and `com.android.phone` ANR. New exact-head run `45284177523` is `startup_failure` with zero jobs and cannot be retried; the new test is UNVERIFIED by CI. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no APK, pairing, action, update request or permission change occurred.
+
+Handoff: `v14/handoffs/CORE_COMPANION_SQLITE_RECEIPT_RECOVERY_TEST_20261123_RUN1.md`.
+
+**Next:** obtain an executable exact-head Android companion run for `dc848768`, verify the new Robolectric case, and separately stabilize the emulator process-restart job without masking the System UI/phone ANR. QA review remains required before APK/device acceptance. No user action is needed.
+
+---
+
+# Core & Harness — latest verified checkpoint (2026-11-23 22:50 UTC)
+
+**Primary P0 candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, branch head `7f1e865f47d9b9e39a289e03db87795fd16de079`, based on current release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. The last substantive code/test checkpoint is `61509b1b061b377d5c19f69d861acda6f7b9f07e`; the later branch commit persists the handoff. It provides the fair same-turn B1/B2 pre-answer scheduling candidate, but exact-head Actions is still `startup_failure / no jobs`; the nested Boss Runtime pins and QA A5 Store lifecycle gate remain unresolved.
+
+**Parallel fastpath candidate:** [PR #2445](https://github.com/RedMentos/Aii/pull/2445), DRAFT / NOT_RELEASED, branch `core/v14-fast-greeting-staged-overlay-20261123`, exact head `dee83e03af1afcdd827d60014e29d153ccd438eb`, still based on older `fb563d771fe2d493c4ec25abe94280981d24ef5c`. A review found that the text-only greeting guard rejected only dict-valued `_audio_window` metadata; malformed non-dict values could pass. Code commit `190d920f0f3a2dbe037250a7fa198d60ba9e9bb6` now requires `event.get("_audio_window") is None`; test commit `1187a609f46e41f91a16bb481e816865417fdb1b` adds malformed string/bytes/list/number/boolean negatives. Handoff: `v14/handoffs/CORE_FAST_GREETING_FAIL_CLOSED_20261123_RUN1.md`.
+
+**Evidence boundary:** LOCAL_LINUX / CPython 3.13.5 isolated `py_compile` and matcher/policy/audio-shape assertions PASS for the fastpath guard. This is not full repository pytest. Exact code-head Actions run `45283293852` is `startup_failure` with zero jobs; no CI PASS is claimed. Full Aii checkout/pytest remains BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS is unavailable. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device, updater, shell, permission, model, weight or data action was performed.
+
+**Next:** Boss/Integrator must rebind the #2458 nested Runtime/JEPA pins and QA must rerun the A5 Store lifecycle gate. Recompose the #2445 fastpath only after that current integration chain is stable, then run exact Python 3.13/3.14 staged/integrated/migration CI and independent review. No user action is needed; do not restart the stopped phone or issue a duplicate update request.
+
+---
+
+# Core & Harness — latest verified checkpoint (2026-11-23 22:08 UTC)
+
+**Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `61509b1b061b377d5c19f69d861acda6f7b9f07e`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+- New test commit changes `v13/code/tests/test_observer_schedule.py`: the Runtime integration fixture now has a deterministic 10-second pre-answer window and 40-second C3 reserve; a controlled 1.5-second regression proves a subminimum first-role slice is deferred while the peer receives the full available slice.
+- Handoff: `v14/handoffs/CORE_B1_B2_FAIR_PREANSWER_BUDGET_20261123_RUN2.md`.
+- LOCAL_LINUX / CPython 3.13.5 isolated helper probe: PASS (compile + budget/scheduler calculations). Full Aii pytest: BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails.
+- Exact-head Actions run `45276837088`: `startup_failure`, no jobs; no CI PASS. The previous Boss review's nested Runtime/source-pin and A5 Store-pin failures remain open; this change does not relax them.
+- Redmi: latest evidence says STOPPED_BY_USER, autostart false, native residency unavailable. REDMI_UNVERIFIED. No restart, chat, update request, shell, permission, model, weight or data action.
+- **Next:** Boss rebinds immutable JEPA/integrated-online-world and post-commit Runtime pins; QA reruns A5 Store lifecycle; then exact Python 3.13/3.14 staged, integrated and migration CI plus independent review. No user action is needed.
+
+---
+
+# Core & Harness — fair B1/B2 recovery checkpoint (2026-11-23 20:34 UTC)
+
+**Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `8878c5e1b35dee8845d3f2e81a7dcb43d9668771`, 17 commits ahead / 0 behind base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+- Short-turn recovery now keeps both B1_DETAIL and B2_GIST eligible with sequential per-role deadlines and a reserved C3 window. A body is deferred only when its own remaining slice is below 1.0 s; normal/deep turns retain their ordinary window. Peer identity, source-bound offers, post-commit observation, Age and learning authority are unchanged.
+- Store telemetry ownership collision was removed: `v13/store.py` now matches the release-base blob `f347e1c960076e06e284369549275bc39a4195cb`. The feature-owned `native_turn_budget.py` registers its own telemetry fields/enums; exact source readback and Store-blob comparison succeeded.
+- Exact current Runtime SHA-256 for the immutable staged/JEPA/postcommit source-pin chain: `720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3`. Boss/Integrator must rebind those owned pins; QA should rerun the A5 Store lifecycle gate after the Store restoration.
+- LOCAL_LINUX: exact fetched `native_turn_budget.py` py_compile and import-time telemetry/budget test against an isolated Store stub PASS. The first stub attempt failed because the stub omitted pre-existing `kind`/`status` allowlist fields; after correcting the stub, the same exact module passed. This is not the full repository suite. Full Aii checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS does not resolve.
+- Exact-head Actions run `45260798204`: `startup_failure`, no jobs. No CI PASS is claimed. A prior head had scheduler/source-pin failures; all require a fresh executable exact-head run.
+- Redmi receipt #826 reports `STOPPED_BY_USER`, AI autostart off and native residency unavailable. No restart, CHAT_SEND, UPDATE_REQUEST, shell, permission, model, weight or data action was performed. Redmi remains REDMI_UNVERIFIED.
+
+**Next:** Boss rebinds the exact Runtime pins; QA rechecks A5 Store lifecycle; then run Python 3.13/3.14 scheduler and staged/integrated CI and independent review. No user action is required; do not start the stopped phone.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.

@@ -25,8 +25,11 @@ def test_staged_audio_lease_covers_bodies_and_complete_c3_then_revokes(tmp_path)
     assert manifest["builder"].endswith("termux_runtime_recovery_candidate_20261121.py")
     staged_runtime = (destination / "v13/runtime.py").read_text()
     staged_focal = (destination / "v13/focal.py").read_text()
+    staged_cognition = (destination / "v13/cognition.py").read_text()
     staged_store = (destination / "v13/audio_context_store.py").read_text()
     assert "audio_consent_lease" in staged_runtime
+    assert "preanswer_budgeted=None" in staged_cognition
+    assert "minimum_role_slice_s" in staged_cognition
     assert "consent_lease=audio_window.get('_consent_lease')" in staged_runtime
     assert "SCALE_AWARE_C4_RULE" in staged_focal
     assert "LOCAL_EXACT_ARITHMETIC" in staged_runtime

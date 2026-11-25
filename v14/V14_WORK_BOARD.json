@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-24T13:24:14Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core PR #2462 is DRAFT / OPEN / NOT_RELEASED at latest branch HEAD ca269493a380232ef88ffa095ab5b82eaec7fce3 (code head d0a30b18cc629d7498373e01985f89df00fa7461; later commits are documentation-only). Fair B1/B2 slices plus late-watch budget/idempotent telemetry fixes exist; exact staged/same-turn/owner-read CI remains blocked by stale Runtime composition pins. Full local Aii suite NOT_RUN; Redmi branch proof unavailable and phone runtime is STOPPED_BY_USER.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "proof_environment": "CI_PY313_AND_PY314_CORE_99_PASS_AND_DIRECT_SAME_TURN_3_PASS; STAGED_RUNTIME_FAIL_SOURCE_PINS; INTEGRATED_FAIL_SOURCE_PINS; LOCAL_FULL_REPO_BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Boss/Integrator: recompose integrated_online_world, observer_fair_budget, postcommit_observer and record_only_online_guard against the exact current Runtime bytes, then rebind downstream recovery/stage/deployer without weakening pins. QA: rerun exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and two-checkout migration matrix. Core: after shared chain is current, continue native receiver pair-matrix/consumed-signal validation and Android ActionIntent/ActionOutcome integration; do not claim native latent learning or Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-24T13:24:14Z",
+      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -34,6 +34,123 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run16_checkpoint": {
+        "date": "2026-11-24T03:42:36Z",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "head_sha": "201bd5419613e3f997ba9c58b7d2b97c3576d3df",
+        "pull_request": 2462,
+        "status": "OPEN_CI_PENDING_NOT_RELEASED",
+        "runtime_file_sha256": "7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186",
+        "tests": {
+          "local_linux_full_repository": "BLOCKED: no checkout; git ls-remote DNS failure",
+          "prior_exact_head_23863": "FAIL: staged 33 failed/240 passed/10 skipped/2 errors; integrated FAIL; same-turn Python 3.13 FAIL; 3.14 pending at last poll",
+          "other_ci": "PASS: combined online JEPA, JEPA receipt integrity, JEPA Runtime transactional update, runtime deployment integrity, Core native tap provenance",
+          "latest_exact_head_201bd": "QUEUED/IN_PROGRESS at 2026-11-24 03:42 UTC; no result claimed"
+        },
+        "device": "REDMI_UNVERIFIED; no private relay or device action",
+        "next_action": "Inspect exact-head diagnostic and coordinate downstream source-pin rebind with Boss/Integrator."
+      },
+      "core_run17_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-20261123-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "61509b1b061b377d5c19f69d861acda6f7b9f07e",
+        "pull_request": 2458,
+        "status": "DRAFT_CI_STARTUP_FAILURE_SOURCE_PIN_REBIND_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 helper py_compile and exact budget/scheduler logic probe; 30s/50s reserves and subminimum peer fallback",
+          "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
+          "exact_head_ci": "STARTUP_FAILURE_NO_JOBS run 45276837088"
+        },
+        "device": "REDMI_STOPPED_BY_USER_RECEIPT_826; REDMI_UNVERIFIED; no action",
+        "next_action": "Boss rebinds nested Runtime source pins; QA reruns A5 Store lifecycle; then exact-head staged/integrated/migration CI and independent review."
+      },
+      "core_run18_checkpoint": {
+        "date": "2026-11-23T22:52:13Z",
+        "owner": "Core & Harness",
+        "primary_runtime_pr": 2458,
+        "primary_runtime_head": "7f1e865f47d9b9e39a289e03db87795fd16de079",
+        "primary_runtime_code_commit": "61509b1b061b377d5c19f69d861acda6f7b9f07e",
+        "fastpath_pr": 2445,
+        "fastpath_head": "dee83e03af1afcdd827d60014e29d153ccd438eb",
+        "fastpath_code_commit": "190d920f0f3a2dbe037250a7fa198d60ba9e9bb6",
+        "fastpath_test_commit": "1187a609f46e41f91a16bb481e816865417fdb1b",
+        "fastpath_status": "DRAFT_STALE_BASE_CI_STARTUP_FAILURE",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 py_compile and exact greeting/policy/malformed audio-window assertions",
+          "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
+          "exact_head_ci": "STARTUP_FAILURE_ZERO_JOBS; no CI pass"
+        },
+        "device": "REDMI_STOPPED_BY_USER / REDMI_UNVERIFIED; no action",
+        "next_action": "Boss/Integrator rebinds #2458 pins and QA reruns A5 Store lifecycle; recompose #2445 on the current integrated base before staged/integrated CI."
+      },
+      "core_run19_checkpoint": {
+        "date": "2026-11-24T03:18:51.264Z",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "1c6df9d9ab70e17d1e28c41564e243eaf7b43cc4",
+        "test_commit": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
+        "pull_request": 2462,
+        "supersedes_pull_request": 2458,
+        "status": "OPEN_NOT_RELEASED_CI_PARTIAL_PIN_CHAIN_BLOCKED",
+        "tests": {
+          "local_linux": "PASS: CPython 3.13.5 isolated helper compile + failed/delivered/still-running/other-role/empty/None matrix",
+          "full_repository_local": "BLOCKED: no checkout; git ls-remote DNS failure; pytest/compile/integration NOT_RUN",
+          "exact_head_ci": "Prior head 1c6df staged-runtime FAIL 33/240/10skipped/2errors, mostly immutable runtime source pins; migration PARTIAL. ad89ad deterministic missing-peer test rerun pending. JEPA transactional + receipt integrity and native tap provenance PASS; runtime deployment 3.11 PASS / 3.14 pending; Core consumer 3.13/3.14 in progress at last poll."
+        },
+        "device": "STOPPED_BY_USER / REDMI_UNVERIFIED; no private relay/device action.",
+        "next_action": "Boss/Integrator rebinds nested runtime/JEPA pins bottom-up; QA reruns exact 3.13/3.14 staged/integrated/migration; Core verifies failed-late-watch postcommit retry on exact new head."
+      },
+      "core_followup_checkpoint_20261124": {
+        "date": "2026-11-24T04:38:22Z",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "d0a30b18cc629d7498373e01985f89df00fa7461",
+        "pull_request": 2462,
+        "status": "DRAFT_OPEN_NOT_RELEASED_CI_BLOCKED",
+        "changes": [
+          "late-watch post-answer pass sets preanswer_budgeted=False",
+          "late-watch status persistence is idempotent across check/finish",
+          "regression test added; Runtime test double accepts explicit preanswer flag"
+        ],
+        "tests": {
+          "local_linux": "PASS: CPython 3.13.5 isolated py_compile and 2/2 contract assertions",
+          "full_repository_local": "NOT_RUN/BLOCKED: no full checkout; GitHub DNS failure",
+          "exact_head_ci": "FAIL on code head d0a30b18cc629d7498373e01985f89df00fa7461; documentation-only commits afterward did not rerun code workflows"
+        },
+        "device": "REDMI_UNVERIFIED; latest private observation STOPPED_BY_USER/autostart OFF/zero valid B1-B2 offers; updater last confirmed at 8d93236c, no #2462 installation receipt",
+        "next_action": "Boss/Integrator recompose shared Runtime pins/anchors; then rerun exact staged/integrated/same-turn/owner-read/migration matrix",
+        "branch_head": "ca269493a380232ef88ffa095ab5b82eaec7fce3"
+      },
+      "core_run20_checkpoint": {
+        "date": "2026-11-24T05:16:34Z",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f",
+        "pull_request": 2462,
+        "status": "OPEN_NOT_RELEASED_CI_PARTIAL_SOURCE_PIN_BLOCKED",
+        "changes": [
+          "FocalLoop persists exact source/freshness-checked C4-selected OfferPacket IDs before C3 context assembly",
+          "same-turn Runtime test asserts both B1/B2 offers reach C4 and C3 synthetic context; C4/template IDs match; tampered offer rejected"
+        ],
+        "tests": {
+          "local_linux_isolated": "PASS: telemetry sanitization and C4/template ID match plus tamper negative controls",
+          "full_repository_local": "BLOCKED: no checkout mounted; git ls-remote GitHub DNS failure",
+          "ci_py313": "PASS: direct Runtime same-turn consumer step; overall workflow FAIL at final staged composition",
+          "ci_py314": "PASS: direct Runtime same-turn consumer step; overall workflow FAIL at final staged composition",
+          "staged_integrated": "FAIL/BLOCKED: staged-runtime 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests; integrated-regression 1 selected stage test failed at the same integrated_online_world Runtime pin; owner-read unit job PASS; Python 3.14 installer stage FAIL at the same pin",
+          "other_ci": "PASS: runtime deploy integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity, release-event integration; owner-read unit job PASS; safe-additive policy-skipped"
+        },
+        "device": "REDMI_UNVERIFIED; last stored private observation STOPPED_BY_USER/autostart OFF; no fresh device read or action",
+        "next_action": "Boss/Integrator recompose four Runtime source consumers and downstream stage/deployer; QA reruns exact Python 3.13/3.14 staged/integrated/same-turn/owner-read/migration matrix",
+        "user_action_required": false
       }
     },
     {
@@ -77,11 +194,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDMI_RECEIVER_PROBE",
+      "next_step": "After Boss #2443 and JEPA #2454 are reviewed/integrated, rebase Core #2457 onto current JEPA head 28386778a04bf77802f84de5c5a5dee4dcb19329, rerun exact native-receiver/approval/overlay/staged/deployer CI, and keep production B3 OFF. A real probe still requires a separate local TTY one-shot approval on an installed verified release.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
+      "last_checkpoint": "2026-11-24T05:14:43Z",
+      "proof": "Core PR #2451 exact head 19257bf678b01055d82d7f2ad54e69132ce37ba6 has the local TTY-approved one-shot native-probe overlay and exact-head CI PASS for native receiver, staged/integrated, same-turn, runtime deploy, Lab-Age, owner-read and migration workflows. Stacked successor #2457 head fdc0107b6318025ceedfabcd2f86261a05923ec7 has only a startup_failure run (no jobs) and is based on JEPA branch SHA a8bba75481812b2344d4ae237acfa9bc57078d29, while current JEPA PR #2454 head is 28386778a04bf77802f84de5c5a5dee4dcb19329; #2457 is stale. No native probe, trained receiver utility or Redmi evidence.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -253,7 +370,25 @@
       "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.",
+      "core_run19_checkpoint": {
+        "date": "2026-11-23T22:56:26Z",
+        "owner": "Core & Harness",
+        "pull_request": 2406,
+        "branch": "core/v14-capability-registry-mediaprojection-20261123",
+        "code_test_head": "dc848768c6797b60c329d5d7485545b579d232f8",
+        "handoff_commit": "3aa31af4aac90caefd85f7ca3c41bac9419fb0a0",
+        "behavior": "SQLite trigger failure for EXECUTING→OUTCOME_UNKNOWN and DENYING→USER_DENIED; receipt-only restart retry, retained notifications before durable receipt, no redispatch, idempotency",
+        "tests": {
+          "local_linux_sqlite_semantics": "PASS: Python 3.13.5 RAISE(ABORT) preserves both claimed rows; retry finalizes both",
+          "android_robolectric_exact_head": "NOT_RUN / CI STARTUP_FAILURE_ZERO_JOBS run 45284177523",
+          "prior_head_android_unit_job": "PASS on 429f62a",
+          "prior_head_emulator_restart_job": "FAIL due System UI nonresponsive / com.android.phone ANR; separate environment failure"
+        },
+        "device": "REDMI_UNVERIFIED; no APK/device action",
+        "status": "DRAFT_NOT_RELEASED_NEW_SQLITE_TEST_UNVERIFIED",
+        "next_action": "Obtain executable exact-head Android companion workflow and verify new Robolectric test; separately fix emulator ANR without weakening assertions; independent QA review."
+      }
     },
     {
       "id": "V14-010",
@@ -345,10 +480,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof_environment": "CI candidate only; no native tap/gradient proof",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "last_checkpoint": "2026-11-24T05:14:43Z",
+      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDMI_RECEIVER_PROBE",
+      "proof": "Core PR #2451 exact head 19257bf678b01055d82d7f2ad54e69132ce37ba6 has the local TTY-approved one-shot native-probe overlay and exact-head CI PASS for native receiver, staged/integrated, same-turn, runtime deploy, Lab-Age, owner-read and migration workflows. Stacked successor #2457 head fdc0107b6318025ceedfabcd2f86261a05923ec7 has only a startup_failure run (no jobs) and is based on JEPA branch SHA a8bba75481812b2344d4ae237acfa9bc57078d29, while current JEPA PR #2454 head is 28386778a04bf77802f84de5c5a5dee4dcb19329; #2457 is stale. No native probe, trained receiver utility or Redmi evidence.",
+      "next_step": "After Boss #2443 and JEPA #2454 are reviewed/integrated, rebase Core #2457 onto current JEPA head 28386778a04bf77802f84de5c5a5dee4dcb19329, rerun exact native-receiver/approval/overlay/staged/deployer CI, and keep production B3 OFF. A real probe still requires a separate local TTY one-shot approval on an installed verified release.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -1346,5 +1481,77 @@
     "user_action_required": "NONE. Do not run a manual Termux command. Existing updater is enabled; #519 is already queued. No model/weight/permission/microphone change or device action requested.",
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
+  },
+  "latest_core_checkpoint": {
+    "timestamp": "2026-11-24T03:18:51.264Z",
+    "owner": "Core & Harness",
+    "primary_runtime_pr": 2462,
+    "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+    "primary_runtime_head": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
+    "primary_runtime_code_checkpoint": "1c6df9d9ab70e17d1e28c41564e243eaf7b43cc4",
+    "primary_runtime_status": "OPEN_NOT_RELEASED_LATEWATCH_RETRY_ADDED_STAGED_PIN_FAILURE_EXACT_HEAD_RERUN_PENDING",
+    "fastpath_pr": 2445,
+    "fastpath_branch": "core/v14-fast-greeting-staged-overlay-20261123",
+    "fastpath_head": "dee83e03af1afcdd827d60014e29d153ccd438eb",
+    "fastpath_code_commit": "190d920f0f3a2dbe037250a7fa198d60ba9e9bb6",
+    "fastpath_test_commit": "1187a609f46e41f91a16bb481e816865417fdb1b",
+    "fastpath_status": "DRAFT_STALE_BASE_CI_STARTUP_FAILURE",
+    "android_receipt_pr": 2406,
+    "android_receipt_branch": "core/v14-capability-registry-mediaprojection-20261123",
+    "android_receipt_code_test_head": "dc848768c6797b60c329d5d7485545b579d232f8",
+    "android_receipt_handoff_commit": "3aa31af4aac90caefd85f7ca3c41bac9419fb0a0",
+    "android_receipt_status": "DRAFT_EXACT_HEAD_CI_STARTUP_FAILURE_NEW_SQLITE_TEST_UNVERIFIED",
+    "local_linux": "LOCAL_LINUX CPython 3.13.5: isolated helper compile + failed/delivered/still-running/other-role/empty/None retry matrix PASS. Full repository checkout unavailable; exact project pytest/compile/integration NOT_RUN locally.",
+    "full_repository_local": "BLOCKED: git ls-remote returned 128 / Could not resolve host github.com; no Aii checkout. Full repository tests NOT_RUN.",
+    "exact_head_ci": "New test head ad89ad5 has no Actions result at last readback. Prior code head 1c6df: staged-runtime FAIL (33 failed, 240 passed, 10 skipped, 2 errors); immutable runtime source pins fail in integrated_online_world_candidate_20261110.py, postcommit_observer_candidate_20261116.py, record_only_online_guard_candidate_20261116.py and integrated_observer_fair_budget_candidate_20261116.py; two migration tests return PARTIAL because staging fails. The missing-peer regression also failed on 1c6df; its fixture is now deterministic on ad89ad5 and awaits rerun. On 1c6df: JEPA transactional update PASS; JEPA receipt integrity PASS; native-tap provenance Python 3.11/3.13 PASS; deployment-integrity Python 3.11 PASS with 3.14 pending; Core same-turn 3.13/3.14 in progress; combined JEPA queued. No full CI pass claimed.",
+    "previous_android_ci": "No new Redmi test. Historical companion emulator/ANR evidence remains unchanged.",
+    "redmi": "STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay read, chat, shell, APK, update request, permission, model/weight or data action in this run.",
+    "next_action": "Boss/Integrator: recompose immutable nested Runtime/JEPA/staged-consumer source pins bottom-up against exact current bytes; do not relax pins. QA: rerun exact Python 3.13/3.14 staged, integrated and two-checkout migration workflows. Core: verify the deterministic failed-late-watch peer retry on the new exact head, then continue source-bound B1/B2→C4→C3 consumer integration. Research idea: replace fixed BOOT time fractions only after matching authenticated DEVICE_RECEIPT samples exist, using per-role p95 prefill/TTFT and a C3 reserve; no model alternative or swap recommended.",
+    "user_action_required": false,
+    "primary_runtime_handoff": "v14/handoffs/CORE_LATEWATCH_RETRY_20261124_RUN1.md",
+    "primary_runtime_behavior": "Fair sequential B1_DETAIL/B2_GIST per-role pre-answer slices preserve the C3 reserve and a separate 1.0 s C4/Focal reserve. Failed late-watch NO_OFFER attempts no longer suppress post-commit retry; a delivered offer or still-running native body is not duplicated.",
+    "primary_runtime_branch_tip_at_last_readback": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
+    "primary_runtime_docs_checkpoint": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
+    "primary_runtime_test_checkpoint": "ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16",
+    "supersedes_pr": 2458
+  },
+  "core_run21_checkpoint": {
+    "date": "2026-11-24T13:19:13Z",
+    "owner": "Core & Harness",
+    "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+    "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "code_commit": "85fda5fbc0997da5d495a023967d0ce7eadc44ff",
+    "pull_request": 2462,
+    "status": "OPEN_NOT_RELEASED_CI_PARTIAL_SOURCE_PIN_BLOCKED",
+    "changes": [
+      "Late B1/B2 OfferPacket completion after C3 return is consumed once through selfmodel.late_offer; committed C3 output is not rewritten.",
+      "Deferred offer is dropped if the original source_ref is revoked or unavailable before completion.",
+      "Added deterministic delayed-completion and source-revocation regressions in test_latewatch.py."
+    ],
+    "tests": {
+      "local_linux_full_repository": "BLOCKED: no checkout mounted; git ls-remote GitHub DNS failure; full pytest/compile/integration not run locally.",
+      "ci_py313_core": "PASS: 99 passed, 7 subtests passed; compile exact source PASS.",
+      "ci_py314_core": "PASS: 99 passed, 7 subtests passed; compile exact source PASS.",
+      "ci_py313_same_turn": "PASS: 3 passed; direct Runtime B1/B2->C4->C3 synthetic consumer.",
+      "ci_py314_same_turn": "PASS: 3 passed; direct Runtime B1/B2->C4->C3 synthetic consumer.",
+      "ci_staged_composition": "FAIL: 3 failed, 2 passed at final staged fair-budget composition; exact Runtime source pin mismatch.",
+      "ci_staged_runtime": "FAIL: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; shared integrated_online_world Runtime pin mismatch.",
+      "ci_integrated_regression": "FAIL: one selected staged regression at the same Runtime pin.",
+      "ci_phone_offer_receipt": "FAIL: same integrated_online_world Runtime pin mismatch.",
+      "ci_coordinated_source_contracts": "FAIL: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; same Runtime pin.",
+      "ci_owner_read_bootstrap": "FAIL: stage bootstrap fails closed at same Runtime pin.",
+      "other_ci": "PASS: runtime deployment integrity, combined online JEPA, JEPA Runtime transactional update, JEPA receipt integrity, native tap provenance, Core native stream integrity, release-event integration. Safe-additive workflow policy-skipped."
+    },
+    "runtime_sha256": "7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186",
+    "expected_runtime_sha256": "a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38",
+    "coordination": {
+      "boss_pr": 2443,
+      "boss_comment": 7132621604,
+      "qa_pr": 2455,
+      "qa_comment": 7132622370
+    },
+    "device": "REDMI_UNVERIFIED; last stored private observation STOPPED_BY_USER/autostart OFF; no fresh receipt or device action.",
+    "next_action": "Boss/Integrator recompose four Runtime consumers and downstream recovery/stage/deployer; QA reruns exact Python 3.13/3.14 matrix; Core then proceeds to native receiver pair-matrix and Android action/outcome integration.",
+    "user_action_required": false
   }
 }

@@ -7,6 +7,7 @@ on:
       - core/v14-fair-budget-diagnostic-20261122
       - boss/v14-recall-store-pin-rebind-20261122
       - boss/v14-c3-prefill-cap-20261123-run1
+      - core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1
     paths:
       - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
@@ -24,6 +25,20 @@ on:
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
       - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
+      - 'v13/code/v13/latewatch.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/cognition.py'
+      - 'v13/code/v13/focal.py'
+      - 'v13/code/v13/observer_schedule.py'
+      - 'v13/code/v13/native_turn_budget.py'
+      - 'v13/code/v13/arithmetic_fastpath.py'
+      - 'v13/code/tests/test_focal.py'
+      - 'v13/code/tests/test_observer_schedule.py'
+      - 'v13/code/tests/test_native_turn_budget.py'
+      - 'v13/code/tests/test_arithmetic_fastpath.py'
+      - 'v13/code/tests/test_arithmetic_fastpath_runtime.py'
+      - 'v13/code/tests/test_latewatch.py'
+      - 'v13/code/tests/test_effort.py'
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
@@ -58,6 +73,20 @@ on:
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
       - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
+      - 'v13/code/v13/latewatch.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/cognition.py'
+      - 'v13/code/v13/focal.py'
+      - 'v13/code/v13/observer_schedule.py'
+      - 'v13/code/v13/native_turn_budget.py'
+      - 'v13/code/v13/arithmetic_fastpath.py'
+      - 'v13/code/tests/test_focal.py'
+      - 'v13/code/tests/test_observer_schedule.py'
+      - 'v13/code/tests/test_native_turn_budget.py'
+      - 'v13/code/tests/test_arithmetic_fastpath.py'
+      - 'v13/code/tests/test_arithmetic_fastpath_runtime.py'
+      - 'v13/code/tests/test_latewatch.py'
+      - 'v13/code/tests/test_effort.py'
       - 'v14/V14_WORK_BOARD.json'
       - 'v14/V14_LIVE_WORKPLAN.md'
       - 'v14/V14_CANON_COVERAGE_INDEX.md'
@@ -88,12 +117,22 @@ jobs:
             v13/code/v13/native_turn_budget.py \
             v13/code/v13/observer_schedule.py \
             v13/code/v13/focal.py \
+            v13/code/v13/latewatch.py \
+            v13/code/v13/arithmetic_fastpath.py \
+            v13/code/tests/test_latewatch.py \
+            v13/code/tests/test_effort.py \
+            v13/code/tests/test_focal.py \
+            v13/code/tests/test_observer_schedule.py \
+            v13/code/tests/test_native_turn_budget.py \
+            v13/code/tests/test_arithmetic_fastpath.py \
+            v13/code/tests/test_arithmetic_fastpath_runtime.py \
             v13/code/v13/brain_panel.py \
             v13/code/v13/native_offer_prompt_receipt.py \
             v13/code/v13/runners.py \
             v13/code/v13/native_prompt_admission.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_v14_causal_stream_offer_receipt.py \
+            v13/code/tests/test_v14_same_turn_c4_c3_consumption.py \
             v13/code/tests/test_same_turn_body_delivery_qa.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
             v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py \
@@ -107,6 +146,19 @@ jobs:
             v13/code/scripts/integrated_memory_world_candidate_20261111.py \
             v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Run Core Runtime, C4 lineage, scheduling and fastpath regressions
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_observer_schedule.py \
+            v13/code/tests/test_latewatch.py \
+            v13/code/tests/test_native_turn_budget.py \
+            v13/code/tests/test_effort.py \
+            v13/code/tests/test_focal.py \
+            v13/code/tests/test_arithmetic_fastpath.py \
+            v13/code/tests/test_arithmetic_fastpath_runtime.py
       - name: Exercise final staged fair-budget composition
         env:
           PYTHONPATH: v13/code
@@ -116,6 +168,12 @@ jobs:
             v13/code/tests/test_termux_runtime_recovery_stage.py \
             v13/code/tests/test_observer_fair_budget_stage_20261116.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise direct Runtime same-turn B1/B2 to C4 to C3 (synthetic models)
+        if: always()
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_v14_same_turn_c4_c3_consumption.py
       - name: Exercise source-preserving C3 prompt admission
         env:
           PYTHONPATH: v13/code

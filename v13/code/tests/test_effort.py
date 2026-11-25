@@ -148,6 +148,12 @@ class EffortPolicy(unittest.TestCase):
 class EffortRuntime(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name);self.r=Runtime(self.home)
+        self.r.sleep.cycle.set_policy('enabled','off')
+        # This suite tests effort-mode semantics, not host-dependent ResourceGuard state.
+        self.r.resources=lambda: {'wall_time':time.time(),'mem_available_bytes':8*1024**3,'mem_total_bytes':8*1024**3,
+                                  'free_disk_bytes':20*1024**3,'battery_temperature_c':25.,'battery_percent':80.,
+                                  'charging':True,'processes':[],'own_peak_rss_bytes':0}
+        self.r.guard.update(self.r.resources())
 
     def tearDown(self):
         self.r.close();self.tmp.cleanup()
@@ -162,8 +168,8 @@ class EffortRuntime(unittest.TestCase):
         self.r.learner.decide=Mock(side_effect=lambda component,e,baseline,*a,**k:{'learned':False,'action':baseline})
         self.r.learner.output_delta=Mock(return_value=None)
         foreground=[]
-        def offer(role,e,version,deadline,peer=None,*,valid_until=None):
-            if valid_until is not None:foreground.append(role)
+        def offer(role,e,version,deadline,peer=None,*,valid_until=None,preanswer_budgeted=None,**kwargs):
+            if preanswer_budgeted is True:foreground.append(role)
             raise RuntimeError('test seam: no body model')
         self.r.cognition.offer=offer
         runner=SimpleNamespace(role='C3_LANGUAGE',last_metrics={'test_seam':True},generate=lambda *a,**k:iter(['ok']))

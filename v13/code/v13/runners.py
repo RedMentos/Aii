@@ -312,7 +312,10 @@ class LlamaRunner:
             if fits_context and fits_clock:
                 self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
-                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
+                    'native_prompt_tokens':count,'native_tokenizer':'LLAMA_SERVER_TOKENIZE',
+                    'rendered_prompt_sha256':digest(p),
+                    'native_token_ids_sha256':digest(dumps(tokens))}
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
@@ -332,7 +335,10 @@ class LlamaRunner:
                 self._prompt_admission={'revision':admission.REVISION,
                     'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
-                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
+                    'native_prompt_tokens':count,'native_tokenizer':'LLAMA_SERVER_TOKENIZE',
+                    'rendered_prompt_sha256':digest(p),
+                    'native_token_ids_sha256':digest(dumps(tokens))}
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
@@ -351,6 +357,8 @@ class LlamaRunner:
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         self._prompt_admission=None
         self._native_completion_http_200=False
+        self._native_stream_completed=False
+        self._native_single_step_completed=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -383,12 +391,37 @@ class LlamaRunner:
             if self.role == 'C3_LANGUAGE' and type(self._prompt_admission) is dict:
                 witnessed=self._prompt_admission.get('offer_template_witness')
                 if type(witnessed) is dict:
+                    admission=self._prompt_admission
+                    prompt_sha=admission.get('rendered_prompt_sha256') if type(admission) is dict else None
+                    token_sha=admission.get('native_token_ids_sha256') if type(admission) is dict else None
+                    prompt_tokens=admission.get('native_prompt_tokens') if type(admission) is dict else None
+                    generated=self.last_metrics.get('generated_tokens',0)
+                    ttft=self.last_metrics.get('ttft_s')
+                    prefill_observed=bool(
+                        type(prompt_sha) is str and len(prompt_sha)==64
+                        and type(prompt_tokens) is int and prompt_tokens>0
+                        and ((self._native_stream_completed
+                              and type(ttft) in (int,float) and math.isfinite(ttft))
+                             or (self._native_single_step_completed
+                                 and type(generated) is int and generated>0)))
+                    generation_completed=bool(
+                        status=='FINAL' and
+                        (self._native_stream_completed or self._native_single_step_completed))
                     self.last_metrics['native_offer_prompt_receipt']={
                         **witnessed,
                         'native_completion_http_200':self._native_completion_http_200,
                         'native_template_submitted':bool(
                             self._native_completion_http_200
                             and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
+                        'native_prompt_sha256':prompt_sha,
+                        'native_token_ids_sha256':token_sha,
+                        'native_prompt_tokens':prompt_tokens,
+                        'native_tokenizer':admission.get('native_tokenizer') if type(admission) is dict else None,
+                        'native_prefill_observed':prefill_observed,
+                        'native_prompt_prefill_verified':False,
+                        'native_stream_completed':self._native_stream_completed,
+                        'native_single_step_completed':self._native_single_step_completed,
+                        'native_generation_completed':generation_completed,
                         'native_attention_or_semantic_use_proven':False}
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
@@ -415,6 +448,8 @@ class LlamaRunner:
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
             result=json.loads(raw)
             if result.get('error'):raise Unavailable('Native output step failed')
+            self._native_completion_http_200=True
+            self._native_single_step_completed=True
             return result
         except (OSError,http.client.HTTPException):
             check(cancel,deadline);self.unload();raise Unavailable('Native output step interrupted')
@@ -477,6 +512,7 @@ class LlamaRunner:
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
                 if data.get("stop") is True:
                     native_stop=True
+                    self._native_stream_completed=True
                     if self._audit_enabled:self._audit_completed=True
                     break
             check(cancel,deadline)
@@ -636,7 +672,13 @@ class CausalStreamRunner:
                 self.last_metrics['native_offer_prompt_receipt']={
                     **offer_witness,'native_completion_http_200':False,
                     'native_template_submitted':False,'native_prompt_prefill_verified':False,
+                    'native_prompt_sha256':digest(prompt),
+                    'native_token_ids_sha256':digest(dumps(ids)),
+                    'native_prompt_tokens':len(ids),
+                    'native_tokenizer':'LLAMA_SERVER_TOKENIZE',
+                    'native_prefill_observed':False,
                     'native_stream_completed':False,
+                    'native_generation_completed':False,
                     'native_attention_or_semantic_use_proven':False}
                 context={'messages':messages,'prompt':prompt,'token_ids':ids,'history_trimmed':False}
             finally:
@@ -671,6 +713,7 @@ class CausalStreamRunner:
                     and observed.get('prompt_sha256')==digest(prompt))
                 if type(offer_receipt) is dict:
                     offer_receipt.update(native_prompt_prefill_verified=prefill_verified,
+                        native_prefill_observed=prefill_verified,
                         native_template_submitted=prefill_verified)
                 atomic_write(out/'observed.json',dumps(observed))
                 self.last_metrics['observed_sha256']=digest(dumps(observed))
@@ -697,6 +740,7 @@ class CausalStreamRunner:
             offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
             if type(offer_receipt) is dict:
                 offer_receipt['native_stream_completed']=True
+                offer_receipt['native_generation_completed']=True
             raw=complete['raw_result']
             self.last_metrics.update(native_token_ids=complete['native_token_ids'],
                 stop_reason=raw['stop_reason'],resume_prefill_calls=raw['resume_prefill_calls'],

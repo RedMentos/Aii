@@ -20,12 +20,16 @@ def load(path, name):
 
 
 class ObserverStageTests(unittest.TestCase):
-    def test_exact_anchors_reject_double_application_and_preserve_upstream(self):
+    def test_current_runtime_is_already_composed_and_overlay_fails_closed(self):
         module = load(HELPER, 'observer_layer')
-        result = module.apply_sources(CODE, {'v13/upstream_example.py': b'unchanged'})
-        self.assertEqual(result['v13/upstream_example.py'], b'unchanged')
+        from scripts import termux_runtime_recovery_candidate_20261112 as recovery
+        runtime = (CODE / 'v13/runtime.py').read_bytes()
+        self.assertTrue(recovery._observer_budget_is_composed(
+            CODE, {'v13/runtime.py': runtime}))
+        sources = {'v13/upstream_example.py': b'unchanged'}
         with self.assertRaisesRegex(ValueError, 'anchor changed'):
-            module.apply_sources(CODE, result)
+            module.apply_sources(CODE, sources)
+        self.assertEqual(sources['v13/upstream_example.py'], b'unchanged')
 
     def test_final_composed_runtime_and_native_success_contract(self):
         module = load(HELPER, 'observer_pins')

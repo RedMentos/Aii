@@ -6,11 +6,12 @@ import threading
 import time
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from v13 import observer_schedule as obs
+from v13 import latewatch as lw
 from v13 import resource_modes as rm
 from v13 import effort
-from v13.common import Cancelled
+from v13.common import Cancelled, Limits
 from v13.config import DEFAULTS,validate
 from v13.operator import Operator
 from v13.runtime import Runtime
@@ -31,6 +32,26 @@ class Plan(unittest.TestCase):
         self.assertEqual((p('ON_DEMAND_REENTRY')['pre'],p('ON_DEMAND_REENTRY')['reentry']),([],True))
         self.assertEqual(p('SAMPLED_OBSERVER',rate=1.)['pre'],BOTH);self.assertEqual(p('SAMPLED_OBSERVER',rate=0.)['reason'],'SAMPLED_OUT')
         with self.assertRaises(ValueError):obs.plan('BOTH_PLEASE',BOTH,'e')
+
+    def test_recovery_slice_allows_two_roles_without_weakening_other_limits(self):
+        sig=effort.signals('Compare plan A and plan B in detail',route='both')
+        cfg=dict(DEFAULTS)
+        recovery=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                               observer_window_s=3.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(recovery['wake'],'both')
+        self.assertNotIn('DEADLINE_ONE_BODY',recovery['constraints'])
+        ordinary=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                               observer_window_s=3.9,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(ordinary['wake'])),1)
+        self.assertIn('DEADLINE_ONE_BODY',ordinary['constraints'])
+        orange=effort.decide('max',sig,resource_state='PRESSURE',resource_mode='ORANGE',
+                             observer_window_s=3.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(orange['wake'])),1)
+        self.assertIn('RESOURCE_ORANGE',orange['constraints'])
+        short=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                            observer_window_s=1.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(short['wake'])),1)
+        self.assertIn('DEADLINE_ONE_BODY',short['constraints'])
 
     def test_sampling_is_deterministic_and_near_the_rate(self):
         hits=[obs.sampled('evt_%d'%i,.3) for i in range(2000)]
@@ -86,6 +107,14 @@ OFFER={'packet_id':'pkt_x','offer':{'summary':'note','needs_reentry':False,'quot
 class Turn(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
+        # The recovery budget is specifically a background-observer policy.
+        self.r.cfg['observer_mode']='background'
+        # Fix the resource fixture explicitly: this test proves scheduling when both bodies are admitted,
+        # not whichever resource mode the shared CI host happens to report.
+        self.r.resources=lambda: {'wall_time':time.time(),'mem_available_bytes':8*1024**3,'mem_total_bytes':8*1024**3,
+                                  'free_disk_bytes':20*1024**3,'battery_temperature_c':25.,'battery_percent':80.,
+                                  'charging':True,'processes':[],'own_peak_rss_bytes':0}
+        self.r.guard.update(self.r.resources())
         op=Operator(self.r);op.run(':route both');effort.set_mode(self.r.store,'max')
         self.r.learner.output_delta=Mock(return_value=None);self.calls=[];self.lock=threading.Lock()
         def offer(role,e,version,deadline,peer=None,**kw):
@@ -100,6 +129,40 @@ class Turn(unittest.TestCase):
         self.r.submit('Compare plan A and plan B in detail');until=time.monotonic()+15
         while not self.r.idle() and time.monotonic()<until:time.sleep(.005)
         time.sleep(.05);return json.loads(self.r.last_answer()['metadata'])
+    def test_budgeted_sequential_roles_get_fair_deadlines(self):
+        now=[0.0]
+        seen=[]
+        def clock():
+            return now[0]
+        def ask(role,peer,role_end):
+            seen.append((role,peer,role_end))
+            # B1 finishes early; B2 receives the remaining window.
+            now[0]=2.0 if role=="B1_DETAIL" else role_end
+            return role
+        out=obs.run(obs.plan("A_THEN_B_SEQUENTIAL",BOTH,"e"),
+                    ask,10.0,Mock(),clock=clock,budgeted=True)
+        self.assertEqual(out,BOTH)
+        self.assertEqual([x[0] for x in seen],BOTH)
+        self.assertEqual([x[1] for x in seen],[True,True])
+        self.assertEqual([x[2] for x in seen],[5.0,10.0])
+
+    def test_budgeted_short_window_defers_expired_first_role_but_keeps_peer_slice(self):
+        now=[0.0]
+        seen=[]
+        errors=[]
+        def ask(role,peer,role_end):
+            available=role_end-now[0]
+            seen.append((role,round(available,3)))
+            if available < 1.0:
+                raise Limits("pre-answer slice below role minimum")
+            return role
+        out=obs.run(obs.plan("A_THEN_B_SEQUENTIAL",BOTH,"e"),ask,1.5,
+                    lambda role,exc:errors.append((role,type(exc).__name__)),
+                    clock=lambda:now[0],budgeted=True)
+        self.assertEqual(seen,[("B1_DETAIL",0.75),("B2_GIST",1.5)])
+        self.assertEqual(out,["B2_GIST"])
+        self.assertEqual(errors,[("B1_DETAIL","Limits")])
+
     def test_schedules_change_physical_order_not_roles(self):
         self.assertEqual(self.r.cfg['observer_schedule'],'A_THEN_B_SEQUENTIAL')
         meta=self.turn('B_THEN_A_SEQUENTIAL');pre=[r for r,st in self.calls if st!='FINAL']
@@ -109,5 +172,124 @@ class Turn(unittest.TestCase):
         meta=self.turn('ON_DEMAND_REENTRY');self.assertEqual(meta['observer_schedule']['reason'],'ON_DEMAND_ONLY')
         self.assertFalse([r for r,st in self.calls if st=='FINAL'])  # no background pass either
         self.assertEqual(json.loads(Operator(self.r).run(':resources modes'))['mode'],self.r.guard.mode)
+
+    def test_short_c3_recovery_preserves_both_preanswer_body_slices(self):
+        # 50 s gives a 39 s initial-body window, a 1 s focal reserve and
+        # a labeled 10 s fallback C3 reserve. Per-role observer_seconds and
+        # the whole-turn deadline still cap the native attempts.
+        self.r.cfg["deadline_seconds"]=50
+        original_rows=self.r.store.rows
+        failure={"status":"DEADLINE","metadata":json.dumps({
+            "runner":{"role":"C3_LANGUAGE","generated_tokens":0,"last_phase":"prefill"}
+        })}
+        self.r.store.rows=lambda query,args=(): (
+            [failure,failure] if "SELECT status,metadata FROM messages" in query
+            else original_rows(query,args)
+        )
+        logs=[]
+        original_log=self.r.store.log
+        def capture_log(kind,event,metrics):
+            logs.append((kind,metrics))
+            return original_log(kind,event,metrics)
+        self.r.store.log=capture_log
+        self.calls.clear()
+        def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
+            self.calls.append((role,deadline,valid_until,time.monotonic()))
+            return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
+        self.r.cognition.offer=offer
+        self.r.cognition.communicate=Mock(return_value=None)
+        Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
+        self.r.submit("Compare plan A and plan B in detail")
+        until=time.monotonic()+15
+        while not self.r.idle() and time.monotonic()<until:
+            time.sleep(.005)
+        pre=[x for x in self.calls if x[2] is not None]
+        self.assertEqual(self.r.guard.mode,'GREEN')
+        self.assertGreaterEqual(len(pre),2)
+        self.assertEqual([x[0] for x in pre[:2]],BOTH)
+        for _,role_deadline,turn_deadline,called_at in pre[:2]:
+            self.assertLessEqual(role_deadline,turn_deadline-11.0,
+                msg=repr({'role':_,'role_deadline':role_deadline,'turn_deadline':turn_deadline,
+                          'called_at':called_at,'deadline_seconds':self.r.cfg['deadline_seconds'],
+                          'budget_logs':[(kind,metrics) for kind,metrics in logs if kind=='native_turn_budget_plan']}))
+            self.assertGreaterEqual(role_deadline-called_at,1.99)
+        decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
+        decision=json.loads(decision_row['payload'])
+        self.assertEqual(decision['wake'],'both')
+        self.assertNotIn('DEADLINE_ONE_BODY',decision['constraints'])
+        plan_logs=[m for k,m in logs if k=="native_turn_budget_plan"]
+        self.assertTrue(plan_logs)
+        self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
+        self.assertEqual(plan_logs[0]["c3_reserved_seconds"],10.0)
+        self.assertEqual(plan_logs[0]["c3_reserve_source"],"FALLBACK_DEFAULT")
+        self.assertEqual(plan_logs[0]["minimum_role_slice_s"],2.0)
+        self.assertEqual(plan_logs[0]["focal_reserved_seconds"],1.0)
+
+    def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
+        self.calls.clear()
+        notices=[]
+        self.r.notify=notices.append
+        original_decide=self.r.learner.decide
+        def deterministic_decide(kind,*args,**kwargs):
+            if kind=="wake":return {"learned":False,"action":"both"}
+            return original_decide(kind,*args,**kwargs)
+        self.r.learner.decide=deterministic_decide
+        # Restore the real Cognition.offer implementation for this Runtime path;
+        # the class-level fixture from setUp only records two-field tuples.
+        del self.r.cognition.offer
+        original_offer=self.r.cognition.offer
+        self.c3_messages=[]
+        def pool_get(role):
+            if role=="C3_LANGUAGE":
+                def generate(messages,cancel,deadline,*args,**kwargs):
+                    self.c3_messages.extend(messages)
+                    yield "Done."
+            else:
+                def generate(messages,cancel,deadline,*args,**kwargs):
+                    yield json.dumps({"summary":role+" found a source-bound comparison request.",
+                                      "quotes":["Compare plan A and plan B"],
+                                      "uncertainty":"","needs_reentry":False})
+            return SimpleNamespace(role=role,last_metrics={"status":"FINAL","prompt_tokens":64,
+                "generated_tokens":1,"ttft_s":0.01,"duration_s":0.02,"actual_model":role},
+                generate=generate,pids=lambda:[],memory=None)
+        self.r.pool.get=Mock(side_effect=pool_get)
+        def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
+            row=self.r.store.one(
+                "SELECT status FROM messages WHERE event_id=? AND role='assistant'",
+                (e["event_id"],)
+            )
+            status=row["status"] if row else "MISSING"
+            preanswer=kw.get("preanswer_budgeted") is True
+            thread=threading.current_thread().name
+            valid_until_present=valid_until is not None
+            self.calls.append((role,preanswer,thread,valid_until_present,status))
+            if role=="B2_GIST" and valid_until_present:
+                raise Limits("pre-answer/late-watch B2 attempt expired")
+            return original_offer(role,e,version,deadline,peer,valid_until=valid_until,**kw)
+        self.r.cognition.offer=offer
+        self.r.cognition.communicate=Mock(return_value=None)
+        Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
+        with patch.object(lw,"residency",return_value=None), patch("v13.output_policy.match",return_value=None):
+            self.r.submit("Compare plan A and plan B in detail")
+            until=time.monotonic()+15
+            while not self.r.idle() and time.monotonic()<until:
+                time.sleep(.005)
+        meta=json.loads(self.r.last_answer()["metadata"])
+        self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
+        self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
+        self.assertEqual(self.r.last_answer()["status"],"FINAL",
+                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}; error={meta.get('error')!r}; detail={meta.get('detail')!r}; failure_stage={meta.get('failure_stage')!r}")
+        self.assertEqual(meta["late_watch"].get("offered"),"B2_GIST")
+        self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER",
+                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}")
+        self.assertFalse(meta["late_watch"].get("offer_id"))
+        late_report=json.loads(Operator(self.r).run(":latewatch"))
+        self.assertGreaterEqual(late_report["counts"].get("NO_OFFER",0),1)
+        self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
+                            for role,pre,thread,valid,status in self.calls),
+                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; notices={notices!r}")
+        c3_input=" ".join(message.get("content","") for message in self.c3_messages)
+        self.assertIn("B1_DETAIL",c3_input)
+        self.assertIn("Compare plan A and plan B",c3_input)
 
 if __name__=='__main__':unittest.main()

@@ -11,11 +11,20 @@ PINS = {
     'v13/runtime.py': {
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
+        'c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65',
+        '48603d6f44d8fa60532dd3a522e2c7e73f41f410ee793445d3c9d07e151b5575',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
-    'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e'},
-    'v13/attention.py': {'0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739'},
+    # Base ActionLearn plus the exact reviewed feedback-shadow CLI candidate.
+    # The candidate changes only the explicit :feedback-shadow operator surface;
+    # the C5 learning body remains guarded below.
+    'v13/actionlearn.py': {
+        '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6',
+        'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e',
+    },
+    'v13/attention.py': {'0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739', '58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e'},
     'v13/deliberation.py': {'5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c'},
     'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc'},
     'v13/workspace_learn.py': {'b6e3d2149fe7b7cc461c0edadd1a95b65b99b0d14e39da29206f7343fea74524'},
@@ -61,8 +70,9 @@ def apply_sources(code_dir, sources):
         raw = result.get(name)
         if raw is None:
             raw = path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() not in allowed:
-            raise ValueError('controller guard source changed: ' + name)
+        actual_sha = hashlib.sha256(raw).hexdigest()
+        if actual_sha not in allowed:
+            raise ValueError('controller guard source changed: ' + name + ' sha256=' + actual_sha)
         checked[name] = raw
 
     runtime = checked['v13/runtime.py']
@@ -132,6 +142,9 @@ def apply_sources(code_dir, sources):
     checked[name] = raw
 
     name = 'v13/actionlearn.py'
+    # Identify the exact unmodified source variant before injecting the gate import.
+    # The guarded output hash is checked separately against action_pin below.
+    source_action_pin = hashlib.sha256(result[name]).hexdigest()
     raw = checked[name]
     raw = _replace(raw, b"        sc=step(self.n,'c5_action_selection')  # WP-U6 \xc2\xa712.7\n",
         b"        if not updates_allowed(self.s):return {'n':0,'mods':{},'status':blocked_status(self.s)}\n"
@@ -185,14 +198,27 @@ def apply_sources(code_dir, sources):
     local_name = 'v13/local_error_route_shadow_candidate.py'
     semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
     local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
-    action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
+    action_pin = {
+        '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6':
+            '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a',
+        'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e':
+            '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a',
+    }.get(source_action_pin)
+    if action_pin is None:
+        raise ValueError('unrecognized ActionLearn source variant')
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
         actual = hashlib.sha256(result[name]).hexdigest()
         if actual != expected:
             raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
-    old_action_pin, = PINS['v13/actionlearn.py']
+    action_pin_candidates = sorted(
+        pin for pin in PINS['v13/actionlearn.py']
+        if result[semantic_name].count(pin.encode('ascii')) == 1
+    )
+    if len(action_pin_candidates) != 1:
+        raise ValueError('semantic ActionLearn dependency is missing or ambiguous')
+    old_action_pin = action_pin_candidates[0]
     semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
                         action_pin.encode('ascii'), 'semantic ActionLearn dependency')
     result[semantic_name] = semantic

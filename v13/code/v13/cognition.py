@@ -285,34 +285,48 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'perception','error':type(exc).__name__})
         return stored
-    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
+    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
+        if preanswer_budgeted is not None and type(preanswer_budgeted) is not bool:
+            raise ValueError('preanswer_budgeted must be bool or None')
         # Inference must finish within its own budget. A completed foreground
         # result may remain eligible until the already bounded consumer turn ends.
         # Background/probe callers retain their original observer-window expiry.
-        preanswer_observer = valid_until is not None
+        preanswer_observer = (valid_until is not None if preanswer_budgeted is None
+                              else preanswer_budgeted)
         valid_until=deadline if valid_until is None else valid_until
         for value in (deadline,valid_until):
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
         deadline=min(deadline,valid_until);check(self.r.cancel_event,deadline)
-        # On repeated measured zero-token C3 prefill deadlines, pre-answer
-        # B passes must not consume the remaining foreground native time.
-        # The existing postcommit body observer is unaffected (its caller
-        # omits valid_until). Both B1 and B2 retain real source/provenance.
+        # Repeated C3 prefill failures reserve the remaining C3 window, while
+        # the Runtime gives each sequential B1/B2 pass a fair native deadline.
+        # Defer only when this role's own slice is too small to attempt.
         if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
             try:
                 from .native_turn_budget import plan,recent_proof
                 budget=plan(valid_until-self.r.cfg['deadline_seconds'],
                             valid_until,time.monotonic(),
                             recent=recent_proof(self.s),
-                            background_enabled=True)
+                            background_enabled=True,
+                            observer_deadline=deadline)
             except (OSError,ValueError,RuntimeError,KeyError,TypeError):
                 budget=None
             if budget and budget['recovery']:
-                self.s.log('native_body_deferred_for_c3',e['event_id'],
-                           {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
-                            'recent_failures':budget['recent_real_prefill_failures']})
-                raise Limits('Redmi C3 braucht native Antwortzeit; B-Observer nach erfolgreicher Antwort')
+                available=budget['preanswer_seconds_available']
+                metrics={'role':role,
+                         'preanswer_seconds_available':round(available,3),
+                         'c3_reserved_seconds':budget['c3_reserved_seconds'],
+                         'c3_reserve_estimate_seconds':budget['c3_reserve_estimate_seconds'],
+                         'c3_reserve_source':budget['c3_reserve_source'],
+                         'c3_reserve_capped':budget['c3_reserve_capped'],
+                         'minimum_role_slice_s':budget['minimum_role_slice_s'],
+                         'recent_real_prefill_failures':budget['recent_real_prefill_failures']}
+                if available < budget['minimum_role_slice_s']:
+                    self.s.log('native_body_deferred_for_c3',e['event_id'],
+                               metrics|{'status':'POSTCOMMIT_ELIGIBLE'})
+                    raise Limits('No fair B1/B2 slice remains inside the C3-reserved turn window')
+                self.s.log('native_body_budgeted_for_c3',e['event_id'],
+                           metrics|{'status':'PREANSWER_BUDGETED'})
         control=self.r.cfg.get('b2_control','two_body')
         # §85.1 controls: the B2 role keeps its own state slot but may borrow B1's policy.
         policy='B1_DETAIL' if role=='B1_DETAIL' or control=='same_model_same_policy' else 'B2_GIST'
@@ -432,10 +446,22 @@ class Cognition:
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
-            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema));attempt_status='FINAL'
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema))
+            runner_status=(runner.last_metrics or {}).get('status') if isinstance(getattr(runner,'last_metrics',None),dict) else None
+            if self.r.cancel_event.is_set():attempt_status='CANCELLED'
+            elif time.monotonic()>=deadline or runner_status=='DEADLINE':attempt_status='DEADLINE'
+            elif runner_status in ('CANCELLED','INTERRUPTED','ERROR'):attempt_status=runner_status
+            else:attempt_status='FINAL'
+        except Exception:
+            if self.r.cancel_event.is_set():attempt_status='CANCELLED'
+            elif time.monotonic()>=deadline:attempt_status='DEADLINE'
+            else:attempt_status='ERROR'
+            raise
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
-            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
+            # The runner's last_metrics may be stale (e.g. FINAL from its prior
+            # call). The attempt boundary is authoritative for deadline/cancel.
+            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':attempt_status,'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
         obj=json.loads(raw)
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
