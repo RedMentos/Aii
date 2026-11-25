@@ -8,16 +8,16 @@ from pathlib import Path
 
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "abcda6f0e287122e19cffd2264a1c1fcc8f2eea4b811e731ceb24195101e2325",
+    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "2bb2cfc5baa4b02ec2989bd403dc45390a0c402325082230c5340d02038a1d15",
+    "v13/native_latent_receiver.py": "60be5402d3fbaf8bc3d99da18a637a31f0c5aeb910c7e3996343db203a12f17c",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "3a78fc92fd74be85e0b91859fad23f5917a633f4e233376226e1082f80aed344",
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "7aa9b4699b0aa0d49c126c090f89ba3173e0bdd4d9af1de8cb2705610f3c99c4",
     "v13/native/latent_receiver/README.md": "568757eed361977c60e18764476c1687b1584a8ce001e7847176f92cd84eee08"
 }
 
@@ -136,8 +136,8 @@ REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'pro
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
-OPERATOR_HELP_OLD = '''    """:callosum status/shadow/active/degrade/promote plus local one-shot native taps."""\n'''
-OPERATOR_HELP_NEW = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm|arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|revoke-tokenwise-pair]"""\n'''
+OPERATOR_HELP_OLD = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
+OPERATOR_HELP_NEW = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
 OPERATOR_PREFIX_NEW = r"""    c=controller(r)
     if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
@@ -164,8 +164,8 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
                       'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
 """
 
-OPERATOR_ERROR_OLD = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')\n"""
-OPERATOR_ERROR_NEW = """    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe <sender> <receiver> --last-source --confirm|arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|revoke-tokenwise-pair]')\n"""
+OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
+OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
