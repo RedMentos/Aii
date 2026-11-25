@@ -41,7 +41,7 @@ def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.
 
 
 def make_runtime(tmp_path):
-    (tmp_path / "data" / "db").mkdir(parents=True)
+    (tmp_path / "data" / "db").mkdir(parents=True, exist_ok=True)
     store = Store(tmp_path)
     store.ensure_generation_snapshot({}, {})
     session = store.new_session("RAW EAR temporal prediction test")
