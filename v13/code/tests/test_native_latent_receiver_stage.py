@@ -24,6 +24,8 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     runtime = (destination / "v13/runtime.py").read_text(encoding="utf-8")
     assert "v13/native_probe_approval.py" in manifest["files_sha256"]
     assert "v13/native_probe_matrix.py" in manifest["files_sha256"]
+    assert manifest["native_probe_close_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
+    assert manifest["native_probe_close_overlay"]["replaced_files"] == ["v13/runtime.py"]
     assert manifest["native_probe_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["native_probe_overlay"]["production_route"] is False
     assert manifest["native_probe_overlay"]["training_authority"] == 0
