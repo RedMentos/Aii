@@ -29,7 +29,7 @@ R-149 corrects R-148's upstream attribution: `a8fad21` is an unrelated MTP hidde
 
 - LOCAL_LINUX isolated reproduction, CPython 3.13.5: `py_compile` PASS; 18 focused positive/negative tests PASS.
 - The local run used an isolated package and minimal dependency stubs; it is not the full Aii repository suite.
-- Full Aii checkout is not mounted in this environment. Exact-head GitHub CI is pending.
+- Full Aii checkout is not mounted in this environment. Exact-head GitHub CI PASS on code/workflow head `11b8e983523e2962752bd5129c377e597b886e39` (run 45657145905): Python 3.13 and 3.14 each compiled the adapter/source-audit contracts, ran 65 tests PASS, and passed the public privacy scan (CLEAN).
 - No llama.cpp native build, GGUF row read, Android cross-compile, Termux or Redmi test is claimed.
 - No model/weight, permission, updater or device data changed. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED.
 
