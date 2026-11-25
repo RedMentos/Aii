@@ -1,9 +1,12 @@
-"""Low-rank cross-organ activation adapter for the native B3 diagnostic receiver.
+"""Typed low-rank cross-organ activation adapter for B3 research.
 
-The adapter maps paired sender activations into a receiver's input-embedding
-width. Training is an opt-in offline operation (NumPy is optional); projection
-uses only the Python standard library. Alignment metrics are NOT semantic
-utility: every result remains diagnostic, non-promoted and authority-zero.
+Generic paired-vector fitting can target an explicitly declared receiver space.
+The persisted B1/B2 tap fitter instead mean-pools non-position-zero final-RMSNorm
+rows and therefore produces an EVENT_POOLED_NONZERO_MEAN adapter, not a tokenwise
+native input-embedding adapter. Native receiver input construction requires a
+separately trained TOKENWISE adapter bound to the receiver input-embedding tap.
+Alignment metrics are not semantic utility; all results remain diagnostic,
+non-promoted and authority-zero.
 """
 from __future__ import annotations
 
@@ -18,7 +21,7 @@ import sys
 import tempfile
 from typing import Mapping, Sequence
 
-SCHEMA = "v14.cross-organ-latent-adapter/1"
+SCHEMA = "v14.cross-organ-latent-adapter/2"
 _MAGIC = b"V14LAT1\0"
 _MAX_DIM = 8192
 _MAX_RANK = 64
@@ -26,6 +29,12 @@ _MAX_PAIRS = 4096
 _MAX_FILE_BYTES = 64 * 1024 * 1024
 _ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 _RECEIVERS = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
+_PROJECTION_SCOPES = frozenset({"PAIRED_VECTOR", "EVENT_POOLED_NONZERO_MEAN", "TOKENWISE"})
+_NATIVE_INPUT_TAP_IDS = {
+    "B1_DETAIL": "b1.input-embedding.v1",
+    "B2_GIST": "b2.input-embedding.v1",
+    "C3_LANGUAGE": "c3.input-embedding.v1",
+}
 
 
 class LatentAdapterError(ValueError):
@@ -79,6 +88,24 @@ def _validate_pairs(pairs, name: str):
     return pair_ids, source_ids, senders, receivers
 
 
+def _validate_tokenwise_pairs(pairs: Sequence[Mapping], name: str) -> None:
+    """Require ordered, contiguous token positions within each source group."""
+    by_source: dict[str, list[int]] = {}
+    for pair in pairs:
+        source_id = pair["source_id"]
+        position = pair.get("token_position")
+        if type(position) is not int or not 0 <= position < 64:
+            raise LatentAdapterError(name + " tokenwise pairs require bounded token_position metadata")
+        positions = by_source.setdefault(source_id, [])
+        if position in positions:
+            raise LatentAdapterError(name + " contains a duplicate token position for one source")
+        positions.append(position)
+    for source_id, positions in by_source.items():
+        ordered = sorted(positions)
+        if len(ordered) < 2 or ordered != list(range(len(ordered))):
+            raise LatentAdapterError(name + " token positions must contain at least two contiguous rows from zero")
+
+
 def _weight_values(adapter: Mapping) -> list[float]:
     values = list(adapter["sender_mean"]) + list(adapter["receiver_mean"])
     values.extend(value for row in adapter["sender_factor"] for value in row)
@@ -99,7 +126,7 @@ def _serialize(adapter: Mapping) -> bytes:
         "sender_model_revision", "receiver_model_revision", "sender_model_sha256",
         "receiver_model_sha256", "sender_dim", "receiver_dim", "rank", "metrics",
         "train_pairs", "holdout_pairs", "train_source_count", "holdout_source_count",
-        "training_method", "holdout_policy",
+        "training_method", "holdout_policy", "projection_scope",
         "production_route", "semantic_use_proven", "training_authority", "native_receiver_authority",
     )}
     header["weight_count"] = len(values)
@@ -117,6 +144,8 @@ def _validate_adapter(adapter: Mapping, *, require_candidate: bool = True) -> No
         raise LatentAdapterError("adapter did not pass its source-disjoint alignment gate")
     if adapter.get("sender_role") not in _ROLES or adapter.get("receiver_role") not in _RECEIVERS or adapter.get("sender_role") == adapter.get("receiver_role"):
         raise LatentAdapterError("invalid sender/receiver role binding")
+    if adapter.get("projection_scope") not in _PROJECTION_SCOPES:
+        raise LatentAdapterError("invalid projection scope")
     _sha256_text(adapter.get("sender_model_sha256"), "sender_model_sha256")
     _sha256_text(adapter.get("receiver_model_sha256"), "receiver_model_sha256")
     for key in ("sender_tap_id", "receiver_tap_id", "sender_model_revision", "receiver_model_revision"):
@@ -146,7 +175,8 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
                 sender_model_revision: str, receiver_model_revision: str,
                 sender_model_sha256: str, receiver_model_sha256: str,
                 rank: int = 16, ridge: float = 1e-4,
-                min_relative_improvement: float = 0.02, seed: int = 7) -> dict:
+                min_relative_improvement: float = 0.02, seed: int = 7,
+                projection_scope: str = "PAIRED_VECTOR") -> dict:
     """Fit a low-rank affine map on paired activations with source-disjoint holdout.
 
     This is an alignment candidate only. The held-out MSE and shuffled control
@@ -168,12 +198,17 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         raise LatentAdapterError("invalid minimum holdout improvement")
     if type(seed) is not int:
         raise LatentAdapterError("seed must be an integer")
+    if projection_scope not in _PROJECTION_SCOPES:
+        raise LatentAdapterError("unsupported projection scope")
     train_ids, train_sources, x_train, y_train = _validate_pairs(train_pairs, "train_pairs")
     holdout_ids, holdout_sources, x_holdout, y_holdout = _validate_pairs(holdout_pairs, "holdout_pairs")
     if train_ids & holdout_ids:
         raise LatentAdapterError("paired activation IDs cross train/holdout")
     if train_sources & holdout_sources:
         raise LatentAdapterError("source leakage: a source appears in train and holdout")
+    if projection_scope == "TOKENWISE":
+        _validate_tokenwise_pairs(train_pairs, "train_pairs")
+        _validate_tokenwise_pairs(holdout_pairs, "holdout_pairs")
     if len(train_pairs) < 8 or len(holdout_pairs) < 4 or len(train_sources) < 4 or len(holdout_sources) < 2:
         raise LatentAdapterError("insufficient independent source groups for alignment holdout")
     sender_dim, receiver_dim = len(x_train[0]), len(y_train[0])
@@ -233,6 +268,7 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
         "receiver_role": receiver_role,
         "sender_tap_id": sender_tap_id,
         "receiver_tap_id": receiver_tap_id,
+        "projection_scope": projection_scope,
         "sender_model_revision": sender_model_revision,
         "receiver_model_revision": receiver_model_revision,
         "sender_model_sha256": sender_model_sha256,
@@ -303,11 +339,72 @@ def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
     )
 
 
-def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+def project_event(adapter: Mapping, sender_vector, **bindings) -> list[float]:
+    """Project one source-bound event vector with an event-level adapter.
+
+    Pooled tap fitting produces one vector per source/event. It must not be
+    broadcast over token rows: the native receiver has a separate token-position
+    contract and currently has no latent-prefix position mode.
+    """
     _validate_adapter(adapter)
+    if adapter["projection_scope"] not in {"PAIRED_VECTOR", "EVENT_POOLED_NONZERO_MEAN"}:
+        raise LatentAdapterError("tokenwise adapter cannot be projected as one event vector")
+    return _project_vector_validated(adapter, sender_vector, **bindings)
+
+
+def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+    """Project token rows only when the adapter was fitted tokenwise."""
+    _validate_adapter(adapter)
+    if adapter["projection_scope"] != "TOKENWISE":
+        raise LatentAdapterError("event-level adapter requires project_event; token-aligned fit is required for rows")
     if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
         raise LatentAdapterError("sender tap must contain 1..64 activation rows")
     return [_project_vector_validated(adapter, row, **bindings) for row in sender_vectors]
+
+
+def build_native_receiver_input(adapter: Mapping, sender_vectors, *, token_ids,
+                                tokenizer_revision: str, **bindings) -> dict:
+    """Build the exact token-row input contract accepted by native receiver v3.
+
+    This requires a TOKENWISE adapter trained against the receiver's actual
+    input-embedding tap. Event-pooled adapters are refused: the current receiver
+    has no LATENT_PREFIX position mode for a single pooled event vector.
+    Token IDs are used only to verify row count and are not returned.
+    """
+    _validate_adapter(adapter)
+    if adapter["projection_scope"] != "TOKENWISE":
+        raise LatentAdapterError("native receiver requires a tokenwise adapter; pooled event vectors need a latent-prefix contract")
+    expected_tap = _NATIVE_INPUT_TAP_IDS.get(adapter["receiver_role"])
+    if expected_tap is None or adapter["receiver_tap_id"] != expected_tap or bindings.get("receiver_tap_id") != expected_tap:
+        raise LatentAdapterError("native receiver adapter is not bound to the receiver input-embedding tap")
+    if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
+        raise LatentAdapterError("sender tap must contain 1..64 token rows")
+    if not isinstance(token_ids, (list, tuple)) or len(token_ids) != len(sender_vectors):
+        raise LatentAdapterError("token ID count differs from token-aligned activation rows")
+    if any(type(token_id) is not int or token_id < 0 for token_id in token_ids):
+        raise LatentAdapterError("token IDs must be non-negative integers")
+    if type(tokenizer_revision) is not str or not tokenizer_revision or len(tokenizer_revision) > 160:
+        raise LatentAdapterError("tokenizer revision is required for native input alignment")
+
+    projected = project_rows(adapter, sender_vectors, **bindings)
+    from . import native_latent_receiver
+    rows, input_dim, _payload, input_sha256 = native_latent_receiver._vector_payload(projected)
+    positions = native_latent_receiver._validate_positions(
+        list(range(rows)), rows, native_latent_receiver.POSITION_MODE,
+    )
+    return {
+        "vectors": projected,
+        "position_ids": positions,
+        "position_mode": native_latent_receiver.POSITION_MODE,
+        "input_rows": rows,
+        "input_dim": input_dim,
+        "input_sha256": input_sha256,
+        "tokenizer_revision": tokenizer_revision,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
 
 
 def save_adapter(adapter: Mapping, path: str | os.PathLike) -> str:
@@ -551,6 +648,7 @@ def fit_from_tap_records(
         ridge=ridge,
         min_relative_improvement=min_relative_improvement,
         seed=fit_seed,
+        projection_scope="EVENT_POOLED_NONZERO_MEAN",
     )
     return {
         "schema": "v14.latent-tap-adapter-fit/1",

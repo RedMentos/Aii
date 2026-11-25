@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-25T11:18:46.133Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -428,6 +428,25 @@
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T12:44:40Z",
       "proof": "v14/m1/data.py + array_data.py + test_data.py + test_array_data.py. Two-pass direct-to-array UCI ingestion; data/split hash parity; 256 MiB batch allocation ceiling; vectorized missing-window checks; monthly rejection stats; test gate logs and fsyncs before any test-window materialization/unlock. Latest M1 CI queued, not passed."
+    },
+    {
+      "id": "V14-021",
+      "title": "Typed event-pooled vs tokenwise latent adapter and native receiver input contract",
+      "owner": "Research & Perception + Core & Harness",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "last_checkpoint": "2026-11-25T11:18:46.133Z",
+      "proof_environment": "LOCAL_LINUX isolated helper/receiver-validator reproduction + SYNTHETIC tokenwise vectors; exact repository staged CI in progress; runtime-deployment integrity CI PASS; no native GGUF or Redmi proof",
+      "proof": "Research/Perception PR #2496 code head a1d8fe6c82ffd4573d81ab69769d12dce50827a6 is stacked on #2489. Adapter schema v2 records projection_scope; persisted B1/B2 final-RMSNorm fitting is EVENT_POOLED_NONZERO_MEAN; project_event handles one vector; project_rows rejects pooled adapters; tokenwise fit requires source-local contiguous token_position rows; build_native_receiver_input emits native receiver-v3 token-row payload only for TOKENWISE adapters bound to *.input-embedding.v1. LOCAL_LINUX CPython 3.13.5 isolated helper reproduction: py_compile PASS, 10/10 contract/position tests PASS; local receiver validator is a stub copied from the receiver contract, not exact repository modules. Exact staged/integrated CI IN_PROGRESS; runtime-deployment integrity SUCCESS. Full local Aii suite NOT_RUN; no native model pair, gradient/retention or Redmi proof.",
+      "next_step": "Core must provide either (a) source-bound receiver input-embedding taps and paired tokenwise cohorts with exact tokenizer/source positions, or (b) a separately typed LATENT_PREFIX_V1 position mode for pooled event vectors. Then run the existing local one-shot approved native receiver path and task-utility controls; keep production B3 OFF until held-out semantic/task utility, parity, zero/shuffle/repeat/OOD and rollback evidence pass.",
+      "parent_ticket": "V14-016",
+      "related_prs": [
+        2489,
+        2496,
+        2488,
+        2490
+      ],
+      "user_action_required": false
     }
   ],
   "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",

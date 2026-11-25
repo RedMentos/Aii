@@ -10,9 +10,11 @@ from v13.latent_adapter import (
     LatentAdapterError,
     fit_from_tap_records,
     load_adapter,
+    project_event,
     project_rows,
     save_adapter,
 )
+from v13.latent_alignment_audit import _pool_without_position0
 
 SENDER_HASH = "a" * 64
 RECEIVER_HASH = "b" * 64
@@ -179,16 +181,20 @@ def test_persisted_taps_fit_source_disjoint_crossdim_adapter_and_roundtrip(tmp_p
     path = tmp_path / "adapter.v14lat"
     saved_sha = save_adapter(adapter, path)
     restored = load_adapter(path)
-    projected = project_rows(
-        restored,
-        [rows[0][0].tolist()],
-        sender_model_sha256=SENDER_HASH,
-        receiver_model_sha256=RECEIVER_HASH,
-        sender_tap_id=SENDER_TAP,
-        receiver_tap_id=RECEIVER_TAP,
-    )
+    sender_vectors = [
+        [1000.0 + col for col in range(len(rows[0][0]))],
+        rows[0][0].tolist(),
+        [float(value) * 0.999 + 0.001 for value in rows[0][0]],
+    ]
+    sender_event, _, _ = _pool_without_position0(sender_vectors)
+    bindings = dict(sender_model_sha256=SENDER_HASH, receiver_model_sha256=RECEIVER_HASH,
+                    sender_tap_id=SENDER_TAP, receiver_tap_id=RECEIVER_TAP)
+    projected = project_event(restored, sender_event, **bindings)
     assert restored["adapter_sha256"] == saved_sha
-    assert len(projected) == 1 and len(projected[0]) == 4
+    assert restored["projection_scope"] == "EVENT_POOLED_NONZERO_MEAN"
+    assert len(projected) == 4
+    with pytest.raises(LatentAdapterError, match="event-level adapter"):
+        project_rows(restored, [sender_event, sender_event], **bindings)
 
 
 def test_shuffled_source_pairing_is_rejected(tmp_path):
