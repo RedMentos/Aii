@@ -43,6 +43,14 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertFalse(d["age_changed"])
         self.assertFalse(d["memory_or_native_weights_changed"])
 
+    def test_recent_success_duration_sets_measured_c3_reserve(self):
+        rows = [turn(), turn(), turn("FINAL", generated=7, phase="stream", duration_s=11.5)]
+        d = budget.plan(100, 130, 104, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["c3_reserve_source"], "RECENT_SUCCESS_MAX")
+        self.assertAlmostEqual(d["c3_reserve_estimate_seconds"], 16.525)
+        self.assertAlmostEqual(d["c3_reserved_seconds"], 16.525)
+
     def test_one_failure_keeps_full_synchronous_cognitive_window(self):
         d=budget.plan(100,130,103.5,recent=[turn()])
         self.assertFalse(d["recovery"])
