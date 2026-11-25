@@ -39,7 +39,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
           python -m py_compile v13/code/v13/native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_extractor.py
-          python -m unittest -v tests.test_native_input_embedding_extractor
+          python v13/code/tests/test_native_input_embedding_extractor.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
 
