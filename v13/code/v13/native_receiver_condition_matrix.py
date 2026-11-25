@@ -138,7 +138,9 @@ def _packet(record, packet, adapter_sha, name):
     if [item.get("token_position") for item in exact_pairs] != list(range(len(exact_pairs))):
         raise NativeReceiverConditionMatrixError(name + " pair positions are not contiguous")
     exact = _rows([item.get("receiver_vector") for item in exact_pairs], name + " exact receiver rows")
-    if len(exact) != len(rows) or len(exact[0]) != len(rows[0]) or len(rows) + 1 > MAX_ROWS:
+    if (len(exact) != len(rows) or len(exact[0]) != len(rows[0])
+            or len(exact[0]) != record.get("receiver", {}).get("embedding_dim")
+            or len(rows) + 1 > MAX_ROWS):
         raise NativeReceiverConditionMatrixError(name + " exact/candidate geometry differs")
     return exact, rows, sender, receiver
 
@@ -168,10 +170,64 @@ def _control(control, name, task, main, adapter_sha, main_sender, main_receiver)
         "brain_generation_id": record.get("brain_generation_id")}
 
 
+def build_entity_substitution_proof(original_text, alternate_text, original_record, alternate_record, entity_byte_spans):
+    """Verify a same-template, entity-only text pair without returning raw text."""
+    if type(original_text) is not str or type(alternate_text) is not str:
+        raise NativeReceiverConditionMatrixError("entity proof texts must be strings")
+    original, alternate = original_text.encode("utf-8"), alternate_text.encode("utf-8")
+    original_ref, alternate_ref = _ref(original_record.get("source_ref"), "task"), _ref(alternate_record.get("source_ref"), "entity")
+    if (hashlib.sha256(original).hexdigest() != original_ref["sha256"]
+            or hashlib.sha256(alternate).hexdigest() != alternate_ref["sha256"]
+            or original_record["source_ref"].get("char_end") != len(original_text)
+            or alternate_record["source_ref"].get("char_end") != len(alternate_text)):
+        raise NativeReceiverConditionMatrixError("entity proof source text does not match its source refs")
+    if len(original) != len(alternate) or not isinstance(entity_byte_spans, (list, tuple)) or not entity_byte_spans:
+        raise NativeReceiverConditionMatrixError("entity substitution must preserve byte length and declare spans")
+    normalized, previous, any_change = [], 0, False
+    for span in entity_byte_spans:
+        if (not isinstance(span, (list, tuple)) or len(span) != 2 or type(span[0]) is not int
+                or type(span[1]) is not int or not previous <= span[0] < span[1] <= len(original)):
+            raise NativeReceiverConditionMatrixError("entity byte spans are invalid or overlapping")
+        start, end = span
+        if original[previous:start] != alternate[previous:start]:
+            raise NativeReceiverConditionMatrixError("entity substitution changed bytes outside declared spans")
+        any_change = any_change or original[start:end] != alternate[start:end]
+        normalized.extend((original[previous:start], b"<ENTITY>"))
+        previous = end
+    if original[previous:] != alternate[previous:]:
+        raise NativeReceiverConditionMatrixError("entity substitution changed trailing bytes outside declared spans")
+    normalized.extend((original[previous:],))
+    if not any_change:
+        raise NativeReceiverConditionMatrixError("declared entity spans contain no changed bytes")
+    a, b = original_record["receiver"], alternate_record["receiver"]
+    if a.get("token_spans") != b.get("token_spans") or len(a.get("token_ids", [])) != len(b.get("token_ids", [])):
+        raise NativeReceiverConditionMatrixError("entity token spans are not position-compatible")
+    changed = []
+    for index, span in enumerate(a["token_spans"]):
+        start, end = span
+        byte_changed = original[start:end] != alternate[start:end]
+        id_changed = a["token_ids"][index] != b["token_ids"][index]
+        inside = any(left <= start and end <= right for left, right in entity_byte_spans)
+        if byte_changed != id_changed or (byte_changed and not inside):
+            raise NativeReceiverConditionMatrixError("entity token changes do not match declared entity spans")
+        if id_changed:
+            changed.append(index)
+    if not changed:
+        raise NativeReceiverConditionMatrixError("entity substitution changed no receiver token IDs")
+    template_sha = hashlib.sha256(b"".join(normalized)).hexdigest()
+    return {"schema": "v14.entity-substitution-proof/1",
+        "original_source_sha256": original_ref["sha256"], "alternate_source_sha256": alternate_ref["sha256"],
+        "original_template_sha256": template_sha, "alternate_template_sha256": template_sha,
+        "changed_token_positions": changed, "token_spans_sha256": _json_sha(a["token_spans"]),
+        "proof_kind": "ENTITY_ONLY_BYTE_SPAN_VERIFIED_V1"}
+
+
 def _entity_positions(main, alternate, proof):
     if not isinstance(proof, Mapping) or proof.get("schema") != "v14.entity-substitution-proof/1":
         raise NativeReceiverConditionMatrixError("entity-only source-pair proof is required")
     original_ref, alternate_ref = _ref(main["source_ref"], "task"), _ref(alternate["source_ref"], "entity")
+    if proof.get("proof_kind") != "ENTITY_ONLY_BYTE_SPAN_VERIFIED_V1":
+        raise NativeReceiverConditionMatrixError("entity proof kind is not byte-span verified")
     if (proof.get("original_source_sha256") != original_ref["sha256"]
             or proof.get("alternate_source_sha256") != alternate_ref["sha256"]
             or proof.get("original_template_sha256") != proof.get("alternate_template_sha256")):
@@ -267,9 +323,8 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         candidate_packet, ood_control, entity_control):
     """Create the eight source-bound task-score inputs; no native execution occurs.
 
-    entity_control.proof must be emitted by a source preprocessor that has
-    checked that only the declared entity changed. This function verifies its
-    source hashes, shared template digest, token spans and changed token IDs.
+    Entity proof is built in memory from both source texts and declared byte
+    spans; only source hashes and changed token positions escape.
     """
     if not isinstance(task, Mapping):
         raise NativeReceiverConditionMatrixError("task metadata is required")
@@ -285,6 +340,11 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
     main = _record(pair_record, "task")
     if main.get("session_id") != session:
         raise NativeReceiverConditionMatrixError("task and pair-record sessions differ")
+    if type(task.get("source_text")) is not str or not task["source_text"]:
+        raise NativeReceiverConditionMatrixError("task source text is required for source-pair validation")
+    if (main["source_ref"].get("char_end") != len(task["source_text"])
+            or hashlib.sha256(task["source_text"].encode("utf-8")).hexdigest() != main["source_ref"]["sha256"]):
+        raise NativeReceiverConditionMatrixError("task source text differs from the pair record")
     main_sender, main_receiver = _bindings(main)
     adapter_sha = _sha(candidate_packet.get("adapter_sha256"), "candidate.adapter_sha256")
     exact, candidate, _sender, _receiver = _packet(main, candidate_packet, adapter_sha, "task")
@@ -311,7 +371,9 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         raise NativeReceiverConditionMatrixError("entity substitution must preserve task family")
     if entity_meta["source_ref"] == ood_meta["source_ref"] or entity_meta["task_group_id"] == ood_meta["task_group_id"]:
         raise NativeReceiverConditionMatrixError("OOD and entity controls must use different sources/task groups")
-    changed = _entity_positions(main, entity_record, entity_control.get("proof"))
+    proof = build_entity_substitution_proof(task["source_text"], entity_control.get("source_text"),
+        main, entity_record, entity_control.get("entity_byte_spans"))
+    changed = _entity_positions(main, entity_record, proof)
 
     source = _ref(main["source_ref"], "task")
     context_sha = _json_sha({"schema": "v14.native-receiver-shared-context/1", "task_group_id": task_id,
