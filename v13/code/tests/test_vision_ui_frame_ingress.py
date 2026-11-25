@@ -1572,3 +1572,81 @@ def test_temporal_visual_legacy_luminance_only_remains_supported():
     assert first["method"] == LUMINANCE_METHOD
     assert second["multichannel_status"] == "UNAVAILABLE"
     assert second["attention_novelty"] == 0.0
+
+
+def test_a3_online_temporal_prediction_is_source_bound_and_a4_shadow_only(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    _path, projector_sha = install_student_projector(runtime, tmp_path)
+    session_receipt = "session-consent-predictor-0001"
+    frames = [image_buffer() if index % 2 == 0 else image_buffer_variant() for index in range(7)]
+    results = []
+    first_obs = None
+
+    for index, frame in enumerate(frames):
+        obs = observation(
+            source_id=f"ui-predict-frame-{index:02d}",
+            receipt_ref=f"frame-predict-receipt-{index:02d}",
+            session_receipt_ref=session_receipt,
+            start_ms=1000 + index * 33,
+            end_ms=1033 + index * 33,
+        )
+        if first_obs is None:
+            first_obs = obs
+        with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+            result = consume_with_provider_verifier(
+                runtime, obs, frame, consent_lease=lease,
+                current_source="Observe this authorized screen session.",
+                goal="track the changing panel",
+            )
+        results.append(result)
+
+    first_prediction = results[0]["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert first_prediction["status"] == "WARMUP"
+    assert first_prediction["persistent_weights"] is False
+    assert results[1]["a3_projected_change"]["status"] == "MEASURED"
+
+    final = results[-1]
+    prediction = final["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert prediction["status"] == "SHADOW_MEASURED"
+    assert prediction["updates"] >= prediction["warmup_updates"] + 1
+    assert prediction["parameter_l2"] > 0.0
+    assert prediction["persistent_weights"] is False
+    assert prediction["weight_scope"] == "EPHEMERAL_SESSION_SHADOW"
+    assert prediction["authority"] == "SHADOW_ONLY"
+    assert prediction["truth_authority"] == 0
+    assert prediction["learning_authority"] is False
+    assert prediction["action_authority"] is False
+    assert final["packet"]["temporal_visual_evidence"]["a3_temporal_prediction"] == prediction
+    assert final["a4"]["temporal_visual_evidence"]["a3_temporal_prediction"] == prediction
+    assert final["temporal_visual_modulation"]["salience"]["novelty"] == (
+        final["temporal_visual_evidence"]["attention_novelty"]
+    )
+    assert all(not any(frame) for frame in frames)
+
+    # A new session-consent receipt on the same capture session cannot inherit
+    # the previous predictor's numeric state.
+    rotated = observation(
+        source_id="ui-predict-frame-rotated",
+        receipt_ref="frame-predict-receipt-rotated",
+        session_receipt_ref="session-consent-predictor-rotated",
+        start_ms=1231,
+        end_ms=1264,
+    )
+    rotated_frame = image_buffer()
+    with lease_for(runtime, rotated, lock=runtime.store.mutex) as lease:
+        rotated_result = consume_with_provider_verifier(
+            runtime, rotated, rotated_frame, consent_lease=lease,
+            current_source="Observe the new authorized screen session.",
+            goal="track the changing panel",
+        )
+    reset_prediction = rotated_result["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert reset_prediction["status"] == "WARMUP"
+    assert reset_prediction["updates"] == 0
+    assert reset_prediction["parameter_l2"] == 0.0
+    assert not any(rotated_frame)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(rotated["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
