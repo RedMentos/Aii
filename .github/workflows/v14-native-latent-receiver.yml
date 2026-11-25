@@ -87,6 +87,16 @@ jobs:
           close_raw = close_overlay_path.read_bytes()
           close_blob = hashlib.sha1(b"blob " + str(len(close_raw)).encode("ascii") + b"\0" + close_raw).hexdigest()
           assert close_pin == close_blob
+          stage_close_pin = re.search(r"RUNTIME_CLOSE_OVERLAY_GIT_BLOB = '([a-f0-9]{40})'", stage_text)
+          assert stage_close_pin and stage_close_pin.group(1) == close_blob
+          recovery_path = code / "scripts/termux_runtime_recovery_candidate_20261121.py"
+          receiver_builder_path = code / "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+          builder_pin = re.search(r"BUILDER_SHA = '([a-f0-9]{64})'", stage_text)
+          assert builder_pin and builder_pin.group(1) == hashlib.sha256(recovery_path.read_bytes()).hexdigest()
+          recovery_native_pin = re.search(r'NATIVE_RECEIVER_BLOB_SHA1 = "([a-f0-9]{40})"', recovery_text)
+          receiver_builder_raw = receiver_builder_path.read_bytes()
+          receiver_builder_blob = hashlib.sha1(b"blob " + str(len(receiver_builder_raw)).encode("ascii") + b"\0" + receiver_builder_raw).hexdigest()
+          assert recovery_native_pin and recovery_native_pin.group(1) == receiver_builder_blob
           print("PASS: deployer -> stage builder -> recovery -> close overlay -> operator/module pins")
           PY
       - name: Test captured Runtime.close callback lifecycle barrier
