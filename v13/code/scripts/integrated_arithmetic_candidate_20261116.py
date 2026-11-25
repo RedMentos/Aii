@@ -59,6 +59,18 @@ def apply_sources(code_dir, sources):
         "            from .arithmetic_reflex import exact_arithmetic\n"
         "            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)\n",
         'bounded source computation')
+    runtime = _replace(runtime,
+        "            mark('perception_and_state')\n",
+        "            if isinstance(fixed_policy,dict) and fixed_policy.get('rule_id')=='BUILTIN_ARITHMETIC_EXACT_V1':\n"
+        "                if fixed_policy.get('kind')!='FIXED_EXACT' or fixed_policy.get('query_ref')!=e['source_ref'] or type(fixed_policy.get('answer')) is not str:\n"
+        "                    raise ValueError('built-in arithmetic receipt is not source-bound')\n"
+        "                answer_ref=fixed_policy.get('answer_ref')\n"
+        "                if not isinstance(answer_ref,dict) or self.store.read_source(answer_ref)!=fixed_policy['answer']:\n"
+        "                    raise ValueError('built-in arithmetic answer source mismatch')\n"
+        "                arithmetic_answer=fixed_policy['answer']\n"
+        "                fixed_policy=None\n"
+        "            mark('perception_and_state')\n",
+        'preserve built-in arithmetic authority')
     # Like approved exact output, the narrow arithmetic path needs the current
     # A5 source and executive state, without optional native perception/recall.
     runtime = _replace(runtime,
