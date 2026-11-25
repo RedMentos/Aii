@@ -26,7 +26,7 @@ Commits:
 
 - **LOCAL_LINUX — CPython 3.13.5:** isolated reproduction of the new cohort gate, 4 assertions PASS (normal crossed cohort, per-cell minimum, duplicate-source rejection, missing session/family cell rejection).
 - **LOCAL_LINUX — full repository:** BLOCKED / NOT_RUN. No Aii checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` failed because GitHub DNS is unavailable in this runner. No exact repository pytest or native llama.cpp build is claimed locally.
-- **GitHub Actions:** earlier code/test head `4b8fb872` had deployment-integrity PASS (Python 3.11/3.14) and staged-runtime PASS; integrated-regression was still running. The follow-up code/test head `cabcff089` must be read back separately; no PASS is claimed for it yet.
+- **GitHub Actions:** follow-up code/test head `cabcff089` has deployment-integrity PASS (Python 3.11/3.14, run 45711165841) and staged-runtime + integrated-regression PASS (run 45711165776). The integrated job ran `tests/test_staged_integrated_regression_20261111.py`: 424 passed, 3 skipped, 58 subtests passed, 6 warnings. This is not proof that `v13/code/tests/test_native_tokenwise_pairing.py` itself ran; no dedicated exact-head tokenwise adapter-contract run was observed. The earlier code/test head `4b8fb872` also completed staged/integrated + deployment-integrity successfully.
 - **TERMUX/REDMI:** REDMI_UNVERIFIED. No connected device, live microphone, native GGUF target-score cohort, model download/swap, update request, restart or permission/data mutation occurred.
 
 ## Actual consumer and user effect
@@ -36,6 +36,8 @@ Core PR [#2515](https://github.com/RedMentos/Aii/pull/2515) is the intended cons
 The change improves the validity of the eventual B3 native-receiver likelihood comparison. It does **not** establish semantic understanding, generated-answer correctness, trained cross-model latent coupling, production B3, model learning or a user-visible chat improvement. B3 remains OFF.
 
 ## Whole-system status carried forward
+
+The successful integrated-regression log printed `JEPA_HOLDOUT` before=0.9685428667, after=0.9142360215, delta=-0.0543068452. The test suite passed because the holdout gate correctly rejects this regressed update; this is not a successful JEPA learning/retention result. JEPA/Memory must change the update/replay mechanism, not relax the gate.
 
 - The P0 basic-chat / B1-B2 delivery blocker in #1904 remains open; this Perception change does not solve it.
 - The tokenwise path is still a diagnostic candidate. Symbolic source-exact exchange remains distinct from learned native latent communication.
