@@ -28,7 +28,7 @@ class A3TemporalPredictor:
 
     def __init__(self, *, learning_rate: float = 0.25,
                  warmup_updates: int = 4, max_gradient_norm: float = 1.0,
-                 max_abs_weight: float = 2.0) -> None:
+                 max_abs_weight: float = 2.0, update_policy: str = "ALWAYS") -> None:
         if (type(learning_rate) not in (int, float)
                 or not math.isfinite(float(learning_rate))
                 or not 0.0 < float(learning_rate) <= 1.0):
@@ -43,19 +43,24 @@ class A3TemporalPredictor:
                 or not math.isfinite(float(max_abs_weight))
                 or not 0.0 < float(max_abs_weight) <= 10.0):
             raise ValueError("max_abs_weight must be finite in (0,10]")
+        if update_policy not in {"ALWAYS", "ERROR_GATED"}:
+            raise ValueError("update_policy must be ALWAYS or ERROR_GATED")
         self.learning_rate = float(learning_rate)
         self.warmup_updates = warmup_updates
+        self.update_policy = update_policy
         self.max_gradient_norm = float(max_gradient_norm)
         self.max_abs_weight = float(max_abs_weight)
         self._weights = [[0.0] * TILE_COUNT for _ in range(INPUT_COUNT)]
         self._previous = None
         self._updates = 0
+        self._observations = 0
 
     def reset(self) -> None:
         """Erase the session-local predictor and all learned numeric state."""
         self._weights = [[0.0] * TILE_COUNT for _ in range(INPUT_COUNT)]
         self._previous = None
         self._updates = 0
+        self._observations = 0
 
     @staticmethod
     def _validate(values) -> tuple[float, ...]:
@@ -76,12 +81,19 @@ class A3TemporalPredictor:
 
     def _payload(self, *, status: str, prediction_error=None, baseline_error=None,
                  improvement=None, surprise=None, gradient_l2=0.0,
-                 parameter_delta_l2=0.0) -> dict:
+                 parameter_delta_l2=0.0, update_gate="NONE",
+                 prediction_error_exceeds_gate=False) -> dict:
         return {
             "schema": "v14.a3-temporal-prediction/1",
             "status": status,
             "method": METHOD,
             "updates": self._updates,
+            "observations": self._observations,
+            "update_fraction": round(self._updates / max(1, self._observations), 6),
+            "update_policy": self.update_policy,
+            "update_gate_rule": "MODEL_MAE_GT_MAX_EPSILON_OR_0.25_PERSISTENCE_MAE",
+            "update_gate": update_gate,
+            "prediction_error_exceeds_gate": bool(prediction_error_exceeds_gate),
             "warmup_updates": self.warmup_updates,
             "prediction_error_mae": None if prediction_error is None else round(prediction_error, 8),
             "persistence_baseline_mae": None if baseline_error is None else round(baseline_error, 8),
@@ -123,34 +135,43 @@ class A3TemporalPredictor:
         ))) for column in range(TILE_COUNT))
         baseline_error = sum(abs(target[i] - self._previous[i]) for i in range(TILE_COUNT)) / TILE_COUNT
         model_error = sum(abs(target[i] - prediction[i]) for i in range(TILE_COUNT)) / TILE_COUNT
-        measured = self._updates >= self.warmup_updates
+        measured = self._observations >= self.warmup_updates
+        error_gate_open = model_error > max(1e-8, baseline_error * 0.25)
+        should_update = self.update_policy == "ALWAYS" or error_gate_open
+        update_gate = "ALWAYS" if self.update_policy == "ALWAYS" else (
+            "ERROR_GATE_OPEN" if error_gate_open else "ERROR_GATE_CLOSED"
+        )
 
-        # Mean-squared-error LMS gradient. Clip the global gradient norm and
-        # each parameter to keep the per-session model strictly bounded.
-        gradient = [
-            [2.0 * features[row] * (prediction[column] - target[column]) / TILE_COUNT
-             for column in range(TILE_COUNT)]
-            for row in range(INPUT_COUNT)
-        ]
-        gradient_l2 = math.sqrt(sum(value * value for row in gradient for value in row))
-        scale = min(1.0, self.max_gradient_norm / max(gradient_l2, 1e-12))
+        gradient_l2 = 0.0
         delta_squared = 0.0
-        for row in range(INPUT_COUNT):
-            for column in range(TILE_COUNT):
-                delta = -self.learning_rate * gradient[row][column] * scale
-                updated = max(-self.max_abs_weight, min(
-                    self.max_abs_weight, self._weights[row][column] + delta,
-                ))
-                actual_delta = updated - self._weights[row][column]
-                self._weights[row][column] = updated
-                delta_squared += actual_delta * actual_delta
+        if should_update:
+            # Mean-squared-error LMS gradient. Clip the global gradient norm and
+            # each parameter to keep the per-session model strictly bounded.
+            gradient = [
+                [2.0 * features[row] * (prediction[column] - target[column]) / TILE_COUNT
+                 for column in range(TILE_COUNT)]
+                for row in range(INPUT_COUNT)
+            ]
+            gradient_l2 = math.sqrt(sum(value * value for row in gradient for value in row))
+            scale = min(1.0, self.max_gradient_norm / max(gradient_l2, 1e-12))
+            for row in range(INPUT_COUNT):
+                for column in range(TILE_COUNT):
+                    delta = -self.learning_rate * gradient[row][column] * scale
+                    updated = max(-self.max_abs_weight, min(
+                        self.max_abs_weight, self._weights[row][column] + delta,
+                    ))
+                    actual_delta = updated - self._weights[row][column]
+                    self._weights[row][column] = updated
+                    delta_squared += actual_delta * actual_delta
+            self._updates += 1
 
         self._previous = target
-        self._updates += 1
+        self._observations += 1
         if not measured:
             return self._payload(
                 status="WARMUP", gradient_l2=gradient_l2,
-                parameter_delta_l2=math.sqrt(delta_squared),
+                parameter_delta_l2=math.sqrt(delta_squared), update_gate=update_gate,
+                prediction_error_exceeds_gate=error_gate_open,
             )
         improvement = baseline_error - model_error
         return self._payload(
@@ -158,5 +179,6 @@ class A3TemporalPredictor:
             baseline_error=baseline_error, improvement=improvement,
             surprise=max(0.0, model_error - baseline_error),
             gradient_l2=gradient_l2,
-            parameter_delta_l2=math.sqrt(delta_squared),
+            parameter_delta_l2=math.sqrt(delta_squared), update_gate=update_gate,
+            prediction_error_exceeds_gate=error_gate_open,
         )
