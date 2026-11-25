@@ -160,3 +160,56 @@ def test_native_input_tap_preserves_repeated_token_ids_without_deduplication():
     assert result["manifest"]["extractor_receipt"]["requested_token_ids"] == token_ids
     assert result["manifest"]["row_positions"] == [0, 1, 2]
     assert validate(result["manifest"], source, pieces, rows) == result
+
+
+def extractor_output(**overrides):
+    value = receipt()
+    output = {
+        "status": "COMPLETE",
+        "receipt": value,
+        "rows": ROWS,
+        "model_sha256": MODEL_SHA,
+        "extractor_binary_sha256": value["extractor_binary_sha256"],
+    }
+    output.update(overrides)
+    return output
+
+
+def build_from_extractor_output(output):
+    from v13.native_input_embedding_tap import (
+        build_native_input_embedding_tap_manifest_from_extractor_output,
+    )
+    return build_native_input_embedding_tap_manifest_from_extractor_output(
+        "C3_LANGUAGE", SOURCE, IDS, PIECES, output,
+        source_id="s1", event_id="e1", brain_generation_id="g1",
+        model_revision="model-r1", model_sha256=MODEL_SHA,
+        tokenizer_revision="tokenizer-r1",
+    )
+
+
+def test_extractor_output_bridge_builds_and_validates_one_bound_manifest():
+    output = extractor_output()
+    result = build_from_extractor_output(output)
+    assert result["vectors"] == ROWS
+    assert result["manifest"]["extractor_receipt"] == output["receipt"]
+    assert validate(result["manifest"], SOURCE, PIECES, ROWS) == result
+
+
+@pytest.mark.parametrize("overrides,match", [
+    ({"status": "FAILED"}, "not complete"),
+    ({"model_sha256": "c" * 64}, "model SHA differs"),
+    ({"extractor_binary_sha256": "c" * 64}, "hashes differ from its receipt"),
+    ({"extra": "untrusted"}, "fields are not canonical"),
+    ({"rows": None}, "rows do not match"),
+])
+def test_extractor_output_bridge_rejects_partial_or_mixed_results(overrides, match):
+    with pytest.raises(LatentAdapterError, match=match):
+        build_from_extractor_output(extractor_output(**overrides))
+
+
+def test_extractor_output_bridge_rejects_receipt_hash_drift():
+    output = extractor_output()
+    output["receipt"] = dict(output["receipt"])
+    output["receipt"]["model_sha256"] = "c" * 64
+    with pytest.raises(LatentAdapterError, match="hashes differ from its receipt"):
+        build_from_extractor_output(output)
