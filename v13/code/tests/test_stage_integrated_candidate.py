@@ -46,6 +46,7 @@ class StageTest(unittest.TestCase):
         shutil.copy2(source_code / module.RUNTIME_CLOSE_OVERLAY, self.code / module.RUNTIME_CLOSE_OVERLAY)
         shutil.copy2(source_code / module.ACTION_SELECTION_LINEAGE_OVERLAY, self.code / module.ACTION_SELECTION_LINEAGE_OVERLAY)
         tokenwise = (
+            "SOURCE_PINS = {}\n"
             "def apply_staged_tokenwise(code_dir, staging):\n"
             "    return {\n"
             "        'v13/runners.py': (staging / 'v13/runners.py').read_bytes() + b'TOKENWISE_TOKENIZER',\n"
