@@ -347,3 +347,56 @@ def test_duplicate_or_malformed_c4_and_template_ids_do_not_match():
     assert latest["offer_flow"]["body_attempts"][0]["consumption_state"] == (
         "DELIVERED_NOT_SELECTED_BY_C4"
     )
+
+
+def test_native_template_packet_role_mismatch_is_not_reported_as_consumed():
+    query_id, packet_id = _id("pkt", "5"), _id("pkt", "6")
+    receipt = _native_receipt(packet_id)
+    receipt["offers"] = [{
+        "role": "B2_GIST",
+        "packet_id": packet_id,
+        "rendered_quote_count": 1,
+    }]
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+    )
+    body = brain_panel._latest_native_evidence(runtime)["offer_flow"]["body_attempts"][0]
+    assert body["selected_by_c4"] is True
+    assert body["native_template_role"] == "B2_GIST"
+    assert body["template_role_matches"] is False
+    assert body["included_in_c3_template"] is False
+    assert body["consumption_state"] == "C4_C3_PACKET_ROLE_MISMATCH"
+    assert body["semantic_use_proven"] is False
+
+
+def test_duplicate_native_template_packet_ids_cannot_create_role_binding():
+    query_id, packet_id = _id("pkt", "7"), _id("pkt", "8")
+    receipt = _native_receipt(packet_id)
+    receipt["offers"] = [
+        {"role": "B1_DETAIL", "packet_id": packet_id, "rendered_quote_count": 1},
+        {"role": "B2_GIST", "packet_id": packet_id, "rendered_quote_count": 1},
+    ]
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+    )
+    latest = brain_panel._latest_native_evidence(runtime)
+    body = latest["offer_flow"]["body_attempts"][0]
+    assert latest["offer_flow"]["c4_native_offer_ids_match"] is False
+    assert body["native_template_role"] is None
+    assert body["template_role_matches"] is False
+    assert body["included_in_c3_template"] is False
+    assert body["consumption_state"] == "C4_C3_PACKET_ROLE_MISMATCH"
