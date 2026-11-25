@@ -415,6 +415,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
     restarted.cfg = {"raw_ear_persist_prediction_weights": True}
     # make_runtime starts a fresh generation; this test deliberately resumes the original scope.
     event2["brain_generation_id"] = event["brain_generation_id"]
+    restarted.store.generation_id = event["brain_generation_id"]
     capture2 = CaptureAttention()
     try:
         with monkeypatch.context() as patch:
