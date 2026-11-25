@@ -1354,3 +1354,19 @@ The full arXiv HTML for Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection f
 - Biological plasticity: no new reviewed study in this pass establishes biological/synaptic plasticity on-device; R-114 uses algorithmic stability/plasticity.
 - Android/memory: Yggdrasil's small active read set costs a 681 MB stored bank and AVX-512-specific timing; mzCache/Adaptive Guard are not Redmi-proven; MNN-Pocket is a candidate but has no Snapdragon 732G measurements.
 - No paper/model was downloaded, integrated or activated. These are research hypotheses, not development/release success.
+
+
+## R-119 — Palimpsa: Bayesian metaplasticity for in-context associative memory
+- Primary: Palimpsa, arXiv:2602.09075v4 (2026-06-03); accepted/published in PMLR 306, ICML 2026. Full arXiv HTML reviewed. The method adds a per-state precision/importance trace and a learned forgetting gate to a linear-attention associative memory, approximating Bayesian metaplasticity.
+- Evidence scope: reported experiments include 8-seed MQAR settings, 170M/760M language-model variants and a 2.7B Mamba2 fine-tune. Gains are workload-dependent: longer-context retrieval improves in some settings, while shorter RULER ranges can regress; the 760M Palimpsa variant is reported over 3× slower than Mamba2. Fast-kernel results are GPU-specific, not Android measurements.
+- OSS/license: `djo1996/Palimpsa` README displays an MIT badge, but the root LICENSE path is absent (404); dependencies include PyTorch/Flash Linear Attention/custom accelerator kernels. Weight license and ARM64/Bionic closure are not established. No code, weights or dependencies reused.
+- V14 hypothesis: a tiny diagonal precision/importance state may stabilize local A4/JEPA adapter plasticity, but only as a separately measured candidate. Compare fixed-rate SGD, diagonal-precision scaling, no-forgetting and bounded forgetting on source/session-disjoint outcomes; record gradients, numeric deltas, update cost, old-session retention, restart and rollback.
+- Status: FULL_ARXIV_HTML_REVIEWED / ICML_2026 / REPO_LICENSE_TEXT_UNVERIFIED / GPU_DEPENDENT / NO_REUSE.
+
+## R-120 — Memorized mistake-gated continual learning
+- Primary: Aaron Pache & Mark C. W. van Rossum, “Mistake gating leads to energy and memory efficient continual learning”, arXiv:2604.14336v1 (2026-04-15); *Neural Computation*, online publication 2026-11-05, DOI 10.1162/NECO.a.1602. Full arXiv HTML reviewed.
+- Method: update on a sample when it is currently misclassified or was misclassified at least once before. The paper reports 50–80% fewer updates on MNIST, about 12% of baseline update steps on EMNIST, ~20% on blurred MNIST, and roughly halved updates in a pretrained/incremental CIFAR-10 setting with plasticity restricted to later blocks. Pure mistake gating is less robust; the memorized variant retains past mistakes.
+- Limits: supervised classification, stable sample identity, one-sample updates; batching reduces the advantage, and training from scratch on the more complex CIFAR-10 setup did not save updates. This is not evidence for unsupervised JEPA, open-ended streaming identity or Android efficiency.
+- OSS/license: `vanrossumlab/mistake-gating26` currently contains only a short README; no implementation or LICENSE file was found. No code or data reused.
+- V14 hypothesis: compare always-update, pure error-gating and memorized error-gating on deterministic, source-bound A4 outcomes. Require stable event keys, source/session-disjoint holdouts, confirmed targets (not self-assessed model errors), update-count/gradient/parameter-diff evidence, old-session retention, bounded replay storage, restart and rollback. No private raw conversation is eligible without separate local consent.
+- Status: FULL_ARXIV_HTML_REVIEWED / JOURNAL_AHEAD_OF_PRINT / REPO_NO_CODE_NO_LICENSE / SUPERVISED_ONLY / NO_REUSE.
