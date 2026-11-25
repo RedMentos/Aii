@@ -434,3 +434,15 @@ def test_error_gate_rule_is_explicit_and_invalid_policy_fails_closed():
     assert result["update_gate_rule"] == "MODEL_MAE_GT_MAX_EPSILON_OR_0.25_PERSISTENCE_MAE"
     with pytest.raises(ValueError, match="update_policy"):
         A3TemporalPredictor(update_policy="UNBOUNDED")
+
+
+def test_hysteresis_gate_does_not_suppress_unpredictable_noise():
+    from random import Random
+
+    rng = Random(77)
+    predictor = A3TemporalPredictor(update_policy="ERROR_HYSTERESIS")
+    stream = [[rng.random() * 1e-3 for _ in range(16)] for _ in range(300)]
+    for sample in stream:
+        predictor.update(sample)
+    assert predictor._updates == len(stream) - 1
+    assert predictor._gate_transitions == 1

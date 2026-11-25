@@ -109,6 +109,33 @@ def _aggregate(rows: list[dict]) -> dict:
     }
 
 
+
+def run_noise_control(seed: int, amplitude: float, policy: str) -> dict:
+    rng = random.Random(seed)
+    stream = [
+        [rng.random() * amplitude for _ in range(16)]
+        for _ in range(1799)
+    ]
+    predictor = A3TemporalPredictor(
+        learning_rate=BASE_LR,
+        warmup_updates=4,
+        update_policy=policy,
+        gate_open_ratio=OPEN_RATIO,
+        gate_close_ratio=CLOSE_RATIO,
+    )
+    errors = []
+    for sample in stream:
+        result = predictor.update(sample)
+        if result["status"] == "SHADOW_MEASURED":
+            errors.append(result["prediction_error_mae"])
+    return {
+        "updates": predictor._updates,
+        "update_fraction": predictor._updates / predictor._observations,
+        "mean_mae": fmean(errors),
+        "gate_transitions": predictor._gate_transitions,
+    }
+
+
 def run_experiment() -> dict:
     train_always = [run_one(seed, "ALWAYS") for seed in TRAIN_SEEDS]
     train_hysteresis = [run_one(seed, "ERROR_HYSTERESIS") for seed in TRAIN_SEEDS]
@@ -121,6 +148,16 @@ def run_experiment() -> dict:
             "ALWAYS", "ERROR_GATED", "ERROR_HYSTERESIS",
             "PERIODIC_MATCHED_UPDATES", "MATCHED_AVERAGE_LR",
         )
+    }
+    noise_control = {
+        str(amplitude): {
+            policy: _aggregate([
+                run_noise_control(seed, amplitude, policy)
+                for seed in range(5)
+            ])
+            for policy in ("ALWAYS", "ERROR_GATED", "ERROR_HYSTERESIS")
+        }
+        for amplitude in (1e-5, 1e-4, 1e-3, 1e-2)
     }
     return {
         "schema": "v14.a3-hysteresis-plasticity-ablation/1",
@@ -139,6 +176,7 @@ def run_experiment() -> dict:
             "ERROR_HYSTERESIS": _aggregate(train_hysteresis),
         },
         "heldout": {policy: _aggregate(rows) for policy, rows in holdout.items()},
+        "noise_control": noise_control,
         "authority": "SHADOW_ONLY",
         "weights_persisted": False,
         "truth_authority": 0,

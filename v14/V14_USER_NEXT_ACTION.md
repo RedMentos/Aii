@@ -1952,3 +1952,8 @@ The author repository Joshua-Ren/learning-dynamics-cl was inspected; no LICENSE 
 **Next cross-lane task:** JEPA & Memory + Core should specify a source-bound native Update-Effect tap containing target token IDs, logits/token-force top-K, final hidden state, selected layer states, readout revision/hash and optimizer/checkpoint revision. The current #2510 tokenwise tap path does not expose that contract. Prototype CH1 and selected-layer/top-K CH2 against exact one-step gradient/log-probability deltas on a tiny residual model; measure cold-start sign reliability, OOD readout transmission, zero/shuffle controls, retention and rollback. Keep any production learning selection OFF until those gates pass.
 
 No model candidate or model swap is recommended. No user action required.
+
+
+### A3 hysteresis noise limitation — 2026-11-25
+
+A five-seed negative control with independent 16-D noise at amplitudes 1e-5, 1e-4, 1e-3 and 1e-2 showed ALWAYS, ERROR_GATED and ERROR_HYSTERESIS all updating on 100% of post-warmup observations; the hysteresis gate opens once and stays open. The 1e-8 absolute floor is only a numerical floor, not a camera noise calibration. This candidate cannot suppress unpredictable sensor noise. Keep it SHADOW_ONLY until a source-specific noise-vs-signal threshold is learned and validated on consented camera sequences.

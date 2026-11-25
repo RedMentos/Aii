@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T20:19:59Z",
+  "updated_at": "2026-11-25T20:22:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,7 +197,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX isolated CPython 3.13.5 + GitHub CI; no full local checkout or Android device proof",
-      "next_step": "Core/Integrator must recompose the strict vision.py source-lifecycle pin and rerun staged/integrated/migration. In parallel, Research + JEPA should design the native source-bound Update-Effect tap from R-155 (logits/token force, final/selected hidden states, readout revision); current #2510 exposes only sender final-RMSNorm and receiver input-embedding rows. Prototype CH1/selected-layer CH2 and R_D against exact one-step gradients on a tiny residual model with cold/warm, zero/shuffle/OOD, retention and rollback controls. Keep A3 hysteresis shadow-only and all production learning/B3 OFF.",
+      "next_step": "Core/Integrator must recompose the strict vision.py source-lifecycle pin and rerun staged/integrated/migration. In parallel, Research + JEPA should design the native source-bound Update-Effect tap from R-155 (logits/token force, final/selected hidden states, readout revision); current #2510 exposes only sender final-RMSNorm and receiver input-embedding rows. Prototype CH1/selected-layer CH2 and R_D against exact one-step gradients on a tiny residual model with cold/warm, zero/shuffle/OOD, retention and rollback controls. Keep A3 hysteresis shadow-only and all production learning/B3 OFF. Add source-specific camera-noise calibration and held-out noise-vs-signal tests before any live visual promotion.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-25T20:19:59Z",
       "latest_candidate_pr": {
@@ -208,7 +208,7 @@
         "ci": "A3_81_PY313_PY314; FRAME_55_PY313_PY314; SOURCE_LINEAGE_39_PY313_PY314; DEPLOY_INTEGRITY_PASS; STAGED_FAIL_VISION_LIFECYCLE_PIN; INTEGRATED_FAIL_SAME_PIN",
         "scope": "A3 ERROR_HYSTERESIS shadow in TemporalVisualEvidence; A4 unchanged; 20-train/20-heldout synthetic ablation and matched controls; no persistent weights or Android provider"
       },
-      "proof": "Exact code head d6d682d: A3 temporal suite 81/81 on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both; runtime deployment integrity PASS. Staged runtime FAIL: 19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests; integrated regression FAIL: 1 failed at the inherited Core-owned unsupported lifecycle source vision.py pin. Local isolated predictor copy py_compile PASS and 6/6 focused tests PASS. 20-seed train / 20-seed held-out synthetic comparison: 26.11% fewer updates than ALWAYS with nearly identical MAE/old-pattern MAE; matched periodic/LR controls worse. Third predictor adds ~30.95 KB/stream in CPython tracemalloc across 16 warmed streams. All A3 outputs remain SHADOW_ONLY; A4 does not consume the new shadow.",
+      "proof": "Exact code head d6d682d: A3 temporal suite 81/81 on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both; runtime deployment integrity PASS. Staged runtime FAIL: 19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests; integrated regression FAIL: 1 failed at the inherited Core-owned unsupported lifecycle source vision.py pin. Local isolated predictor copy py_compile PASS and 6/6 focused tests PASS. 20-seed train / 20-seed held-out synthetic comparison: 26.11% fewer updates than ALWAYS with nearly identical MAE/old-pattern MAE; matched periodic/LR controls worse. Third predictor adds ~30.95 KB/stream in CPython tracemalloc across 16 warmed streams. All A3 outputs remain SHADOW_ONLY; A4 does not consume the new shadow. Negative control: five-seed independent uniform-noise sweep at amplitudes 1e-5..1e-2; ALWAYS, ERROR_GATED and ERROR_HYSTERESIS each update 100% post-warmup. Gate opens once and stays open; it is not a camera-noise suppressor.",
       "latest_followup_pr": {
         "pr": 2509,
         "branch": "research-perception/v14-a3-error-gated-plasticity-20261125-run11b",

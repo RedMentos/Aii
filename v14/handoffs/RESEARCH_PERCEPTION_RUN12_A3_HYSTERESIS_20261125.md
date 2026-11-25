@@ -82,3 +82,8 @@ Full 45-page primary PDF reviewed: Yi Ren, Wenlong Deng, Guanzhe Hong, Clare Lyl
 Critical caveats: first-order/local estimate; identity-path residual approximation; SGD derivation with incomplete AdamW history/decoupled-decay treatment; Transformer shared-readout scope (not MoE/circuit-level); signed CH2 unreliable at cold start until a brief warm start. Top-K vocabulary and selected layers can reduce O(ndL) cost.
 
 The author OSS tree has no LICENSE file, so no code was reused. The paper is not an Android/Redmi measurement. The current #2510 tokenwise tap path does not expose the logits, target token forces, final hidden states, selected layer states and readout needed for CH1/CH2/R_D. Next cross-lane implementation is a source-bound native Update-Effect tap and a tiny-model exact-gradient parity harness; keep production JEPA update selection OFF until holdout/retention/rollback passes.
+
+
+## Run 12 negative control — unpredictable noise
+
+A five-seed generated white-noise sweep (1,799 observations/seed, 16 tile dimensions, amplitudes 1e-5, 1e-4, 1e-3 and 1e-2) showed 100% post-warmup update fractions for ALWAYS, ERROR_GATED and ERROR_HYSTERESIS. The hysteresis gate opened once and remained open. This is a material limitation: the current residual ratio cannot distinguish unpredictable sensor noise from useful novelty. The 1e-8 floor is only a numerical guard, not a camera noise calibration. The new test locks in this negative result. Do not promote the shadow on live camera/audio streams without source-specific noise-vs-signal calibration and held-out controls.
