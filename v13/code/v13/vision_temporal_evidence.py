@@ -142,6 +142,7 @@ class TemporalVisualEvidence:
         self.changed_tile_threshold = float(changed_tile_threshold)
         self.tau_ms = tau_ms
         self.window_ms = window_ms
+        self._last_start_ms = None
         self._last_end_ms = None
         self._previous = None
         self._previous_features = None
@@ -154,6 +155,7 @@ class TemporalVisualEvidence:
         self._previous_a3_source_ref = None
 
     def reset(self) -> None:
+        self._last_start_ms = None
         self._last_end_ms = None
         self._previous = None
         self._previous_features = None
@@ -253,6 +255,8 @@ class TemporalVisualEvidence:
         reset_reason = None
         gap_ms = 0
         if self._last_end_ms is not None:
+            if self._last_start_ms is not None and start_ms < self._last_start_ms:
+                raise TemporalVisualEvidenceError("temporal visual frame starts must be monotonic")
             if end_ms <= self._last_end_ms:
                 raise TemporalVisualEvidenceError("temporal visual frames must advance monotonically")
             gap_ms = max(0, start_ms - self._last_end_ms)
@@ -270,6 +274,7 @@ class TemporalVisualEvidence:
         if self._previous is None:
             self._previous = current
             self._previous_features = current_features
+            self._last_start_ms = start_ms
             self._last_end_ms = end_ms
             return {
                 "method": METHOD if current_features is not None else LUMINANCE_METHOD,
@@ -396,7 +401,7 @@ class TemporalVisualEvidence:
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
         changed = [tile for tile in TILE_IDS if tile_delta[tile] >= self.changed_tile_threshold]
-        self._previous, self._last_end_ms = current, end_ms
+        self._previous, self._last_start_ms, self._last_end_ms = current, start_ms, end_ms
         self._previous_features = current_features
         return {
             "method": METHOD if current_features is not None else LUMINANCE_METHOD,
