@@ -8,6 +8,8 @@ on:
       - research-perception/v14-native-input-bridge-20261125-run19
       - research-perception/v14-native-tokenwise-pairing-20261125-run20
       - research-perception/v14-native-tokenwise-session-fit-20261125-run21
+      - research-perception/v14-native-tokenwise-session-fit-20261125-run21
+      - research-perception/v14-anchor-preserving-tokenwise-20261125-run22
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111

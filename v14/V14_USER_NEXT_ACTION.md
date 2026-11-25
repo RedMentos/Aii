@@ -1,3 +1,24 @@
+# Latest verified checkpoint — Research & Perception Run 31 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is required or authorized by this checkpoint.
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` remains at verified base `8d93236c753f0194224c19edc7411d8d7082b1d6`; this work is a separate draft PR stack, NOT_RELEASED.
+- Updated Perception branch `research-perception/v14-anchor-preserving-tokenwise-20261125-run22` is at `a528e7b0250077ad78f604151ce6ceca396839d1`, parent PR [#2511](https://github.com/RedMentos/Aii/pull/2511).
+- Latest evaluator commit `006ec09afee1dbe40da7f16630456d698c072087` (initial cohort gate: `635a6bc09f3ef5e268aa7037f327092a49b5f92d`) changes `v13/code/v13/native_receiver_utility.py`: native receiver task-score cohorts now reject duplicate source-content hashes across task groups and require crossed session × task-family coverage. The result exposes per-cell counts and source-group count.
+- Latest test commit `cabcff089abcfb0eefe3c32bf1f11385ec56fc3d` (initial negative controls: `4b8fb872ce43c01f0363f718ce21486498ced721`) adds three negative tests: duplicate source content, a missing session/family cell, and a per-cell minimum above the observed count.
+- Research ledger commit `c3cab797392e308aa93cfe3624b5f154214f0449` records full-text reviews of RASP (arXiv:2611.03513) and Stability Does Not Mirror Plasticity (arXiv:2611.23427; anonymous code link, licence unverified; 1% replay materially changes retention), an abstract/README-level Temporal-Distance JEPA review (arXiv:2607.25337; full paper not read; linked Progress-JEPA root MIT), and a corrected Android llama.cpp packaging/licence audit (latest repo release v1.0.0, not v0.8.0). Handoff: [RESEARCH_PERCEPTION_RUN31_NATIVE_RECEIVER_COHORT_20261125.md](handoffs/RESEARCH_PERCEPTION_RUN31_NATIVE_RECEIVER_COHORT_20261125.md).
+- **LOCAL_LINUX:** isolated cohort-gate reproduction, 6 assertions PASS, including a 1/9–9/1 sparse-cross negative control on CPython 3.13.5. Full Aii checkout/pytest and full native llama.cpp build BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
+- **CI:** exact-head runtime deployment integrity PASS (Python 3.11 and 3.14, run 45710597904). Staged-runtime/integrated-regression run 45710597847 is still IN_PROGRESS; no integrated PASS is claimed. No dedicated exact-head adapter-contract run was observed.
+- **Consumer / integration blocker:** Core PR [#2515](https://github.com/RedMentos/Aii/pull/2515) head branch is core/v14-native-target-score-20261125-run1 at fcbac873728d860d8b97839d167d20cbfc2c7a6e. Its native_receiver_task_score.py imports and calls evaluate_native_receiver_task_utility, so the consumer is wired, but the copied helper blob ec3247a6a39ec0316388961507ed76dcae873bba is older than current Perception blob dcf25ba15e5a3e0e2fe1c6cb34a26cc9e1e840a6. The Core head diverges from the Perception branch at merge-base 68ce8ca8122fba9b0063a4da89a117377a1b9e92 (Core 48 behind / 68 ahead). Perception opened replacement child PR [#2517](https://github.com/RedMentos/Aii/pull/2517) against the latest #2515 head; it refreshes the helper and adds collector-level duplicate-source and sparse session/family tests, including the new COLLECTING-until-minima behavior. #2517 is mergeable and read back, but exact CI is NOT_OBSERVED yet; earlier #2516 was closed as superseded. Core review/merge of #2517 is required before the eight-condition producer can rely on the new source-disjoint/two-per-cell gate. Only LATENT_CANDIDATE is currently produced; the other seven conditions remain missing.
+- **Device:** latest available private V13OBS #115 snapshot is historical (2026-11-24) and reported STOPPED_BY_USER. No fresh authenticated receipt was obtained. Current Redmi installation, runtime and updater state are therefore REDMI_UNVERIFIED / UPDATER_UNVERIFIED. Do not restart the user-stopped runtime.
+- **Shared queue freshness:** V14_WORK_BOARD.json was last updated 2026-11-23T12:44:40Z; V14_LIVE_WORKPLAN.md still ends with the Nov23 Boss checkpoint and older #2429-era integration state. Both predate the current #2511/#2515 stack. Boss/Integrator should reconcile the shared board/workplan after Core’s branch refresh; Perception has not edited Boss-owned queue/master files.
+- **JEPA negative evidence:** the integrated-regression log reports holdout before=0.9685428667, after=0.9142360215, delta=-0.0543068452. The gate correctly rejects this regressed update; this is not a learning/retention win. JEPA/Memory should repair the update/replay mechanism rather than relax the gate.
+- **Whole-system blockers:** #1904 P0 basic-chat and B1/B2 delivery remain open. B3 remains OFF. The new evaluator is a target-logprob proxy gate, not semantic correctness, trained latent coupling or release acceptance.
+
+**Next executable step:** Core rebase #2515 onto #2511, produce all eight source/session-bound conditions, then run a pinned real GGUF cohort with at least 20 unique source groups, two sessions, two families, five tasks per session, four per family and non-empty session × family cells. Keep B3 OFF until every control is beaten with real native evidence and independent review.
+
+---
+
 # Current V14 handoff — Research & Perception Run 19 (2026-11-25)
 
 **User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
@@ -2031,3 +2052,47 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 **Consumer and limitations:** NOT_RUNTIME_WIRED. Core must compose #2505 native selected-row extraction, Cognition.read_tap and #2507 pair assembly, then call this fitter only under explicit local consent. It does not prove semantic receiver utility or actual JEPA/gradient learning. The next gate is real GGUF receiver-task utility against exact-message, no-message, zero, shuffled, repeat and OOD controls, plus retention/restart/rollback.
 
 **Device:** private V13OBS #115 last updated 2026-11-24T09:28:11Z; no newer receipt. The newest recorded turn had C3 native output but B1/B2 were not attempted in that turn; earlier B1 attempts failed and native latent exchange was unproven. Read-only relay issues #925–927 had no response at last poll. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No device command, model/weight/permission/data change or deployment occurred.
+
+## Research & Perception Run 22 — verified next action (2026-11-25)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, data mutation or deployment was performed.
+
+- Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), stacked on #2508, adds receiver-manifest row binding and an opt-in anchor-preserving residual input builder. Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae.
+- LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Exact adapter-contract 3.13/3.14, staged/integrated, offline and privacy checks are QUEUED on the current PR head.
+- The new builder returns native receiver prefill geometry but is not yet called by Core's runtime capture/receiver lane. It does not prove semantic utility or trained latent exchange.
+- Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
+- Owner-read DIAGNOSTICS produced NO_LIVE_RECEIPT in this checkpoint. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but also AI STOPPED_BY_USER; this is historical, not proof of today's installed state. No release is ready to deploy. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
+- The native selected-row extractor and receiver still need real GGUF utility comparisons, exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.
+
+
+## Research & Perception — Run 23 verified handoff (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+- Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511) now includes the anchor-preserving tokenwise input path plus a source-bound target-token utility evaluator. Evaluator module commit: `7031958809b6479231d87d74631d79de359ebf73`; focused test commit: `be00992147f46165489684f82fba1891c86b986b`; research-ledger commit: `b4e0eef2a6cd208491d176f162accb2a32cbabc6`. The branch's latest SHA will advance with this handoff append; this is not a release SHA.
+- The evaluator defines a native target-logprob receipt contract and requires exact-message/no-message plus zero, shuffle, repeat, OOD and entity-substitution controls. It is a **target-logprob proxy**, not generated-answer correctness. Synthetic fixtures always report `FIXTURE_ONLY`; the helper never grants persistence, weight-learning, native receiver or production B3 authority.
+- LOCAL_LINUX CPython 3.13.5 / pytest 9.0.2 isolated harness: `py_compile` PASS and 8/8 focused tests PASS. Full local Aii pytest BLOCKED/NOT_RUN because no full checkout is mounted and repository clone/DNS is unavailable. Exact CI for the new branch head: NOT_YET_OBSERVED.
+- Core's current native receiver still returns decode/input-effect metrics only. It has no target-token score or generated-answer output, so no actual native task utility is yet measured and the new evaluator is not yet wired. Core PR #2510 is the next consumer owner. B3 remains OFF/SYMBOLIC; REDMI_UNVERIFIED; NOT_RELEASED.
+- Research notes R-156–R-161 were appended with explicit evidence levels and license/resource caveats. No code, weights, data or dependencies were imported.
+- Updater/deployment: no fresh private phone receipt in this run. The last available private snapshot is historical (2026-11-24) and reported auto-update enabled but AI runtime STOPPED_BY_USER at 8d93236; current installed SHA is unknown. No device action was attempted.
+- Next: Core adds a bounded native teacher-forced target-score operation and calls the Perception evaluator across all eight controls; then exact CI, independent review, held-out utility, restart/rollback and only later any separate device approval. Boss should update the shared board after review.
+
+
+### Cross-lane update — Core native consumer PR #2512
+
+Core has opened [PR #2512](https://github.com/RedMentos/Aii/pull/2512), head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`, which consumes the anchor-preserving tokenwise input under the separate `NATIVE_RECEIVER` approval. It is a real Runtime diagnostic consumer, but it still measures only decode/input-effect metrics. It does not yet score target tokens or generated answers. The current #2512 branch snapshot does not contain the new #2511 `native_receiver_utility.py` module; Core has been asked to refresh the Perception parent and add a bounded native teacher-forced target-score producer. #2512 exact-head CI was queued; no PASS claimed. This is not trained semantic utility, B3 remains OFF, and no Redmi evidence exists.
+
+
+### CI readback after Run 23 checkpoint (2026-11-25)
+
+- Core PR #2512 exact head `93fa02a75d68409a1cca6c2f2fcd338c1813a0bb`: native input-embedding extractor PASS (Python contract 3.13/3.14, Linux pinned API, Android ARM64 cross-compile); staged-runtime PASS; integrated-regression PASS; offline deployment integrity PASS (Python 3.11/3.14). These are GitHub-hosted CI/cross-compile results, not Redmi runtime evidence.
+- Perception PR #2511 exact head `9d864d66f6d66f1f5ead3284a85cf22814aa69d9`: staged-runtime PASS; offline deployment integrity PASS (Python 3.11/3.14); integrated-regression still IN_PROGRESS at last readback. The connector did not expose a new exact-head adapter-contract run for the appended task-score tests, so no CI PASS is claimed for those eight tests.
+- #2512 still does not contain the new `native_receiver_utility.py` evaluator; Core has been asked to refresh/rebase the Perception parent and add the native target-score producer. Its current green consumer CI only validates the input-effect probe path.
+
+
+### Run 23 evaluator hardening — balanced cohorts and Android evidence (2026-11-25)
+
+- Perception evaluator branch head `f1e84db9d3140c53927ff3ef301a1d981d96e69d`: now requires one adapter revision across the entire cohort, >=5 tasks/session and >=4 tasks/family by default, in addition to >=20 tasks, >=2 sessions and >=2 families.
+- Native `TERMUX_ANDROID`/ `REDMI` receipts must include a digest of the private device-execution receipt and a runtime-build identifier; raw private receipt bodies/IDs are not stored. This is an evidence-shape check, not cryptographic attestation.
+- Three additional focused tests cover missing Redmi receipt metadata, per-session/family minima and adapter-revision drift. LOCAL_LINUX CPython 3.13.5 isolated evaluator harness: 10/10 PASS. Exact repository test target/new-head CI still NOT_YET_OBSERVED.
+- Research ledger R-163 appended at commit `becf115df76f861d7332b8e735511b49319a26f6`. B3 remains OFF; no native target-score producer, no Redmi receipt and no release.

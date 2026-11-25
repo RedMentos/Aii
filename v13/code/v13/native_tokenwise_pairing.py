@@ -14,11 +14,17 @@ import math
 
 from .latent_adapter import (
     LatentAdapterError,
+    _require_exact_span_partition,
+    _validate_span_sequence,
+    _validate_tokenwise_pairs,
     align_token_rows_by_byte_pieces,
     build_tokenwise_tap_manifest,
     fit_adapter,
+    project_rows,
 )
 from .native_input_embedding_tap import (
+    _manifest_digest,
+    _validate_extractor_receipt,
     build_native_input_embedding_tap_manifest_from_extractor_output,
 )
 
@@ -276,6 +282,92 @@ def build_native_tokenwise_pair_record(
 
 
 
+def _validate_receiver_manifest_binding(record: Mapping, pairs: list[Mapping]) -> dict:
+    """Bind every aligned receiver vector back to the native extractor manifest."""
+    receiver = record.get("receiver")
+    source_ref = record.get("source_ref")
+    if not isinstance(receiver, Mapping) or not isinstance(source_ref, Mapping):
+        raise LatentAdapterError("native pair record lacks receiver manifest/source binding")
+    expected_fields = {
+        "role", "tap_id", "model_revision", "model_sha256", "tokenizer_revision",
+        "token_ids", "token_spans", "embedding_dim", "row_sha256",
+        "extractor_receipt", "manifest_sha256",
+    }
+    if set(receiver) != expected_fields:
+        raise LatentAdapterError("native receiver manifest field set is not canonical")
+    role = receiver.get("role")
+    if role not in _RECEIVER_TAPS or receiver.get("tap_id") != _RECEIVER_TAPS[role]:
+        raise LatentAdapterError("native receiver manifest role/tap binding differs")
+    token_ids = receiver.get("token_ids")
+    token_spans = receiver.get("token_spans")
+    row_hashes = receiver.get("row_sha256")
+    pair_count = len(pairs)
+    if (not isinstance(token_ids, list) or len(token_ids) != pair_count
+            or any(type(token_id) is not int or token_id < 0 for token_id in token_ids)
+            or not isinstance(token_spans, list) or len(token_spans) != pair_count
+            or not isinstance(row_hashes, list) or len(row_hashes) != pair_count):
+        raise LatentAdapterError("native receiver manifest row count differs from tokenwise pairs")
+    dimension = receiver.get("embedding_dim")
+    if type(dimension) is not int or not 1 <= dimension <= 8192:
+        raise LatentAdapterError("native receiver manifest embedding dimension is invalid")
+    if any(type(value) is not str or len(value) != 64
+           or any(ch not in "0123456789abcdef" for ch in value) for value in row_hashes):
+        raise LatentAdapterError("native receiver manifest row digest is invalid")
+    source_length = pairs[0].get("source_length") if pairs else None
+    if (type(source_length) is not int or not 1 <= source_length <= 1_048_576
+            or any(pair.get("source_length") != source_length for pair in pairs)):
+        raise LatentAdapterError("native receiver manifest source length differs from aligned pairs")
+    spans = _validate_span_sequence(token_spans, "receiver.token_spans")
+    _require_exact_span_partition(spans, source_length, "receiver")
+    if record.get("alignment_method") != "UTF8_BYTE_PIECE_OVERLAP_V1":
+        raise LatentAdapterError("native receiver manifest requires exact UTF-8 byte-piece alignment")
+    receipt = _validate_extractor_receipt(
+        receiver.get("extractor_receipt"),
+        list(token_ids),
+        dimension,
+        receiver.get("model_revision"),
+        receiver.get("model_sha256"),
+    )
+    if dict(receipt) != dict(receiver.get("extractor_receipt", {})):
+        raise LatentAdapterError("native receiver extractor receipt is not canonical")
+    material = {
+        "schema": "v14.native-input-embedding-tap/2",
+        "role": role,
+        "tap_id": receiver["tap_id"],
+        "activation_space": "INPUT_EMBEDDING_F32",
+        "source_span_unit": "UTF8_BYTE",
+        "source_id": source_ref.get("source_id"),
+        "source_sha256": source_ref.get("sha256"),
+        "source_length": source_length,
+        "event_id": record.get("event_id"),
+        "brain_generation_id": record.get("brain_generation_id"),
+        "model_revision": receiver["model_revision"],
+        "model_sha256": receiver["model_sha256"],
+        "tokenizer_revision": receiver["tokenizer_revision"],
+        "token_ids": list(token_ids),
+        "token_spans": [list(span) for span in spans],
+        "row_positions": list(range(pair_count)),
+        "embedding_dim": dimension,
+        "row_sha256": list(row_hashes),
+        "extractor_receipt": dict(receipt),
+    }
+    if _manifest_digest(material) != receiver.get("manifest_sha256"):
+        raise LatentAdapterError("native receiver manifest digest mismatch")
+    alignment_method = _validate_tokenwise_pairs(pairs, "native pair record")
+    if alignment_method != record.get("alignment_method"):
+        raise LatentAdapterError("native receiver manifest alignment method differs")
+    ordered = sorted(pairs, key=lambda item: item["token_position"])
+    if [item["token_position"] for item in ordered] != list(range(pair_count)):
+        raise LatentAdapterError("native receiver rows are not in contiguous tokenizer order")
+    for index, pair in enumerate(ordered):
+        if (pair.get("source_span") != list(spans[index])
+                or pair.get("source_span_unit") != "UTF8_BYTE"
+                or pair.get("receiver_vector_sha256") != row_hashes[index]
+                or len(pair.get("receiver_vector", ())) != dimension):
+            raise LatentAdapterError("aligned receiver vector differs from its native manifest row")
+    return dict(receiver)
+
+
 def _validate_native_pair_record(record: Mapping) -> dict:
     """Verify the exact in-memory pair-record envelope before fitting."""
     expected_fields = set(_RECORD_MATERIAL_FIELDS) | {
@@ -315,6 +407,7 @@ def _validate_native_pair_record(record: Mapping) -> dict:
             or len(set(pair_ids)) != len(pair_ids)
             or not isinstance(coverages, list) or len(coverages) != len(pairs)):
         raise LatentAdapterError("native tokenwise pair record row manifest is inconsistent")
+    _validate_receiver_manifest_binding(record, pairs)
     for pair, coverage in zip(pairs, coverages):
         pair_coverage = pair.get("alignment_coverage")
         if (pair.get("source_id") != source_id
@@ -440,3 +533,136 @@ def fit_adapter_from_native_pair_records(
         "manifest_sha256": _record_digest(fit_manifest_material),
     }
     return {"adapter": adapter, "fit_manifest": fit_manifest}
+
+
+def build_anchor_preserving_native_receiver_input(
+    adapter: Mapping,
+    record: Mapping,
+    *,
+    residual_gain: float = 0.10,
+    max_relative_residual: float = 0.25,
+) -> dict:
+    """Build a bounded tokenwise receiver input while keeping exact receiver rows as anchors.
+
+    This optional diagnostic strategy interpolates from each exact receiver
+    input-embedding row toward the projected sender row. The per-row residual
+    is clipped relative to the exact anchor norm before the global gain is
+    applied. It is not XBridge LEB/cross-attention and does not prove semantic
+    utility; the native receiver must still beat exact/no-message and negative
+    controls on held-out tasks.
+    """
+    checked = _validate_native_pair_record(record)
+    receiver = checked["receiver"]
+    sender = checked["sender"]
+    if type(residual_gain) not in (int, float) or not math.isfinite(float(residual_gain)) or not 0.0 <= float(residual_gain) <= 0.5:
+        raise LatentAdapterError("anchor residual gain must be finite and in [0, 0.5]")
+    if (type(max_relative_residual) not in (int, float)
+            or not math.isfinite(float(max_relative_residual))
+            or not 0.0 <= float(max_relative_residual) <= 1.0):
+        raise LatentAdapterError("maximum relative residual must be finite and in [0, 1]")
+    if not isinstance(adapter, Mapping) or adapter.get("projection_scope") != "TOKENWISE":
+        raise LatentAdapterError("anchor-preserving receiver input requires a tokenwise adapter")
+    adapter_bindings = {
+        "sender_role": sender.get("role"),
+        "receiver_role": receiver.get("role"),
+        "sender_tap_id": sender.get("tap_id"),
+        "receiver_tap_id": receiver.get("tap_id"),
+        "sender_model_revision": sender.get("model_revision"),
+        "receiver_model_revision": receiver.get("model_revision"),
+        "sender_model_sha256": sender.get("model_sha256"),
+        "receiver_model_sha256": receiver.get("model_sha256"),
+        "sender_tokenizer_revision": sender.get("tokenizer_revision"),
+        "receiver_tokenizer_revision": receiver.get("tokenizer_revision"),
+    }
+    if any(adapter.get(key) != value for key, value in adapter_bindings.items()):
+        raise LatentAdapterError("anchor-preserving adapter model/tap/tokenizer binding mismatch")
+    pairs = sorted(checked["pairs"], key=lambda item: item["token_position"])
+    sender_vectors = [pair["sender_vector"] for pair in pairs]
+    anchor_vectors = [pair["receiver_vector"] for pair in pairs]
+    projected_rows = project_rows(
+        adapter,
+        sender_vectors,
+        sender_model_sha256=sender["model_sha256"],
+        receiver_model_sha256=receiver["model_sha256"],
+        sender_tap_id=sender["tap_id"],
+        receiver_tap_id=receiver["tap_id"],
+    )
+    output_rows = []
+    preclip_ratios = []
+    applied_ratios = []
+    clipped_rows = 0
+    for anchor, projected in zip(anchor_vectors, projected_rows):
+        anchor_norm = math.sqrt(sum(float(value) * float(value) for value in anchor))
+        if not math.isfinite(anchor_norm) or anchor_norm <= 1e-10:
+            raise LatentAdapterError("native receiver anchor row has an invalid norm")
+        delta = [float(p) - float(a) for a, p in zip(anchor, projected)]
+        residual_norm = math.sqrt(sum(value * value for value in delta))
+        relative = residual_norm / anchor_norm
+        if not math.isfinite(relative):
+            raise LatentAdapterError("anchor residual is non-finite")
+        preclip_ratios.append(relative)
+        scale = 1.0
+        if relative > float(max_relative_residual):
+            scale = float(max_relative_residual) / relative if relative > 0.0 else 1.0
+            clipped_rows += 1
+        applied_gain = float(residual_gain) * scale
+        output = [float(a) + applied_gain * value for a, value in zip(anchor, delta)]
+        if any(not math.isfinite(value) for value in output):
+            raise LatentAdapterError("anchor-preserving receiver row is non-finite")
+        applied_norm = math.sqrt(sum((value - float(a)) ** 2 for value, a in zip(output, anchor)))
+        applied_ratios.append(applied_norm / anchor_norm)
+        output_rows.append(output)
+
+    from . import native_latent_receiver
+    rows, dimension, _payload, input_sha256 = native_latent_receiver._vector_payload(output_rows)
+    anchor_rows, anchor_dimension, _anchor_payload, anchor_sha256 = native_latent_receiver._vector_payload(anchor_vectors)
+    if (rows != len(pairs) or dimension != adapter.get("receiver_dim")
+            or anchor_dimension != dimension):
+        raise LatentAdapterError("anchor-preserving receiver input geometry differs from the native contract")
+    positions = native_latent_receiver._validate_positions(
+        list(range(rows)), rows, native_latent_receiver.POSITION_MODE,
+    )
+    adapter_sha = adapter.get("adapter_sha256")
+    if (type(adapter_sha) is not str or len(adapter_sha) != 64
+            or any(ch not in "0123456789abcdef" for ch in adapter_sha)):
+        raise LatentAdapterError("anchor-preserving adapter digest is missing or invalid")
+    return {
+        "schema": "v14.native-tokenwise-anchor-residual-input/1",
+        "input_strategy": "ANCHOR_PLUS_CAPPED_RESIDUAL_V1",
+        "vectors": output_rows,
+        "position_ids": positions,
+        "position_mode": native_latent_receiver.POSITION_MODE,
+        "input_rows": rows,
+        "input_dim": dimension,
+        "input_sha256": input_sha256,
+        "anchor_sha256": anchor_sha256,
+        "tokenizer_revision": receiver["tokenizer_revision"],
+        "token_count": len(receiver["token_ids"]),
+        "source_ref": dict(checked["source_ref"]),
+        "event_id": checked["event_id"],
+        "brain_generation_id": checked["brain_generation_id"],
+        "session_id": checked["session_id"],
+        "record_sha256": checked["record_sha256"],
+        "adapter_sha256": adapter_sha,
+        "sender_role": sender["role"],
+        "receiver_role": receiver["role"],
+        "sender_model_revision": sender["model_revision"],
+        "receiver_model_revision": receiver["model_revision"],
+        "sender_model_sha256": sender["model_sha256"],
+        "receiver_model_sha256": receiver["model_sha256"],
+        "sender_tap_id": sender["tap_id"],
+        "receiver_tap_id": receiver["tap_id"],
+        "residual_gain": float(residual_gain),
+        "max_relative_residual": float(max_relative_residual),
+        "mean_preclip_relative_residual": sum(preclip_ratios) / len(preclip_ratios),
+        "max_preclip_relative_residual": max(preclip_ratios),
+        "mean_applied_relative_residual": sum(applied_ratios) / len(applied_ratios),
+        "max_applied_relative_residual": max(applied_ratios),
+        "clipped_rows": clipped_rows,
+        "anchor_rows_preserved_as_base": True,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
