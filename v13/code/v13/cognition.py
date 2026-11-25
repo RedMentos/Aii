@@ -9,6 +9,78 @@ from .memory import relevance,entities
 from .runners import check
 from .enlightened_space import EnlightenedSpace
 ROUTES=['simple','detail','gist','both']
+def _seal_tokenwise_tap_manifest(manifest,source_text,prefill_token_ids,activation_rows):
+    """Validate and hash source/token/activation-row alignment without storing source text."""
+    import hashlib
+    fields={
+        'schema','source_sha256','source_length','token_ids','token_spans',
+        'prefill_positions','special_prefix_tokens','special_suffix_tokens',
+    }
+    if not isinstance(manifest,dict) or set(manifest) not in (fields,fields|{'manifest_sha256'}):
+        raise ValueError('Tokenwise tap manifest fields are not canonical')
+    if manifest.get('schema')!='v14.source-bound-tokenwise-tap/1':
+        raise ValueError('Tokenwise tap manifest schema is unsupported')
+    if type(source_text) is not str or not source_text:
+        raise ValueError('Tokenwise tap source is empty or invalid')
+    source_bytes=source_text.encode('utf-8',errors='strict')
+    source_length=manifest.get('source_length')
+    source_sha256=manifest.get('source_sha256')
+    if (type(source_length) is not int or not 1<=source_length<=1_048_576
+            or source_length!=len(source_bytes)
+            or type(source_sha256) is not str or len(source_sha256)!=64
+            or any(ch not in '0123456789abcdef' for ch in source_sha256)
+            or hashlib.sha256(source_bytes).hexdigest()!=source_sha256):
+        raise ValueError('Tokenwise tap source bytes/length/hash differ')
+    token_ids=manifest.get('token_ids')
+    token_spans=manifest.get('token_spans')
+    positions=manifest.get('prefill_positions')
+    if (not isinstance(token_ids,list) or not 2<=len(token_ids)<=64
+            or any(type(token) is not int or not 0<=token<=2_147_483_647 for token in token_ids)
+            or not isinstance(token_spans,list) or len(token_spans)!=len(token_ids)
+            or not isinstance(positions,list) or len(positions)!=len(token_ids)):
+        raise ValueError('Tokenwise tap token/span/position counts differ')
+    cursor=0
+    for span in token_spans:
+        if (not isinstance(span,(list,tuple)) or len(span)!=2
+                or type(span[0]) is not int or type(span[1]) is not int
+                or span[0]!=cursor or span[1]<=span[0] or span[1]>source_length):
+            raise ValueError('Tokenwise tap byte spans do not exactly partition the source')
+        cursor=span[1]
+    if cursor!=source_length:
+        raise ValueError('Tokenwise tap byte spans do not cover the source')
+    if (not isinstance(prefill_token_ids,list) or not isinstance(activation_rows,list)
+            or len(prefill_token_ids)!=len(activation_rows)
+            or not len(token_ids)<=len(prefill_token_ids)<=len(token_ids)+2
+            or any(type(token) is not int or not 0<=token<=2_147_483_647 for token in prefill_token_ids)):
+        raise ValueError('Tokenwise tap prefill token/activation rows differ')
+    if any(not isinstance(row,(list,tuple)) or not row for row in activation_rows):
+        raise ValueError('Tokenwise tap activation rows are malformed')
+    dimension=len(activation_rows[0])
+    if any(len(row)!=dimension or any(type(value) not in (int,float) or not math.isfinite(float(value)) for value in row)
+           for row in activation_rows):
+        raise ValueError('Tokenwise tap activation dimensions or values are invalid')
+    if any(type(position) is not int for position in positions):
+        raise ValueError('Tokenwise tap prefill positions are malformed')
+    start=positions[0]
+    end=start+len(token_ids)
+    if (start<0 or start>2 or positions!=list(range(start,end))
+            or end>len(prefill_token_ids) or prefill_token_ids[start:end]!=token_ids):
+        raise ValueError('Tokenwise tap content tokens do not map to exact prefill rows')
+    prefix=start
+    suffix=len(prefill_token_ids)-end
+    if (type(manifest.get('special_prefix_tokens')) is not int
+            or type(manifest.get('special_suffix_tokens')) is not int
+            or manifest['special_prefix_tokens']!=prefix
+            or manifest['special_suffix_tokens']!=suffix or prefix+suffix>2):
+        raise ValueError('Tokenwise tap special-token offsets are inconsistent')
+    body={key:manifest[key] for key in fields}
+    material=json.dumps(body,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8')
+    expected=hashlib.sha256(b'V14-SOURCE-BOUND-TOKENWISE-TAP/1\\0'+material).hexdigest()
+    supplied=manifest.get('manifest_sha256')
+    if supplied is not None and supplied!=expected:
+        raise ValueError('Tokenwise tap manifest digest mismatch')
+    return body|{'manifest_sha256':expected}
+
 def scaffold_route(text):
     t=text.lower()
     if re.search(r'vergleich|compare|abwäg|trade.?off',t):return 'both'
@@ -160,29 +232,78 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'upstream_organs','error':type(exc).__name__})
     def tap(self,role,e,source_ref,deadline):
-        """Source-bound native body observation; no receiver or learning authority."""
+        """Source-bound native body tap with optional exact UTF-8 token alignment."""
         if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
-        text=self.s.read_source(source_ref);tap_runner=self.r.pool.get_tap(role);native=tap_runner.tap(text,self.r.cancel_event,deadline)
+        text=self.s.read_source(source_ref)
+        tap_runner=self.r.pool.get_tap(role)
+        native=tap_runner.tap(text,self.r.cancel_event,deadline)
         bound_tap_id=getattr(tap_runner,'tap_id',None)
         if (not isinstance(bound_tap_id,str) or native.get('tap_id')!=bound_tap_id or
                 native.get('metrics',{}).get('tap_id')!=bound_tap_id):
             raise ValueError('Native tap identity differs from the validated model binding')
-        path=self.r.home/'data/blobs'/(uid('tap')+'.json');atomic_write(path,dumps({'token_ids':native['token_ids'],'vectors':native['vectors']}))
+        metrics=dict(native.get('metrics') or {})
+        tokenwise_manifest=None
+        manifest_error=None
+        if native.get('tokenwise_manifest') is not None:
+            try:
+                tokenwise_manifest=_seal_tokenwise_tap_manifest(
+                    native['tokenwise_manifest'],text,native['token_ids'],native['vectors'],
+                )
+            except Exception as exc:
+                manifest_error=type(exc).__name__
+        if tokenwise_manifest is not None:
+            metrics.update({
+                'tokenwise_manifest_status':'VALID',
+                'tokenwise_manifest_sha256':tokenwise_manifest['manifest_sha256'],
+                'tokenwise_manifest_token_count':len(tokenwise_manifest['token_ids']),
+                'tokenwise_manifest_source_bytes':tokenwise_manifest['source_length'],
+            })
+        elif manifest_error is not None:
+            metrics['tokenwise_manifest_status']='REJECTED'
+            metrics['tokenwise_manifest_reason']=manifest_error
+        else:
+            metrics.setdefault('tokenwise_manifest_status','UNAVAILABLE')
+        blob={'token_ids':native['token_ids'],'vectors':native['vectors']}
+        if tokenwise_manifest is not None:
+            blob['tokenwise_manifest']=tokenwise_manifest
+        path=self.r.home/'data/blobs'/(uid('tap')+'.json')
+        atomic_write(path,dumps(blob))
         prediction=None
         try:prediction=self.r.learner.predict_states(role,native['vectors'])
         except Exception as exc:self.s.log('local_predictor_unavailable',e['event_id'],{'role':role,'error':type(exc).__name__})
         p=packet('LatentTapPacket',role,e['event_id'],e['brain_generation_id'],[source_ref],role=role,source_ref=source_ref,
                  tap_id=bound_tap_id,model_revision=self.r.models.revision(role),runner_revision='b10964',
-                 token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
-                 role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=native['metrics'],local_prediction=prediction)
-        self.s.add_packet('LatentTapPacket',p);self.s.log('native_tap',e['event_id'],native['metrics']|{'model_revision':p['model_revision'],'source_ref':source_ref});return p
+                 tokenizer_revision=None,token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),
+                 feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
+                 tokenwise_manifest=tokenwise_manifest,
+                 tokenwise_manifest_sha256=tokenwise_manifest['manifest_sha256'] if tokenwise_manifest else None,
+                 role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=metrics,local_prediction=prediction)
+        self.s.add_packet('LatentTapPacket',p)
+        self.s.log('native_tap',e['event_id'],metrics|{'model_revision':p['model_revision'],'source_ref':source_ref})
+        return p
     def read_tap(self,p):
         row=self.s.one("SELECT payload FROM packets WHERE kind='LatentTapPacket' AND id=?",(p['packet_id'],))
         if not row or json.loads(row['payload'])!=p:raise ValueError('Tap packet is not the stored observation')
-        self.s.read_source(p['source_ref']);path=(self.r.home/p['feature_path']).resolve()
+        source_text=self.s.read_source(p['source_ref'])
+        path=(self.r.home/p['feature_path']).resolve()
         if not path.is_relative_to((self.r.home/'data/blobs').resolve()) or file_hash(path)!=p['feature_sha256']:raise ValueError('Tap feature file/source binding invalid')
         data=json.loads(path.read_text())
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
+        stored_manifest=data.get('tokenwise_manifest')
+        packet_manifest=p.get('tokenwise_manifest')
+        if stored_manifest!=packet_manifest:
+            raise ValueError('Tap tokenwise manifest differs from the stored feature blob')
+        if packet_manifest is not None:
+            checked=_seal_tokenwise_tap_manifest(
+                packet_manifest,source_text,data['token_ids'],data['vectors'],
+            )
+            if p.get('tokenwise_manifest_sha256')!=checked['manifest_sha256']:
+                raise ValueError('Tap tokenwise manifest packet digest mismatch')
+            data['tokenwise_manifest']=checked|{
+                'vectors':[data['vectors'][position] for position in checked['prefill_positions']]
+            }
+        elif p.get('tokenwise_manifest_sha256') is not None:
+            raise ValueError('Tap tokenwise manifest digest exists without a manifest')
         return data
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
