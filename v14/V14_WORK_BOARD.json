@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T07:51:57.146Z",
+  "updated_at": "2026-11-25T07:54:56.697Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,19 +197,20 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "After #2491 exact-head focused CI and independent review, merge the child into #2487 only; then Core/QA resolve the #2482/#2483 strict source-pin chain and rerun staged/integrated consumers. Keep speaker identity and learning/action authority OFF. Next Perception evidence: source/session-disjoint calibration with overlap, silence and long-return controls; no threshold or model change from synthetic results.",
+      "next_step": "Independent review of #2491; keep it a child of #2487. Then Core/QA resolve the #2482/#2483 strict source-pin failure and rerun staged/integrated/migration on the exact combined head. Keep speaker identity and learning/action authority OFF. Next Perception evidence: source/session-disjoint calibration with overlap, silence and long-return controls; no threshold or model change from synthetic results.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-25T07:51:57.146Z",
+      "last_checkpoint": "2026-11-25T07:54:56.697Z",
       "latest_candidate_pr": {
         "pr": 2491,
-        "head_sha": "38f0ef5fa46651e157c365a490e5faa16c33feb9",
+        "head_sha": "602e721384a704ae32a50f97992fa53226d57d83",
+        "tested_code_sha": "38f0ef5fa46651e157c365a490e5faa16c33feb9",
         "base_pr": 2487,
         "base_sha": "cbf3bca17797f52c889b672baef5b7fd5b7deb80",
-        "state": "OPEN_DRAFT_CI_RUNNING",
+        "state": "OPEN_DRAFT_FOCUSED_CI_GREEN_STAGED_BLOCKED",
         "scope": "Evict old same-source/same-generation speaker vectors on consent-scope rotation; preserve source isolation; no identity/learning/action authority",
-        "ci": "RAW_EAR_FASTPATH_45571203618_AND_FASTDIAR_45571203750_RUNNING_OR_PARTIAL; FASTDIAR_PY313_PY314_PASS; RAW_EAR_313_PASS_314_PENDING; COMPARATOR_314_PASS_313_PENDING; STAGED_INTEGRATED_45571203720_PENDING"
+        "ci": "PASS: RAW_EAR_FASTPATH_45571203618 (148/148 on Py3.13 and 3.14); FASTDIAR_45571203750 (108/108 on Py3.13 and 3.14); RAW_EAR_COMPARATOR_45571203673 (both Python versions). FAIL: STAGED_INTEGRATED_45571203720 due Core recovery-builder controller-guard SHA 86ad7838... mismatch; migration PARTIAL."
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n2026-11-25 Perception run29: PR #2491 child of #2487 adds same-source/same-generation consent-scope eviction in the RAW EAR speaker registry; prior vectors no longer remain in the LRU after a new scope. LOCAL_LINUX isolated state-machine harness 7/7 PASS; exact GitHub CI partial/pending at last poll; full local Aii suite BLOCKED/NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n2026-11-25 Perception run29: PR #2491 child of #2487 evicts prior same-source/same-generation speaker vectors on consent-scope rotation. LOCAL_LINUX isolated state-machine reproduction 7/7 PASS. Exact CI: RAW EAR fastpath 148/148 on Python 3.13 and 3.14; FASTDIAR adapter/consumer 108/108 on both; WebRTC/libfvad comparator PASS on both. Staged/integrated FAILS at Core-owned recovery-builder guard SHA mismatch (expected 86ad7838...); migration PARTIAL. Full local Aii suite BLOCKED/NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED."
     },
     {
       "id": "V14-007",
