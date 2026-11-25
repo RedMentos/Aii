@@ -22,6 +22,7 @@ from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
     _speaker_change_decision,
     audio_consent_generation_scope,
+    audio_consent_lease,
     consume_pcm16_voice_window,
     reset_runtime_temporal_voice_states,
 )
@@ -1257,3 +1258,137 @@ def test_audio_generation_scope_holds_provider_lease_through_full_runner_iterato
         if revoker.is_alive():
             revoker.join(1.0)
         runtime.store.close()
+
+def test_audio_generation_scope_reuses_runtime_held_lease_without_reentry(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    gate = threading.Lock()
+    calls = {"check": 0, "guard": 0}
+
+    def check(source_id, receipt):
+        calls["check"] += 1
+        return consent_ok(source_id, receipt)
+
+    @contextmanager
+    def guard(source_id, receipt):
+        calls["guard"] += 1
+        with gate:
+            yield consent_ok(source_id, receipt)
+
+    class Runner:
+        def __init__(self):
+            self.closed = False
+
+        def generate(self, messages, cancel, deadline, **kwargs):
+            assert gate.locked()
+            assert messages == [{"role": "system", "content": "borrowed-audio-lease"}]
+            try:
+                yield "token-1"
+                assert gate.locked()
+                yield "token-2"
+            finally:
+                self.closed = True
+
+    runner = Runner()
+
+    def messages_factory(audio_result):
+        assert gate.locked()
+        assert audio_result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
+        assert audio_result["packet"]["source_ref"]["source_id"] == SOURCE
+        return [{"role": "system", "content": "borrowed-audio-lease"}]
+
+    def forbidden_check(*args, **kwargs):
+        raise AssertionError("borrowed lease must not re-enter consent_check")
+
+    def forbidden_guard(*args, **kwargs):
+        raise AssertionError("borrowed lease must not re-enter consent_guard")
+
+    try:
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, check, guard,
+        ) as lease:
+            assert calls == {"check": 1, "guard": 1}
+            with audio_consent_generation_scope(
+                runtime, tone(seconds=0.5),
+                runner=runner,
+                messages_factory=messages_factory,
+                cancel=None,
+                deadline=1_000_000_000.0,
+                sample_rate=16000,
+                start_ms=0,
+                event_id=event["event_id"],
+                generation_id=generation,
+                source_id=SOURCE,
+                consent_receipt=RECEIPT,
+                consent_check=forbidden_check,
+                consent_guard=forbidden_guard,
+                consent_lease=lease,
+                finality="FINAL",
+            ) as (audio_result, token_stream):
+                assert lease.active
+                assert list(token_stream) == ["token-1", "token-2"]
+                assert lease.active
+                assert audio_result["a4"]["learning_authority"] is False
+            # Leaving the borrowed sub-scope closes C3 but does not release
+            # the provider lock or invalidate the outer Runtime lease.
+            assert lease.active
+            assert gate.locked()
+        assert not lease.active
+        assert not gate.locked()
+        assert calls == {"check": 1, "guard": 1}
+        assert runner.closed
+    finally:
+        runtime.store.close()
+
+
+@pytest.mark.parametrize("mismatch", ["source", "generation", "receipt", "temporal_state"])
+def test_audio_generation_scope_rejects_mismatched_borrowed_lease_before_ingress(tmp_path, mismatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    wrong_state = object()
+    lease_source = "other-source" if mismatch == "source" else SOURCE
+    lease_generation = "other-generation" if mismatch == "generation" else generation
+    lease_receipt = "other-receipt" if mismatch == "receipt" else RECEIPT
+    lease_state = wrong_state if mismatch == "temporal_state" else None
+
+    @contextmanager
+    def always_active_guard(source_id, receipt):
+        yield True
+
+    class NeverRunner:
+        def generate(self, *args, **kwargs):
+            raise AssertionError("mismatched lease must fail before C3")
+
+    try:
+        with audio_consent_lease(
+            runtime, lease_source, lease_generation, lease_receipt,
+            lambda source_id, receipt: True, always_active_guard,
+            temporal_state=lease_state,
+        ) as lease:
+            before = runtime.store.one("SELECT COUNT(*) AS n FROM packets")["n"]
+            with pytest.raises(PermissionError, match="source-bound"):
+                with audio_consent_generation_scope(
+                    runtime, tone(seconds=0.5),
+                    runner=NeverRunner(),
+                    messages_factory=lambda *_: (_ for _ in ()).throw(
+                        AssertionError("mismatched lease must fail before context composition")
+                    ),
+                    cancel=None,
+                    deadline=1_000_000_000.0,
+                    sample_rate=16000,
+                    start_ms=0,
+                    event_id=event["event_id"],
+                    generation_id=generation,
+                    source_id=SOURCE,
+                    consent_receipt=RECEIPT,
+                    consent_check=lambda *_: True,
+                    consent_guard=always_active_guard,
+                    consent_lease=lease,
+                    finality="FINAL",
+                ):
+                    raise AssertionError("mismatched lease unexpectedly admitted")
+            after = runtime.store.one("SELECT COUNT(*) AS n FROM packets")["n"]
+            assert after == before
+    finally:
+        runtime.store.close()
+
