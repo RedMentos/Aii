@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from v13 import vision
+from v13 import vision_projector_stats as projector_stats
 from v13.common import Unavailable
 from v13.config import initialize
 from v13.store import Store
@@ -884,6 +885,41 @@ class Vision(unittest.TestCase):
         self.assertNotIn('projector', result['recomputed_projectors'])
         self.assertIsNone(vision.load(self.store)['projector'])
         self.assertIn('projector', result['rebuild_fallbacks'])
+
+
+    def test_source_stats_byte_budget_keeps_training_and_forgets_safely(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20),
+                   (220, 180, 20), (180, 20, 180), (20, 180, 180)]
+        with patch.object(projector_stats, 'MAX_SOURCE_STATS_SET_BYTES', 1):
+            for i, colour in enumerate(colours):
+                rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+                for region in ('g', 'qtl'):
+                    vision.describe(self.rt, rec, region, teacher)
+                records.append(rec)
+
+            global_projector = vision.train(self.rt, encoder)
+            tile_projector = vision.train_tiles(self.rt, encoder)
+
+        self.assertEqual(global_projector['source_stats'], [])
+        self.assertEqual(tile_projector['source_stats'], [])
+        self.assertEqual(global_projector['source_stats_mode'], 'SOURCE_STATS_BUDGET_EXCEEDED')
+        self.assertEqual(tile_projector['source_stats_mode'], 'SOURCE_STATS_BUDGET_EXCEEDED')
+        state = vision.load(self.store)
+        self.assertIsNotNone(state['projector'])
+        self.assertIsNotNone(state['tile_projector'])
+
+        # The cap affects only optional exact deletion statistics: training
+        # remains available, while forget conservatively invalidates both heads.
+        result = vision.forget(self.store, records[-1])
+        self.assertEqual(result['recomputed_projectors'], [])
+        self.assertEqual(set(result['invalidated_projectors']), {'projector', 'tile_projector'})
+        self.assertEqual(set(result['rebuild_fallbacks']), {'projector', 'tile_projector'})
+        state_after = vision.load(self.store)
+        self.assertIsNone(state_after['projector'])
+        self.assertIsNone(state_after['tile_projector'])
 
 
 if __name__ == '__main__':
