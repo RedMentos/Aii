@@ -220,9 +220,11 @@ def probe_native_tokenwise_candidate(
             runtime, sender_role, receiver_role, event, source_ref,
             lease_token=lease_token, probe_kind=APPROVAL_KIND,
         )
+        preflight = approval.get("resource_preflight") if isinstance(approval, dict) else None
         if (not isinstance(approval, dict) or not isinstance(approval.get("approval_id"), str)
-                or approval.get("probe_kind") != APPROVAL_KIND or approval.get("consumed") is not True):
-            raise PermissionError("separate local NATIVE_RECEIVER approval was not consumed")
+                or approval.get("probe_kind") != APPROVAL_KIND or approval.get("consumed") is not True
+                or not isinstance(preflight, dict) or preflight.get("status") != "PASS"):
+            raise PermissionError("separate local NATIVE_RECEIVER approval or resource preflight failed")
         consumed_record, _ = runtime.store.state(approval_module.KEY, None)
         if (not isinstance(consumed_record, dict) or consumed_record.get("status") != "CONSUMED"
                 or consumed_record.get("probe_kind") != APPROVAL_KIND
@@ -274,6 +276,19 @@ def probe_native_tokenwise_candidate(
             raise NativeTokenwiseReceiverProbeError("source bytes changed during native receiver probe")
         _file_identity(sender_binding, "sender")
         _file_identity(receiver_binding, "receiver")
+        from .native_latent_receiver import PINNED_LLAMA_REVISION
+        native_status = native_result.get("status")
+        consumed = native_result.get("native_input_consumed")
+        effect_detected = native_result.get("input_effect_detected")
+        effect_rms = native_result.get("input_effect_rms")
+        if (native_result.get("runner_revision") != PINNED_LLAMA_REVISION
+                or native_status not in {"DIMENSION_MISMATCH", "NATIVE_INPUT_EFFECT", "NATIVE_DECODE_NO_EFFECT"}
+                or type(consumed) is not bool or type(effect_detected) is not bool
+                or type(effect_rms) not in (int, float) or not math.isfinite(float(effect_rms))
+                or (native_status == "DIMENSION_MISMATCH" and (consumed or effect_detected))
+                or (native_status == "NATIVE_INPUT_EFFECT" and (not consumed or not effect_detected))
+                or (native_status == "NATIVE_DECODE_NO_EFFECT" and (not consumed or effect_detected))):
+            raise NativeTokenwiseReceiverProbeError("native receiver status or pinned runner evidence is invalid")
         if (native_result.get("sender_role") != sender_role
                 or native_result.get("receiver_role") != receiver_role
                 or native_result.get("sender_model_sha256") != sender_binding["sha256"]

@@ -261,9 +261,20 @@ def run_probe(runtime, approval, record, *, receiver_fn=None, packet_fn=packet):
 def test_probe_consumes_separate_native_receiver_approval_and_native_input(tmp_path):
     runtime = FakeRuntime(tmp_path)
     approval = FakeApproval(runtime)
-    result = run_probe(runtime, approval, pair_record(runtime))
+    calls = []
+
+    def receiver_fn(**kwargs):
+        calls.append(kwargs)
+        return native_result(**kwargs)
+
+    result = run_probe(runtime, approval, pair_record(runtime), receiver_fn=receiver_fn)
 
     assert approval.consumed_kind == "NATIVE_RECEIVER"
+    assert len(calls) == 1
+    assert calls[0]["vectors"] == [[0.1, 0.2], [0.3, 0.4]]
+    assert calls[0]["position_ids"] == [0, 1]
+    assert calls[0]["position_mode"] == POSITION_MODE
+    assert calls[0]["model_path"] == runtime.bindings["C3_LANGUAGE"]["canonical_path"]
     assert result["status"] == "NATIVE_RECEIVER_DIAGNOSTIC"
     assert result["native_status"] == "NATIVE_INPUT_EFFECT"
     assert result["native_input_consumed"] is True
