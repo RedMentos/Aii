@@ -91,7 +91,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
 def test_single_complete_task_group_is_not_enough_for_utility():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = complete_group(runtime)
-    assert result["status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["status"] == "FIXTURE_ONLY"
     assert result["task_group_count"] == 1
     assert result["enough_holdout"] is False
     assert result["semantic_use_proven"] is False
