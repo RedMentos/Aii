@@ -22,21 +22,31 @@ final class ClaimedActionRecovery {
     private ClaimedActionRecovery() {}
 
     static int recoverAll(CompanionDb db, Signer signer, long nowMillis) {
-        return recoverAll(db, signer, nowMillis,
+        return recoverAllIds(db, signer, nowMillis).size();
+    }
+
+    static int recoverAll(CompanionDb db, Signer signer, long nowMillis, Finalizer finalizer) {
+        return recoverAllIds(db, signer, nowMillis, finalizer).size();
+    }
+
+    static List<String> recoverAllIds(CompanionDb db, Signer signer, long nowMillis) {
+        return recoverAllIds(db, signer, nowMillis,
                 (database, actionId, expected, status, receipt) ->
                         database.finishClaimed(actionId, expected, status, receipt));
     }
 
-    static int recoverAll(CompanionDb db, Signer signer, long nowMillis, Finalizer finalizer) {
+    static List<String> recoverAllIds(CompanionDb db, Signer signer, long nowMillis, Finalizer finalizer) {
+        List<String> recovered = new java.util.ArrayList<>();
         List<CompanionDb.Action> pending;
         try {
             pending = db.claimedWithoutReceipt();
         } catch (RuntimeException ignored) {
-            return 0;
+            return recovered;
         }
-        int recovered = 0;
         for (CompanionDb.Action action : pending) {
-            if (recoverAction(db, signer, action.actionId, nowMillis, finalizer)) recovered++;
+            if (recoverAction(db, signer, action.actionId, nowMillis, finalizer)) {
+                recovered.add(action.actionId);
+            }
         }
         return recovered;
     }
