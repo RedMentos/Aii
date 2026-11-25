@@ -348,12 +348,10 @@ int extract(const Options & options) {
 
     const llama_vocab * vocab = llama_model_get_vocab(model);
     const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
-    const int embedding_dim = llama_model_n_embd_inp(model);
-    std::uint32_t expected_elements = 0;
-    if (!prevalidate_token_ids(ids, vocab_size, embedding_dim, expected_elements)) {
+    if (vocab_size < 2) {
         llama_model_free(model);
         llama_backend_free();
-        std::cerr << "token IDs or receiver embedding geometry are invalid\n";
+        std::cerr << "native model vocabulary is unavailable\n";
         return 4;
     }
 
@@ -372,11 +370,21 @@ int extract(const Options & options) {
     const char * tensor_type = tensor_id >= 0
         ? ggml_type_name(gguf_get_tensor_type(gguf, tensor_id)) : nullptr;
     if (!tensor_ne || !valid_tensor_type(tensor_type)
-            || tensor_ne[0] != embedding_dim || tensor_ne[1] != vocab_size) {
+            || tensor_ne[0] < 1 || tensor_ne[0] > static_cast<std::int64_t>(kMaxDim)
+            || tensor_ne[1] != vocab_size) {
         gguf_free(gguf);
         llama_model_free(model);
         llama_backend_free();
         std::cerr << "token embedding tensor geometry/type mismatch\n";
+        return 6;
+    }
+    const int embedding_dim = static_cast<int>(tensor_ne[0]);
+    std::uint32_t expected_elements = 0;
+    if (!prevalidate_token_ids(ids, vocab_size, embedding_dim, expected_elements)) {
+        gguf_free(gguf);
+        llama_model_free(model);
+        llama_backend_free();
+        std::cerr << "token IDs or receiver embedding geometry are invalid\n";
         return 6;
     }
 
