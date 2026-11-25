@@ -1379,3 +1379,34 @@ Next: Boss/Integrator rebind the current exact source hashes and include the ful
 - Latest recorded turn: C3 7 tokens, prompt 358, TTFT 2.046 s, total 6.295 s. B1/B2 each 2 native attempts, both TIME_BUDGET failures (53.2 s / 54.2 s), 0 valid offers; no semantic-use or native latent proof.
 - New HEALTH/PIPELINE_STATUS/DIAGNOSTICS owner-read requests returned no device_status at last readback (NO_LIVE_RECEIPT). No logs or chat data retrieved.
 - Existing updater is reported up-to-date for the base release; #2484 is not integrated, so no UPDATE_REQUEST. PR-specific Redmi test remains REDMI_UNVERIFIED.
+## Research & Perception — run 25, 2026-11-25
+
+### A3 source-stat storage budget: executable runtime change
+
+PR #2484 exact code/test head: `1e10e7d92a9b5eb3d48d29689763dc5b04d9989b` (NOT_RELEASED). `vision_projector_stats.py` now estimates the complete fp64 sufficient-stat NPZ set and refuses to write it when the per-projector estimate exceeds 32 MiB. The estimate adds 8 KiB per source for NPZ/NPY headers and metadata. Over-budget returns `SOURCE_STATS_BUDGET_EXCEEDED`; `vision.train()` and `vision.train_tiles()` continue their normal projector training, while `vision.forget()` uses the existing safe invalidation fallback instead of claiming an exact source-scoped rebuild.
+
+### Consumer and regression evidence
+
+- Added helper tests for budget rejection before directory creation and for the estimate covering actual NPZ artifact sizes.
+- Added a Runtime consumer test: both global and tile A3 training remain available when the cap is exceeded; a later source-forget invalidates both projectors and does not report a recomputation.
+- GitHub Actions run `45551382106`: exact source-lineage/forget suite **58/58 PASS** on CPython 3.13 and **58/58 PASS** on 3.14; exact py_compile PASS on both.
+- Run `45551381858`: RAW EYE / MediaProjection frame-ingress PASS on Python 3.13 and 3.14.
+- Run `45551381910`: offline runtime-deployment integrity PASS on Python 3.11 and 3.14.
+- Run `45551381822`: staged-runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests); integrated-regression FAIL (1 test). Both fail before Perception consumer acceptance at Core-owned `source_lifecycle_lock_integration_candidate.py:179`, `unsupported lifecycle source: vision.py`.
+- LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated formula+NPZ size reproduction PASS. Full local Aii checkout/pytest NOT_RUN: no checkout mounted and raw GitHub download unavailable.
+
+### Cross-agent integration handoff
+
+Perception posted exact current source hashes to Core PR #2465 (comment 7153498421): `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d`; `vision_projector_stats.py` SHA-256 `bb987ff4b12f7c5622e3890a62a3afc145d82d7401f5a0518d9f04d2786ad10f`. Core owns the immutable composer and must rebind both files and include the helper in the staged closure. Perception does not modify Core-owned files or weaken exact pins.
+
+### Device and updater state
+
+Private V13OBS #115 (2026-11-24 09:28:11Z) reports the base release `8d93236c753f0194224c19edc7411d8d7082b1d6` installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Fresh read-only requests #895 HEALTH, #896 PIPELINE_STATUS and #897 DIAGNOSTICS have NO_LIVE_RECEIPT. PR #2484 is not installed; Redmi acceptance remains REDMI_UNVERIFIED. No UPDATE_REQUEST or device/data/model/permission action.
+
+### Research — R-150
+
+Full MobileMoE paper and official MobileMoE-S-PTE card reviewed. The S PTE is 0.95 GB, with 0.68 GB projected INT4 weights and 272M active / 1.3B total parameters. Its Android benchmarks are Galaxy S25 only; custom ExecuTorch 1.6.0, NDK r28c, torchao and fused-MoE kernels are required. FAIR Noncommercial Research License and gated HF access make it unsuitable as a production default; it is not GGUF/Termux-compatible. No download or code/weight reuse.
+
+### Next executable step
+
+Core/Integrator: update the exact source-lifecycle closure and strict pins, then rerun staged/integrated/consumer/migration. Perception: continue the next independent A-plane/RAW EAR integration task while preserving the full Canon and device consent gates. User action: NONE.
