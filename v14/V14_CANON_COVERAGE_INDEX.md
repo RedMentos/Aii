@@ -2405,3 +2405,11 @@ This overlay preserves the 1,255-heading historical inventory and does not promo
 | Local / device evidence | Current runtime and release branch | No local checkout; git ls-remote DNS failure. Last authenticated device baseline remains installed 8d93236, AI STOPPED_BY_USER. | LOCAL_LINUX full suite NOT_RUN; REDMI_UNVERIFIED; no update request or device action. |
 
 No model/weight swap, permission change, private log access or user-data mutation occurred. No result here promotes B3, native body learning, Android control, or whole-system acceptance.
+
+
+## Candidate evidence overlay — Android ActionOutcome emulator completion — 2026-11-25
+
+| Canon family / contract | Exact evidence | Remaining acceptance boundary |
+|---|---|---|
+| Android companion Stop/persisted-OFF/process-death | PR #2481 head `545ec845`, 17/17 exact checks SUCCESS. API-33 x86_64 GitHub emulator passed Espresso visible Stop, process teardown/restart, new PID/start identity `2176@493104 → 2621@560711`, provider state remained OFF. | Emulator only; no Redmi/Termux install, signer pairing, physical touch, Accessibility, screen capture or real-device action. Draft stack #2450/#2356 awaits independent review and integration. |
+| Android ActionOutcome → B1/B2/C3 | Same head: 64 tests on Python 3.13 and 64 on 3.14; CONTROL_ONLY receipt reaches B1/B2/C3 on the immediate next event and expires after that event. | Does not prove observation, reward, T8 learning, app visibility on real phone or model-weight updates. |
