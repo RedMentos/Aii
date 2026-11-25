@@ -70,7 +70,7 @@ def make_aligned_tokenwise_pairs(prefix, groups, *, seed):
         receiver_rows = z @ target + np.asarray([0.2, -0.1, 0.3])
         receiver_rows += rng.normal(scale=0.001, size=(2, 3))
         rows.extend(align_token_rows_by_char_span(
-            sender_rows, sender_spans, receiver_rows.tolist(), receiver_spans,
+            [row.tolist() for row in sender_rows], sender_spans, receiver_rows.tolist(), receiver_spans,
             source_id=source_id, source_sha256=source_sha256,
         ))
     return rows
