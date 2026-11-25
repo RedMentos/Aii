@@ -477,3 +477,169 @@ def test_anchor_preserving_native_receiver_input_bounds_residual_and_model_bindi
             wrong_fit["adapter"], records[8],
         )
 
+
+
+# Native receiver task-score contract: target log-probability is a proxy, not answer proof.
+from v13.native_receiver_utility import (
+    CONDITIONS as _TASK_SCORE_CONDITIONS,
+    NativeReceiverUtilityError,
+    build_native_receiver_task_score_receipt,
+    evaluate_native_receiver_task_utility,
+)
+
+
+def _task_score_sha(value):
+    return hashlib.sha256(value.encode()).hexdigest()
+
+
+def _task_score_native(target_hash, input_hash, score):
+    return {
+        "schema": "v14.native-receiver-target-score/1",
+        "execution_kind": "SYNTHETIC_FIXTURE",
+        "environment": "SYNTHETIC",
+        "llama_cpp_revision": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+        "binary_sha256": "a" * 64,
+        "receiver_model_sha256": "b" * 64,
+        "input_sha256": input_hash,
+        "target_token_ids_sha256": target_hash,
+        "target_token_count": 2,
+        "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+        "token_logprobs": [score, score - 0.01],
+        "decode_status": 0,
+        "native_input_consumed": True,
+        "llama_version": "synthetic fixture only",
+    }
+
+
+def _task_score_cohort(candidate_delta=0.12):
+    result = []
+    for index in range(20):
+        task_id = f"task-{index}"
+        source = {"source_id": f"source-{index}", "sha256": _task_score_sha(f"source-{index}")}
+        target_hash = _task_score_sha(f"target-{index}")
+        context_hash = _task_score_sha(f"context-{index}")
+        family = "ARITHMETIC" if index % 2 == 0 else "ENTITY_RECALL"
+        scores = {
+            "NO_MESSAGE": -0.42, "EXACT_MESSAGE": -0.38,
+            "LATENT_CANDIDATE": -0.38 + candidate_delta,
+            "ZERO": -0.50, "SHUFFLE": -0.52, "REPEAT": -0.49,
+            "OOD": -0.55, "ENTITY_SUBSTITUTION": -0.58,
+        }
+        for condition in _TASK_SCORE_CONDITIONS:
+            message_source = None if condition == "NO_MESSAGE" else source
+            if condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+                message_source = {
+                    "source_id": f"wrong-{condition}-{index}",
+                    "sha256": _task_score_sha(f"wrong-{condition}-{index}"),
+                }
+            adapter_sha = None if condition in {"NO_MESSAGE", "EXACT_MESSAGE"} else "d" * 64
+            input_hash = _task_score_sha(f"{task_id}:{condition}")
+            result.append(build_native_receiver_task_score_receipt(
+                condition=condition, task_group_id=task_id, task_family=family,
+                session_id=f"session-{index // 10}", source_ref=source,
+                message_source_ref=message_source,
+                receiver={"role": "C3_LANGUAGE", "model_revision": "r1",
+                          "model_sha256": "b" * 64, "tokenizer_revision": "tok1"},
+                target_token_ids_sha256=target_hash, target_token_count=2,
+                context_sha256=context_hash, input_sha256=input_hash,
+                native_receipt=_task_score_native(target_hash, input_hash, scores[condition]),
+                adapter_sha256=adapter_sha,
+            ))
+    return result
+
+
+def test_task_score_complete_synthetic_cohort_is_never_promoted_to_native():
+    result = evaluate_native_receiver_task_utility(_task_score_cohort())
+    assert result["status"] == "FIXTURE_ONLY"
+    assert result["evidence_class"] == "SYNTHETIC"
+    assert result["task_group_count"] == 20 and result["session_count"] == 2
+    assert result["enough_holdout"] is True and result["candidate_beats_all_controls"] is True
+    assert result["semantic_use_proven"] is False
+    assert result["generated_answer_correctness_proven"] is False
+    assert result["production_route"] is False
+    assert result["training_authority"] == result["native_receiver_authority"] == 0
+
+
+def test_task_score_receipt_digest_rejects_post_wrap_score_mutation():
+    rows = _task_score_cohort()
+    tampered = copy.deepcopy(rows[0])
+    tampered["token_logprobs"][0] += 0.2
+    with pytest.raises(NativeReceiverUtilityError, match="digest mismatch"):
+        evaluate_native_receiver_task_utility([tampered] + rows[1:])
+
+
+def test_task_score_evaluator_requires_every_negative_control():
+    rows = [item for item in _task_score_cohort()
+            if not (item["task_group_id"] == "task-0" and item["condition"] == "SHUFFLE")]
+    with pytest.raises(NativeReceiverUtilityError, match="missing or extra"):
+        evaluate_native_receiver_task_utility(rows)
+
+
+def test_task_score_evaluator_rejects_target_mismatch_across_paired_conditions():
+    rows = _task_score_cohort()
+    item = next(x for x in rows if x["task_group_id"] == "task-0" and x["condition"] == "SHUFFLE")
+    new_target = _task_score_sha("different-target")
+    changed = build_native_receiver_task_score_receipt(
+        condition=item["condition"], task_group_id=item["task_group_id"],
+        task_family=item["task_family"], session_id=item["session_id"],
+        source_ref=item["source_ref"], message_source_ref=item["message_source_ref"],
+        receiver=item["receiver"], target_token_ids_sha256=new_target, target_token_count=2,
+        context_sha256=item["context_sha256"], input_sha256=item["input_sha256"],
+        native_receipt=_task_score_native(new_target, item["input_sha256"], -0.5),
+        adapter_sha256=item["adapter_sha256"],
+    )
+    rows[rows.index(item)] = changed
+    with pytest.raises(NativeReceiverUtilityError, match="source/target/context/model"):
+        evaluate_native_receiver_task_utility(rows)
+
+
+def test_task_score_ood_and_entity_substitution_require_different_sender_source():
+    with pytest.raises(NativeReceiverUtilityError, match="must differ"):
+        build_native_receiver_task_score_receipt(
+            condition="OOD", task_group_id="t", task_family="OTHER", session_id="s",
+            source_ref={"source_id": "x", "sha256": "1" * 64},
+            message_source_ref={"source_id": "x", "sha256": "1" * 64},
+            receiver={"role": "C3_LANGUAGE", "model_revision": "r",
+                      "model_sha256": "b" * 64, "tokenizer_revision": "t"},
+            target_token_ids_sha256="d" * 64, target_token_count=2,
+            context_sha256="e" * 64, input_sha256="f" * 64,
+            native_receipt=_task_score_native("d" * 64, "f" * 64, -0.5),
+            adapter_sha256="c" * 64,
+        )
+
+
+def test_task_score_candidate_must_beat_exact_and_no_message_controls():
+    result = evaluate_native_receiver_task_utility(_task_score_cohort(candidate_delta=0.005))
+    assert result["status"] == "FIXTURE_ONLY"
+    assert result["candidate_beats_all_controls"] is False
+    assert result["paired_candidate_deltas"]["EXACT_MESSAGE"]["pass"] is False
+
+
+def test_task_score_native_receipt_requires_successful_decode_and_consumption():
+    bad = _task_score_native("d" * 64, "f" * 64, -0.5)
+    bad["decode_status"] = -1
+    with pytest.raises(NativeReceiverUtilityError, match="successfully consume"):
+        build_native_receiver_task_score_receipt(
+            condition="LATENT_CANDIDATE", task_group_id="t", task_family="OTHER",
+            session_id="s", source_ref={"source_id": "x", "sha256": "1" * 64},
+            message_source_ref={"source_id": "x", "sha256": "1" * 64},
+            receiver={"role": "C3_LANGUAGE", "model_revision": "r",
+                      "model_sha256": "b" * 64, "tokenizer_revision": "t"},
+            target_token_ids_sha256="d" * 64, target_token_count=2,
+            context_sha256="e" * 64, input_sha256="f" * 64,
+            native_receipt=bad, adapter_sha256="c" * 64,
+        )
+
+
+def test_task_score_no_message_cannot_claim_sender_source_or_adapter():
+    with pytest.raises(NativeReceiverUtilityError, match="NO_MESSAGE"):
+        build_native_receiver_task_score_receipt(
+            condition="NO_MESSAGE", task_group_id="t", task_family="OTHER", session_id="s",
+            source_ref={"source_id": "x", "sha256": "1" * 64}, message_source_ref=None,
+            receiver={"role": "C3_LANGUAGE", "model_revision": "r",
+                      "model_sha256": "b" * 64, "tokenizer_revision": "t"},
+            target_token_ids_sha256="d" * 64, target_token_count=2,
+            context_sha256="e" * 64, input_sha256="f" * 64,
+            native_receipt=_task_score_native("d" * 64, "f" * 64, -0.5),
+            adapter_sha256="c" * 64,
+        )
