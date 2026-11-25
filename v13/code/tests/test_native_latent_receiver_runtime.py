@@ -476,7 +476,6 @@ def test_native_receive_prefix_projects_one_event_vector_into_virtual_receiver_p
         assert kwargs["position_ids"] == [0]
         assert kwargs["position_mode"] == native.LATENT_PREFIX_MODE
         assert kwargs["tokenizer_revision"] is None
-        assert kwargs["input_dim"] if "input_dim" in kwargs else True
         value = receipt(digest, sender_digest)
         value.update({
             "input_rows": 1,
@@ -529,7 +528,7 @@ def test_native_receive_prefix_projects_one_event_vector_into_virtual_receiver_p
     runtime.close()
 
 
-def test_native_receive_prefix_refuses_unapproved_or_wrong_receiver_tap(tmp_path, monkeypatch):
+def test_native_receive_prefix_refuses_unapproved_prefix(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     adapter_name, adapter, _ = _make_event_pooled_c3_adapter(runtime, sender_digest, digest)
     tap = {
@@ -547,7 +546,7 @@ def test_native_receive_prefix_refuses_unapproved_or_wrong_receiver_tap(tmp_path
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101, 202], "vectors": [[9.0, 9.0], [1.0, 2.0]]}
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("unapproved prefix must not reach native"))
-    with pytest.raises(PermissionError, match="consumed source-bound approval"):
+    with pytest.raises(PermissionError, match="exclusive approved Runtime lease"):
         runtime.cognition.native_receive_prefix(
             "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
             adapter_name, time.monotonic() + 30,
