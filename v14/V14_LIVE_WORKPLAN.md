@@ -1496,3 +1496,12 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - #2488 staged exact-arithmetic test proves `2+2` and English/German two-integer questions return `4` through Runtime/C5/ActionSelection/Broker/Egress/ExperienceRecord; date-shaped ambiguous inputs are held unless explicitly calculated. No native model or normal B1/B2 path is loaded. Manifest remains SHADOW_REVIEW_ONLY; not released/installed, so no Redmi fix claim.
 - #2479 test-only PR head `dce46db`: 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED. Audio/arithmetic tests: 53 passed + 26 subtests on Python 3.13 and 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Two test fixture defects fixed. The TTS code already exists in release base; this PR adds coverage only.
 - TTS evidence is fake CLI Runtime/SQLite only. No real Android audio, audibility, microphone, raw-ear learning, trainable decoder/vocoder or full-duplex proof. No device command.
+
+
+## Core & Harness — run 26 — 2026-11-25
+
+**Implemented on PR #2488, exact head `d2932cc7ae15a2b53087337efbd0dcdc0e2d092e` (DRAFT / NOT_RELEASED):** read-only native input/organ-delivery evidence in `brain_panel.py`. It correlates B1/B2 attempt telemetry and persisted OfferPackets with C4 selection and C3's exact rendered-offer receipt; checks llama.cpp `prompt_n + cache_n` against the exact tokenizer count and `predicted_n` against generated tokens. Only numeric/status metadata is exposed; raw text and source refs remain excluded. `semantic_use_proven=false`.
+
+**Verification:** local isolated Python checks 5/5 + 1/1; exact-head CI 7 workflows / 13 jobs SUCCESS; new panel tests 5 passed on Python 3.13/3.14; native receiver tests 27 passed; staged/integrated regression 424 passed / 3 skipped / 58 subtests; pinned Linux native build/selftest PASS; Android arm64-v8a/API 26 cross-compile PASS; privacy scan CLEAN.
+
+**Limits:** no full local checkout (GitHub DNS failure); no GGUF/model-pair execution; no learned latent utility/gradient; no Redmi/Termux receipt; no device action. #2488 and #2481 remain DRAFT / NOT_RELEASED. Production B3 OFF. Boss/QA review and safe integration precede any device probe.
