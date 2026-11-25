@@ -58,6 +58,7 @@ class StageTest(unittest.TestCase):
         indented = ''.join('    ' + line for line in body.splitlines(True))
         source = ('def build_sources(code_dir):\n'
                   '    result = {"v13/runtime.py": b"guard_runtime_close(self)"}\n'
+                  '    result["v13/focal.py"] = (code_dir / "v13/focal.py").read_bytes() + b"\\n# SCALE_AWARE_C4_RULE\\n"\n'
                   '    def custom(code_dir):\n' + indented +
                   '    extra = custom(code_dir)\n'
                   '    if isinstance(extra, dict): result.update(extra)\n'
