@@ -2001,7 +2001,7 @@ The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visi
 - Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 3.14; exact push CI 45678196840: 80/80 PASS on both; privacy scan CLEAN. Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded.
 - The helper pairs the stored sender final-RMSNorm prefill tap with the receiver's selected input-embedding rows using exact UTF-8 byte-piece overlap. It is in-memory diagnostic only; no training, persistence, inference or B3 enablement.
 - Core integration is still missing: native tokenizer piece streams and selected receiver rows must be wired into Cognition.tap, then consent-gated source/session-disjoint utility and negative controls must run.
-- Latest available consented Redmi snapshot remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236, but AI runtime STOPPED_BY_USER, autostart false, model process stopped; no fresh authenticated device receipt. REDMI_UNVERIFIED. No automatic deployment from this draft PR.
+- No fresh authenticated device receipt was obtained during this run. Prior device evidence is historical and is not treated as current; REDMI_UNVERIFIED. No automatic deployment from this draft PR.
 - Keep LATENT_PREFIX_V1 event pooling separate from tokenwise input-row pairing. Do not install or swap models; the selected-row API remains staging/WIP and the native memory cost is unmeasured.
 
 

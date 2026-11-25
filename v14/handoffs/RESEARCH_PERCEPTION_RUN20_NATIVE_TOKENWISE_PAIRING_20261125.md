@@ -27,7 +27,7 @@ The selected-row API is present in llama.cpp commit 2851b3bcbf8d993a2243ae751c0a
 
 ## Remaining
 
-Core must wire the two native tokenizer piece streams and selected-row extractor into the actual Cognition.tap/receiver workflow, call this helper, and persist/train only behind explicit local consent. Then run source/session-disjoint receiver utility, no-message/zero/shuffle/repeat/OOD controls, retention and restart/rollback. Redmi remains REDMI_UNVERIFIED; installed runtime remains STOPPED_BY_USER in the latest historical snapshot. No user action required.
+Core must wire the two native tokenizer piece streams and selected-row extractor into the actual Cognition.tap/receiver workflow, call this helper, and persist/train only behind explicit local consent. Then run source/session-disjoint receiver utility, no-message/zero/shuffle/repeat/OOD controls, retention and restart/rollback. Redmi remains REDMI_UNVERIFIED; no fresh authenticated device receipt was obtained during this run and prior evidence is historical only. No user action required.
 
 
 ## R-152 — mobile native-load optimization candidate

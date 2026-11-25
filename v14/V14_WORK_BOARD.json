@@ -1395,7 +1395,7 @@
     "local": "LOCAL_LINUX CPython 3.13.5 isolated harness with stubbed dependencies 7/7 PASS; py_compile PASS; full local Aii checkout NOT_RUN.",
     "ci": "PR run 45678205802: 80/80 PASS on Python 3.13 and 80/80 PASS on Python 3.14; push run 45678196840 same; privacy CLEAN. Staged/integrated run 45678205707 PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests.",
     "consumer": "NOT_RUNTIME_WIRED. Core must obtain exact sender/receiver tokenizer piece streams, call selected-row extractor, consume Cognition.read_tap output through build_native_tokenwise_pair_record, and persist/fitting only under explicit local consent.",
-    "device": "REDMI_UNVERIFIED; latest available consented V13OBS #115 is historical 2026-11-24 09:28 UTC and reports STOPPED_BY_USER, autostart=false, model process stopped. No fresh receipt; B3 OFF; NOT_RELEASED.",
+    "device": "No fresh authenticated HEALTH/PIPELINE_STATUS/DIAGNOSTICS receipt was obtained during this run. Prior device evidence is historical and is not treated as current. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.",
     "next_action": "Core runtime producer/consumer integration; evaluate one-process selected-row extraction + receiver decode at the exact WIP llama.cpp pin, then measure PSS/RSS/TTFT and real GGUF receiver utility with negative controls, retention and rollback.",
     "code_test_sha": "29cda16ef3e3ce436e5f0d59eb418c030626f024",
     "tested_sha": "29cda16ef3e3ce436e5f0d59eb418c030626f024",
