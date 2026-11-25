@@ -11,8 +11,10 @@ import json
 import math
 import os
 from pathlib import Path
+import selectors
 import stat
 import subprocess
+import time
 
 PINNED_LLAMA_REVISION = "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40"
 RECEIPT_SCHEMA = "v14.llama-token-embedding-rows-receipt/1"
@@ -147,6 +149,97 @@ def _validate_rows(rows, token_ids, receipt):
     return validated
 
 
+
+class _NativeOutputLimit(Exception):
+    pass
+
+
+def _kill_and_reap(process):
+    if process is None:
+        return
+    try:
+        if process.poll() is None:
+            process.kill()
+    except OSError:
+        pass
+    try:
+        process.wait(timeout=2)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def _run_bounded_native_process(argv, timeout_seconds):
+    """Capture at most MAX_OUTPUT_BYTES and kill/reap a runaway native child."""
+    process = None
+    selector = None
+    chunks = []
+    total = 0
+    try:
+        process = subprocess.Popen(
+            argv,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            bufsize=0,
+            close_fds=True,
+        )
+        if process.stdout is None:
+            raise NativeInputEmbeddingError("native extractor stdout pipe is unavailable")
+        os.set_blocking(process.stdout.fileno(), False)
+        selector = selectors.DefaultSelector()
+        selector.register(process.stdout, selectors.EVENT_READ)
+        deadline = time.monotonic() + timeout_seconds
+        eof = False
+        while not eof:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError
+            events = selector.select(min(remaining, 0.1))
+            if not events:
+                continue
+            chunk = os.read(
+                process.stdout.fileno(),
+                min(65536, MAX_OUTPUT_BYTES + 1 - total),
+            )
+            if not chunk:
+                eof = True
+                break
+            total += len(chunk)
+            if total > MAX_OUTPUT_BYTES:
+                raise _NativeOutputLimit
+            chunks.append(chunk)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError
+        return_code = process.wait(timeout=remaining)
+        if return_code != 0:
+            raise NativeInputEmbeddingError("native input-embedding extractor failed")
+        try:
+            return b"".join(chunks).decode("utf-8", errors="strict")
+        except UnicodeDecodeError as exc:
+            raise NativeInputEmbeddingError("native input-embedding extractor returned invalid UTF-8") from exc
+    except _NativeOutputLimit as exc:
+        _kill_and_reap(process)
+        raise NativeInputEmbeddingError("native input-embedding extractor output exceeded its bound") from exc
+    except TimeoutError as exc:
+        _kill_and_reap(process)
+        raise NativeInputEmbeddingError("native input-embedding extraction timed out") from exc
+    except subprocess.TimeoutExpired as exc:
+        _kill_and_reap(process)
+        raise NativeInputEmbeddingError("native input-embedding extraction timed out") from exc
+    except OSError as exc:
+        _kill_and_reap(process)
+        raise NativeInputEmbeddingError("native input-embedding extractor could not start or stream output") from exc
+    except BaseException:
+        _kill_and_reap(process)
+        raise
+    finally:
+        if selector is not None:
+            selector.close()
+        if process is not None and process.stdout is not None:
+            process.stdout.close()
+
+
 def extract_native_input_embedding_rows(
     binary_path,
     model_path,
@@ -208,29 +301,10 @@ def extract_native_input_embedding_rows(
         "--extractor-sha256", binary_sha,
         "--token-ids", ",".join(str(token_id) for token_id in token_ids),
     ]
+    native_stdout = _run_bounded_native_process(argv, timeout_seconds)
+
     try:
-        completed = subprocess.run(
-            argv,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=timeout_seconds,
-            check=False,
-            close_fds=True,
-        )
-    except subprocess.TimeoutExpired as exc:
-        raise NativeInputEmbeddingError("native input-embedding extraction timed out") from exc
-    except OSError as exc:
-        raise NativeInputEmbeddingError("native input-embedding extractor could not start") from exc
-    if completed.returncode != 0:
-        raise NativeInputEmbeddingError("native input-embedding extractor failed")
-    if len(completed.stdout.encode("utf-8")) > MAX_OUTPUT_BYTES:
-        raise NativeInputEmbeddingError("native input-embedding extractor output exceeded its bound")
-    try:
-        result = json.loads(completed.stdout, parse_constant=_reject_json_constant)
+        result = json.loads(native_stdout, parse_constant=_reject_json_constant)
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         raise NativeInputEmbeddingError("native input-embedding extractor returned invalid JSON") from exc
 
