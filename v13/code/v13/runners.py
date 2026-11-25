@@ -105,8 +105,14 @@ class LlamaRunner:
         if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
         self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         return {"before":before,"process_reaped":True}
-    def _retain_after_deadline(self):
-        """Retain a warm child only after its local llama-server slots report idle."""
+    def _retain_after_deadline(self,cancel=None):
+        """Retain a warm child only after idle slots and no concurrent user stop."""
+        def cancelled():
+            return cancel is not None and cancel.is_set()
+        def unload_for_cancel():
+            result=self.unload()
+            return result | {"retained_warm":False,"reason":"USER_CANCELLED"}
+        if cancelled():return unload_for_cancel()
         proc=self.proc
         if proc is None or proc.poll() is not None:
             result=self.unload()
@@ -116,8 +122,10 @@ class LlamaRunner:
                 raise ValueError("runner lifecycle changed")
             end=time.monotonic()+.35
             while time.monotonic()<end:
+                if cancelled():return unload_for_cancel()
                 remaining=end-time.monotonic()
                 slots=self._json("GET","/slots",None,end,timeout_cap=min(.12,remaining))
+                if cancelled():return unload_for_cancel()
                 if not isinstance(slots,list) or not slots:
                     raise ValueError("runner slots state unavailable")
                 states=[]
@@ -126,13 +134,16 @@ class LlamaRunner:
                         raise ValueError("runner slot state malformed")
                     states.append(slot["is_processing"])
                 if not any(states):
+                    if cancelled():return unload_for_cancel()
                     if (self.proc is proc and proc.poll() is None
                             and self._loaded_stamp==self._lifecycle_stamp()):
                         # Never persist the /slots response: it can contain prompt text.
+                        if cancelled():return unload_for_cancel()
                         return {"process_reaped":False,"retained_warm":True,"reason":"SERVER_IDLE"}
                 time.sleep(min(.05,max(0.,end-time.monotonic())))
         except Exception:
             pass
+        if cancelled():return unload_for_cancel()
         result=self.unload()
         return result | {"retained_warm":False,"reason":"SERVER_NOT_IDLE_OR_UNVERIFIED"}
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
@@ -407,7 +418,7 @@ class LlamaRunner:
         try:
             yield from self._generate(messages,cancel,deadline,max_tokens,schema,seed,first_token_bias,confidence_field)
         except BaseException as exc:
-            status='CANCELLED' if isinstance(exc,Cancelled) else ('DEADLINE' if isinstance(exc,Limits) and time.monotonic()>=deadline else 'ERROR')
+            status='CANCELLED' if cancel.is_set() or isinstance(exc,Cancelled) else ('DEADLINE' if isinstance(exc,Limits) and time.monotonic()>=deadline else 'ERROR')
             raise
         finally:
             done.set();watcher.join(timeout=1);sample()
@@ -461,7 +472,14 @@ class LlamaRunner:
                     if observed is not None:self.last_metrics['native_memory_firing']=observed
                 finally:self._audit_lock.release()
             if status!='FINAL':
-                recovery=self._retain_after_deadline() if status=='DEADLINE' else self.unload()
+                if status=='DEADLINE':
+                    recovery=self._retain_after_deadline(cancel)
+                    if cancel.is_set() and recovery.get('retained_warm') is True:
+                        recovery=self.unload() | {'retained_warm':False,'reason':'USER_CANCELLED'}
+                else:
+                    recovery=self.unload()
+                    if status=='CANCELLED':
+                        recovery=recovery | {'retained_warm':False,'reason':'USER_CANCELLED'}
                 self.last_metrics['interruption_unload']=recovery
                 self.last_metrics['warm_process_retained']=recovery.get('retained_warm') is True
     def completion_one(self,payload,cancel,deadline):

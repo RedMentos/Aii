@@ -220,3 +220,47 @@ def test_deadline_waits_until_every_slot_is_idle_before_retaining(tmp_path, monk
     }
     assert runner.unload.call_count == 0
     assert "PRIVATE_SLOT_PROMPT" not in repr(runner.last_metrics)
+
+
+
+def test_deadline_racing_user_cancel_unloads_without_slots_probe(tmp_path, monkeypatch):
+    runner = make_runner(tmp_path, monkeypatch)
+    cancel = threading.Event()
+    runner._json = Mock(side_effect=AssertionError("must not probe after user stop"))
+
+    def cancel_then_deadline(*args, **kwargs):
+        cancel.set()
+        raise Limits("deadline")
+        yield  # pragma: no cover - makes this a generator for yield-from
+
+    runner._generate = cancel_then_deadline
+    with pytest.raises(Limits):
+        list(runner.generate([], cancel, time.monotonic() - 0.01))
+
+    assert runner.last_metrics["status"] == "CANCELLED"
+    assert runner.last_metrics["warm_process_retained"] is False
+    assert runner.last_metrics["interruption_unload"]["reason"] == "USER_CANCELLED"
+    runner._json.assert_not_called()
+    assert runner.unload.call_count == 1
+
+
+def test_deadline_probe_unloads_if_user_cancels_during_idle_slot_check(tmp_path, monkeypatch):
+    runner = make_runner(tmp_path, monkeypatch)
+    cancel = threading.Event()
+    calls = []
+
+    def cancel_during_slots(method, path, payload, deadline, timeout_cap=3.0):
+        calls.append((method, path))
+        cancel.set()
+        return [{"is_processing": False}]
+
+    runner._json = cancel_during_slots
+    decision = runner._retain_after_deadline(cancel)
+
+    assert calls == [("GET", "/slots")]
+    assert decision == {
+        "process_reaped": True,
+        "retained_warm": False,
+        "reason": "USER_CANCELLED",
+    }
+    assert runner.unload.call_count == 1
