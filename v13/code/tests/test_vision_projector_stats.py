@@ -180,3 +180,57 @@ def test_global_rebuild_requires_complete_caption_provenance(tmp_path):
                                         if not key.startswith("src0:")})
     result, reason = rebuild_without_source(home, incomplete, "src1", lineage[1]["sha256"], retained, Projector, 4)
     assert result is None and "caption" in reason
+
+
+def test_concurrent_first_use_builders_share_private_directories(tmp_path):
+    """Concurrent A3 training calls must converge on one private directory inode."""
+    import concurrent.futures
+
+    X, Y, keys, lineage, _ = _fixture(sources=4, rows_per=4)
+
+    def build(_):
+        return _build(tmp_path, X, Y, keys, lineage)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(build, range(8)))
+
+    assert all(mode == SOURCE_STATS_MODE and len(records) == 4 for records, mode in results)
+    paths = [item["path"] for records, _ in results for item in records]
+    assert len(paths) == 32
+    assert len(paths) == len(set(paths))
+    data_dir = tmp_path / "data"
+    vision_dir = data_dir / "vision"
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path / path).stat().st_mode & 0o777 == 0o600 for path in paths)
+
+
+def test_first_use_rejects_symlink_winning_directory_creation_race(tmp_path, monkeypatch):
+    """A symlink created after ENOENT must not become the A3 statistics root."""
+    import os
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    real_mkdir = os.mkdir
+    installed = False
+
+    def racing_mkdir(name, mode=0o777, *, dir_fd=None):
+        nonlocal installed
+        if name == "data" and dir_fd is not None and not installed:
+            os.symlink(str(outside), name, dir_fd=dir_fd)
+            installed = True
+            raise FileExistsError(name)
+        return real_mkdir(name, mode, dir_fd=dir_fd)
+
+    # Preserve the helper's capability check while replacing only the syscall
+    # behavior for this controlled interleaving.
+    monkeypatch.setattr(os, "mkdir", racing_mkdir)
+    monkeypatch.setattr(os, "supports_dir_fd", set(os.supports_dir_fd) | {racing_mkdir})
+
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert installed
+    assert records == []
+    assert mode == "UNAVAILABLE_STORAGE"
+    assert (tmp_path / "data").is_symlink()
+    assert list(outside.iterdir()) == []
