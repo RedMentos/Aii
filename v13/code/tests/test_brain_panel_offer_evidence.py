@@ -530,7 +530,7 @@ def test_real_sqlite_offer_packet_and_source_ref_are_verified(tmp_path):
     home = tmp_path / "v14-test-home"
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
-    store = Store(str(home))
+    store = Store(home)
     try:
         session = store.new_session("body evidence test")
         event = store.event(session, "Please use the source evidence.")
