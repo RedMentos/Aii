@@ -1494,3 +1494,6 @@ Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTI
 **Next:** Core/Integrator must recompose the #2494 `vision.py` source-lifecycle closure and rerun staged/integrated/migration/consumer gates. Then rebase/retest #2494→#2509 on one exact release ancestor. Only after that, compare ALWAYS vs ERROR_GATED on explicitly consented real visual sequences with source/session-disjoint holdouts, static-screen and motion strata, brightness/codec/camera controls, retention and restart/rollback. Keep A4 gain 0.15 unchanged until those controls pass. Continue other Canon families; this ablation does not close A0–A5, voice, B1/B2, B3, World/Self/Memory/JEPA, persistent learning or Android control.
 
 User action: **keine Aktion nötig**.
+
+
+**Final branch/readback checkpoint (2026-11-25T19:47:24.064Z):** PR #2509 documentation/ledger/board head `47ccf435dcf66350ba6972b36a5df05341715256`. Exact-head runtime deployment and frame-ingress workflows SUCCESS; A3 temporal calibration, source-lineage and staged/integrated workflows IN_PROGRESS at last poll. No completion is claimed for in-progress jobs.
