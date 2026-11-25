@@ -1508,3 +1508,15 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 **Device/deployment:** owner-read DIAGNOSTICS returned NO_LIVE_RECEIPT. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; this is historical only. No new release is ready. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No UPDATE_REQUEST, shell command, model/weight/permission/data change or deployment.
 
 **Next:** obtain exact PR #2511 CI, fix any failures, ask Core to integrate the helper into the native receiver utility path, then run held-out task tests with exact-message/no-message/zero/shuffle/repeat/OOD/entity-substitution controls plus retention/restart/rollback. No user action is required.
+
+
+---
+
+## Core & Harness — tokenwise native receiver consumer (2026-11-25)
+
+- Core PR [#2512](https://github.com/RedMentos/Aii/pull/2512), branch `core/v14-tokenwise-native-receiver-consumer-20261125-run1`, current head `6ff13917a9736a292716becdb2e50a1ac7f9b288`. It is stacked on Core #2510 and carries Perception #2511 as a second parent so the exact anchor-preserving helper is consumed without rewriting either owner branch.
+- New in-memory path: session-disjoint TOKENWISE adapter fit → held-out current-event validation → anchor-preserving receiver-input construction → separately approved native receiver probe. It consumes `NATIVE_RECEIVER`, not `TOKENWISE_PAIR_CAPTURE`, and verifies source bytes, event/generation/session, model revisions and file identities, Runtime lease, queue and known managed-model process census.
+- Pair records, adapter and activation vectors are not persisted. No model weight update, generated answer, production B3 route or semantic utility claim.
+- Exact-head CI on `6ff1391`: queued at this checkpoint. Earlier head `27c4788` compiled on Python 3.13/3.14 and ran 18/19 focused tests; the only failure was a test comparing `Path` to `str`. Corrected in `6ff1391`; exact rerun still required.
+- LOCAL_LINUX full Aii checkout is BLOCKED: no checkout and `git ls-remote` failed DNS. No local repository pytest or native GGUF run. REDMI_UNVERIFIED; no device receipt, install, model swap, weight change or deployment.
+- Next: read exact #2512 CI, fix any remaining failures, then arrange an explicitly consented local native-GGUF probe on a reachable authorized environment. Do not promote B3 until task-level held-out utility beats exact/no-message/zero/shuffle/repeat/OOD controls and passes retention/restart/rollback.

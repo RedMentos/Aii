@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-25T20:47:46.685Z",
+  "updated_at": "2026-11-25T21:14:20.978Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.",
@@ -1424,5 +1424,20 @@
     "mobile_optimization": "RESEARCHED_NOT_IMPLEMENTED: current extractor and receiver are separate processes and independently load the GGUF at different llama.cpp pins; one-process same-model-pointer extraction/decode may avoid duplicate loading, but RSS/PSS/TTFT must be measured.",
     "cross_lane_research_finding": "Synthetic WorldJEPA A→B→A (run 45678205707): 12 source-disjoint arms; B actual-action loss worse than zero/shuffled in 12/12; B forgetting positive in 9/12; A reacquisition positive in 6/12; exact rollback all. Uniform replay lowered B forgetting metric but did not fix B action utility. See R-153; not native model/device proof.",
     "staged_integration": "PASS — staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests (run 45678205707)."
+  },
+  "latest_core_checkpoint": {
+    "owner": "Core & Harness",
+    "package_id": "V14-TOKENWISE-NATIVE-RECEIVER-001",
+    "branch": "core/v14-tokenwise-native-receiver-consumer-20261125-run1",
+    "head_sha": "6ff13917a9736a292716becdb2e50a1ac7f9b288",
+    "pull_request": "https://github.com/RedMentos/Aii/pull/2512",
+    "base_dependency": "Core PR #2510",
+    "source_dependency": "Perception PR #2511",
+    "status": "CI_PENDING",
+    "local_linux": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
+    "ci_python_313_314": "QUEUED_AT_CHECKPOINT",
+    "redmi": "REDMI_UNVERIFIED",
+    "proof": "In-memory cohort-to-native-receiver API with separate NATIVE_RECEIVER approval; no vectors or adapter persisted; no production B3 or semantic utility.",
+    "next_action": "Read exact-head CI, repair failures, then run a consented native-GGUF receiver diagnostic only on a reachable authorized environment."
   }
 }

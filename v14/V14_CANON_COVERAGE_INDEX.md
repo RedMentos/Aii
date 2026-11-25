@@ -2319,3 +2319,12 @@ This is not a production latent path, not a semantic-use result and not a releas
 | B3 / Enlightened Space — tokenwise receiver input | Pair fitter now checks native receiver extractor-manifest digest, token order/spans and each row hash; an optional anchor-preserving residual builder emits zero-based contiguous receiver-prefill vectors while retaining exact receiver rows as the base. | Draft PR #2511, code/test SHA 87c8c7ecdf18ac42ad2753568991a2c4e32078ae; LOCAL_LINUX isolated harness 4/4 PASS. Exact PR CI pending; full local Aii suite NOT_RUN. | Core #2510 runtime call, actual installed GGUF extraction+receiver decode, held-out task utility vs exact/no-message/zero/shuffle/repeat/OOD/entity-substitution, old-task retention, restart/rollback, PSS/RSS/TTFT and Redmi proof. | CODE_PRESENT / ISOLATED_HARNESS / NOT_RUNTIME_WIRED / NATIVE_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
 
 This is a provenance and input-construction improvement, not a trained latent channel or semantic-communication result. The original replacement-style input builder is unchanged. Event-pooled LATENT_PREFIX_V1 remains separate. No other Canon family is promoted.
+
+
+## Core & Harness Run 1 — tokenwise native receiver consumer (2026-11-25)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — tokenwise receiver | In-memory cohort fit → anchor-preserving receiver input → separate NATIVE_RECEIVER-approved native diagnostic API. | Draft PR #2512, head `6ff13917a9736a292716becdb2e50a1ac7f9b288`; parent Core #2510 and Perception #2511; exact-head CI queued. | Local native GGUF execution, real Redmi receipt, generated/task-level utility, OOD/retention/restart/rollback, durable candidate lifecycle, production B3 route. | WIRED_SYNTHETIC; REDMI_UNVERIFIED |
+
+This is a diagnostic input consumer only. It does not demonstrate semantic B3 coupling or permanent model-weight learning.
