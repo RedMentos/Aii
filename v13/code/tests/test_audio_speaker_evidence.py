@@ -26,6 +26,7 @@ from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     reset_runtime_temporal_voice_states,
 )
+from v13.audio_temporal_evidence import TemporalVoiceEvidence
 from v13.store import Store
 
 
@@ -100,6 +101,83 @@ def test_audio_window_hash_mismatch_is_rejected_before_history_changes():
             embeddings=batch,
         )
     assert len(registry) == 0
+
+
+def test_new_consent_receipt_isolates_runtime_temporal_and_speaker_state(tmp_path):
+    runtime, first_event = make_runtime(tmp_path)
+    active = {"receipt": "fixture:consented-speaker-a"}
+
+    def current_consent(source_id, receipt):
+        return source_id == SOURCE and receipt == active["receipt"]
+
+    try:
+        first_pcm = tone(frequency=140)
+        first_embeddings = speaker_batch(
+            SOURCE, first_event["brain_generation_id"], 100, 1100,
+            lambda _: (1.0, 0.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(first_pcm).hexdigest(),
+        )
+        first = consume_pcm16_voice_window(
+            runtime, first_pcm, sample_rate=16000, start_ms=100,
+            event_id=first_event["event_id"],
+            generation_id=first_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=active["receipt"],
+            consent_check=current_consent,
+            consent_guard=consent_guard(current_consent),
+            finality="FINAL", speaker_embeddings=first_embeddings,
+        )
+        assert first["speaker_change_evidence"]["status"] == "WARMUP"
+        assert first["speaker_change_evidence"]["consent_scope_bound"] is True
+        assert first["temporal_voice"]["consent_scope_bound"] is True
+
+        active["receipt"] = "fixture:consented-speaker-b"
+        second_session = runtime.store.new_session("RAW EAR renewed consent")
+        second_event = runtime.store.event(second_session, "new consent scope")
+        second_pcm = tone(frequency=180)
+        second_embeddings = speaker_batch(
+            SOURCE, second_event["brain_generation_id"], 100, 1100,
+            lambda _: (1.0, 0.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(second_pcm).hexdigest(),
+        )
+        second = consume_pcm16_voice_window(
+            runtime, second_pcm, sample_rate=16000, start_ms=100,
+            event_id=second_event["event_id"],
+            generation_id=first_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=active["receipt"],
+            consent_check=current_consent,
+            consent_guard=consent_guard(current_consent),
+            finality="FINAL", speaker_embeddings=second_embeddings,
+        )
+
+        # Reusing a source and brain generation with a fresh receipt must not
+        # inherit the prior speaker vector history or the previous time origin.
+        assert second["speaker_change_evidence"]["status"] == "WARMUP"
+        assert second["speaker_change_evidence"]["history_frame_count"] == len(second_embeddings["frames"])
+        assert second["temporal_voice"]["state_reset"] is False
+        assert second["temporal_voice"]["gap_ms"] == 0
+        assert second["a4"]["speaker_change_decision"] == "DEFER"
+        fingerprint = hashlib.sha256(active["receipt"].encode("utf-8")).hexdigest()
+        packet_text = json.dumps(second["packet"], sort_keys=True)
+        assert fingerprint not in packet_text
+        assert "consent_scope_id" not in packet_text
+    finally:
+        runtime.store.close()
+
+
+def test_external_temporal_voice_state_resets_when_receipt_scope_changes():
+    state = TemporalVoiceEvidence()
+    cues = {"activity_hint": "VOICED", "activity_score": 0.9}
+    state.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        cues=cues, consent_scope_id="a" * 64,
+    )
+    changed = state.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        cues=cues, consent_scope_id="b" * 64,
+    )
+    assert changed["state_reset"] is True
+    assert changed["reset_reason"] == "CONSENT_SCOPE_CHANGED"
+    assert changed["consent_scope_bound"] is True
 
 
 def test_speaker_window_start_cannot_move_backwards_when_frame_times_advance_and_state_recovers():
