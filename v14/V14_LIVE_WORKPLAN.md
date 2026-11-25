@@ -1468,3 +1468,20 @@ The staged/integrated CI run 45678205707 completed successfully (staged runtime 
 ### Run 20 final regression status
 
 Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. This validates the selected CI test matrix only, not the new native tokenwise pair helper on a real GGUF or any Redmi runtime.
+
+
+
+## Research & Perception Run 21 — session-disjoint native tokenwise fitter (2026-11-25)
+
+**User action: none required.** Draft PR [#2508](https://github.com/RedMentos/Aii/pull/2508), branch `research-perception/v14-native-tokenwise-session-fit-20261125-run21`, current exact head `c246a56a50f06ca6d8e1ee560e6caa6fcd426a99`; stacked on #2507 at creation. It adds:
+
+- TOKENWISE adapter schema v4; each pair carries a session ID and the alignment digest binds that session.
+- Fitting now requires at least two independent sessions on each side and rejects session overlap, in addition to existing source-ID/source-hash separation.
+- `fit_adapter_from_native_pair_records()` validates record/source/session/model/tap/tokenizer bindings and returns a low-rank PCA+ridge alignment candidate plus a digest-bound fit manifest.
+- The fitter is in-memory only. No persistence, native receiver inference, model-weight update, training authority or B3 enablement.
+
+**Verification:** LOCAL_LINUX CPython 3.13.5 isolated stub-bound wrapper harness 3/3 PASS (positive session-disjoint cohort, overlapping-session negative control, tampered-session negative control). This is not the exact repository test suite. Full local Aii checkout is absent; exact `py_compile` and repository pytest are NOT_RUN. No exact PR #2508 Actions run was visible at last poll. Parent #2507 CI is not evidence for this child PR.
+
+**Consumer and limitations:** NOT_RUNTIME_WIRED. Core must compose #2505 native selected-row extraction, Cognition.read_tap and #2507 pair assembly, then call this fitter only under explicit local consent. It does not prove semantic receiver utility or actual JEPA/gradient learning. The next gate is real GGUF receiver-task utility against exact-message, no-message, zero, shuffled, repeat and OOD controls, plus retention/restart/rollback.
+
+**Device:** private V13OBS #115 last updated 2026-11-24T09:28:11Z; no newer receipt. The newest recorded turn had C3 native output but B1/B2 were not attempted in that turn; earlier B1 attempts failed and native latent exchange was unproven. Read-only relay issues #925–927 had no response at last poll. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No device command, model/weight/permission/data change or deployment occurred.
