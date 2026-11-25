@@ -121,6 +121,7 @@ def capture_native_input_embedding_tap(
         approval = approval_module.consume(
             runtime, sender_role, receiver_role, event, source_ref,
             lease_token=lease_token,
+            probe_kind="INPUT_EMBEDDING_TAP",
         )
         model_binding = approval_module._model_binding(runtime, receiver_role)
         model_path = Path(model_binding["canonical_path"])
@@ -280,7 +281,7 @@ def operator_command(runtime, args, *, approval_module=None, capture_fn=None):
 
     if (len(args) == 5 and args[0] == "arm-input-tap"
             and args[3:] == ["--last-source", "--confirm"]):
-        return dumps(approval_module.arm(runtime, args[1], args[2]))
+        return dumps(approval_module.arm(runtime, args[1], args[2], probe_kind="INPUT_EMBEDDING_TAP"))
     if args == ["revoke-input-tap"]:
         return dumps(approval_module.revoke(runtime))
     if (len(args) == 5 and args[0] == "native-input-tap"
