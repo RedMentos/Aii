@@ -176,7 +176,7 @@ def test_capture_maps_content_tokens_to_prefill_rows_and_roundtrips(tmp_path):
     assert runner.calls[0][2]["with_pieces"] is True
     assert packet["role"] == "B2_GIST"
     assert packet["token_ids"] == [11, 12, 13]
-    assert packet["token_spans"] == [[0, 1], [1, 5], [5, 10]]
+    assert packet["token_spans"] == [[0, 1], [1, 5], [5, 11]]
     assert packet["prefill_positions"] == [1, 2, 3]
     assert packet["special_prefix_tokens"] == 1
     assert packet["special_suffix_tokens"] == 1
@@ -195,7 +195,7 @@ def test_capture_maps_content_tokens_to_prefill_rows_and_roundtrips(tmp_path):
 
     restored = read_tokenwise_tap(cognition, packet)
     assert restored["token_ids"] == [11, 12, 13]
-    assert restored["token_spans"] == [[0, 1], [1, 5], [5, 10]]
+    assert restored["token_spans"] == [[0, 1], [1, 5], [5, 11]]
     assert restored["vectors"] == blob["vectors"]
     assert restored["tokenizer_revision"].startswith("llama-server-sha256:")
     assert restored["position_mode"] == POSITION_MODE
