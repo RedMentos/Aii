@@ -73,3 +73,12 @@ The periodic matched-update control is now 3/4, matching the corrected training 
 This is still synthetic generated data. The difference versus ALWAYS is small and does not establish real visual utility or Android energy savings.
 
 Exact CI for the preceding code head 3dfd657: A3 80/80 on Python 3.13.18 and 3.14.10; frame ingress 55/55 and source-lineage 39/39 on both; runtime deployment integrity PASS; staged/integrated FAIL at the Core-owned strict vision.py lifecycle pin. This correction needs a new exact CI run.
+
+
+## Run 12 research extension — R-155 Update-Effect Predictor
+
+Full 45-page primary PDF reviewed: Yi Ren, Wenlong Deng, Guanzhe Hong, Clare Lyle, Yarin Gal, arXiv:2609.33620 (2026-09-27), preprint. The paper derives forward-computable token-level CH1/CH2 interaction estimates from logits/token forces, hidden states and shared readout; it also defines task-conditioned readout transmission R_D to diagnose future learnability. It distinguishes high-energy collision from cumulative low-energy erosion and reports OOD-specific readout transmission decay during long-horizon PubMed training.
+
+Critical caveats: first-order/local estimate; identity-path residual approximation; SGD derivation with incomplete AdamW history/decoupled-decay treatment; Transformer shared-readout scope (not MoE/circuit-level); signed CH2 unreliable at cold start until a brief warm start. Top-K vocabulary and selected layers can reduce O(ndL) cost.
+
+The author OSS tree has no LICENSE file, so no code was reused. The paper is not an Android/Redmi measurement. The current #2510 tokenwise tap path does not expose the logits, target token forces, final hidden states, selected layer states and readout needed for CH1/CH2/R_D. Next cross-lane implementation is a source-bound native Update-Effect tap and a tiny-model exact-gradient parity harness; keep production JEPA update selection OFF until holdout/retention/rollback passes.

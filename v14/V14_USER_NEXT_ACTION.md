@@ -1939,3 +1939,16 @@ No user action required. Core/Integrator owns the source-lifecycle rebind; Perce
 - Recalibrated the fixed-rate control to 3/4 updates to match the corrected train-set gate fraction (~0.738). On held-out seeds 20–39, hysteresis uses 1,329.35 updates vs ALWAYS 1,799 (26.11% fewer) with mean MAE 0.00601103 vs 0.00600822 and old-pattern MAE 0.01788599 vs 0.01783551. The 3/4 periodic control and matched-average-LR control are worse in this synthetic task.
 - Prior exact CI head 3dfd657: A3 80/80 on Python 3.13/3.14, frame ingress 55/55, source-lineage 39/39, runtime deployment PASS; staged/integrated FAIL at Core-owned vision.py lifecycle pin. The absolute-floor change requires fresh exact CI.
 - Still shadow-only, NOT_RELEASED, REDMI_UNVERIFIED; no user action required.
+
+
+---
+
+# Research & Perception — full-paper review for Update-Effect Predictor (2026-11-25)
+
+R-155 records the full 45-page review of Ren et al., arXiv:2609.33620 (2026-09-27), including its token/layer CH1+CH2 update–behavior decomposition, collision vs erosion distinction, and task-conditioned readout-transmission R_D. The paper reports cross-lingual and memory-retrieval gains on Qwen/Llama research settings, plus OOD readout-transmission decay and partial recovery after readout restoration. It is an arXiv preprint, not a peer-reviewed Android result.
+
+The author repository Joshua-Ren/learning-dynamics-cl was inspected; no LICENSE file is present, so no code reuse. Its large PyTorch/Transformers experiments are not an Android model candidate.
+
+**Next cross-lane task:** JEPA & Memory + Core should specify a source-bound native Update-Effect tap containing target token IDs, logits/token-force top-K, final hidden state, selected layer states, readout revision/hash and optimizer/checkpoint revision. The current #2510 tokenwise tap path does not expose that contract. Prototype CH1 and selected-layer/top-K CH2 against exact one-step gradient/log-probability deltas on a tiny residual model; measure cold-start sign reliability, OOD readout transmission, zero/shuffle controls, retention and rollback. Keep any production learning selection OFF until those gates pass.
+
+No model candidate or model swap is recommended. No user action required.
