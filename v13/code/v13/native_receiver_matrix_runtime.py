@@ -466,9 +466,10 @@ def _arm(runtime):
     models = _model_bindings(runtime, sender, receiver)
     other, _ = runtime.store.state(approval.KEY, None)
     if isinstance(other, dict) and other.get("status") == "PENDING":
-        expires = other.get("expires_at")
-        if type(expires) in (int, float) and time.time() < expires:
-            raise PermissionError("revoke the separate native probe approval before arming a matrix")
+        # Do not let malformed/expired timestamps make a second diagnostic approval
+        # coexist with a still-pending single-probe record. The operator must revoke
+        # that record explicitly before arming this separate one-shot workflow.
+        raise PermissionError("revoke the separate native probe approval before arming a matrix")
     current, version = runtime.store.state(KEY, None)
     if isinstance(current, dict) and current.get("schema") == SCHEMA and current.get("status") == "PENDING":
         liveness = _approval_liveness(runtime, current)
