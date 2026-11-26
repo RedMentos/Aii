@@ -10,7 +10,7 @@ Repo: RedMentos/Aii
 - PR: https://github.com/RedMentos/Aii/pull/2524
 - Branch: research-perception/v14-kv-snapshot-consumer-20261126-run35
 - Exact code/test SHA: 1417250fb28c4e30c5c4e0d8150e673248ad10a8
-- Latest docs/handoff branch head at this readback: 82d79103af7aa80d1ec29b688ec2f3ecca78acc8
+- Initial handoff commit: 82d79103af7aa80d1ec29b688ec2f3ecca78acc8; subsequent docs/board commits advance the same PR branch, so read the current HEAD from PR #2524.
 - PR state: OPEN / DRAFT / NOT_RELEASED
 - Base: PR #2519, base SHA 5f2ef5393f25085d2e2968118982d72b823b99b4
 
