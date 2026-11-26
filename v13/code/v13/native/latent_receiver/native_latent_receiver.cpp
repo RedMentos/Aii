@@ -18,6 +18,7 @@
 #ifdef V14_WITH_LLAMA
 #include <llama.h>
 #include "position_layout.hpp"
+#include "native_receiver_kv_snapshot.hpp"
 #endif
 
 namespace v14 {
@@ -357,6 +358,8 @@ int selftest() {
 #ifdef V14_WITH_LLAMA
     const int position_layout_status = selftest_embedding_positions();
     if (position_layout_status != 0) return position_layout_status;
+    const int kv_snapshot_status = native_kv_snapshot_selftest();
+    if (kv_snapshot_status != 0) return 50 + kv_snapshot_status;
 #endif
     const float positive_infinity_logits[] = {std::numeric_limits<float>::infinity(), 0.0f};
     if (logprob_from_logits(positive_infinity_logits, 2, 0, logprob)) return 21;
@@ -467,7 +470,7 @@ void print_version() {
     std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown")
-              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\"}\n";
+              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
@@ -696,6 +699,17 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
             : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
+        v14::NativeKvSnapshot kv_snapshot;
+        std::string kv_snapshot_error;
+        if (!v14::capture_readonly_kv_snapshot(context.value, 0, kv_snapshot, kv_snapshot_error)) {
+            std::cerr << "native read-only K/V snapshot failed: " << kv_snapshot_error << "\\n";
+            return 8;
+        }
+        if (kv_snapshot.active_cell_count != static_cast<uint32_t>(target_context_rows) ||
+            kv_snapshot.position_ids.size() != static_cast<size_t>(target_context_rows)) return 8;
+        for (int32_t row = 0; row < target_context_rows; ++row) {
+            if (kv_snapshot.position_ids[static_cast<size_t>(row)] != row) return 8;
+        }
         std::vector<double> token_logprobs;
         int target_decode_status = decode_status;
         if (!score_target_tokens(context.value, model.value, target_context_rows,
@@ -709,6 +723,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                        << ",\"position_mode\":\"" << v14::kPositionMode << "\""
                        << ",\"decode_status\":" << decode_status
                        << ",\"native_input_consumed\":true"
+                       << ",\"kv_snapshot\":" << v14::native_kv_snapshot_json(kv_snapshot)
                        << ",\"target_score\":{\"schema\":\"v14.native-receiver-target-score/1\""
                        << ",\"score_method\":\"TEACHER_FORCED_TARGET_LOGPROB_V1\""
                        << ",\"target_token_count\":" << target_tokens.size()
