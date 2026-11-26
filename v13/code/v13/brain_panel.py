@@ -429,6 +429,14 @@ def _latest_native_evidence(r):
     native_prompt_sha256 = _sha256(receipt.get("native_prompt_sha256"))
     native_token_ids_sha256 = _sha256(receipt.get("native_token_ids_sha256"))
     native_prompt_tokens = _count(receipt.get("native_prompt_tokens"))
+    rendered_prompt_sha256 = _sha256(receipt.get("rendered_prompt_sha256"))
+    rendered_prompt_chars = _count(receipt.get("rendered_prompt_chars"))
+    native_prompt_render_match = bool(
+        receipt.get("native_prompt_render_match") is True
+        and rendered_prompt_sha256 is not None
+        and rendered_prompt_sha256 == native_prompt_sha256
+        and rendered_prompt_chars is not None and rendered_prompt_chars > 0
+    )
     first_step_raw = runner.get("output_adapter_native_first_step")
     if type(first_step_raw) is dict:
         # The first request receives the full prompt; continuation timings are
@@ -461,7 +469,10 @@ def _latest_native_evidence(r):
     native_generation_completed = (not synthetic) and receipt.get("native_generation_completed") is True
     native_prefill_token_count_matched = bool(
         not synthetic and native_submitted and ids_match
-        and receipt.get("revision") == "v13.native-offer-prompt-receipt/1"
+        and receipt.get("revision") in ("v13.native-offer-prompt-receipt/1",
+                                             "v13.native-offer-prompt-receipt/2")
+        and (receipt.get("revision") != "v13.native-offer-prompt-receipt/2"
+             or native_prompt_render_match)
         and receipt.get("status") == "RENDERED_WITH_QUOTES"
         and receipt.get("native_template_rendered") is True
         and receipt.get("native_template_submitted") is True
@@ -487,6 +498,39 @@ def _latest_native_evidence(r):
         not synthetic and native_prompt_sha256 and native_token_ids_sha256
         and native_prompt_tokens is not None and native_prompt_tokens > 0
     )
+    native_prompt_span_by_id = {}
+    if (not synthetic and native_prompt_render_match and ids_match
+            and receipt.get("revision") == "v13.native-offer-prompt-receipt/2"):
+        candidate_spans = []
+        span_rows_valid = True
+        for item in native_offers:
+            if type(item) is not dict:
+                span_rows_valid = False
+                break
+            packet_id = _identifier(item.get("packet_id"))
+            start = item.get("native_prompt_char_start")
+            end = item.get("native_prompt_char_end")
+            span_sha = _sha256(item.get("native_prompt_span_sha256"))
+            if (packet_id is None or type(start) is not int or type(end) is not int
+                    or start < 0 or end <= start or end > rendered_prompt_chars
+                    or span_sha is None or packet_id in native_prompt_span_by_id):
+                span_rows_valid = False
+                break
+            native_prompt_span_by_id[packet_id] = {
+                "start": start, "end": end, "sha256": span_sha,
+                "role": item.get("role"),
+            }
+            candidate_spans.append((start, end))
+        candidate_spans.sort()
+        if (not span_rows_valid or any(
+                candidate_spans[index][0] < candidate_spans[index - 1][1]
+                for index in range(1, len(candidate_spans)))):
+            native_prompt_span_by_id = {}
+    native_prompt_span_roles = {
+        item.get("role") for item in native_offers
+        if type(item) is dict
+        and _identifier(item.get("packet_id")) in native_prompt_span_by_id
+    }
     if not receipt:
         flow_status = "OFFER_RECEIPT_UNAVAILABLE"
     elif submitted and c4_recorded and not c4_accepted:
@@ -520,7 +564,16 @@ def _latest_native_evidence(r):
         role = item.get("role")
         if role not in ("B1_DETAIL", "B2_GIST"):
             continue
-        offers.append({"role": role, "rendered_quote_count": _count(item.get("rendered_quote_count"))})
+        packet_id = _identifier(item.get("packet_id"))
+        span = native_prompt_span_by_id.get(packet_id)
+        offers.append({
+            "role": role,
+            "rendered_quote_count": _count(item.get("rendered_quote_count")),
+            "native_prompt_span_bound": span is not None and span.get("role") == role,
+            "native_prompt_char_start": span.get("start") if span else None,
+            "native_prompt_char_end": span.get("end") if span else None,
+            "native_prompt_span_sha256": span.get("sha256") if span else None,
+        })
 
     body_attempts = _body_offer_evidence(
         r.store,
@@ -541,6 +594,11 @@ def _latest_native_evidence(r):
         synthetic_prefill_verified=synthetic_prefill_verified,
         synthetic_generation_completed=synthetic_generation_completed,
     )
+    for item in body_attempts:
+        packet_id = _identifier(item.get("packet_id"))
+        span = native_prompt_span_by_id.get(packet_id)
+        item["native_prompt_span_bound"] = bool(
+            span is not None and span.get("role") == item.get("role"))
     selected_body_items = [
         item for item in body_attempts
         if item.get("delivered") and item.get("selected_by_c4") is True
@@ -592,6 +650,11 @@ def _latest_native_evidence(r):
             "native_generation_completed": native_generation_completed,
             "synthetic_generation_completed": synthetic_generation_completed,
             "native_prompt_sha256": native_prompt_sha256 if not synthetic else None,
+            "rendered_prompt_sha256": rendered_prompt_sha256 if not synthetic else None,
+            "rendered_prompt_chars": rendered_prompt_chars if not synthetic else None,
+            "native_prompt_render_match": native_prompt_render_match,
+            "native_prompt_span_bound": set(native_prompt_span_roles) == set(_BODY_ROLES),
+            "native_prompt_span_bound_roles": sorted(native_prompt_span_roles),
             "native_token_ids_sha256": native_token_ids_sha256 if not synthetic else None,
             "native_prompt_tokens": native_prompt_tokens if not synthetic else None,
             "native_tokenizer": receipt.get("native_tokenizer") if not synthetic and receipt.get("native_tokenizer") == "LLAMA_SERVER_TOKENIZE" else None,
