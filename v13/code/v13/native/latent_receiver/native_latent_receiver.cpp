@@ -1053,7 +1053,7 @@ int main(int argc, char ** argv) {
             conditions != expected_conditions || target_count < 1 || target_count > 512 ||
             (include_hybrid_state_roundtrip && target_count > 64) ||
             !v14::valid_sha256_hex(target_hash)) {
-            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256\n";
+            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip]\n";
             return 64;
         }
         std::vector<MatrixInput> matrices;
