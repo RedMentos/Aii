@@ -109,7 +109,8 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
     )
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
-                 input_sha_override=None, kv_digest_override=None, kv_geometry_override=None):
+                 input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
+                 score_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
@@ -140,7 +141,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "target_token_ids_sha256": target_sha,
         "target_token_count": 2,
         "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
-        "token_logprobs": [-1.0, -1.25],
+        "token_logprobs": list(score_override) if score_override is not None else [-1.0, -1.25],
         "decode_status": 0,
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
@@ -195,10 +196,11 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
 def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC",
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
-                   hybrid_state_roundtrip_override=None):
+                   hybrid_state_roundtrip_override=None, score_overrides=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
+    score_overrides = score_overrides or {}
     for condition in CONDITIONS:
         receipt = make_receipt(
             task_index, session_id, task_family, condition,
@@ -206,6 +208,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             input_sha_override=input_overrides.get(condition),
             kv_digest_override=kv_overrides.get(condition),
             kv_geometry_override=kv_geometry_override,
+            score_override=score_overrides.get(condition),
         )
         if include_hybrid_state_roundtrip and condition == "NO_MESSAGE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
@@ -441,6 +444,85 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert effect["production_route"] is False
     assert effect["training_authority"] == effect["native_receiver_authority"] == 0
     assert effect["persisted"] is False
+
+
+
+def test_information_use_audit_exposes_system_gain_without_content_specific_gain():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    scores = {
+        "NO_MESSAGE": [-2.0, -2.0],
+        "EXACT_MESSAGE": [-1.5, -1.5],
+        "LATENT_CANDIDATE": [-1.0, -1.0],
+        "ZERO": [-2.0, -2.0],
+        "SHUFFLE": [-2.0, -2.0],
+        "REPEAT": [-2.0, -2.0],
+        "OOD": [-2.0, -2.0],
+        "ENTITY_SUBSTITUTION": [-1.0, -1.0],
+    }
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        result = complete_group(
+            runtime, task_index=task_index, session_id=session_id,
+            task_family=family, score_overrides=scores,
+        )
+    audit = result["information_use_audit"]
+    assert audit["status"] == "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+    assert audit["system_gain_vs_no_message"]["mean_delta_nats_per_token"] == 1.0
+    assert audit["entity_specificity_gain_vs_counterfactual"]["mean_delta_nats_per_token"] == 0.0
+    assert audit["system_gain_pass"] is True
+    assert audit["entity_specificity_pass"] is False
+    assert audit["holdout_sufficient"] is True
+    assert audit["counterfactual_kind"] == "ENTITY_ONLY_SOURCE_PAIR"
+    assert audit["full_derangement_tested"] is False
+    assert audit["semantic_use_proven"] is False
+    assert result["semantic_use_proven"] is False
+
+
+def test_information_use_audit_requires_both_system_and_specificity_gains():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    scores = {
+        "NO_MESSAGE": [-2.0, -2.0],
+        "EXACT_MESSAGE": [-1.5, -1.5],
+        "LATENT_CANDIDATE": [-1.0, -1.0],
+        "ZERO": [-2.0, -2.0],
+        "SHUFFLE": [-2.0, -2.0],
+        "REPEAT": [-2.0, -2.0],
+        "OOD": [-2.0, -2.0],
+        "ENTITY_SUBSTITUTION": [-2.0, -2.0],
+    }
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        result = complete_group(
+            runtime, task_index=task_index, session_id=session_id,
+            task_family=family, score_overrides=scores,
+        )
+    audit = result["information_use_audit"]
+    assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL"
+    assert audit["system_gain_pass"] is True
+    assert audit["entity_specificity_pass"] is True
+    assert audit["full_derangement_tested"] is False
+    assert audit["semantic_use_proven"] is False
+
+
+def test_information_use_audit_does_not_promote_a_single_task_group():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = complete_group(
+        runtime,
+        score_overrides={
+            "NO_MESSAGE": [-2.0, -2.0],
+            "LATENT_CANDIDATE": [-1.0, -1.0],
+            "ENTITY_SUBSTITUTION": [-2.0, -2.0],
+        },
+    )
+    audit = result["information_use_audit"]
+    assert audit["status"] == "INSUFFICIENT_HOLDOUT"
+    assert audit["holdout_sufficient"] is False
+    assert audit["system_gain_pass"] is False
+    assert audit["entity_specificity_pass"] is False
 
 
 def test_hybrid_state_roundtrip_failure_is_reported_without_passing_task_utility():
