@@ -543,12 +543,14 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert supported["speaker_change_evidence"]["decision"] == "DEFER"
 
+        silence = b"\x00\x00" * 16000
         changed = speaker_batch(
             SOURCE, event["brain_generation_id"], 2100, 3100,
             lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(silence).hexdigest(),
         )
         silent = consume_pcm16_voice_window(
-            runtime, b"\x00\x00" * 16000, sample_rate=16000, start_ms=2100,
+            runtime, silence, sample_rate=16000, start_ms=2100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
