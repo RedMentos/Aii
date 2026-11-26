@@ -1460,7 +1460,7 @@
       "aed3a6a06e61db3cd7a236328eb442be5dd83715",
       "fd62994e9e44a5e33a0ac02ca53f1eb271cb6771"
     ],
-    "status": "DRAFT_FOCUSED_49_PASS_STAGE_BLOCKED_CORE_OBSERVER_PIN_NATIVE_BUILD_ARM64_COMPILE_PASS_RUNTIMEDEPLOY_OFFLINE_PASS",
+    "status": "DRAFT_FOCUSED_49_PASS_STAGE_BLOCKED_CORE_OBSERVER_PIN_NATIVE_BUILD_ARM64_COMPILE_PASS_RUNTIMEDEPLOY_OFFLINE_PASS_P0_1904_OPEN",
     "workflow_runs": {
       "native_receiver": 45861303391,
       "staged_integrated": 45861303423,
@@ -1492,7 +1492,7 @@
     "device": "REDMI_UNVERIFIED; V13OBS #115 is historical 2026-11-24: auto-update enabled/runtime UP_TO_DATE at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; owner-read #978/#979 had NO_LIVE_RECEIPT at last poll; no UPDATE_REQUEST or deployment.",
     "release": "NOT_RELEASED; no deployment",
     "research": "R-168 full-text arXiv:2611.34278v1 preprint (2026-11-25): cross-model KV handoffs can undermine safety and prompt-injection defence, leak cache content and degrade capability after repeated remapping. H200 / 3B-32B only; no official code/licence found; no LFM2 or Android generalization. Source hashes are integrity, not producer authentication. Future B3 gates need provenance/authenticity, transport integrity, trust/consent, injection/backdoor/privacy and multi-hop retention tests.",
-    "next_action": "Core refreshes #2525 onto latest #2524 and reruns exact staged/integrated gates. After integration is green, use only an already-present GGUF with separate explicit local approval for a native diagnostic. Before B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention gates. No user action needed now; B3 OFF.",
+    "next_action": "Core refreshes #2525 onto latest #2524 and reruns exact staged/integrated gates. P0 #1904 remains OPEN. After integration is green, use only an already-present GGUF with separate explicit local approval for a native diagnostic. Before B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention gates. No user action needed now; B3 OFF.",
     "parallel_perception_prs": {
       "2527_raw_ear_temporal_chronology": {
         "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
@@ -1513,6 +1513,12 @@
         "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
         "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
       }
+    },
+    "p0_issue_1904": {
+      "status": "OPEN",
+      "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; Run 48 is diagnostic-only and does not close this gate.",
+      "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
+      "release_or_redmi_proof": false
     }
   },
   "previous_perception_checkpoint": {
