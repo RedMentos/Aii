@@ -9,12 +9,20 @@ from v13 import native_turn_budget as budget
 
 
 def turn(status="DEADLINE", *, generated=0, phase="prefill", role="C3_LANGUAGE",
-         duration_s=29.1):
-    return {"status":status,"metadata":json.dumps({
+         duration_s=29.1, focal_duration_s=None, stage_marks_s=None):
+    metadata = {
         "runner":{"role":role,"generated_tokens":generated,
                   "last_phase":phase,"duration_s":duration_s},
         "raw_user_prompt":"PRIVATE NEVER SELECT OR RETURN",
-    })}
+    }
+    if stage_marks_s is not None:
+        metadata["stage_marks_s"] = stage_marks_s
+    elif focal_duration_s is not None:
+        metadata["stage_marks_s"] = {
+            "focal_loop": 2.0,
+            "output_prepare": 2.0 + focal_duration_s,
+        }
+    return {"status":status,"metadata":json.dumps(metadata)}
 
 
 class DummyStore:
@@ -50,6 +58,68 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertEqual(d["c3_reserve_source"], "RECENT_SUCCESS_MAX")
         self.assertAlmostEqual(d["c3_reserve_estimate_seconds"], 16.525)
         self.assertAlmostEqual(d["c3_reserved_seconds"], 16.525)
+
+    def test_recent_focal_duration_sets_adaptive_c4_reserve(self):
+        rows = [
+            turn(),
+            turn(),
+            turn("FINAL", generated=21, phase="stream", duration_s=6.5,
+                 focal_duration_s=4.0),
+        ]
+        d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["focal_reserve_source"], "RECENT_FOCAL_MAX")
+        self.assertAlmostEqual(d["focal_reserve_estimate_seconds"], 5.5)
+        self.assertAlmostEqual(d["focal_reserved_seconds"], 5.5)
+        self.assertFalse(d["focal_reserve_capped"])
+        self.assertEqual(d["recent_focal_samples"], 1)
+        self.assertAlmostEqual(d["c3_reserved_seconds"], 9.775)
+        self.assertAlmostEqual(d["preanswer_seconds_available"], 14.725)
+
+    def test_completed_c4_stage_from_c3_deadline_still_informs_reserve(self):
+        rows = [
+            turn(),
+            turn(),
+            turn("DEADLINE", generated=0, phase="prefill", focal_duration_s=4.0),
+        ]
+        d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["focal_reserve_source"], "RECENT_FOCAL_MAX")
+        self.assertAlmostEqual(d["focal_reserved_seconds"], 5.5)
+        self.assertEqual(d["recent_focal_samples"], 1)
+        self.assertEqual(d["c3_reserve_source"], "FALLBACK_DEFAULT")
+        self.assertAlmostEqual(d["c3_reserved_seconds"], 10.0)
+        self.assertAlmostEqual(d["preanswer_seconds_available"], 14.5)
+
+    def test_slow_focal_reserve_is_capped_without_starving_both_body_slices(self):
+        rows = [
+            turn(),
+            turn(),
+            turn("FINAL", generated=21, phase="stream", duration_s=6.5,
+                 focal_duration_s=10.0),
+        ]
+        d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["focal_reserve_source"], "RECENT_FOCAL_MAX")
+        self.assertAlmostEqual(d["focal_reserve_estimate_seconds"], 13.0)
+        self.assertAlmostEqual(d["focal_reserved_seconds"], 6.0)
+        self.assertTrue(d["focal_reserve_capped"])
+        self.assertAlmostEqual(d["preanswer_seconds_available"], 14.225)
+        self.assertGreaterEqual(d["preanswer_seconds_available"] / 2, 2.0)
+
+    def test_invalid_focal_stage_marks_use_bounded_default(self):
+        rows = [
+            turn(),
+            turn(),
+            turn("FINAL", generated=21, phase="stream", duration_s=6.5,
+                 stage_marks_s={"focal_loop": float("nan"), "output_prepare": 8.0}),
+        ]
+        d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["focal_reserve_source"], "FALLBACK_DEFAULT")
+        self.assertEqual(d["recent_focal_samples"], 0)
+        self.assertEqual(d["focal_reserve_estimate_seconds"], 1.0)
+        self.assertEqual(d["focal_reserved_seconds"], 1.0)
 
     def test_one_failure_keeps_full_synchronous_cognitive_window(self):
         d=budget.plan(100,130,103.5,recent=[turn()])
