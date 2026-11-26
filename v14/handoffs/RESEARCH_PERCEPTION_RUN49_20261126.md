@@ -70,7 +70,7 @@ R-169 records full-text review of Kvedaras & Rasymas, arXiv:2611.12062v1 (2026-1
 
 ## Cross-agent coordination
 
-Core PR #2525 is still OPEN/DRAFT and mergeable=false. Its base points at stale #2524 SHA ee27e03c89f69cf049e60b622c5be068a4b0cf2d, while the current #2524 docs/handoff branch head is 82d79103af7aa80d1ec29b688ec2f3ecca78acc8 (code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8). Core must rebase after the parent CI result, refresh exact observer/recovery/source pins and rerun staged/integrated tests. No Core-owned files were changed.
+Core PR #2525 is still OPEN/DRAFT and mergeable=false. Its base points at stale #2524 SHA ee27e03c89f69cf049e60b622c5be068a4b0cf2d, while the current #2524 branch HEAD is the live PR ref (code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; later docs/board commits are on the same branch). Core must rebase after the parent CI result, refresh exact observer/recovery/source pins and rerun staged/integrated tests. No Core-owned files were changed.
 
 ## Device, updater and release
 
