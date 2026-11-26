@@ -96,11 +96,16 @@ def _role_from_packet(payload, kind):
     return role if role in ROLES else None
 
 
-def _runtime_native_template_receipts(report, selected, events):
-    """Cross-check the runtime's reported HTTP-200 template witness against local packet IDs.
+def _valid_sha256(value):
+    return (type(value) is str and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
 
-    The audit does NOT independently attest the server, hashes, source text or
-    model attention. Mismatched, stale, malformed and absent claims fail closed.
+
+def _runtime_native_template_receipts(report, selected, events):
+    """Cross-check native prompt/prefill witnesses against this turn's packet IDs.
+
+    The audit is metadata-only; it does not independently attest the server,
+    source text or model attention. Mismatched and incomplete claims fail closed.
     """
     witness = report.get("native_offer_prompt_receipt")
     if type(witness) is not dict:
@@ -108,11 +113,22 @@ def _runtime_native_template_receipts(report, selected, events):
     if (witness.get("revision") != "v13.native-offer-prompt-receipt/1"
             or witness.get("status") != "RENDERED_WITH_QUOTES"
             or witness.get("native_template_submitted") is not True
-            or witness.get("native_completion_http_200") is not True
+            or not (witness.get("native_completion_http_200") is True
+                    or witness.get("native_prompt_prefill_verified") is True)
             or witness.get("native_template_rendered") is not True
             or witness.get("source_span_revalidated_here") is not False
             or witness.get("native_semantic_use_proven") is not False):
         return set()
+    if witness.get("native_prompt_prefill_verified") is True:
+        binding = report.get("native_context_binding")
+        if (type(binding) is not dict
+                or binding.get("scope") != "EXACT_SAME_CAUSAL_PREFILL"
+                or binding.get("live_generation_kv_tap") is not True
+                or not _valid_sha256(binding.get("context_source_sha256"))
+                or type(binding.get("pid")) is not int or binding.get("pid") <= 0
+                or not _valid_sha256(binding.get("handle_id"))
+                or not _valid_sha256(binding.get("features_sha256"))):
+            return set()
     rows = witness.get("offers")
     if type(rows) is not list or not 1 <= len(rows) <= len(ROLES):
         return set()
@@ -186,6 +202,41 @@ def _native_prefill_token_count_match(report, template_roles, native_c3_output, 
         and prefill_count == expected
     )
     return matched, prefill_count, prefill_prompt_n, prefill_cache_n, prefill_ms
+
+
+def _native_prompt_inclusion_mode(report, template_roles, native_c3_output,
+                                  incomplete, prefill_count_matched):
+    if (not native_c3_output or incomplete or set(template_roles) != set(ROLES)):
+        return None
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return None
+    if (witness.get("native_prompt_prefill_verified") is True
+            and witness.get("native_template_submitted") is True
+            and witness.get("native_generation_completed") is True
+            and _valid_sha256(witness.get("native_prompt_sha256"))
+            and _valid_sha256(witness.get("native_token_ids_sha256"))):
+        binding = report.get("native_context_binding")
+        if (type(binding) is dict
+                and binding.get("scope") == "EXACT_SAME_CAUSAL_PREFILL"
+                and binding.get("live_generation_kv_tap") is True
+                and _valid_sha256(binding.get("context_source_sha256"))
+                and type(binding.get("pid")) is int and binding.get("pid") > 0
+                and _valid_sha256(binding.get("handle_id"))
+                and _valid_sha256(binding.get("features_sha256"))):
+            return "EXACT_SAME_CAUSAL_PREFILL"
+    request_sha = witness.get("native_request_prompt_sha256")
+    if (witness.get("native_completion_http_200") is True
+            and witness.get("native_template_submitted") is True
+            and witness.get("native_generation_completed") is True
+            and witness.get("native_request_prompt_submitted") is True
+            and witness.get("native_request_prompt_matches_admission") is True
+            and _valid_sha256(witness.get("native_prompt_sha256"))
+            and _valid_sha256(request_sha)
+            and request_sha == witness.get("native_prompt_sha256")
+            and prefill_count_matched):
+        return "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT"
+    return None
 
 
 def _audit_one(conn, index, event_id, status, metadata):
@@ -309,17 +360,31 @@ def _audit_one(conn, index, event_id, status, metadata):
         _native_prefill_token_count_match(
             report, native_template_roles, native_c3_output, incomplete)
     )
+    native_prompt_inclusion_mode = _native_prompt_inclusion_mode(
+        report, native_template_roles, native_c3_output, incomplete,
+        native_prefill_token_count_matched)
+    native_prompt_offer_inclusion_verified = native_prompt_inclusion_mode is not None
     native_prefill_timing_source = None
-    if type(report.get("native_offer_prompt_receipt")) is dict and native_c3_output:
+    native_receipt = report.get("native_offer_prompt_receipt")
+    if type(native_receipt) is dict and native_c3_output:
         native_prefill_timing_source = (
-            "FIRST_TOKEN_STEP"
+            "EXACT_SAME_CAUSAL_PREFILL"
+            if native_receipt.get("native_prompt_prefill_verified") is True
+            else "FIRST_TOKEN_STEP"
             if type(report.get("output_adapter_native_first_step")) is dict
             else "STREAM_COMPLETION"
         )
+    native_receipt = report.get("native_offer_prompt_receipt")
+    native_http_200 = (type(native_receipt) is dict
+                       and native_receipt.get("native_completion_http_200") is True)
     for role in ROLES:
-        roles[role]["native_template_http200_submitted"] = role in native_template_roles
+        roles[role]["native_template_http200_submitted"] = bool(
+            native_http_200 and role in native_template_roles)
+        roles[role]["native_template_submission_verified"] = role in native_template_roles
         roles[role]["native_prefill_token_count_matched"] = bool(
             native_prefill_token_count_matched and role in native_template_roles)
+        roles[role]["native_prompt_offer_inclusion_verified"] = bool(
+            native_prompt_offer_inclusion_verified and role in native_template_roles)
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -336,8 +401,10 @@ def _audit_one(conn, index, event_id, status, metadata):
         "native_prefill_cache_n": native_prefill_cache_n,
         "native_prefill_prompt_ms": native_prefill_prompt_ms,
         "native_prefill_timing_source": native_prefill_timing_source,
+        "native_prompt_offer_inclusion_verified": native_prompt_offer_inclusion_verified,
+        "native_prompt_inclusion_mode": native_prompt_inclusion_mode,
         "audit_incomplete": incomplete,
-        "c3_prompt_inclusion_proven": False,
+        "c3_prompt_inclusion_proven": native_prompt_offer_inclusion_verified,
         "c3_semantic_use_proven": False,
         "native_latent_exchange_proven": False,
         "c3_prompt_admission": _prompt_admission(report),
@@ -390,7 +457,19 @@ def audit(conn, limit=10):
     both_native_prefill_count_matched = sum(
         t["c3_native_output_observed"] and not t["audit_incomplete"]
         and t["native_prefill_token_count_matched"]
-        and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
+        and all(t["roles"][r]["native_template_submission_verified"] for r in ROLES)
+        for t in turns)
+    both_native_template_submitted = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and all(t["roles"][r]["native_template_submission_verified"] for r in ROLES)
+        for t in turns)
+    both_native_prompt_inclusion_verified = sum(
+        t["native_prompt_offer_inclusion_verified"] for t in turns)
+    native_http_prompt_binding = sum(
+        t["native_prompt_inclusion_mode"] == "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT"
+        for t in turns)
+    native_causal_prompt_binding = sum(
+        t["native_prompt_inclusion_mode"] == "EXACT_SAME_CAUSAL_PREFILL"
         for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
@@ -399,8 +478,10 @@ def audit(conn, limit=10):
     incomplete_turns = sum(t["audit_incomplete"] for t in turns)
     proof_status = ("NO_ASSISTANT_TURNS" if not turns
                     else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED" if both_native_prompt_inclusion_verified
                     else "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED" if both_native_prefill_count_matched
                     else "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED" if both_native
+                    else "BOTH_BODY_NATIVE_TEMPLATE_SUBMISSION_VERIFIED" if both_native_template_submitted
                     else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
                     else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
     return {
@@ -411,22 +492,30 @@ def audit(conn, limit=10):
             "both_body_selected_delivered_and_c3_generated_turns": both,
             "both_body_native_template_http200_reported_turns": both_native,
             "both_body_native_prefill_token_count_matched_turns": both_native_prefill_count_matched,
+            "both_body_native_template_submission_verified_turns": both_native_template_submitted,
+            "both_body_native_prompt_inclusion_verified_turns": both_native_prompt_inclusion_verified,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
-            "native_prompt_offer_inclusion_verified": False,
+            "native_prompt_offer_inclusion_verified": both_native_prompt_inclusion_verified > 0,
+            "native_request_prompt_hash_match_observed": native_http_prompt_binding > 0,
+            "native_exact_same_causal_prefill_observed": native_causal_prompt_binding > 0,
             "native_prefill_token_count_match_observed": both_native_prefill_count_matched > 0,
-            "native_template_submission_reported_by_runtime": both_native > 0,
+            "native_template_submission_reported_by_runtime": both_native_template_submitted > 0,
             "source_span_revalidated_by_audit": False,
             "learned_latent_exchange_verified": False,
             "device_functional_acceptance": "NOT_VERIFIED",
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_EXACT_NATIVE_PROMPT_BINDING"
+            if both_native_prompt_inclusion_verified else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_NATIVE_PREFILL_TOKEN_COUNT_MATCH"
             if both_native_prefill_count_matched else
+            "LOCAL_SQLITE_METADATA_PLUS_NATIVE_TEMPLATE_SUBMISSION"
+            if both_native_template_submitted else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "A prefill count match means the local /tokenize total equals llama-server prompt_n plus cache_n (freshly processed plus reused prompt tokens) for the submitted prompt. It does not attest the exact token sequence, attention, semantic use, learned latent exchange or Redmi installation.",
+        "warning": "Prompt inclusion is verified only when the post-admission prompt hash matches the actual HTTP completion prompt and native prefill token count, or the same-causal native context reports the exact prompt/token binding. This does not prove attention, semantic use, learned latent exchange, source truth beyond the existing source-bound receipts, or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
