@@ -13,7 +13,7 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = '04d5717fc63e6efebb5dca618cd386413e87816aa272b2544d4cd321c853c286'
+BUILDER_SHA = 'd6bb71e479d3676f1449ea048be2c02445ba1789d24d9e20f509b7305d09a561'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
@@ -44,8 +44,12 @@ def stage(code_dir: Path, destination: Path) -> dict:
     if code_dir == destination or code_dir in destination.parents:
         raise ValueError('destination overlaps source tree')
     builder = code_dir / BUILDER
-    if builder.is_symlink() or hashlib.sha256(builder.read_bytes()).hexdigest() != BUILDER_SHA:
-        raise ValueError('integrated builder hash mismatch')
+    builder_sha = hashlib.sha256(builder.read_bytes()).hexdigest() if builder.is_file() else "MISSING"
+    if builder.is_symlink() or builder_sha != BUILDER_SHA:
+        raise ValueError(
+            f"integrated builder hash mismatch: symlink={builder.is_symlink()} "
+            f"expected={BUILDER_SHA} actual={builder_sha}"
+        )
     spec = importlib.util.spec_from_file_location('v13_pinned_integrated_builder', builder)
     if spec is None or spec.loader is None:
         raise RuntimeError('integrated builder is not loadable')
