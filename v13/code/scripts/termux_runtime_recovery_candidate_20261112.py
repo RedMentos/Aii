@@ -76,7 +76,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '5c17b575ea5083df2972593b8c104dcb10018aae16f7c27f69f962b7c393ad47')
+                      '690f0e18a81a98915be645197664ff5bde42cd2d685de6cf2db4ebc2ca4b923c')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -163,7 +163,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '65b2939533fe4de16d2b003c4ac908e425aae10f6fa16b575d7ac79c9a519ae3')
+                     'dfe9a84e3437de92483dbbda043b5b33014d1a8dcc6e9f6d42ec5c498ec38d02')
     # Preserve the exact source pins even when this Runtime already carries the
     # fair-budget implementation; the legacy overlay must not be applied twice.
     for name, expected in observers.PINS.items():
