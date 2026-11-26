@@ -1683,3 +1683,14 @@ The author-hosted PDF states that a CC BY public copyright licence is applied to
 ### R-166 / Run 44 corrected-head CI (2026-11-26)
 
 On corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`, the A4/A5 feature-set probe passes 14/14 on Python 3.13/3.14 (45781255306), including the actual RAW EAR extractor → A5 packet test. RAW EAR comparison passes 9/9 on both versions (45781255440); RuntimeDeploy offline integrity passes on Python 3.11/3.14 (45781255519). Shared staged/integrated fails (45781255404): 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; the principal cascade is the Core-owned audio-builder pin mismatch, with two additional migration assertions returning PARTIAL rather than UPDATED. Core/Integrator owns these composition/migration paths. The current rIMI-inspired proxy remains diagnostic-only and not paper rIMI/CSD.
+
+
+## R-166 estimator implementation / OSS licence audit — 2026-11-26
+
+Reviewed the maintained-looking upstream GCMI repository \`robince/gcmi\` (branch \`master\`) because the paper uses Gaussian-copula/GCMI estimation:
+- \`README.md\` blob \`be48e8dbfc8706617cdbc7318d53224d95b667d9\`
+- root \`LICENSE\` blob \`7083002211aac22fc9000de0a4c000533e875ed8\`: **GNU GPL-3.0**
+- \`python/pyproject.toml\` blob \`be799fad620d827cb072fc412dd92afd1a45bc8b\`: package \`gcmi 0.5.0\`, Python \`>=3.10\`, dependencies \`numpy>=1.23\` and \`scipy>=1.10\`, optional Numba / benchmark extras.
+- The upstream README says its optimized MATLAB C++ MEX CI targets macOS and Linux \`x86_64\`; it makes no Android/aarch64 ABI claim. The Python package declares NumPy/SciPy but no Android wheel/Termux validation. Therefore ARM/Termux compatibility remains UNVERIFIED.
+
+The Aii working ref has no root \`LICENSE\` file. GPL-3.0 compatibility must not be assumed. **No GCMI code, package, dataset or weights were copied or added to V14.** For a future exact estimator, either implement the paper equations independently with an explicitly reviewed numerical dependency set, or obtain an explicit project-license decision before considering GPL code. Current Run 44 code uses Python standard library only.
