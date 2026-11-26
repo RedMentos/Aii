@@ -28,7 +28,7 @@ def sha(value):
 
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
-                 input_sha_override=None, kv_digest_override=None):
+                 input_sha_override=None, kv_digest_override=None, kv_geometry_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
@@ -73,15 +73,15 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
             "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
             "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
             "sequence_id": 0,
-            "layer_id": 0,
-            "attention_layer_count": 12,
+            "layer_id": (kv_geometry_override or {}).get("layer_id", 0),
+            "attention_layer_count": (kv_geometry_override or {}).get("attention_layer_count", 12),
             "active_cell_count": 1,
             "position_ids": [0],
             "position_sha256": position_sha,
-            "k_shape": [64, 8, 128, 1],
-            "v_shape": [128, 8, 64, 1],
-            "k_type": "f16",
-            "v_type": "f16",
+            "k_shape": (kv_geometry_override or {}).get("k_shape", [64, 8, 128, 1]),
+            "v_shape": (kv_geometry_override or {}).get("v_shape", [128, 8, 64, 1]),
+            "k_type": (kv_geometry_override or {}).get("k_type", "f16"),
+            "v_type": (kv_geometry_override or {}).get("v_type", "f16"),
             "k_sha256": sha("kv-k-" + kv_digest_override),
             "v_sha256": sha("kv-v-" + kv_digest_override),
             "combined_sha256": combined_sha,
@@ -112,7 +112,8 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
 
 
 def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC",
-                   source_ref_override=None, input_overrides=None, kv_overrides=None):
+                   source_ref_override=None, input_overrides=None, kv_overrides=None,
+                   kv_geometry_override=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -124,6 +125,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
                 source_ref_override=source_ref_override,
                 input_sha_override=input_overrides.get(condition),
                 kv_digest_override=kv_overrides.get(condition),
+                kv_geometry_override=kv_geometry_override,
             ),
         )
     return result
@@ -298,3 +300,35 @@ def test_collector_rejects_sparse_session_family_cross_even_when_totals_pass():
     }
     assert result["balanced_session_family_coverage"] is False
     assert result["enough_holdout"] is False
+
+
+@pytest.mark.parametrize("geometry_override", [
+    {"layer_id": 1},
+    {"attention_layer_count": 13},
+    {"k_shape": [32, 8, 128, 1]},
+    {"k_type": "f32"},
+])
+def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_override):
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    baseline = {condition: "baseline-" + condition for condition in CONDITIONS}
+    changed = {condition: "changed-" + condition for condition in CONDITIONS}
+    complete_group(runtime, task_index=0, kv_overrides=baseline)
+
+    with pytest.raises(
+        NativeReceiverTaskScoreError,
+        match="complete task-score cohort failed validation",
+    ) as error:
+        complete_group(
+            runtime,
+            task_index=1,
+            session_id="session-B",
+            task_family="ENTITY_RECALL",
+            kv_overrides=changed,
+            kv_geometry_override=geometry_override,
+        )
+
+    assert "native K/V snapshot geometry changed across task cohort" in str(error.value.__cause__)
+    status = task_score_status(runtime)
+    assert status["receipt_count"] == 15
+    assert status["complete_task_group_count"] == 1
+    assert status["incomplete_task_group_count"] == 1
