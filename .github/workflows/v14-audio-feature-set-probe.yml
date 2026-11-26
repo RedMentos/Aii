@@ -1,0 +1,71 @@
+name: V14 source-bound A4/A5 feature-set probe
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_ear.py"
+      - "v13/code/v13/audio_percept_contract.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/contracts.py"
+      - "v14/experiments/audio_feature_set_probe.py"
+      - "v14/experiments/test_audio_feature_set_probe.py"
+      - ".github/workflows/v14-audio-feature-set-probe.yml"
+  pull_request:
+    branches:
+      - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
+    paths:
+      - "v13/code/v13/audio_ear.py"
+      - "v13/code/v13/audio_percept_contract.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/contracts.py"
+      - "v14/experiments/audio_feature_set_probe.py"
+      - "v14/experiments/test_audio_feature_set_probe.py"
+      - ".github/workflows/v14-audio-feature-set-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  feature-set-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Compile the exact Perception producer and probe
+        run: |
+          python -m py_compile \
+            v13/code/v13/audio_ear.py \
+            v13/code/v13/audio_percept_contract.py \
+            v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/contracts.py \
+            v14/experiments/audio_feature_set_probe.py \
+            v14/experiments/test_audio_feature_set_probe.py
+      - name: Verify producer blob pins and run source-bound integration tests
+        env:
+          V14_EXPECTED_AUDIO_EAR_BLOB: 86e93ae5b55e76ecd68864a7f51bd477e601e9b6
+          V14_EXPECTED_AUDIO_PACKET_BLOB: f3ee37426fc3e3a8cf70f8a107e7074783118a66
+          V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
+          V14_EXPECTED_CONTRACTS_BLOB: 7b21d9c5076015716851b5d432a5730e4e17da92
+          PYTHONPATH: v14/experiments
+        run: |
+          test "$(git hash-object v13/code/v13/audio_ear.py)" = "$V14_EXPECTED_AUDIO_EAR_BLOB"
+          test "$(git hash-object v13/code/v13/audio_percept_contract.py)" = "$V14_EXPECTED_AUDIO_PACKET_BLOB"
+          test "$(git hash-object v13/code/v13/audio_voice_cues.py)" = "$V14_EXPECTED_RAW_EAR_V3_BLOB"
+          test "$(git hash-object v13/code/v13/contracts.py)" = "$V14_EXPECTED_CONTRACTS_BLOB"
+          python -m unittest discover -s v14/experiments -p "test_audio_feature_set_probe.py" -v
