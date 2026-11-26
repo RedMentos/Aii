@@ -1,3 +1,32 @@
+# CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
+
+## Verified code / CI checkpoint
+- Draft PR [#2519](https://github.com/RedMentos/Aii/pull/2519), branch `research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34`.
+- Current exact PR head / workflow-only correction: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`. Matrix/bridge code SHA: `16d64120ba1cb0d690d249a7fed62ddfcb345663`.
+- Parent Core #2520 branch head: `2032888020a2f409ee976abe222cc99e0818159c`.
+- Exact native receiver workflow 45738564334: **SUCCESS**. Python 3.13 and 3.14 each: 19 focused matrix/task-score tests PASS + 59 broader taps/receiver/stage/tokenwise/matrix tests PASS; py_compile PASS; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a cross-compile PASS (not device execution); privacy scan CLEAN.
+- Shared staged/integrated workflow 45738564326 was still **IN_PROGRESS** at last poll. Poll exact result before claiming the full PR CI is green.
+- LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN**. Local CPython 3.13.5 is available, but no repository checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve.
+
+## Actual product effect / open gaps
+- The source-bound eight-condition producer and teacher-forced target-token likelihood bridge pass their exact focused/broader CI tests. `NO_MESSAGE` injects zero rows/positions; BOS remains receiver-internal. Synthetic evidence remains `FIXTURE_ONLY` and holdout sufficiency remains separately reported.
+- This is a diagnostic B3/Enlightened-Space path, **not** trained latent coupling, generated-answer correctness, semantic utility, production routing or active weight learning. B3 remains OFF.
+- Core PR #2522 is not yet integrated: its `build_and_stage_native_receiver_matrix()` has no live Runtime producer call site; current tests stage a fixture and monkeypatch the bridge. It is based on #2520 and does not contain #2519's builder/bridge. Core must stack/rebase #2522 on #2519 and test a real task/pair/packet producer → Perception builder → Runtime staging → one-shot approval → bridge.
+- The seven old `Cognition.native_receive` / legacy `:callosum native-probe` tests were excluded only from the Perception-specific workflow because they assert removed Core APIs. Their file remains present and syntax-compiled. This does **not** waive the Canon: Core must restore the capability or provide an explicitly equivalent tested replacement.
+- P0 basic-chat correctness and valid B1/B2 offer delivery remain OPEN. This PR does not fix them.
+
+## Device / deployment
+- Last available consented private V13OBS snapshot: issue #115, 2026-11-24 09:28 UTC. It reported installed/runtime target `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and dashboard/runtime UP_TO_DATE, but AI STOPPED_BY_USER and native model processes stopped. This is historical only; no fresh authenticated HEALTH/PIPELINE_STATUS/DIAGNOSTICS receipt arrived in this run.
+- Therefore current installation and runtime state remain **REDMI_UNVERIFIED**. GitHub push is not deployment. No UPDATE_REQUEST, restart, model/weight/permission/data change or device action occurred.
+
+## Research note / next executable step
+- R-158 records full-text LCF (arXiv:2605.22863, ICML 2026/PMLR 306) and the scoped negative Pythia transfer study (arXiv:2606.03280). LCF uses per-layer K/V residuals and span pooling, but the tested training used A100 80GB / RTX PRO 6000; 13 MB adapter size is not total runtime memory. The negative study shows cosine≈0.97 alignment can still yield no causal utility. Current llama.cpp selected-row API reads static token embeddings, not contextual K/V caches.
+- Next: finish workflow 45738564326; then Core rebases #2522 on #2519 and adds a real source-bound producer integration test. After that, run >=20 held-out groups across >=2 sessions and >=2 task families on a pinned real GGUF, requiring candidate wins over every control plus generated-answer correctness, retention, restart and rollback. No user action required.
+
+---
+
 # V14 USER NEXT ACTION — Core & Harness Run 3 (2026-11-26)
 
 **Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, code head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8` (the PR branch was subsequently advanced to `68c3de91ede75bd0d1381524690e46505451aeda` by handoff-only documentation commits; no code changed after the green CI). It is stacked on Core PR #2515; it is not merged or released.
