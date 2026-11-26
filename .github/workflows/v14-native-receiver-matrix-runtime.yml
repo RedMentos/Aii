@@ -21,7 +21,6 @@ on:
       - "v13/code/tests/test_native_receiver_matrix_runtime.py"
       - "v13/code/tests/test_native_receiver_condition_matrix.py"
       - "v13/code/tests/test_native_latent_receiver.py"
-      - "v13/code/tests/test_native_receiver_condition_matrix.py"
       - "v13/code/tests/test_native_latent_receiver_runtime.py"
       - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
   pull_request:
@@ -44,7 +43,6 @@ on:
       - "v13/code/tests/test_native_receiver_matrix_runtime.py"
       - "v13/code/tests/test_native_receiver_condition_matrix.py"
       - "v13/code/tests/test_native_latent_receiver.py"
-      - "v13/code/tests/test_native_receiver_condition_matrix.py"
       - "v13/code/tests/test_native_latent_receiver_runtime.py"
       - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
 permissions:
@@ -80,7 +78,6 @@ jobs:
             v13/code/tests/test_native_receiver_matrix_runtime.py \
             v13/code/tests/test_native_receiver_condition_matrix.py \
             v13/code/tests/test_native_latent_receiver.py \
-            v13/code/tests/test_native_receiver_condition_matrix.py \
             v13/code/tests/test_native_latent_receiver_runtime.py
       - name: Run Core Runtime producer and matrix regressions
         env:
