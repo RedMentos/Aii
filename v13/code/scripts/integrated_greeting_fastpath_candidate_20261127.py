@@ -50,8 +50,16 @@ def apply_sources(code_dir: Path, result: dict) -> dict:
     actual_sha = hashlib.sha256(runtime).hexdigest()
     if actual_sha != SOURCE_RUNTIME_SHA256:
         raise ValueError("composed Runtime source changed before greeting/ack overlay: " + actual_sha)
-    if runtime.count(OLD) != 1 or NEW in runtime:
-        raise ValueError("greeting/ack Runtime insertion anchor changed or is ambiguous")
+    old_count = runtime.count(OLD)
+    new_present = NEW in runtime
+    if old_count != 1 or new_present:
+        anchor = b"from .output_policy import match"
+        offset = runtime.find(anchor)
+        context = runtime[max(0, offset - 100):offset + 700]
+        raise ValueError(
+            "greeting/ack Runtime insertion anchor changed or is ambiguous: "
+            + f"old_count={old_count} new_present={new_present} context={context!r}"
+        )
 
     updated = dict(result)
     updated["v13/runtime.py"] = runtime.replace(OLD, NEW, 1)
