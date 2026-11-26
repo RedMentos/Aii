@@ -42,7 +42,7 @@ public final class ConsentActivityTest {
     }
 
     @Test public void openUrlDigestMatchesSortedPythonEnvelope() throws Exception {
-        String canonical = "{\\"args\\":{\\"url\\":\\"https://example.com/path?q=1\\"},\\"capability\\":\\"open_url\\"}";
+        String canonical = "{\"args\":{\"url\":\"https://example.com/path?q=1\"},\"capability\":\"open_url\"}";
         String expected = Canonical.hex(MessageDigest.getInstance("SHA-256")
                 .digest(canonical.getBytes(StandardCharsets.UTF_8)));
         assertEquals(expected, Canonical.requestDigest("open_url", URL));
