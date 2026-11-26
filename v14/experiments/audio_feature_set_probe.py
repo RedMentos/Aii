@@ -312,9 +312,13 @@ def evaluate_relative_incremental_information(
 
     This intentionally differs from Heintz et al.'s full rIMI method: it uses
     discrete plug-in MI and a coarse feature-history state, not Gaussian-copula
-    estimates over the previous five seconds of prediction scores. It is a
-    synthetic diagnostic, not human auditory-attention decoding, a runtime
-    attention signal, JEPA learning, or decision authority.
+    estimates over the full vector of prior prediction scores. The paper's
+    variables are AAD model scores and an attended-speaker state; this probe
+    instead uses acoustic cue tuples and a later action outcome. Its ratio is
+    therefore rIMI-inspired, not rIMI itself, and its feature-history
+    dependence term is not the paper's CSD. It is a synthetic diagnostic,
+    not human auditory-attention decoding, a runtime attention signal,
+    JEPA learning, or decision authority.
     """
     rows = list(records)
     if type(history_window_ms) is not int or isinstance(history_window_ms, bool) or not 1 <= history_window_ms <= 60000:
@@ -405,7 +409,7 @@ def evaluate_relative_incremental_information(
         None if remaining_entropy <= 1e-12
         else min(1.0, max(0.0, incremental_mi / remaining_entropy))
     )
-    conditional_self_dependence = conditional_mutual_information_bits(
+    feature_history_dependence = conditional_mutual_information_bits(
         feature_sets, histories,
         [
             (session_ids[index], goals[index], actions[index])
@@ -471,6 +475,7 @@ def evaluate_relative_incremental_information(
         "schema": "v14.audio-relative-incremental-information-proxy/1",
         "estimator": "DISCRETE_PLUGIN_COARSE_HISTORY_PROXY",
         "paper_exact_rimi": False,
+        "metric_scope": "ACOUSTIC_FEATURES_TO_LATER_ACTION_OUTCOME_NOT_AAD_ATTENTION_SCORE",
         "evidence_class": "SYNTHETIC_FIXTURE_ONLY",
         "record_count": len(rows),
         "session_count": len(session_rows),
@@ -486,7 +491,7 @@ def evaluate_relative_incremental_information(
         "relative_incremental_information_bits": incremental_mi,
         "remaining_action_entropy_bits": remaining_entropy,
         "rimi_proxy": rimi_proxy,
-        "conditional_self_dependence_bits": conditional_self_dependence,
+        "conditional_feature_history_dependence_bits": feature_history_dependence,
         "no_history_goal_conditioned_cmi_bits": no_history_cmi,
         "per_session": per_session,
         "permutation_strata": "SESSION_X_GOAL",
