@@ -51,10 +51,12 @@ LOCAL_LINUX:
 - Full local Aii checkout, exact repository pytest, pinned llama.cpp native build: NOT_RUN. /mnt/data has no checkout; git ls-remote fails because github.com DNS cannot resolve. Do not describe the scratch checks as the repository suite.
 
 CI:
-- Native receiver workflow 45888866164: QUEUED at checkpoint.
-- Staged/integrated workflow 45888866275: QUEUED at checkpoint.
-- RuntimeDeploy offline integrity workflow 45888866345: QUEUED at checkpoint.
-- Queued is not PASS. Recheck exact run conclusions before integration.
+- Exact GitHub Actions on code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8: native receiver 45888866164 completed FAILURE only at the Core-owned observer fairness pin (test_native_latent_receiver_stage.py::test_native_receiver_is_composed_and_runtime_contracts_pass; ValueError: observer fairness source changed: v13/cognition.py). The focused condition-matrix/task-score suite passed 52/52 on Python 3.13 and 52/52 on Python 3.14; the extended receiver suite passed 92 tests and failed only that same Core pin on each version. py_compile passed. The exact pinned llama.cpp Linux API build/selftest passed; Android arm64-v8a cross-compile passed (compile-only); public privacy scan CLEAN. Staged/integrated 45888866275 completed FAILURE: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, due to the same Core observer-fairness pin plus two migration assertions returning PARTIAL instead of UPDATED. RuntimeDeploy offline integrity 45888866345 completed SUCCESS on Python 3.11 and 3.14. These are CI results, not local full-repository tests, real GGUF execution or Redmi proof.
+- Focused condition-matrix/task-score tests: 52/52 PASS on Python 3.13 and 52/52 PASS on Python 3.14.
+- Extended receiver tests: 92 passed / 1 failed on both Python versions; the sole failure is the Core-owned observer fairness pin, not a Perception assertion.
+- Pinned Linux API build/selftest PASS; Android arm64-v8a cross-compile PASS (compile-only); public privacy scan CLEAN.
+- Staged/integrated is still FAIL due to Core-owned observer pin and two migration PARTIAL-vs-UPDATED assertions. RuntimeDeploy offline integrity is PASS.
+- Local full Aii checkout/pytest/native model run remains NOT_RUN; no GGUF or Redmi proof.
 
 ## User effect and canonical status
 
