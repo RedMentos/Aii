@@ -136,6 +136,7 @@ def _validate_duplicate_kv_snapshots(group):
         "scope": snapshots["NO_MESSAGE"]["snapshot_scope"],
         "sampled_layer_id": snapshots["NO_MESSAGE"]["layer_id"],
         "attention_layer_count": snapshots["NO_MESSAGE"]["attention_layer_count"],
+        "_geometry": geometry,
         "distinct_from_no_message_by_condition": distinct,
         "candidate_differs_from_no_message": distinct["LATENT_CANDIDATE"],
         "candidate_differs_from_exact_message": (
@@ -493,6 +494,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     deltas = {name: [] for name in CONDITIONS if name != "LATENT_CANDIDATE"}
     kv_snapshot_effects = []
     kv_snapshot_mode = None
+    kv_cohort_geometry = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
@@ -535,6 +537,13 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         elif kv_snapshot_mode != has_kv_snapshot:
             raise NativeReceiverUtilityError("K/V snapshot coverage changed across task cohort")
         if kv_effect is not None:
+            current_geometry = kv_effect["_geometry"]
+            if kv_cohort_geometry is None:
+                kv_cohort_geometry = current_geometry
+            elif current_geometry != kv_cohort_geometry:
+                raise NativeReceiverUtilityError(
+                    "native K/V snapshot geometry changed across task cohort"
+                )
             kv_snapshot_effects.append(kv_effect)
         adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
         if len(adapter_hashes) != 1:
