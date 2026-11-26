@@ -1500,3 +1500,29 @@ def test_integrated_audio_candidate_embedded_runtime_bytes_literal_is_ascii():
     embedded = source[start:end]
     non_ascii = sorted({ord(ch) for ch in embedded if ord(ch) > 127})
     assert not non_ascii, "embedded bytes patch contains non-ASCII code points: " + repr(non_ascii)
+
+def test_integrated_audio_candidate_rejects_unreviewed_runtime_and_cognition_sources():
+    code_dir = Path(__file__).resolve().parents[1]
+    module_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("integrated_audio_candidate_guard_test", module_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    sources = {
+        "v13/runtime.py": (code_dir / "v13" / "runtime.py").read_bytes(),
+        "v13/cognition.py": (code_dir / "v13" / "cognition.py").read_bytes(),
+    }
+    bad_runtime = dict(sources)
+    bad_runtime["v13/runtime.py"] = bad_runtime["v13/runtime.py"].replace(
+        b"latewatch.start", b"latewatch.removed", 1
+    )
+    with pytest.raises(ValueError, match="reviewed submit/turn/observer"):
+        module.apply_sources(code_dir, bad_runtime)
+
+    bad_cognition = dict(sources)
+    bad_cognition["v13/cognition.py"] = bad_cognition["v13/cognition.py"].replace(
+        b"Consumer query scope changed", b"Consumer query scope changed?", 1
+    )
+    with pytest.raises(ValueError, match="reviewed source-bound consumer"):
+        module.apply_sources(code_dir, bad_cognition)
