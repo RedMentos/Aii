@@ -8,13 +8,13 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_BLOB_SHA1 = "b66f553520001fd083be2e64b4315cbc6a3dd59e"
+BASE_BUILDER_BLOB_SHA1 = "da0d1be9a80a3bf868654f3aa16fbaf5b9ce19d5"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_BLOB_SHA1 = "831080bceec90711bd42e0fa4eba47c669975c98"
+AUDIO_BUILDER_BLOB_SHA1 = "5d21b77c68d6c890040b9d720fa150b7690815b7"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
-NATIVE_RECEIVER_BLOB_SHA1 = "3d3d0c2ed458cbc64030acc8c032aafd85c2c560"
+NATIVE_RECEIVER_BLOB_SHA1 = "0cd1a4f436f5972fcb73a44fd469c058d37a6d92"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -35,10 +35,32 @@ def _load(code_dir: Path, relative: str, expected: str):
     return module
 
 
+
+AUDIO_COGNITION_CURRENT_BLOB_SHA1 = "deb8c274022e2a4419dd38adb11ca14481c4bd91"
+
+
+def _verify_audio_cognition_pin(code_dir: Path, audio) -> None:
+    """Require Perception's own composer to pin the exact current Cognition bytes.
+
+    Core verifies the cross-lane contract but never rewrites a Perception-owned
+    source pin at runtime.
+    """
+    path = code_dir / "v13/cognition.py"
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("current Perception Cognition source missing or unsafe")
+    actual = _git_blob_sha1(path.read_bytes())
+    if actual != AUDIO_COGNITION_CURRENT_BLOB_SHA1:
+        raise ValueError("current Perception Cognition source differs from the reviewed exact blob")
+    pins = getattr(audio, "SOURCE_BLOBS", None)
+    if not isinstance(pins, dict) or pins.get("v13/cognition.py") != actual:
+        raise ValueError("Perception audio Cognition pin does not match the current exact blob")
+
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
     audio = _load(code_dir, AUDIO_BUILDER, AUDIO_BUILDER_BLOB_SHA1)
+    _verify_audio_cognition_pin(code_dir, audio)
 
     result = base.build_sources(code_dir, include_postcommit=include_postcommit)
     focal_before = result.get("v13/focal.py")
