@@ -1724,3 +1724,15 @@ R-166 remains **ABSTRACT_VERIFIED only**: the official arXiv abstract introduces
 - B3 remains OFF; PR #2527 remains DRAFT / NOT_RELEASED. P0 normal chat and B1/B2 valid-offer delivery remain OPEN.
 
 **Next:** poll the exact new CI; Core/Integrator must compose #2527 with the current #2525/#2524 native receiver work and repair the Core-owned recovery → stage → RuntimeDeploy audio-builder pin chain. Perception's next research step is a source/session-disjoint held-out evaluation with temporal-drift and switch-focused controls, but only after a legitimate, separately consented outcome cohort and the normal-turn revocable audio lease exist. Do not turn this diagnostic into an attention decision or learning signal.
+
+
+### Run 44 exact-CI completion addendum (2026-11-26)
+
+Tested code/test head: \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`.
+- Source-bound A4/A5 feature-set workflow [45780338189](https://github.com/RedMentos/Aii/actions/runs/45780338189): **14/14 PASS on Python 3.13 and 3.14**, including the actual repository RAW EAR extractor → A5 PerceptPacket integration test.
+- RAW EAR comparison [45780338123](https://github.com/RedMentos/Aii/actions/runs/45780338123): **9/9 PASS on Python 3.13 and 3.14**.
+- RuntimeDeploy offline integrity [45780338147](https://github.com/RedMentos/Aii/actions/runs/45780338147): **PASS on Python 3.11 and 3.14**; this is not a deployment.
+- Shared staged/integrated [45780338096](https://github.com/RedMentos/Aii/actions/runs/45780338096): **FAIL**. Staged runtime: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression: 1 failed. Exact failure is the Core-owned audio-builder source pin. GitHub readback confirms Perception builder blob \`f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0\`; Core recovery blob \`b44fe9a21412c570a5f19472719972a53b3447d8\` still expects \`831080bceec90711bd42e0fa4eba47c669975c98\`. This is a pre-existing cross-lane composition failure, not a failure in the new A4/A5 tests. Perception did not edit Core-owned recovery/stage/deployer files.
+- The exact feature-set workflow runs all 14 tests on both Python versions; no exact code/test CI is being inherited from a prior head.
+- Full local Aii checkout/pytest/native build remains NOT_RUN because no checkout is mounted and GitHub DNS is unavailable locally. The local CPython 3.13.5 scratch reproduction remains separate from exact CI.
+- Status remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No microphone, model, weight, permission, device or user-data action.
