@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -213,6 +214,8 @@ class CandidateStore:
                     "created_at": loaded["checkpoint"]["created_at"],
                     "record_persisted": False,
                     "pair_vectors_persisted": False,
+                    "source_text_persisted": False,
+                    "token_ids_persisted": False,
                     "production_route": False,
                     "training_authority": 0,
                     "native_receiver_authority": 0,
@@ -230,6 +233,9 @@ class CandidateStore:
                 "adapter_sha256": adapter_sha,
                 "adapter_file_sha256": adapter_file_sha,
                 "fit_manifest": fit,
+                "sender_role": adapter.get("sender_role"),
+                "receiver_role": adapter.get("receiver_role"),
+                "rank": adapter.get("rank"),
                 "created_at": created_at,
                 "record_persisted": False,
                 "pair_vectors_persisted": False,
@@ -301,8 +307,11 @@ class CandidateStore:
         if file_hash(adapter_path) != adapter_file_sha:
             raise CandidateStoreError("adapter checkpoint file digest mismatch")
         adapter = _adapter(load_adapter(adapter_path))
-        if adapter.get("adapter_sha256") != adapter_sha:
-            raise CandidateStoreError("adapter checkpoint and manifest IDs differ")
+        if (adapter.get("adapter_sha256") != adapter_sha
+                or material.get("sender_role") != adapter.get("sender_role")
+                or material.get("receiver_role") != adapter.get("receiver_role")
+                or material.get("rank") != adapter.get("rank")):
+            raise CandidateStoreError("adapter checkpoint and manifest bindings differ")
         return {
             "adapter": adapter,
             "fit_manifest": fit,
@@ -341,15 +350,20 @@ class CandidateStore:
             entries.append({
                 "candidate_id": item.name,
                 "created_at": material.get("created_at"),
-                "sender_role": None,
-                "receiver_role": None,
+                "sender_role": material.get("sender_role"),
+                "receiver_role": material.get("receiver_role"),
+                "rank": material.get("rank"),
                 "train_record_count": fit.get("train_record_count"),
                 "holdout_record_count": fit.get("holdout_record_count"),
                 "train_pair_count": fit.get("train_pair_count"),
                 "holdout_pair_count": fit.get("holdout_pair_count"),
                 "record_persisted": False,
                 "pair_vectors_persisted": False,
+                "source_text_persisted": False,
+                "token_ids_persisted": False,
                 "production_route": False,
+                "checkpoint_present": (item / "adapter.v14lat").is_file()
+                    and not (item / "adapter.v14lat").is_symlink(),
             })
         entries.sort(key=lambda item: (item.get("created_at") or 0, item["candidate_id"]), reverse=True)
         return entries[:MAX_CANDIDATES]
