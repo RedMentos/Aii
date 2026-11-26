@@ -1,6 +1,12 @@
 import hashlib
+import json
+from pathlib import Path
 
 import pytest
+
+from v13 import native_probe_approval as approval
+from v13.operator import Operator
+from v13.runtime import Runtime
 
 from v13.native_receiver_utility import CONDITIONS, build_native_receiver_task_score_receipt
 from v13.native_receiver_task_score import (
@@ -154,3 +160,81 @@ def test_receipt_cap_is_bounded_and_explicit_clear_discards_memory():
     assert cleared["discarded_receipt_count"] == MAX_TASK_SCORE_RECEIPTS
     assert task_score_status(runtime)["status"] == "EMPTY"
     assert cleared["persisted"] is False
+
+
+def _operator_runtime(tmp_path):
+    runtime = Runtime(Path(tmp_path))
+    runtime.sleep.cycle.set_policy("enabled", "off")
+    return runtime
+
+
+def test_task_score_operator_status_is_local_counts_only(tmp_path, monkeypatch):
+    runtime = _operator_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+        result = json.loads(Operator(runtime).run(":callosum task-score status"))
+        assert result["schema"] == "v14.native-receiver-task-score-operator/1"
+        assert result["operation"] == "STATUS"
+        assert result["cohort"]["status"] == "EMPTY"
+        assert result["cohort"]["receipt_count"] == 0
+        assert result["cohort"]["persisted"] is False
+        assert result["production_route"] is False
+        assert result["semantic_use_proven"] is False
+        assert result["generated_answer_correctness_proven"] is False
+        encoded = json.dumps(result)
+        for forbidden in ("token_logprobs", "source_text", "source_id", "target_token_ids_sha256", "context_sha256"):
+            assert forbidden not in encoded
+
+
+def test_task_score_operator_evaluation_keeps_synthetic_fixture_non_authoritative(tmp_path, monkeypatch):
+    runtime = _operator_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+        complete_group(runtime, 0, "session-A", "ARITHMETIC")
+        result = json.loads(Operator(runtime).run(":callosum task-score evaluate"))
+        evaluation = result["evaluation"]
+        assert result["schema"] == "v14.native-receiver-task-score-operator/1"
+        assert result["operation"] == "EVALUATE"
+        assert evaluation["status"] == "FIXTURE_ONLY"
+        assert evaluation["evidence_class"] == "SYNTHETIC"
+        assert evaluation["semantic_use_proven"] is False
+        assert evaluation["generated_answer_correctness_proven"] is False
+        assert evaluation["production_route"] is False
+        assert evaluation["training_authority"] == 0
+        assert evaluation["native_receiver_authority"] == 0
+        assert evaluation["persisted"] is False
+    finally:
+        runtime.close()
+
+
+def test_task_score_operator_clear_requires_confirmation_and_preserves_pending_probe(tmp_path, monkeypatch):
+    runtime = _operator_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+        record_task_score_receipt(runtime, make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE"))
+        with pytest.raises(ValueError, match="usage"):
+            Operator(runtime).run(":callosum task-score clear")
+        state, version = runtime.store.state(approval.KEY, None)
+        runtime.store.set_state(approval.KEY, {"status": "PENDING"}, expected=version)
+        with pytest.raises(PermissionError, match="revoke the pending local probe approval"):
+            Operator(runtime).run(":callosum task-score clear --confirm")
+        assert task_score_status(runtime)["receipt_count"] == 1
+        runtime.store.set_state(approval.KEY, {"status": "REVOKED"}, expected=version + 1)
+        result = json.loads(Operator(runtime).run(":callosum task-score clear --confirm"))
+        assert result["operation"] == "CLEAR"
+        assert result["status"] == "CLEARED"
+        assert result["discarded_receipt_count"] == 1
+        assert result["persisted"] is False
+        assert task_score_status(runtime)["status"] == "EMPTY"
+    finally:
+        runtime.close()
+
+
+def test_task_score_operator_rejects_model_origin(tmp_path, monkeypatch):
+    runtime = _operator_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+        with pytest.raises(PermissionError):
+            Operator(runtime).run(":callosum task-score status", origin="MODEL")
+    finally:
+        runtime.close()
