@@ -40,7 +40,7 @@ At head 1677c3c58b4505ec40831c11151829e0e6fe46bc:
 - PASS — fastpath and interrupted-runner warm retention, run 45838222676.
 - PASS — Lab Age / WebView truth, run 45838222757.
 - PASS — two-checkout updater migration, run 45838222669.
-- IN_PROGRESS at last readback — staged context and integrated regression, run 45838222818. This must be checked again before review; no green claim yet.
+- PASS — staged context and integrated regression, run 45838222818: staged 292 passed / 10 skipped / 51 subtests; integrated 424 passed / 3 skipped / 58 subtests.
 
 LOCAL_LINUX full repository checkout/pytest: BLOCKED / NOT_RUN because git ls-remote https://github.com/RedMentos/Aii.git fails DNS resolution and no Aii checkout is mounted. GitHub CI is not local execution.
 
@@ -52,7 +52,7 @@ This closes a real telemetry gap in the C3 first-token-bias path and preserves t
 
 ## Next action
 
-1. Re-read exact run 45838222818 for the latest head. If green, request independent Boss/QA review of #2533 and its parent #2532; do not merge a child without its parent.
+1. Request independent Boss/QA review of #2533 and its parent #2532; do not merge a child without its parent. Exact code head 1677c3c58b4505ec40831c11151829e0e6fe46bc is green across all nine observed workflows.
 2. Continue the actual B1/B2 → C4 → C3 correctness/quality path; token-count parity is not semantic-consumption proof.
 3. Rebase/compose MediaProjection provider #2379, registry/recovery #2406 and Perception RAW EYE ingress #2375 on the current #2513/#2528 Android action stack. Keep screen_capture OFF until the combined provider/registry/transport/lease/Perception consumer passes exact CI.
 4. No user action required. Production B3 remains OFF.
