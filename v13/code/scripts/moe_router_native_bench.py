@@ -105,8 +105,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--threads', type=int, default=4)
     ap.add_argument('--pair', action='store_true')
-    ap.add_argument('--pair-reserve-mib', type=float, default=512.0,
-                    help='free MemAvailable to reserve for Android/V13 and other processes before concurrent pair mode')
+    ap.add_argument('--pair-reserve-mib', type=float, default=1024.0,
+                    help='free MemAvailable to reserve (1 GiB by default) for Android/V13 and other processes before concurrent pair mode')
     a = ap.parse_args()
     work = Path(a.work)
     work.mkdir(parents=True, exist_ok=True)
