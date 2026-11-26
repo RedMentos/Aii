@@ -110,7 +110,7 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
-                 score_override=None):
+                 score_override=None, ood_source_ref_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
@@ -120,10 +120,14 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         message_source_ref = source_ref
         adapter_sha256 = None
     elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
-        message_source_ref = {
-            "source_id": f"control-{condition.lower()}-{task_index:02d}",
-            "sha256": sha(f"{condition}-source-{task_index}"),
-        }
+        message_source_ref = (
+            dict(ood_source_ref_override)
+            if condition == "OOD" and ood_source_ref_override is not None
+            else {
+                "source_id": f"control-{condition.lower()}-{task_index:02d}",
+                "sha256": sha(f"{condition}-source-{task_index}"),
+            }
+        )
         adapter_sha256 = ADAPTER_SHA256
     else:
         message_source_ref = source_ref
@@ -196,7 +200,8 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
 def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC",
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
-                   hybrid_state_roundtrip_override=None, score_overrides=None):
+                   hybrid_state_roundtrip_override=None, score_overrides=None,
+                   ood_source_ref_override=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -209,11 +214,61 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             kv_digest_override=kv_overrides.get(condition),
             kv_geometry_override=kv_geometry_override,
             score_override=score_overrides.get(condition),
+            ood_source_ref_override=ood_source_ref_override,
         )
         if include_hybrid_state_roundtrip and condition == "NO_MESSAGE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
         result = record_task_score_receipt(runtime, receipt)
     return result
+
+
+def _information_use_scores():
+    return {
+        "NO_MESSAGE": [-2.0, -2.0],
+        "EXACT_MESSAGE": [-1.5, -1.5],
+        "LATENT_CANDIDATE": [-1.0, -1.0],
+        "ZERO": [-2.0, -2.0],
+        "SHUFFLE": [-2.0, -2.0],
+        "REPEAT": [-2.0, -2.0],
+        "OOD": [-2.0, -2.0],
+        "ENTITY_SUBSTITUTION": [-2.0, -2.0],
+    }
+
+
+def _record_information_use_cohort(derangement_mode, score_overrides):
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    families = ("ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER")
+    result = None
+    for task_index in range(20):
+        session_start = (task_index // 10) * 10
+        offset = task_index - session_start
+        if derangement_mode == "cycle":
+            donor_index = session_start + ((offset + 1) % 10)
+        elif derangement_mode == "fixed_point":
+            donor_index = task_index if task_index == 0 else session_start + ((offset + 1) % 10)
+        elif derangement_mode == "duplicate":
+            donor_index = session_start + 3 if task_index in (0, 1) else session_start + ((offset + 1) % 10)
+        elif derangement_mode == "cross_session":
+            donor_index = 10 if task_index == 0 else session_start + ((offset + 1) % 10)
+        elif derangement_mode == "same_family":
+            donor_index = session_start + ((offset + 5) % 10)
+        elif derangement_mode == "external":
+            donor_index = None
+        else:
+            raise AssertionError(f"unknown derangement mode: {derangement_mode}")
+        donor_ref = None if donor_index is None else {
+            "source_id": f"source-{donor_index:02d}",
+            "sha256": sha(f"source-{donor_index}"),
+        }
+        result = complete_group(
+            runtime,
+            task_index=task_index,
+            session_id=f"session-{task_index // 10}",
+            task_family=families[offset % len(families)],
+            score_overrides=score_overrides,
+            ood_source_ref_override=donor_ref,
+        )
+    return result["information_use_audit"]
 
 
 def test_single_complete_synthetic_task_group_is_not_enough_for_utility():
@@ -480,31 +535,52 @@ def test_information_use_audit_exposes_system_gain_without_content_specific_gain
     assert result["semantic_use_proven"] is False
 
 
-def test_information_use_audit_requires_both_system_and_specificity_gains():
-    runtime = type("Runtime", (), {"session": "session-A"})()
-    scores = {
-        "NO_MESSAGE": [-2.0, -2.0],
-        "EXACT_MESSAGE": [-1.5, -1.5],
-        "LATENT_CANDIDATE": [-1.0, -1.0],
-        "ZERO": [-2.0, -2.0],
-        "SHUFFLE": [-2.0, -2.0],
-        "REPEAT": [-2.0, -2.0],
-        "OOD": [-2.0, -2.0],
-        "ENTITY_SUBSTITUTION": [-2.0, -2.0],
-    }
-    result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
-        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
-        result = complete_group(
-            runtime, task_index=task_index, session_id=session_id,
-            task_family=family, score_overrides=scores,
-        )
-    audit = result["information_use_audit"]
+def test_information_use_audit_requires_system_specificity_and_full_derangement():
+    audit = _record_information_use_cohort("cycle", _information_use_scores())
     assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL"
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is True
+    assert audit["unrelated_donor_gain_pass"] is True
+    assert audit["full_derangement_tested"] is True
+    assert audit["unrelated_donor_derangement"]["status"] == "PASS"
+    assert audit["unrelated_donor_derangement"]["task_group_count"] == 20
+    assert audit["unrelated_donor_derangement"]["matched_donor_count"] == 20
+    assert audit["unrelated_donor_derangement"]["unique_donor_count"] == 20
+    assert audit["unrelated_donor_derangement"]["fixed_point_count"] == 0
+    assert audit["unrelated_donor_derangement"]["same_family_count"] == 0
+    assert audit["unrelated_donor_gain_vs_deranged_control"]["pass"] is True
+    assert audit["semantic_use_proven"] is False
+
+
+def test_entity_specificity_without_full_derangement_is_not_promoted():
+    audit = _record_information_use_cohort("external", _information_use_scores())
+    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    assert audit["system_gain_pass"] is True
+    assert audit["entity_specificity_pass"] is True
+    assert audit["unrelated_donor_gain_pass"] is False
     assert audit["full_derangement_tested"] is False
+    assert audit["unrelated_donor_derangement"]["external_donor_count"] == 20
+    assert audit["semantic_use_proven"] is False
+
+
+@pytest.mark.parametrize(
+    ("mode", "count_key", "expected_count"),
+    [
+        ("fixed_point", "fixed_point_count", 1),
+        ("duplicate", "duplicate_donor_count", 2),
+        ("cross_session", "cross_session_donor_count", 1),
+        ("same_family", "same_family_count", 20),
+        ("external", "external_donor_count", 20),
+    ],
+)
+def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key, expected_count):
+    audit = _record_information_use_cohort(mode, _information_use_scores())
+    derangement = audit["unrelated_donor_derangement"]
+    assert derangement["status"] == "NOT_ESTABLISHED"
+    assert derangement[count_key] == expected_count
+    assert audit["full_derangement_tested"] is False
+    assert audit["unrelated_donor_gain_pass"] is False
+    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
     assert audit["semantic_use_proven"] is False
 
 
