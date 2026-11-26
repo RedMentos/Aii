@@ -432,7 +432,23 @@ def _run(runtime):
             or record.get("task_event_id") != receipt["task_event_id"]
             or record.get("task_generation_id") != receipt["task_generation_id"]):
         raise PermissionError("fresh matching :callosum matrix-arm --confirm approval is required")
-    _validate_matrix_sources(runtime, receipt, require_current=True)
+    try:
+        _validate_matrix_sources(runtime, receipt, require_current=True)
+    except BaseException as exc:
+        state, version = runtime.store.state(KEY, None)
+        if isinstance(state, dict) and state.get("schema") == SCHEMA and state.get("status") == "PENDING":
+            state = dict(state)
+            state.update({"status": "FAILED_REVOKED", "failure_kind": type(exc).__name__})
+            runtime.store.set_state(KEY, state, expected=version)
+        try:
+            matrix.close()
+        except Exception:
+            pass
+        runtime._native_receiver_condition_matrix = None
+        runtime._native_receiver_matrix_target_token_ids = None
+        runtime._native_receiver_matrix_pair_record = None
+        runtime._native_receiver_matrix_staged_at = None
+        raise
     environment = platform_tag()
     if not environment.startswith("linux"):
         raise PermissionError(
