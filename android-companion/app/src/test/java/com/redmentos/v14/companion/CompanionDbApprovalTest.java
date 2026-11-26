@@ -139,6 +139,28 @@ public final class CompanionDbApprovalTest {
         };
     }
 
+    @Test public void actionRequestRejectsUnboundTopLevelFields() throws Exception {
+        JSONObject valid = new JSONObject()
+                .put("schema", "v14.android-action-request/1")
+                .put("action_id", "a".repeat(32))
+                .put("capability", "open_url")
+                .put("args", new JSONObject().put("url", "https://example.com/path?token=secret"))
+                .put("digest", "b".repeat(64))
+                .put("expires_at", 1_000_030.0)
+                .put("companion_local_consent_required", true)
+                .put("android_os_permission_required", false)
+                .put("permission_bypass", false)
+                .put("model_authority", false)
+                .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
+        assertTrue(CompanionProvider.hasExactActionRequestFields(valid));
+
+        valid.put("unbound_private_url", "https://example.com/private/path?session_token=secret");
+        assertFalse(CompanionProvider.hasExactActionRequestFields(valid));
+        valid.remove("unbound_private_url");
+        valid.remove("digest");
+        assertFalse(CompanionProvider.hasExactActionRequestFields(valid));
+    }
+
     @Test public void completedOpenUrlReceiptsRedactPathAndQueryAfterDurableCommit() throws Exception {
         String url = "https://example.com/private/path?session_token=secret";
         String digest = Canonical.requestDigest("open_url", url);
