@@ -27,6 +27,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import moe_router_monitor as M  # noqa: E402
 from moe_router_bench import OLD_EN, OLD_DE, PREAMBLES  # noqa: E402
+from moe_resource_gate import pair_memory_admission, read_memavailable_mib, read_vmhwm_mib  # noqa: E402
 
 
 def write_ids(tokenizer_dir, path):
@@ -54,18 +55,16 @@ def run_tap(binary, gguf, ids, out_dir, threads, names=None):
     env = dict(os.environ)
     if names is not None:
         env['V13_TAP_NAMES'] = names
+    memavailable_before_mib = read_memavailable_mib()
     proc = subprocess.Popen([binary, str(gguf), str(ids), str(out_dir), str(threads)],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
-    hwm = [0]
+    hwm = [None]
 
     def sample():
         while proc.poll() is None:
-            try:
-                for line in Path(f'/proc/{proc.pid}/status').read_text().splitlines():
-                    if line.startswith('VmHWM:'):
-                        hwm[0] = max(hwm[0], int(line.split()[1]))
-            except OSError:
-                pass
+            current = read_vmhwm_mib(proc.pid)
+            if current is not None:
+                hwm[0] = current if hwm[0] is None else max(hwm[0], current)
             time.sleep(0.05)
     th = threading.Thread(target=sample, daemon=True)
     th.start()
@@ -73,7 +72,11 @@ def run_tap(binary, gguf, ids, out_dir, threads, names=None):
     th.join()
     if proc.returncode != 0:
         raise RuntimeError(f'tap failed {proc.returncode}: {err[-500:]}')
-    return {'seconds': round(time.time() - t0, 1), 'vmhwm_mb': round(hwm[0] / 1024, 1), 'stdout': out.strip()}
+    vmhwm_mb = round(hwm[0], 1) if hwm[0] is not None else None
+    return {'seconds': round(time.time() - t0, 1), 'vmhwm_mb': vmhwm_mb,
+            'vmhwm_status': 'MEASURED' if vmhwm_mb is not None else 'UNAVAILABLE',
+            'memavailable_before_mib': memavailable_before_mib,
+            'memavailable_after_mib': read_memavailable_mib(), 'stdout': out.strip()}
 
 
 def calib_and_p0(tap_dir, meta, top_k, router_input):
@@ -101,6 +104,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--threads', type=int, default=4)
     ap.add_argument('--pair', action='store_true')
+    ap.add_argument('--pair-reserve-mib', type=float, default=512.0,
+                    help='free MemAvailable to reserve for Android/V13 and other processes before concurrent pair mode')
     a = ap.parse_args()
     work = Path(a.work)
     work.mkdir(parents=True, exist_ok=True)
@@ -133,23 +138,40 @@ def main():
             print(name, f'parity {ref}->{label}', json.dumps({k: round(v['mean'], 4) for k, v in summary.items()}),
                   gate['verdict'], flush=True)
         res['bodies'][name] = body
-        pair_jobs.append((name, runners[-1][1], ids))
+        last_label, last_gguf = runners[-1]
+        pair_jobs.append((name, last_gguf, ids, body['runners'][last_label]['run']['vmhwm_mb']))
         del caps
-    if a.pair and len(pair_jobs) > 1:
-        results = {}
+    if a.pair:
+        if len(pair_jobs) < 2:
+            res['pair'] = {'status': 'SKIPPED_NEEDS_TWO_BODIES',
+                           'note': 'pair mode requires at least two body runners'}
+        else:
+            admission = pair_memory_admission([j[3] for j in pair_jobs],
+                                              read_memavailable_mib(), a.pair_reserve_mib)
+            if admission['status'] != 'ADMITTED':
+                res['pair'] = {'status': 'SKIPPED_RESOURCE_GATE', 'admission': admission,
+                               'note': 'concurrent inference was not launched'}
+                print('pair skipped', json.dumps(res['pair']), flush=True)
+            else:
+                results = {}
 
-        def job(n, g, i):
-            results[n] = run_tap(a.tap, g, i, work / f'pair-{n}', max(1, a.threads // len(pair_jobs)), '')
-            shutil.rmtree(work / f'pair-{n}', ignore_errors=True)
-        ths = [threading.Thread(target=job, args=j) for j in pair_jobs]
-        for t in ths:
-            t.start()
-        for t in ths:
-            t.join()
-        res['pair'] = {'files': {n: g for n, g, _ in pair_jobs}, 'runs': results,
-                       'sum_vmhwm_mb': round(sum(r['vmhwm_mb'] for r in results.values()), 1),
-                       'note': 'two plain inference processes at once (no tap, n_ctx 2048, ubatch 128, last-token output), CPU only, mmap; not phone RSS'}
-        print('pair', json.dumps(res['pair']), flush=True)
+                def job(n, g, i, _single_peak):
+                    results[n] = run_tap(a.tap, g, i, work / f'pair-{n}',
+                                         max(1, a.threads // len(pair_jobs)), '')
+                    shutil.rmtree(work / f'pair-{n}', ignore_errors=True)
+                ths = [threading.Thread(target=job, args=j) for j in pair_jobs]
+                for t in ths:
+                    t.start()
+                for t in ths:
+                    t.join()
+                pair_peaks = [r['vmhwm_mb'] for r in results.values()]
+                sum_peak = round(sum(pair_peaks), 1) if all(
+                    isinstance(x, (int, float)) and x > 0 for x in pair_peaks) else None
+                res['pair'] = {'status': 'RAN', 'admission': admission,
+                               'files': {n: g for n, g, _, _ in pair_jobs}, 'runs': results,
+                               'sum_vmhwm_mb': sum_peak,
+                               'note': 'two plain inference processes at once (no tap, n_ctx 2048, ubatch 128, last-token output), CPU only, mmap; not phone RSS'}
+                print('pair', json.dumps(res['pair']), flush=True)
     Path(a.out).write_text(json.dumps(res, indent=1, sort_keys=True))
     print('wrote', a.out)
 
