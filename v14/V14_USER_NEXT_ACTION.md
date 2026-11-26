@@ -3,7 +3,8 @@
 **Nutzeraktion: keine Aktion nötig.** Do not send a Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft Perception work.
 
 ## Current code checkpoint
-- Draft PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`, exact current head `0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5`; base #2524 head `b298719af8faf75811d03d486de7725395a590b0`.
+- Draft PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`.
+- Exact tested code/test/workflow head: `fe7bb53674171fdececaf53c81a0c93f47256e48`. Later commits on the same branch update only the run board, workplan, research ledger, coverage index and handoff.
 - New files: `v14/experiments/audio_feature_set_probe.py`, `v14/experiments/test_audio_feature_set_probe.py`, `.github/workflows/v14-audio-feature-set-probe.yml`.
 - Probe/test blob SHAs read back: `02cd6cdcd04942b144b46bf96134547c6bf91d12` / `11c6dbcb039ccf369c39580dd6f9fc423cc634f3`.
 - The probe consumes only FINAL A5_AUDIO packet metadata with A4 RAW EAR pitch/prosody/activity cues and a separate later goal/action source. It is synthetic-only, shadow diagnostic, non-persistent and has zero learning/action authority.
@@ -11,26 +12,28 @@
 
 ## Local test evidence
 - LOCAL_LINUX CPython 3.13.5: exact scratch `py_compile` PASS; **9/9 unit tests PASS**.
-- One test is skipped locally: actual A4 extractor → A5 PerceptPacket integration, because this environment has no full Aii checkout. A CI test for that exact integration is present and has been triggered; do not call the local run a full-repository test.
+- One actual-repository A4 extractor → A5 PerceptPacket integration test was skipped locally because this environment has no full Aii checkout. That exact integration test now passes in GitHub CI on both supported matrix versions.
 - Controlled 64-record synthetic fixture / 2 goals: joint goal-conditioned CMI 1.000 bits; pitch-only, prosody-only and goal-only MI 0; joint gain over best single 1.000 bits; within-goal shuffle p95 0.15711 bits; 64-permutation empirical p 0.01538. These are fixture metrics, not real audio, human behaviour or trained-model evidence.
 - Full Aii local pytest/native build: NOT_RUN (checkout absent; GitHub DNS unavailable).
 
-## CI and integration
-- Feature-set workflow `45773372374`: IN_PROGRESS at last poll.
-- RAW EAR comparison `45773372422`: IN_PROGRESS.
-- Shared staged/integrated `45773372390`: IN_PROGRESS.
-- RuntimeDeploy integrity `45773372351`: QUEUED.
-- Core owns the recovery → stage → RuntimeDeploy audio-builder source-pin refresh. Do not change those foreign-owned files. The normal-turn audio caller/consumer and a revocable lease held through the complete C3 generator are still missing.
+## Exact CI / blockers
+- Feature-set workflow [45773907611](https://github.com/RedMentos/Aii/actions/runs/45773907611): **PASS on Python 3.13 and 3.14, 10/10 tests each**, including actual `extract_voice_cues` → A5 `PerceptPacket` integration. The first workflow attempt failed because the matrix expression was escaped; commit `fe7bb536` corrected it and the exact rerun passed.
+- RAW EAR comparison [45773907533](https://github.com/RedMentos/Aii/actions/runs/45773907533): **PASS on Python 3.13 and 3.14**.
+- RuntimeDeploy integrity offline checks [45773907582](https://github.com/RedMentos/Aii/actions/runs/45773907582): **PASS on Python 3.11 and 3.14**. This is not a deployment.
+- Shared staged/integrated run [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687): **FAIL**. Both jobs stop at the Core-owned recovery builder pin: it expects blob `831080bceec90711bd42e0fa4eba47c669975c98`, while the current Perception audio builder is `f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0`. Staged job reports 16 failed, 237 passed, 10 skipped, 2 errors and 47 subtests passed; the failures cascade from the pin mismatch, including two migration expectations reporting PARTIAL rather than UPDATED. Integrated regression fails at the same pin.
+- Core PR #2525 owns that pin chain. The existing cross-lane comment was updated with exact current hashes and run IDs. Perception must not edit Core-owned recovery/stage/deployer files.
 
 ## Device / deployment
 - Last available private V13OBS #115 is historical (2026-11-24 09:28 UTC): auto-update reported enabled and runtime/dashboard UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI STOPPED_BY_USER and model processes stopped. No fresh authenticated receipt was obtained.
 - No device action or UPDATE_REQUEST was sent. GitHub push is not deployment. Current device state: **REDMI_UNVERIFIED**; this PR is **NOT_RELEASED**.
 - Microphone capture remains OFF. No Android AudioRecord provider, native GGUF, gradients, weight changes, B3 production route or Android control is claimed. B3 remains OFF.
 
-## Research / next executable step
+## Cross-lane context / next executable step
+- Core PR #2529 now has a bounded exact-greeting reflex candidate with Python 3.13/3.14 CI success. It is not evidence that nontrivial normal chat or B1/B2 → C4 → C3 is complete; longer/mixed-modality turns must still fall through.
+- P0 correct/fast normal chat and B1/B2 valid-offer delivery remain OPEN.
 - R-165: peer-reviewed, open-access Nature Human Behaviour feature-gain paper (full text reviewed); task-specific cue-conditioned multiplicative gains, not an Android or general JEPA proof.
 - R-166: abstract-only arXiv study on relative incremental MI and temporal dependence in auditory-attention metrics.
-- Next: poll the exact CI, then Core refreshes the source-pin chain and connects the normal-turn revocable audio lease. Perception adds history-aware relative/incremental MI and source/session-disjoint held-out outcome tests before proposing any attention policy.
+- Next: Core refreshes the recovery → stage → RuntimeDeploy audio-builder pin and reruns the shared gates; Core then connects the normal-turn revocable audio lease through A4 admission and the complete C3 generator. Perception adds history-aware rIMI and source/session-disjoint held-out outcome tests before proposing any attention policy.
 
 ---
 
