@@ -144,7 +144,7 @@ class ControllerGuard(unittest.TestCase):
         d.record(eid,['CONFLICT'],'ANSWER',1,steps)
         self.assertEqual(d.report()['mode_values'],{})
         self.assertEqual(d.outcome(eid,1.)['status'],'SKIPPED_RECORD_ONLY')
-        c=callosum.Callosum(r.store)
+        c=callosum.controller(r)
         c.note(eid,'message','B1_DETAIL','B2_GIST','SOURCE_EXACT','SOURCE_EXACT',False,0.)
         before=c._load()[0]['dirs']
         self.assertEqual(c.outcome(eid,[],'FINAL')['status'],'SKIPPED_RECORD_ONLY')

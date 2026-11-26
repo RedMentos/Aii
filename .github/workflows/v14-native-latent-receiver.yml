@@ -5,6 +5,7 @@ on:
       - boss/v14-native-latent-probe-rebase-20261122
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-target-score-20261125-run1
+      - core/v14-native-target-score-repair-20261126-run1
       - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
   pull_request:
     branches:
@@ -12,6 +13,7 @@ on:
       - gpt6/v13-private-remote-bridge-20261111
       - core/v14-tokenwise-native-receiver-consumer-20261125-run1
       - core/v14-native-target-score-20261125-run1
+      - core/v14-native-target-score-repair-20261126-run1
     paths:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native/latent_receiver/**"
