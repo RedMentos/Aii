@@ -276,6 +276,61 @@ def test_native_prefill_token_count_requires_http_success_and_completed_generati
     assert flow["semantic_use_proven"] is False
 
 
+def test_first_token_bias_prefill_uses_full_prompt_step_not_continuation_timings():
+    query_id, packet_id = _id("pkt", "a"), _id("pkt", "b")
+    runtime = _runtime(
+        receipt=_native_receipt(packet_id),
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+        runner_extra={
+            "timings": {"prompt_n": 1, "cache_n": 0, "prompt_ms": 0.2},
+            "output_adapter_native_first_step": {
+                "token_ids": [12345],
+                "bias": [[12345, 0.25]],
+                "timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5},
+            },
+        },
+    )
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["native_prefill_token_count_matched"] is True
+    assert flow["native_prefill_prompt_tokens"] == 173
+    assert flow["native_prefill_processed_tokens"] == 153
+    assert flow["native_prefill_cached_tokens"] == 20
+    assert flow["native_prefill_timing_source"] == "FIRST_TOKEN_STEP"
+    assert "12345" not in repr(flow)
+
+
+def test_first_token_bias_prefill_mismatch_is_not_hidden_by_matching_continuation():
+    query_id, packet_id = _id("pkt", "c"), _id("pkt", "d")
+    runtime = _runtime(
+        receipt=_native_receipt(packet_id),
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+        runner_extra={
+            "timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5},
+            "output_adapter_native_first_step": {
+                "token_ids": [12345],
+                "bias": [[12345, 0.25]],
+                "timings": {"prompt_n": 152, "cache_n": 20, "prompt_ms": 12.5},
+            },
+        },
+    )
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["native_prefill_token_count_matched"] is False
+    assert flow["native_prefill_timing_source"] == "FIRST_TOKEN_STEP"
+    assert "12345" not in repr(flow)
+
+
 def test_zero_token_b2_deadline_is_visible_without_inventing_delivery():
     query_id = _id("pkt", "c")
     runtime = _runtime(

@@ -429,7 +429,15 @@ def _latest_native_evidence(r):
     native_prompt_sha256 = _sha256(receipt.get("native_prompt_sha256"))
     native_token_ids_sha256 = _sha256(receipt.get("native_token_ids_sha256"))
     native_prompt_tokens = _count(receipt.get("native_prompt_tokens"))
-    native_timings = _mapping(runner.get("timings"))
+    first_step_raw = runner.get("output_adapter_native_first_step")
+    if type(first_step_raw) is dict:
+        # The first request receives the full prompt; continuation timings are
+        # for token IDs plus the first generated token and are not its prefill.
+        native_timings = _mapping(first_step_raw.get("timings"))
+        native_prefill_timing_source = "FIRST_TOKEN_STEP"
+    else:
+        native_timings = _mapping(runner.get("timings"))
+        native_prefill_timing_source = "STREAM_COMPLETION"
     native_prefill_processed_tokens = _count(native_timings.get("prompt_n"))
     native_prefill_cached_tokens = _count(native_timings.get("cache_n"))
     native_prefill_prompt_tokens = (
@@ -578,6 +586,7 @@ def _latest_native_evidence(r):
             "native_prefill_processed_tokens": native_prefill_processed_tokens if not synthetic else None,
             "native_prefill_cached_tokens": native_prefill_cached_tokens if not synthetic else None,
             "native_prefill_prompt_ms": native_prefill_prompt_ms if not synthetic else None,
+            "native_prefill_timing_source": native_prefill_timing_source if not synthetic else None,
             "native_stream_completed": (not synthetic) and receipt.get("native_stream_completed") is True,
             "synthetic_stream_completed": synthetic and receipt.get("native_stream_completed") is True,
             "native_generation_completed": native_generation_completed,
