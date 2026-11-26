@@ -2364,3 +2364,16 @@ Exact pin: `ggml-org/llama.cpp@b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, MIT. P
 ## R-159 — pinned llama.cpp hybrid K/V API feasibility (2026-11-26)
 
 At exact upstream pin `ggml-org/llama.cpp@b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (MIT), the public C API exposes only opaque memory and sequence operations. Internal C++ exposes `llama_memory_hybrid::get_mem_attn/get_mem_recr`, `llama_kv_cache_context::get_k/get_v/cpy_k/cpy_v`, and `llama_kv_cells::seq_has/pos_get`. LFM2/LFM2MOE are hybrid: attention K/V and recurrent state are separate; only attention-filtered layers belong to the K/V path. Read-only access appears feasible with pinned internal headers, but no stable public ABI exists. Writes require graph construction, exact cell/sequence mapping, dtype/layout and backend synchronization. **No implementation, model run or device proof.** Next is a read-only one-sequence/one-layer probe with no-mutation evidence; B3 remains OFF.
+
+
+## Research & Perception Run 40 — native K/V sampled-state consumer overlay (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — native K/V receipt consumer | The eight-condition task-utility evaluator consumes the read-only one-layer/one-sequence K/V metadata. Identical receiver-input digests must reproduce identical sampled K/V signatures; partial coverage and geometry drift fail closed; aggregate candidate-vs-baseline differences are emitted separately from the teacher-forced likelihood gate. | Draft PR #2524, exact code/test head `8f7c73065e8f92e5988fe12fa88038dc41ece530`; focused tests 26/26 on Python 3.13/3.14; pinned llama.cpp Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Core PR #2523 exact head `241743cfe7728586c3d4e07c88bfc3da1387e04f` has 7/7 CI success but is still based on #2519, not #2524. | Core must stack #2523 onto #2524 and refresh source pins; then real GGUF >=20 held-out groups / >=2 sessions / >=2 task families, all controls, generated-answer correctness, retention/restart/rollback and RSS/TTFT. No MAC-bound transport, K/V write, recurrent-state transfer, learned cross-model coupling or production B3 route. | WIRED_SYNTHETIC_DIAGNOSTIC / NATIVE_LINUX_CI_BUILD_SELFTEST / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+
+The K/V summary is structural diagnostic evidence only: SHA-256 is not a MAC; sampled-state change is not semantic utility; raw K/V is not persisted. No other Canon family is promoted. P0 basic chat and B1/B2 valid-offer delivery remain OPEN.
+
+**Cross-lane integration blocker:** Exact #2524 staged CI fails at the Core-owned integrated candidate pin for `v13/native_latent_receiver.py`. Shared staged runtime: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression: 1 failed. The Perception-focused suite passes 26/26 on Python 3.13/3.14. Core owns the pin refresh; Perception did not edit recovery/stage/deployer files.
+
+**Research:** R-162 reviews HMAC-bound K/V transport integrity (arXiv:2606.28958) and CacheBridge (arXiv:2609.00891 v2). CacheBridge is GPU/same-family dense-GQA evidence and its public project license is pending; no code or weights reused. These findings do not authorize B3 activation.
