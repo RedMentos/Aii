@@ -81,7 +81,7 @@ def validate_native_hybrid_state_roundtrip(
 
     required = {
         "schema", "status", "state_api", "state_scope", "state_components",
-        "prefill_decode_status", "source_sequence_id", "destination_sequence_id,
+        "prefill_decode_status", "source_sequence_id", "destination_sequence_id",
         "source_model_sha256", "destination_model_sha256",
         "source_model_revision", "destination_model_revision",
         "source_tokenizer_revision", "destination_tokenizer_revision",
