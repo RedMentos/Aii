@@ -163,7 +163,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '65b2939533fe4de16d2b003c4ac908e425aae10f6fa16b575d7ac79c9a519ae3')
+                     '4b47d850ceb5ba3b1cdf40e5046085b66ee3bebdf53df0c3771c6d32323f0f3a')
     # Preserve the exact source pins even when this Runtime already carries the
     # fair-budget implementation; the legacy overlay must not be applied twice.
     for name, expected in observers.PINS.items():
