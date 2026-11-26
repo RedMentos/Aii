@@ -2299,3 +2299,8 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 - Shared Core/QA source-pin refresh remains required for the staged/integrated audio path. The caller-supplied PCM16 path is not an Android microphone provider, normal-turn C3 voice route, or full-duplex voice system.
 - Latest private HEALTH/PIPELINE_STATUS requests #989/#990 have no authenticated device reply at this checkpoint; previous V13OBS #115 is historical. Current Redmi install/updater state is REDMI_UNVERIFIED; no UPDATE_REQUEST, CHAT_SEND, shell command, model/weight/permission/data change. B3 OFF; NOT_RELEASED.
 - **User action: none required.**
+
+
+### Run 50 CI follow-up — 2026-11-26
+
+Parent #2524 exact CI readback: native receiver workflow 45890208766 failed only the staged Runtime test on Python 3.13/3.14 (92 passed, 1 failed each), because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; failures cascade from the same pin, with two migration assertions returning PARTIAL rather than UPDATED. Linux pinned API and Android arm64 cross-compile jobs passed. This is a Core-owned pin/migration blocker; Perception did not modify recovery/stage/deployer files. New #2527 exact-head workflows remain queued at first poll.

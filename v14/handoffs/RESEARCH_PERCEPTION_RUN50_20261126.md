@@ -60,3 +60,8 @@ V14 implication is limited: future attention evaluation should measure sequence 
 2. Core adds a normal-turn caller that holds the revocable AudioConsentLease through A4 admission and the complete C3 generator; keep the fast text path and deeper multi-organ path intact.
 3. Perception then adds a real source/session-bound A4 score-sequence evaluation with trusted attended-state outcomes, held-out sessions, switch-delay, false-flip, drift and shuffled-outcome controls. Do not map EEG AAD results directly onto acoustic cues.
 4. No model swap or user action is needed. Keep microphone capture OFF until the Android provider, consent/revocation and zeroization path are independently verified.
+
+
+## Parent #2524 CI failure readback after this checkpoint
+
+Exact workflow 45890208766: Linux pinned API PASS; Android arm64 cross-compile PASS; Python 3.13 and 3.14 each report 92 passed / 1 failed. The sole failure is test_native_receiver_is_composed_and_runtime_contracts_pass, which reaches integrated_observer_fair_budget_candidate_20261116.py and raises ValueError: observer fairness source changed: v13/cognition.py. Exact shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed. The same stale observer fairness pin causes the staged failures; two migration tests additionally expect UPDATED but receive PARTIAL. This is a Core-owned source-pin/migration chain, not a Perception audio test failure. Perception did not alter Core recovery/stage/deployer files. Core/Integrator must rebind and retest.

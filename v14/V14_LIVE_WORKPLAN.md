@@ -1695,3 +1695,8 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 ## Run 50 — Perception audio temporal path (2026-11-26)
 
 PR #2527 is being advanced from its stale #2524 parent onto #2524 head a47907c4a0603e602581c6462ecb845211eb0445 by a non-force two-parent merge checkpoint. Preserved scope: TemporalVoiceEvidence provisional preview versus FINAL commit, per-source/generation monotonic timing, overlap/gap handling, A4AttentionReceipt provenance and Store persistence, plus the source-bound A4/A5 feature-set experiment. Local Linux scratch-equivalent focused tests: py_compile PASS, 17/17 PASS; full checkout NOT_RUN. Exact-head CI after the new checkpoint is required. The shared staged/integrated chain still depends on Core-owned source pins and is not accepted. Next: Core refreshes recovery/stage/RuntimeDeploy pins; then a normal-turn caller must hold a revocable AudioConsentLease through the full C3 generation. No microphone, Android or Redmi proof; NOT_RELEASED.
+
+
+## Run 50 parent CI failure readback — 2026-11-26
+
+#2524 exact native receiver workflow 45890208766: Linux pinned API and Android arm64 cross-compile PASS; Python 3.13 and 3.14 each fail one staged Runtime test (92 passed, 1 failed) because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; most cascade from the same pin, and two migration assertions return PARTIAL instead of UPDATED. Core/Integrator owns the pin and migration repair. Do not change Perception files to bypass it. #2527 own exact-head CI is queued; no acceptance or release claim.
