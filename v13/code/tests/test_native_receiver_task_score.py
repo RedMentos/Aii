@@ -184,6 +184,8 @@ def test_task_score_operator_status_is_local_counts_only(tmp_path, monkeypatch):
         encoded = json.dumps(result)
         for forbidden in ("token_logprobs", "source_text", "source_id", "target_token_ids_sha256", "context_sha256"):
             assert forbidden not in encoded
+    finally:
+        runtime.close()
 
 
 def test_task_score_operator_evaluation_keeps_synthetic_fixture_non_authoritative(tmp_path, monkeypatch):
