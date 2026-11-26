@@ -53,7 +53,7 @@ def read_vmhwm_mib(pid: int, proc_root: str | Path = "/proc") -> float | None:
 def pair_memory_admission(
     single_peak_rss_mib: Iterable[float | int | None],
     available_mib: float | int | None,
-    reserve_mib: float | int = 512,
+    reserve_mib: float | int = 1024,
 ) -> dict:
     """Admit a concurrent pair only with measured peaks and measured headroom.
 
