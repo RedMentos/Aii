@@ -482,9 +482,15 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     for task_index in range(20):
         session_id = "session-A" if task_index < 10 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        params_sha = sha(f"native-context-params-{task_index}")
         result = complete_group(
             runtime, task_index, session_id, family,
             include_hybrid_state_roundtrip=True,
+            hybrid_state_roundtrip_override={
+                "prefill_rows": 1 + (task_index % 4),
+                "source_context_params_sha256": params_sha,
+                "destination_context_params_sha256": params_sha,
+            },
         )
     effect = result["hybrid_state_roundtrip_effect"]
     assert result["status"] == "FIXTURE_ONLY"
@@ -492,8 +498,10 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert effect["status"] == "SAME_MODEL_ROUNDTRIP_PASS"
     assert effect["task_group_count"] == 20
     assert effect["prefill_condition"] == "LATENT_CANDIDATE"
-    assert effect["prefill_rows_min"] == effect["prefill_rows_max"] == 1
-    assert effect["context_params_variant_count"] == 1
+    assert effect["prefill_rows_min"] == 1
+    assert effect["prefill_rows_median"] == 2.5
+    assert effect["prefill_rows_max"] == 4
+    assert effect["context_params_variant_count"] == 20
     assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
     assert effect["top1_match_rate"] == 1.0
     assert effect["truncated_restore_rejected_count"] == 20
