@@ -349,8 +349,11 @@ def test_actual_provisional_consumer_does_not_train_or_admit(tmp_path, monkeypat
         assert result["a4"]["audio_temporal_prediction"]["status"] == "PROVISIONAL_IGNORED"
         assert result["a4"]["audio_temporal_predictive_novelty"] == 0.0
         assert result["a4"]["audio_temporal_omission_novelty"] == 0.0
+        assert result["a4"]["audio_event_expectation"]["status"] == "PROVISIONAL_IGNORED"
+        assert result["a4"]["audio_event_omission_novelty"] == 0.0
         assert result["c3_admission"].selected == ()
         assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 0
+        assert len(audio_voice_module._runtime_audio_event_expectation_registry(runtime)) == 0
     finally:
         runtime.store.close()
 
@@ -637,6 +640,40 @@ def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monke
         assert predictor_attention.calls[-1]["novelty"] >= control_attention.calls[-1]["novelty"]
     finally:
         control_runtime.store.close()
+
+
+def test_optional_event_registry_failure_does_not_break_raw_ear(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    try:
+        monkeypatch.setattr(
+            audio_voice_module,
+            "extract_voice_cues",
+            lambda _pcm, _sample_rate, backend="python": dict(VOICED),
+        )
+        monkeypatch.setattr(audio_voice_module.attctl, "controller", lambda _runtime: capture)
+
+        def unavailable_registry(_runtime):
+            raise ValueError("runtime cannot retain optional event state")
+
+        monkeypatch.setattr(
+            audio_voice_module,
+            "_runtime_audio_event_expectation_registry",
+            unavailable_registry,
+        )
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_check, consent_guard=consent_guard(consent_check),
+            finality="FINAL",
+        )
+        assert result["packet"]["packet_id"]
+        assert result["a4"]["voice_cues"]["activity_hint"] == "VOICED"
+        assert result["a4"]["audio_event_expectation"]["status"] == "REJECTED"
+        assert result["a4"]["audio_event_omission_novelty"] == 0.0
+    finally:
+        runtime.store.close()
 
 
 def test_integrated_audio_candidate_pins_all_current_sources():
