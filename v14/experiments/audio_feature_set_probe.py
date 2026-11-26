@@ -266,7 +266,7 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
     for session_id, indices in session_rows.items():
         if len(indices) < 2:
             continue
-        session_features = [features[index] for index in indices]
+        session_features = [feature_set[index] for index in indices]
         session_pitch = [pitch[index] for index in indices]
         session_prosody = [prosody[index] for index in indices]
         session_activity = [activity[index] for index in indices]
