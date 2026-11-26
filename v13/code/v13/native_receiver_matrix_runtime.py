@@ -451,6 +451,12 @@ def _invalidate_stale_approval(runtime, record, version, reason):
     return updated
 
 
+
+
+def _hybrid_state_receiver_supported(runtime, receiver_role):
+    from .models import model_key
+    return model_key(receiver_role, runtime.models.b2_control) in {"body", "language"}
+
 def _approval_record(runtime):
     record, version = runtime.store.state(KEY, None)
     if not isinstance(record, dict) or record.get("schema") != SCHEMA:
@@ -466,8 +472,8 @@ def _arm(runtime, *, include_hybrid_state_roundtrip=False):
         raise ValueError("hybrid-state roundtrip opt-in must be boolean")
     if include_hybrid_state_roundtrip and len(_ids) > 64:
         raise PermissionError("hybrid-state roundtrip is limited to 64 continuation tokens")
-    if include_hybrid_state_roundtrip and receiver["role"] == "B2_GIST":
-        raise PermissionError("hybrid-state roundtrip is limited to LFM2 receiver roles")
+    if include_hybrid_state_roundtrip and not _hybrid_state_receiver_supported(runtime, receiver["role"]):
+        raise PermissionError("hybrid-state roundtrip requires an installed LFM2 body/language model")
     _validate_matrix_sources(runtime, receipt, require_current=True)
     models = _model_bindings(runtime, sender, receiver)
     other, _ = runtime.store.state(approval.KEY, None)
@@ -563,8 +569,8 @@ def _run(runtime):
         raise PermissionError("matrix approval has an invalid hybrid-state opt-in")
     if include_hybrid_state_roundtrip and len(target_ids) > 64:
         raise PermissionError("hybrid-state roundtrip is limited to 64 continuation tokens")
-    if include_hybrid_state_roundtrip and receiver["role"] == "B2_GIST":
-        raise PermissionError("hybrid-state roundtrip is limited to LFM2 receiver roles")
+    if include_hybrid_state_roundtrip and not _hybrid_state_receiver_supported(runtime, receiver["role"]):
+        raise PermissionError("hybrid-state roundtrip requires an installed LFM2 body/language model")
     now = time.time()
     if (record.get("status") != "PENDING"
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)

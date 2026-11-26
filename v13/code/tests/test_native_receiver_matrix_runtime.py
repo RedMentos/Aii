@@ -379,6 +379,15 @@ def test_hybrid_state_roundtrip_requires_explicit_arm_and_is_bound_to_native_run
     assert calls[0]["include_hybrid_state_roundtrip"] is True
     assert matrix._closed is True
 
+
+def test_hybrid_state_roundtrip_model_gate_uses_actual_selected_model_key():
+    runtime = types.SimpleNamespace(models=types.SimpleNamespace(b2_control="two_body"))
+    assert matrix_runtime._hybrid_state_receiver_supported(runtime, "B1_DETAIL")
+    assert matrix_runtime._hybrid_state_receiver_supported(runtime, "C3_LANGUAGE")
+    assert not matrix_runtime._hybrid_state_receiver_supported(runtime, "B2_GIST")
+    runtime.models.b2_control = "same_model"
+    assert matrix_runtime._hybrid_state_receiver_supported(runtime, "B2_GIST")
+
 def test_source_drift_between_arming_and_native_run_revokes_the_attempt(monkeypatch, tmp_path):
     runtime, matrix, _ids, _pair, _events, texts, _sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
     matrix_runtime._arm(runtime)
