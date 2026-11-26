@@ -1487,3 +1487,16 @@ def test_integrated_audio_candidate_surfaces_missing_revocation_hook_on_legacy_q
     assert result == "MISSING_REVOCATION_SUBSCRIPTION"
     assert "_audio_window" not in event
     assert notices and "Widerrufsschutz" in notices[0]
+
+def test_integrated_audio_candidate_embedded_runtime_bytes_literal_is_ascii():
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "integrated_audio_context_candidate_20261121.py"
+    )
+    source = script.read_text(encoding="utf-8")
+    start = source.index("runtime += b'''")
+    end = source.index("\n'''", start)
+    embedded = source[start:end]
+    non_ascii = sorted({ord(ch) for ch in embedded if ord(ch) > 127})
+    assert not non_ascii, "embedded bytes patch contains non-ASCII code points: " + repr(non_ascii)
