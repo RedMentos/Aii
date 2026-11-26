@@ -63,10 +63,9 @@ def _target_ids(values, receipt):
     return tuple(values)
 
 
-def _matrix_receipt(matrix, *, allow_consumed=False):
-    consumed = getattr(matrix, "_consumed", False)
+def _matrix_receipt(matrix):
     if (matrix is None or not callable(getattr(matrix, "iter_inputs", None))
-            or (consumed is not False and not (allow_consumed and consumed is True))
+            or getattr(matrix, "_consumed", False) is not False
             or not callable(getattr(matrix, "close", None))
             or not callable(getattr(matrix, "_build_one", None))):
         raise NativeReceiverMatrixRuntimeError("an open one-shot NativeReceiverConditionMatrix is required")
@@ -295,20 +294,20 @@ def build_and_stage_native_receiver_matrix(
     )
 
 
-def _staged(runtime, *, allow_consumed=False):
+def _staged(runtime):
     matrix = getattr(runtime, "_native_receiver_condition_matrix", None)
     pair_record = getattr(runtime, "_native_receiver_matrix_pair_record", None)
     target_ids = getattr(runtime, "_native_receiver_matrix_target_token_ids", None)
     if matrix is None:
         raise PermissionError("no Perception-built native receiver condition matrix is staged")
-    receipt = _matrix_receipt(matrix, allow_consumed=allow_consumed)
+    receipt = _matrix_receipt(matrix)
     ids = _target_ids(target_ids, receipt)
     record, sender, receiver = _pair_bindings(pair_record, receipt)
     return matrix, receipt, ids, record, sender, receiver
 
 
-def _model_snapshot_matches(runtime, record, *, allow_consumed=False):
-    _matrix, receipt, _ids, _pair, sender, receiver = _staged(runtime, allow_consumed=allow_consumed)
+def _model_snapshot_matches(runtime, record):
+    _matrix, receipt, _ids, _pair, sender, receiver = _staged(runtime)
     models = _model_bindings(runtime, sender, receiver)
     if record is not None and models != record.get("models"):
         raise PermissionError("installed sender/receiver model identity changed after matrix approval")
@@ -455,7 +454,9 @@ def _run(runtime):
                     raise PermissionError("matrix receipt changed during native execution")
                 approval._require_runtime_probe_lease(runtime, lease_token)
                 _validate_matrix_sources(runtime, current_receipt, require_current=True)
-                _model_snapshot_matches(runtime, record, allow_consumed=True)
+                current_models = _model_bindings(runtime, sender, receiver)
+                if current_models != record.get("models"):
+                    raise PermissionError("installed sender/receiver model identity changed during native execution")
                 return True
 
             bridge_started = True
