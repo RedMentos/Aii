@@ -45,6 +45,7 @@ class TemporalVoiceEvidence:
     def reset(self) -> None:
         self._source_id: str | None = None
         self._generation_id: str | None = None
+        self._last_start_ms: int | None = None
         self._last_end_ms: int | None = None
         self._evidence = 0.0
         self._active = False
@@ -81,6 +82,10 @@ class TemporalVoiceEvidence:
         ):
             self.reset()
             reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+
+        previous_start_ms = self._last_start_ms
+        if previous_start_ms is not None and start_ms < previous_start_ms:
+            raise ValueError("audio window start times must advance monotonically")
 
         previous_end_ms = self._last_end_ms
         gap_ms = 0
@@ -139,6 +144,7 @@ class TemporalVoiceEvidence:
 
         self._source_id = source_id
         self._generation_id = generation_id
+        self._last_start_ms = start_ms
         self._last_end_ms = end_ms
         self._evidence = max(0.0, min(1.0, evidence))
         self._active = active
