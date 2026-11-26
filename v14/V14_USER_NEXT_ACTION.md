@@ -1,3 +1,18 @@
+# Research & Perception — latest verified checkpoint (2026-11-26)
+
+PR [#2498](https://github.com/RedMentos/Aii/pull/2498), branch \`research-perception/v14-raw-ear-next-delta-20261125-run13\`, now includes a RAW EAR event-expectation reliability guard. Exact head: \`8167033a8f133c8feb89c341df3720a5db765504\`.
+
+- UNCERTAIN/low-confidence FINAL windows clear pending omission/onset state; non-target evidence must cover the expected onset through its tolerance. A late silence window after an uncovered gap can no longer be treated as a confirmed omission.
+- Exact fetched module blob \`4571b12aeb665f2865d53c54561cacd2562d6f95\`: CPython 3.13.5 syntax compile PASS and 5/5 focused module runtime checks PASS. This is LOCAL_LINUX module evidence, not the full repository consumer suite.
+- Exact GitHub CI was still IN_PROGRESS at the last read: 45730324785, 45730324780, 45730324811, 45730324844. Do not treat as passed until rechecked.
+- Perception composer blob \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\` pins module blob \`4571b12aeb665f2865d53c54561cacd2562d6f95\`. Core/QA must rebind the downstream recovery builder, stage and deployer exact hashes before staged/integrated/migration can pass.
+- Research R-164: Aurich et al., *European Journal of Neuroscience* (2026-02-25), N=41, found action/context-sensitive auditory omission responses; low-level silence alone is not a reliable semantic prediction. A4 remains a non-calibrated timing novelty shadow, not a semantic omission detector.
+- Redmi/Termux/microphone: REDMI_UNVERIFIED. No AudioRecord provider, native audio test, model/weight/permission change or deployment was performed. No user action required.
+
+**Next internal step:** Core/QA rebind the exact recovery→stage→deployer pins to the current Perception composer, rerun staged/integrated and migration; then Perception runs held-out and shuffled timing controls. No manual Termux command or model swap is requested.
+
+---
+
 # Research & Perception — latest verified checkpoint (2026-11-25)
 
 A new RAW EAR temporal-prediction candidate is open as [PR #2498](https://github.com/RedMentos/Aii/pull/2498), stacked on #2496. It connects a tiny consent-scoped process-local predictor to A4 novelty; only FINAL windows update it, PROVISIONAL windows are ignored, and its novelty contribution is capped at 0.10. It does not change C3 output, interrupt decisions, packet contents, permissions, installed models, persistent model weights or user data.
