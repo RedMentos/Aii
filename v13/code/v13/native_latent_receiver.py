@@ -821,7 +821,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         condition_scores[expected] = receipt
 
     if hybrid_state_roundtrip is not None:
-        condition_scores["NO_MESSAGE"]["hybrid_state_roundtrip"] = hybrid_state_roundtrip
+        condition_scores["LATENT_CANDIDATE"]["hybrid_state_roundtrip"] = hybrid_state_roundtrip
     if _sha256_file(model) != expected_model_sha256:
         raise NativeReceiverError("receiver model changed during task-matrix probe")
     if _sha256_file(binary) != binary_sha256_before:
