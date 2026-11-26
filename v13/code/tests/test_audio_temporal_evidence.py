@@ -256,6 +256,6 @@ def test_integrated_audio_context_candidate_pins_current_temporal_voice_blob():
     source = code_dir / "v13" / "audio_temporal_evidence.py"
     raw = source.read_bytes()
     actual_blob = hashlib.sha1(
-        b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+        b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
     assert module.SOURCE_BLOBS["v13/audio_temporal_evidence.py"] == actual_blob
