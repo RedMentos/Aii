@@ -7,6 +7,7 @@ on:
       - core/v14-native-target-score-20261125-run1
       - core/v14-native-target-score-repair-20261126-run1
       - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
+      - research-perception/v14-kv-snapshot-consumer-20261126-run35
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
@@ -14,6 +15,7 @@ on:
       - core/v14-tokenwise-native-receiver-consumer-20261125-run1
       - core/v14-native-target-score-20261125-run1
       - core/v14-native-target-score-repair-20261126-run1
+      - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
     paths:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native/latent_receiver/**"
