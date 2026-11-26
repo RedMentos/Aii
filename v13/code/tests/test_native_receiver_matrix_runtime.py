@@ -865,29 +865,32 @@ def _load_core_audio_recovery_candidate():
     return module
 
 
-def test_audio_cognition_pin_rebind_accepts_only_current_exact_source():
+def test_audio_cognition_pin_verification_accepts_only_current_exact_source():
     module = _load_core_audio_recovery_candidate()
     code_dir = Path(__file__).parents[1]
     audio = SimpleNamespace(SOURCE_BLOBS={
-        "v13/cognition.py": module.AUDIO_COGNITION_PREVIOUS_BLOB_SHA1,
+        "v13/cognition.py": module.AUDIO_COGNITION_CURRENT_BLOB_SHA1,
         "v13/runtime.py": "runtime-pin-preserved",
     })
-    module._rebind_audio_cognition_pin(code_dir, audio)
-    assert audio.SOURCE_BLOBS["v13/cognition.py"] == module.AUDIO_COGNITION_CURRENT_BLOB_SHA1
-    assert audio.SOURCE_BLOBS["v13/runtime.py"] == "runtime-pin-preserved"
+    before = dict(audio.SOURCE_BLOBS)
+    module._verify_audio_cognition_pin(code_dir, audio)
+    assert audio.SOURCE_BLOBS == before
 
 
-def test_audio_cognition_pin_rebind_rejects_unreviewed_source_and_pin(tmp_path):
+def test_audio_cognition_pin_verification_rejects_stale_or_unreviewed_pin(tmp_path):
     module = _load_core_audio_recovery_candidate()
-    bad_pin = SimpleNamespace(SOURCE_BLOBS={"v13/cognition.py": "0" * 40})
-    with pytest.raises(ValueError, match="pin changed"):
-        module._rebind_audio_cognition_pin(Path(__file__).parents[1], bad_pin)
+    code_dir = Path(__file__).parents[1]
+    stale = SimpleNamespace(SOURCE_BLOBS={
+        "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813"
+    })
+    with pytest.raises(ValueError, match="does not match the current exact blob"):
+        module._verify_audio_cognition_pin(code_dir, stale)
 
-    code_dir = tmp_path / "code"
-    (code_dir / "v13").mkdir(parents=True)
-    (code_dir / "v13" / "cognition.py").write_text("changed source\n")
-    old_pin = SimpleNamespace(SOURCE_BLOBS={
-        "v13/cognition.py": module.AUDIO_COGNITION_PREVIOUS_BLOB_SHA1
+    changed_dir = tmp_path / "code"
+    (changed_dir / "v13").mkdir(parents=True)
+    (changed_dir / "v13" / "cognition.py").write_text("changed source\n")
+    current_pin = SimpleNamespace(SOURCE_BLOBS={
+        "v13/cognition.py": module.AUDIO_COGNITION_CURRENT_BLOB_SHA1
     })
     with pytest.raises(ValueError, match="differs from the reviewed exact blob"):
-        module._rebind_audio_cognition_pin(code_dir, old_pin)
+        module._verify_audio_cognition_pin(changed_dir, current_pin)

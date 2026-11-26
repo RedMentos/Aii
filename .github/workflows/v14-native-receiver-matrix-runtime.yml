@@ -30,7 +30,9 @@ on:
       - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
       - core/v14-native-receiver-matrix-integrated-20261126-run3
       - research-perception/v14-kv-snapshot-consumer-20261126-run35
+      - research-perception/v14-audio-temporal-window-order-20261126-run41b
       - core/v14-native-receiver-kv-integration-20261126-run5
+      - core/v14-native-receiver-kv-integration-20261126-run50-core
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"

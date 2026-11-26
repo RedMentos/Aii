@@ -1690,3 +1690,28 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 **Research:** R-169 reviews the full arXiv:2611.12062v1 preprint. Its per-object transfer results support separate K/V, MLA, recurrent-state and indexer contracts; same-geometry recurrent state copy/correction differs from target-recurrence replay. Its 16–48B GPU results do not generalize to LFM2/Android, and its translator code/weights are internal rather than public OSS.
 
 **Next executable step:** CI closeout is now available: focused condition-matrix/task-score 52/52 PASS on Python 3.13 and 3.14; extended receiver suite 92 PASS / 1 Core-owned observer-pin failure on each; py_compile PASS; pinned Linux API build/selftest PASS; Android arm64-v8a cross-compile PASS (compile-only); privacy scan CLEAN. Staged/integrated is FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) on the same observer pin plus two migration PARTIAL-vs-UPDATED assertions; RuntimeDeploy offline 3.11/3.14 is PASS. Core must now rebase #2525 onto the live #2524 branch, refresh exact observer/recovery/source pins without weakening them, fix the two migration assertions and rerun staged/integrated. Only after that, and with separate explicit approval, run on an already-present LFM2 GGUF; no download/swap. B3 remains OFF.
+
+  
+## Run 50 — Perception audio temporal path (2026-11-26)
+
+PR #2527 is being advanced from its stale #2524 parent onto #2524 head a47907c4a0603e602581c6462ecb845211eb0445 by a non-force two-parent merge checkpoint. Preserved scope: TemporalVoiceEvidence provisional preview versus FINAL commit, per-source/generation monotonic timing, overlap/gap handling, A4AttentionReceipt provenance and Store persistence, plus the source-bound A4/A5 feature-set experiment. Local Linux scratch-equivalent focused tests: py_compile PASS, 17/17 PASS; full checkout NOT_RUN. Exact-head CI after the new checkpoint is required. The shared staged/integrated chain still depends on Core-owned source pins and is not accepted. Next: Core refreshes recovery/stage/RuntimeDeploy pins; then a normal-turn caller must hold a revocable AudioConsentLease through the full C3 generation. No microphone, Android or Redmi proof; NOT_RELEASED.
+
+
+## Run 50 parent CI failure readback — 2026-11-26
+
+#2524 exact native receiver workflow 45890208766: Linux pinned API and Android arm64 cross-compile PASS; Python 3.13 and 3.14 each fail one staged Runtime test (92 passed, 1 failed) because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; most cascade from the same pin, and two migration assertions return PARTIAL instead of UPDATED. Core/Integrator owns the pin and migration repair. Do not change Perception files to bypass it. #2527 own exact-head CI is queued; no acceptance or release claim.
+
+
+## Core #2538 parent-stack follow-up — 2026-11-26
+
+Core replacement #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) has refreshed the current #2524 observer/recovery/audio/stage/RuntimeDeploy pin chain; exact CI remains queued. It is still based on #2524, not #2527. Once #2527's exact A4/A5 checks complete, Core must stack/rebase #2538 onto #2527 and recompute any A4 audio pins against the new Perception blobs before staged/integrated acceptance. Do not edit Core-owned files from Perception.
+
+
+## Exact #2538 audio source-pin mismatch — 2026-11-26
+
+Read-only comparison: Core #2538 integrated_audio_context_candidate still expects old audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025, audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1, and contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 Perception blobs are b372d52b83c1b35077732755f076e48b62e90ac0, cacf649007a89cbfe74924536e413747d1392db3, and 6065a471f5f623abea57725d33d362d9eb806013. #2538 is valid against #2524 but not yet #2527. Core must stack it on #2527 and refresh these pins before the combined staged/integrated gate. No Perception edits to Core files.
+
+
+## Run50 exact CI completion — 2026-11-26
+
+The Perception audio branch's RAW EAR/libfvad comparison passed on Python 3.13/3.14; optional NumPy/A4 voice suite passed with 117 tests on each; source-bound A4/A5 feature-set passed on both; offline RuntimeDeploy integrity passed. The shared staged/integrated workflow failed: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Exact failure is Core-owned: recovery candidate expects stale audio builder blob 831080… instead of Perception candidate 5d21b77…; arithmetic candidate pin for contracts.py is stale (current Git blob 6065a47…); observer fairness pin and two migration assertions also fail on the #2524 parent. Core PR #2538 now passes these shared gates on #2524, but its pins still target the old audio branch. Next: stack #2538 onto #2527, update audio-builder and contracts pins, rerun combined stage. No Perception edits to Core recovery/stage/deployer files.
