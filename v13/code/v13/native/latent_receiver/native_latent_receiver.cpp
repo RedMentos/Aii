@@ -534,6 +534,13 @@ std::string logits_step_sha256(const float * logits, int vocab_size) {
     return v14::sha256_hex(bytes);
 }
 
+struct MatrixInput {
+    std::string condition;
+    int rows = 0;
+    std::vector<int> positions;
+    std::vector<float> values;
+};
+
 bool run_hybrid_state_roundtrip(
         llama_model * model,
         const llama_context_params & base_context_params,
@@ -861,13 +868,6 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
               << ",\"finite_output\":" << (v14::all_finite(positive_out) ? "true" : "false") << "}\n";
     return 0;
 }
-
-struct MatrixInput {
-    std::string condition;
-    int rows = 0;
-    std::vector<int> positions;
-    std::vector<float> values;
-};
 
 bool decode_bos(llama_context * ctx, const llama_model * model, int & decode_status) {
     if (!ctx || !model) return false;
