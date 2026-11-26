@@ -1765,3 +1765,8 @@ R-166 is now FULL_TEXT_REVIEWED; see the research-ledger note for method, AV-GC 
 ### R-166 GCMI OSS/license audit (2026-11-26)
 
 Upstream \`robince/gcmi\` was inspected: GPL-3.0; Python package 0.5.0 requires Python ≥3.10, NumPy ≥1.23 and SciPy ≥1.10 (Numba optional); optimized MATLAB C++ MEX CI targets macOS/Linux x86_64, with no Android/aarch64 claim. Aii has no root LICENSE at the working ref, so GPL compatibility is unknown. No GCMI code/dependency was reused. Any future exact estimator must be independently implemented or pass an explicit GPL/project-license review; Termux NumPy/SciPy compatibility remains unverified.
+
+
+### Private device read result (2026-11-26 08:18:51 UTC)
+
+Read-only HEALTH, PIPELINE_STATUS and DIAGNOSTICS owner-relay requests were issued in the private V13OBS repository with ten-minute expiry. No authenticated device comments arrived before expiry. Record **NO_LIVE_RECEIPT**; do not infer the phone is online or stopped from silence. The last available V13OBS #115 snapshot remains historical (2026-11-24). Current Redmi runtime, updater and deployment status are therefore REDMI_UNVERIFIED.
