@@ -23,11 +23,30 @@ MAX_EXPONENT = 12
 _PREFIXES = (
     "what is ",
     "was ist ",
+    "wie viel ist ",
+    "wieviel ist ",
+    "was ergibt ",
     "calculate ",
     "compute ",
     "berechne ",
 )
+_EXPLICIT_MATH_PREFIXES = frozenset(("calculate ", "compute ", "berechne "))
 _ALLOWED = re.compile(r"[0-9\s()+\-*/%.]+\Z")
+_DATE_YEAR_MONTH = re.compile(r"(\d{4})\s*[-/]\s*(\d{1,2})\Z")
+_DATE_MONTH_DAY = re.compile(r"(\d{1,2})\s*([- /])\s*(\d{1,2})\Z")
+
+
+def _ambiguous_calendar_expression(expression: str) -> bool:
+    """Treat unprompted year-month/month-day shapes as dates, not arithmetic."""
+    year_month = _DATE_YEAR_MONTH.fullmatch(expression)
+    if year_month is not None:
+        month = int(year_month.group(2))
+        return 1 <= month <= 12
+    month_day = _DATE_MONTH_DAY.fullmatch(expression)
+    if month_day is None:
+        return False
+    month, operator, day = int(month_day.group(1)), month_day.group(2), int(month_day.group(3))
+    return 1 <= month <= 12 and 1 <= day <= 31 and (operator == "-" or day > 12)
 
 
 def is_text_only_event(event: object) -> bool:
@@ -47,8 +66,10 @@ def _extract_expression(text: object) -> str | None:
         return None
     value = unicodedata.normalize("NFKC", text).strip().casefold()
     value = re.sub(r"[?.!…]+\Z", "", value).strip()
+    explicit_math = False
     for prefix in _PREFIXES:
         if value.startswith(prefix):
+            explicit_math = prefix in _EXPLICIT_MATH_PREFIXES
             value = value[len(prefix):].strip()
             break
     if not _ALLOWED.fullmatch(value):
@@ -56,6 +77,8 @@ def _extract_expression(text: object) -> str | None:
     if not any(ch.isdigit() for ch in value):
         return None
     if not any(ch in "+-*/%" for ch in value):
+        return None
+    if not explicit_math and _ambiguous_calendar_expression(value):
         return None
     return value
 

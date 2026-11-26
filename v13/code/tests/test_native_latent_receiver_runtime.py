@@ -40,6 +40,20 @@ def receipt(model_sha, sender_sha):
         "row_shuffle_control_cosine": 0.05,
         "row_shuffle_control_applicable": True,
         "repeat_cosine": 1.0,
+        "receiver_vocab_size": 32000,
+        "receiver_next_token_id": 42,
+        "zero_control_next_token_id": 0,
+        "shuffle_control_next_token_id": 17,
+        "row_shuffle_control_next_token_id": 12,
+        "repeat_next_token_id": 42,
+        "receiver_next_token_margin": 1.25,
+        "logit_effect_rms": 0.5,
+        "logit_cosine": 0.2,
+        "next_token_effect_detected": True,
+        "next_token_changed_vs_zero": True,
+        "next_token_changed_vs_shuffle": True,
+        "next_token_changed_vs_row_shuffle": True,
+        "repeat_next_token_stable": True,
         "native_input_consumed": True,
         "input_effect_detected": True,
         "status": "NATIVE_INPUT_EFFECT",
@@ -123,6 +137,10 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert packet["provenance"] == [event["source_ref"]]
     assert packet["native_input_consumed"] is True
     assert packet["input_effect_detected"] is True
+    assert packet["receiver_next_token_id"] == 42
+    assert packet["logit_effect_rms"] == 0.5
+    assert packet["next_token_effect_detected"] is True
+    assert packet["next_token_changed_vs_zero"] is True
     assert packet["production_route"] is False
     assert packet["semantic_use_proven"] is False
     assert packet["training_authority"] == packet["native_receiver_authority"] == 0
@@ -134,12 +152,24 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert stored == packet
     status = controller(runtime).report(runtime.cfg)
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
+    assert status["native_receiver_probe"]["sender_tap_packet_id"] == "tap-packet-1"
+    assert status["native_receiver_probe"]["input_rows"] == 2
+    assert status["native_receiver_probe"]["receiver_next_token_id"] == 42
+    assert status["native_receiver_probe"]["logit_effect_rms"] == 0.5
+    assert status["native_receiver_probe"]["next_token_effect_detected"] is True
+    assert status["native_receiver_probe"]["next_token_changed_vs_zero"] is True
     assert status["native_receiver_probe"]["production_route"] is False
     assert "LATENT blocked" in status["gate"]
 
     promoted = dict(packet, production_route=True)
     with pytest.raises(native.NativeReceiverError, match="cannot grant"):
         native.validate_packet(promoted)
+    bad_token = dict(packet, receiver_next_token_id=packet["receiver_vocab_size"])
+    with pytest.raises(native.NativeReceiverError, match="outside receiver vocabulary"):
+        native.validate_packet(bad_token)
+    bad_effect = dict(packet, next_token_effect_detected=False)
+    with pytest.raises(native.NativeReceiverError, match="next-token effect threshold"):
+        native.validate_packet(bad_effect)
     runtime.close()
 
 
@@ -199,6 +229,19 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "row_shuffle_control_cosine": None,
         "row_shuffle_control_applicable": False,
         "repeat_cosine": None,
+        "receiver_next_token_id": None,
+        "zero_control_next_token_id": None,
+        "shuffle_control_next_token_id": None,
+        "row_shuffle_control_next_token_id": None,
+        "repeat_next_token_id": None,
+        "receiver_next_token_margin": None,
+        "logit_effect_rms": None,
+        "logit_cosine": None,
+        "next_token_effect_detected": False,
+        "next_token_changed_vs_zero": False,
+        "next_token_changed_vs_shuffle": False,
+        "next_token_changed_vs_row_shuffle": False,
+        "repeat_next_token_stable": False,
         "native_input_consumed": False,
         "input_effect_detected": False,
         "status": "DIMENSION_MISMATCH",

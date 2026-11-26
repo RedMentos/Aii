@@ -13,9 +13,13 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = 'd1ac645d0c872184302506a2306219777f3c042d466a2e6b57a174dd8eecccdb'
+BUILDER_SHA = '8c3b4bda50459ea0d6c7f2efa967783c796d0367cc84ce73864ebd5d10df6fc9'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '94cf14f671f695efc1544f50c8edbc8d462c0cd5'
+NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
+NATIVE_PROBE_OVERLAY_GIT_BLOB = '8be75cecf7b76865ea95b4cb60985d52d586edf6'
+RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_20261124.py'
+RUNTIME_CLOSE_OVERLAY_GIT_BLOB = 'fc32dc9c350e36b76c54bf8f1e26186370ccb133'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -53,6 +57,18 @@ def stage(code_dir: Path, destination: Path) -> dict:
     spec.loader.exec_module(module)
     # Validate source pins before creating the destination.
     replacements = module.build_sources(code_dir)
+    close_overlay_path = code_dir / RUNTIME_CLOSE_OVERLAY
+    if close_overlay_path.is_symlink() or not close_overlay_path.is_file():
+        raise ValueError('native-probe Runtime close overlay missing or unsafe')
+    close_overlay_raw = close_overlay_path.read_bytes()
+    close_overlay_blob = hashlib.sha1(
+        b'blob ' + str(len(close_overlay_raw)).encode('ascii') + b'\0' + close_overlay_raw
+    ).hexdigest()
+    if close_overlay_blob != RUNTIME_CLOSE_OVERLAY_GIT_BLOB:
+        raise ValueError('native-probe Runtime close overlay source changed')
+    runtime_payload = replacements.get('v13/runtime.py')
+    if not isinstance(runtime_payload, bytes) or b'guard_runtime_close(self)' not in runtime_payload:
+        raise ValueError('integrated Runtime lacks the native-probe close barrier')
     for relative, payload in replacements.items():
         target = Path(relative)
         if (target.is_absolute() or '..' in target.parts or not target.parts
@@ -102,7 +118,57 @@ def stage(code_dir: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
                 raise ValueError('unsafe arithmetic guard output')
             target.write_bytes(payload)
-        replaced_files = sorted(set(replacements) | set(arithmetic_files))
+        staged_runtime = staging / 'v13/runtime.py'
+        if staged_runtime.is_symlink() or not staged_runtime.is_file() or b'guard_runtime_close(self)' not in staged_runtime.read_bytes():
+            raise ValueError('arithmetic overlay removed the native-probe Runtime close barrier')
+        native_probe_overlay_path = code_dir / NATIVE_PROBE_OVERLAY
+        if native_probe_overlay_path.is_symlink() or not native_probe_overlay_path.is_file():
+            raise ValueError('native-probe approval overlay missing or unsafe')
+        native_probe_overlay_raw = native_probe_overlay_path.read_bytes()
+        native_probe_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(native_probe_overlay_raw)).encode('ascii') + b'\0' + native_probe_overlay_raw
+        ).hexdigest()
+        if native_probe_overlay_blob != NATIVE_PROBE_OVERLAY_GIT_BLOB:
+            raise ValueError('native-probe approval overlay source changed')
+        native_probe_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_checked_native_probe_overlay', native_probe_overlay_path)
+        if native_probe_overlay_spec is None or native_probe_overlay_spec.loader is None:
+            raise RuntimeError('native-probe approval overlay is not loadable')
+        native_probe_overlay_module = importlib.util.module_from_spec(native_probe_overlay_spec)
+        native_probe_overlay_spec.loader.exec_module(native_probe_overlay_module)
+        expected_staged_operator = replacements.get('v13/operator.py')
+        if expected_staged_operator is None:
+            expected_staged_operator = (code_dir / 'v13/operator.py').read_bytes()
+        if not isinstance(expected_staged_operator, bytes):
+            raise ValueError('pinned recovery builder did not emit a valid operator source')
+        native_probe_files = native_probe_overlay_module.apply_staged_native_probe(
+            code_dir, staging, expected_staged_operator=expected_staged_operator,
+        )
+        if not isinstance(native_probe_files, dict) or set(native_probe_files) != {'v13/operator.py'}:
+            raise ValueError('native-probe overlay produced an unexpected staged file set')
+        for relative, payload in native_probe_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe native-probe approval overlay output')
+            target.write_bytes(payload)
+        native_probe_overlay_manifest = {
+            'name': NATIVE_PROBE_OVERLAY,
+            'git_blob_sha1': NATIVE_PROBE_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'source_pins': native_probe_overlay_module.SOURCE_PINS,
+            'replaced_files': sorted(native_probe_files),
+            'staged_operator_git_blob_sha1': native_probe_overlay_module._git_blob_sha1(expected_staged_operator),
+            'production_route': False,
+            'training_authority': 0,
+            'native_receiver_authority': 0,
+        }
+        native_probe_close_overlay_manifest = {
+            'name': RUNTIME_CLOSE_OVERLAY,
+            'git_blob_sha1': RUNTIME_CLOSE_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'replaced_files': ['v13/runtime.py'],
+        }
+        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(native_probe_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
             'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
@@ -117,6 +183,8 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'builder_sha256': BUILDER_SHA,
             'replaced_files': replaced_files,
             'arithmetic_overlay': arithmetic_overlay_manifest,
+            'native_probe_overlay': native_probe_overlay_manifest,
+            'native_probe_close_overlay': native_probe_close_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',

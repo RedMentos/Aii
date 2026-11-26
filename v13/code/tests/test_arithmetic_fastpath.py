@@ -15,6 +15,10 @@ from v13.arithmetic_fastpath import RULE_ID, is_text_only_event, match
         ("2 ** 12", "4096"),
         ("17 // 5", "3"),
         ("17 % 5", "2"),
+        ("Wie viel ist 2 + 2?", "4"),
+        ("calculate 11-21", "-10"),
+        ("compute 7-12", "-5"),
+        ("berechne 2026-11", "2015"),
     ],
 )
 def test_exact_single_expression(text, expected):
@@ -40,6 +44,14 @@ def test_exact_single_expression(text, expected):
         "2+__import__('os')",
         "True + 1",
         "1e100",
+        "2026-11",
+        "What is 2026-11?",
+        "Was ist 2026/11?",
+        "11-21",
+        "What is 11-21?",
+        "Was ist 11-21?",
+        "7-12",
+        "11/21",
         "9" * 100,
     ],
 )
