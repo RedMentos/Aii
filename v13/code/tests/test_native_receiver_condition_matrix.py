@@ -295,8 +295,9 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     result, phases, runtime = _run_bridge(monkeypatch, matrix, task)
 
     assert result["status"] == "TASK_GROUP_SCORED"
-    assert result["cohort_status"] == "COLLECTING"
+    assert result["cohort_status"] == "FIXTURE_ONLY"
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["enough_holdout"] is False
     assert result["condition_count"] == 8
     assert result["execution_kind"] == "SYNTHETIC_FIXTURE"
     assert result["environment"] == "SYNTHETIC"

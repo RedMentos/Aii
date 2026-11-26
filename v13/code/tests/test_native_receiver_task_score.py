@@ -94,6 +94,8 @@ def test_single_complete_synthetic_task_group_is_not_enough_for_utility():
     assert result["status"] == "FIXTURE_ONLY"
     assert result["task_group_count"] == 1
     assert result["enough_holdout"] is False
+    assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
+    assert result["minimum_task_groups"] == 20
     assert result["semantic_use_proven"] is False
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert result["persisted"] is False
