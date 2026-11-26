@@ -461,6 +461,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     Only hashes, target-token log-probabilities and dimensions are returned.
     No input text, token IDs, vectors, learning, routing or persistence are added.
     """
+    from .native_receiver_utility import validate_native_receiver_kv_snapshot
+
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
@@ -585,8 +587,11 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if version.returncode != 0:
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
-    if version_data.get("task_matrix_supported") is not True or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1":
-        raise NativeReceiverUnavailable("native receiver binary does not advertise eight-condition task scoring")
+    if (version_data.get("task_matrix_supported") is not True
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1"
+            or version_data.get("kv_snapshot_supported") is not True
+            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
@@ -619,14 +624,28 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
     condition_scores = {}
     for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
+        expected_context_rows = 1 if prepared_item["rows"] == 0 else prepared_item["rows"]
         if (not isinstance(native_item, dict) or native_item.get("condition") != expected
                 or native_item.get("input_rows") != prepared_item["rows"]
+                or native_item.get("context_rows") != expected_context_rows
                 or native_item.get("input_dim") != input_dim
                 or native_item.get("position_ids") != prepared_item["positions"]
                 or native_item.get("position_mode") != position_mode
                 or type(native_item.get("decode_status")) is not int or native_item.get("decode_status") != 0
                 or native_item.get("native_input_consumed") is not True):
             raise NativeReceiverError("native receiver condition receipt is missing or misbound: " + expected)
+        try:
+            kv_snapshot = validate_native_receiver_kv_snapshot(
+                native_item.get("kv_snapshot"),
+                expected_rows=expected_context_rows,
+                expected_condition=expected,
+                expected_model_sha256=expected_model_sha256,
+                expected_input_sha256=prepared_item["input_sha256"],
+            )
+        except Exception as exc:
+            raise NativeReceiverError(
+                "native receiver K/V snapshot is missing or misbound: " + expected
+            ) from exc
         score = native_item.get("target_score")
         token_scores = score.get("token_logprobs") if isinstance(score, dict) else None
         if (not isinstance(score, dict) or score.get("schema") != "v14.native-receiver-target-score/1"
@@ -657,6 +676,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         if target_env in {"TERMUX_ANDROID", "REDMI"}:
             receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
             receipt["device_runtime_build_id"] = device_runtime_build_id
+        receipt["kv_snapshot"] = kv_snapshot
         condition_scores[expected] = receipt
 
     if _sha256_file(model) != expected_model_sha256:
