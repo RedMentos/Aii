@@ -150,7 +150,13 @@ def _native_prefill_token_count_match(report, template_roles, native_c3_output, 
     timings = timings if type(timings) is dict else {}
     expected = _count(witness.get("native_prompt_tokens"))
     runner_count = _count(report.get("prompt_tokens"))
-    prefill_count = _count(timings.get("prompt_n"))
+    prefill_prompt_n = _count(timings.get("prompt_n"))
+    prefill_cache_n = _count(timings.get("cache_n"))
+    prefill_count = (
+        prefill_prompt_n + prefill_cache_n
+        if prefill_prompt_n is not None and prefill_cache_n is not None
+        and prefill_prompt_n + prefill_cache_n <= 100000 else None
+    )
     prefill_ms = _duration(timings.get("prompt_ms"))
     prompt_sha = witness.get("native_prompt_sha256")
     token_sha = witness.get("native_token_ids_sha256")
@@ -172,7 +178,7 @@ def _native_prefill_token_count_match(report, template_roles, native_c3_output, 
         and runner_count == expected
         and prefill_count == expected
     )
-    return matched, prefill_count, prefill_ms
+    return matched, prefill_count, prefill_prompt_n, prefill_cache_n, prefill_ms
 
 
 def _audit_one(conn, index, event_id, status, metadata):
@@ -291,7 +297,8 @@ def _audit_one(conn, index, event_id, status, metadata):
         }
     native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)
                              if native_c3_output and not incomplete else set())
-    native_prefill_token_count_matched, native_prefill_prompt_tokens, native_prefill_prompt_ms = (
+    (native_prefill_token_count_matched, native_prefill_prompt_tokens,
+     native_prefill_prompt_n, native_prefill_cache_n, native_prefill_prompt_ms) = (
         _native_prefill_token_count_match(
             report, native_template_roles, native_c3_output, incomplete)
     )
@@ -311,6 +318,8 @@ def _audit_one(conn, index, event_id, status, metadata):
         "native_template_http200_submitted_roles": sorted(native_template_roles),
         "native_prefill_token_count_matched": native_prefill_token_count_matched,
         "native_prefill_prompt_tokens": native_prefill_prompt_tokens,
+        "native_prefill_prompt_n": native_prefill_prompt_n,
+        "native_prefill_cache_n": native_prefill_cache_n,
         "native_prefill_prompt_ms": native_prefill_prompt_ms,
         "audit_incomplete": incomplete,
         "c3_prompt_inclusion_proven": False,
