@@ -52,7 +52,7 @@ class PairGateIntegrationTests(unittest.TestCase):
             "--body", "B1:tokenizer:2:ffn_norm:Q4=/model-b1.gguf",
             "--body", "B2:tokenizer:2:ffn_norm:Q4=/model-b2.gguf",
             "--tap", "/fake/tap", "--work", str(root / "work"), "--out", str(out), "--pair",
-            "--pair-reserve-mib", "512",
+            "--pair-reserve-mib", "1024",
         ]
         with patch.object(self.mod, "write_ids", return_value=[{"preamble": 0, "n_text": 1}] * 3), \
              patch.object(self.mod, "calib_and_p0", return_value=({"thresholds": {}}, {0: object()})), \
@@ -74,7 +74,7 @@ class PairGateIntegrationTests(unittest.TestCase):
             self.assertGreater(result["memavailable_before_mib"], 0)
 
     def test_insufficient_memory_skips_concurrent_processes(self):
-        result, calls = self._run_main(1911.0)
+        result, calls = self._run_main(2323.0)
         self.assertEqual(result["pair"]["status"], "SKIPPED_RESOURCE_GATE")
         self.assertEqual(result["pair"]["admission"]["status"], "BLOCKED_INSUFFICIENT_MEMORY")
         self.assertEqual(calls, 2)  # only the two serial single-body runs
