@@ -1,0 +1,44 @@
+name: V14 Core native receiver matrix Runtime consumer
+on:
+  push:
+    branches:
+      - core/v14-native-receiver-matrix-runtime-consumer-20261126-run1
+    paths:
+      - "v13/code/v13/native_receiver_matrix_runtime.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
+  pull_request:
+    branches:
+      - core/v14-native-target-score-repair-20261126-run1
+    paths:
+      - "v13/code/v13/native_receiver_matrix_runtime.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
+permissions:
+  contents: read
+jobs:
+  runtime-consumer:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install --upgrade pytest
+      - name: Compile changed Python modules
+        run: |
+          python -m py_compile \
+            v13/code/v13/native_receiver_matrix_runtime.py \
+            v13/code/v13/callosum.py \
+            v13/code/tests/test_native_receiver_matrix_runtime.py
+      - name: Run one-shot Runtime consumer regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_native_receiver_matrix_runtime.py
