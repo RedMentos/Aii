@@ -2062,3 +2062,33 @@ Run start/end time: UNKNOWN (not measured by the execution environment).
 - **Next:** review/integrate #2493 and #2529 on a compatible base, then measure cold/warm greeting TTFT on Redmi. The higher-priority open product gap remains useful B1_DETAIL + B2_GIST source-bound offers selected by C4 and consumed in C3 on the same nontrivial turn, followed by correct final output and a fresh phone receipt.
 
 **User action required: NONE.** No model download/swap, permission change, device action or manual Termux command is justified.
+
+
+# Core & Harness — exact acknowledgment fastpath (2026-11-26)
+
+A child PR is stacked on the verified greeting Runtime pin-repair branch:
+- Parent #2534 branch head: `b4ca2a37670d084b6edb4cb7eb1cf56e6a3e7ce7`; exact-head CI readback: 7/7 SUCCESS.
+- New branch: `core/v14-exact-ack-fastpath-20261126-run1` (PR creation and exact-head CI pending at this checkpoint).
+- Runtime change: the existing source-bound greeting reflex now also recognizes a narrow exact acknowledgment set (thanks/thank you/danke/verstanden/got it/noted). It remains bounded to the complete text SourceRef and uses the existing fixed-output receipt.
+- Bare yes/no/ok, approval verbs, mixed requests and multimodal inputs explicitly fall through to the normal multi-organ path.
+- New tests cover matcher source/modality rejection and the actual Runtime no-B1/B2/C3 path for an exact thanks message.
+- No full local Aii checkout; LOCAL_LINUX full-suite NOT_RUN. Redmi/Termux REDMI_UNVERIFIED. No device/model/weight/permission/data action.
+- User action: none. This is a draft candidate, not released or installed.
+
+
+
+## Exact-head follow-up — 2026-11-26
+
+- GitHub readback confirms PR #2536 head `987bcd22ac77bc1baeb1f302873a8900f0a58364` contains the matcher and Runtime tests; parent #2534 remains the exact base.
+- LOCAL_LINUX Python 3.13.5 isolated matcher harness: `py_compile` PASS; 14 allow/deny, source-hash, modality and normal-path fallthrough checks PASS. This is an isolated copy of the matcher logic, not the full Aii Runtime suite.
+- Exact GitHub CI: Runtime deployment integrity PASS; Core fastpath/interrupted-runner retention PASS; staged/integrated regression still IN_PROGRESS at the last poll. Do not mark PR green until that job completes on the final head.
+- REDMI_UNVERIFIED / NOT_RELEASED. No device action or user approval required.
+
+
+# Core & Harness — whole-system continuity update (2026-11-26)
+
+- #2535 exact head `e00f6e0da57f94c1c5f06a103fc96bfd1bb18d54`: 9/9 exact-head workflows SUCCESS. B1/B2 source-bound offers are now bound to the exact native C3 HTTP prompt hash plus prefill evidence. This proves request inclusion, not attention, semantic use, correct answer or Redmi behavior.
+- #2525 exact head `ce1a73944428819ab14b583904284a15b4c030ee`: 7/7 exact-head workflows SUCCESS. The K/V-aware native receiver matrix is connected to Runtime/Callosum; it remains diagnostic-only, with no GGUF pair or Redmi run.
+- #2536 current head `d958545d5e3eabbd9ffcab558bd6d527d8056412`: exact source-bound acknowledgment fastpath added on #2534. LOCAL_LINUX CPython 3.13.5 isolated matcher harness: py_compile + 14 allow/deny/source/modality checks PASS. Runtime-deploy and fastpath-retention CI PASS; staged/integrated run 45883760571 was still IN_PROGRESS at last poll.
+- Full local Aii checkout remains BLOCKED by missing checkout/GitHub DNS. Redmi remains REDMI_UNVERIFIED. No update request, device action, model/weight/permission/data change.
+- Next: poll #2536 exact-head staged/integrated CI; then Boss/Integrator review the stacked P0 B1/B2→C4→C3 chain and #2524→#2525, followed by a fresh consented Redmi correctness receipt. Production B3 stays OFF. No user action required.
