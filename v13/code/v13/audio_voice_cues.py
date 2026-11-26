@@ -19,6 +19,7 @@ from statistics import median
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_teacher_ear import TeacherEarConsentLease, validate_teacher_ear_result
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -721,7 +722,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                               speaker_embeddings: dict | None = None,
+                               teacher_result: dict | None = None,
+                               teacher_lease: TeacherEarConsentLease | None = None,
+                               teacher_receipt: str | None = None,
+                               transcript_receipt: str | None = None):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
@@ -765,6 +770,37 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        # Teacher ASR is a separate, optional hypothesis channel. It is validated
+        # under distinct teacher-use and transcript-use receipts and is never
+        # copied into the persisted PerceptPacket or A4 receipt.
+        teacher_ear = None
+        teacher_ear_status = "NOT_SUPPLIED"
+        if teacher_result is not None:
+            try:
+                teacher_ear = validate_teacher_ear_result(
+                    teacher_result,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=audio_segment["start_ms"],
+                    end_ms=audio_segment["end_ms"],
+                    finality=finality,
+                    teacher_receipt=teacher_receipt,
+                    transcript_receipt=transcript_receipt,
+                    teacher_lease=teacher_lease,
+                )
+                if finality == "PROVISIONAL":
+                    teacher_ear = None
+                    teacher_ear_status = "PROVISIONAL_NOT_ADMITTED"
+                else:
+                    teacher_ear_status = "CALLER_SUPPLIED_UNVERIFIED"
+            except (PermissionError, ValueError) as exc:
+                runtime.store.log(
+                    "teacher_ear_rejected", event_id,
+                    {"error": type(exc).__name__},
+                )
+                teacher_ear = None
+                teacher_ear_status = "REJECTED"
         speaker_evidence = None
         # Speaker lookback is stateful too; defer it until FINAL so a provisional
         # window and its later promotion cannot count the same embedding twice.
@@ -956,7 +992,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
+            "teacher_ear_status": teacher_ear_status,
         }
+        if teacher_ear is not None:
+            result["teacher_ear"] = teacher_ear
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
         return result
