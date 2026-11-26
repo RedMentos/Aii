@@ -66,6 +66,24 @@ class PurePromptReceipt(unittest.TestCase):
                 self.assertEqual([r["packet_id"] for r in receipt["offers"]], ["b1", "b2"])
                 self.assertEqual([r["rendered_quote_count"] for r in receipt["offers"]], [1, 1])
                 self.assertTrue(receipt["native_template_rendered"])
+                self.assertEqual(
+                    receipt["rendered_prompt_sha256"],
+                    hashlib.sha256(render(m).encode("utf-8")).hexdigest(),
+                )
+                self.assertEqual(receipt["rendered_prompt_chars"], len(render(m)))
+                self.assertTrue(all(
+                    type(row.get("native_prompt_char_start")) is int
+                    and type(row.get("native_prompt_char_end")) is int
+                    and row["native_prompt_char_start"] < row["native_prompt_char_end"]
+                    and len(row.get("native_prompt_span_sha256", "")) == 64
+                    for row in receipt["offers"]
+                ))
+                for row in receipt["offers"]:
+                    span = render(m)[row["native_prompt_char_start"]:row["native_prompt_char_end"]]
+                    self.assertEqual(
+                        row["native_prompt_span_sha256"],
+                        hashlib.sha256(span.encode("utf-8")).hexdigest(),
+                    )
                 self.assertNotIn(SECRET, json.dumps(receipt))
                 self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(receipt))
 
@@ -198,6 +216,8 @@ class NativeHTTPBound(unittest.TestCase):
         self.assertEqual(runner.last_metrics["generated_tokens"], 1)
         receipt = runner.last_metrics["native_offer_prompt_receipt"]
         self.assertEqual(receipt["status"], "RENDERED_WITH_QUOTES")
+        self.assertTrue(receipt["native_prompt_render_match"])
+        self.assertEqual(receipt["rendered_prompt_sha256"], receipt["native_prompt_sha256"])
         self.assertTrue(receipt["native_template_submitted"])
         self.assertTrue(receipt["native_completion_http_200"])
         self.assertEqual(runner.last_metrics["status"], "FINAL")
@@ -290,10 +310,22 @@ class SQLiteNativeAudit(unittest.TestCase):
         return {"revision": REVISION, "status": "RENDERED_WITH_QUOTES",
                 "native_template_rendered": True,
                 "native_template_submitted": True, "native_completion_http_200": True,
+                "native_prompt_render_match": True,
+                "native_prompt_sha256": "a" * 64,
+                "rendered_prompt_sha256": "a" * 64,
+                "rendered_prompt_chars": 1000,
+                "native_token_ids_sha256": "b" * 64,
+                "native_prompt_tokens": 521,
                 "source_span_revalidated_here": False,
                 "native_semantic_use_proven": False,
-                "offers": [{"role": r, "packet_id": pid, "rendered_quote_count": 1}
-                           for r, pid in (("B1_DETAIL", "b1"), ("B2_GIST", "b2"))]}
+                "offers": [
+                    {"role": "B1_DETAIL", "packet_id": "b1", "rendered_quote_count": 1,
+                     "native_prompt_char_start": 100, "native_prompt_char_end": 180,
+                     "native_prompt_span_sha256": "c" * 64},
+                    {"role": "B2_GIST", "packet_id": "b2", "rendered_quote_count": 1,
+                     "native_prompt_char_start": 220, "native_prompt_char_end": 300,
+                     "native_prompt_span_sha256": "d" * 64},
+                ]}
 
     def test_both_native_rendered_and_sent_is_still_metadata_only(self):
         self.seed(self.witness())
@@ -301,6 +333,8 @@ class SQLiteNativeAudit(unittest.TestCase):
         gate = out["end_to_end_gate"]
         self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED")
         self.assertEqual(gate["both_body_native_template_http200_reported_turns"], 1)
+        self.assertEqual(gate["both_body_native_prompt_span_bound_turns"], 1)
+        self.assertTrue(gate["native_prompt_span_binding_observed"])
         self.assertTrue(gate["native_template_submission_reported_by_runtime"])
         self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
         self.assertFalse(gate["learned_latent_exchange_verified"])
