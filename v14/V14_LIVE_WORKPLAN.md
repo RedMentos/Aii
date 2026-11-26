@@ -1760,3 +1760,8 @@ R-166 is now FULL_TEXT_REVIEWED; see the research-ledger note for method, AV-GC 
 - Shared staged/integrated [45781255404](https://github.com/RedMentos/Aii/actions/runs/45781255404): **FAIL**. Staged: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests passed; integrated: 1 failed. Most failures cascade from the Core recovery wrapper's pinned composer SHA (\`831080...\`) not matching the current Perception composer (\`f9a0ed...\`). Two additional migration assertions report \`PARTIAL\` instead of expected \`UPDATED\`; Core/Integrator must inspect them after the pin chain is corrected.
 - This CI is on the corrected code/test head \`ef61d48\`, not the earlier c0d68 head. Full local Aii checkout/pytest/native build remains NOT_RUN; local scratch-equivalent proxy compile and six assertions PASS.
 - Classification remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED; no Android microphone, attention policy, JEPA learner, model, weight, permission or device action.
+
+
+### R-166 GCMI OSS/license audit (2026-11-26)
+
+Upstream \`robince/gcmi\` was inspected: GPL-3.0; Python package 0.5.0 requires Python ≥3.10, NumPy ≥1.23 and SciPy ≥1.10 (Numba optional); optimized MATLAB C++ MEX CI targets macOS/Linux x86_64, with no Android/aarch64 claim. Aii has no root LICENSE at the working ref, so GPL compatibility is unknown. No GCMI code/dependency was reused. Any future exact estimator must be independently implemented or pass an explicit GPL/project-license review; Termux NumPy/SciPy compatibility remains unverified.
