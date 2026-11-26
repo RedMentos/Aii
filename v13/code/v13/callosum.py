@@ -328,6 +328,107 @@ def _fit_tokenwise_candidate(runtime, args):
     })
 
 
+def _save_tokenwise_candidate(runtime, args):
+    if args != ["save-tokenwise-candidate", "--confirm"]:
+        raise ValueError("usage: :callosum save-tokenwise-candidate --confirm")
+    from . import native_probe_approval as approval
+    approval._require_local_tty()
+    runtime.require_idle()
+    pending, _ = runtime.store.state(approval.KEY, None)
+    if isinstance(pending, dict) and pending.get("status") == "PENDING":
+        raise PermissionError("revoke the pending native probe approval before saving a candidate")
+    candidate = getattr(runtime, "_native_tokenwise_candidate", None)
+    from .native_tokenwise_candidate_store import CandidateStore
+    result = CandidateStore(runtime.home).save(candidate)
+    return dumps({
+        "schema": "v14.native-tokenwise-candidate-save/1",
+        **result,
+        "adapter_persisted": True,
+        "pair_records_persisted": False,
+        "production_route": False,
+        "semantic_utility_proven": False,
+    })
+
+
+def _load_tokenwise_candidate(runtime, args):
+    if len(args) != 3 or args[0] != "load-tokenwise-candidate" or args[2] != "--confirm":
+        raise ValueError("usage: :callosum load-tokenwise-candidate <adapter-sha-prefix> --confirm")
+    from . import native_probe_approval as approval
+    approval._require_local_tty()
+    runtime.require_idle()
+    if getattr(runtime, "_native_tokenwise_candidate", None) is not None:
+        raise ValueError("clear the in-memory tokenwise lab before loading a saved candidate")
+    pending, _ = runtime.store.state(approval.KEY, None)
+    if isinstance(pending, dict) and pending.get("status") == "PENDING":
+        raise PermissionError("revoke the pending native probe approval before loading a candidate")
+    from .native_tokenwise_candidate_store import CandidateStore
+    loaded = CandidateStore(runtime.home).load(args[1])
+    checkpoint = loaded["checkpoint"]
+    runtime._native_tokenwise_candidate = {
+        "adapter": loaded["adapter"],
+        "record": None,
+        "fit_manifest": loaded["fit_manifest"],
+        "staged_at": time.time(),
+        "persisted": True,
+        "candidate_id": checkpoint["candidate_id"],
+    }
+    return dumps({
+        "schema": "v14.native-tokenwise-candidate-load/1",
+        "status": "LOADED_DIAGNOSTIC_CANDIDATE",
+        "candidate_id": checkpoint["candidate_id"],
+        "adapter_sha256": loaded["adapter"]["adapter_sha256"],
+        "pair_record_loaded": False,
+        "fresh_source_bound_pair_record_required": True,
+        "record_persisted": False,
+        "pair_vectors_persisted": False,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    })
+
+
+def _tokenwise_candidate_status(runtime, args):
+    if args != ["tokenwise-candidate-status"]:
+        raise ValueError("usage: :callosum tokenwise-candidate-status")
+    runtime.require_idle()
+    from .native_tokenwise_candidate_store import CandidateStore
+    candidate = getattr(runtime, "_native_tokenwise_candidate", None)
+    adapter = candidate.get("adapter") if isinstance(candidate, dict) else None
+    saved = CandidateStore(runtime.home).list()
+    return dumps({
+        "schema": "v14.native-tokenwise-candidate-status/1",
+        "in_memory_candidate": isinstance(adapter, dict),
+        "in_memory_candidate_id": (
+            candidate.get("candidate_id") or adapter.get("adapter_sha256")
+            if isinstance(candidate, dict) and isinstance(adapter, dict) else None
+        ),
+        "in_memory_pair_record": (
+            isinstance(candidate.get("record"), dict)
+            if isinstance(candidate, dict) else False
+        ),
+        "saved_candidate_count": len(saved),
+        "saved_candidates": saved,
+        "saved_candidates_are_diagnostic_only": True,
+        "production_route": False,
+    })
+
+
+def _tokenwise_record_matches_pending(record, pending):
+    if not isinstance(record, dict) or not isinstance(pending, dict):
+        return False
+    sender = record.get("sender") if isinstance(record.get("sender"), dict) else {}
+    receiver = record.get("receiver") if isinstance(record.get("receiver"), dict) else {}
+    return (
+        record.get("session_id") == pending.get("session_id")
+        and record.get("event_id") == pending.get("event_id")
+        and record.get("brain_generation_id") == pending.get("brain_generation_id")
+        and _tokenwise_source_key(record.get("source_ref")) == _tokenwise_source_key(pending.get("source_ref"))
+        and sender.get("role") == pending.get("sender_role")
+        and receiver.get("role") == pending.get("receiver_role")
+    )
+
+
 def _run_tokenwise_native_probe(runtime, args):
     if args != ["native-tokenwise-probe", "--confirm"]:
         raise ValueError("usage: :callosum native-tokenwise-probe --confirm")
@@ -335,12 +436,21 @@ def _run_tokenwise_native_probe(runtime, args):
     approval._require_local_tty()
     candidate = getattr(runtime, "_native_tokenwise_candidate", None)
     if not isinstance(candidate, dict):
-        raise ValueError("no in-memory tokenwise candidate is staged")
-    record = candidate.get("record")
+        raise ValueError("no in-memory or loaded tokenwise candidate is staged")
     adapter = candidate.get("adapter")
-    if not isinstance(record, dict) or not isinstance(adapter, dict):
-        raise ValueError("staged tokenwise candidate is malformed")
+    if not isinstance(adapter, dict):
+        raise ValueError("staged tokenwise candidate adapter is malformed")
     pending, _ = runtime.store.state(approval.KEY, None)
+    record = candidate.get("record")
+    if not isinstance(record, dict):
+        records = getattr(runtime, "_native_tokenwise_pair_records", None)
+        matches = [
+            item for item in records
+            if _tokenwise_record_matches_pending(item, pending)
+        ] if isinstance(records, list) else []
+        if len(matches) != 1:
+            raise ValueError("loaded candidate requires exactly one fresh matching in-memory source-bound pair record")
+        record = matches[0]
     if (not isinstance(pending, dict) or pending.get("status") != "PENDING"
             or pending.get("probe_kind") != "NATIVE_RECEIVER"
             or pending.get("sender_role") != record.get("sender", {}).get("role")
@@ -378,12 +488,16 @@ def _clear_tokenwise_lab(runtime, args):
     candidate = getattr(runtime, "_native_tokenwise_candidate", None)
     runtime._native_tokenwise_pair_records = []
     runtime._native_tokenwise_candidate = None
+    from .native_tokenwise_candidate_store import CandidateStore
+    saved = CandidateStore(runtime.home).list()
     return dumps({
         "schema": "v14.native-tokenwise-pair-lab/1",
         "status": "CLEARED",
         "cleared_record_count": len(records) if isinstance(records, list) else 0,
         "cleared_candidate": isinstance(candidate, dict),
         "persisted": False,
+        "saved_candidates_preserved": True,
+        "saved_candidate_count": len(saved),
     })
 
 def operator_command(r,args):
@@ -399,6 +513,12 @@ def operator_command(r,args):
         return pair_command(r,args)
     if args and args[0] == "fit-tokenwise-cohort":
         return _fit_tokenwise_candidate(r,args)
+    if args and args[0] == "save-tokenwise-candidate":
+        return _save_tokenwise_candidate(r,args)
+    if args and args[0] == "load-tokenwise-candidate":
+        return _load_tokenwise_candidate(r,args)
+    if args and args[0] == "tokenwise-candidate-status":
+        return _tokenwise_candidate_status(r,args)
     if args and args[0] == "native-tokenwise-probe":
         return _run_tokenwise_native_probe(r,args)
     if args and args[0] == "clear-tokenwise-lab":
@@ -415,5 +535,7 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
+        'save-tokenwise-candidate --confirm|load-tokenwise-candidate <adapter-sha-prefix> --confirm|'
+        'tokenwise-candidate-status|native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|'
+        'clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
     )
