@@ -6,6 +6,9 @@ on:
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py"
+      - "v13/code/scripts/integrated_greeting_fastpath_candidate_20261127.py"
+      - "v13/code/v13/greeting_fastpath.py"
+      - "v13/code/tests/test_greeting_fastpath_runtime.py"
       - "v13/code/tests/test_core_audio_observer_composition_20261127.py"
       - ".github/workflows/v14-core-audio-observer-composition.yml"
   push:
@@ -33,8 +36,8 @@ jobs:
       - name: Compile the exact Core composer and regression
         env:
           PYTHONPATH: v13/code
-        run: python -m py_compile v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/tests/test_core_audio_observer_composition_20261127.py
+        run: python -m py_compile v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/integrated_greeting_fastpath_candidate_20261127.py v13/code/v13/greeting_fastpath.py v13/code/tests/test_greeting_fastpath_runtime.py v13/code/tests/test_core_audio_observer_composition_20261127.py
       - name: Test exact audio + fair-budget + native receiver composition
         env:
           PYTHONPATH: v13/code
-        run: python -m pytest -q -s v13/code/tests/test_core_audio_observer_composition_20261127.py
+        run: python -m pytest -q v13/code/tests/test_core_audio_observer_composition_20261127.py
