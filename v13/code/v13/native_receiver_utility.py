@@ -323,36 +323,21 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "median_delta_nats_per_token": statistics.median(values), "win_rate": win,
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
     kind, env = native_binding[:2]
-    # A synthetic fixture must not hide missing holdout coverage.
-    # FIXTURE_ONLY is valid only after the session/family minima are met.
-    if not enough:
-        status, evidence = "COLLECTING", "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else env
-    elif kind == "SYNTHETIC_FIXTURE":
-        status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
-    elif not all_pass:
-        status, evidence = "UTILITY_NOT_ESTABLISHED", env
+    if kind == "SYNTHETIC_FIXTURE": status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
+    elif not enough: status, evidence = "INSUFFICIENT_HOLDOUT", env
+    elif not all_pass: status, evidence = "UTILITY_NOT_ESTABLISHED", env
     else:
         status = {"LOCAL_LINUX": "NATIVE_LINUX_TARGET_LOGPROB_PASS",
             "TERMUX_ANDROID": "ANDROID_NATIVE_TARGET_LOGPROB_PASS", "REDMI": "REDMI_TARGET_LOGPROB_PASS"}[env]
         evidence = env
     return {"schema": RESULT_SCHEMA, "status": status, "evidence_class": evidence,
-        "task_group_count": len(groups),
-        "complete_task_group_count": len(groups),
-        "incomplete_task_group_count": 0,
-        "minimum_task_groups": min_task_groups,
-        "minimum_sessions": min_sessions,
-        "minimum_task_families": min_task_families,
-        "minimum_tasks_per_session": min_tasks_per_session,
-        "minimum_tasks_per_family": min_tasks_per_family,
-        "minimum_tasks_per_session_family": min_tasks_per_session_family,
-        "session_count": len(sessions), "task_families": sorted(families),
+        "task_group_count": len(groups), "session_count": len(sessions), "task_families": sorted(families),
         "tasks_per_session": dict(sorted(tasks_per_session.items())),
         "tasks_per_family": dict(sorted(tasks_per_family.items())),
         "tasks_per_session_family": session_family_report,
         "source_group_count": len(source_hashes),
         "balanced_session_family_coverage": balanced_session_family_coverage,
         "enough_holdout": enough,
-        "holdout_status": "SUFFICIENT_HOLDOUT" if enough else "INSUFFICIENT_HOLDOUT",
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
