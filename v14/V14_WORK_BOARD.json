@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T06:08:28+01:00",
+  "updated_at": "2026-11-26T07:53:34+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.\nResearch & Perception Run 41: PR #2527 DRAFT, branch research-perception/v14-audio-temporal-window-order-20261126-run41b, head 998a8f02e3011b63581c2888316b4073b589d474; A4 TemporalVoiceEvidence tracks start/end and rejects backward starts. LOCAL_LINUX CPython 3.13.5 exact-blob scratch py_compile PASS, 14/14 focused tests PASS, 10,000 monotonic windows and 1,000 out-of-order rejects PASS. Perception comparator pin updated; exact CI reruns queued. Shared staged-runtime still exposes Core-owned audio source pin mismatch; no Redmi/Android proof, REDMI_UNVERIFIED, NOT_RELEASED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n\n\nResearch & Perception Run 41 (2026-11-26T06:08:28+01:00): #2527 head 998a8f02e3011b63581c2888316b4073b589d474, draft child of #2524 current base b298719af8faf75811d03d486de7725395a590b0. Source blob f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb; test blob fe7a716b4ce88ed2868337deda9f2c454360561b. LOCAL_LINUX exact-blob scratch: py_compile PASS, 14/14 focused tests PASS, 10,000 monotonic windows/1,000 backward-start rejects PASS. Comparator workflow pin refreshed. First exact CI showed stale Perception comparator pin (now corrected) and Core-owned staged-runtime audio source pin mismatch; new runs queued. No mic, Redmi, native model, deployment or release proof; B3 OFF; REDMI_UNVERIFIED.",
@@ -233,19 +233,33 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "After exact CI, merge/integrate PR #2527 only once the Core-owned recovery → stage → RuntimeDeploy audio-source pin chain is refreshed to blob f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb. Then coordinate with Core to add a normal-turn caller/consumer that holds a revocable AudioConsentLease across A4 admission and the complete C3 generator; keep microphone capture OFF until an authorized Android provider and revoke/zeroization path are proven. Do not conflate this A4 chronology fix with B3 or full voice completion.",
+      "proof_environment": "LOCAL_LINUX CPython 3.13.5 scratch unit tests; exact A4/A5 extractor integration test queued in GitHub CI; Android provider NOT_IMPLEMENTED/NOT_VERIFIED.",
+      "next_step": "Poll exact PR #2527 feature-set workflow 45773372374 and shared stage/deploy runs. Core must refresh the recovery → stage → RuntimeDeploy audio-builder source pin to the exact Perception blob, then re-run staged/integrated gates; Perception does not edit Core-owned pin files. After that, wire a normal-turn caller that holds a revocable AudioConsentLease through A4 admission and the complete C3 generator. Keep microphone capture OFF until a real Android provider, OS consent, revocation and zeroization are verified. Treat the feature-set probe as synthetic diagnostic evidence only; next research step is history-aware relative/incremental MI with session-disjoint held-out outcomes, not an attention policy.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26",
+      "last_checkpoint": "2026-11-26T07:53:34+01:00",
       "latest_candidate_pr": {
+        "pr": 2527,
+        "head_sha": "0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5",
+        "base": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "state": "OPEN_DRAFT_CI_PENDING",
+        "scope": "A4 RAW EAR temporal chronology plus a shadow-only source-bound A4/A5 feature-set predictive-information probe; no Runtime, model, learning or microphone authority.",
+        "ci": {
+          "feature_set_probe": "IN_PROGRESS run 45773372374",
+          "raw_ear_comparison": "IN_PROGRESS run 45773372422",
+          "staged_runtime": "IN_PROGRESS run 45773372390",
+          "runtime_deploy": "QUEUED run 45773372351"
+        }
+      },
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n\nRun 41 (#2527 DRAFT): source blob f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb tracks last start/end per source/generation and rejects backward starts before state mutation; equal-start cumulative windows and forward overlaps remain supported. Test blob fe7a716b4ce88ed2868337deda9f2c454360561b. LOCAL_LINUX CPython 3.13.5 exact-blob scratch: py_compile PASS, 14/14 focused tests PASS; old-source negative control DID NOT RAISE; 10,000 monotonic windows and 1,000 out-of-order rejects PASS. First CI found a stale Perception comparator pin (fixed in 998a8f0) and a separate Core-owned staged-runtime audio-source pin mismatch; reruns queued. No normal-turn mic provider, no Android/Redmi proof, NOT_RELEASED.\n\nRun 43 (2026-11-26): PR #2527 head 0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5 adds v14/experiments/audio_feature_set_probe.py, its test and a dedicated Python 3.13/3.14 workflow. The probe accepts FINAL source-bound A5_AUDIO packets with RAW EAR pitch/prosody/activity cues and a separately sourced, later goal/action outcome; it rejects provisional, raw PCM, transcript, cross-generation, duplicate-source and authority-bearing inputs. LOCAL_LINUX CPython 3.13.5: py_compile PASS; 9/9 unit tests PASS, one actual A4/A5 repository integration test skipped because the full checkout is not mounted. On 64 deterministic synthetic records / 2 goals: joint goal-conditioned CMI 1.000 bits, each single-feature CMI 0, goal-only MI 0, joint gain over best single 1.000 bits; 64 within-goal time permutations median 0.05857, p95 0.15711, empirical p=0.01538. These are fixture-only information metrics, not model learning or real user-audio results. New exact CI run 45773372374 is IN_PROGRESS; shared stage 45773372390 IN_PROGRESS; RuntimeDeploy 45773372351 QUEUED. Actual A4 extractor integration is encoded in the CI test, not yet locally executed. No Runtime hook, microphone, Android, GGUF, weights, Redmi or release proof.",
+      "previous_candidate_pr": {
         "pr": 2487,
         "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
         "base": "research-perception/v14-a4-audio-source-outcomes-current-20261124-run16",
         "state": "OPEN_DRAFT_PARTIAL_CI_FAILED",
         "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
         "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
-      },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n\nRun 41 (#2527 DRAFT): source blob f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb tracks last start/end per source/generation and rejects backward starts before state mutation; equal-start cumulative windows and forward overlaps remain supported. Test blob fe7a716b4ce88ed2868337deda9f2c454360561b. LOCAL_LINUX CPython 3.13.5 exact-blob scratch: py_compile PASS, 14/14 focused tests PASS; old-source negative control DID NOT RAISE; 10,000 monotonic windows and 1,000 out-of-order rejects PASS. First CI found a stale Perception comparator pin (fixed in 998a8f0) and a separate Core-owned staged-runtime audio-source pin mismatch; reruns queued. No normal-turn mic provider, no Android/Redmi proof, NOT_RELEASED."
+      }
     },
     {
       "id": "V14-007",
@@ -1439,45 +1453,40 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
-    "timestamp": "2026-11-26T05:25:03+01:00",
+    "timestamp": "2026-11-26T07:53:34+01:00",
     "owner": "Research & Perception",
-    "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
-    "pr": 2524,
-    "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
-    "base_pr": 2519,
-    "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
-    "code_test_sha": "8f7c73065e8f92e5988fe12fa88038dc41ece530",
-    "implementation_commit": "68d90606a312bdda739253664d7a51632715c87c",
-    "test_correction_commits": [
-      "d353faf846a62329f5bac502ecd53ce6662648b6",
-      "8f7c73065e8f92e5988fe12fa88038dc41ece530"
-    ],
-    "status": "DRAFT_FOCUSED_TESTS_GREEN_SHARED_STAGE_BLOCKED_CORE_PIN",
+    "branch": "research-perception/v14-audio-temporal-window-order-20261126-run41b",
+    "pr": 2527,
+    "pr_url": "https://github.com/RedMentos/Aii/pull/2527",
+    "base_pr": 2524,
+    "base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+    "code_test_workflow_head": "0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5",
+    "implementation_commit": "04abfa48429e64c01f561bc502a80e724a221cc5",
+    "test_commit": "5bc0d13ab351701b2d30e2bc4737b7b51bc04672",
+    "workflow_commit": "0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5",
+    "blobs": {
+      "audio_feature_set_probe": "02cd6cdcd04942b144b46bf96134547c6bf91d12",
+      "test_audio_feature_set_probe": "11c6dbcb039ccf369c39580dd6f9fc423cc634f3",
+      "audio_ear": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
+      "audio_percept_contract": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
+      "audio_voice_cues": "b18e450162b062b09368a12b1ca18924ed8c5025",
+      "contracts": "7b21d9c5076015716851b5d432a5730e4e17da92"
+    },
+    "status": "DRAFT_CI_PENDING",
     "tests": {
-      "focused_python_313": "26/26 PASS",
-      "focused_python_314": "26/26 PASS",
-      "native_linux_pinned_build_selftest": "PASS",
-      "android_arm64_cross_compile": "PASS_COMPILE_ONLY",
-      "runtime_deploy_offline_311_314": "PASS",
-      "privacy_scan": "CLEAN",
-      "shared_staged_runtime": "FAIL: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; Core integrated candidate source pin mismatch for v13/native_latent_receiver.py",
-      "integrated_regression": "FAIL: 1 failed; same Core source pin",
-      "local_linux_scratch": "5/5 PASS; CPython 3.13.5",
-      "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable"
+      "local_linux_python_3135": "PASS: py_compile; 9/9 unit tests PASS; 1 actual repository A4/A5 integration test SKIPPED because full checkout is not mounted.",
+      "synthetic_metrics": "64 records, 2 goals; joint goal-conditioned CMI 1.000 bits; single-feature CMI 0; goal-only MI 0; within-goal permutation p=0.01538; shuffled p95 0.15711 bits.",
+      "exact_feature_set_ci": "IN_PROGRESS run 45773372374",
+      "raw_ear_comparison_ci": "IN_PROGRESS run 45773372422",
+      "staged_runtime_ci": "IN_PROGRESS run 45773372390",
+      "runtime_deploy_ci": "QUEUED run 45773372351",
+      "local_full_checkout": "NOT_RUN: no Aii checkout mounted; GitHub DNS unavailable."
     },
-    "consumer": "native_receiver_utility.evaluate_native_receiver_task_utility now consumes read-only K/V snapshot metadata, checks identical-input consistency and geometry, rejects partial coverage, and emits aggregate sampled-state differences; no raw K/V persistence and no change to likelihood utility gate. Core #2523 provides a manual local-TTY one-shot diagnostic producer/consumer, not a normal-turn hook; normal user chat remains unconnected.",
-    "cross_lane_core_pr": {
-      "number": 2523,
-      "head_sha": "241743cfe7728586c3d4e07c88bfc3da1387e04f",
-      "ci": "7/7 workflows SUCCESS",
-      "base_pr": 2519,
-      "status": "MANUAL_DIAGNOSTIC_CI_GREEN_NOT_NORMAL_TURN_NOT_STACKED_ON_2524",
-      "mode": "MANUAL_LOCAL_TTY_DIAGNOSTIC_NOT_NORMAL_TURN"
-    },
-    "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; last available private snapshot is historical 2026-11-24; no device action.",
+    "consumer": "Shadow-only diagnostic consumer of FINAL A5_AUDIO PerceptPackets enriched with A4 RAW EAR cues plus separate later goal/action SourceRef. Not imported by normal Runtime/attention/JEPA; no production attention decision.",
+    "research": "R-165 full-text peer-reviewed feature-gain paper; R-166 abstract-only relative incremental-MI evaluation warning. No code/weights downloaded or reused.",
+    "device": "REDMI_UNVERIFIED; no fresh authenticated receipt; last available V13OBS #115 is historical 2026-11-24 and reports AI STOPPED_BY_USER.",
     "release": "NOT_RELEASED",
-    "research": "R-162 full-text review: When Latent Agents Lie HMAC transport integrity boundary; CacheBridge same-family dense-GQA/GPU limits and project license pending. No code/weights reused.",
-    "next_action": "Core stacks #2523 onto #2524, refresh Core-owned integrated source pins and reruns staged/integrated CI; then separately authorize a >=20-group real-GGUF held-out cohort. B3 remains OFF."
+    "next_action": "Poll exact CI; Core rebinds audio builder source pin and completes normal-turn revocable lease path; Perception then validates an authorized Android provider and temporal information measures on held-out source/session outcomes."
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T01:57:48Z",
