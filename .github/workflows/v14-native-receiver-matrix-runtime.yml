@@ -36,7 +36,8 @@ jobs:
       - name: Run one-shot Runtime consumer regressions
         env:
           PYTHONPATH: v13/code
-        run: python -m pytest -q \
-          v13/code/tests/test_native_receiver_matrix_runtime.py \
-          v13/code/tests/test_native_latent_receiver_runtime.py \
-          v13/code/tests/test_callosum.py
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_native_receiver_matrix_runtime.py \
+            v13/code/tests/test_native_latent_receiver_runtime.py \
+            v13/code/tests/test_callosum.py
