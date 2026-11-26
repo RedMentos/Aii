@@ -382,7 +382,7 @@ def _audio_lease_turn(self, event):
                        {"stage": "pre_turn_revocation_sweep", "error": type(exc).__name__})
         event.pop("_audio_window", None)
         event["_audio_rejection"] = "REVOCATION_SWEEP_FAILED"
-        self.notice("Audioeingabe übersprungen; Einwilligungsstatus konnte nicht sicher geprüft werden.")
+        self.notice("Audio input skipped; consent status could not be verified.")
 
     window = event.get("_audio_window")
     if type(window) is not dict:
@@ -405,7 +405,7 @@ def _audio_lease_turn(self, event):
         event["_audio_rejection"] = "MISSING_REVOCATION_SUBSCRIPTION"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "two_phase_revocation_subscription_required"})
-        self.notice("Audioeingabe übersprungen; der Zwei-Phasen-Widerrufsschutz fehlt.")
+        self.notice("Audio input skipped; two-phase revocation protection is missing.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     def on_revoke_requested():
@@ -438,7 +438,7 @@ def _audio_lease_turn(self, event):
         event["_audio_rejection"] = "REVOCATION_SUBSCRIPTION_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "revocation_subscription", "error": type(exc).__name__})
-        self.notice("Audioeingabe übersprungen; der Widerrufsschutz konnte nicht registriert werden.")
+        self.notice("Audio input skipped; revocation protection could not be registered.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     from .audio_voice_cues import audio_consent_lease
@@ -462,7 +462,7 @@ def _audio_lease_turn(self, event):
         event["_audio_rejection"] = "RUNTIME_CONSENT_LEASE_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "runtime_consent_lease", "error": type(exc).__name__})
-        self.notice("Audioeingabe übersprungen; die Runtime-Einwilligungslease konnte nicht geöffnet werden.")
+        self.notice("Audio input skipped; Runtime consent lease could not be opened.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     window["_consent_lease"] = lease
