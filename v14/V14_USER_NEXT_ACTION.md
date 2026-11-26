@@ -2332,3 +2332,5 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 
 **Next action:** finish Python 3.14 libfvad comparison; Core/QA refresh the stale pins and rerun staged/integrated CI. After that, independently review the Runtime consumer and obtain explicit permission before any microphone/provider or device experiment. No user action required.
 
+
+Coverage overlay added to v14/V14_CANON_COVERAGE_INDEX.md at the Run 53 checkpoint. It records the RAW EAR→A4→ContextOS/C3 candidate as WIRED_SYNTHETIC/DRAFT only; no Android or acceptance promotion.
