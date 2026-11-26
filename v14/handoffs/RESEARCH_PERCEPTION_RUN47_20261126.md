@@ -65,3 +65,17 @@ The new field is part of the existing native receiver task-utility result return
 4. Add a true no-fixed-point unrelated-question donor permutation and generated-answer correctness before any semantic-use or B3 claim.
 
 **User action:** none required now. No model, weight, permission, app, updater or user-data change occurred.
+
+
+
+## Run 47 exact-CI closeout — 2026-11-26
+
+The exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91 completed CI with the following results:
+
+- V14 native latent receiver workflow 45856881120: FAIL at the shared staged Runtime source-tap identity test. Python 3.13 and 3.14 each reported 83 passed / 1 failed in the focused receiver suite. The three new information-use audit regressions passed; the single failure is the stage-composition test failing on the Core-owned observer fairness pin for v13/cognition.py.
+- V13 staged context and integrated regression workflow 45856880943: FAIL, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. The failures converge on the same Core-owned ValueError: observer fairness source changed: v13/cognition.py. Two migration assertions also remain PARTIAL rather than UPDATED.
+- Native build evidence in 45856881120: pinned Linux API build PASS; Android arm64 cross-compile PASS (compile only, not device proof).
+- V13 RuntimeDeploy offline integrity 45856880964: PASS. This does not install or update a phone.
+- Public repository privacy scan in the failing workflow: CLEAN.
+
+This is an integration failure outside the two files changed by Run 47. Do not weaken or bypass the source pin. Core must refresh its recovery/observer source pin chain and rebase #2525 onto the current Perception branch. The information-use code/test slice itself passed in both Python versions.
