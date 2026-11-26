@@ -512,6 +512,9 @@ def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_thro
     assert result["execution_kind"] == "SYNTHETIC_FIXTURE"
     assert result["environment"] == "SYNTHETIC"
     assert result["generated_answer_correctness_proven"] is False
+    assert result["kv_snapshot_count"] == 8
+    assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
+    assert result["kv_snapshot_stable"] is True
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert len(calls) == 1
     assert [item["condition"] for item in calls[0]["condition_inputs"]] == list(CONDITIONS)
