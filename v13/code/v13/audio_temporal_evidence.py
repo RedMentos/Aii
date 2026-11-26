@@ -49,6 +49,82 @@ class TemporalVoiceEvidence:
         self._last_end_ms: int | None = None
         self._evidence = 0.0
         self._active = False
+        # Provisional windows use a reversible shadow state. FINAL windows alone
+        # advance the committed filter state.
+        self._preview_state = None
+        self._preview_signature = None
+        self._preview_result = None
+        self._preview_start_ms = None
+        self._preview_end_ms = None
+        self._preview_revision = 0
+
+    def _clone_committed_state(self) -> "TemporalVoiceEvidence":
+        clone = TemporalVoiceEvidence(
+            attack_tau_ms=self.attack_tau_ms,
+            release_tau_ms=self.release_tau_ms,
+            onset_threshold=self.onset_threshold,
+            offset_threshold=self.offset_threshold,
+            reset_gap_ms=self.reset_gap_ms,
+        )
+        clone._source_id = self._source_id
+        clone._generation_id = self._generation_id
+        clone._last_start_ms = self._last_start_ms
+        clone._last_end_ms = self._last_end_ms
+        clone._evidence = self._evidence
+        clone._active = self._active
+        return clone
+
+    def preview(
+        self,
+        *,
+        source_id: str,
+        generation_id: str,
+        start_ms: int,
+        end_ms: int,
+        cues: dict,
+    ) -> dict:
+        """Evaluate provisional cues without committing temporal evidence.
+
+        Consecutive provisional windows may accumulate in a private preview copy.
+        Repeated identical windows are idempotent; a revised or rewound window is
+        recomputed from the last committed FINAL state. A later FINAL update then
+        commits once, even when it promotes the exact same interval.
+        """
+        if type(cues) is not dict:
+            raise ValueError("cues must be an object")
+        signature = (
+            source_id, generation_id, start_ms, end_ms,
+            cues.get("activity_hint"), cues.get("activity_score"),
+        )
+        if self._preview_state is not None and signature == self._preview_signature:
+            return dict(self._preview_result)
+
+        rebuild = self._preview_state is None
+        if not rebuild:
+            rebuild = (
+                self._preview_start_ms is None
+                or self._preview_end_ms is None
+                or start_ms < self._preview_start_ms
+                or end_ms <= self._preview_end_ms
+            )
+        candidate = self._clone_committed_state() if rebuild else self._preview_state
+        result = candidate.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            start_ms=start_ms,
+            end_ms=end_ms,
+            cues=cues,
+        )
+        result = dict(result)
+        result["preview_only"] = True
+        result["preview_revision"] = self._preview_revision + 1
+        self._preview_state = candidate
+        self._preview_signature = signature
+        self._preview_result = dict(result)
+        self._preview_start_ms = start_ms
+        self._preview_end_ms = end_ms
+        self._preview_revision += 1
+        return result
 
     def update(
         self,
@@ -148,6 +224,13 @@ class TemporalVoiceEvidence:
         self._last_end_ms = end_ms
         self._evidence = max(0.0, min(1.0, evidence))
         self._active = active
+        # A committed FINAL update supersedes all provisional preview history.
+        self._preview_state = None
+        self._preview_signature = None
+        self._preview_result = None
+        self._preview_start_ms = None
+        self._preview_end_ms = None
+        self._preview_revision = 0
         return {
             "method": self.METHOD,
             "voice_evidence": round(self._evidence, 6),
@@ -161,6 +244,8 @@ class TemporalVoiceEvidence:
             "elapsed_ms": elapsed_ms,
             "state_reset": reset_reason is not None,
             "reset_reason": reset_reason,
+            "preview_only": False,
+            "preview_revision": 0,
         }
 
 
@@ -191,6 +276,30 @@ class TemporalVoiceEvidenceRegistry:
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
             result = state.update(
+                source_id=source_id, generation_id=generation_id,
+                start_ms=start_ms, end_ms=end_ms, cues=cues,
+            )
+            for old_key in list(self._states):
+                if old_key[0] == source_id and old_key[1] != generation_id:
+                    del self._states[old_key]
+            self._states.pop(key, None)
+            self._states[key] = state
+            while len(self._states) > self.max_streams:
+                self._states.popitem(last=False)
+            return result
+
+    def preview(self, *, source_id: str, generation_id: str,
+                start_ms: int, end_ms: int, cues: dict) -> dict:
+        if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
+            raise ValueError("source_id is invalid")
+        if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
+            raise ValueError("generation_id is invalid")
+        key = (source_id, generation_id)
+        with self._lock:
+            state = self._states.get(key)
+            if state is None:
+                state = TemporalVoiceEvidence(**self._state_options)
+            result = state.preview(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
             )

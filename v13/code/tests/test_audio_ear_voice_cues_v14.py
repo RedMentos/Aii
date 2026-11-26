@@ -1231,3 +1231,76 @@ def test_outer_audio_lease_is_thread_bound_and_nonserializable(tmp_path):
             assert RECEIPT not in repr(lease)
     finally:
         runtime.store.close()
+
+
+def test_provisional_audio_window_can_be_promoted_to_final_same_window(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    state = TemporalVoiceEvidence()
+    pcm = tone(140, sample_rate=16000, seconds=0.08)
+    try:
+        provisional = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="PROVISIONAL", token_budget=512, temporal_state=state,
+        )
+        assert provisional["a4"]["finality"] == "PROVISIONAL"
+        assert provisional["a4"]["temporal_state_mode"] == "PREVIEW_ONLY"
+        assert provisional["a4"]["temporal_voice"]["preview_only"] is True
+        assert state._last_end_ms is None
+        assert provisional["c3_admission"].status == "EMPTY_OR_UNAUTHORIZED"
+
+        final = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512, temporal_state=state,
+        )
+        assert final["a4"]["finality"] == "FINAL"
+        assert final["a4"]["temporal_state_mode"] == "COMMITTED"
+        assert final["a4"]["temporal_voice"]["preview_only"] is False
+        assert state._last_end_ms == 180
+        assert final["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 2
+        assert a4_receipt_count(runtime.store, event["event_id"]) == 2
+        assert attention_count(runtime.store, event["event_id"]) == 2
+    finally:
+        runtime.store.close()
+
+
+def test_provisional_audio_does_not_advance_stateful_vad_or_speaker_registry(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    calls = []
+
+    def forbidden_vad_push(self, *args, **kwargs):
+        calls.append("vad")
+        raise AssertionError("provisional windows must not advance stateful VAD")
+
+    class ForbiddenSpeakerRegistry:
+        def update(self, **kwargs):
+            calls.append("speaker")
+            raise AssertionError("provisional windows must not advance speaker lookback")
+
+    monkeypatch.setattr(SileroVADStream, "push_pcm16", forbidden_vad_push)
+    monkeypatch.setattr(
+        audio_voice_cues_module, "_runtime_speaker_evidence_registry",
+        lambda runtime: ForbiddenSpeakerRegistry(),
+    )
+    vad_stream = object.__new__(SileroVADStream)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140, sample_rate=16000, seconds=0.08),
+            sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="PROVISIONAL", token_budget=512, vad_stream=vad_stream,
+            speaker_embeddings={"fixture": [0.1, 0.2]},
+        )
+        assert calls == []
+        assert result["a4"]["temporal_state_mode"] == "PREVIEW_ONLY"
+        assert "VAD" in result["packet"]["segments"][0]["unmeasured"]
+    finally:
+        runtime.store.close()

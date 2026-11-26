@@ -727,6 +727,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if type(finality) is not str or finality not in {"FINAL", "PROVISIONAL"}:
+        raise ValueError("finality must be FINAL or PROVISIONAL")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -739,7 +741,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         segment = raw["segments"][0]
         cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
-        if vad_stream is not None:
+        # Stateful VAD advances only on FINAL windows. Provisional windows still
+        # feed immediate RAW EAR cues and A4 attention, but cannot consume a frame
+        # that will later be promoted and replayed as FINAL.
+        if vad_stream is not None and finality == "FINAL":
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
                 stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
@@ -761,7 +766,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
-        if speaker_embeddings is not None:
+        # Speaker lookback is stateful too; defer it until FINAL so a provisional
+        # window and its later promotion cannot count the same embedding twice.
+        if speaker_embeddings is not None and finality == "FINAL":
             try:
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
@@ -790,6 +797,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
                 or speaker_change_decision == "DEFER"):
             audio_segment["unmeasured"].append("speaker_change")
+        if vad_stream is not None and finality == "PROVISIONAL":
+            audio_segment["unmeasured"].append("VAD")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -811,24 +820,21 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             runtime, audio_packet, lease_active=lease_active,
         )
 
+        provisional = finality == "PROVISIONAL"
         if temporal_state is None:
-            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
+            temporal_registry = _runtime_temporal_voice_registry(runtime)
+            temporal_update = temporal_registry.preview if provisional else temporal_registry.update
         else:
             if not isinstance(temporal_state, TemporalVoiceEvidence):
                 raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-            temporal_voice = temporal_state.update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
+            temporal_update = temporal_state.preview if provisional else temporal_state.update
+        temporal_voice = temporal_update(
+            source_id=source_id,
+            generation_id=generation_id,
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            cues=cues,
+        )
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
@@ -885,6 +891,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "temporal_state_mode": "PREVIEW_ONLY" if provisional else "COMMITTED",
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,

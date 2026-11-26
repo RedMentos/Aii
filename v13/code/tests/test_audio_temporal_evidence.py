@@ -259,3 +259,68 @@ def test_integrated_audio_context_candidate_pins_current_temporal_voice_blob():
         b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
     assert module.SOURCE_BLOBS["v13/audio_temporal_evidence.py"] == actual_blob
+
+
+def test_provisional_preview_accumulates_without_committing_and_final_promotes():
+    state = TemporalVoiceEvidence()
+    first = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    repeated = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert repeated == first
+    assert first["preview_only"] is True
+    assert first["preview_revision"] == 1
+    assert state._last_end_ms is None
+
+    second = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80,
+        cues=cue("VOICED"),
+    )
+    assert second["voice_onset"] is True
+    assert second["preview_revision"] == 2
+    assert state._last_end_ms is None
+
+    final = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=80,
+        cues=cue("VOICED"),
+    )
+    assert final["preview_only"] is False
+    assert state._last_end_ms == 80
+    assert state._preview_state is None
+
+
+def test_revised_provisional_window_rebuilds_from_committed_state():
+    state = TemporalVoiceEvidence()
+    state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    revised = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("SILENCE"),
+    )
+    assert revised["preview_only"] is True
+    assert revised["voice_evidence"] == 0.0
+    assert state._last_end_ms is None
+
+
+def test_registry_preview_is_shadow_only_until_final_update():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=2)
+    provisional = registry.preview(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+    state = registry._states[("mic-a", "g1")]
+    assert provisional["preview_only"] is True
+    assert state._last_end_ms is None
+
+    final = registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+    assert final["preview_only"] is False
+    assert state._last_end_ms == 140
