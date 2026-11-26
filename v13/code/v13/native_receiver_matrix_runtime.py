@@ -531,6 +531,293 @@ def _run(runtime):
             runtime._native_receiver_matrix_staged_at = None
 
 
+
+def _json_sha(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _f32_sha(rows):
+    flat = [float(value) for row in rows for value in row]
+    return hashlib.sha256(struct.pack("<" + "f" * len(flat), *flat)).hexdigest()
+
+
+def _matrix_token_ids(response, label, minimum, maximum):
+    if not isinstance(response, dict) or not isinstance(response.get("tokens"), list):
+        raise NativeReceiverMatrixRuntimeError(label + " tokenizer response is malformed")
+    items = response["tokens"]
+    if not minimum <= len(items) <= maximum:
+        raise NativeReceiverMatrixRuntimeError(label + " token count is outside the diagnostic bound")
+    result = []
+    for item in items:
+        if not isinstance(item, dict) or set(item) != {"id", "piece"}:
+            raise NativeReceiverMatrixRuntimeError(label + " token item is not canonical")
+        token_id, piece = item["id"], item["piece"]
+        if type(token_id) is not int or not 0 <= token_id <= 2147483647:
+            raise NativeReceiverMatrixRuntimeError(label + " contains an invalid token ID")
+        if not (type(piece) is str or (isinstance(piece, list) and piece
+                and all(type(value) is int and 0 <= value <= 255 for value in piece))):
+            raise NativeReceiverMatrixRuntimeError(label + " contains an invalid token piece")
+        result.append(token_id)
+    return result
+
+
+def _matrix_record_by_prefix(records, prefix, label):
+    if (type(prefix) is not str or not 8 <= len(prefix) <= 64
+            or any(ch not in "0123456789abcdef" for ch in prefix)):
+        raise ValueError(label + " record prefix must be 8..64 lowercase hexadecimal characters")
+    matches = [item for item in records if isinstance(item, Mapping)
+               and type(item.get("record_sha256")) is str
+               and item["record_sha256"].startswith(prefix)]
+    if len(matches) != 1:
+        raise ValueError(label + " prefix must identify exactly one in-memory pair record")
+    return dict(matches[0])
+
+
+def _matrix_entity_byte_span(original_text, alternate_text):
+    if type(original_text) is not str or type(alternate_text) is not str:
+        raise ValueError("entity-control source text is unavailable")
+    original = original_text.encode("utf-8", errors="strict")
+    alternate = alternate_text.encode("utf-8", errors="strict")
+    if len(original) != len(alternate):
+        raise ValueError("entity control must preserve exact UTF-8 byte length")
+    left = 0
+    while left < len(original) and original[left] == alternate[left]:
+        left += 1
+    right = len(original)
+    while right > left and original[right - 1] == alternate[right - 1]:
+        right -= 1
+    if left == right:
+        raise ValueError("entity control has no source-byte change")
+    return [[left, right]]
+
+
+def _capture_matrix_bos_and_target(runtime, sender_role, receiver_role, pair_record, source_text, target_text):
+    """Use a separate INPUT_EMBEDDING_TAP approval for the BOS row and target IDs."""
+    from . import native_input_embedding_capture as input_capture
+    from .native_input_embedding_extractor import extract_native_input_embedding_rows
+
+    event, source_ref = approval._current_event(runtime)
+    if (event.get("event_id") != pair_record.get("event_id")
+            or event.get("brain_generation_id") != pair_record.get("brain_generation_id")
+            or _source_key(source_ref, "current task") != _source_key(pair_record.get("source_ref"), "main pair")
+            or runtime.store.read_source(source_ref) != source_text):
+        raise PermissionError("matrix task no longer matches the current authoritative Runtime source")
+
+    with approval.runtime_probe_lease(runtime) as lease_token:
+        approval.consume(
+            runtime, sender_role, receiver_role, event, source_ref,
+            lease_token=lease_token, probe_kind="INPUT_EMBEDDING_TAP",
+        )
+        model_binding = approval._model_binding(runtime, receiver_role)
+        receiver = pair_record["receiver"]
+        if (model_binding.get("revision") != receiver.get("model_revision")
+                or model_binding.get("sha256") != receiver.get("model_sha256")):
+            raise PermissionError("installed receiver model differs from the captured pair record")
+        approval._resource_preflight(runtime, model_binding)
+        deadline = time.monotonic() + 120.0
+        runner = runtime.pool.get_tap(receiver_role)
+        try:
+            runner.load(runtime.cancel_event, deadline)
+            special = runner._json(
+                "POST", "/tokenize",
+                {"content": source_text, "add_special": True, "parse_special": False, "with_pieces": True},
+                deadline, timeout_cap=None,
+            )
+            target = runner._json(
+                "POST", "/tokenize",
+                {"content": target_text, "add_special": False, "parse_special": False, "with_pieces": True},
+                deadline, timeout_cap=None,
+            )
+        finally:
+            input_capture._unload_pool(runtime)
+
+        special_ids = _matrix_token_ids(special, "BOS/source", 3, 66)
+        receiver_ids = receiver.get("token_ids")
+        if (not isinstance(receiver_ids, list)
+                or special_ids[1:1 + len(receiver_ids)] != receiver_ids):
+            raise NativeReceiverMatrixRuntimeError(
+                "receiver tokenizer BOS+content sequence differs from the captured pair record"
+            )
+        target_ids = _matrix_token_ids(target, "generated answer target", 1, MAX_TARGET_TOKENS)
+
+        def prepare_idle():
+            if runtime.cancel_event.is_set():
+                raise InterruptedError("matrix BOS extraction was cancelled")
+            if (getattr(runtime, "current", None) != "probe"
+                    or not getattr(runtime, "_native_probe_active", False)
+                    or getattr(runtime, "_native_probe_lease_nonce", None) != lease_token):
+                raise PermissionError("matrix BOS extraction lost its exclusive Runtime lease")
+            if runtime.stop.is_set() or not runtime.jobs.empty():
+                raise PermissionError("matrix BOS extraction Runtime is stopping or has queued work")
+            if runtime.store.queue_stats().get("count", 0) != 0:
+                raise PermissionError("matrix BOS extraction Runtime queue is not empty")
+            if input_capture._managed_pids(runtime):
+                raise PermissionError("managed native model processes remain before BOS extraction")
+            approval._resource_preflight(runtime, model_binding)
+
+        remaining = int(deadline - time.monotonic())
+        if remaining < 1:
+            raise TimeoutError("matrix BOS extraction deadline expired")
+        extracted = extract_native_input_embedding_rows(
+            Path(runtime.home) / "bin" / "native_input_embedding_extractor",
+            Path(model_binding["canonical_path"]), model_binding["revision"],
+            [special_ids[0], special_ids[1]],
+            model_root=Path(runtime.home) / "models",
+            expected_model_sha256=model_binding["sha256"],
+            prepare_idle=prepare_idle, timeout_seconds=min(120, remaining),
+        )
+        if (not isinstance(extracted, dict) or extracted.get("status") != "COMPLETE"
+                or not isinstance(extracted.get("rows"), list) or len(extracted["rows"]) != 2
+                or not isinstance(extracted.get("receipt"), dict)):
+            raise NativeReceiverMatrixRuntimeError("native BOS extractor returned no complete two-row result")
+        bos_rows = [extracted["rows"][0]]
+        if (len(bos_rows[0]) != receiver.get("embedding_dim") or not bos_rows[0]
+                or any(type(value) not in (int, float) for value in bos_rows[0])):
+            raise NativeReceiverMatrixRuntimeError("native BOS row geometry differs from the receiver manifest")
+        event_after, source_after = approval._current_event(runtime)
+        if (event_after != event or source_after != source_ref
+                or runtime.store.read_source(source_ref) != source_text
+                or approval._model_binding(runtime, receiver_role) != model_binding):
+            raise PermissionError("task source or installed receiver model changed during BOS extraction")
+        baseline = {
+            "token_kind": "BOS", "token_id": special_ids[0], "rows": bos_rows,
+            "receiver_model_sha256": receiver["model_sha256"],
+            "receiver_tap_id": receiver["tap_id"],
+            "tokenizer_revision": receiver["tokenizer_revision"],
+            "extractor_receipt_sha256": _json_sha(extracted["receipt"]),
+            "input_sha256": _f32_sha(bos_rows), "input_rows": 1,
+            "input_dim": len(bos_rows[0]), "source_ref": dict(source_ref),
+            "event_id": event["event_id"], "brain_generation_id": event["brain_generation_id"],
+        }
+        del extracted
+        return baseline, target_ids
+
+
+def _build_matrix_from_runtime(runtime, args):
+    usage = (
+        "usage: :callosum matrix-build <task-family> <ood-family> <entity-family> "
+        "<ood-record-sha-prefix> <entity-record-sha-prefix> --confirm; "
+        "first arm INPUT_EMBEDDING_TAP for the same B1/B2 sender and receiver"
+    )
+    if len(args) != 7 or args[0] != "matrix-build" or args[6] != "--confirm":
+        raise ValueError(usage)
+    approval._require_local_tty()
+    runtime.require_idle()
+    if getattr(runtime, "_native_receiver_condition_matrix", None) is not None:
+        raise PermissionError("clear the already-staged matrix before building another")
+    task_family, ood_family, entity_family = args[1:4]
+    if (task_family not in TASK_FAMILIES or ood_family not in TASK_FAMILIES
+            or entity_family not in TASK_FAMILIES or entity_family != task_family
+            or ood_family == task_family):
+        raise ValueError("task/entity families must match and OOD family must differ")
+
+    candidate = getattr(runtime, "_native_tokenwise_candidate", None)
+    if not isinstance(candidate, dict):
+        raise ValueError("no source-disjoint tokenwise alignment candidate is staged")
+    adapter, main_raw = candidate.get("adapter"), candidate.get("record")
+    manifest, cohort = candidate.get("fit_manifest"), candidate.get("cohort_records")
+    if (not isinstance(adapter, dict) or adapter.get("projection_scope") != "TOKENWISE"
+            or adapter.get("status") != "ALIGNMENT_CANDIDATE"
+            or adapter.get("production_route") is not False
+            or adapter.get("semantic_use_proven") is not False
+            or adapter.get("training_authority") != 0 or adapter.get("native_receiver_authority") != 0
+            or not isinstance(manifest, dict) or manifest.get("session_disjoint") is not True
+            or manifest.get("source_disjoint") is not True
+            or not isinstance(cohort, list) or not 3 <= len(cohort) <= 8):
+        raise ValueError("candidate lacks its bounded source/session-disjoint control cohort")
+    holdout_sessions, record_hashes = manifest.get("holdout_session_ids"), manifest.get("record_sha256s")
+    if (not isinstance(holdout_sessions, list) or runtime.session not in holdout_sessions
+            or not isinstance(record_hashes, list)):
+        raise ValueError("current Runtime session is not part of the candidate's held-out cohort")
+
+    from . import native_tokenwise_pairing
+    def checked_record(value, label):
+        try:
+            checked = native_tokenwise_pairing._validate_native_pair_record(value)
+        except Exception as exc:
+            raise ValueError(label + " pair record failed native source/manifest validation") from exc
+        if (checked.get("status") != "PAIRED_DIAGNOSTIC" or checked.get("persisted") is not False
+                or checked.get("production_route") is not False or checked.get("semantic_use_proven") is not False
+                or checked.get("training_authority") != 0 or checked.get("native_receiver_authority") != 0):
+            raise ValueError(label + " pair record carries unsupported authority")
+        if (checked.get("session_id") != runtime.session
+                or checked.get("record_sha256") not in record_hashes
+                or checked.get("session_id") not in holdout_sessions):
+            raise ValueError(label + " record is not in the current held-out session/cohort")
+        return dict(checked)
+
+    main = checked_record(main_raw, "main")
+    ood_record = checked_record(_matrix_record_by_prefix(cohort, args[4], "OOD"), "OOD")
+    entity_record = checked_record(_matrix_record_by_prefix(cohort, args[5], "entity"), "entity")
+    if (len({main["record_sha256"], ood_record["record_sha256"], entity_record["record_sha256"]}) != 3
+            or len({main["source_ref"]["source_id"], ood_record["source_ref"]["source_id"],
+                    entity_record["source_ref"]["source_id"]}) != 3
+            or len({main["source_ref"]["sha256"], ood_record["source_ref"]["sha256"],
+                    entity_record["source_ref"]["sha256"]}) != 3):
+        raise ValueError("main, OOD and entity controls must use three distinct source records")
+    if (main.get("sender") != ood_record.get("sender") or main.get("sender") != entity_record.get("sender")
+            or main.get("receiver") != ood_record.get("receiver")
+            or main.get("receiver") != entity_record.get("receiver")):
+        raise ValueError("control pair records use different sender/receiver model bindings")
+
+    event, source_ref = approval._current_event(runtime)
+    if (main.get("event_id") != event.get("event_id")
+            or main.get("brain_generation_id") != event.get("brain_generation_id")
+            or _source_key(main.get("source_ref"), "main pair") != _source_key(source_ref, "current task")):
+        raise PermissionError("held-out main pair is not the current completed Runtime task")
+    source_text = runtime.store.read_source(source_ref)
+    answer = runtime.last_answer()
+    if (not answer or answer.get("status") != "FINAL" or answer.get("event_id") != event.get("event_id")
+            or type(answer.get("text")) is not str or not answer["text"].strip()):
+        raise ValueError("matrix target requires the current task's FINAL assistant output")
+    entity_text = runtime.store.read_source(entity_record["source_ref"])
+    runtime.store.read_source(ood_record["source_ref"])
+    entity_spans = _matrix_entity_byte_span(source_text, entity_text)
+
+    baseline, target_ids = _capture_matrix_bos_and_target(
+        runtime, main["sender"]["role"], main["receiver"]["role"], main, source_text, answer["text"],
+    )
+    candidate_packet = native_tokenwise_pairing.build_anchor_preserving_native_receiver_input(adapter, main)
+    ood_packet = native_tokenwise_pairing.build_anchor_preserving_native_receiver_input(adapter, ood_record)
+    entity_packet = native_tokenwise_pairing.build_anchor_preserving_native_receiver_input(adapter, entity_record)
+    task = {
+        "task_group_id": main["event_id"], "task_family": task_family,
+        "session_id": runtime.session, "source_text": source_text, "target_token_ids": target_ids,
+    }
+    ood_control = {
+        "task_group_id": ood_record["event_id"], "task_family": ood_family,
+        "session_id": runtime.session, "record": ood_record, "candidate_packet": ood_packet,
+    }
+    entity_control = {
+        "task_group_id": entity_record["event_id"], "task_family": entity_family,
+        "session_id": runtime.session, "record": entity_record,
+        "candidate_packet": entity_packet, "source_text": entity_text,
+        "entity_byte_spans": entity_spans,
+    }
+    staged = build_and_stage_native_receiver_matrix(
+        runtime, task=task, pair_record=main, baseline_packet=baseline,
+        candidate_packet=candidate_packet, ood_control=ood_control, entity_control=entity_control,
+    )
+    runtime._native_receiver_matrix_target_kind = "SELF_GENERATED_FINAL_OUTPUT"
+    runtime._native_receiver_matrix_target_event_id = event["event_id"]
+    runtime._native_receiver_matrix_task_family_source = "LOCAL_OPERATOR_ASSERTION"
+    runtime._native_receiver_matrix_family_labels = {
+        "task": task_family, "ood": ood_family, "entity": entity_family,
+    }
+    return dumps({
+        **staged, "target_kind": runtime._native_receiver_matrix_target_kind,
+        "target_source": "CURRENT_FINAL_ASSISTANT_OUTPUT",
+        "generated_answer_correctness_proven": False,
+        "task_family_source": runtime._native_receiver_matrix_task_family_source,
+        "task_family_labels": dict(runtime._native_receiver_matrix_family_labels),
+        "entity_span_source": "DERIVED_COMMON_PREFIX_SUFFIX_UTF8_BYTES",
+        "baseline_source": "PINNED_NATIVE_RECEIVER_BOS_INPUT_EMBEDDING",
+        "vectors_persisted": False, "production_route": False, "semantic_use_proven": False,
+        "training_authority": 0, "native_receiver_authority": 0,
+    })
+
+
 def _status(runtime):
     matrix = getattr(runtime, "_native_receiver_condition_matrix", None)
     staged = None
@@ -574,6 +861,11 @@ def _status(runtime):
         "semantic_use_proven": False,
         "training_authority": 0,
         "native_receiver_authority": 0,
+        "target_kind": getattr(runtime, "_native_receiver_matrix_target_kind", None),
+        "target_event_id": getattr(runtime, "_native_receiver_matrix_target_event_id", None),
+        "task_family_source": getattr(runtime, "_native_receiver_matrix_task_family_source", None),
+        "task_family_labels": getattr(runtime, "_native_receiver_matrix_family_labels", None),
+        "generated_answer_correctness_proven": False if getattr(runtime, "_native_receiver_matrix_target_kind", None) else None,
     }
 
 
@@ -592,11 +884,17 @@ def _clear(runtime):
     runtime._native_receiver_matrix_target_token_ids = None
     runtime._native_receiver_matrix_pair_record = None
     runtime._native_receiver_matrix_staged_at = None
+    runtime._native_receiver_matrix_target_kind = None
+    runtime._native_receiver_matrix_target_event_id = None
+    runtime._native_receiver_matrix_task_family_source = None
+    runtime._native_receiver_matrix_family_labels = None
     return {"schema": SCHEMA, "status": "CLEARED", "matrix_was_staged": matrix is not None}
 
 
 def operator_command(runtime, args):
     """Local-TTY commands for the staged native receiver matrix consumer."""
+    if args and args[0] == "matrix-build":
+        return _build_matrix_from_runtime(runtime, args)
     if args == ["matrix-status"]:
         return dumps(_status(runtime))
     if args == ["matrix-arm", "--confirm"]:
@@ -610,6 +908,6 @@ def operator_command(runtime, args):
     if args == ["matrix-clear", "--confirm"]:
         return dumps(_clear(runtime))
     raise ValueError(
-        ":callosum matrix-status|matrix-arm --confirm|matrix-run --confirm|"
-        "matrix-revoke --confirm|matrix-clear --confirm"
+        ":callosum matrix-build <task-family> <ood-family> <entity-family> <ood-record-sha-prefix> <entity-record-sha-prefix> --confirm|"
+        "matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm"
     )
