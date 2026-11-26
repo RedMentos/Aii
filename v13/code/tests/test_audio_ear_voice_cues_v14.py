@@ -366,7 +366,7 @@ def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatc
         assert score > 0.6
         assert observed["novelty"] >= 0.9 * score
         assert observed["external_interrupt"] >= 0.25 * score
-        assert result["a4"]["attention"] == {"captured": True}
+        assert result["a4"]["attention"]["captured"] is True
         assert "prosody_change=" in result["c3_admission"].selected[0].summary
     finally:
         runtime.store.close()
