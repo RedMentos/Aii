@@ -218,8 +218,8 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
+        b"provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))",
         b"provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))",
-        b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))",
         "Context OS audio provenance",
     )
     runtime = _replace(
