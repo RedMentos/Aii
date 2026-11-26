@@ -120,6 +120,7 @@ def _runtime_native_template_receipts(report, selected, events):
         rendered_sha = witness.get("rendered_prompt_sha256")
         if (witness.get("native_prompt_render_match") is not True
                 or type(prompt_sha) is not str or len(prompt_sha) != 64
+                or any(char not in "0123456789abcdef" for char in prompt_sha)
                 or rendered_sha != prompt_sha
                 or type(witness.get("rendered_prompt_chars")) is not int
                 or witness["rendered_prompt_chars"] <= 0):
