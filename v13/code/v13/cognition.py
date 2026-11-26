@@ -189,6 +189,12 @@ class Cognition:
         from . import native_latent_receiver as native
         from . import native_probe_approval as approval
 
+        if (not isinstance(e, dict) or not isinstance(source_ref, dict)
+                or source_ref != e.get("source_ref")
+                or not isinstance(e.get("event_id"), str)
+                or not isinstance(e.get("brain_generation_id"), str)
+                or not isinstance(source_ref.get("source_id"), str)):
+            raise PermissionError("native receiver event/source binding is invalid")
         lease_token = getattr(self.r, "_native_probe_lease_nonce", None)
         approval._require_runtime_probe_lease(self.r, lease_token)
         approval_record, _ = self.s.state(approval.KEY, None)
@@ -198,17 +204,12 @@ class Cognition:
                 or approval_record.get("runtime_nonce") != approval._runtime_nonce(self.r)
                 or approval_record.get("sender_role") != sender_role
                 or approval_record.get("receiver_role") != receiver_role
-                or approval_record.get("event_id") != e.get("event_id")
-                or approval_record.get("brain_generation_id") != e.get("brain_generation_id")
+                or approval_record.get("event_id") != e["event_id"]
+                or approval_record.get("brain_generation_id") != e["brain_generation_id"]
                 or approval_record.get("source_ref") != source_ref
                 or approval_record.get("session_id") != self.r.session
                 or approval_record.get("input_mode") == "LATENT_PREFIX_V1"):
             raise PermissionError("native receiver requires a consumed matching token-prefill approval")
-        if (not isinstance(e, dict) or not isinstance(source_ref, dict)
-                or source_ref != e.get("source_ref")
-                or not isinstance(e.get("event_id"), str)
-                or not isinstance(e.get("brain_generation_id"), str)):
-            raise PermissionError("native receiver event/source binding is invalid")
         self.s.read_source(source_ref)
 
         sender_binding = approval._model_binding(self.r, sender_role)
