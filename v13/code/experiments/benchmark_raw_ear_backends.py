@@ -9,6 +9,7 @@ Run from v13/code:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import platform
@@ -118,8 +119,12 @@ def benchmark_speaker_tracker(iterations):
         vector = [rng.uniform(-1.0, 1.0) for _ in range(192)]
         vectors.append(vector)
     batches = []
+    current_chunk_hashes = []
     for index in range(iterations):
         start_ms = 1000 + index * 1000
+        synthetic_pcm = tone(frequency=140.0 + index, seconds=1.0)
+        current_chunk_sha256 = hashlib.sha256(synthetic_pcm).hexdigest()
+        current_chunk_hashes.append(current_chunk_sha256)
         frames = [
             {"end_ms": start_ms + offset * 80, "vector": vectors[offset % len(vectors)]}
             for offset in range(1, 13)
@@ -131,6 +136,7 @@ def benchmark_speaker_tracker(iterations):
             "model_id": "synthetic:192d",
             "model_revision": "fixture-v1",
             "model_sha256": "a" * 64,
+            "current_chunk_sha256": current_chunk_sha256,
             "embedding_dim": 192,
             "frame_step_ms": 80,
             "lookback_frames": 10,
@@ -149,6 +155,7 @@ def benchmark_speaker_tracker(iterations):
             generation_id="benchmark:generation",
             start_ms=start_ms,
             end_ms=start_ms + 1000,
+            current_chunk_sha256=current_chunk_hashes[index],
             activity_hint="VOICED",
             embeddings=batches[index],
         )

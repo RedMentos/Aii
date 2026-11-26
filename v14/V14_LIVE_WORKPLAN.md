@@ -1,3 +1,16 @@
+## Research & Perception — RAW EAR next-delta prediction checkpoint (2026-11-25)
+
+- **Candidate:** PR #2498, branch research-perception/v14-raw-ear-next-delta-20261125-run13, stacked on current research base PR #2496. Code checkpoint SHA 58aee47736ddddde7d19c390bd878b37481f5fe1; subsequent research-ledger sync is separate. This is not a release branch or phone deployment.
+- **Connected path:** new v13/code/v13/audio_temporal_prediction.py is called by the existing audio_voice_cues.py consumer. It predicts the next absolute delta of eight continuous RAW EAR cues plus five activity-class indicators (13 dimensions, 182 LMS parameters). The process-local registry is bounded to 16 source/generation streams and consent-hash scoped; FINAL only; PROVISIONAL ignored; reset on consent rotation, source/generation reset, gap/chronology break, eviction and explicit teardown/revocation.
+- **Consumer effect:** only a capped 0.10 contribution to A4 novelty. external_interrupt, speaker evidence, C3 summary, PerceptPacket payload, truth/action authority and persistent model weights are unchanged. No PCM, transcript, speaker embedding or training example is persisted. This is not NAPE, JEPA, EMA or persistent body-weight learning.
+- **Local evidence:** LOCAL_LINUX isolated CPython 3.13.5 copy: py_compile PASS, 10/10 unit tests PASS. 10,000 updates ~0.74–0.84 s; 182 parameters; one stream's weight rows/list storage ~6.8 KB. This is an isolated module test/microbenchmark, not a full Aii checkout or Android measurement.
+- **Exact CI:** PR #2498 RAW EAR fastpath: 126 tests PASS on Python 3.13 and 3.14; py_compile, synthetic benchmark and public-content privacy scan PASS. First VAD-comparison run failed only because its exact audio_voice_cues.py blob pin still named the pre-change blob; the comparison workflow was rebound to blob a8fc1ab23b79231b44738892e3c120771c072687. Exact compare rerun and staged/integrated CI were pending at this checkpoint; do not call them passed.
+- **Research:** R-142 records the full NAPE arXiv review (20 Aug 2026 preprint) and OSS audit. NAPE-S is ~19M, but the paper's pretraining used AudioSet and 46-GB L40S GPUs; repository README MIT badge conflicts with Apache-2.0 LICENSE and no separate checkpoint license was verified. No code or weights reused.
+- **Canon/evidence:** A3 audio temporal prediction → A4 attention/salience on the existing caller-supplied PCM16 RAW EAR path. Classification remains CODE_CONNECTED / WIRED_SYNTHETIC_PENDING_EXACT_COMPARE; no held-out acoustic cohort, Android AudioRecord provider, Termux/Redmi measurement or native microphone proof. REDMI_UNVERIFIED; NOT_RELEASED.
+- **Next:** finish exact compare and staged/integrated CI; fix only observed failures without weakening source pins. Then add a frozen-weight held-out cohort against persistence/no-predictor/shuffled-cue controls. Reconcile with QA's Android AudioRecord provider only after its explicit permission/receipt contract exists. No user action is required.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
@@ -1328,3 +1341,58 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+## Research & Perception Run 23 — RAW EAR omission/negative prediction error (2026-11-25)
+
+- Extended existing PR #2498 on `research-perception/v14-raw-ear-next-delta-20261125-run13`. `audio_temporal_prediction.py` now exposes signed prediction error, negative/omission magnitude and commission magnitude. `predictive_omission_novelty()` provides a capped 0.10 signal only for SHADOW_MEASURED FINAL-window predictions. `audio_voice_cues.py` routes that signal into A4 novelty only; external_interrupt, C3 summary, speaker identity, source truth, action and learning authority are unchanged.
+- Added two tests to `test_audio_temporal_prediction.py` plus a PROVISIONAL zero-omission assertion. They check a predicted transition that fails to occur, bounded A4 novelty, routing into A4 and unchanged external_interrupt versus a disabled-predictor control.
+- Commits: predictor `8839946f17973c1a7bd238a60e3173e3f6005815`; A4 consumer `68192953fb3f91163f1488eea095b2e396631dce`; tests `1d1e53d47424098c2b9a781b75d4b6f8c26cacb2`; research note R-162 `042ac79d4f378b773660018d316c73c0cd748bee`.
+- LOCAL_LINUX CPython 3.13.5 formula-level reproduction PASS: eight repeated high-delta updates followed by a zero-delta omission yielded signed error -0.968896, omission magnitude 0.968896, commission 0 and old positive-only excess error 0. This is a formula reproduction, **not** execution of the repository predictor or A4 consumer. Exact source/consumer could not be fetched into the local environment because no checkout is mounted and raw GitHub DNS failed.
+- Exact CI for the new branch head: NOT_YET_OBSERVED. Full repository pytest/native audio tests: NOT_RUN. Prior #2498 fastpath/consumer CI on earlier tested head remains historical and does not cover these additions.
+- Existing staged/integrated blocker remains: the Core audio composer has a stale exact `audio_voice_cues.py` source pin. Do not weaken it; Core/QA must rebind the reviewed source bytes in order and rerun staged/integrated regression.
+- No microphone, AudioRecord provider, native audio model, Termux, Redmi or release test. No raw PCM/transcript, speaker embedding, dataset, model or weight download. REDMI_UNVERIFIED; NOT_RELEASED. Existing opt-in weight persistence and consent gates are unchanged.
+- Next executable step: read back exact new-head RAW EAR fastpath and staged/integrated CI; fix the Core-owned source pin through the normal review chain; then run held-out alternating/omitted-event, silence/noise, shuffled-cue, session-reset and consent-rotation ablations before increasing any A4 influence.
+
+
+## Research & Perception Run 37 — RAW EAR uncertainty and observation-coverage guard (2026-11-26)
+
+- Updated PR [#2498](https://github.com/RedMentos/Aii/pull/2498), branch \`research-perception/v14-raw-ear-next-delta-20261125-run13\`. Exact branch head at checkpoint: \`8167033a8f133c8feb89c341df3720a5db765504\`.
+- \`audio_event_expectation.py\` now censors UNCERTAIN and low-confidence FINAL windows by clearing pending expected events/onset anchors while retaining only the bounded historical interval distribution. A non-target window must start at or before the predicted onset and extend through its tolerance before it can register an omission.
+- Regression tests cover: uncertainty crossing an expected event, low-confidence silence, a late non-target window after an uncovered gap, plus the existing positive omission case. The positive case still uses a confident SILENCE cue.
+- Exact fetched module blob \`4571b12aeb665f2865d53c54561cacd2562d6f95\`: CPython 3.13.5 syntax compile PASS; five focused runtime checks PASS (positive omission, uncertain-window negative, low-confidence negative, gap negative, provisional no-state negative). Full Aii suite NOT_RUN locally (no checkout; GitHub DNS unavailable).
+- Exact-head CI at checkpoint: run 45730324785 (RAW EAR/libfvad), 45730324780 (runtime deployment integrity), 45730324811 (staged/integrated regression), 45730324844 (optional NumPy backend) all IN_PROGRESS. Re-read before claiming any result.
+- Perception integrated composer blob is now \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\` and pins module blob \`4571b12aeb665f2865d53c54561cacd2562d6f95\`. Core/QA must update downstream recovery, stage and deployer pins bottom-up; exact hash gates remain intact.
+- R-164: Aurich et al., EJN 2026-02-25, N=41, shows context-sensitive action→sound omission responses and cautions against treating acoustic silence as a semantic prediction at the lowest sensory level. The current A4 timing signal remains heuristic, low-level and SHADOW-only; action/outcome-conditioned silence modeling is future work.
+- Consumer effect: A5→A4 timed RAW EAR remains wired to capped novelty only; no external interrupt, C3 content, learning authority, action authority or model weight changes. No microphone/AudioRecord provider or Android proof; REDMI_UNVERIFIED / NOT_RELEASED.
+- Next: Core/QA rebind the recovery builder to composer blob \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\`, recompute downstream pins, and rerun staged/integrated/two-checkout migration. Then run held-out regular/omitted/shuffled/uncertain temporal cohorts before increasing A4 influence.
+
+
+## Research & Perception Run 37 — exact CI outcome (2026-11-26)
+
+- Code-bearing SHA \`8167033a8f133c8feb89c341df3720a5db765504\` on \`research-perception/v14-raw-ear-next-delta-20261125-run13\`; latest branch documentation head before this update was \`b5fa240f4f29f562aa0a771f7187504a9757c273\`.
+- RAW EAR fastpath/optional NumPy: **138/138 PASS** on Python 3.13 and 3.14, including exact module/test py_compile and privacy scan CLEAN.
+- VAD comparison: **9/9 PASS** on Python 3.13 and 3.14 with pinned libfvad/WebRTC comparator. Offline runtime-integrity: **41/41 PASS** on Python 3.11 and 3.14.
+- Staged/integrated run 45730324811: **FAIL** (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests). The failing consumer is the Core-owned recovery composer pin: expected \`831080bceec90711bd42e0fa4eba47c669975c98\`, current Perception composer \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\`. Migration returns PARTIAL. No gate weakened.
+- Exact local fetched module: CPython 3.13.5 py_compile PASS and 5/5 targeted runtime checks PASS. Full local Aii suite remains BLOCKED (no checkout, GitHub DNS unavailable).
+- Next owner: Core/QA + Boss must compose #2482/#2483 A4 guard, #2485 Runtime allowlist and #2498 current audio composer on one reviewed base, then recompute recovery→wrapper→stage→deployer pins and rerun all exact staged/integrated/migration suites. Perception does not edit those foreign-owned files.
+- Redmi/Termux/microphone: REDMI_UNVERIFIED / NOT_RELEASED. No AudioRecord, native phone test, device mutation, model/weight/permission change.
+
+
+## Research & Perception Run 37 — B3 selected-row API audit (2026-11-26; R-165)
+
+- Reviewed upstream \`ggml-org/llama.cpp\` commit \`2851b3bcbf8d993a2243ae751c0a7dfa8e944a40\` (2026-10-15T23:46:42Z), MIT. \`llama_model_get_tok_embd_rows\` is declared in \`src/llama-ext.h\` (explicit staging/WIP header) and reads static \`model->tok_embd\` rows to F32; it is not contextual hidden-state/final-RMSNorm extraction. The implementation performs per-row backend reads and can partially write before returning 0 on a later invalid token.
+- Core wrapper must prevalidate every ID, verify actual model/vocab/tensor and extractor binary hashes, bound \`n_tokens × n_embd\` for uint32 and memory, and discard output on any non-exact element count. The current V14 llama.cpp pin \`b29c606e28a01b1bc8c1351026a0fa6e616bf6c4\` predates the API.
+- PR #2503 schema-v2 receipt contract is correct to label the API STAGING_WIP and bind ordered IDs/model/extractor provenance. Exact workflow 45658242985: 66 tests PASS on Python 3.13 and 3.14; 45658242958 runtime integrity and 45658243238 staged regression SUCCESS. No native build, real GGUF row read or Android ABI evidence.
+- Static input embeddings are only a receiver baseline, not true B3 latent coupling. Actual B3 still needs sender contextual activations, trainable cross-architecture projection, receiver injection/read, held-out task utility, zero/shuffle/repeat/OOD controls, gradient/parameter diff, retention, restart and rollback. Keep B3 OFF.
+
+
+## Research & Perception Run 38 — A5/A4/C3 speaker similarity and receiver-matrix integration (2026-11-26)
+
+- **Connected code in draft PR #2498:** source-bound speaker evidence v2 now requires the current PCM chunk SHA-256, excludes non-voiced frames from the reference deque, and suppresses provisional embeddings before registry update. A new A4 helper maps uncalibrated per-frame cosine discontinuity to a 0.05-capped novelty hint only for FINAL/VOICED windows. The existing C3 summary remains similarity-only; no identity, interrupt, learning or action authority is inferred.
+- **Code pins:** speaker evidence blob 08b17a…; novelty helper blob 656aaacef71d12da7e2e920e974f515e239db48c; voice-cue consumer blob 4cb3a6a8e1bb0defc1db70ab1888731d676a152a; integrated audio composer source pins updated (composer blob 4b8b99f5…). RAW EAR CI now watches and compiles the helper. A synthetic benchmark now binds its caller-supplied embeddings to deterministic synthetic PCM hashes.
+- **LOCAL_LINUX:** exact helper blob py_compile PASS; 11/11 focused helper tests PASS; local Git blob SHA matches GitHub. Full repository pytest/benchmark NOT_RUN locally (no checkout; GitHub DNS unavailable).
+- **CI:** exact PR #2498 head d124e89 is pending; runtime-deployment integrity and private-bridge checks SUCCESS; RAW EAR, VAD and staged/integrated jobs still running. Previous exact head exposed a missing hash in the synthetic benchmark; fixed in d124e89. The earlier 142/143 test failure was a silence fixture using a tone hash; fixed by hashing the exact silence PCM.
+- **B3 coordination:** PR #2519 is now stacked on Core #2520 via merge commit b6c52fa12813439b6eb24a82e9d2a053c3c87d79; only Perception matrix files and workflow are carried forward. Its matrix tests 16/16 pass; native Linux and Android arm64 cross-compile jobs report no failure. Python 3.13/3.14 fail because Core's one-group test expects FIXTURE_ONLY although the 20-task minimum correctly returns COLLECTING. Core #2520 was notified; no Core-owned test/consumer edited.
+- **Next:** resolve exact-head CI; Core/QA rebind the composer→recovery→stage→deployer pins and correct the Core one-group test; Core adds the local one-shot matrix approval and :callosum consumer. Perception validates the A4 cap with held-out licensed embeddings and noise/brief-turn controls.
+- **Device/release:** no connected Redmi, no fresh private receipt, no update request, no model/weight/permission/data change. Latest shared private V13OBS #115 metadata says installed 8d93236, auto-update enabled/UP_TO_DATE but runtime STOPPED_BY_USER. REDMI_UNVERIFIED; NOT_RELEASED; B3 OFF.

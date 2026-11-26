@@ -2281,3 +2281,14 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+## Research & Perception run 13 evidence overlay — 2026-11-25
+
+Append-only evidence. This candidate is not a whole-system acceptance and does not replace the historical Canon.
+
+| Canon family | Candidate implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A3 audio prediction / A4 attention / Voice-Audio | PR #2498 adds a 13-D RAW EAR cue-delta predictor and connects its process-local, consent-hash-scoped 182-parameter LMS state to the existing caller-PCM16 A5/A4/C3 consumer. FINAL only; PROVISIONAL ignored; capped 0.10 A4 novelty only. | Local isolated CPython 3.13.5 module py_compile + 10/10 tests PASS; exact PR RAW EAR fastpath 126/126 PASS on Python 3.13 and 3.14; synthetic A5→A4→C3 consumer, consent reset and privacy scan included. VAD-comparison exact source pin was corrected after first-run failure; retest plus staged/integrated status pending at checkpoint. | Frozen-weight held-out cohort vs persistence/no-predictor/shuffled controls; real nonverbal/prosody input; AudioRecord provider and explicit Android permission; Redmi native timing/RSS; persistent audio model-weight update, EMA/JEPA integration and full-duplex voice. | WIRED_SYNTHETIC / LOCAL_LINUX_ISOLATED_PASS / CI_RAW_EAR_FASTPATH_PASS / COMPARE_PENDING / REDMI_UNVERIFIED / NOT_RELEASED |
+
+This pilot predicts hand-crafted cue deltas; it is not a learned audio patch encoder, NAPE reproduction, JEPA/EMA teacher, persistent body-weight learner or native microphone path. It does not change C3 content, external_interrupt, speaker identity, permissions or stored audio packets.
