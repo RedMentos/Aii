@@ -1,20 +1,22 @@
-"""Compose the current pinned recovery/runtime candidate with consent-bound RAW EAR.
+"""Compose the current pinned recovery/runtime candidate with consent-bound RAW EAR and an exact greeting/ack reflex.
 
 The existing V13 arithmetic, source-span C4 and postcommit overlays remain
-owned by the base builder. This wrapper adds only the A5 audio consumer.
+owned by the base builder. This wrapper composes the A5 audio consumer, then a bounded exact greeting/ack reflex.
 """
 import hashlib
 import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_BLOB_SHA1 = "d379c53b92f076d8aeee51938116a45bdb6b8bc3"
+BASE_BUILDER_BLOB_SHA1 = "9373b2c9756cbd74f861386236ee658497c37b21"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "5d21b77c68d6c890040b9d720fa150b7690815b7"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
 NATIVE_RECEIVER_BLOB_SHA1 = "0cd1a4f436f5972fcb73a44fd469c058d37a6d92"
+GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
+GREETING_FASTPATH_BLOB_SHA1 = "82d4987b0019d5970ca050c9bda575bfdf3c94a2"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -56,6 +58,50 @@ def _verify_audio_cognition_pin(code_dir: Path, audio) -> None:
         raise ValueError("Perception audio Cognition pin does not match the current exact blob")
 
 
+
+_PREANSWER_SIGNATURE = b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n"
+_PREANSWER_BUDGET_SIGNATURE = b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n"
+_PREANSWER_BODY = b"        preanswer_observer = valid_until is not None\n"
+_PREANSWER_BUDGET_BODY = (
+    b"        if preanswer_budgeted is not None and type(preanswer_budgeted) is not bool:\n"
+    b"            raise ValueError(\"preanswer_budgeted must be bool\")\n"
+    b"        preanswer_observer = (valid_until is not None if preanswer_budgeted is None else preanswer_budgeted)\n"
+)
+
+
+def _normalize_preanswer_budget_contract(raw: bytes):
+    """Temporarily expose the exact Cognition.offer anchor expected by the audio layer."""
+    if not isinstance(raw, bytes):
+        raise ValueError("Core Cognition source is missing or not bytes")
+    budget_signature_count = raw.count(_PREANSWER_BUDGET_SIGNATURE)
+    budget_body_count = raw.count(_PREANSWER_BUDGET_BODY)
+    base_signature_count = raw.count(_PREANSWER_SIGNATURE)
+    base_body_count = raw.count(_PREANSWER_BODY)
+    if (budget_signature_count == 1 and budget_body_count == 1
+            and base_signature_count == 0 and base_body_count == 0):
+        normalized = raw.replace(_PREANSWER_BUDGET_SIGNATURE, _PREANSWER_SIGNATURE, 1)
+        normalized = normalized.replace(_PREANSWER_BUDGET_BODY, _PREANSWER_BODY, 1)
+        return normalized, True
+    if (budget_signature_count == 0 and budget_body_count == 0
+            and base_signature_count == 1 and base_body_count == 1):
+        return raw, False
+    raise ValueError("Core pre-answer budget contract changed or is ambiguous before audio composition")
+
+
+def _restore_preanswer_budget_contract(raw: bytes, changed: bool) -> bytes:
+    """Restore the Core-only flag after the pinned Perception audio transform."""
+    if not changed:
+        return raw
+    if (not isinstance(raw, bytes)
+            or raw.count(_PREANSWER_SIGNATURE) != 1
+            or raw.count(_PREANSWER_BODY) != 1
+            or raw.count(_PREANSWER_BUDGET_SIGNATURE) != 0
+            or raw.count(_PREANSWER_BUDGET_BODY) != 0):
+        raise ValueError("audio composition changed the normalized Core pre-answer budget anchors")
+    restored = raw.replace(_PREANSWER_SIGNATURE, _PREANSWER_BUDGET_SIGNATURE, 1)
+    return restored.replace(_PREANSWER_BODY, _PREANSWER_BUDGET_BODY, 1)
+
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
@@ -70,9 +116,24 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     if not isinstance(runtime_before, bytes) or b"LOCAL_EXACT_ARITHMETIC" not in runtime_before:
         raise ValueError("base stage no longer contains the reviewed bounded arithmetic route")
 
-    composed = audio.apply_sources(code_dir, result)
-    # The base composer already applies the fair B1/B2 observer overlay. The
-    # audio overlay must preserve it; fail closed rather than reapply Runtime.
+    # The base builder applies the Core fair-budget overlay before the
+    # Perception audio overlay. That adds one Core-only optional argument to
+    # Cognition.offer, while the pinned audio composer uses the original
+    # signature as its insertion anchor. Normalize only that exact signature
+    # and its paired decision line for the duration of the audio transform,
+    # then restore them. No Perception-owned source pin is changed or weakened.
+    audio_input = dict(result)
+    cognition_before_audio = audio_input.get("v13/cognition.py")
+    normalized_cognition, had_preanswer_budget = _normalize_preanswer_budget_contract(
+        cognition_before_audio
+    )
+    audio_input["v13/cognition.py"] = normalized_cognition
+    composed = audio.apply_sources(code_dir, audio_input)
+    composed["v13/cognition.py"] = _restore_preanswer_budget_contract(
+        composed.get("v13/cognition.py"), had_preanswer_budget
+    )
+    # The audio overlay must preserve the fair B1/B2 observer path; fail closed
+    # rather than reapplying Runtime or broadening a source pin.
     if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
         raise ValueError("A5 audio composition removed the Core observer fair-budget path")
     receipt_path = code_dir / C4_RECEIPT_BUILDER
@@ -90,6 +151,8 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     composed = receipt_module.apply_sources(code_dir, composed)
     native_receiver = _load(code_dir, NATIVE_RECEIVER_BUILDER, NATIVE_RECEIVER_BLOB_SHA1)
     composed = native_receiver.apply_sources(code_dir, composed)
+    greeting_fastpath = _load(code_dir, GREETING_FASTPATH_BUILDER, GREETING_FASTPATH_BLOB_SHA1)
+    composed = greeting_fastpath.apply_sources(code_dir, composed)
     if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
         raise ValueError("native receiver Cognition path was not composed")
     if b"native-probe" not in composed.get("v13/callosum.py", b""):

@@ -48,7 +48,7 @@ ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
 # This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "2681a700773b4b9940d0ed642413f15dac75fc671eb04d246a73088d909d41fa"
+STAGER_SHA256 = "ed59c988c0f449d0a5882a2c33b38d25baed9b0a40920039c0f9de39b5b4ba4c"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
@@ -494,8 +494,9 @@ def _stage_integrated_runtime(source, target, *, expected_commit=None):
             if builder.is_symlink() or not builder.is_file():
                 raise RuntimeDeployError("Integrated stage builder missing or unsafe")
             raw = builder.read_bytes()
-            if hashlib.sha256(raw).hexdigest() != STAGER_SHA256:
-                raise RuntimeDeployError("Integrated stage builder changed")
+            actual_stager_sha = hashlib.sha256(raw).hexdigest()
+            if actual_stager_sha != STAGER_SHA256:
+                raise RuntimeDeployError("Integrated stage builder changed: actual=" + actual_stager_sha)
             namespace = {"__name__": "v13_checked_runtime_stager", "__file__": str(builder)}
             exec(compile(raw, str(builder), "exec"), namespace)
             manifest = namespace["stage"](frozen, target)

@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'd1bb256f13b46d837c5d0eaf8306f1dd8e5f052fb059d7e70648187f9512cbb4')
+                     'cae84b584676b746fcf20706e5e461a33ad5710fc3315cf2815f1d3a9e8fed21')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -173,13 +173,15 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
-            raise ValueError('Postcommit observer builder source changed')
+        candidate_sha = hashlib.sha256(raw_candidate).hexdigest()
+        if candidate_sha != '47d58a7ed5a344c20f29aa2de683a12b81b7ea24e56c991955d9027163ae42c5':
+            raise ValueError('Postcommit observer builder source changed: actual=' + candidate_sha)
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
-            raise ValueError('Integrated observer Runtime source changed')
+        runtime_sha = hashlib.sha256(runtime).hexdigest()
+        if runtime_sha != '4463fc10d5634776666fbc93ec0d408630396a2d8edd90e7f0cbf0162515920f':
+            raise ValueError('Integrated observer Runtime source changed: actual=' + runtime_sha)
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.
@@ -220,7 +222,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'd883f184c902b1c56f0549c8d75fdbe283c0c330146457643cfedabc77076261')
+                             '25fd16a1a9508f4f9ad29b29d5fd3accd268fa481c97ae44477a1180a1814c30')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
