@@ -287,9 +287,12 @@ def _fit_tokenwise_candidate(runtime, args):
         "adapter": adapter,
         "record": heldout,
         "fit_manifest": manifest,
+        "cohort_records": list(cohort),
         "staged_at": time.time(),
     }
-    runtime._native_tokenwise_pair_records = [heldout]
+    # Keep the bounded held-out control records in memory until the matrix is
+    # built or the tokenwise lab is cleared; they are never persisted.
+    runtime._native_tokenwise_pair_records = list(cohort)
     return dumps({
         "schema": "v14.native-tokenwise-candidate-stage/1",
         "status": "ALIGNMENT_CANDIDATE_STAGED",
@@ -370,7 +373,7 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
-    if args and args[0] in {"matrix-status", "matrix-arm", "matrix-run", "matrix-revoke", "matrix-clear"}:
+    if args and type(args[0]) is str and args[0].startswith("matrix-"):
         from .native_receiver_matrix_runtime import operator_command as matrix_command
         return matrix_command(r,args)
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
@@ -397,5 +400,5 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-build <task-family> <ood-family> <entity-family> <ood-record-sha-prefix> <entity-record-sha-prefix> --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
     )
