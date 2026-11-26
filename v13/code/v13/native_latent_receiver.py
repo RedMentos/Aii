@@ -455,10 +455,11 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
 
 def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
         receiver_model_revision, receiver_tokenizer_revision, context_sha256,
-        binary_sha256, input_sha256, target_sha256, target_count):
+        binary_sha256, input_sha256, prefill_rows, target_sha256, target_count):
     """Bind native same-model state metrics to the already-verified matrix identities."""
     required = {
         "schema", "status", "state_api", "state_scope", "state_components",
+        "prefill_condition", "prefill_rows", "prefill_input_sha256", "prefill_decode_status",
         "source_sequence_id", "destination_sequence_id", "state_bytes",
         "get_size_bytes", "get_data_bytes", "set_data_bytes", "state_sha256",
         "capture_duration_us", "restore_duration_us", "baseline_logits_sha256",
@@ -477,6 +478,17 @@ def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
     if not isinstance(context_sha256, str) or len(context_sha256) != 64 or any(
             ch not in "0123456789abcdef" for ch in context_sha256):
         raise NativeReceiverError("hybrid-state task context SHA is malformed")
+    if raw.get("prefill_condition") != "LATENT_CANDIDATE":
+        raise NativeReceiverError("native hybrid-state prefill condition is not LATENT_CANDIDATE")
+    if type(raw.get("prefill_rows")) is not int or raw["prefill_rows"] != prefill_rows:
+        raise NativeReceiverError("native hybrid-state prefill row count is misbound")
+    if type(raw.get("prefill_decode_status")) is not int or raw["prefill_decode_status"] != 0:
+        raise NativeReceiverError("native hybrid-state prefill decode did not pass")
+    prefill_input_sha256 = raw.get("prefill_input_sha256")
+    if (not isinstance(prefill_input_sha256, str) or len(prefill_input_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in prefill_input_sha256)
+            or prefill_input_sha256 != input_sha256):
+        raise NativeReceiverError("native hybrid-state prefill input binding mismatch")
     context_params_sha256 = raw.get("context_params_sha256")
     if not isinstance(context_params_sha256, str) or len(context_params_sha256) != 64 or any(
             ch not in "0123456789abcdef" for ch in context_params_sha256):
@@ -501,7 +513,9 @@ def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
         "destination_binary_sha256": binary_sha256,
         "source_context_sha256": context_sha256,
         "destination_context_sha256": context_sha256,
-        "source_input_sha256": input_sha256,
+        "source_input_sha256": prefill_input_sha256,
+        "prefill_condition": raw["prefill_condition"],
+        "prefill_rows": raw["prefill_rows"],
         "continuation_token_ids_sha256": target_sha256,
         "source_context_params_sha256": context_params_sha256,
         "destination_context_params_sha256": context_params_sha256,
@@ -738,7 +752,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             receiver_tokenizer_revision=receiver_tokenizer_revision,
             context_sha256=context_sha256,
             binary_sha256=binary_sha256_before,
-            input_sha256=prepared[0]["input_sha256"],
+            input_sha256=prepared[2]["input_sha256"],
+            prefill_rows=prepared[2]["rows"],
             target_sha256=target_sha256,
             target_count=len(target_ids),
         )
