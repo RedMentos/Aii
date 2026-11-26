@@ -13,6 +13,7 @@ import json
 import math
 import random
 import statistics
+import struct
 
 TASK_SCHEMA = "v14.native-receiver-task-score/1"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
@@ -22,6 +23,8 @@ CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFL
 LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"})
 TASK_FAMILIES = frozenset({"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"})
 ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
+KV_SNAPSHOT_SCHEMA = "v14.native-receiver-kv-snapshot/1"
+MAX_KV_SNAPSHOT_BYTES = 32 * 1024 * 1024
 
 
 class NativeReceiverUtilityError(ValueError):
@@ -57,6 +60,99 @@ def _validate_duplicate_input_digests(group):
                 )
 
 
+def _kv_snapshot_signature(snapshot):
+    """Stable one-layer K/V identity; deliberately excludes capture duration."""
+    return (
+        snapshot["schema"], snapshot["cache_kind"], snapshot["snapshot_scope"],
+        snapshot["sequence_id"], snapshot["layer_id"], snapshot["attention_layer_count"],
+        snapshot["position_count"], snapshot["position_sha256"],
+        tuple(snapshot["k_shape"]), tuple(snapshot["v_shape"]),
+        snapshot["k_type"], snapshot["v_type"], snapshot["k_sha256"],
+        snapshot["v_sha256"], snapshot["combined_sha256"],
+        snapshot["stable_read_sha256"], snapshot["bytes_read_per_snapshot"],
+        snapshot["double_read_bytes_read"],
+    )
+
+
+def _validate_duplicate_kv_snapshots(group):
+    """Check sampled K/V state determinism without treating it as task utility.
+
+    Identical receiver input bytes, model, target and runner must produce the
+    same sampled K/V state. Different inputs may legitimately collapse to the
+    same state (a negative result), so that case is reported rather than
+    rejected. The snapshot covers one attention layer, not LFM2 recurrent state.
+    """
+    snapshots = {
+        condition: group[condition]["native"].get("kv_snapshot")
+        for condition in CONDITIONS
+    }
+    present = [snapshot is not None for snapshot in snapshots.values()]
+    if not any(present):
+        return None
+    if not all(present):
+        raise NativeReceiverUtilityError("partial native K/V snapshot coverage in task group")
+
+    geometry = None
+    by_input = defaultdict(list)
+    for condition in CONDITIONS:
+        item = group[condition]
+        snapshot = snapshots[condition]
+        if not isinstance(snapshot, Mapping):
+            raise NativeReceiverUtilityError("native K/V snapshot is malformed")
+        if (snapshot.get("condition") != condition
+                or snapshot.get("input_sha256") != item["input_sha256"]
+                or snapshot.get("receiver_model_sha256") != item["receiver"]["model_sha256"]):
+            raise NativeReceiverUtilityError("native K/V snapshot lost its condition/model/input binding")
+        current_geometry = (
+            snapshot["schema"], snapshot["cache_kind"], snapshot["snapshot_scope"],
+            snapshot["sequence_id"], snapshot["layer_id"], snapshot["attention_layer_count"],
+            tuple(snapshot["k_shape"]), tuple(snapshot["v_shape"]),
+            snapshot["k_type"], snapshot["v_type"],
+        )
+        if geometry is None:
+            geometry = current_geometry
+        elif current_geometry != geometry:
+            raise NativeReceiverUtilityError("native K/V snapshot geometry changed across conditions")
+        by_input[item["input_sha256"]].append(snapshot)
+
+    duplicate_groups_checked = 0
+    for same_input in by_input.values():
+        if len(same_input) < 2:
+            continue
+        duplicate_groups_checked += 1
+        if len({_kv_snapshot_signature(snapshot) for snapshot in same_input}) != 1:
+            raise NativeReceiverUtilityError(
+                "identical receiver input digest produced different native K/V snapshots"
+            )
+
+    baseline_sha = snapshots["NO_MESSAGE"]["combined_sha256"]
+    distinct = {
+        condition: snapshots[condition]["combined_sha256"] != baseline_sha
+        for condition in CONDITIONS
+    }
+    return {
+        "status": "READ_ONLY_SAMPLE_ONLY",
+        "snapshot_count": len(CONDITIONS),
+        "scope": snapshots["NO_MESSAGE"]["snapshot_scope"],
+        "sampled_layer_id": snapshots["NO_MESSAGE"]["layer_id"],
+        "attention_layer_count": snapshots["NO_MESSAGE"]["attention_layer_count"],
+        "distinct_from_no_message_by_condition": distinct,
+        "candidate_differs_from_no_message": distinct["LATENT_CANDIDATE"],
+        "candidate_differs_from_exact_message": (
+            snapshots["LATENT_CANDIDATE"]["combined_sha256"]
+            != snapshots["EXACT_MESSAGE"]["combined_sha256"]
+        ),
+        "duplicate_input_groups_checked": duplicate_groups_checked,
+        "same_input_consistency_passed": True,
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+
+
 def _digest(value: Mapping) -> str:
     try:
         raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()
@@ -84,7 +180,140 @@ def _source(value, name):
             "sha256": _sha(value.get("sha256"), name + ".sha256")}
 
 
-def _native_score(value, receiver_sha, input_sha, target_sha, target_count):
+def validate_native_receiver_kv_snapshot(value, *, expected_rows=None,
+        expected_condition=None, expected_model_sha256=None,
+        expected_input_sha256=None, allow_sanitized=False):
+    """Validate and minimize a read-only native K/V snapshot receipt.
+
+    Raw K/V bytes are never accepted here. Only shape/type metadata and
+    cryptographic digests cross the Runtime boundary. A sanitized receipt may
+    be revalidated by downstream consumers with allow_sanitized=True.
+    """
+    if not isinstance(value, Mapping) or value.get("schema") != KV_SNAPSHOT_SCHEMA:
+        raise NativeReceiverUtilityError("native K/V snapshot schema mismatch")
+    if (value.get("status") != "READ_ONLY_SNAPSHOT"
+            or value.get("cache_kind") != "LLAMA_MEMORY_HYBRID_ATTENTION"
+            or value.get("snapshot_scope") != "ONE_ATTENTION_LAYER_ONE_SEQUENCE"):
+        raise NativeReceiverUtilityError("native K/V snapshot scope/status is unsupported")
+    if type(value.get("sequence_id")) is not int or value["sequence_id"] != 0:
+        raise NativeReceiverUtilityError("native K/V snapshot sequence is unsupported")
+    if type(value.get("layer_id")) is not int or value["layer_id"] < 0:
+        raise NativeReceiverUtilityError("native K/V snapshot layer ID is invalid")
+    if (type(value.get("attention_layer_count")) is not int
+            or value["attention_layer_count"] < 1):
+        raise NativeReceiverUtilityError("native K/V snapshot attention-layer count is invalid")
+
+    raw_positions = value.get("position_ids")
+    if isinstance(raw_positions, (list, tuple)):
+        if not 1 <= len(raw_positions) <= 64 or any(
+                type(position) is not int or position < 0 or position > 131071
+                for position in raw_positions):
+            raise NativeReceiverUtilityError("native K/V snapshot positions are invalid")
+        positions = list(raw_positions)
+        if positions != list(range(len(positions))):
+            raise NativeReceiverUtilityError("native K/V snapshot positions are not contiguous prefill positions")
+        position_count = len(positions)
+        expected_position_sha = hashlib.sha256(
+            struct.pack("<" + "i" * position_count, *positions)
+        ).hexdigest()
+        position_sha = _sha(value.get("position_sha256"), "kv_snapshot.position_sha256")
+        if position_sha != expected_position_sha:
+            raise NativeReceiverUtilityError("native K/V snapshot position digest mismatch")
+    elif allow_sanitized:
+        position_count = value.get("position_count")
+        if type(position_count) is not int or not 1 <= position_count <= 64:
+            raise NativeReceiverUtilityError("sanitized native K/V snapshot position count is invalid")
+        position_sha = _sha(value.get("position_sha256"), "kv_snapshot.position_sha256")
+    else:
+        raise NativeReceiverUtilityError("native K/V snapshot position list is missing")
+    if expected_rows is not None and (
+            type(expected_rows) is not int or expected_rows != position_count):
+        raise NativeReceiverUtilityError("native K/V snapshot position count differs from receiver context")
+    if type(value.get("active_cell_count")) is not int or value["active_cell_count"] != position_count:
+        raise NativeReceiverUtilityError("native K/V snapshot active-cell count differs from positions")
+
+    shapes = {}
+    for name in ("k_shape", "v_shape"):
+        shape = value.get(name)
+        if (not isinstance(shape, (list, tuple)) or len(shape) != 4
+                or any(type(dim) is not int or dim < 1 for dim in shape)):
+            raise NativeReceiverUtilityError("native K/V snapshot " + name + " is invalid")
+        shapes[name] = list(shape)
+    types = {}
+    for name in ("k_type", "v_type"):
+        types[name] = _id(value.get(name), "kv_snapshot." + name)
+        if types[name] == "unknown":
+            raise NativeReceiverUtilityError("native K/V snapshot tensor type is unknown")
+    digests = {}
+    for name in ("k_sha256", "v_sha256", "combined_sha256", "stable_read_sha256"):
+        digests[name] = _sha(value.get(name), "kv_snapshot." + name)
+    if digests["stable_read_sha256"] != digests["combined_sha256"]:
+        raise NativeReceiverUtilityError("native K/V snapshot stable read digest differs")
+    byte_count = value.get("bytes_read_per_snapshot")
+    double_bytes = value.get("double_read_bytes_read")
+    if (type(byte_count) is not int or not 1 <= byte_count <= MAX_KV_SNAPSHOT_BYTES
+            or type(double_bytes) is not int or double_bytes != 2 * byte_count
+            or double_bytes > 2 * MAX_KV_SNAPSHOT_BYTES):
+        raise NativeReceiverUtilityError("native K/V snapshot read-byte accounting is invalid")
+    duration = value.get("duration_us")
+    if type(duration) is not int or duration < 0:
+        raise NativeReceiverUtilityError("native K/V snapshot duration is invalid")
+    if (value.get("read_only") is not True
+            or value.get("double_read_stable") is not True
+            or value.get("raw_data_exported") is not False
+            or value.get("recurrent_state_included") is not False):
+        raise NativeReceiverUtilityError("native K/V snapshot is not stable/read-only or exposes raw/recurrent state")
+
+    result = {
+        "schema": KV_SNAPSHOT_SCHEMA,
+        "status": "READ_ONLY_SNAPSHOT",
+        "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
+        "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+        "sequence_id": 0,
+        "layer_id": value["layer_id"],
+        "attention_layer_count": value["attention_layer_count"],
+        "active_cell_count": position_count,
+        "position_count": position_count,
+        "position_sha256": position_sha,
+        "k_shape": shapes["k_shape"],
+        "v_shape": shapes["v_shape"],
+        "k_type": types["k_type"],
+        "v_type": types["v_type"],
+        "k_sha256": digests["k_sha256"],
+        "v_sha256": digests["v_sha256"],
+        "combined_sha256": digests["combined_sha256"],
+        "stable_read_sha256": digests["stable_read_sha256"],
+        "bytes_read_per_snapshot": byte_count,
+        "double_read_bytes_read": double_bytes,
+        "duration_us": duration,
+        "read_only": True,
+        "double_read_stable": True,
+        "raw_data_exported": False,
+        "recurrent_state_included": False,
+    }
+    condition = expected_condition if expected_condition is not None else value.get("condition")
+    if condition is not None:
+        if condition not in CONDITIONS or (expected_condition is not None and condition != expected_condition):
+            raise NativeReceiverUtilityError("native K/V snapshot condition binding mismatch")
+        result["condition"] = condition
+    model_sha = expected_model_sha256 if expected_model_sha256 is not None else value.get("receiver_model_sha256")
+    input_sha = expected_input_sha256 if expected_input_sha256 is not None else value.get("input_sha256")
+    if model_sha is not None:
+        model_sha = _sha(model_sha, "kv_snapshot.receiver_model_sha256")
+        if value.get("receiver_model_sha256") is not None and _sha(
+                value.get("receiver_model_sha256"), "kv_snapshot.receiver_model_sha256") != model_sha:
+            raise NativeReceiverUtilityError("native K/V snapshot receiver-model binding mismatch")
+        result["receiver_model_sha256"] = model_sha
+    if input_sha is not None:
+        input_sha = _sha(input_sha, "kv_snapshot.input_sha256")
+        if value.get("input_sha256") is not None and _sha(
+                value.get("input_sha256"), "kv_snapshot.input_sha256") != input_sha:
+            raise NativeReceiverUtilityError("native K/V snapshot condition-input binding mismatch")
+        result["input_sha256"] = input_sha
+    return result
+
+
+def _native_score(value, receiver_sha, input_sha, target_sha, target_count, condition):
     if not isinstance(value, Mapping) or value.get("schema") != NATIVE_SCHEMA:
         raise NativeReceiverUtilityError("native target-score schema mismatch")
     kind, env = value.get("execution_kind"), value.get("environment")
@@ -120,6 +349,14 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count):
             value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
         native_data["device_runtime_build_id"] = _id(
             value.get("device_runtime_build_id"), "native.device_runtime_build_id")
+    if "kv_snapshot" in value:
+        native_data["kv_snapshot"] = validate_native_receiver_kv_snapshot(
+            value.get("kv_snapshot"),
+            expected_condition=condition,
+            expected_model_sha256=model_sha,
+            expected_input_sha256=input_hash,
+            allow_sanitized=True,
+        )
     return native_data
 
 
@@ -163,7 +400,7 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
         elif message_source != source:
             raise NativeReceiverUtilityError("in-distribution latent control source mismatch")
         _sha(adapter_sha256, "adapter_sha256")
-    native = _native_score(native_receipt, receiver_data["model_sha256"], input_hash, target_sha, target_token_count)
+    native = _native_score(native_receipt, receiver_data["model_sha256"], input_hash, target_sha, target_token_count, condition)
     material = {
         "schema": TASK_SCHEMA, "status": "SCORED", "condition": condition,
         "task_group_id": task_id, "task_family": task_family, "session_id": session,
@@ -218,6 +455,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     correlated questions from one message could inflate the bootstrap sample
     count. Every observed session must also contain every observed task family.
     This is still a likelihood proxy, never answer-correctness proof.
+    Optional one-layer K/V differences are reported as read-only structural
+    evidence and never contribute to the task-utility pass/fail decision.
     """
     if not isinstance(receipts, Sequence) or isinstance(receipts, (str, bytes)) or not receipts:
         raise NativeReceiverUtilityError("task-score receipts must be a non-empty sequence")
@@ -252,6 +491,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     source_hashes = set()
     scores = defaultdict(list)
     deltas = {name: [] for name in CONDITIONS if name != "LATENT_CANDIDATE"}
+    kv_snapshot_effects = []
+    kv_snapshot_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
@@ -287,6 +528,14 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
                 raise NativeReceiverUtilityError("in-distribution message source mismatch")
             scores[condition].append(item["mean_target_logprob"])
         _validate_duplicate_input_digests(group)
+        kv_effect = _validate_duplicate_kv_snapshots(group)
+        has_kv_snapshot = kv_effect is not None
+        if kv_snapshot_mode is None:
+            kv_snapshot_mode = has_kv_snapshot
+        elif kv_snapshot_mode != has_kv_snapshot:
+            raise NativeReceiverUtilityError("K/V snapshot coverage changed across task cohort")
+        if kv_effect is not None:
+            kv_snapshot_effects.append(kv_effect)
         adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
         if len(adapter_hashes) != 1:
             raise NativeReceiverUtilityError("latent controls use different adapter revisions")
@@ -322,6 +571,49 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         delta_report[control] = {"mean_delta_nats_per_token": mean,
             "median_delta_nats_per_token": statistics.median(values), "win_rate": win,
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
+    if kv_snapshot_effects:
+        kv_snapshot_effect = {
+            "status": "READ_ONLY_SAMPLE_ONLY",
+            "task_group_count": len(kv_snapshot_effects),
+            "snapshot_count": sum(item["snapshot_count"] for item in kv_snapshot_effects),
+            "candidate_differs_from_no_message_count": sum(
+                item["candidate_differs_from_no_message"] for item in kv_snapshot_effects
+            ),
+            "candidate_differs_from_exact_message_count": sum(
+                item["candidate_differs_from_exact_message"] for item in kv_snapshot_effects
+            ),
+            "distinct_from_no_message_task_groups_by_condition": {
+                condition: sum(
+                    item["distinct_from_no_message_by_condition"][condition]
+                    for item in kv_snapshot_effects
+                )
+                for condition in CONDITIONS
+            },
+            "duplicate_input_groups_checked": sum(
+                item["duplicate_input_groups_checked"] for item in kv_snapshot_effects
+            ),
+            "same_input_consistency_passed": True,
+            "scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+            "semantic_use_proven": False,
+            "generated_answer_correctness_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    else:
+        kv_snapshot_effect = {
+            "status": "UNAVAILABLE",
+            "task_group_count": 0,
+            "snapshot_count": 0,
+            "same_input_consistency_passed": None,
+            "semantic_use_proven": False,
+            "generated_answer_correctness_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
     kind, env = native_binding[:2]
     if kind == "SYNTHETIC_FIXTURE": status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
     elif not enough: status, evidence = "INSUFFICIENT_HOLDOUT", env
@@ -347,6 +639,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "holdout_status": "SUFFICIENT_HOLDOUT" if enough else "INSUFFICIENT_HOLDOUT",
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
+        "kv_snapshot_effect": kv_snapshot_effect,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,
         "training_authority": 0, "native_receiver_authority": 0, "persisted": False}
