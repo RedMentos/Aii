@@ -172,7 +172,8 @@ def _body_offer_evidence(
     template_ids=(), template_role_by_id=None, template_receipt_available=False,
     template_submitted=False, synthetic=False,
     native_prefill_verified=False, native_prefill_observed=False,
-    native_generation_completed=False, synthetic_prefill_verified=False,
+    native_prefill_token_count_matched=False, native_generation_completed=False,
+    synthetic_prefill_verified=False,
     synthetic_generation_completed=False,
 ):
     """Join bounded B1/B2 metrics to C4 selection and C3 native-prefill receipts.
@@ -246,6 +247,7 @@ def _body_offer_evidence(
             "included_in_c3_template": None,
             "native_prefill_observed": False,
             "native_prefill_verified": False,
+            "native_prefill_token_count_matched": False,
             "native_generation_completed": False,
             "consumption_state": "ATTEMPT_NOT_DELIVERED",
             "semantic_use_proven": False,
@@ -297,6 +299,9 @@ def _body_offer_evidence(
             path_synthetic = synthetic or item["evidence_environment"] == "SYNTHETIC"
             item["native_prefill_observed"] = bool(not path_synthetic and native_prefill_observed)
             item["native_prefill_verified"] = bool(not path_synthetic and native_prefill_verified)
+            item["native_prefill_token_count_matched"] = bool(
+                not path_synthetic and native_prefill_token_count_matched
+            )
             item["native_generation_completed"] = bool(
                 not path_synthetic and native_generation_completed
             )
@@ -332,6 +337,8 @@ def _body_offer_evidence(
                 state = "BODY_ATTEMPT_ENVIRONMENT_UNVERIFIED"
             elif native_prefill_verified and native_generation_completed:
                 state = "C4_SELECTED_C3_NATIVE_PREFILL_AND_GENERATION_VERIFIED"
+            elif native_prefill_token_count_matched and native_generation_completed:
+                state = "C4_SELECTED_C3_NATIVE_PREFILL_TOKEN_COUNT_MATCHED_AND_GENERATION_COMPLETED"
             elif native_prefill_observed and native_generation_completed:
                 state = "C4_SELECTED_C3_NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED"
             elif native_prefill_observed:
@@ -422,6 +429,9 @@ def _latest_native_evidence(r):
     native_prompt_sha256 = _sha256(receipt.get("native_prompt_sha256"))
     native_token_ids_sha256 = _sha256(receipt.get("native_token_ids_sha256"))
     native_prompt_tokens = _count(receipt.get("native_prompt_tokens"))
+    native_timings = _mapping(runner.get("timings"))
+    native_prefill_prompt_tokens = _count(native_timings.get("prompt_n"))
+    native_prefill_prompt_ms = _seconds(native_timings.get("prompt_ms"))
 
     synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
     raw_native_submitted = receipt.get("native_template_submitted") is True
@@ -433,6 +443,14 @@ def _latest_native_evidence(r):
     native_prefill_observed = (not synthetic) and receipt.get("native_prefill_observed") is True
     native_prefill_verified = (not synthetic) and receipt.get("native_prompt_prefill_verified") is True
     native_generation_completed = (not synthetic) and receipt.get("native_generation_completed") is True
+    native_prefill_token_count_matched = bool(
+        not synthetic and native_submitted and ids_match
+        and receipt.get("native_completion_http_200") is True
+        and native_generation_completed
+        and native_prompt_tokens is not None and native_prompt_tokens > 0
+        and native_prefill_prompt_tokens == native_prompt_tokens
+        and _count(runner.get("prompt_tokens")) == native_prompt_tokens
+    )
     synthetic_prefill_verified = synthetic and (
         receipt.get("synthetic_prompt_prefill_verified") is True
         or receipt.get("native_prompt_prefill_verified") is True
@@ -453,6 +471,8 @@ def _latest_native_evidence(r):
     elif submitted and c4_recorded and ids_match:
         if fingerprint_complete and native_prefill_verified and native_generation_completed:
             flow_status = "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
+        elif fingerprint_complete and native_prefill_token_count_matched and native_generation_completed:
+            flow_status = "NATIVE_PREFILL_TOKEN_COUNT_MATCHED_AND_GENERATION_COMPLETED_MATCHED_C4"
         elif fingerprint_complete and native_prefill_observed and native_generation_completed:
             flow_status = "NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED_MATCHED_C4"
         elif fingerprint_complete and native_prefill_observed:
@@ -493,6 +513,7 @@ def _latest_native_evidence(r):
         synthetic=synthetic,
         native_prefill_verified=native_prefill_verified,
         native_prefill_observed=native_prefill_observed,
+        native_prefill_token_count_matched=native_prefill_token_count_matched,
         native_generation_completed=native_generation_completed,
         synthetic_prefill_verified=synthetic_prefill_verified,
         synthetic_generation_completed=synthetic_generation_completed,
@@ -537,6 +558,9 @@ def _latest_native_evidence(r):
             "synthetic_completion_http_200": synthetic and receipt.get("native_completion_http_200") is True,
             "native_prompt_prefill_verified": native_prefill_verified,
             "native_prefill_observed": native_prefill_observed,
+            "native_prefill_token_count_matched": native_prefill_token_count_matched,
+            "native_prefill_prompt_tokens": native_prefill_prompt_tokens if not synthetic else None,
+            "native_prefill_prompt_ms": native_prefill_prompt_ms if not synthetic else None,
             "native_stream_completed": (not synthetic) and receipt.get("native_stream_completed") is True,
             "synthetic_stream_completed": synthetic and receipt.get("native_stream_completed") is True,
             "native_generation_completed": native_generation_completed,
