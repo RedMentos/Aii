@@ -289,6 +289,10 @@ class CandidateStore:
         adapter_sha = _sha(material.get("adapter_sha256"), "adapter digest")
         if directory.name != adapter_sha:
             raise CandidateStoreError("candidate directory and manifest IDs differ")
+        created_at = material.get("created_at")
+        if (type(created_at) not in (int, float) or not math.isfinite(float(created_at))
+                or created_at <= 0):
+            raise CandidateStoreError("checkpoint creation time is invalid")
         if (material.get("schema") != SCHEMA
                 or material.get("record_persisted") is not False
                 or material.get("pair_vectors_persisted") is not False
@@ -307,11 +311,16 @@ class CandidateStore:
         if file_hash(adapter_path) != adapter_file_sha:
             raise CandidateStoreError("adapter checkpoint file digest mismatch")
         adapter = _adapter(load_adapter(adapter_path))
+        metrics = adapter.get("metrics", {})
         if (adapter.get("adapter_sha256") != adapter_sha
                 or material.get("sender_role") != adapter.get("sender_role")
                 or material.get("receiver_role") != adapter.get("receiver_role")
-                or material.get("rank") != adapter.get("rank")):
-            raise CandidateStoreError("adapter checkpoint and manifest bindings differ")
+                or material.get("rank") != adapter.get("rank")
+                or metrics.get("train_session_count") != len(fit.get("train_session_ids", []))
+                or metrics.get("holdout_session_count") != len(fit.get("holdout_session_ids", []))
+                or adapter.get("train_pairs") != fit.get("train_pair_count")
+                or adapter.get("holdout_pairs") != fit.get("holdout_pair_count")):
+            raise CandidateStoreError("adapter checkpoint and fit-manifest bindings differ")
         return {
             "adapter": adapter,
             "fit_manifest": fit,
@@ -319,7 +328,7 @@ class CandidateStore:
                 "candidate_id": adapter_sha,
                 "adapter_file_sha256": adapter_file_sha,
                 "manifest_sha256": supplied,
-                "created_at": material.get("created_at"),
+                "created_at": created_at,
                 "record_persisted": False,
                 "pair_vectors_persisted": False,
                 "source_text_persisted": False,
@@ -347,6 +356,20 @@ class CandidateStore:
             if _canonical_sha(material) != supplied or material.get("adapter_sha256") != item.name:
                 raise CandidateStoreError("candidate listing found a corrupt manifest")
             fit = _fit_manifest(material.get("fit_manifest"))
+            created_at = material.get("created_at")
+            if (type(created_at) not in (int, float) or not math.isfinite(float(created_at))
+                    or created_at <= 0):
+                raise CandidateStoreError("candidate listing found an invalid creation time")
+            adapter_path = item / "adapter.v14lat"
+            try:
+                adapter_info = adapter_path.lstat()
+                checkpoint_present = (
+                    stat.S_ISREG(adapter_info.st_mode)
+                    and not stat.S_ISLNK(adapter_info.st_mode)
+                    and not (adapter_info.st_mode & 0o077)
+                )
+            except FileNotFoundError:
+                checkpoint_present = False
             entries.append({
                 "candidate_id": item.name,
                 "created_at": material.get("created_at"),
@@ -362,8 +385,7 @@ class CandidateStore:
                 "source_text_persisted": False,
                 "token_ids_persisted": False,
                 "production_route": False,
-                "checkpoint_present": (item / "adapter.v14lat").is_file()
-                    and not (item / "adapter.v14lat").is_symlink(),
+                "checkpoint_present": checkpoint_present,
             })
         entries.sort(key=lambda item: (item.get("created_at") or 0, item["candidate_id"]), reverse=True)
         return entries[:MAX_CANDIDATES]
