@@ -145,8 +145,15 @@ def _native_prefill_token_count_match(report, template_roles, native_c3_output, 
     """
     witness = report.get("native_offer_prompt_receipt")
     if type(witness) is not dict:
-        return False, None, None
-    timings = report.get("timings")
+        # Keep the five-value return contract for every legacy/no-receipt row.
+        return False, None, None, None, None
+    first_step = report.get("output_adapter_native_first_step")
+    if type(first_step) is dict:
+        # The first completion receives the full prompt; the stream continues
+        # from token IDs plus the first generated token.
+        timings = first_step.get("timings")
+    else:
+        timings = report.get("timings")
     timings = timings if type(timings) is dict else {}
     expected = _count(witness.get("native_prompt_tokens"))
     runner_count = _count(report.get("prompt_tokens"))
@@ -302,6 +309,13 @@ def _audit_one(conn, index, event_id, status, metadata):
         _native_prefill_token_count_match(
             report, native_template_roles, native_c3_output, incomplete)
     )
+    native_prefill_timing_source = None
+    if type(report.get("native_offer_prompt_receipt")) is dict and native_c3_output:
+        native_prefill_timing_source = (
+            "FIRST_TOKEN_STEP"
+            if type(report.get("output_adapter_native_first_step")) is dict
+            else "STREAM_COMPLETION"
+        )
     for role in ROLES:
         roles[role]["native_template_http200_submitted"] = role in native_template_roles
         roles[role]["native_prefill_token_count_matched"] = bool(
@@ -321,6 +335,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         "native_prefill_prompt_n": native_prefill_prompt_n,
         "native_prefill_cache_n": native_prefill_cache_n,
         "native_prefill_prompt_ms": native_prefill_prompt_ms,
+        "native_prefill_timing_source": native_prefill_timing_source,
         "audit_incomplete": incomplete,
         "c3_prompt_inclusion_proven": False,
         "c3_semantic_use_proven": False,
