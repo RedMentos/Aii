@@ -394,5 +394,127 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
     assert runtime.store.states == {}
 
     with pytest.raises(PermissionError, match="no local one-shot approval"):
-        callosum.operator_command(runtime, ["matrix-run"])
+        callosum.operator_command(runtime, ["matrix-run", "--confirm"])
     assert matrix._closed is False
+
+
+def _load_perception_matrix_test_helpers():
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).with_name("test_native_receiver_condition_matrix.py")
+    spec = importlib.util.spec_from_file_location("v14_perception_matrix_test_helpers", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("Perception matrix test helpers are not loadable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_through_bridge(
+    monkeypatch, tmp_path
+):
+    """Exercise Perception builder -> Callosum -> Runtime -> one-shot bridge.
+
+    The native probe is deliberately stubbed as SYNTHETIC; this test proves
+    producer/consumer wiring and source/approval contracts, not GGUF execution.
+    """
+    perception = _load_perception_matrix_test_helpers()
+    task, _main, baseline, _candidate, old_ood, old_entity = perception.inputs()
+
+    main = perception.record(
+        "src-main", task["source_text"], [11, 22, 33],
+        [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]],
+    )
+    ood_text = "Birds can fly."
+    ood = perception.record(
+        "src-ood", ood_text, [41, 42, 43],
+        [[0.2, 0.1], [0.4, 0.3], [0.6, 0.5]],
+    )
+    entity_text = "The dog sat."
+    entity = perception.record(
+        "src-entity", entity_text, [11, 44, 33],
+        [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]],
+    )
+    for record, event_id in (
+        (main, "event-main"), (ood, "event-ood"), (entity, "event-entity")
+    ):
+        record["event_id"] = event_id
+        record["brain_generation_id"] = "generation-1"
+        record["source_ref"]["modality"] = "text"
+
+    candidate = perception.packet(
+        main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]
+    )
+    ood_control = dict(old_ood)
+    ood_control["record"] = ood
+    ood_control["candidate_packet"] = perception.packet(
+        ood, [[0.2, 0.1], [0.4, 0.3], [0.6, 0.5]]
+    )
+    entity_control = dict(old_entity)
+    entity_control["record"] = entity
+    entity_control["source_text"] = entity_text
+    entity_control["entity_byte_spans"] = [[4, 7]]
+    entity_control["candidate_packet"] = perception.packet(
+        entity, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]]
+    )
+
+    texts = {
+        "src-main": task["source_text"],
+        "src-ood": ood_text,
+        "src-entity": entity_text,
+    }
+    events = {
+        "event-main": _event("event-main", "generation-1", main["source_ref"]),
+        "event-ood": _event("event-ood", "generation-1", ood["source_ref"]),
+        "event-entity": _event("event-entity", "generation-1", entity["source_ref"]),
+    }
+    runtime = FakeRuntime(FakeStore(events, texts), tmp_path)
+    _patch_core(monkeypatch, runtime, main["sender"], main["receiver"])
+
+    from v13 import native_tokenwise_pairing
+    monkeypatch.setattr(
+        native_tokenwise_pairing, "_validate_native_pair_record", lambda value: dict(value)
+    )
+    monkeypatch.setitem(sys.modules, "v13.b3degrade", types.ModuleType("v13.b3degrade"))
+    monkeypatch.delitem(sys.modules, "v13.callosum", raising=False)
+    from v13 import callosum
+
+    staged = callosum.controller(runtime).stage_native_receiver_matrix(
+        task=task,
+        pair_record=main,
+        baseline_packet=baseline,
+        candidate_packet=candidate,
+        ood_control=ood_control,
+        entity_control=entity_control,
+    )
+    assert staged["status"] == "STAGED_NOT_APPROVED"
+    assert staged["condition_count"] == 8
+    assert staged["source_count"] == 3
+
+    calls = perception._fake_matrix_probe(monkeypatch)
+    import v13.native_receiver_task_matrix_bridge as bridge
+    real_bridge = bridge.score_and_record_native_receiver_condition_matrix
+
+    def synthetic_bridge(runtime_arg, matrix_arg, **kwargs):
+        kwargs["target_environment"] = "SYNTHETIC"
+        kwargs["binary_path"] = None
+        return real_bridge(runtime_arg, matrix_arg, **kwargs)
+
+    monkeypatch.setattr(
+        bridge, "score_and_record_native_receiver_condition_matrix", synthetic_bridge
+    )
+    armed = json.loads(callosum.operator_command(runtime, ["matrix-arm", "--confirm"]))
+    assert armed["status"] == "ARMED_ONE_SHOT"
+    result = json.loads(callosum.operator_command(runtime, ["matrix-run", "--confirm"]))
+
+    assert result["status"] == "TASK_GROUP_SCORED"
+    assert result["execution_kind"] == "SYNTHETIC_FIXTURE"
+    assert result["environment"] == "SYNTHETIC"
+    assert result["generated_answer_correctness_proven"] is False
+    assert result["training_authority"] == result["native_receiver_authority"] == 0
+    assert len(calls) == 1
+    assert [item["condition"] for item in calls[0]["condition_inputs"]] == list(CONDITIONS)
+    assert calls[0]["condition_inputs"][0]["vectors"] == []
+    assert calls[0]["condition_inputs"][0]["position_ids"] == []
+    assert runtime._native_receiver_condition_matrix is None
