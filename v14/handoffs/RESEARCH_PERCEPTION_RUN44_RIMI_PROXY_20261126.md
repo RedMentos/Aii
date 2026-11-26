@@ -81,3 +81,8 @@ Code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`:
 ## GCMI upstream / licence audit
 
 Upstream \`robince/gcmi\` master README blob \`be48e8dbfc8706617cdbc7318d53224d95b667d9\`; LICENSE blob \`7083002211aac22fc9000de0a4c000533e875ed8\` is GPL-3.0; Python package metadata blob \`be799fad620d827cb072fc412dd92afd1a45bc8b\` declares gcmi 0.5.0, Python ≥3.10, NumPy ≥1.23 and SciPy ≥1.10, optional Numba. README says optimized MATLAB C++ MEX CI targets macOS/Linux x86_64, not Android/aarch64. Aii has no root LICENSE at the working ref, so GPL compatibility is unknown. No GCMI code/dependency/data/weights were reused; Run 44 uses Python standard library only. Any future reuse requires a separate explicit project-license decision.
+
+
+## Private device receipt
+
+Fresh read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS owner-relay requests expired without authenticated device comments (NO_LIVE_RECEIPT). The last V13OBS #115 snapshot is historical (2026-11-24). Current Redmi runtime/updater/deployment remain REDMI_UNVERIFIED. No CHAT_SEND, LOG_PAGE, shell, update request or device action was performed.
