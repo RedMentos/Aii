@@ -2393,3 +2393,12 @@ This is a diagnostic reporting improvement, not a trained latent channel. It is 
 ### Run 47 exact-CI closeout — 2026-11-26
 
 Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91: the focused receiver suites report 83 passed / 1 failed on both Python 3.13 and 3.14; all three new information-use audit regressions passed. The sole focused failure is the staged composition gate, which rejects a Core-owned observer fairness source pin for v13/cognition.py. Shared staged/integrated CI reports 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, with the same pin mismatch and two migration PARTIAL assertions. Pinned Linux native API build PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline integrity PASS; privacy scan CLEAN. Core owns the pin refresh. The B3 classification remains SYNTHETIC_DIAGNOSTIC / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / OFF.
+
+
+## Research & Perception Run 49 — B3 candidate-prefilled full-hybrid state evidence overlay (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — LFM2 full-hybrid sequence-state diagnostic | Native receiver's opt-in state roundtrip now pre-fills from the actual LATENT_CANDIDATE matrix, hashes and records its rows, restores attention/KV plus recurrent shortconv state into a fresh same-model context, and compares a fixed continuation. Python task-score and Runtime bridge read the receipt from the candidate condition. | PR #2524 branch head 1417250fb28c4e30c5c4e0d8150e673248ad10a8; schema v2; LOCAL_LINUX CPython 3.13.5 scratch contract 6/6 PASS; standalone C++ float32-LE digest helper compile/run PASS. Exact GitHub native/staged/RuntimeDeploy workflows 45888866164 / 45888866275 / 45888866345 were QUEUED at checkpoint. | Exact CI completion; real LFM2 GGUF execution; different-weight source/receiver mapping; learned projector/receiver weights and gradient/retention; generated-answer/task correctness; source authentication and adversarial privacy/safety; normal-turn consumer; Redmi measurement. | CODE_PRESENT / WIRED_SYNTHETIC_DIAGNOSTIC / LOCAL_SCRATCH_PASS / CI_QUEUED / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+
+This is a stronger prefill baseline than the earlier BOS-only roundtrip, but remains same-model state serialization. It does not establish cross-model latent communication, trained coupling, semantic use, learning, or production routing. The full system and P0 #1904 remain OPEN.
