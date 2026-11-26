@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from v13 import audio_voice_cues as audio_voice_module
+from v13.audio_event_expectation import AudioEventExpectationRegistry
 from v13.audio_temporal_prediction import (
     ATTENTION_GAIN,
     FEATURE_COUNT,
@@ -83,6 +84,10 @@ def acoustic_cues(activity, *, f0=140.0, f0_range=20.0, energy=10.0,
 SILENCE = acoustic_cues(
     "SILENCE", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
     voiced_fraction=0.0, confidence=0.0, activity_score=0.0, prosody=0.0,
+)
+EVENT_SILENCE = acoustic_cues(
+    "SILENCE", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
+    voiced_fraction=0.0, confidence=0.0, activity_score=0.9, prosody=0.0,
 )
 UNCERTAIN = acoustic_cues(
     "UNCERTAIN", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
@@ -601,8 +606,8 @@ def test_a4_consumer_routes_audio_omission_to_novelty_not_interrupt(tmp_path, mo
 
 def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monkeypatch):
     sequence = [
-        VOICED, SILENCE, VOICED, SILENCE, VOICED,
-        SILENCE, VOICED, SILENCE, SILENCE,
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE, VOICED,
+        EVENT_SILENCE, VOICED, EVENT_SILENCE, EVENT_SILENCE,
     ]
     runtime, event = make_runtime(tmp_path)
     predictor_attention = CaptureAttention()
@@ -640,6 +645,74 @@ def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monke
         assert predictor_attention.calls[-1]["novelty"] >= control_attention.calls[-1]["novelty"]
     finally:
         control_runtime.store.close()
+
+
+def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9):
+    if activity == "VOICED":
+        cues = dict(VOICED)
+    elif activity == "UNCERTAIN":
+        cues = dict(UNCERTAIN)
+    else:
+        cues = dict(EVENT_SILENCE)
+    cues["activity_score"] = activity_score
+    return registry.update(
+        source_id="event-expectation-source",
+        generation_id="event-expectation-generation",
+        consent_scope_id="e" * 64,
+        start_ms=start_ms,
+        end_ms=end_ms,
+        cues=cues,
+        finality="FINAL",
+    )
+
+
+def _seed_event_registry(registry):
+    for activity, start_ms, end_ms in (
+        ("VOICED", 100, 300), ("SILENCE", 1100, 1300),
+        ("VOICED", 2100, 2300), ("SILENCE", 3100, 3300),
+        ("VOICED", 4100, 4300), ("SILENCE", 5100, 5300),
+        ("VOICED", 6100, 6300),
+    ):
+        _event_registry_window(registry, activity, start_ms, end_ms)
+
+
+def test_uncertain_window_over_expected_event_breaks_pending_omission(tmp_path, monkeypatch):
+    sequence = [
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE, VOICED,
+        EVENT_SILENCE, VOICED, EVENT_SILENCE, UNCERTAIN, EVENT_SILENCE,
+    ]
+    runtime, event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            results = run_consumer_sequence(runtime, event, patch, sequence, capture)
+        assert results[-2]["a4"]["audio_event_expectation"]["status"] == "CENSORED_UNCERTAIN"
+        after = results[-1]["a4"]["audio_event_expectation"]
+        assert after["omission_detected"] is False
+        assert after["expected_events"] == []
+        assert results[-1]["a4"]["audio_event_omission_novelty"] == 0.0
+    finally:
+        runtime.store.close()
+
+
+def test_low_confidence_silence_is_censored_not_used_as_omission():
+    registry = AudioEventExpectationRegistry()
+    _seed_event_registry(registry)
+    result = _event_registry_window(
+        registry, "SILENCE", 8100, 9100, activity_score=0.1,
+    )
+    assert result["status"] == "CENSORED_LOW_CONFIDENCE"
+    assert result["omission_detected"] is False
+    assert result["attention_novelty"] == 0.0
+
+
+def test_late_non_target_window_after_expected_time_does_not_prove_omission():
+    registry = AudioEventExpectationRegistry()
+    _seed_event_registry(registry)
+    _event_registry_window(registry, "SILENCE", 7000, 7200)
+    result = _event_registry_window(registry, "SILENCE", 8500, 9500)
+    assert result["omission_detected"] is False
+    assert result["attention_novelty"] == 0.0
 
 
 def test_optional_event_registry_failure_does_not_break_raw_ear(tmp_path, monkeypatch):
