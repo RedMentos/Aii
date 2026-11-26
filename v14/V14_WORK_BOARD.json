@@ -1447,7 +1447,7 @@
     "base_pr": 2519,
     "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
     "code_test_sha": "5f17b865ab2647d9085a019904f2e581986758db",
-    "implementation_commit": "68d90606a312bdda739253664d7a51632715c87c",
+    "implementation_commit": "5f17b865ab2647d9085a019904f2e581986758db",
     "test_correction_commits": [
       "d353faf846a62329f5bac502ecd53ce6662648b6",
       "8f7c73065e8f92e5988fe12fa88038dc41ece530"
@@ -1470,6 +1470,9 @@
     "consumer": "Cohort-wide read-only K/V geometry invariant added to native_receiver_utility; four regressions reject layer, attention-layer-count, K-shape and dtype drift across task groups. No raw K/V persistence, cache write, recurrent-state transfer, semantic utility or normal-turn hook.",
     "cross_lane_core_pr": {
       "number": 2525,
+      "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
+      "base_sha": "53c6a45d02f3bf36f81d78bc05f78c71e5b73651",
+      "mergeable": false,
       "status": "DRAFT_REBASE_REQUIRED",
       "dependency": "rebase onto current #2524 head and refresh exact nested source pins",
       "normal_turn": "NOT_CONNECTED"
