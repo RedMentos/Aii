@@ -68,6 +68,7 @@ class FakeMatrix:
         self._receipt = json.loads(json.dumps(receipt))
         self._consumed = False
         self._closed = False
+        self._build_one = lambda condition: {"condition": condition}
 
     @property
     def receipt(self):
@@ -84,6 +85,7 @@ class FakeMatrix:
     def close(self):
         self._closed = True
         self._consumed = True
+        self._build_one = None
 
 
 class FakeRuntime:
