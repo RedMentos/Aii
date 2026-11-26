@@ -1366,3 +1366,14 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - R-164: Aurich et al., EJN 2026-02-25, N=41, shows context-sensitive action→sound omission responses and cautions against treating acoustic silence as a semantic prediction at the lowest sensory level. The current A4 timing signal remains heuristic, low-level and SHADOW-only; action/outcome-conditioned silence modeling is future work.
 - Consumer effect: A5→A4 timed RAW EAR remains wired to capped novelty only; no external interrupt, C3 content, learning authority, action authority or model weight changes. No microphone/AudioRecord provider or Android proof; REDMI_UNVERIFIED / NOT_RELEASED.
 - Next: Core/QA rebind the recovery builder to composer blob \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\`, recompute downstream pins, and rerun staged/integrated/two-checkout migration. Then run held-out regular/omitted/shuffled/uncertain temporal cohorts before increasing A4 influence.
+
+
+## Research & Perception Run 37 — exact CI outcome (2026-11-26)
+
+- Code-bearing SHA \`8167033a8f133c8feb89c341df3720a5db765504\` on \`research-perception/v14-raw-ear-next-delta-20261125-run13\`; latest branch documentation head before this update was \`b5fa240f4f29f562aa0a771f7187504a9757c273\`.
+- RAW EAR fastpath/optional NumPy: **138/138 PASS** on Python 3.13 and 3.14, including exact module/test py_compile and privacy scan CLEAN.
+- VAD comparison: **9/9 PASS** on Python 3.13 and 3.14 with pinned libfvad/WebRTC comparator. Offline runtime-integrity: **41/41 PASS** on Python 3.11 and 3.14.
+- Staged/integrated run 45730324811: **FAIL** (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests). The failing consumer is the Core-owned recovery composer pin: expected \`831080bceec90711bd42e0fa4eba47c669975c98\`, current Perception composer \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\`. Migration returns PARTIAL. No gate weakened.
+- Exact local fetched module: CPython 3.13.5 py_compile PASS and 5/5 targeted runtime checks PASS. Full local Aii suite remains BLOCKED (no checkout, GitHub DNS unavailable).
+- Next owner: Core/QA + Boss must compose #2482/#2483 A4 guard, #2485 Runtime allowlist and #2498 current audio composer on one reviewed base, then recompute recovery→wrapper→stage→deployer pins and rerun all exact staged/integrated/migration suites. Perception does not edit those foreign-owned files.
+- Redmi/Termux/microphone: REDMI_UNVERIFIED / NOT_RELEASED. No AudioRecord, native phone test, device mutation, model/weight/permission change.
