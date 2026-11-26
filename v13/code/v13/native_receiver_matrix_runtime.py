@@ -512,11 +512,13 @@ def _consume_approval(runtime, nonce, expected_binding_sha256, receipt, lease_to
     approval._require_runtime_probe_lease(runtime, lease_token)
     record, version = _approval_record(runtime)
     now = time.time()
-    if (record.get("status") != "PENDING"
-            or record.get("nonce") != nonce
+    liveness = _approval_liveness(runtime, record, now=now)
+    if liveness != "PENDING":
+        raise PermissionError(
+            "one-shot NATIVE_RECEIVER_MATRIX approval is not live: " + liveness
+        )
+    if (record.get("nonce") != nonce
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or not _valid_approval_window(record, now=now)
-            or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt.get("matrix_sha256")
             or record.get("approval_binding_sha256") != expected_binding_sha256
             or expected_binding_sha256 != receipt.get("approval_binding_sha256")
@@ -548,16 +550,18 @@ def _run(runtime):
     matrix, receipt, target_ids, _pair, sender, receiver = _staged(runtime)
     record, _version = _approval_record(runtime)
     now = time.time()
-    if (record.get("status") != "PENDING"
+    liveness = _approval_liveness(runtime, record, now=now)
+    if (liveness != "PENDING"
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or not _valid_approval_window(record, now=now)
-            or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt["matrix_sha256"]
             or record.get("approval_binding_sha256") != receipt["approval_binding_sha256"]
             or record.get("session_id") != receipt["session_id"]
             or record.get("task_event_id") != receipt["task_event_id"]
             or record.get("task_generation_id") != receipt["task_generation_id"]):
-        raise PermissionError("fresh matching :callosum matrix-arm --confirm approval is required")
+        raise PermissionError(
+            "fresh matching :callosum matrix-arm --confirm approval is required"
+            + (": " + liveness if liveness != "PENDING" else "")
+        )
     try:
         _validate_matrix_sources(runtime, receipt, require_current=True)
     except BaseException as exc:
