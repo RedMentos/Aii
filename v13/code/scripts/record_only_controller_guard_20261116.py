@@ -235,7 +235,7 @@ def apply_sources(code_dir, sources):
     if test_path.is_symlink() or not test_path.is_file():
         raise ValueError('FastForward test source missing or unsafe')
     test_raw = test_path.read_bytes()
-    if hashlib.sha256(test_raw).hexdigest() != 'ea53e2481dc73a13deda565a3538bdd9efcb6ead0d7a5db95b2ebc1b16854797':
+    if hashlib.sha256(test_raw).hexdigest() != 'b040cf28f987a949fbf5c07f96f82b548ef294708c613d48720ff12539d8414b':
         raise ValueError('FastForward test source changed')
     test_raw = _replace(test_raw,
         b'self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy(\'enabled\',\'off\')',

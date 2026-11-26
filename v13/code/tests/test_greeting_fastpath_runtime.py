@@ -113,6 +113,8 @@ def test_runtime_answers_exact_greeting_without_native_body_or_c3_calls():
             runtime.pool.get.assert_not_called()
             runtime.cognition.offer.assert_not_called()
             runtime.cognition.percept.assert_not_called()
+            assert "context_plan" not in meta
+            assert runtime.store.rows("SELECT * FROM packets WHERE kind='ContextPlan'") == []
         finally:
             runtime.close()
 
