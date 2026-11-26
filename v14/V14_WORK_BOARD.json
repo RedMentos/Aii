@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Poll exact PR #2520 CI (Python 3.13/3.14 staged Runtime, pinned llama.cpp Linux build/selftest, Android arm64 cross-compile, privacy scan); repair any failures. If green, coordinate Perception #2517/#2519 rebase, then implement/execute the remaining seven native receiver matrix conditions against a pinned real GGUF. No B3 promotion from compile/likelihood proxy.",
+      "next_step": "Coordinate Perception #2519/#2517 rebase onto exact green Core #2520 head 7ffe4e23. Then wire the 8-condition matrix through a distinct local NATIVE_RECEIVER_MATRIX one-shot approval and :callosum Runtime consumer; run a pinned real-GGUF cohort in LOCAL_LINUX before any separate Redmi authorization. Keep B3 OFF and do not promote likelihood to semantic utility.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-26",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.\\nCore Run 2: PR #2520 (DRAFT, head 024c88a8e2c2bae77bb354d25038ef7ee4e5bfee; code 5476ae6148e455fb30e06cc2b87c7eef93f6737c) fixes the undeclared native receiver model pointer and staged-only test invocation. Parent exact CI 45721544481 had Linux/Android compile failure and 7 Python assertions; child exact CI pending. Full local checkout NOT_RUN (GitHub DNS); REDMI_UNVERIFIED.",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.\\nCore Run 2: PR #2520 (DRAFT, head 024c88a8e2c2bae77bb354d25038ef7ee4e5bfee; code 5476ae6148e455fb30e06cc2b87c7eef93f6737c) fixes the undeclared native receiver model pointer and staged-only test invocation. Parent exact CI 45721544481 had Linux/Android compile failure and 7 Python assertions; child exact CI pending. Full local checkout NOT_RUN (GitHub DNS); REDMI_UNVERIFIED.\nCore Run 3 (2026-11-26): PR #2520 exact head 7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8, all 7 CI workflows SUCCESS. Native C++ now recomputes target-token SHA-256 from the consumed little-endian int32 vector; builder/recovery/stage/RuntimeDeploy pins read back. Local isolated C++17 SHA-256 compile/selftest PASS; full Aii checkout NOT_RUN due DNS. Linux pinned llama.cpp build/selftest PASS; Android arm64 cross-compile PASS only; Python 3.13/3.14 45/45 each; staged/integrated 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime 255 passed, 10 skipped, 47 subtests. No real GGUF score or Redmi proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -50,6 +50,25 @@
         },
         "device": "REDMI_UNVERIFIED; no device receipt or deployment",
         "next_action": "Poll exact PR #2520 CI, repair failures, then coordinate Perception child rebase and execute the eight-condition real-GGUF matrix"
+      },
+      "core_run27_checkpoint": {
+        "branch": "core/v14-native-target-score-repair-20261126-run1",
+        "head_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8",
+        "pull_request": "https://github.com/RedMentos/Aii/pull/2520",
+        "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+        "tests": {
+          "local_linux": "PASS: isolated C++17 SHA-256 helper compile/selftest (-Wall -Wextra -Werror)",
+          "native_linux": "PASS: pinned llama.cpp build and --selftest",
+          "android_arm64": "PASS: cross-compile artifact only; no device execution",
+          "python_313": "PASS 45/45",
+          "python_314": "PASS 45/45",
+          "integrated_regression": "PASS 424 passed, 3 skipped, 6 warnings, 58 subtests",
+          "staged_runtime": "PASS 255 passed, 10 skipped, 47 subtests",
+          "privacy": "CLEAN"
+        },
+        "redmi": "REDMI_UNVERIFIED",
+        "release": "NOT_RELEASED",
+        "next_action": "Perception rebase #2519/#2517; Core one-shot matrix consumer."
       }
     },
     {
@@ -94,7 +113,7 @@
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "next_step": "Perception #2519/#2517: rebase matrix producer/evaluator onto Core #2520 exact green head. Core then adds a distinct NATIVE_RECEIVER_MATRIX one-shot approval bound to the exact matrix digest, source/session/generation and model manifests, and wires the eight-condition matrix into :callosum with bounded deadline/cancellation. No B3 promotion until held-out utility beats every control.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
       "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
@@ -363,8 +382,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
       "proof_environment": "CI candidate only; no native tap/gradient proof",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent. Core PR #2515 (head 1eee88b1) adds native teacher-forced target-token scoring and a bounded ephemeral cohort collector; exact-head CI and real GGUF measurement are still pending. PR #2512 remains the parent receiver consumer, PR #2511 supplies the unchanged Perception utility evaluator.",
-      "next_step": "Core: complete the eight-condition matrix producer (NO_MESSAGE, EXACT_MESSAGE, LATENT_CANDIDATE, ZERO, SHUFFLE, REPEAT, OOD, ENTITY_SUBSTITUTION) with source/session-bound records; collect >=20 held-out task groups across >=2 sessions and >=2 task families; score target tokens with the pinned native receiver and evaluate candidate vs every control. No semantic/production/B3 promotion until the evaluator passes on real native receipts; then obtain separate authorized Redmi evidence.",
+      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent. Core PR #2515 (head 1eee88b1) adds native teacher-forced target-token scoring and a bounded ephemeral cohort collector; exact-head CI and real GGUF measurement are still pending. PR #2512 remains the parent receiver consumer, PR #2511 supplies the unchanged Perception utility evaluator.\n2026-11-26 Core Run 3: PR #2520 exact head 7ffe4e23, all 7 CI workflows SUCCESS; native Linux pinned build/selftest and Android arm64 cross-compile pass, Python 3.13/3.14 45/45, integrated regression 424 passed/3 skipped/58 subtests, staged runtime 255 passed/10 skipped/47 subtests. Native target-token SHA-256 is now recomputed inside C++ from the exact little-endian int32 vector. Still no real GGUF score, complete matrix, semantic utility or Redmi proof.",
+      "next_step": "Perception #2519/#2517 rebase onto Core #2520 head 7ffe4e23. Core then wires the matrix producer to a one-shot local Runtime consumer; collect >=20 held-out task groups across >=2 sessions and >=2 task families, score all eight conditions on a pinned real GGUF, and evaluate candidate vs every control. No semantic/production/B3 promotion; Redmi remains a separate explicit authorization.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -390,8 +409,8 @@
       "status": "BLOCKED_REVIEW",
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof_environment": "CI only; no Android APK/device proof",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Core PR #2513 adds a visible-consent HTTPS ACTION_VIEW open_url capability to the companion; it is stacked on #2481, DRAFT/NOT_RELEASED, and REDMI_UNVERIFIED.",
-      "next_step": "Review #2513 URL validation, visible consent, signed DISPATCHED_UNVERIFIED receipt, redaction/restart behavior and operator TTY gate; integrate only after parent #2481 and QA/Boss review. Keep companion default-OFF and obtain no device permissions without a separate explicit user decision."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Core PR #2513 adds a visible-consent HTTPS ACTION_VIEW open_url capability to the companion; it is stacked on #2481, DRAFT/NOT_RELEASED, and REDMI_UNVERIFIED.\n2026-11-26: PR #2513 latest head 736233e5 fixes overescaped Python ECDSA DER test bytes and Java JSON escaping; operator global help was returned to its pinned base and a runtime :android help test now checks the controller help exposes open-url. Exact-head CI is still in progress; no release/APK/device proof.",
+      "next_step": "Core #2513 remains draft: wait for exact-head Android companion and staged CI, then obtain independent Boss/QA review of URL validation, visible consent, signed DISPATCHED_UNVERIFIED receipt, redaction/restart and local TTY gate. Keep companion default-OFF; no APK install or device permission without explicit user authorization."
     },
     {
       "id": "V14-018",
@@ -1444,6 +1463,51 @@
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
     "package_id": "V14-NATIVE-TARGET-SCORE-001",
+    "branch": "core/v14-native-target-score-repair-20261126-run1",
+    "base_dependency": "Core PR #2515 head 13cfe43a7a94d4b35d4a3be0249bd725b6f06c23; #2512 native tokenwise receiver consumer; Perception #2511 evaluator lineage",
+    "head_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8",
+    "pull_request": "https://github.com/RedMentos/Aii/pull/2520",
+    "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+    "local_linux": "PASS: isolated C++17 SHA-256 helper compiled with -Wall -Wextra -Werror; known abc vector, little-endian token IDs [0,1,2], mismatch and negative-ID checks. Full Aii checkout/native llama.cpp build NOT_RUN because GitHub DNS failed.",
+    "ci_python_313_314": "PASS: 45/45 tests on Python 3.13 and 45/45 on Python 3.14; privacy scan CLEAN.",
+    "native_build": "PASS: pinned llama.cpp Linux build and native --selftest; Android arm64 cross-compile artifact PASS only (not device execution).",
+    "redmi": "REDMI_UNVERIFIED",
+    "proof": "Native receiver now recomputes SHA-256 from the exact little-endian int32 target-token vector inside C++ before scoring; the emitted target-token digest is derived from the vector actually consumed, not merely echoed from the caller. Added SHA-256 known-vector, token-vector, mismatch and negative-ID selftests. Refreshed and read back the complete integrated-native-builder → recovery-builder → stage-builder → RuntimeDeploy pin chain. Exact-head CI: all seven workflows SUCCESS; native workflow 45730746076, RuntimeDeploy integrity 45730746114, two-checkout migration 45730745975, controller record-only 45730746040, Lab Age/WebView 45730746061, private owner-read bootstrap 45730745989, staged/integrated regression 45730746060. Staged/integrated: 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime: 255 passed, 10 skipped, 47 subtests. No GGUF task matrix, production B3, training authority or Redmi execution.",
+    "parallel_prs": [
+      {
+        "number": 2512,
+        "url": "https://github.com/RedMentos/Aii/pull/2512",
+        "head_sha": "10c2f66f8c110516e02d165e2b60183199527116",
+        "status": "DRAFT_DEPENDENCY"
+      },
+      {
+        "number": 2513,
+        "url": "https://github.com/RedMentos/Aii/pull/2513",
+        "head_sha": "736233e5af847706bd0270da2051fcdd973b4a8f",
+        "status": "DRAFT_CI_IN_PROGRESS",
+        "scope": "consent-gated HTTPS ACTION_VIEW open_url; no APK/device proof"
+      },
+      {
+        "number": 2519,
+        "url": "https://github.com/RedMentos/Aii/pull/2519",
+        "head_sha": "015a8d1a0a029b29b2466f4c81611b86062ab838",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "scope": "eight-condition matrix producer"
+      },
+      {
+        "number": 2517,
+        "url": "https://github.com/RedMentos/Aii/pull/2517",
+        "head_sha": "b72a14ef29d299227d25c46d34510e4f773e4c84",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "scope": "native receiver utility core sync"
+      }
+    ],
+    "next_action": "Perception: rebase #2519 and #2517 onto this exact green #2520 head. Core: add a distinct NATIVE_RECEIVER_MATRIX one-shot TTY approval bound to matrix_sha256, source/session/generation and exact model manifests; wire the 8-condition matrix into :callosum with deadline, cancellation, resource preflight and no production/training authority. Then collect >=20 held-out task groups across >=2 sessions and >=2 task families on a pinned real GGUF in LOCAL_LINUX before any separate Redmi authorization.",
+    "code_commit_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8"
+  },
+  "previous_core_checkpoint": {
+    "owner": "Core & Harness",
+    "package_id": "V14-NATIVE-TARGET-SCORE-001",
     "branch": "core/v14-native-target-score-20261125-run1",
     "base_dependency": "Core PR #2512 (head 10c2f66f8c110516e02d165e2b60183199527116); Perception evaluator copied byte-for-byte from PR #2511 latest head",
     "head_sha": "54a72bc38213f0c1e551e4ae216f450106371230",
@@ -1471,20 +1535,5 @@
     ],
     "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately.",
     "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
-  },
-  "previous_core_checkpoint": {
-    "owner": "Core & Harness",
-    "package_id": "V14-TOKENWISE-NATIVE-RECEIVER-001",
-    "branch": "core/v14-tokenwise-native-receiver-consumer-20261125-run1",
-    "head_sha": "6ff13917a9736a292716becdb2e50a1ac7f9b288",
-    "pull_request": "https://github.com/RedMentos/Aii/pull/2512",
-    "base_dependency": "Core PR #2510",
-    "source_dependency": "Perception PR #2511",
-    "status": "CI_PENDING",
-    "local_linux": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
-    "ci_python_313_314": "QUEUED_AT_CHECKPOINT",
-    "redmi": "REDMI_UNVERIFIED",
-    "proof": "In-memory cohort-to-native-receiver API with separate NATIVE_RECEIVER approval; no vectors or adapter persisted; no production B3 or semantic utility.",
-    "next_action": "Read exact-head CI, repair failures, then run a consented native-GGUF receiver diagnostic only on a reachable authorized environment."
   }
 }
