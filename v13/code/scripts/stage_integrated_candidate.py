@@ -13,9 +13,9 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = '99dd5cbe851a05a54a86e297caa6160a3a7832cd6d8ad4e7fe83ca8404170a62'
+BUILDER_SHA = '02de6ad4749a564c395aa2e9658723033173813d888da41396720f10c545434d'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
-ARITHMETIC_OVERLAY_GIT_BLOB = '94cf14f671f695efc1544f50c8edbc8d462c0cd5'
+ARITHMETIC_OVERLAY_GIT_BLOB = 'e604ad666a49a2d278328d7eb6b452f5261460af'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
 NATIVE_PROBE_OVERLAY_GIT_BLOB = '8be75cecf7b76865ea95b4cb60985d52d586edf6'
 RUNTIME_CLOSE_OVERLAY = 'scripts/integrated_native_probe_runtime_close_overlay_20261124.py'
