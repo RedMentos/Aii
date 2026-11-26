@@ -448,6 +448,10 @@ def _run(runtime):
         runtime._native_receiver_matrix_target_token_ids = None
         runtime._native_receiver_matrix_pair_record = None
         runtime._native_receiver_matrix_staged_at = None
+        runtime._native_receiver_matrix_target_kind = None
+        runtime._native_receiver_matrix_target_event_id = None
+        runtime._native_receiver_matrix_task_family_source = None
+        runtime._native_receiver_matrix_family_labels = None
         raise
     environment = platform_tag()
     if not environment.startswith("linux"):
@@ -529,6 +533,10 @@ def _run(runtime):
             runtime._native_receiver_matrix_target_token_ids = None
             runtime._native_receiver_matrix_pair_record = None
             runtime._native_receiver_matrix_staged_at = None
+            runtime._native_receiver_matrix_target_kind = None
+            runtime._native_receiver_matrix_target_event_id = None
+            runtime._native_receiver_matrix_task_family_source = None
+            runtime._native_receiver_matrix_family_labels = None
 
 
 
