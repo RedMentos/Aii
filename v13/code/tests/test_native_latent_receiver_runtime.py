@@ -256,7 +256,7 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
     with pytest.raises(PermissionError, match="file hash differs"):
         _approved_native_receive(
             runtime, event, "B2_GIST", "C3_LANGUAGE", time.monotonic() + 30,
-            monkeypatch, before_run=lambda: sender_path.write_bytes(b"changed-after-tap")
+            monkeypatch, before_run=lambda: sender_path.write_bytes(b"X" * sender_path.stat().st_size)
         )
     runtime.close()
 
@@ -288,7 +288,7 @@ def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monke
     runtime.close()
 
 
-def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
+def test_native_receive_rejects_manifest_model_symlink(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     outside = Path(tmp_path) / "sender-symlink-target.gguf"
     outside.write_bytes(sender_path.read_bytes())
@@ -312,7 +312,35 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
     from v13 import native_probe_approval as approval
     monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
-    with pytest.raises(PermissionError, match="selected model path is linked"):
+    with pytest.raises(PermissionError, match="native probe model is missing or linked"):
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+    runtime.close()
+
+
+
+def test_native_receive_rejects_selected_sender_model_symlink(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    selected_path = sender_path.parent / "selected-sender.gguf"
+    selected_path.symlink_to(sender_path)
+    runtime.models.path_for = lambda role: selected_path if role == "B2_GIST" else model_path
+    tap = {
+        "packet_id": "tap-packet-selected-symlink",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    with pytest.raises(PermissionError, match="native probe selected model path is linked"):
         approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
     runtime.close()
 
