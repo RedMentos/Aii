@@ -1390,3 +1390,38 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - **Next:** finish exact-head CI; fix any newly exposed source pin or integration failure; then Boss/QA should compose #2493 with the #2492 B1/B2→C4→C3 telemetry branch on one reviewed base and obtain fresh consented Redmi evidence after release.
 
 Run start/end time: UNKNOWN (not measured by the execution environment).
+
+## Core Run 31 — C3 single-step prefill receipt + source-chain repair (2026-11-26)
+
+**PR:** #2533, branch `core/v14-native-prefill-single-step-timing-20261126-run1`, exact current code head `1677c3c58b4505ec40831c11151829e0e6fe46bc`, stacked on #2532 (`eae91af6d724b8d12530ed0b013afc7f5fed4372`). DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
+
+### Defect and runtime change
+
+The C3 `first_token_bias` path has an early return for `max_tokens == 1`, no first token, or native EOS/word stop. It previously persisted prefill timings only at the top-level metrics object, not inside `output_adapter_native_first_step`. The #2532 native-offer audit intentionally treats the prompt-bearing first-step receipt as authoritative, so a valid single-step native output was incorrectly reported without prefill timing. The early-return receipt now carries those same timings in the nested first-step record.
+
+A loopback HTTP regression exercises the real `LlamaRunner.generate()` path with B1_DETAIL + B2_GIST, `max_tokens=1`, and first-token bias. It checks that the native prompt count (24) equals processed (20) + cached (4), and that the receipt remains metadata-only.
+
+### Exact-head evidence
+
+- Phone-offer receipt evidence: PASS, run 45838222712.
+- Coordinated source contracts: PASS, run 45838222782.
+- Runtime deployment integrity: PASS, run 45838222659.
+- Private owner-read bootstrap: PASS, run 45838222791.
+- Core native stream integrity: PASS, run 45838222717.
+- Fastpath / interrupted-runner warm retention: PASS, run 45838222676.
+- Lab-Age / WebView truth: PASS, run 45838222757.
+- Two-checkout updater migration: PASS, run 45838222669.
+- Staged context + integrated regression: PASS, run 45838222818; staged 292 passed / 10 skipped / 51 subtests; integrated 424 passed / 3 skipped / 58 subtests.
+- Full local Aii checkout/pytest: BLOCKED / NOT_RUN because `git ls-remote` cannot resolve `github.com`; no checkout is mounted.
+- Redmi/Termux/Android: REDMI_UNVERIFIED; no device receipt, APK install, native GGUF run, permission, model, weight, updater or user-data action.
+
+### Source-pin repair
+
+The first exact-head CI attempt found strict nested pins after the intentional `runners.py` change. Rebound bottom-up without broadening allowlists: native receiver runner SHA-256; recovery-21 receiver Git blob; stage builder recovery SHA-256; RuntimeDeploy stager SHA-256. Exact source checks remain strict.
+
+### Next executable work
+
+1. Request independent Boss/QA review of #2533 and parent #2532; do not merge a child without its parent. Exact code head 1677c3c58b4505ec40831c11151829e0e6fe46bc is green across all nine observed workflows.
+2. Continue the actual normal-turn B1/B2 → C4 → C3 quality path. Token-count parity proves prefill accounting, not semantic use, correctness, or trained latent coupling.
+3. Android: #2513 open_url and #2528 terminal redaction have green focused Android/bridge CI. MediaProjection provider #2379, registry/recovery #2406, and Perception RAW EYE ingress #2375 remain separate/stale stacks. Rebase and compose them on the current Android action stack before enabling screen_capture; keep it OFF until the combined provider, consent, transport, lease and Perception consumer pass.
+4. Keep production B3 OFF and do not claim Redmi proof. No user action is required at this checkpoint.
