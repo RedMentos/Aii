@@ -1678,3 +1678,8 @@ A faithful future rIMI evaluation would require an actual A4 attention/intent pr
 
 ### Rights / reuse
 The author-hosted PDF states that a CC BY public copyright licence is applied to any Author Accepted Manuscript version arising from the submission. The author publication page exposes PDF/Cite/DOI but no code repository for this preprint; this is not a code or dataset licence. No paper code, data, EEG, checkpoints or weights were reused.
+
+
+### R-166 / Run 44 corrected-head CI (2026-11-26)
+
+On corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`, the A4/A5 feature-set probe passes 14/14 on Python 3.13/3.14 (45781255306), including the actual RAW EAR extractor → A5 packet test. RAW EAR comparison passes 9/9 on both versions (45781255440); RuntimeDeploy offline integrity passes on Python 3.11/3.14 (45781255519). Shared staged/integrated fails (45781255404): 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; the principal cascade is the Core-owned audio-builder pin mismatch, with two additional migration assertions returning PARTIAL rather than UPDATED. Core/Integrator owns these composition/migration paths. The current rIMI-inspired proxy remains diagnostic-only and not paper rIMI/CSD.
