@@ -11,6 +11,10 @@ PR [#2498](https://github.com/RedMentos/Aii/pull/2498), branch \`research-percep
 
 **Next internal step:** Core/QA and Boss compose the A4 guard, Runtime allowlist and Perception audio composer on one reviewed base, then rebind the complete recovery→wrapper→stage→deployer hash chain and rerun staged/integrated/migration. The exact run 45730324811 currently FAILS only at the stale recovery builder composer pin (expected 831080bceec90711bd42e0fa4eba47c669975c98; actual d6d634857b42fc9dd29fa9bb2481220fd414e8bf); migration is PARTIAL. Perception then runs held-out/shuffled timing controls. No manual Termux command or model swap is requested.
 
+
+
+**Private Redmi evidence (read-only, latest available):** private V13OBS issue #115 was last updated 2026-11-24T09:28:11Z and is metadata-only/stale. It reports `pipeline.auto_enabled=true`, dashboard/runtime `UP_TO_DATE`, `last_error=NONE`, installed commit `8d93236c753f0194224c19edc7411d8d7082b1d6`; app service/dashboard were RUNNING, but `ai_runtime.state=STOPPED_BY_USER`, `autostart=false`, model process STOPPED, native residency UNAVAILABLE. The newest recorded simple C3 turn generated 7 tokens with TTFT 2.05s, but prompt inclusion/semantic use were not proven; B1/B2 still had 0 valid offers and previous native attempts timed out; native latent exchange was false. A new owner-read `PIPELINE_STATUS` request was issued privately as issue #938 at 2026-11-26T00:54:31Z; at the last poll it remained open with no device comment: **NO_LIVE_RECEIPT**. Therefore current updater/deployment and runtime state remain UNVERIFIED; no UPDATE_REQUEST, manual Termux command or device mutation was sent.
+
 **Separate B3 boundary:** the audited llama.cpp selected-row API is staging/WIP and returns static token-embedding-table rows, not contextual hidden states; the current V14 llama.cpp pin predates it. Core still needs the native extractor plus a separate sender contextual-activation tap, trainable projection and receiver injection. B3 remains OFF; no latent-learning or Android proof is claimed.
 
 ---
