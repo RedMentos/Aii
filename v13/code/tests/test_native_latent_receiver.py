@@ -226,6 +226,40 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "target_token_count": len(target_ids),
         "target_token_ids_sha256": target_sha,
         "conditions": native_conditions,
+        "hybrid_state_roundtrip": {
+            "schema": "v14.native-hybrid-state-roundtrip/1",
+            "status": "READ_ONLY_ROUNDTRIP",
+            "state_api": "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA",
+            "state_scope": "FULL_HYBRID_SEQUENCE",
+            "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
+            "source_sequence_id": 0,
+            "destination_sequence_id": 0,
+            "state_bytes": 4096,
+            "get_size_bytes": 4096,
+            "get_data_bytes": 4096,
+            "set_data_bytes": 4096,
+            "state_sha256": hashlib.sha256(b"state").hexdigest(),
+            "capture_duration_us": 100,
+            "restore_duration_us": 120,
+            "baseline_logits_sha256": hashlib.sha256(b"baseline").hexdigest(),
+            "restored_logits_sha256": hashlib.sha256(b"restored").hexdigest(),
+            "continuation_token_count": len(target_ids),
+            "top1_match_count": len(target_ids),
+            "max_abs_logit_diff": 0.0,
+            "rms_logit_diff": 0.0,
+            "roundtrip_passed": True,
+            "truncated_restore_rejected": True,
+            "attention_kv_included": True,
+            "recurrent_shortconv_included": True,
+            "raw_state_exported": False,
+            "state_persisted": False,
+            "state_buffer_zeroized": True,
+            "installed_runtime_touched": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "context_params_sha256": hashlib.sha256(b"params").hexdigest(),
+        },
     }
     version = {
         "schema": SCHEMA,
@@ -235,6 +269,8 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "task_matrix_schema": "v14.native-receiver-task-matrix/1",
         "kv_snapshot_supported": True,
         "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
+        "hybrid_state_roundtrip_supported": True,
+        "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/1",
     }
     monkeypatch.setattr(
         native_receiver.subprocess, "run",
@@ -242,10 +278,11 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
             "returncode": 0, "stdout": json.dumps(version).encode(), "stderr": b"",
         })(),
     )
-    monkeypatch.setattr(
-        native_receiver, "_run_cancelable",
-        lambda *args, **kwargs: (0, json.dumps(raw).encode(), b""),
-    )
+    commands = []
+    def fake_matrix_run(command, *args, **kwargs):
+        commands.append(list(command))
+        return 0, json.dumps(raw).encode(), b""
+    monkeypatch.setattr(native_receiver, "_run_cancelable", fake_matrix_run)
     result = probe_matrix(
         home=home,
         model_path=model,
@@ -266,7 +303,11 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         threads=1,
         binary_path=binary,
         target_environment="SYNTHETIC",
+        include_hybrid_state_roundtrip=True,
+        receiver_tokenizer_revision="lfm2-tokenizer-r1",
+        context_sha256="c" * 64,
     )
+    assert "--hybrid-state-roundtrip" in commands[0]
     assert result["status"] == "SCORED"
     assert len(result["condition_scores"]) == 8
     for condition in conditions:
@@ -278,6 +319,14 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         assert "position_ids" not in snapshot
         if condition == "NO_MESSAGE":
             assert score["input_sha256"] == hashlib.sha256(b"").hexdigest()
+            roundtrip = score["hybrid_state_roundtrip"]
+            assert roundtrip["status"] == "READ_ONLY_ROUNDTRIP"
+            assert roundtrip["state_components"] == ["ATTENTION_KV", "RECURRENT_SHORTCONV"]
+            assert roundtrip["truncated_restore_rejected"] is True
+            assert roundtrip["source_input_sha256"] == hashlib.sha256(b"").hexdigest()
+            assert roundtrip["source_context_sha256"] == "c" * 64
+            assert roundtrip["source_tokenizer_revision"] == "lfm2-tokenizer-r1"
+            assert roundtrip["roundtrip_passed"] is True
 
 
 def test_dimension_mismatch_is_explicit_and_never_consumed(tmp_path):
