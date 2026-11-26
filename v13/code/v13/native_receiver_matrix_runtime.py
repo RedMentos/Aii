@@ -63,10 +63,12 @@ def _target_ids(values, receipt):
     return tuple(values)
 
 
-def _matrix_receipt(matrix):
+def _matrix_receipt(matrix, *, allow_consumed=False):
+    consumed = getattr(matrix, "_consumed", False)
     if (matrix is None or not callable(getattr(matrix, "iter_inputs", None))
-            or getattr(matrix, "_consumed", False) is not False
-            or not callable(getattr(matrix, "close", None))):
+            or (consumed is not False and not (allow_consumed and consumed is True))
+            or not callable(getattr(matrix, "close", None))
+            or not callable(getattr(matrix, "_build_one", None))):
         raise NativeReceiverMatrixRuntimeError("an open one-shot NativeReceiverConditionMatrix is required")
     receipt = matrix.receipt
     if not isinstance(receipt, Mapping):
@@ -241,6 +243,11 @@ def _validate_matrix_sources(runtime, receipt, *, require_current=True):
 def stage_native_receiver_matrix(runtime, matrix, target_token_ids, pair_record):
     """Stage a Perception-built matrix in memory; this grants no native authority."""
     runtime.require_idle()
+    if getattr(runtime, "_native_receiver_condition_matrix", None) is not None:
+        raise PermissionError("clear the already-staged native receiver matrix before staging another")
+    pending, _ = runtime.store.state(KEY, None)
+    if isinstance(pending, dict) and pending.get("status") == "PENDING":
+        raise PermissionError("revoke the pending native receiver matrix approval before staging another")
     receipt = _matrix_receipt(matrix)
     ids = _target_ids(target_token_ids, receipt)
     record, sender, receiver = _pair_bindings(pair_record, receipt)
@@ -288,20 +295,20 @@ def build_and_stage_native_receiver_matrix(
     )
 
 
-def _staged(runtime):
+def _staged(runtime, *, allow_consumed=False):
     matrix = getattr(runtime, "_native_receiver_condition_matrix", None)
     pair_record = getattr(runtime, "_native_receiver_matrix_pair_record", None)
     target_ids = getattr(runtime, "_native_receiver_matrix_target_token_ids", None)
     if matrix is None:
         raise PermissionError("no Perception-built native receiver condition matrix is staged")
-    receipt = _matrix_receipt(matrix)
+    receipt = _matrix_receipt(matrix, allow_consumed=allow_consumed)
     ids = _target_ids(target_ids, receipt)
     record, sender, receiver = _pair_bindings(pair_record, receipt)
     return matrix, receipt, ids, record, sender, receiver
 
 
-def _model_snapshot_matches(runtime, record):
-    _matrix, receipt, _ids, _pair, sender, receiver = _staged(runtime)
+def _model_snapshot_matches(runtime, record, *, allow_consumed=False):
+    _matrix, receipt, _ids, _pair, sender, receiver = _staged(runtime, allow_consumed=allow_consumed)
     models = _model_bindings(runtime, sender, receiver)
     if record is not None and models != record.get("models"):
         raise PermissionError("installed sender/receiver model identity changed after matrix approval")
@@ -394,7 +401,8 @@ def _revoke(runtime, status="REVOKED"):
         updated = dict(record)
         updated.update({"status": status, "revoked_at": time.time()})
         runtime.store.set_state(KEY, updated, expected=version)
-    return {"schema": SCHEMA, "status": status}
+        return {"schema": SCHEMA, "status": status}
+    return {"schema": SCHEMA, "status": record.get("status", "NO_APPROVAL")}
 
 
 def _run(runtime):
@@ -447,7 +455,7 @@ def _run(runtime):
                     raise PermissionError("matrix receipt changed during native execution")
                 approval._require_runtime_probe_lease(runtime, lease_token)
                 _validate_matrix_sources(runtime, current_receipt, require_current=True)
-                _model_snapshot_matches(runtime, record)
+                _model_snapshot_matches(runtime, record, allow_consumed=True)
                 return True
 
             bridge_started = True
@@ -474,13 +482,20 @@ def _run(runtime):
         return result
     except BaseException as exc:
         state, version = runtime.store.state(KEY, None)
-        if isinstance(state, dict) and state.get("schema") == SCHEMA and state.get("status") == "PENDING":
+        if isinstance(state, dict) and state.get("schema") == SCHEMA and state.get("status") in {"PENDING", "CONSUMED"}:
             state = dict(state)
-            state.update({"status": "FAILED_REVOKED", "failure_kind": type(exc).__name__})
+            state.update({
+                "status": "FAILED_AFTER_CONSUMPTION" if state.get("status") == "CONSUMED" else "FAILED_REVOKED",
+                "failure_kind": type(exc).__name__,
+            })
             runtime.store.set_state(KEY, state, expected=version)
         raise
     finally:
         if bridge_started:
+            try:
+                matrix.close()
+            except Exception:
+                pass
             runtime._native_receiver_condition_matrix = None
             runtime._native_receiver_matrix_target_token_ids = None
             runtime._native_receiver_matrix_pair_record = None
