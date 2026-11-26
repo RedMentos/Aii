@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 
 from audio_feature_set_probe import (
-    evaluate_feature_set, evaluate_relative_incremental_information,
-    feature_values_from_packet,
+    conditional_mutual_information_bits, evaluate_feature_set,
+    evaluate_relative_incremental_information, feature_values_from_packet,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -46,7 +46,7 @@ def _manual_packet(index, pitch_bit, prosody_bit, activity="VOICED", pitch_overr
         pitch, score = None, 0.0
     source = {
         "source_id": "synthetic-mic",
-        "sha256": _sha(f"pcm:{index}:{pitch_bit}:{prosody_bit}:{activity}"),
+        "sha256": _sha(f"pcm:{index}:{pitch_bit}:{prosody_bit}:{activity}:{pitch}"),
         "char_start": 0,
         "char_end": 0,
         "modality": "audio",
@@ -145,6 +145,9 @@ def _records(count=64, seed=11):
         action_bit = pitch_bit ^ prosody_bit ^ goal_bit
         action = "INTERRUPT" if action_bit else "CONTINUE"
         packet = _build_packet(index, pitch_bit, prosody_bit)
+        session_local_index = index % max(1, count // 4)
+        packet["segments"][0]["start_ms"] = session_local_index * 220
+        packet["segments"][0]["end_ms"] = session_local_index * 220 + 200
         end_ms = packet["segments"][0]["end_ms"]
         outcome_source = {
             "source_id": f"world-outcome-{index}",
@@ -173,11 +176,55 @@ def _records(count=64, seed=11):
 class AudioFeatureSetProbeTests(unittest.TestCase):
     def test_goal_conditioned_joint_features_capture_synergy(self):
         result = evaluate_feature_set(_records())
+        self.assertEqual(result["session_count"], 4)
+        self.assertEqual(result["conditioning_variables"], ["session_id", "goal_id"])
+        self.assertEqual(result["permutation_strata"], "SESSION_X_GOAL")
         self.assertAlmostEqual(result["feature_set_goal_action_cmi_bits"], 1.0, delta=1e-9)
         self.assertLess(result["single_feature_goal_action_cmi_bits"]["pitch_band"], 1e-9)
         self.assertLess(result["single_feature_goal_action_cmi_bits"]["prosody_band"], 1e-9)
         self.assertGreater(result["joint_gain_over_best_single_bits"], 0.999999)
         self.assertLess(result["goal_only_action_mi_bits"], 1e-9)
+
+    def test_session_goal_conditioning_blocks_between_session_confounding(self):
+        records = _records(64)
+        stratum_counts = {}
+        for index, record in enumerate(records):
+            session_index = int(record["session_id"].split("-")[-1])
+            goal_bit = 1 if record["outcome"]["goal_id"] == "goal-follow" else 0
+            key = (record["session_id"], record["outcome"]["goal_id"])
+            within = stratum_counts.get(key, 0)
+            stratum_counts[key] = within + 1
+
+            pitch = 300.0 if session_index % 2 else 140.0
+            record["packet"] = _manual_packet(index, 0, 0, pitch_override=pitch)
+            local_index = index % 16
+            record["packet"]["segments"][0]["start_ms"] = local_index * 220
+            record["packet"]["segments"][0]["end_ms"] = local_index * 220 + 200
+
+            majority = goal_bit ^ (session_index % 2)
+            action_bit = majority ^ (1 if within % 4 == 0 else 0)
+            action = "INTERRUPT" if action_bit else "CONTINUE"
+            record["outcome"]["action_type"] = action
+            record["outcome"]["observed_at_ms"] = local_index * 220 + 220
+            record["outcome"]["source_ref"]["sha256"] = _sha(
+                f"session-outcome:{index}:{session_index}:{goal_bit}:{action}"
+            )
+
+        unstratified = conditional_mutual_information_bits(
+            [feature_values_from_packet(r["packet"])["pitch_band"] for r in records],
+            [r["outcome"]["action_type"] for r in records],
+            [r["outcome"]["goal_id"] for r in records],
+        )
+        self.assertGreater(unstratified, 0.1)
+        result = evaluate_feature_set(records, permutations=64)
+        self.assertLess(result["feature_set_goal_action_cmi_bits"], 1e-9)
+        self.assertTrue(all(value < 1e-9 for value in
+                            result["single_feature_goal_action_cmi_bits"].values()))
+        self.assertEqual(result["permutation_p_value"], 1.0)
+        self.assertAlmostEqual(
+            result["relative_incremental_information"]["rimi_proxy"], 0.0, delta=1e-9,
+        )
+        self.assertEqual(result["session_count"], 4)
 
     def test_shuffled_time_permutation_control_breaks_pairing(self):
         result = evaluate_feature_set(_records(), seed=17, permutations=64)
