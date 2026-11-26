@@ -1640,3 +1640,40 @@ Audited exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c
 **Canon / product status:** B3 remains OFF. This is `WIRED_SYNTHETIC_DIAGNOSTIC` only, not trained latent coupling, generated-answer correctness, weight learning or production routing. P0 basic chat and B1/B2 valid-offer delivery remain OPEN. No real GGUF cohort, Redmi/Termux test, release or deployment. Last phone receipt remains historical 2026-11-24; current device behavior `REDMI_UNVERIFIED`.
 
 **Next executable owner/action:** Core rebase/stack #2523 onto exact #2524 head, refresh integrated source pins bottom-up and rerun the exact stage suite. This remains a manual local-TTY diagnostic route; a normal-turn consumer and the P0 user-chat path are still missing. After that, with separate explicit local operator approval, run >=20 held-out groups across >=2 sessions and >=2 task families on pinned real GGUF, including all eight controls, generated-answer correctness, retention, restart/rollback and RSS/TTFT. Keep B3 OFF until those gates pass.
+
+
+## Research & Perception Run 43 — source-bound A4/A5 feature-set probe (2026-11-26)
+
+**Status:** PR [#2527](https://github.com/RedMentos/Aii/pull/2527) remains DRAFT / NOT_RELEASED. Branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`; exact branch head `0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5`, based on #2524 head `b298719af8faf75811d03d486de7725395a590b0`.
+
+### Implemented
+- Added `v14/experiments/audio_feature_set_probe.py`: consumes FINAL A5_AUDIO PerceptPackets enriched with RAW EAR pitch/prosody/activity cues and a separately source-bound later goal/action outcome. It requires source/provenance hashes, one generation, increasing audio windows, separate outcome source, and non-authoritative inputs. Provisional audio, transcript text, raw PCM, duplicate bindings, cross-generation packets and authority-bearing fixtures fail closed.
+- Added `v14/experiments/test_audio_feature_set_probe.py`: 64-record / two-goal controlled fixture; joint and single-feature information, goal-only control, within-goal temporal permutation null, self-predictability, non-speech preservation and negative provenance/authority/time controls. The test also contains a real A4 RAW EAR extractor → A5 PerceptPacket integration case using the exact repository modules.
+- Added `.github/workflows/v14-audio-feature-set-probe.yml`: Python 3.13/3.14, source-blob pins for audio_ear, audio_percept_contract, audio_voice_cues and contracts, compile and exact integration tests.
+- Existing Run 41 temporal chronology repair remains on the same PR. No Core-owned stage/recovery/deployer files were edited.
+
+### Local evidence
+LOCAL_LINUX / CPython 3.13.5 scratch package:
+- `py_compile` for probe and tests: PASS.
+- Focused unit tests: **9/9 PASS**; the one actual-repository A4/A5 integration test is **SKIPPED** locally because no full Aii checkout is mounted.
+- Exact Git blob readback: probe `02cd6cdcd04942b144b46bf96134547c6bf91d12`; test `11c6dbcb039ccf369c39580dd6f9fc423cc634f3`.
+- Synthetic fixture result: 64 records / 2 goals; joint goal-conditioned CMI = **1.000 bits**; pitch-only, prosody-only and goal-only MI = **0**; joint gain over best single = **1.000 bits**; within-goal shuffle median = 0.05857 bits, p95 = 0.15711 bits, 64-permutation empirical p = 0.01538. Pitch/prosody self-MI = 0.00458 / 0.01483 bits. This demonstrates the intended XOR fixture only; it is not a trained JEPA, a human-audio result or proof of general feature synergy.
+- Full Aii local checkout/pytest: NOT_RUN (no checkout mounted; GitHub DNS unavailable).
+
+### CI / integration
+- New source-bound A4/A5 feature-set workflow: run **45773372374 IN_PROGRESS** at last poll.
+- RAW EAR comparison: **45773372422 IN_PROGRESS**.
+- Shared staged/integrated: **45773372390 IN_PROGRESS**.
+- RuntimeDeploy integrity: **45773372351 QUEUED**.
+- The actual extractor integration is encoded in the new CI test; it is not claimed locally until the checkout-backed test runs.
+- Core must refresh the recovery → stage → RuntimeDeploy audio-builder source pin to the exact Perception blob and rerun the shared gates. Perception does not edit those Core-owned pin files. The normal-turn caller/consumer still must hold a revocable AudioConsentLease through A4 admission and the complete C3 generator.
+
+### Research and scope
+- R-165: Griffith, Hess & McDermott, *Optimized feature gains explain and predict successes and failures of human selective listening*, Nature Human Behaviour 10, 937–959 (published 2026-03-13; peer-reviewed; CC BY 4.0). The task-specific model uses cue-conditioned multiplicative feature gains for binaural cocktail-party speech selection; it is not an Android/JEPA or free-form agency result.
+- R-166: Heintz et al., *Why Performance Metrics Overpromise in Auditory Attention Decoding* (arXiv:2608.14250, 2026-08-14), ABSTRACT_VERIFIED only. Relative incremental MI is a useful next metric because temporal dependence and feature drift can inflate ordinary accuracy/ITR.
+- The probe is synthetic-only, diagnostic and not imported into Runtime, attention policy, JEPA training or persistent learning. No raw user audio, transcripts, microphone, model weights or external code/weights were used.
+
+### Product and device boundary
+P0 correct/fast normal chat and B1/B2 valid-offer delivery remain OPEN. No normal-turn audio integration, real AudioRecord/microphone provider, native GGUF cohort, gradients/weight change, Android device control or Redmi execution is proven. B3 remains OFF. Last available private V13OBS #115 is historical (2026-11-24): auto-update was reported enabled/UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI was STOPPED_BY_USER; no fresh authenticated receipt. Current install/runtime behavior remains REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, restart, model/weight/permission/data change.
+
+**Next:** poll the exact feature-set and shared CI; Core refreshes its source-pin chain and normal-turn lease consumer. Then add history-aware relative/incremental MI and source/session-disjoint held-out outcome tests before any attention-policy proposal.
