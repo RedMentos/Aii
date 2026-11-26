@@ -1739,3 +1739,18 @@ Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility b
 **Status:** FULL_TEXT_READ / PREPRINT / PAPER_CC_BY_4.0 / NO_PUBLIC_TRANSLATOR_CODE_OR_WEIGHTS / OBJECT_SPECIFIC_TRANSFER / SAME_MODEL_BASELINE_ONLY / NO_LFM2_OR_ANDROID_GENERALIZATION / REDMI_UNVERIFIED / B3_OFF.
 
 **Source:** https://arxiv.org/abs/2611.12062
+
+
+## R-170 — Latent-in-the-Middle: security of cross-model latent communication
+
+**Paper:** Manit Baser, Vyoman Jain, Rachel Yeo Hui Min, Xianglin Yang, Meenatchi Sundaram Muthu Selva Annamalai, Dinil Mon Divakaran, *Latent-in-the-Middle: On the Security of Cross-Model Latent Communication in Multi-Agent Systems*, arXiv:2611.34278v1, submitted 2026-11-25. Preprint; not peer-reviewed. Full text reviewed: threat model, mapper setup, attack results, HandoffGuard, limitations and conclusion.
+
+**Evidence:** The authors test three model families (Ministral 3 8B→14B, Qwen3 14B→32B, Llama 3.2 3B→3.1 8B), four mapper families (ridge, MLP, CacheBridge, SwaT), and two calibration corpora (FineWeb-Edu and UltraChat), yielding 24 settings. Mapper fitting uses 500 sequences of 1,024 tokens per calibration corpus. The reported native prompt-injection success of 0.4% for Meta-SecAlign-8B rises as high as 44.2% after a mapped-cache handoff. Untrusted/de-aligned sources raise harmful-response rates across the tested settings; mapper-aware optimization can exceed ordinary target-only GCG. Their target-side HandoffGuard p1 brings the tested de-aligned-source HarmBench rate to within 4.5 percentage points of native on the three main pairs; stronger p2 reduces rates further but over-refuses. A guard-aware LoRA attacker still reaches 73.3–87.5% ASR in 300 steps, so the guard is not a substitute for source authentication.
+
+**Limits / mobile relevance:** Mapper and model experiments are 3B–32B-class; the mapper-aware GCG runs use an NVIDIA H200. The switching experiment does not generate tokens between switches; realistic multi-turn switching, cache composition and latency/utility/safety trade-offs are left open. Prompt-injection mitigation partly works by refusing, not by restoring the target's original input-role defense. No LFM2, ARM, Android or Redmi result is reported. The arXiv record/paper did not identify an official implementation repository, released weights or a reusable software/weight licence; no code or weights reused.
+
+**V14 consequence:** A mapped latent/KV cache is an untrusted input channel, not a trust or permission boundary. Before any B3/foreign-state activation, require authenticated producer identity (not only a hash), exact source/target/mapper manifests, session/generation and position binding, integrity/expiry, explicit trust/consent labels, target-side safety evaluation, and negative controls for aligned vs de-aligned donors, wrong mapper, prompt injection, mapper-aware attack, privacy leakage and multi-hop retention. Foreign latent state must never grant tool/action/OS permission or become verified evidence by itself. Keep B3 OFF until these gates and real receiver utility are demonstrated.
+
+**Daily research digest addendum (2026-11-26):** No new primary JEPA, continual-online-learning, plasticity or Android-memory result with comparable new empirical evidence was verified since the previous digest. R-170 is the material new finding for the latent-coupling/security boundary. The immediate V14 experiment is a small, source-authenticated receiver red-team matrix, not porting HandoffGuard's large-model training recipe to Android.
+
+**Source:** https://arxiv.org/abs/2611.34278
