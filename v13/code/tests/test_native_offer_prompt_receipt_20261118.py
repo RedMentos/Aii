@@ -18,7 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from types import SimpleNamespace
 
 from v13.native_offer_prompt_receipt import inspect, REVISION, VOLATILE_HEAD
-from v13.phone_offer_delivery_audit import audit
+from v13.phone_offer_delivery_audit import audit, _native_prefill_token_count_match
 from v13.runners import LlamaRunner
 from v13.prompts import text as prompt_text
 
@@ -155,6 +155,31 @@ class FakeCompletionHandler(BaseHTTPRequestHandler):
         pass
 
 
+class FakeFirstTokenHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        length = int(self.headers.get("Content-Length", "0"))
+        request = json.loads(self.rfile.read(length))
+        if request.get("stream") is not False or request.get("n_predict") != 1:
+            self.send_response(400)
+            self.end_headers()
+            return
+        payload = json.dumps({
+            "content": "ok",
+            "tokens": [17],
+            "tokens_predicted": 1,
+            "stop_type": "eos",
+            "timings": {"prompt_n": 20, "cache_n": 4, "prompt_ms": 1.25},
+        }).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def log_message(self, *_):
+        pass
+
+
 class NativeHTTPBound(unittest.TestCase):
     def setUp(self):
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeCompletionHandler)
@@ -203,6 +228,37 @@ class NativeHTTPBound(unittest.TestCase):
         self.assertEqual(runner.last_metrics["status"], "FINAL")
         self.assertNotIn(SECRET, json.dumps(runner.last_metrics))
         self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(runner.last_metrics))
+
+    def test_first_token_bias_single_step_preserves_prefill_timing_for_audit(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(3)
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeFirstTokenHandler)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+
+        runner = self.runner()
+        selected = messages([offer("B1_DETAIL", "b1"), offer("B2_GIST", "b2")])
+        output = "".join(runner.generate(
+            selected, threading.Event(), time.monotonic() + 20,
+            max_tokens=1, first_token_bias=[[17, 0.25]],
+        ))
+
+        self.assertEqual(output, "ok")
+        metrics = runner.last_metrics
+        expected = {"prompt_n": 20, "cache_n": 4, "prompt_ms": 1.25}
+        self.assertEqual(metrics["timings"], expected)
+        self.assertEqual(metrics["output_adapter_native_first_step"]["timings"], expected)
+        receipt = metrics["native_offer_prompt_receipt"]
+        self.assertTrue(receipt["native_completion_http_200"])
+        self.assertTrue(receipt["native_generation_completed"])
+        matched, count, prompt_n, cache_n, prompt_ms = _native_prefill_token_count_match(
+            metrics, {"B1_DETAIL", "B2_GIST"}, True, False
+        )
+        self.assertTrue(matched)
+        self.assertEqual((count, prompt_n, cache_n, prompt_ms), (24, 20, 4, 1.25))
+        self.assertNotIn("SECRET_NATIVE_QUOTE_DO_NOT_EXPORT", json.dumps(metrics))
+        self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(metrics))
 
     def test_rejected_http_call_does_not_report_success(self):
         class Rejected(FakeCompletionHandler):
