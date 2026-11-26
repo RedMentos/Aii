@@ -1,27 +1,41 @@
-# CURRENT NEXT ACTION — Research & Perception Run 41 (2026-11-26)
+# CURRENT NEXT ACTION — Research & Perception Run 43 (2026-11-26)
 
-**Nutzeraktion: keine Aktion nötig.** Do not send a Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft Perception change.
+**Nutzeraktion: keine Aktion nötig.** Do not send a Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft Perception work.
 
 ## Current code checkpoint
-- Draft PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`, current code/test/pin head `998a8f02e3011b63581c2888316b4073b589d474`, based on current parent #2524 branch head `b298719af8faf75811d03d486de7725395a590b0`.
-- Source blob `f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb`; test blob `fe7a716b4ce88ed2868337deda9f2c454360561b`. Old draft #2526 was closed as superseded because it started two commits behind; no force-push.
-- The A4 temporal filter now rejects backward window starts before state mutation while preserving equal-start cumulative windows and forward-overlap suffix accounting.
-- LOCAL_LINUX / CPython 3.13.5: exact fetched module/test Git blob hashes match the local scratch files; py_compile PASS; focused tests **14/14 PASS**; old-source negative control reproduced DID NOT RAISE; deterministic stress 10,000 monotonic windows + 1,000 out-of-order rejects PASS.
-- Full Aii local checkout/full suite NOT_RUN: no repository checkout mounted and GitHub DNS unavailable.
+- Draft PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`, exact current head `0e1837a042aadee3b5e94301e10fd2b4eaa3a8b5`; base #2524 head `b298719af8faf75811d03d486de7725395a590b0`.
+- New files: `v14/experiments/audio_feature_set_probe.py`, `v14/experiments/test_audio_feature_set_probe.py`, `.github/workflows/v14-audio-feature-set-probe.yml`.
+- Probe/test blob SHAs read back: `02cd6cdcd04942b144b46bf96134547c6bf91d12` / `11c6dbcb039ccf369c39580dd6f9fc423cc634f3`.
+- The probe consumes only FINAL A5_AUDIO packet metadata with A4 RAW EAR pitch/prosody/activity cues and a separate later goal/action source. It is synthetic-only, shadow diagnostic, non-persistent and has zero learning/action authority.
+- The Run 41 temporal chronology fix remains in the same draft PR; no Core-owned pin files changed.
 
-## CI and integration blockers
-- The first exact PR run's Perception RAW EAR/libfvad comparison workflow failed only because its expected temporal source blob was stale. The Perception-owned workflow pin is now updated to `f8ebe2c7...`; rerun `45759867790` is queued.
-- Shared staged-runtime run `45759546449` failed because Core-owned recovery/stage composition still expects the old `v13/audio_temporal_evidence.py` blob. Rerun `45759867775` is queued. Perception has not modified Core/QA-owned recovery, stage or RuntimeDeploy files. Core/Integrator must refresh the pin chain bottom-up.
-- Parent PR #2524 remains DRAFT. Its focused K/V tests passed, but shared staged/integrated CI still fails on Core-owned `v13/native_latent_receiver.py` pinning. Core PR #2523 is a manual local-TTY one-shot diagnostic, not a normal-turn hook. P0 basic chat, B1/B2 valid offers and normal-turn audio integration remain OPEN.
+## Local test evidence
+- LOCAL_LINUX CPython 3.13.5: exact scratch `py_compile` PASS; **9/9 unit tests PASS**.
+- One test is skipped locally: actual A4 extractor → A5 PerceptPacket integration, because this environment has no full Aii checkout. A CI test for that exact integration is present and has been triggered; do not call the local run a full-repository test.
+- Controlled 64-record synthetic fixture / 2 goals: joint goal-conditioned CMI 1.000 bits; pitch-only, prosody-only and goal-only MI 0; joint gain over best single 1.000 bits; within-goal shuffle p95 0.15711 bits; 64-permutation empirical p 0.01538. These are fixture metrics, not real audio, human behaviour or trained-model evidence.
+- Full Aii local pytest/native build: NOT_RUN (checkout absent; GitHub DNS unavailable).
 
-## Device, deployment and permissions
-- Last available private V13OBS receipt is historical issue #115 (2026-11-24 09:28 UTC): auto-update enabled and dashboard/runtime UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI STOPPED_BY_USER and model processes stopped. Private read issues #862–#864 have no comments. Current install/runtime/updater state is REDMI_UNVERIFIED.
-- No device action, UPDATE_REQUEST, CHAT_SEND, model/weight/permission/data change. GitHub push is not deployment.
-- Caller-supplied PCM16 only. No Android AudioRecord/microphone provider, ASR, TTS/vocoder, full-duplex or audio learning. Microphone capture remains OFF; B3 remains OFF. No Redmi/native proof; NOT_RELEASED.
+## CI and integration
+- Feature-set workflow `45773372374`: IN_PROGRESS at last poll.
+- RAW EAR comparison `45773372422`: IN_PROGRESS.
+- Shared staged/integrated `45773372390`: IN_PROGRESS.
+- RuntimeDeploy integrity `45773372351`: QUEUED.
+- Core owns the recovery → stage → RuntimeDeploy audio-builder source-pin refresh. Do not change those foreign-owned files. The normal-turn audio caller/consumer and a revocable lease held through the complete C3 generator are still missing.
 
-## Research / next step
-- R-163: FASTDIAR (arXiv:2610.02941, 2026-10-02 preprint) is an optional frame-level speaker-embedding candidate. Code repo MIT; checkpoint-weight license not confirmed; 2.4M small checkpoint, PyTorch/torchaudio/torchcodec + FFmpeg, no Android/ARM64 proof. No download or model change.
-- Next: Core rebinds the audio source pins and the #2524 native receiver pins, then exact staged/integrated CI is rerun. After that, Core must connect a normal-turn caller that keeps the revocable audio lease alive through the complete C3 generator. Perception then adds the approved OS audio provider only after explicit device consent and revocation/zeroization proof.
+## Device / deployment
+- Last available private V13OBS #115 is historical (2026-11-24 09:28 UTC): auto-update reported enabled and runtime/dashboard UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI STOPPED_BY_USER and model processes stopped. No fresh authenticated receipt was obtained.
+- No device action or UPDATE_REQUEST was sent. GitHub push is not deployment. Current device state: **REDMI_UNVERIFIED**; this PR is **NOT_RELEASED**.
+- Microphone capture remains OFF. No Android AudioRecord provider, native GGUF, gradients, weight changes, B3 production route or Android control is claimed. B3 remains OFF.
+
+## Research / next executable step
+- R-165: peer-reviewed, open-access Nature Human Behaviour feature-gain paper (full text reviewed); task-specific cue-conditioned multiplicative gains, not an Android or general JEPA proof.
+- R-166: abstract-only arXiv study on relative incremental MI and temporal dependence in auditory-attention metrics.
+- Next: poll the exact CI, then Core refreshes the source-pin chain and connects the normal-turn revocable audio lease. Perception adds history-aware relative/incremental MI and source/session-disjoint held-out outcome tests before proposing any attention policy.
+
+---
+
+# Historical next-action snapshots
+
 
 ---
 
