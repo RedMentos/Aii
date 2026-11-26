@@ -45,3 +45,10 @@ R-164 records Aurich et al., “Neural Correlates of Dynamic Predictions and Pre
 ## User action
 
 None. No manual Termux command, model download/swap, permission change, weight change, remote shell, chat send or device mutation was performed.
+
+
+## Additional cross-organ research — R-165 (B3 input-tap boundary)
+
+Reviewed upstream `ggml-org/llama.cpp` commit `2851b3bcbf8d993a2243ae751c0a7dfa8e944a40` (2026-10-15T23:46:42Z), MIT. The selected-row function is in [src/llama-ext.h](https://github.com/ggml-org/llama.cpp/blob/2851b3bcbf8d993a2243ae751c0a7dfa8e944a40/src/llama-ext.h) and [src/llama-model.cpp](https://github.com/ggml-org/llama.cpp/blob/2851b3bcbf8d993a2243ae751c0a7dfa8e944a40/src/llama-model.cpp#L3910-L3971); the header explicitly labels itself staging/WIP. The function reads static `model->tok_embd` rows, dequantizes to F32, and returns an element count. It does not return contextual hidden states. It may partially write rows before a later invalid ID returns 0, so Core must prevalidate every ID, enforce exact count/overflow/memory bounds, verify model/vocab/tensor and binary hashes, and discard all output on failure. Current V14 pin `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` predates the API.
+
+PR #2503's typed receipt contract is correctly marked STAGING_WIP; exact run 45658242985 passes 66 tests on Python 3.13 and 3.14. Runtime-integrity 45658242958 and staged regression 45658243238 also pass. These are CI/Python contract tests only; no native GGUF or Android ABI proof. Static input embeddings are a baseline, not B3. True B3 requires sender contextual activations + trainable projection + receiver injection and held-out task utility/negative controls/retention/rollback. B3 remains OFF.
