@@ -2289,3 +2289,33 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 - **Research R-169:** full-text preprint arXiv:2611.12062v1 (2026-11-09) shows that hybrid cache transfer requires separate token-wise K/V/MLA and recurrent-state mechanisms; same-geometry state copy/correction differs from target recurrence replay. 16–48B GPU results do not generalize to LFM2/Android; translator code/weights are internal, not public OSS.
 - **Device / updater:** REDMI_UNVERIFIED. No fresh authenticated device receipt, no deployment, no update request. The historical V13OBS #115 snapshot from 2026-11-24 reported auto-update enabled at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; it is not current updater/runtime proof. No model, weight, app, permission or user data changed.
 - **Next:** Core rebase #2525 onto the live #2524 branch ref, refresh the observer/recovery/source pins and fix the two migration PARTIAL-vs-UPDATED assertions, then rerun staged/integrated CI. Do not weaken source-pin checks. A real GGUF diagnostic requires separate explicit local approval and must use an already-present model (no download or productive swap). No user action is needed for this Core integration step. P0 #1904 remains OPEN; B3 stays OFF.
+
+  
+## Run 50 — 2026-11-26 (Research & Perception)
+
+- Perception audio PR [#2527](https://github.com/RedMentos/Aii/pull/2527) is being brought forward onto the latest #2524 parent a47907c4a0603e602581c6462ecb845211eb0445 without force-push, preserving its A4 temporal preview/final-promotion, source/generation-bound RAW EAR state, A4 attention receipt, and A4/A5 diagnostic artifacts. The rebase/merge checkpoint is **not a release**; exact-head CI must complete before integration review.
+- Local Linux scratch reconstitution of fetched audio_temporal_evidence.py and its focused tests: py_compile PASS; pytest **17/17 PASS**. This is not a full repository checkout or byte-identical source checkout; full Aii local suite NOT_RUN. Existing exact GitHub CI from the code/test checkpoint reported 15/15 feature-set tests on Python 3.13/3.14 and 58 model-lab tests; the new rebased head needs fresh exact-head CI.
+- R-170 reviewed the full 2026-07-21 arXiv preprint on sequence-level Markov/CRF auditory attention. It supports future switch-delay/false-flip evaluation, but its EEG/two-stream labels are not directly present in RAW EAR; no code or weights reused.
+- Shared Core/QA source-pin refresh remains required for the staged/integrated audio path. The caller-supplied PCM16 path is not an Android microphone provider, normal-turn C3 voice route, or full-duplex voice system.
+- Latest private HEALTH/PIPELINE_STATUS requests #989/#990 have no authenticated device reply at this checkpoint; previous V13OBS #115 is historical. Current Redmi install/updater state is REDMI_UNVERIFIED; no UPDATE_REQUEST, CHAT_SEND, shell command, model/weight/permission/data change. B3 OFF; NOT_RELEASED.
+- **User action: none required.**
+
+
+### Run 50 CI follow-up — 2026-11-26
+
+Parent #2524 exact CI readback: native receiver workflow 45890208766 failed only the staged Runtime test on Python 3.13/3.14 (92 passed, 1 failed each), because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; failures cascade from the same pin, with two migration assertions returning PARTIAL rather than UPDATED. Linux pinned API and Android arm64 cross-compile jobs passed. This is a Core-owned pin/migration blocker; Perception did not modify recovery/stage/deployer files. New #2527 exact-head workflows remain queued at first poll.
+
+
+### Core #2538 follow-up — 2026-11-26
+
+Core replacement PR #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) now refreshes observer/recovery/audio/stage/RuntimeDeploy pins against the current #2524 parent and supersedes #2525. Its exact-head CI is queued, not passed. Because #2538 is based on #2524 rather than the parent-advanced audio PR #2527, Core should stack/rebase #2538 onto #2527 after #2527's exact A4/A5 CI is green, then refresh the audio pins to the new blobs. Do not treat the queued checks as release proof.
+
+
+### Exact #2538 audio-pin mismatch — 2026-11-26
+
+The current #2538 integrated audio candidate still expects old blobs: audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025; audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1; contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 Perception blobs are b372d52b83c1b35077732755f076e48b62e90ac0, cacf649007a89cbfe74924536e413747d1392db3, and 6065a471f5f623abea57725d33d362d9eb806013. #2538 is refreshed for #2524 but not #2527; Core must stack #2538 on #2527 and refresh these exact pins after Perception CI passes.
+
+
+### Run50 exact CI completion — 2026-11-26
+
+Perception code/test SHA 13999de8c676f07075cb8a0d3f0165b579d6cdc6: RAW EAR/libfvad PASS on Python 3.13/3.14 (45893106174); optional NumPy/A4 voice suite PASS with 117 tests on each Python version (45893106136); source-bound A4/A5 feature-set PASS on 3.13/3.14 (45893106110); offline RuntimeDeploy integrity PASS (45893106074). The new source-pin regression test is included in the 117-test suite. Staged/integrated remains FAIL (45893106088): 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Exact log: Core recovery candidate expects old audio builder blob 831080… while current Perception candidate is 5d21b77…; Core arithmetic candidate rejects current contracts.py (Git blob 6065a47…); observer fairness pin is stale on the #2524 parent; migration checks return PARTIAL rather than UPDATED. Core PR #2538 is now green on its #2524 parent for native receiver Runtime consumer, RuntimeDeploy, controller guard, migration, owner-read bootstrap and staged/integrated (45891049936/49901/50110/49890/50131/49926), but still needs to be stacked on #2527 and its pins refreshed. No full local checkout or Redmi proof. No user action required.

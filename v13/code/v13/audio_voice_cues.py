@@ -26,7 +26,7 @@ from .audio_percept_contract import audio_percept_packet
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
-from .contracts import validate
+from .contracts import packet, validate
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -78,6 +78,40 @@ def _speaker_change_decision(evidence, cues):
     return "DEFER"
 
 
+
+
+
+def _a4_attention_score_vector(attention_result: dict) -> dict:
+    """Validate the controller's A4 control scores; this is not an AAD attention probability."""
+    if type(attention_result) is not dict:
+        raise ValueError("A4 attention score vector is missing")
+    gains = attention_result.get("gains")
+    expected_gains = {"perceptual", "callosum", "workspace", "focal", "action"}
+    if type(gains) is not dict or set(gains) != expected_gains:
+        raise ValueError("A4 attention score vector: gain vector is incomplete")
+    salience = attention_result.get("salience")
+    caution = attention_result.get("caution")
+    if any(type(value) not in (int, float) or not math.isfinite(float(value))
+           or not 0.0 <= float(value) <= 1.0 for value in (salience, caution)):
+        raise ValueError("A4 attention salience/caution is invalid")
+    if any(type(value) not in (int, float) or not math.isfinite(float(value))
+           or not 0.0 <= float(value) <= 1.0 for value in gains.values()):
+        raise ValueError("A4 attention gain value is invalid")
+    interrupt = attention_result.get("interrupt")
+    reason = attention_result.get("interrupt_reason")
+    if type(interrupt) is not bool or (reason is not None and type(reason) is not str):
+        raise ValueError("A4 attention interrupt decision is invalid")
+    if attention_result.get("truth_authority") != 0:
+        raise PermissionError("A4 attention scores cannot carry truth authority")
+    return {
+        "kind": "A4_CONTROL_SCORE_NOT_AAD",
+        "salience": float(salience),
+        "caution": float(caution),
+        "gains": {key: float(gains[key]) for key in sorted(gains)},
+        "interrupt": interrupt,
+        "interrupt_reason": reason,
+        "truth_authority": 0,
+    }
 
 # Protect first-use get/create/set on a shared Runtime during concurrent audio calls.
 _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
@@ -693,6 +727,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if type(finality) is not str or finality not in {"FINAL", "PROVISIONAL"}:
+        raise ValueError("finality must be FINAL or PROVISIONAL")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -705,7 +741,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         segment = raw["segments"][0]
         cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
-        if vad_stream is not None:
+        # Stateful VAD advances only on FINAL windows. Provisional windows still
+        # feed immediate RAW EAR cues and A4 attention, but cannot consume a frame
+        # that will later be promoted and replayed as FINAL.
+        if vad_stream is not None and finality == "FINAL":
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
                 stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
@@ -727,7 +766,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
-        if speaker_embeddings is not None:
+        # Speaker lookback is stateful too; defer it until FINAL so a provisional
+        # window and its later promotion cannot count the same embedding twice.
+        if speaker_embeddings is not None and finality == "FINAL":
             try:
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
@@ -756,6 +797,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
                 or speaker_change_decision == "DEFER"):
             audio_segment["unmeasured"].append("speaker_change")
+        if vad_stream is not None and finality == "PROVISIONAL":
+            audio_segment["unmeasured"].append("VAD")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -777,24 +820,21 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             runtime, audio_packet, lease_active=lease_active,
         )
 
+        provisional = finality == "PROVISIONAL"
         if temporal_state is None:
-            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
+            temporal_registry = _runtime_temporal_voice_registry(runtime)
+            temporal_update = temporal_registry.preview if provisional else temporal_registry.update
         else:
             if not isinstance(temporal_state, TemporalVoiceEvidence):
                 raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-            temporal_voice = temporal_state.update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
+            temporal_update = temporal_state.preview if provisional else temporal_state.update
+        temporal_voice = temporal_update(
+            source_id=source_id,
+            generation_id=generation_id,
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            cues=cues,
+        )
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
@@ -827,6 +867,22 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "novelty": min(1.0, max(zcr, voice_novelty)),
             "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
         })
+        score_vector = _a4_attention_score_vector(attention_result)
+        a4_receipt = packet(
+            "A4AttentionReceipt", "A4_AUDIO", event_id, generation_id,
+            [audio_packet["source_ref"]],
+            source_ref=audio_packet["source_ref"],
+            percept_packet_id=audio_packet["packet_id"],
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            finality=audio_segment["finality"],
+            score_vector=score_vector,
+            learning_authority=False,
+            action_authority=False,
+            truth_authority=0,
+        )
+        # The same consent lease still protects this source-bound A4 receipt.
+        runtime.store.add_packet("A4AttentionReceipt", a4_receipt)
         a4 = {
             "packet_id": audio_packet["packet_id"],
             "source_id": source_id,
@@ -835,9 +891,13 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "temporal_state_mode": "PREVIEW_ONLY" if provisional else "COMMITTED",
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
+            "attention_score_vector": score_vector,
+            "attention_receipt_id": a4_receipt["packet_id"],
+            "attention_receipt": a4_receipt,
             "learning_authority": False,
             "action_authority": False,
         }
