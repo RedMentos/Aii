@@ -139,10 +139,22 @@ def _pair_bindings(pair_record, receipt):
             or record.get("brain_generation_id") != receipt["task_generation_id"]
             or _source_key(record.get("source_ref"), "pair record") != _source_key(receipt["source_ref"], "matrix task")):
         raise NativeReceiverMatrixRuntimeError("main pair record differs from the matrix task source/event/generation")
-    sender, receiver = record.get("sender"), record.get("receiver")
-    if not isinstance(sender, Mapping) or not isinstance(receiver, Mapping):
+    sender_raw, receiver_raw = record.get("sender"), record.get("receiver")
+    if not isinstance(sender_raw, Mapping) or not isinstance(receiver_raw, Mapping):
         raise NativeReceiverMatrixRuntimeError("main pair record lacks sender/receiver bindings")
-    sender, receiver = dict(sender), dict(receiver)
+
+    def clean_binding(value, label):
+        clean = {}
+        for key in ("role", "tap_id", "model_revision", "tokenizer_revision"):
+            item = value.get(key)
+            if type(item) is not str or not item or len(item) > 256:
+                raise NativeReceiverMatrixRuntimeError(label + "." + key + " is invalid")
+            clean[key] = item
+        clean["model_sha256"] = _sha(value.get("model_sha256"), label + ".model_sha256")
+        return clean
+
+    sender = clean_binding(sender_raw, "sender")
+    receiver = clean_binding(receiver_raw, "receiver")
     if (sender.get("role") not in _ALLOWED_SENDER
             or receiver.get("role") not in _ALLOWED_RECEIVER
             or sender.get("role") == receiver.get("role")):
