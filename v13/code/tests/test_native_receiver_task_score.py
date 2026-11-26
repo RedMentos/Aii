@@ -44,6 +44,7 @@ def hybrid_state_roundtrip_for(base, overrides=None):
         "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
         "prefill_condition": "LATENT_CANDIDATE",
         "prefill_rows": 1,
+        "prefill_decode_status": 0,
         "source_sequence_id": 0,
         "destination_sequence_id": 0,
         "source_model_sha256": receiver["model_sha256"],
