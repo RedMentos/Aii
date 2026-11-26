@@ -1657,3 +1657,24 @@ This is **not the paper's exact rIMI**. The paper's abstract does not specify en
 ### R-166 / Run 44 exact implementation evidence update (2026-11-26)
 
 Exact source-bound CI for the session-local proxy and its A4/A5 producer integration passes 14/14 on Python 3.13 and 3.14 in workflow 45780338189. RAW EAR comparison passes 9/9 on both versions (45780338123); offline RuntimeDeploy integrity passes on Python 3.11/3.14 (45780338147). Shared staged/integrated remains failed solely at the Core-owned audio-composer source pin: current Perception blob f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0 versus Core recovery's expected 831080bceec90711bd42e0fa4eba47c669975c98 (45780338096). This exact CI does not turn the synthetic proxy into a real attention/JEPA consumer and does not constitute deployment.
+
+
+## R-166 full-text review — 2026-11-26 (correction to the earlier abstract-only note)
+
+**Review status: FULL_TEXT_REVIEWED.** Read the complete 12-page author-hosted PDF by Heintz, Geirnaert, Francart & Bertrand, *Why Performance Metrics Overpromise in Auditory Attention Decoding: an Information-Theoretic Reappraisal*, arXiv:2608.14250, submitted 2026-08-14. The author publication page lists it as an August 2026 **preprint**; no peer-reviewed venue was identified as of this review. Sources: https://arxiv.org/abs/2608.14250 and https://simongeirnaert.com/publication/ .
+
+### Method and evidence
+- The paper defines CSD as \(I(f(n);f_{past}(n)\mid y(n))\), IMI as \(I(f(n);y(n)\mid f_{past}(n))\), and rIMI as \(I(f(n);y(n)\mid f_{past}(n))/H(y(n)\mid f_{past}(n))\). Here \(f(n)\) is an AAD model's prediction score vector and \(y(n)\) is the attended-speaker state.
+- For decision windows up to 5 s, \(f_{past}\) stacks all previous prediction scores in the last 5 s, excluding the current prediction; for longer windows the last prediction is used. The paper uses a Gaussian-copula transform and Gaussian-mixture entropy estimation/GCMI, not a discrete feature-bin plug-in estimator.
+- Experiments use the AV-GC dataset: 13 participants, two competing speakers, 64-channel BioSemi EEG, 10-minute trials with an instructed attention switch after 5 minutes. Training uses all gaze conditions; validation uses Moving Video, Moving Target Noise and No Visuals, excluding the gaze-congruent Static Video condition. The representative algorithms are LS, CCA and AADNet (stimulus reconstruction) versus static/adaptive CSP and Darnet (direct classification).
+- The results show that direct-classification methods can have apparently high accuracy but much lower rIMI and higher conditional dependence; switch-aligned scores show clear changes for stimulus reconstruction while CSP can drift without a switch-driven effect. The paper reports temporal dependencies persisting up to 200 s in some EEG statistics.
+- The authors recommend a temporal buffer of at least five minutes, ideally more than one test session; explicit switch-focused evaluation; and confound control. They also note that LOTO alone may not eliminate temporal leakage.
+- Scope limitation: one dataset and a representative subset of AAD algorithms; the results are about EEG-based attended-speaker decoding, not general audio perception, LLMs or V14 attention.
+
+### V14 translation and correction
+The Run 44 implementation is only an **rIMI-inspired engineering proxy**: current acoustic cue tuples are compared with a later separately sourced action outcome, conditioned on goal and a coarse session-local history. These are not AAD prediction scores \(f(n)\) and an attended-speaker state \(y(n)\). Therefore the ratio is **not paper rIMI**, and its feature-history dependence term is **not paper CSD**. The corrected code now names that term \`conditional_feature_history_dependence_bits\` and emits \`metric_scope=ACOUSTIC_FEATURES_TO_LATER_ACTION_OUTCOME_NOT_AAD_ATTENTION_SCORE\`.
+
+A faithful future rIMI evaluation would require an actual A4 attention/intent predictor score vector, a trusted and separately sourced attended-state/outcome label, the full prior-score vector (5 s for short windows), at least a 5-minute train/test temporal buffer and preferably different sessions, switch-focused analysis and nuisance-drift controls. Those prerequisites do not currently exist as a normal-turn Runtime consumer. Do not use the Run 44 proxy as an attention policy, JEPA target or user-intent claim.
+
+### Rights / reuse
+The author-hosted PDF states that a CC BY public copyright licence is applied to any Author Accepted Manuscript version arising from the submission. The author publication page exposes PDF/Cite/DOI but no code repository for this preprint; this is not a code or dataset licence. No paper code, data, EEG, checkpoints or weights were reused.
