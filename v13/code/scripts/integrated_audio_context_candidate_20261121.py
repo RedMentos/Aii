@@ -54,9 +54,9 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     if not isinstance(runtime, bytes):
         raise ValueError("upstream integrated Runtime candidate missing")
     runtime_required = (
-        b"class Runtime:\\n",
-        b"    def submit(self,text):\\n",
-        b"    def _turn(self,e):\\n",
+        b"class Runtime:\n",
+        b"    def submit(self,text):\n",
+        b"    def _turn(self,e):\n",
         b"latewatch.start",
     )
     if any(marker not in runtime for marker in runtime_required):
