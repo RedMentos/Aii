@@ -177,11 +177,12 @@ def _validate_record(record: dict) -> tuple[dict[str, str], str, str, int]:
 def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
                          permutations: int = 64, min_records: int = 32,
                          min_per_goal: int = 8) -> dict:
-    """Measure feature-set/action information with within-goal time shuffles.
+    """Measure feature-set/action information without crossing session strata.
 
-    Also returns a session-local, coarse-history rIMI proxy. Outcomes are
-    permuted within each goal, preserving goal/action marginals while breaking
-    feature-to-outcome pairing. All results are diagnostic only.
+    Every association is conditioned on (session, goal), and null outcomes are
+    permuted within those same strata. Session-local clocks may restart at zero.
+    The coarse-history rIMI-inspired proxy is returned separately. All results
+    remain synthetic diagnostic evidence only.
     """
     if type(seed) is not int or isinstance(seed, bool):
         raise ValueError("seed must be an integer")
@@ -208,8 +209,20 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
     ):
         raise ValueError("duplicate source/event/action binding in cohort")
     starts = [row[3] for row in parsed]
-    if any(right <= left for left, right in zip(starts, starts[1:])):
-        raise ValueError("audio windows must be supplied in increasing time order")
+    session_ids = []
+    session_rows: dict[str, list[int]] = defaultdict(list)
+    for index, record in enumerate(rows):
+        session_id = record.get("session_id") if isinstance(record, dict) else None
+        if not isinstance(session_id, str) or not session_id.strip():
+            raise ValueError("session identity is missing")
+        session_ids.append(session_id)
+        session_rows[session_id].append(index)
+    if len(session_rows) < 2:
+        raise ValueError("at least two sessions are required")
+    for indices in session_rows.values():
+        session_starts = [starts[index] for index in indices]
+        if any(right <= left for left, right in zip(session_starts, session_starts[1:])):
+            raise ValueError("session audio windows must be supplied in increasing time order")
 
     features = [row[0] for row in parsed]
     goals = [row[1] for row in parsed]
@@ -222,42 +235,63 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
     prosody = [item["prosody_band"] for item in features]
     activity = [item["activity_hint"] for item in features]
     feature_set = list(zip(pitch, prosody, activity))
+    conditioning = list(zip(session_ids, goals))
     single_feature_cmi = {
-        "pitch_band": conditional_mutual_information_bits(pitch, actions, goals),
-        "prosody_band": conditional_mutual_information_bits(prosody, actions, goals),
-        "activity_hint": conditional_mutual_information_bits(activity, actions, goals),
+        "pitch_band": conditional_mutual_information_bits(pitch, actions, conditioning),
+        "prosody_band": conditional_mutual_information_bits(prosody, actions, conditioning),
+        "activity_hint": conditional_mutual_information_bits(activity, actions, conditioning),
     }
-    joint_cmi = conditional_mutual_information_bits(feature_set, actions, goals)
+    joint_cmi = conditional_mutual_information_bits(feature_set, actions, conditioning)
     joint_gain = joint_cmi - max(single_feature_cmi.values())
 
-    by_goal: dict[str, list[int]] = defaultdict(list)
-    for index, goal in enumerate(goals):
-        by_goal[goal].append(index)
+    by_session_goal: dict[tuple[str, str], list[int]] = defaultdict(list)
+    for index, key in enumerate(zip(session_ids, goals)):
+        by_session_goal[key].append(index)
     rng = random.Random(seed)
     null_scores = []
     for _ in range(permutations):
         shuffled_actions = list(actions)
-        for indices in by_goal.values():
+        for indices in by_session_goal.values():
             labels = [actions[index] for index in indices]
             rng.shuffle(labels)
             for index, label in zip(indices, labels):
                 shuffled_actions[index] = label
-        null_scores.append(conditional_mutual_information_bits(feature_set, shuffled_actions, goals))
+        null_scores.append(conditional_mutual_information_bits(feature_set, shuffled_actions, conditioning))
     ordered_null = sorted(null_scores)
     p95_index = min(len(ordered_null) - 1, math.ceil(0.95 * len(ordered_null)) - 1)
     permutation_p = (1 + sum(score >= joint_cmi for score in null_scores)) / (permutations + 1)
 
+    self_mi_by_session = {}
+    pair_count = sum(max(0, len(indices) - 1) for indices in session_rows.values())
+    for session_id, indices in session_rows.items():
+        if len(indices) < 2:
+            continue
+        session_features = [features[index] for index in indices]
+        session_pitch = [pitch[index] for index in indices]
+        session_prosody = [prosody[index] for index in indices]
+        session_activity = [activity[index] for index in indices]
+        self_mi_by_session[session_id] = {
+            "pitch_band": mutual_information_bits(session_pitch[:-1], session_pitch[1:]),
+            "prosody_band": mutual_information_bits(session_prosody[:-1], session_prosody[1:]),
+            "activity_hint": mutual_information_bits(session_activity[:-1], session_activity[1:]),
+            "feature_set": mutual_information_bits(session_features[:-1], session_features[1:]),
+        }
     self_mi = {
-        "pitch_band": mutual_information_bits(pitch[:-1], pitch[1:]),
-        "prosody_band": mutual_information_bits(prosody[:-1], prosody[1:]),
-        "activity_hint": mutual_information_bits(activity[:-1], activity[1:]),
-        "feature_set": mutual_information_bits(feature_set[:-1], feature_set[1:]),
+        key: (
+            sum((len(session_rows[session_id]) - 1) * values[key]
+                for session_id, values in self_mi_by_session.items()) / pair_count
+            if pair_count else 0.0
+        )
+        for key in ("pitch_band", "prosody_band", "activity_hint", "feature_set")
     }
     return {
         "schema": SCHEMA,
         "evidence_class": "SYNTHETIC_FIXTURE_ONLY",
         "record_count": len(rows),
         "goal_count": len(goal_counts),
+        "session_count": len(session_rows),
+        "conditioning_variables": ["session_id", "goal_id"],
+        "permutation_strata": "SESSION_X_GOAL",
         "source_binding_validated": True,
         "feature_names": ["pitch_band", "prosody_band", "activity_hint"],
         "feature_set_goal_action_cmi_bits": joint_cmi,
@@ -267,7 +301,11 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
         "shuffled_time_cmi_p95_bits": ordered_null[p95_index],
         "permutation_p_value": permutation_p,
         "goal_only_action_mi_bits": mutual_information_bits(goals, actions),
+        "goal_action_cmi_given_session_bits": conditional_mutual_information_bits(
+            goals, actions, session_ids,
+        ),
         "feature_self_predictive_mi_bits": self_mi,
+        "session_self_predictive_mi_bits": self_mi_by_session,
         "trained_jepa": False,
         "runtime_integrated": False,
         "attention_policy_changed": False,
