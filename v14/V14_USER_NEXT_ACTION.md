@@ -2242,3 +2242,14 @@ Nutzeraktion: keine Aktion nötig. No Termux command, UPDATE_REQUEST, runtime re
 - The previous shared staged/integrated run failed at the Core-owned audio-builder source pin (Core expected \`831080...\`; current Perception builder \`f9a0ed...\`). Core/Integrator owns the recovery/stage/deployer chain; Perception did not edit those files.
 - Last private V13OBS #115 remains historical (2026-11-24) and reports STOPPED_BY_USER with no current install/runtime proof. Fresh read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests are pending in the private relay; until authenticated replies arrive, REDMI_UNVERIFIED. Release-development SHA remains \`8d93236c753f0194224c19edc7411d8d7082b1d6\`; no newer release SHA or deployment is claimed.
 - Next: poll exact PR CI, coordinate Core's pin repair and normal-turn audio lease, then design session-disjoint holdout/drift/switch controls only when a legitimate consented outcome cohort exists. No microphone or learning permission is requested.
+
+
+### Run 44 exact-CI completion (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.**
+- Exact code/test head \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`: feature-set A4/A5 workflow 45780338189 **14/14 PASS** on Python 3.13 and 3.14, including the real repository RAW EAR extractor → A5 PerceptPacket test.
+- RAW EAR comparison 45780338123: **9/9 PASS** on both versions. RuntimeDeploy offline integrity 45780338147: **PASS** on Python 3.11 and 3.14; not a deployment.
+- Shared staged/integrated 45780338096: **FAIL** (staged 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated 1 failed). Exact root cause is Core's recovery wrapper expecting audio builder blob \`831080bceec90711bd42e0fa4eba47c669975c98\` while Perception's current builder blob is \`f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0\`. Perception did not edit Core-owned recovery/stage/deployer files.
+- The rIMI-like result remains a synthetic discrete proxy, not the exact paper estimator, not a human-audio result and not a runtime attention or JEPA signal. Full local repository pytest/native build was not run; local scratch reproduction is separate from CI.
+- Last authenticated device snapshot remains historical #115 (2026-11-24) and reported STOPPED_BY_USER; the new private HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests have not yet returned. REDMI_UNVERIFIED; NOT_RELEASED; no deployment or model/permission/data changes.
+- Next: Core/Integrator must recompose #2527 with #2525/#2524 and refresh the recovery → stage → RuntimeDeploy pin chain bottom-up, then rerun exact staged/integrated gates. Perception keeps the proxy diagnostic-only and proceeds to source/session-disjoint holdout and drift/switch controls only after a legitimate separately consented cohort exists.
