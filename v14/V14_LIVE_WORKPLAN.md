@@ -1377,3 +1377,11 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Exact local fetched module: CPython 3.13.5 py_compile PASS and 5/5 targeted runtime checks PASS. Full local Aii suite remains BLOCKED (no checkout, GitHub DNS unavailable).
 - Next owner: Core/QA + Boss must compose #2482/#2483 A4 guard, #2485 Runtime allowlist and #2498 current audio composer on one reviewed base, then recompute recovery→wrapper→stage→deployer pins and rerun all exact staged/integrated/migration suites. Perception does not edit those foreign-owned files.
 - Redmi/Termux/microphone: REDMI_UNVERIFIED / NOT_RELEASED. No AudioRecord, native phone test, device mutation, model/weight/permission change.
+
+
+## Research & Perception Run 37 — B3 selected-row API audit (2026-11-26; R-165)
+
+- Reviewed upstream \`ggml-org/llama.cpp\` commit \`2851b3bcbf8d993a2243ae751c0a7dfa8e944a40\` (2026-10-15T23:46:42Z), MIT. \`llama_model_get_tok_embd_rows\` is declared in \`src/llama-ext.h\` (explicit staging/WIP header) and reads static \`model->tok_embd\` rows to F32; it is not contextual hidden-state/final-RMSNorm extraction. The implementation performs per-row backend reads and can partially write before returning 0 on a later invalid token.
+- Core wrapper must prevalidate every ID, verify actual model/vocab/tensor and extractor binary hashes, bound \`n_tokens × n_embd\` for uint32 and memory, and discard output on any non-exact element count. The current V14 llama.cpp pin \`b29c606e28a01b1bc8c1351026a0fa6e616bf6c4\` predates the API.
+- PR #2503 schema-v2 receipt contract is correct to label the API STAGING_WIP and bind ordered IDs/model/extractor provenance. Exact workflow 45658242985: 66 tests PASS on Python 3.13 and 3.14; 45658242958 runtime integrity and 45658243238 staged regression SUCCESS. No native build, real GGUF row read or Android ABI evidence.
+- Static input embeddings are only a receiver baseline, not true B3 latent coupling. Actual B3 still needs sender contextual activations, trainable cross-architecture projection, receiver injection/read, held-out task utility, zero/shuffle/repeat/OOD controls, gradient/parameter diff, retention, restart and rollback. Keep B3 OFF.
