@@ -100,9 +100,13 @@ def _runtime(*, status="FINAL", receipt=None, c4=None, body_rows=(), runner_extr
 
 def _native_receipt(packet_id):
     return {
+        "revision": "v13.native-offer-prompt-receipt/1",
         "status": "RENDERED_WITH_QUOTES",
+        "native_template_rendered": True,
         "native_template_submitted": True,
         "native_completion_http_200": True,
+        "source_span_revalidated_here": False,
+        "native_semantic_use_proven": False,
         "native_prompt_sha256": "a" * 64,
         "native_token_ids_sha256": "b" * 64,
         "native_prompt_tokens": 173,
