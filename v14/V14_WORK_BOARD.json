@@ -118,8 +118,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android companion durable action journal; open_url expiry/cancellation; privacy-preserving terminal records",
       "acceptance": "EXPIRED/CANCELLED rows remove full URL path/query from request_json and legacy target column while preserving host/digest; pending requests remain usable; Android Gradle/Robolectric and restart tests pass",
-      "proof_environment": "PR #2528 code commit 63b05800: Android Gradle/Robolectric SUCCESS (run 45769108967), including malformed-JSON/fragment regression. Code commit 96e8c54: strict 11-field envelope guard; Android Gradle/Robolectric SUCCESS on PR-head run 45769580810; emulator process-restart still IN_PROGRESS. New exact submitLocked negative-path test commit 2526e24: Android Gradle/emulator/security jobs QUEUED/IN_PROGRESS (runs 45770231218 / 45770226511 / 45770226583). LOCAL_LINUX Android build BLOCKED (Gradle/SDK absent); REDMI_UNVERIFIED; private relay HEALTH #959 and PIPELINE_STATUS #960 returned NO_LIVE_RECEIPT.",
-      "next_step": "Verify exact-head commit 2526e24 Android Gradle/Robolectric and emulator process-restart checks, including the real submitLocked rejection-before-persistence test; then request independent QA review. Do not promote companion receipts to device observation or T8 learning.",
+      "proof_environment": "PR #2528 code commit 2526e24: Android Gradle/Robolectric SUCCESS (run 45770231218), including the provider submitLocked negative-path test. Offline bridge security SUCCESS (run 45770226583). Emulator process-restart remains IN_PROGRESS on run 45770231218. Earlier exact-head Android Gradle/Robolectric also SUCCESS on run 45769580810. LOCAL_LINUX Android build BLOCKED (Gradle/SDK absent); REDMI_UNVERIFIED; private relay HEALTH #959 and PIPELINE_STATUS #960 returned NO_LIVE_RECEIPT.",
+      "next_step": "Wait for exact-head emulator process-restart run 45770231218; if it passes, request independent QA review of PR #2528. If it fails, repair and rerun. Keep the signed ActionOutcome receipt-only and do not promote it to device observation or T8 learning.",
       "user_action_required": false
     }
   ]
