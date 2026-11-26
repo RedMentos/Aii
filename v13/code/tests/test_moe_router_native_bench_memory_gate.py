@@ -62,6 +62,17 @@ class PairGateIntegrationTests(unittest.TestCase):
             self.mod.main()
         return json.loads(out.read_text()), run_tap.call_count
 
+    def test_run_tap_measures_real_proc_vmhwm_for_child(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            fake = root / "fake_tap.py"
+            fake.write_text("#!/usr/bin/env python3\nimport time\npayload = bytearray(24 * 1024 * 1024)\ntime.sleep(0.3)\n")
+            fake.chmod(0o700)
+            result = self.mod.run_tap(str(fake), "unused.gguf", root / "ids.jsonl", root / "tap-out", 1)
+            self.assertEqual(result["vmhwm_status"], "MEASURED")
+            self.assertGreater(result["vmhwm_mb"], 16.0)
+            self.assertGreater(result["memavailable_before_mib"], 0)
+
     def test_insufficient_memory_skips_concurrent_processes(self):
         result, calls = self._run_main(1911.0)
         self.assertEqual(result["pair"]["status"], "SKIPPED_RESOURCE_GATE")
