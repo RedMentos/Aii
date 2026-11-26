@@ -2228,3 +2228,16 @@ The previous next step (“implement a same-model LFM2 sequence-state roundtrip�
 **Next concrete action:** Core rebase #2525 onto latest #2524 and expose the Perception opt-in as a separate local-lab flag, default OFF. Then run the native roundtrip on an already-present, explicitly approved LFM2 GGUF with 32–64 continuation tokens and record actual state bytes, capture/restore duration, peak RSS, max/RMS logit delta and truncated-restore rejection. After that, extend the source prefill from BOS to a real LATENT_CANDIDATE and only then test different-weight sender/receiver transfer with zero, shuffled and wrong-donor controls.
 
 **Device/deployment:** REDMI_UNVERIFIED; no fresh authenticated receipt; no update request; NOT_RELEASED; no deployment. No user action required. No model, weight, permission or user-data mutation. B3 remains OFF; this is not cross-model latent coupling or whole-system acceptance.
+
+
+## Research & Perception — verified checkpoint 2026-11-26 (Run 47)
+
+The native receiver task-utility result now separates system gain against NO_MESSAGE from source-specificity gain against the existing ENTITY_SUBSTITUTION counterfactual. This prevents an overall target-logprob improvement from being treated as evidence that the paired latent content mattered. It is still a teacher-forced likelihood proxy; the entity counterfactual is not a full unrelated-question derangement, and semantic use remains unproven.
+
+- PR #2524, current branch head 7bd80e419c851471d95b44cc032efe205a23ab91.
+- LOCAL_LINUX isolated CPython 3.13.5 gate check: 3/3 PASS. Full local Aii suite: NOT_RUN. Exact GitHub native/staged workflows 45856881120 and 45856880943 were still in progress at checkpoint; offline RuntimeDeploy integrity 45856880964 PASS.
+- Draft-KV (arXiv:2609.34754; official code Apache-2.0) motivates matched-versus-deranged evaluation; the Aii implementation is a narrower entity-counterfactual diagnostic only. HST (arXiv:2611.08133) reinforces that full hybrid-state transfer requires continuation compatibility, not just state reconstruction.
+- Core PR #2525 needs to rebase onto #2524 head 7bd80e4 and refresh its exact source pins before the staged/integrated Runtime consumer can be accepted.
+- No real GGUF, Android/Termux, Redmi, updater or deployment test was performed. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED. No model, weight, permission, app or user data was changed.
+
+**No user action required.** The next step is internal CI/rebase work; any future native GGUF run must use an already-present model and separate explicit local approval.
