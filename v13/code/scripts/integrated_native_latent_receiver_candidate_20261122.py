@@ -136,8 +136,10 @@ REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'pro
 REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
-OPERATOR_HELP_OLD = '''    """:callosum status/shadow/active/degrade/promote plus local one-shot native taps."""\n'''
-OPERATOR_HELP_NEW = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm|arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|revoke-tokenwise-pair]"""\n'''
+OPERATOR_HELP_OLD = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+'''
+OPERATOR_HELP_NEW = '''    """:callosum controller plus local one-shot native receiver and tokenwise diagnostics."""
+'''
 OPERATOR_PREFIX_NEW = r"""    c=controller(r)
     if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
@@ -194,7 +196,8 @@ def apply_sources(code_dir,sources):
     callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
     callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")
     callosum=_replace(callosum,b"    c=controller(r)\n",OPERATOR_PREFIX_NEW.encode("utf-8"),"Callosum operator prefix")
-    callosum=_replace(callosum,OPERATOR_ERROR_OLD.encode("utf-8"),OPERATOR_ERROR_NEW.encode("utf-8"),"Callosum operator error help")
+    if b"native-probe <sender>" not in callosum or b"arm-probe <sender>" not in callosum:
+        raise ValueError("Callosum operator help lacks the source-bound native probe commands")
     compile(callosum,"v13/callosum.py","exec")
     result["v13/cognition.py"]=cognition
     result["v13/callosum.py"]=callosum
