@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'd203a691f356049eb197b5cf14212e2afc5e36846512077bc47eff010b441269',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '69c3aa84623c22e065123c9e101f21aa7853556a60499a9a53df5f81c85f4ab4',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -76,7 +76,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '5c17b575ea5083df2972593b8c104dcb10018aae16f7c27f69f962b7c393ad47')
+                      '690f0e18a81a98915be645197664ff5bde42cd2d685de6cf2db4ebc2ca4b923c')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -163,7 +163,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '65b2939533fe4de16d2b003c4ac908e425aae10f6fa16b575d7ac79c9a519ae3')
+                     'dfe9a84e3437de92483dbbda043b5b33014d1a8dcc6e9f6d42ec5c498ec38d02')
     # Preserve the exact source pins even when this Runtime already carries the
     # fair-budget implementation; the legacy overlay must not be applied twice.
     for name, expected in observers.PINS.items():
@@ -217,12 +217,12 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '39827b0eb64a2e52d633f98b06fd1fb7cba5701bf6fa667e05a42f2d78f77bcf':
+        if hashlib.sha256(raw_candidate).hexdigest() != '7aefac8e63e4f210b7f2d2aa6189448b5b91c0efcebeba71102478e31dfa0479':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'e2d0802a5a8173c13f827f0cbd4532184d8fd34c69b539f16ee3579bf5eede2b':
+        if hashlib.sha256(runtime).hexdigest() != '2330ae3e7d63ef9c895fc0130bf1a1e9bf403d0778fb79fb5fc02a3e8190145a':
             raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
@@ -264,7 +264,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'f98fd6e8e08823baa5b5037f9858b5914ce1f3efc34a675844a3570c0474da84')
+                             'b8ca23922430689f8fcfc90c60e50cd649d16cf92e856e54645ce0ea3e3063dc')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.

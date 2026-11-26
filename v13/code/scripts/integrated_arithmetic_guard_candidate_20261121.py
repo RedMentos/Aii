@@ -14,7 +14,7 @@ from pathlib import Path
 # raw-file SHA-256. Never compare a 64-hex SHA-256 value with git_blob_sha1().
 SOURCE_PINS = {
     "v13/arithmetic_reflex.py": "b721b769157b3df3936752419c5b93bed78bc347",
-    "v13/runtime.py": "1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47",
+    "v13/runtime.py": "6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df",
 }
 SOURCE_GIT_BLOB_PINS = {
     "v13/arithmetic_reflex.py": SOURCE_PINS["v13/arithmetic_reflex.py"],

@@ -1,3 +1,20 @@
+# Core & Harness — verified checkpoint (2026-11-26 07:10 UTC)
+
+**Current work:** [PR #2529](https://github.com/RedMentos/Aii/pull/2529), branch `core/v14-greeting-fastpath-runtime-20261126-run1`, exact code/test head `b8e68c9cb65c987da46004438b2404aff2e8650e`. DRAFT / NOT_RELEASED.
+
+- The exact whole-text greeting reflex now verifies the full text SourceRef: start 0, end equal to the input's character length, and SHA-256 equal to the UTF-8 input. It rejects malformed modality declarations and audio/image/video source fields. The Runtime still commits through the existing C5 fixed-rule path; questions and mixed-modality inputs fall through to the normal multi-organ route.
+- **LOCAL_LINUX, CPython 3.13.5:** exact fetched module/test Git blob hashes match GitHub; py_compile PASS; focused matcher tests 2/2 PASS. The old implementation's negative control fails as expected because it accepts a mismatched SourceRef hash together with `modalities="image"`. Full Aii checkout/runtime suite NOT_RUN: no checkout mounted and GitHub DNS fails.
+- **Exact CI:** run [45773215054](https://github.com/RedMentos/Aii/actions/runs/45773215054) SUCCESS on Python 3.13 and 3.14; each has py_compile PASS, runner-retention 9/9, arithmetic 22/22, greeting Runtime/fallthrough 4/4.
+- **Integration blocker:** shared staged/integrated run [45773214858](https://github.com/RedMentos/Aii/actions/runs/45773214858) FAIL. Staged: 33 failed / 253 passed / 10 skipped / 2 errors / 37 subtests; integrated: 1 failed. The strict integrated-online-world consumer expects Runtime SHA-256 `1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47`, but exact current `v13/runtime.py` is `6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df`. The same stale Runtime pin propagates through postcommit, arithmetic, observer-fairness, controller guards and migration. No hash gate was weakened.
+- **Device:** last available consented private V13OBS snapshot #115 is from 2026-11-24 09:28 UTC and reported 8d932 installed/up-to-date with auto-update enabled. A later 17:50 UTC update reported AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers. Read-only requests #862–864 have no authenticated response. Current Redmi state is **REDMI_UNVERIFIED**; no restart, UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model, weight, permission or data action was performed.
+- **Deployment:** NOT_RELEASED. No updater invocation is appropriate while this is an unmerged draft. No manual Termux command is needed.
+
+**Next executable action:** coordinate a strict bottom-up rebind of the staged Runtime consumers to the exact current Runtime bytes with Boss/JEPA owners; rerun staged, integrated and two-checkout migration. Then resume the P0 same-turn B1_DETAIL + B2_GIST → C4 → C3 native path. The greeting reflex does not satisfy that acceptance.
+
+**User action required: NONE.**
+
+---
+
 # Latest Core & Harness checkpoint — 2026-11-24T20:20:29.992Z
 
 - PR #2462 current head is `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07` (release base `8d93236c753f0194224c19edc7411d8d7082b1d6`), DRAFT / NOT_RELEASED.
@@ -2030,3 +2047,18 @@ User action required: **none**. No model alternative or download is recommended 
 - **Next:** finish exact-head CI; fix any newly exposed source pin or integration failure; then Boss/QA should compose #2493 with the #2492 B1/B2→C4→C3 telemetry branch on one reviewed base and obtain fresh consented Redmi evidence after release.
 
 Run start/end time: UNKNOWN (not measured by the execution environment).
+
+---
+
+## Core & Harness — Run 28 — 2026-11-26
+
+- **New Runtime function:** the exact text-only greeting reflex is now connected to `Runtime._turn` after operator-authored exact rules and before arithmetic. It is a bounded allowlist, requires a text SourceRef, rejects mixed/non-text modality and control characters, stores a source-bound `BUILTIN_GREETING_REFLEX` answer, and uses the existing C5 fixed-rule output/commit/broker path. It is not model-generated and does not invoke native models.
+- **Full-path preservation:** “Hi, how are you?” and other non-exact messages fall through to the normal Perception/multi-organ route. This is only a greeting reflex; it does not replace B1/B2/C4/C3 or establish their nontrivial-turn utility.
+- **Code / PR:** [#2529](https://github.com/RedMentos/Aii/pull/2529), branch `core/v14-greeting-fastpath-runtime-20261126-run1`. Code-bearing head `82f3bc511529c365d96ee43b59f9451e6096465b`; latest handoff commit before this note `92e8ba6ca00853173651055b597ad556e7418049`. DRAFT / NOT_RELEASED, stacked on #2493 → #2490 → #2488.
+- **LOCAL_LINUX:** isolated exact matcher test **1/1 PASS**; exact fetched matcher and test Git blob hashes match GitHub readback. Full local Aii checkout / Runtime suite **BLOCKED / NOT_RUN** because this environment cannot resolve github.com and has no repository checkout mounted.
+- **Exact-head CI:** run [45763142595](https://github.com/RedMentos/Aii/actions/runs/45763142595) **SUCCESS** on Python 3.13 and 3.14. Per version: py_compile PASS, runner interruption/warm-retention **9/9 PASS**, arithmetic regression **22/22 PASS**, greeting Runtime + negative fallthrough **3/3 PASS**. Run [45763142633](https://github.com/RedMentos/Aii/actions/runs/45763142633) is a separate private-bridge workflow and is not evidence for greeting behavior.
+- **User effect:** exact greetings can use the deterministic C5 reflex without loading B1/B2/C3; actual Redmi TTFT/quality has not been measured. Longer questions retain the normal route.
+- **Updater / deployment:** PR is still draft and not integrated or released. No UPDATE_REQUEST or manual Termux command was sent. No current receipt for this candidate; installed-device effect remains **REDMI_UNVERIFIED**.
+- **Next:** review/integrate #2493 and #2529 on a compatible base, then measure cold/warm greeting TTFT on Redmi. The higher-priority open product gap remains useful B1_DETAIL + B2_GIST source-bound offers selected by C4 and consumed in C3 on the same nontrivial turn, followed by correct final output and a fresh phone receipt.
+
+**User action required: NONE.** No model download/swap, permission change, device action or manual Termux command is justified.
