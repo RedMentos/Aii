@@ -126,50 +126,53 @@ def _build_packet(index, pitch_bit, prosody_bit):
 
 
 def _records(count=64, seed=11):
-    if count % 4 or count < 32:
-        raise ValueError("fixture count must be divisible by four and at least 32")
+    if count % 8 or count < 32:
+        raise ValueError("fixture count must be divisible by eight and at least 32")
     rng = random.Random(seed)
     combinations = [(0, 0), (0, 1), (1, 0), (1, 1)]
-    per_goal = count // 2
-    goal_sequences = {}
-    for goal_bit in (0, 1):
-        sequence = combinations * (per_goal // len(combinations))
-        sequence += combinations[: per_goal % len(combinations)]
-        rng.shuffle(sequence)
-        goal_sequences[goal_bit] = sequence
-
+    session_count = 4
+    session_size = count // session_count
+    per_goal_per_session = session_size // 2
     records = []
-    for index in range(count):
-        goal_bit = index % 2
-        pitch_bit, prosody_bit = goal_sequences[goal_bit][index // 2]
-        action_bit = pitch_bit ^ prosody_bit ^ goal_bit
-        action = "INTERRUPT" if action_bit else "CONTINUE"
-        packet = _build_packet(index, pitch_bit, prosody_bit)
-        session_local_index = index % max(1, count // 4)
-        packet["segments"][0]["start_ms"] = session_local_index * 220
-        packet["segments"][0]["end_ms"] = session_local_index * 220 + 200
-        end_ms = packet["segments"][0]["end_ms"]
-        outcome_source = {
-            "source_id": f"world-outcome-{index}",
-            "sha256": _sha(f"outcome:{index}:{goal_bit}:{action}"),
-            "char_start": 0,
-            "char_end": 0,
-            "modality": "world/action-outcome",
-        }
-        records.append({
-            "evidence_class": "SYNTHETIC_FIXTURE",
-            "session_id": f"session-{index // max(1, count // 4)}",
-            "packet": packet,
-            "outcome": {
-                "goal_id": "goal-follow" if goal_bit else "goal-turn-taking",
-                "action_id": f"action-{index}",
-                "action_type": action,
-                "observed_at_ms": end_ms + 20,
-                "source_ref": outcome_source,
-                "learning_authority": False,
-                "action_authority": False,
-            },
-        })
+    for session_index in range(session_count):
+        goal_sequences = {}
+        for goal_bit in (0, 1):
+            sequence = combinations * (per_goal_per_session // len(combinations))
+            sequence += combinations[: per_goal_per_session % len(combinations)]
+            rng.shuffle(sequence)
+            goal_sequences[goal_bit] = sequence
+
+        for local_index in range(session_size):
+            index = session_index * session_size + local_index
+            goal_bit = local_index % 2
+            pitch_bit, prosody_bit = goal_sequences[goal_bit][local_index // 2]
+            action_bit = pitch_bit ^ prosody_bit ^ goal_bit
+            action = "INTERRUPT" if action_bit else "CONTINUE"
+            packet = _build_packet(index, pitch_bit, prosody_bit)
+            packet["segments"][0]["start_ms"] = local_index * 220
+            packet["segments"][0]["end_ms"] = local_index * 220 + 200
+            end_ms = packet["segments"][0]["end_ms"]
+            outcome_source = {
+                "source_id": f"world-outcome-{index}",
+                "sha256": _sha(f"outcome:{index}:{goal_bit}:{action}"),
+                "char_start": 0,
+                "char_end": 0,
+                "modality": "world/action-outcome",
+            }
+            records.append({
+                "evidence_class": "SYNTHETIC_FIXTURE",
+                "session_id": f"session-{session_index}",
+                "packet": packet,
+                "outcome": {
+                    "goal_id": "goal-follow" if goal_bit else "goal-turn-taking",
+                    "action_id": f"action-{index}",
+                    "action_type": action,
+                    "observed_at_ms": end_ms + 20,
+                    "source_ref": outcome_source,
+                    "learning_authority": False,
+                    "action_authority": False,
+                },
+            })
     return records
 
 
@@ -227,7 +230,7 @@ class AudioFeatureSetProbeTests(unittest.TestCase):
         self.assertEqual(result["session_count"], 4)
 
     def test_shuffled_time_permutation_control_breaks_pairing(self):
-        result = evaluate_feature_set(_records(), seed=17, permutations=64)
+        result = evaluate_feature_set(_records(128), seed=17, permutations=64)
         self.assertLess(result["shuffled_time_cmi_p95_bits"], 0.35)
         self.assertLessEqual(result["permutation_p_value"], 0.05)
         self.assertGreater(result["feature_set_goal_action_cmi_bits"],
