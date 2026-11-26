@@ -21,6 +21,34 @@ from .context_os import VOLATILE_HEAD
 REVISION = "v13.native-prompt-admission/1"
 # Ordered from redundant system state to progressively useful historical cues.
 REMOVABLE_C3 = ("task_context", "digest", "user_model")
+
+def register_store_telemetry():
+    """Persist bounded native input evidence, never prompt or hypothesis text."""
+    from . import store
+
+    store.TELEMETRY_FIELDS.update({
+        "prompt_admission", "revision", "native_prompt_tokens", "native_tokenizer",
+        "rendered_prompt_sha256", "native_token_ids_sha256", "target_tokens",
+        "original_prompt_tokens", "removed_layers", "source_text_rewritten",
+        "synthetic", "cache_n",
+    })
+    store.TELEMETRY_ENUMS.update({
+        REVISION, "ADMITTED", "PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET",
+        "LLAMA_SERVER_TOKENIZE",
+        "BODY_SOURCE_ADDRESS_METADATA",
+        "BODY_DUPLICATE_EXECUTIVE_SOURCE_REFS",
+        "BODY_NON_SOURCE_STATE_DETAIL",
+        "BODY_DUPLICATE_EXACT_DETAIL_WINDOWS",
+        "BODY_GLOBAL_SPACE_POINTER_METADATA",
+        "BODY_DUPLICATE_STREAM_SOURCE",
+        "BODY_OLDER_SELF_OUTCOMES_NOT_IN_NATIVE_VIEW",
+        "C3_LAYER_TASK_CONTEXT", "C3_LAYER_DIGEST",
+        "C3_LAYER_USER_MODEL", "OLD_NATIVE_HISTORY",
+    })
+
+
+# LlamaRunner imports this module before recording body_offer_attempt telemetry.
+register_store_telemetry()
 def soft_limit(role, cfg, remaining):
     """BOOT token cap: reserve output/decode time before full native prefill."""
     if role not in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST"):
