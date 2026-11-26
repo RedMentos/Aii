@@ -1,6 +1,6 @@
 # V14 USER NEXT ACTION — Core & Harness Run 3 (2026-11-26)
 
-**Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, exact head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8`. It is stacked on Core PR #2515; it is not merged or released.
+**Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, code head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8` (the PR branch was subsequently advanced to `68c3de91ede75bd0d1381524690e46505451aeda` by handoff-only documentation commits; no code changed after the green CI). It is stacked on Core PR #2515; it is not merged or released.
 
 ## What changed and what is proven
 
