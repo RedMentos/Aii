@@ -1,6 +1,6 @@
 ## Research & Perception Run 45 — session-stratified A4/A5 information probe (2026-11-26T15:15:28+01:00)
 
-**Owner:** Research & Perception. **Branch:** `research-perception/v14-audio-temporal-window-order-20261126-run41b`. **PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT, currently stacked on Perception #2524. **Exact head:** `4d1dc7a3315c8fec0016d1162f361f431ee0a4c1`.
+**Owner:** Research & Perception. **Branch:** `research-perception/v14-audio-temporal-window-order-20261126-run41b`. **PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT, currently stacked on Perception #2524. **Current PR branch HEAD:** `c9fb9212ac8f8f3bd7a5fedfd506cc22d70ded2d` (docs-only checkpoint after tests). **Tested code/test HEAD:** `4d1dc7a3315c8fec0016d1162f361f431ee0a4c1`.
 
 **Concrete defect / Canon path:** the A4/A5 shadow feature-set probe conditioned acoustic feature/action information only on goal, required one globally monotonic timestamp sequence, shuffled outcomes across sessions, and computed self-predictive MI across session boundaries. That can reject valid independently clocked sessions and allow between-session feature/outcome confounding to look like within-session predictive value. Canon paths: A4 salience/attention, A5 source-bound PerceptPacket, active perception evaluation; no learning authority is implied.
 
