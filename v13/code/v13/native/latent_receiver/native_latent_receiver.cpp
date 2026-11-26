@@ -690,11 +690,15 @@ bool run_hybrid_state_roundtrip(
         max_abs_logit_diff <= 1.0e-4 && rms_logit_diff <= 1.0e-5;
 
     std::ostringstream out;
-    out << "{\"schema\":\"v14.native-hybrid-state-roundtrip/1\""
+    out << "{\"schema\":\"v14.native-hybrid-state-roundtrip/2\""
         << ",\"status\":\"READ_ONLY_ROUNDTRIP\""
         << ",\"state_api\":\"LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA\""
         << ",\"state_scope\":\"FULL_HYBRID_SEQUENCE\""
         << ",\"state_components\":[\"ATTENTION_KV\",\"RECURRENT_SHORTCONV\"]"
+        << ",\"prefill_condition\":\"LATENT_CANDIDATE\""
+        << ",\"prefill_rows\":" << prefill.rows
+        << ",\"prefill_input_sha256\":\"" << prefill_input_sha256 << "\""
+        << ",\"prefill_decode_status\":" << source_prefill_status
         << ",\"source_sequence_id\":0,\"destination_sequence_id\":0"
         << ",\"state_bytes\":" << state_size
         << ",\"get_size_bytes\":" << state_size
@@ -726,7 +730,7 @@ void print_version() {
     std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown")
-              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/1\"}\n";
+              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
@@ -959,9 +963,10 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
             : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
-        if (include_hybrid_state_roundtrip && item.condition == "NO_MESSAGE") {
-            if (!run_hybrid_state_roundtrip(model.value, context_params,
-                                            target_tokens, hybrid_state_roundtrip_json)) {
+        if (include_hybrid_state_roundtrip && item.condition == "LATENT_CANDIDATE") {
+            if (!run_hybrid_state_roundtrip(model.value, context_params, item,
+                                            input_dim, output_dim, target_tokens,
+                                            hybrid_state_roundtrip_json)) {
                 std::cerr << "native full-hybrid same-model roundtrip failed\n";
                 return 9;
             }
