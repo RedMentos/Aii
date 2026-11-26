@@ -340,6 +340,26 @@ def _valid_expiry(value):
         return False
 
 
+def _valid_approval_window(record, *, now=None):
+    if not isinstance(record, dict):
+        return False
+    issued_at = record.get("issued_at")
+    expires_at = record.get("expires_at")
+    if not _valid_expiry(issued_at) or not _valid_expiry(expires_at):
+        return False
+    current_time = time.time() if now is None else now
+    issued = float(issued_at)
+    expires = float(expires_at)
+    lifetime = expires - issued
+    if lifetime <= 0 or lifetime > TTL_SECONDS + 2:
+        return False
+    if issued > current_time + 2:
+        return False
+    if current_time < expires and current_time - issued > TTL_SECONDS + 2:
+        return False
+    return True
+
+
 def _approval_liveness(runtime, record, *, now=None):
     """Classify a persisted one-shot approval without changing Store state."""
     if not isinstance(record, dict) or record.get("schema") != SCHEMA:
@@ -347,10 +367,10 @@ def _approval_liveness(runtime, record, *, now=None):
     if record.get("status") != "PENDING":
         return record.get("status") if type(record.get("status")) is str else "INVALID_RECORD"
 
-    expires_at = record.get("expires_at")
-    if not _valid_expiry(expires_at):
-        return "INVALID_EXPIRY"
     current_time = time.time() if now is None else now
+    expires_at = record.get("expires_at")
+    if not _valid_approval_window(record, now=current_time):
+        return "INVALID_EXPIRY"
     if current_time >= expires_at:
         return "EXPIRED"
 
@@ -456,7 +476,7 @@ def _consume_approval(runtime, nonce, expected_binding_sha256, receipt, lease_to
     if (record.get("status") != "PENDING"
             or record.get("nonce") != nonce
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or not _valid_expiry(record.get("expires_at"))
+            or not _valid_approval_window(record, now=now)
             or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt.get("matrix_sha256")
             or record.get("approval_binding_sha256") != expected_binding_sha256
@@ -491,7 +511,7 @@ def _run(runtime):
     now = time.time()
     if (record.get("status") != "PENDING"
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or not _valid_expiry(record.get("expires_at"))
+            or not _valid_approval_window(record, now=now)
             or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt["matrix_sha256"]
             or record.get("approval_binding_sha256") != receipt["approval_binding_sha256"]
@@ -626,7 +646,7 @@ def _status(runtime):
     expires_at = (
         approval_record.get("expires_at")
         if isinstance(approval_record, dict) and approval_record.get("schema") == SCHEMA
-                and _valid_expiry(approval_record.get("expires_at"))
+                and _valid_approval_window(approval_record)
         else None
     )
     approval_liveness = _approval_liveness(runtime, approval_record)

@@ -3,6 +3,7 @@ import hashlib
 import json
 import struct
 import sys
+import time
 import threading
 import types
 
@@ -415,7 +416,9 @@ def test_matrix_clear_invalidates_expired_approval(monkeypatch, tmp_path):
     runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
     matrix_runtime._arm(runtime)
     state, version = runtime.store.state(matrix_runtime.KEY, None)
-    state["expires_at"] = -1
+    now = time.time()
+    state["issued_at"] = now - matrix_runtime.TTL_SECONDS - 1
+    state["expires_at"] = now - 1
     runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
 
     status = matrix_runtime._status(runtime)
@@ -425,6 +428,25 @@ def test_matrix_clear_invalidates_expired_approval(monkeypatch, tmp_path):
     matrix_runtime._clear(runtime)
     final, _ = runtime.store.state(matrix_runtime.KEY, None)
     assert final["status"] == "EXPIRED"
+    assert matrix._closed is True
+
+
+def test_matrix_approval_cannot_extend_beyond_its_issued_ttl(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    now = time.time()
+    state["issued_at"] = now - 10
+    state["expires_at"] = now + matrix_runtime.TTL_SECONDS * 10
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "INVALID_EXPIRY"
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "INVALID_EXPIRY"
     assert matrix._closed is True
 
 
