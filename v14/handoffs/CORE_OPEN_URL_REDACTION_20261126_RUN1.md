@@ -19,7 +19,7 @@
 - Emulator process-restart job from run 45769108967 was still **IN_PROGRESS** at last read.
 - Latest hardening commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`: Android Gradle, emulator process-restart and offline-security jobs queued (runs 45769457984 / 45769457901). No PASS is claimed until they finish.
 - LOCAL_LINUX: Java 21 present; Gradle absent; Android SDK variables unset. Android Gradle/Robolectric is BLOCKED locally. Full checkout also BLOCKED by GitHub DNS.
-- TERMUX/REDMI: REDMI_UNVERIFIED; no device receipt or action.
+- TERMUX/REDMI: REDMI_UNVERIFIED; read-only private relay HEALTH #959 and PIPELINE_STATUS #960 have NO_LIVE_RECEIPT (no `device_status` comment). No device action.
 
 ## Safety / release boundary
 
