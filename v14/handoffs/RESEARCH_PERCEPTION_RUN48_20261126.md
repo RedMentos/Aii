@@ -46,6 +46,8 @@ R-168 reviews the full arXiv preprint 2611.34278v1 (submitted 2026-11-25). Chasm
 
 ## Integration and device state
 
+- Whole-system P0 issue #1904 remains OPEN. This PR is a complementary diagnostic improvement, not a basic-chat, B1/B2 offer-delivery or normal-turn fix. The last available device snapshot remains historical and reports AI STOPPED_BY_USER with zero valid B1/B2 offers.
+
 - Core PR #2525 remains DRAFT and mergeable=false. Last observed head: `9fdf321c9c14ab3b27d0d5947eaca443d5796df3`; base SHA remains stale at `b298719af8faf75811d03d486de7725395a590b0`. Core must rebase onto latest #2524 and refresh the source-pin/recovery/observer chain. Perception did not modify Core-owned files.
 - The Core consumer was previously inspected to return the Perception task-score result unchanged; the new audit fields should pass through once #2525 is rebased. This is still a diagnostic opt-in, not a normal-turn route.
 - B3 remains OFF. No real GGUF was run. No model/weight was downloaded or swapped.
