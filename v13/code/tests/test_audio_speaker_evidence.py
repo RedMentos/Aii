@@ -555,7 +555,8 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
             finality="FINAL", speaker_embeddings=changed,
         )
         assert silent["a4"]["voice_activity_hint"] == "SILENCE"
-        assert silent["speaker_change_evidence"]["confidence_gate_passed"] is None
+        assert silent["speaker_change_evidence"]["status"] == "SUPPRESSED_NON_VOICED"
+        assert silent["speaker_change_evidence"]["frame_evidence"] == []
         assert silent["speaker_change_evidence"]["speaker_change_candidate"] is None
         assert silent["a4"]["speaker_change_decision"] == "DEFER"
         assert silent["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
