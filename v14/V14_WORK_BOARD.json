@@ -68,7 +68,9 @@
         },
         "redmi": "REDMI_UNVERIFIED",
         "release": "NOT_RELEASED",
-        "next_action": "Perception rebase #2519/#2517; Core one-shot matrix consumer."
+        "next_action": "Perception rebase #2519/#2517; Core one-shot matrix consumer.",
+        "latest_pr_head_after_docs": "68c3de91ede75bd0d1381524690e46505451aeda",
+        "code_head_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8"
       }
     },
     {
@@ -1467,12 +1469,12 @@
     "base_dependency": "Core PR #2515 head 13cfe43a7a94d4b35d4a3be0249bd725b6f06c23; #2512 native tokenwise receiver consumer; Perception #2511 evaluator lineage",
     "head_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8",
     "pull_request": "https://github.com/RedMentos/Aii/pull/2520",
-    "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+    "status": "DRAFT_CI_GREEN_DOCS_ONLY_COMMITS_AFTER",
     "local_linux": "PASS: isolated C++17 SHA-256 helper compiled with -Wall -Wextra -Werror; known abc vector, little-endian token IDs [0,1,2], mismatch and negative-ID checks. Full Aii checkout/native llama.cpp build NOT_RUN because GitHub DNS failed.",
     "ci_python_313_314": "PASS: 45/45 tests on Python 3.13 and 45/45 on Python 3.14; privacy scan CLEAN.",
     "native_build": "PASS: pinned llama.cpp Linux build and native --selftest; Android arm64 cross-compile artifact PASS only (not device execution).",
     "redmi": "REDMI_UNVERIFIED",
-    "proof": "Native receiver now recomputes SHA-256 from the exact little-endian int32 target-token vector inside C++ before scoring; the emitted target-token digest is derived from the vector actually consumed, not merely echoed from the caller. Added SHA-256 known-vector, token-vector, mismatch and negative-ID selftests. Refreshed and read back the complete integrated-native-builder → recovery-builder → stage-builder → RuntimeDeploy pin chain. Exact-head CI: all seven workflows SUCCESS; native workflow 45730746076, RuntimeDeploy integrity 45730746114, two-checkout migration 45730745975, controller record-only 45730746040, Lab Age/WebView 45730746061, private owner-read bootstrap 45730745989, staged/integrated regression 45730746060. Staged/integrated: 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime: 255 passed, 10 skipped, 47 subtests. No GGUF task matrix, production B3, training authority or Redmi execution.",
+    "proof": "Native receiver now recomputes SHA-256 from the exact little-endian int32 target-token vector inside C++ before scoring; the emitted target-token digest is derived from the vector actually consumed, not merely echoed from the caller. Added SHA-256 known-vector, token-vector, mismatch and negative-ID selftests. Refreshed and read back the complete integrated-native-builder → recovery-builder → stage-builder → RuntimeDeploy pin chain. Exact-head CI: all seven workflows SUCCESS; native workflow 45730746076, RuntimeDeploy integrity 45730746114, two-checkout migration 45730745975, controller record-only 45730746040, Lab Age/WebView 45730746061, private owner-read bootstrap 45730745989, staged/integrated regression 45730746060. Staged/integrated: 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime: 255 passed, 10 skipped, 47 subtests. No GGUF task matrix, production B3, training authority or Redmi execution. Five subsequent commits through 68c3de9 update only V14 board, user handoff, workplan, research ledger and coverage index; no runtime/native source changed after the green code head.",
     "parallel_prs": [
       {
         "number": 2512,
@@ -1503,7 +1505,15 @@
       }
     ],
     "next_action": "Perception: rebase #2519 and #2517 onto this exact green #2520 head. Core: add a distinct NATIVE_RECEIVER_MATRIX one-shot TTY approval bound to matrix_sha256, source/session/generation and exact model manifests; wire the 8-condition matrix into :callosum with deadline, cancellation, resource preflight and no production/training authority. Then collect >=20 held-out task groups across >=2 sessions and >=2 task families on a pinned real GGUF in LOCAL_LINUX before any separate Redmi authorization.",
-    "code_commit_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8"
+    "code_commit_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8",
+    "branch_head_at_last_readback": "68c3de91ede75bd0d1381524690e46505451aeda",
+    "docs_only_commits_after_code_head": [
+      "e6719c7a1d7602e017c6b3a93eb500d442f73840",
+      "457aead90753196c150641e08184583b9f420d0f",
+      "71879f770399325bb41e310249a178c96b0bf14a",
+      "86a1226cc1cc12ca8defb2d6992cb5045163f121",
+      "68c3de91ede75bd0d1381524690e46505451aeda"
+    ]
   },
   "previous_core_checkpoint": {
     "owner": "Core & Harness",
