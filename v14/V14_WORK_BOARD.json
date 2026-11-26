@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T00:44:02.490Z",
+  "updated_at": "2026-11-26T00:44:58.393Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -223,7 +223,7 @@
         "pr": 2498,
         "branch": "research-perception/v14-raw-ear-next-delta-20261125-run13",
         "code_sha": "8167033a8f133c8feb89c341df3720a5db765504",
-        "latest_docs_head": "b5fa240f4f29f562aa0a771f7187504a9757c273",
+        "latest_docs_head": "393bf150d4ebcec786f5f9ee4f1bea0f8f46dd6f",
         "module_blob": "4571b12aeb665f2865d53c54561cacd2562d6f95",
         "composer_blob": "d6d634857b42fc9dd29fa9bb2481220fd414e8bf",
         "local": "CPython 3.13.5 exact fetched module py_compile PASS; 5/5 focused runtime checks PASS; full Aii checkout NOT_MOUNTED",
