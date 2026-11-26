@@ -338,10 +338,11 @@ def test_source_drift_between_arming_and_native_run_revokes_the_attempt(monkeypa
     monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
     with pytest.raises(PermissionError, match="source bytes changed"):
         matrix_runtime._run(runtime)
-    assert called == [True]
+    assert called == []
     state, _ = runtime.store.state(matrix_runtime.KEY, None)
     assert state["status"] == "FAILED_REVOKED"
     assert runtime._native_receiver_condition_matrix is None
+    assert matrix._closed is True
 
 
 def test_android_native_run_is_blocked_without_a_verified_device_receipt(monkeypatch, tmp_path):
