@@ -2393,3 +2393,12 @@ This overlay does not promote A4/A5 to real microphone perception, JEPA learning
 The A4/A5 source-bound feature-set diagnostic's actual RAW EAR extractor → A5 PerceptPacket integration passes 10/10 on Python 3.13 and 3.14 in workflow [45773907611](https://github.com/RedMentos/Aii/actions/runs/45773907611); the RAW EAR comparison passes both versions in [45773907533](https://github.com/RedMentos/Aii/actions/runs/45773907533). Classification remains **WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED** because all outcomes are synthetic and the probe is not connected to normal Runtime/attention/JEPA.
 
 The shared stage/integrated workflow [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687) fails at the Core-owned recovery audio-builder source pin (expected `831080...`, actual Perception blob `f9a0ed...`); this blocks integration/release but does not invalidate the focused A4/A5 CI. RuntimeDeploy offline checks pass but do not constitute deployment.
+
+
+## Research & Perception Run 44 — A4/A5 session-history diagnostic overlay (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A4/A5 active attention evidence evaluation | Existing shadow-only A4/A5 feature-set probe now includes a session-local discrete incremental-information proxy conditioned on goal and a coarse prior-feature history. It resets history per session and uses within-session × goal permutation controls. | PR #2527 code commit \`f4c0648af9d84dae8b8e11ab00431f24413d96a6\`, test commit \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`; LOCAL_LINUX CPython 3.13.5 scratch-equivalent compile PASS and 6/6 assertions PASS; 128-record XOR fixture across four sessions gives proxy rIMI 1.000 and permutation p=0.00775. Exact feature-set CI run 45780338189 was QUEUED at checkpoint. | Exact repository CI; real source/session-disjoint held-out outcome cohorts; temporal-drift/switch controls; normal-turn revocable audio lease; real Android provider, OS consent/revocation/zeroization; real attention utility and native/Redmi evidence. | WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED |
+
+The proxy is deliberately not the paper's exact rIMI estimator: discrete plug-in MI and a coarse prior-feature summary are used instead of Gaussian-copula MI over prediction history. No attention policy, JEPA learner, model, weight, microphone provider or Android permission is changed. P0 normal chat, B1/B2 delivery and B3 remain open/off.
