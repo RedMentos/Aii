@@ -159,7 +159,8 @@ while True:
         self.addCleanup(cleanup)
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
-            if ready.exists() and heartbeat.exists() and ready.stat().st_size:
+            if (ready.exists() and heartbeat.exists() and ready.stat().st_size
+                    and heartbeat.stat().st_size):
                 try:
                     details = json.loads(ready.read_text())
                 except ValueError:
