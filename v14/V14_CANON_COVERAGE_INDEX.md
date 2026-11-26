@@ -2412,3 +2412,8 @@ The A4/A5 feature-set and session-local relative-information proxy suite passes 
 ### Run 44 research-scope correction after R-166 full-text review
 
 R-166 is now **FULL_TEXT_REVIEWED** (12-page author-hosted PDF; August 2026 preprint). The paper's \(f(n)\) is an AAD prediction score vector and \(y(n)\) the attended-speaker state; it uses a full five-second prior-score vector for short windows, Gaussian-copula/GCMI estimation, switch-focused analysis and at least a five-minute temporal buffer (ideally across sessions). Run 44's acoustic-feature → later-action ratio is **not paper rIMI** and its feature-history dependence term is **not paper CSD**. Code/test head is being corrected to expose \`conditional_feature_history_dependence_bits\` and explicit metric scope. No attention policy, JEPA learner or Runtime consumer is changed.
+
+
+### Corrected Run 44 metric-scope code checkpoint
+
+Corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\` renames the feature-history dependence term to \`conditional_feature_history_dependence_bits\` and explicitly marks the acoustic-cue → later-action scope. Fresh exact feature-set CI is pending. The previous \`c0d68f\` head passed 14/14 on Python 3.13/3.14; do not report that as a pass on the corrected head. R-166 is now FULL_TEXT_REVIEWED; current proxy remains not paper rIMI/CSD, not runtime-wired and REDMI_UNVERIFIED.
