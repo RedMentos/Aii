@@ -445,8 +445,15 @@ def _latest_native_evidence(r):
     native_generation_completed = (not synthetic) and receipt.get("native_generation_completed") is True
     native_prefill_token_count_matched = bool(
         not synthetic and native_submitted and ids_match
+        and receipt.get("revision") == "v13.native-offer-prompt-receipt/1"
+        and receipt.get("status") == "RENDERED_WITH_QUOTES"
+        and receipt.get("native_template_rendered") is True
+        and receipt.get("native_template_submitted") is True
         and receipt.get("native_completion_http_200") is True
+        and receipt.get("source_span_revalidated_here") is False
+        and receipt.get("native_semantic_use_proven") is False
         and native_generation_completed
+        and native_prompt_sha256 and native_token_ids_sha256
         and native_prompt_tokens is not None and native_prompt_tokens > 0
         and native_prefill_prompt_tokens == native_prompt_tokens
         and _count(runner.get("prompt_tokens")) == native_prompt_tokens
