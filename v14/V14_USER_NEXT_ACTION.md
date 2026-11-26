@@ -1,3 +1,34 @@
+# Latest Core & Harness checkpoint — 2026-11-26
+
+**User action: none.** No model download/swap, weight change, permission change, device action, UPDATE_REQUEST or manual Termux command was made. The release-development branch is still `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`; the current work below is on a draft Core branch and is NOT_RELEASED.
+
+## Core Run 29 — Android action privacy lifecycle and CI coverage
+
+- **Product fix under review:** PR [#2528](https://github.com/RedMentos/Aii/pull/2528), based on Android action API PR #2513. Its code redacts an `open_url` action's full URL path/query from durable `request_json` and the legacy `package_name` column when the action becomes `EXPIRED` or `CANCELLED`; it retains only the public host and request digest. Still-pending approvals keep their URL until the approval/receipt lifecycle ends. The tests cover direct expiry, bulk expiry through `:pending`, cancellation, and the negative case where a still-live request must not be redacted.
+- **Run 29 CI wiring commit:** `4df2dcaa67f5a8a1ce652af8c4ad965f07ffbffd` adds the #2528 head branch to the Android companion push workflow and its #2513 base branch to the pull-request filter. Exact file readback confirmed both entries.
+- **Exact checks before the wiring commit:** #2528 head `a6ff0bb4d4c895fc91fd81b3b865d6a89e82ef14` had `offline-bridge-security` **1/1 SUCCESS** (run 45761468951). The Android Gradle/Robolectric and emulator process-restart workflows had not run on that branch because the branch filters omitted it.
+- **Exact checks after the wiring commit:** commit `4df2dcaa67f5a8a1ce652af8c4ad965f07ffbffd` has `offline-bridge-security`, `android-companion`, and `android-companion-process-restart` queued (runs 45768878895 and 45768878879). No PASS is claimed until those runs finish.
+- **LOCAL_LINUX:** Java 21 is present. `gradle --version` is BLOCKED because Gradle is not installed; `ANDROID_HOME` and `ANDROID_SDK_ROOT` are unset. Full local Android build/Robolectric is therefore BLOCKED. A local `git ls-remote` also failed because this environment cannot resolve `github.com`; no full local Aii checkout/pytest ran.
+- **TERMUX/REDMI:** REDMI_UNVERIFIED. No private owner-read receipt was requested and no phone action was attempted. This candidate is not deployed.
+
+## Other current Core integration risks
+
+- **PR #2529** exact head `af8a00d5cc4edc85a769da3925c3d1ed3accec3b`: Python 3.13/3.14 focused jobs pass, but exact staged-runtime fails (**33 failed, 253 passed, 10 skipped, 2 errors**) and integrated-regression fails (**1 failed**). The failure is not a greeting assertion: multiple frozen candidate builders reject the changed `v13/runtime.py` SHA (expected 1a0f…; actual SHA shown by CI 6f4e…), with dependent arithmetic/observer pin checks and two migration expectations also failing. This needs a coordinated owner-safe pin-chain rebind; do not merge or claim the greeting is integrated.
+- **PR #2525** exact head `9fdf321c9c14ab3b27d0d5947eaca443d5796df3`: Core Runtime/Callosum K/V-aware native receiver matrix checks **14/14 SUCCESS**. This proves the CI consumer path only. Its Perception base #2524 still has Python/staged/integrated failures; no real GGUF pair, trained latent utility, production B3 or Redmi proof is established.
+- **PR #2512** tokenwise receiver consumer checks are green on its exact head, but its bounded lab cohort and native diagnostic are not production B3 or trained latent acceptance.
+
+## Next internal actions
+
+1. Verify the newly queued Android Gradle/Robolectric and emulator process-restart jobs for #2528; repair any exact-head failure before review.
+2. Coordinate with Boss/QA/JEPA on #2529's runtime.py source-pin cascade without editing another owner's files blindly.
+3. Wait for Perception's exact #2524 repair, then rerun the full #2525 composed matrix. Keep B3 OFF until held-out task utility and negative controls pass.
+4. Continue the P0 nontrivial B1/B2 → C4 → C3 correct-answer path; greeting reflex is only a bounded trivial-input reflex.
+
+**Deployment:** GitHub push is not deployment. No verified current Redmi installation receipt is available for these draft changes. **NOT_RELEASED / REDMI_UNVERIFIED.**
+
+
+---
+
 # Latest verified QA & Android checkpoint — 2026-11-23
 
 **No user action is required.** The existing updater already reports the release-development head `aed1d2b826290c95c70356b5d8b864b5ef382be4` installed on Redmi. Do not rerun Termux, send another UPDATE_REQUEST, download models, or change permissions/weights.
