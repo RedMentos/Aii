@@ -1574,3 +1574,16 @@ The previously pending staged/integrated run 45678205707 has now completed PASS:
 **Evidence/limits:** exact CI on `8f7c73065e8f92e5988fe12fa88038dc41ece530`: focused task-score/condition suite 26/26 PASS on Python 3.13 and 3.14; pinned llama.cpp Linux build/selftest PASS; Android arm64 cross-compile PASS (compile only); RuntimeDeploy offline Python 3.11/3.14 PASS; privacy scan CLEAN. Shared staged/integrated remains FAIL on the Core-owned source pin for `v13/native_latent_receiver.py`. LOCAL_LINUX scratch helper/aggregate reproduction 5/5 PASS; full Aii checkout/pytest NOT_RUN (no checkout mounted; GitHub DNS unavailable). No real GGUF cohort, answer correctness, trained latent coupling, gradients/retention, Android/Termux or Redmi proof. B3 OFF; REDMI_UNVERIFIED; NOT_RELEASED.
 
 **Sources:** https://arxiv.org/abs/2606.28958 ; https://arxiv.org/abs/2609.00891 ; https://github.com/WHU-XingyuQu/CacheBridge ; https://github.com/WHU-XingyuQu/CacheBridge/blob/main/LICENSE_STATUS.md
+
+
+## R-163 — FASTDIAR as an optional streaming speaker-evidence candidate (2026-11-26)
+
+**Review status:** ABSTRACT_VERIFIED / OFFICIAL_REPOSITORY_REVIEWED; full paper text was not available in this scan, so no full-text claim is made. Torgashov & Köpüklü, *FASTDIAR: Frame-Level Speaker Encoder for Streaming Diarization*, arXiv:2610.02941, submitted 2026-10-02 (preprint; no peer-reviewed venue confirmed in the inspected record).
+
+**Primary evidence:** the abstract describes a causal frame-level speaker encoder with online confidence-gated clustering and a fixed 960 ms output delay; it reports CPU real-time factor around 5× on its evaluated setup. The official repository `microsoft/fastdiar` lists small/medium/large checkpoints of 2.4M/4.6M/10.4M parameters, float16 192-D embeddings every 80 ms, and CPU chunk defaults of 320 ms. The repository code license is MIT. It documents PyTorch, torchaudio, torchcodec and FFmpeg dependencies; the README does not establish a separate license for the released checkpoint weights.
+
+**V14 relevance:** potential optional speaker-embedding teacher/feature source for A4/A5 streaming evidence, not a calibrated speech truth signal and not a replacement for RAW EAR acoustic/prosodic/non-speech cues. The paper's 960 ms delay and repository's 320 ms CPU update chunk are distinct measurements; do not conflate them. No ARM64/Termux/Redmi benchmark, memory measurement or Android dependency proof was found. PyTorch + audio decoding dependencies are a substantial integration burden for the current mobile target.
+
+**Decision:** no code or weights copied; no checkpoint downloaded; no model swap. Keep as a research candidate only until the checkpoint license is explicit and a small-model CPU/ARM test can measure TTFT/RTF/RSS, latency, speaker-change stability, overlap failure and retention against the existing source-bound speaker evidence. Any download/try or production replacement requires separate explicit user approval.
+
+**Sources:** https://arxiv.org/abs/2610.02941 ; https://github.com/microsoft/fastdiar ; https://github.com/microsoft/fastdiar/blob/main/LICENSE ; https://github.com/microsoft/fastdiar/releases/tag/v0.1.0
