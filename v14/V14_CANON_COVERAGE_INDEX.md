@@ -2328,3 +2328,13 @@ This is a provenance and input-construction improvement, not a trained latent ch
 | B3 / Enlightened Space — tokenwise receiver | In-memory cohort fit → anchor-preserving receiver input → separate NATIVE_RECEIVER-approved native diagnostic API. | Draft PR #2512, head `6ff13917a9736a292716becdb2e50a1ac7f9b288`; parent Core #2510 and Perception #2511; exact-head CI queued. | Local native GGUF execution, real Redmi receipt, generated/task-level utility, OOD/retention/restart/rollback, durable candidate lifecycle, production B3 route. | WIRED_SYNTHETIC; REDMI_UNVERIFIED |
 
 This is a diagnostic input consumer only. It does not demonstrate semantic B3 coupling or permanent model-weight learning.
+
+
+## Core & Harness Run 3 — native target-token provenance overlay (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — native target scoring | C++ receiver recomputes SHA-256 from the exact little-endian int32 target-token IDs it consumes; receipt emits the verified digest. Bounded teacher-forced likelihood scoring remains diagnostic only. | Draft PR #2520 exact head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8`; all 7 workflows SUCCESS. LOCAL_LINUX isolated C++17 digest helper PASS; pinned llama.cpp Linux build/selftest PASS; Android arm64 cross-compile PASS only; Python 3.13/3.14 45/45 each; staged/integrated 424 passed/3 skipped/58 subtests; staged runtime 255 passed/10 skipped/47 subtests. | Rebased eight-condition matrix consumer, >=20 held-out groups, >=2 sessions, >=2 task families, real GGUF utility beating every control, retention/restart/rollback, authorized Redmi measurement. | CODE_PRESENT / NATIVE_LINUX_CI_BUILD_SELFTEST / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+| Android device control — HTTPS open_url | Core PR #2513 adds a visible-consent HTTPS ACTION_VIEW capability with signed DISPATCHED_UNVERIFIED outcome and redaction; command-specific `:android` help exposes the subcommand. | Draft PR #2513 head `736233e5af847706bd0270da2051fcdd973b4a8f`; Python DER and Java JSON test fixes pushed; exact-head Android/staged CI still in progress. | Independent Boss/QA review, final exact-head CI, APK install, real consent, receipt persistence/restart, Redmi verification. | CODE_PRESENT / DRAFT_CI_PENDING / DEVICE_UNVERIFIED |
+
+This overlay does not promote B3, Android device control or any other Canon family. Current release remains b20e9; the latest private phone receipt #767 predates the green release CI. Whole-Canon semantic coverage remains incomplete.
