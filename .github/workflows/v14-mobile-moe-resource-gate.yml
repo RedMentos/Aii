@@ -41,7 +41,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: \${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
       - name: Install only the benchmark's numeric dependency
         run: python -m pip install numpy==2.3.5
       - name: Compile exact benchmark and focused tests
@@ -56,5 +56,5 @@ jobs:
       - name: Scan changed public content
         if: always()
         env:
-          BASE_REF: \${{ github.event.pull_request.base.ref || 'gpt6/v13-private-remote-bridge-20261111' }}
-        run: python v13/code/scripts/public_repo_privacy_scan.py --base "origin/\${BASE_REF}" --head HEAD --no-worktree
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'gpt6/v13-private-remote-bridge-20261111' }}
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base "origin/${BASE_REF}" --head HEAD --no-worktree
