@@ -35,12 +35,20 @@ def apply_sources(code_dir, sources):
     runtime = result.get('v13/runtime.py', originals['v13/runtime.py'])
     runtime = replace(runtime,
         b'                def ask(role,focus=None,use_peer=True):\n',
-        b'                def ask(role,focus=None,use_peer=True,role_end=None):\n', 'ask')
+        b'                def ask(role,focus=None,use_peer=True,role_end=None,preanswer_budgeted=True):\n', 'ask')
     runtime = replace(runtime,
         b'                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),',
         b'                    native_end=min(observer_end,time.monotonic()+observer_seconds)\n'
         b'                    if role_end is not None:native_end=min(native_end,role_end)\n'
         b'                    p=self.cognition.offer(role,e,version,native_end,', 'native deadline')
+    runtime = replace(runtime,
+        b'valid_until=deadline,',
+        b'valid_until=deadline,preanswer_budgeted=preanswer_budgeted,',
+        'preanswer budget flag')
+    runtime = replace(runtime,
+        b'                def reenter(role,focus=None):\n                    try:return ask(role,focus)\n',
+        b'                def reenter(role,focus=None):\n                    try:return ask(role,focus,preanswer_budgeted=False)\n',
+        'focal re-entry budget bypass')
     runtime = replace(runtime,
         b"                offers+=obsched.run(sched,lambda role,use_peer:ask(role,use_peer=use_peer),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,))\n",
         b"                offers+=obsched.run(sched,lambda role,use_peer,role_end=None:ask(role,use_peer=use_peer,role_end=role_end),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,),budgeted=not sched['parallel'])\n", 'scheduler call')
@@ -105,6 +113,14 @@ def apply_sources(code_dir, sources):
             b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
             'minimum fair role slice')
     cognition = result.get('v13/cognition.py', originals['v13/cognition.py'])
+    cognition = replace(cognition,
+        b'def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n',
+        b'def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):\n',
+        'preanswer budget flag signature')
+    cognition = replace(cognition,
+        b'        preanswer_observer = valid_until is not None\n',
+        b'        if preanswer_budgeted is not None and type(preanswer_budgeted) is not bool:\n            raise ValueError("preanswer_budgeted must be bool")\n        preanswer_observer = (valid_until is not None if preanswer_budgeted is None else preanswer_budgeted)\n',
+        'preanswer budget flag semantics')
     cognition = replace(cognition,
         b"""        # On repeated measured zero-token C3 prefill deadlines, pre-answer
         # B passes must not consume the remaining foreground native time.
