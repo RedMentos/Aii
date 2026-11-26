@@ -5,7 +5,7 @@ import tempfile
 import time
 from unittest.mock import Mock
 
-from v13.greeting_fastpath import RULE_ID, match
+from v13.greeting_fastpath import ACKNOWLEDGMENT_SCOPE, RULE_ID, match
 from v13.runtime import Runtime
 
 
@@ -82,6 +82,70 @@ def test_greeting_match_rejects_source_hash_span_and_malformed_modality():
     assert match("hi", event=_text_event("hi", audio_window={})) is None
     assert match("hi", event=_text_event("hi", image_source_ref={})) is None
     assert match("hi", event=_text_event("hi", video_source_ref={})) is None
+
+
+def test_acknowledgments_are_exact_bounded_and_source_bound_text_only():
+    cases = (
+        ("Thanks!", "You're welcome.", "en"),
+        ("thank you very much", "You're welcome.", "en"),
+        ("danke dir", "Gern.", "de"),
+        ("verstanden", "Alles klar.", "de"),
+    )
+    for text, reply, language in cases:
+        result = match(text, event=_text_event(text))
+        assert result is not None
+        assert result["reply"] == reply
+        assert result["language"] == language
+        assert result["scope"] == ACKNOWLEDGMENT_SCOPE
+        assert result["model_generated"] is False
+        assert result["native_models_invoked"] is False
+
+    for text in (
+        "Thanks, can you also check this?",
+        "yes",
+        "no",
+        "ok",
+        "approve",
+        "do it",
+        "understood, please continue with the upload",
+    ):
+        assert match(text, event=_text_event(text)) is None
+
+    assert match("thanks", event=_text_event("thanks", raw_audio=b"not-empty")) is None
+
+
+def test_runtime_answers_exact_thanks_without_native_body_or_c3_calls():
+    with tempfile.TemporaryDirectory() as tmp:
+        runtime = Runtime(Path(tmp))
+        try:
+            runtime.sleep.cycle.set_policy("enabled", "off")
+            runtime.resources = _resources
+            runtime.guard.update(runtime.resources())
+            runtime.pool.get = Mock(side_effect=AssertionError("C3 must not run for exact thanks"))
+            runtime.cognition.offer = Mock(side_effect=AssertionError("B1/B2 must not run for exact thanks"))
+            runtime.cognition.percept = Mock(side_effect=AssertionError("exact text thanks uses the bounded A5 source packet"))
+
+            runtime.submit("Thanks!")
+            _wait_idle(runtime)
+
+            row = runtime.last_answer()
+            assert row is not None
+            assert row["status"] == "FINAL"
+            assert row["text"].strip() == "You're welcome."
+            meta = json.loads(row["metadata"])
+            assert meta["greeting_fastpath"]["rule_id"] == RULE_ID
+            assert meta["greeting_fastpath"]["scope"] == ACKNOWLEDGMENT_SCOPE
+            assert meta["greeting_fastpath"]["native_models_invoked"] is False
+            assert meta["model_generated"] is False
+            assert meta["output_policy"]["rule_id"] == RULE_ID
+            assert meta["output_authority"] == "APPROVED_FIXED_RULE"
+            assert "B_OBSERVERS" in meta["skipped_native_stages"]
+            assert "C3_DECODE" in meta["skipped_native_stages"]
+            runtime.pool.get.assert_not_called()
+            runtime.cognition.offer.assert_not_called()
+            runtime.cognition.percept.assert_not_called()
+        finally:
+            runtime.close()
 
 
 def test_runtime_answers_exact_greeting_without_native_body_or_c3_calls():

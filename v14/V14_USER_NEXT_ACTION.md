@@ -2062,3 +2062,16 @@ Run start/end time: UNKNOWN (not measured by the execution environment).
 - **Next:** review/integrate #2493 and #2529 on a compatible base, then measure cold/warm greeting TTFT on Redmi. The higher-priority open product gap remains useful B1_DETAIL + B2_GIST source-bound offers selected by C4 and consumed in C3 on the same nontrivial turn, followed by correct final output and a fresh phone receipt.
 
 **User action required: NONE.** No model download/swap, permission change, device action or manual Termux command is justified.
+
+
+# Core & Harness — exact acknowledgment fastpath (2026-11-26)
+
+A child PR is stacked on the verified greeting Runtime pin-repair branch:
+- Parent #2534 branch head: `b4ca2a37670d084b6edb4cb7eb1cf56e6a3e7ce7`; exact-head CI readback: 7/7 SUCCESS.
+- New branch: `core/v14-exact-ack-fastpath-20261126-run1` (PR creation and exact-head CI pending at this checkpoint).
+- Runtime change: the existing source-bound greeting reflex now also recognizes a narrow exact acknowledgment set (thanks/thank you/danke/verstanden/got it/noted). It remains bounded to the complete text SourceRef and uses the existing fixed-output receipt.
+- Bare yes/no/ok, approval verbs, mixed requests and multimodal inputs explicitly fall through to the normal multi-organ path.
+- New tests cover matcher source/modality rejection and the actual Runtime no-B1/B2/C3 path for an exact thanks message.
+- No full local Aii checkout; LOCAL_LINUX full-suite NOT_RUN. Redmi/Termux REDMI_UNVERIFIED. No device/model/weight/permission/data action.
+- User action: none. This is a draft candidate, not released or installed.
+

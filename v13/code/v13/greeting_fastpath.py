@@ -6,7 +6,9 @@ import re
 import unicodedata
 
 RULE_ID = "BUILTIN_GREETING_ACK_V1"
-SCOPE = "EXACT_WHOLE_TEXT_GREETING_ONLY"
+GREETING_SCOPE = "EXACT_WHOLE_TEXT_GREETING_ONLY"
+ACKNOWLEDGMENT_SCOPE = "EXACT_WHOLE_TEXT_ACKNOWLEDGMENT_ONLY"
+SCOPE = GREETING_SCOPE
 MAX_INPUT_CHARS = 48
 MAX_INPUT_BYTES = 128
 
@@ -30,6 +32,26 @@ _GREETINGS = {
     "guten morgen": ("de", "Guten Morgen."),
     "guten tag": ("de", "Guten Tag."),
     "guten abend": ("de", "Guten Abend."),
+}
+
+# Deliberately excludes bare yes/no/ok and action-approval phrases: those can
+# carry turn-specific intent and must remain on the normal multi-organ path.
+_ACKNOWLEDGMENTS = {
+    "thanks": ("en", "You're welcome."),
+    "thank you": ("en", "You're welcome."),
+    "thank you very much": ("en", "You're welcome."),
+    "thx": ("en", "You're welcome."),
+    "appreciate it": ("en", "You're welcome."),
+    "danke": ("de", "Gern."),
+    "danke dir": ("de", "Gern."),
+    "vielen dank": ("de", "Gern."),
+    "dankeschön": ("de", "Gern."),
+    "danke schön": ("de", "Gern."),
+    "understood": ("en", "Okay."),
+    "got it": ("en", "Okay."),
+    "noted": ("en", "Okay."),
+    "verstanden": ("de", "Alles klar."),
+    "alles klar": ("de", "Alles klar."),
 }
 
 _MULTIMODAL_FIELDS = (
@@ -90,6 +112,10 @@ def match(text: str, event: dict | None = None) -> dict | None:
     normalized = re.sub(r"[.!]+$", "", normalized).strip()
     normalized = re.sub(r"\s+", " ", normalized)
     found = _GREETINGS.get(normalized)
+    scope = GREETING_SCOPE
+    if found is None:
+        found = _ACKNOWLEDGMENTS.get(normalized)
+        scope = ACKNOWLEDGMENT_SCOPE
     if found is None:
         return None
 
@@ -100,7 +126,7 @@ def match(text: str, event: dict | None = None) -> dict | None:
         "reply": reply,
         "input_sha256": hashlib.sha256(encoded).hexdigest(),
         "response_sha256": hashlib.sha256(reply.encode("utf-8")).hexdigest(),
-        "scope": SCOPE,
+        "scope": scope,
         "authority": "BUILTIN_REFLEX",
         "model_generated": False,
         "native_models_invoked": False,
