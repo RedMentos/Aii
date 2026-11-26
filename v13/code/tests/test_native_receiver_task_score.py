@@ -74,6 +74,7 @@ def hybrid_state_roundtrip_for(base, overrides=None):
         "max_abs_logit_diff": 0.0,
         "rms_logit_diff": 0.0,
         "roundtrip_passed": True,
+        "truncated_restore_rejected": True,
         "attention_kv_included": True,
         "recurrent_shortconv_included": True,
         "raw_state_exported": False,
@@ -432,6 +433,7 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert effect["task_group_count"] == 20
     assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
     assert effect["top1_match_rate"] == 1.0
+    assert effect["truncated_restore_rejected_count"] == 20
     assert effect["same_model_only"] is True
     assert effect["cross_model_transfer_proven"] is False
     assert effect["trained_latent_coupling_proven"] is False
@@ -488,6 +490,7 @@ def test_hybrid_state_roundtrip_is_only_allowed_on_no_message_condition():
     ({"destination_model_sha256": "e" * 64}, "model SHA"),
     ({"destination_context_params_sha256": "e" * 64}, "context parameters SHA"),
     ({"set_data_bytes": 4095}, "pass flag"),
+    ({"truncated_restore_rejected": False}, "truncated restore negative control"),
     ({"raw_state_blob": "must-not-be-present"}, "fields mismatch"),
 ])
 def test_hybrid_state_roundtrip_rejects_wrong_binding_or_raw_payload(overrides, match):
