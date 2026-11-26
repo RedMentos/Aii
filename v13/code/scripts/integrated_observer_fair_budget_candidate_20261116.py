@@ -11,7 +11,7 @@ from pathlib import Path
 PINS = {
     'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     'v13/observer_schedule.py': '343a4544b873e13f3549556ee52849a46dc2b55242536535b56f959022272943',
-    'v13/native_turn_budget.py': '172bf70b05e21fd3c117273473446d0f77a11f625cc2665df1f4991708a1505c',
+    'v13/native_turn_budget.py': '527d7ca89667f1700b89ac643573f272f5ba1890133e64fdce658d2e7910bbf0',
     'v13/cognition.py': '208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90',
     'v13/store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
 }
@@ -57,23 +57,34 @@ def apply_sources(code_dir, sources):
         b'                role_end=min(end,now+max(0.,end-now)/(len(roles)-index))\n'
         b'                offers.append(ask(role,True,role_end) if budgeted else ask(role,True))\n', 'sequential slice')
     budget = result.get('v13/native_turn_budget.py', originals['v13/native_turn_budget.py'])
-    budget = replace(budget,
-        b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
-        b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
-        'fair recovery slice')
-    budget = replace(budget,
-        b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
-        b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
-        'observer deadline argument')
-    budget = replace(budget,
-        b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if deadline < start or now < start-1:\n',
-        b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if observer_deadline is not None and (type(observer_deadline) not in (int,float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n    if deadline < start or now < start-1:\n',
-        'observer deadline validation')
-    budget = replace(budget,
-        b'            and native.get("generated_tokens") == 0\n',
-        b'            and type(native.get("generated_tokens")) is int\n            and native.get("generated_tokens") == 0\n',
-        'strict zero-token evidence')
-    budget = replace(budget, b'        if status == "FINAL":\n', b'''        data = row.get("metadata")
+    # Preserve a source-pinned adaptive module that already contains the fair
+    # B1/B2 slices and measured C3/C4 reserves; only legacy modules need rewriting.
+    advanced_budget = isinstance(budget, bytes) and all(marker in budget for marker in (
+        b"observer_deadline=None",
+        b"MIN_ROLE_SLICE_S = 2.0",
+        b"register_store_telemetry()",
+        b"recent_focal_durations",
+        b"focal_reserve_source",
+        b"RECENT_FOCAL_MAX",
+    ))
+    if not advanced_budget:
+        budget = replace(budget,
+            b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
+            b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
+            'fair recovery slice')
+        budget = replace(budget,
+            b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
+            b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
+            'observer deadline argument')
+        budget = replace(budget,
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if deadline < start or now < start-1:\n',
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if observer_deadline is not None and (type(observer_deadline) not in (int,float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n    if deadline < start or now < start-1:\n',
+            'observer deadline validation')
+        budget = replace(budget,
+            b'            and native.get("generated_tokens") == 0\n',
+            b'            and type(native.get("generated_tokens")) is int\n            and native.get("generated_tokens") == 0\n',
+            'strict zero-token evidence')
+        budget = replace(budget, b'        if status == "FINAL":\n', b'''        data = row.get("metadata")
         if isinstance(data, str):
             try:
                 data = json.loads(data)
@@ -84,15 +95,15 @@ def apply_sources(code_dir, sources):
                 and native.get("role") == "C3_LANGUAGE"
                 and type(native.get("generated_tokens")) is int
                 and native["generated_tokens"] > 0):
-''', 'native success evidence')
-    budget = replace(budget,
-        b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
-        b'    observer_end = ordinary_end if observer_deadline is None else min(ordinary_end, observer_deadline)\n    reserve = deadline-ordinary_end\n    if recover:\n        allotted=observer_end\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        allotted=observer_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
-        'retain fair preanswer window')
-    budget = replace(budget,
-        b'        "c3_reserved_seconds": round(reserve,3),\n',
-        b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
-        'minimum fair role slice')
+    ''', 'native success evidence')
+        budget = replace(budget,
+            b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
+            b'    observer_end = ordinary_end if observer_deadline is None else min(ordinary_end, observer_deadline)\n    reserve = deadline-ordinary_end\n    if recover:\n        allotted=observer_end\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        allotted=observer_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
+            'retain fair preanswer window')
+        budget = replace(budget,
+            b'        "c3_reserved_seconds": round(reserve,3),\n',
+            b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
+            'minimum fair role slice')
     cognition = result.get('v13/cognition.py', originals['v13/cognition.py'])
     cognition = replace(cognition,
         b"""        # On repeated measured zero-token C3 prefill deadlines, pre-answer
@@ -129,24 +140,33 @@ def apply_sources(code_dir, sources):
                 budget=None
             if budget and budget['recovery']:
                 available=budget['preanswer_seconds_available']
+                metrics = {
+                    'role': role,
+                    'preanswer_seconds_available': round(available,3),
+                    'focal_reserved_seconds': budget['focal_reserved_seconds'],
+                    'focal_reserve_estimate_seconds': budget['focal_reserve_estimate_seconds'],
+                    'focal_reserve_source': budget['focal_reserve_source'],
+                    'focal_reserve_capped': budget['focal_reserve_capped'],
+                    'recent_focal_samples': budget['recent_focal_samples'],
+                    'c3_reserved_seconds': budget['c3_reserved_seconds'],
+                    'c3_reserve_estimate_seconds': budget['c3_reserve_estimate_seconds'],
+                    'c3_reserve_source': budget['c3_reserve_source'],
+                    'c3_reserve_capped': budget['c3_reserve_capped'],
+                    'minimum_role_slice_s': budget['minimum_role_slice_s'],
+                    'recent_real_prefill_failures': budget['recent_real_prefill_failures'],
+                }
                 if available < budget['minimum_role_slice_s']:
-                    self.s.log('native_body_deferred_for_c3',e['event_id'],
-                               {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
-                                'preanswer_seconds_available':round(available,3),
-                                'c3_reserved_seconds':budget['c3_reserved_seconds'],
-                                'recent_real_prefill_failures':budget['recent_real_prefill_failures']})
+                    metrics['status'] = 'POSTCOMMIT_ELIGIBLE'
+                    self.s.log('native_body_deferred_for_c3',e['event_id'],metrics)
                     raise Limits('No fair B1/B2 slice remains inside the C3-reserved turn window')
-                self.s.log('native_body_budgeted_for_c3',e['event_id'],
-                           {'role':role,'status':'PREANSWER_BUDGETED',
-                            'preanswer_seconds_available':round(available,3),
-                            'c3_reserved_seconds':budget['c3_reserved_seconds'],
-                            'recent_real_prefill_failures':budget['recent_real_prefill_failures']})
+                metrics['status'] = 'PREANSWER_BUDGETED'
+                self.s.log('native_body_budgeted_for_c3',e['event_id'],metrics)
 """,
         'Cognition consumes fair recovery slice')
     store = result.get('v13/store.py', originals['v13/store.py'])
     store = replace(store,
         b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # \xc2\xa722.2.4 observer scheduling, \xc2\xa773 RSS budget\n",
-        b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # \xc2\xa722.2.4 observer scheduling, \xc2\xa773 RSS budget\nTELEMETRY_FIELDS.update('preanswer_seconds_available c3_reserved_seconds recent_real_prefill_failures'.split())\nTELEMETRY_ENUMS.update('PREANSWER_BUDGETED POSTCOMMIT_ELIGIBLE'.split())\n",
+        b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # \xc2\xa722.2.4 observer scheduling, \xc2\xa773 RSS budget\nTELEMETRY_FIELDS.update('preanswer_seconds_available focal_reserved_seconds focal_reserve_estimate_seconds focal_reserve_source focal_reserve_capped recent_focal_samples c3_reserved_seconds c3_reserve_estimate_seconds c3_reserve_source c3_reserve_capped recent_real_prefill_failures minimum_role_slice_s'.split())\nTELEMETRY_ENUMS.update('PREANSWER_BUDGETED POSTCOMMIT_ELIGIBLE RECENT_FOCAL_MAX RECENT_SUCCESS_MAX FALLBACK_DEFAULT native_turn_budget_plan native_turn_budget_unavailable native_body_budgeted_for_c3 native_body_deferred_for_c3'.split())\n",
         'budget telemetry allowlist')
     for name, raw in (('v13/runtime.py', runtime), ('v13/observer_schedule.py', schedule),
                       ('v13/native_turn_budget.py', budget), ('v13/cognition.py', cognition),
