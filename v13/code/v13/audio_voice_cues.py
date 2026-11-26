@@ -27,6 +27,12 @@ from .audio_temporal_prediction import (
     predictive_omission_novelty,
     unavailable_prediction,
 )
+from .audio_event_expectation import (
+    AudioEventExpectationError,
+    AudioEventExpectationRegistry,
+    predictive_event_omission_novelty,
+    unavailable_expectation,
+)
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -446,6 +452,11 @@ def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_i
         if not isinstance(prediction_registry, AudioTemporalPredictionRegistry):
             raise ValueError("runtime RAW EAR prediction registry has an invalid type")
         prediction_registry.reset(source_id=source_id, generation_id=generation_id)
+    event_registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+    if event_registry is not None:
+        if not isinstance(event_registry, AudioEventExpectationRegistry):
+            raise ValueError("runtime RAW EAR event expectation registry has an invalid type")
+        event_registry.reset(source_id=source_id, generation_id=generation_id)
     return count
 
 
@@ -507,6 +518,22 @@ def _runtime_audio_temporal_prediction_registry(runtime):
                     raise ValueError("runtime cannot retain bounded RAW EAR prediction state") from exc
     if not isinstance(registry, AudioTemporalPredictionRegistry):
         raise ValueError("runtime RAW EAR prediction registry has an invalid type")
+    return registry
+
+
+def _runtime_audio_event_expectation_registry(runtime):
+    registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+    if registry is None:
+        with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
+            registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+            if registry is None:
+                registry = AudioEventExpectationRegistry()
+                try:
+                    setattr(runtime, "_raw_ear_event_expectation_registry", registry)
+                except Exception as exc:
+                    raise ValueError("runtime cannot retain bounded RAW EAR event expectation state") from exc
+    if not isinstance(registry, AudioEventExpectationRegistry):
+        raise ValueError("runtime RAW EAR event expectation registry has an invalid type")
     return registry
 
 
@@ -864,6 +891,27 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             audio_temporal_predictive_novelty = 0.0
             audio_temporal_omission_novelty = 0.0
 
+        try:
+            if type(consent_receipt) is not str or not consent_receipt:
+                raise AudioEventExpectationError("audio consent receipt is invalid")
+            event_consent_scope_id = hashlib.sha256(consent_receipt.encode("utf-8")).hexdigest()
+            audio_event_expectation = _runtime_audio_event_expectation_registry(runtime).update(
+                source_id=source_id,
+                generation_id=generation_id,
+                consent_scope_id=event_consent_scope_id,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                cues=cues,
+                finality=finality,
+            )
+            audio_event_omission_novelty = predictive_event_omission_novelty(
+                audio_event_expectation
+            )
+        except AudioEventExpectationError as exc:
+            audio_event_expectation = unavailable_expectation("REJECTED")
+            audio_event_expectation["error"] = type(exc).__name__
+            audio_event_omission_novelty = 0.0
+
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
@@ -879,6 +927,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         voice_novelty = max(
             audio_temporal_predictive_novelty,
             audio_temporal_omission_novelty,
+            audio_event_omission_novelty,
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
@@ -909,6 +958,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "audio_temporal_prediction": audio_temporal_prediction,
             "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
             "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
+            "audio_event_expectation": audio_event_expectation,
+            "audio_event_omission_novelty": audio_event_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
@@ -969,6 +1020,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "audio_temporal_prediction": audio_temporal_prediction,
             "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
             "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
+            "audio_event_expectation": audio_event_expectation,
+            "audio_event_omission_novelty": audio_event_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
