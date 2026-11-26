@@ -54,3 +54,10 @@ Tested code/test head: \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`.
 - Shared staged/integrated [45780338096](https://github.com/RedMentos/Aii/actions/runs/45780338096): FAIL; staged 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated 1 failed. Exact source-pin mismatch confirmed by readback: Perception composer blob \`f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0\`; Core recovery blob \`b44fe9a21412c570a5f19472719972a53b3447d8\` expects \`831080bceec90711bd42e0fa4eba47c669975c98\`.
 - This is a Core-owned integration blocker; no Core recovery/stage/deployer file was changed by Perception.
 - Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No device, microphone, model, weight, permission or data action.
+
+
+## R-166 full-text review correction (2026-11-26)
+
+The full 12-page author-hosted PDF has now been read. The paper is an August 2026 preprint; no peer-reviewed venue was identified. It defines rIMI over AAD prediction score vectors \(f(n)\), attended-speaker state \(y(n)\), and prior scores \(f_{past}(n)\); uses a five-second stacked score history for short windows and Gaussian-copula/GCMI estimation; and recommends a ≥5-minute temporal buffer (ideally separate sessions), switch-focused evaluation and confound controls. Dataset: AV-GC, 13 participants, 64-channel EEG, 10-minute trials with a switch after 5 minutes. The study is specific to EEG-based attended-speaker decoding.
+
+**Important scope correction:** the Run 44 proxy uses acoustic cue tuples and later action outcomes, not AAD prediction scores and attended-speaker labels. It is not paper rIMI; its feature-history dependence term is not paper CSD. The code now uses the key \`conditional_feature_history_dependence_bits\` and explicit \`metric_scope\`. The proxy remains synthetic-only and diagnostic-only. A faithful rIMI implementation requires a real A4 score vector, trusted attended-state/outcome labels, full prior-score history and temporally/session-disjoint evaluation. No attention or JEPA policy change.
