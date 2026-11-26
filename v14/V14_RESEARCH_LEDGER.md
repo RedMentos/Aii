@@ -1604,3 +1604,36 @@ Reproducible V14 probe: v14/experiments/predictive_closure_probe.py computes the
 V14 consequence: keep per-feature novelty/self-predictability distinct from cross-feature predictive-partner value. A4/JEPA should eventually evaluate feature sets and preserve a separate externally grounded goal/action/reward signal; the paper's steering can displace other features, so predictive gain must not become a sole discard gate. Next test: source-bound A4/A5 packet sequences, set-level gain vs scalar novelty, shuffled-time negative controls and goal/action-conditioned held-out utility. No production consumer, training, weight update or Android capture is implemented by this experiment.
 
 Status: FULLTEXT_REVIEWED / OSS_CODE_MIT / WEIGHT_LICENSE_UNVERIFIED / SYNTHETIC_ANALYTIC_PROBE_11_TESTS_PASS / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
+
+
+## R-165 — Goal-conditioned feature gains for selective listening (2026-11-26)
+
+**Review status:** FULLTEXT_REVIEWED / PEER_REVIEWED / OPEN_ACCESS_CC-BY-4.0. Ian M. Griffith, R. Preston Hess & Josh H. McDermott, *Optimized feature gains explain and predict successes and failures of human selective listening*, Nature Human Behaviour 10, 937–959 (version of record published 2026-03-13; issue May 2026), DOI 10.1038/s41562-026-02414-7.
+
+**Primary result:** a task-optimized auditory model uses memory of a cued target talker's voice and location to apply multiplicative feature gains while recognizing the target's speech in binaural mixtures. The model reproduces several human selective-listening successes and failures and predicted two attentional effects later confirmed in human experiments. The task uses a 2-second target cue, 0.5-second delay and 2-second mixture, with an 800-word output vocabulary. The paper reports human samples of 195 participants in Experiment 1, 90 in Experiment 2 and 47 in the naturalistic-texture experiment; ten feature-gain network architectures were evaluated.
+
+**Limits:** this is a supervised, task-specific cocktail-party speech-selection model, not a JEPA result, online continual learning, general-purpose attention or an Android/mobile benchmark. It assumes an explicit target cue and a bounded recognition task. The authors note that task structure and architecture may affect where selection occurs; their results are not a definitive neural-locus claim.
+
+**V14 consequence:** goal-conditioned feature gains are a plausible research direction, but a single novelty/salience scalar must not become the only discard gate. Keep source-bound acoustic/prosodic/non-speech cues, active goal context and later outcomes separate. Measure joint feature value, single-feature baselines, goal-only controls and time-shuffled outcomes before proposing any attention-policy change. No paper code, model weights or datasets were imported.
+
+**License:** article states Creative Commons Attribution 4.0 International (CC BY 4.0). No code or weights were reused.
+
+**Sources:** https://www.nature.com/articles/s41562-026-02414-7 ; https://pubmed.ncbi.nlm.nih.gov/41826525/
+
+## R-166 — Temporal dependence and relative incremental information in auditory-attention metrics (2026-11-26)
+
+**Review status:** ABSTRACT_VERIFIED only; full text was not reviewed. Nicolas Heintz, Simon Geirnaert, Tom Francart & Alexander Bertrand, *Why Performance Metrics Overpromise in Auditory Attention Decoding: an Information-Theoretic Reappraisal*, arXiv:2608.14250, submitted 2026-08-14 (preprint; peer-reviewed venue not confirmed in the inspected record).
+
+The abstract argues that steady-state accuracy and information-transfer-rate metrics can overstate useful auditory-attention information when successive predictions are dependent or influenced by irrelevant feature drift. It proposes relative Incremental Mutual Information (rIMI) to measure how much uncertainty a new prediction removes beyond what previous predictions already conveyed. The abstract also reports switch-related analyses and comparisons between direct-classification and stimulus-reconstruction approaches.
+
+**V14 consequence:** retain the current within-goal time-shuffle negative control, but do not treat a single MI score as enough. Next experiment should add history-conditioned/relative incremental MI, temporal drift controls and source/session-disjoint holdouts. This entry is abstract-level evidence only; no numerical result beyond the inspected abstract is promoted.
+
+**Source:** https://arxiv.org/abs/2608.14250
+
+## Research & Perception Run 43 — source-bound A4/A5 feature-set probe (2026-11-26)
+
+Implementation and local/CI evidence are recorded in the [Run 43 handoff](handoffs/RESEARCH_PERCEPTION_RUN43_AUDIO_FEATURE_SET_20261126.md) and [live workplan](V14_LIVE_WORKPLAN.md). The probe is a synthetic-only diagnostic consumer of FINAL A5_AUDIO packets enriched with A4 RAW EAR cues and separately sourced later goal/action outcomes. It computes goal-conditioned CMI, per-feature CMI, joint gain over the best single feature, feature self-predictability and within-goal time-permutation controls.
+
+LOCAL_LINUX CPython 3.13.5: py_compile PASS; 9/9 unit tests PASS; the full-repository A4 extractor integration test is SKIPPED locally because the checkout is not mounted. Exact CI integration workflow 45773372374 was IN_PROGRESS at the last poll. Synthetic fixture only: 64 records, 2 goals, joint CMI 1.000 bits, each single feature and goal-only MI 0, within-goal permutation p95 0.15711 bits and empirical p 0.01538. This is not trained JEPA, human audio, production attention, a Runtime consumer or Android proof.
+
+**Next:** poll exact CI; Core refreshes the audio-builder recovery/stage/deployer source pins and wires the normal-turn revocable audio lease through the full C3 generator. Perception then adds history-aware rIMI and held-out source/session outcomes. No microphone capture or model/weight change is authorized.
