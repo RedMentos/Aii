@@ -75,3 +75,17 @@ After the parent #2524 failures recorded above, Core opened replacement PR #2538
 ## Exact audio pin mismatch in Core #2538
 
 Current #2538 branch source: integrated_audio_context_candidate_20261121.py blob 831080bceec90711bd42e0fa4eba47c669975c98. Its current expected pins are audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025, audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1, and contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 blobs are audio_voice_cues b372d52b83c1b35077732755f076e48b62e90ac0, audio_temporal_evidence cacf649007a89cbfe74924536e413747d1392db3, and contracts 6065a471f5f623abea57725d33d362d9eb806013. Thus #2538 is refreshed for #2524 but not yet for #2527. A Core-owned stack/rebase and exact pin refresh is still required after #2527 CI; do not modify Core files from this lane.
+
+
+## Run50 code/test and exact CI readback
+
+**Additional code/test commit:** 13999de8c676f07075cb8a0d3f0165b579d6cdc6. It fixes a reproduced Perception-owned source pin in integrated_audio_context_candidate_20261121.py: v13/cognition.py expected 06de0acf2c6d30d50301d5073f5569822edff813, while the current #2524/#2527 parent file is Git blob deb8c274022e2a4419dd38adb11ca14481c4bd91. The other 11 candidate source pins were checked against current GitHub file blobs and matched. Added test_integrated_audio_candidate_source_blob_pins_match_current_tree, which checks all 12 pins against the actual checkout at CI time. New candidate script blob: 5d21b77c68d6c890040b9d720fa150b7690815b7; new test file blob: 82e1473cabbcc3dc4c6a8ae7b16cb3568af438b4.
+
+**Exact CI on code/test SHA 13999de8c676f07075cb8a0d3f0165b579d6cdc6:**
+- V14 RAW EAR vs WebRTC/libfvad 45893106174: PASS on Python 3.13 and 3.14.
+- V14 RAW EAR optional NumPy backend 45893106136: PASS on Python 3.13 and 3.14; each ran 117 tests in 10.41s / 16.36s.
+- V14 source-bound A4/A5 feature-set probe 45893106110: PASS on Python 3.13 and 3.14.
+- V13 runtime deployment integrity 45893106074: PASS.
+- V13 staged context/integrated regression 45893106088: FAIL, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Root causes are Core-owned pins: old recovery AUDIO_BUILDER_BLOB_SHA1 831080… instead of candidate blob 5d21b77…; arithmetic SHA-256 pin for contracts.py (current Git blob 6065a47…); observer fairness pin for cognition.py; two migration PARTIAL-vs-UPDATED assertions. Do not treat the passing independent workflows as staged-system acceptance.
+
+**Core coordination:** PR #2538 head ddeca6a939399786753ecc6ae13086a99e68802e now passes its own #2524-based native receiver Runtime consumer, RuntimeDeploy, controller guard, migration, owner-read bootstrap and staged/integrated workflows (45891049936, 45891049901, 45891050110, 45891049890, 45891050131, 45891049926). It is still based on #2524, not #2527. Its recovery audio builder and arithmetic pins still target the old Perception audio blobs. Core must stack/rebase #2538 onto #2527, update the builder and contracts pins, preserve observer/migration fixes and rerun combined staged/integrated.

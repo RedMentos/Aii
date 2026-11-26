@@ -1710,3 +1710,8 @@ Core replacement #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) has refre
 ## Exact #2538 audio source-pin mismatch — 2026-11-26
 
 Read-only comparison: Core #2538 integrated_audio_context_candidate still expects old audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025, audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1, and contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 Perception blobs are b372d52b83c1b35077732755f076e48b62e90ac0, cacf649007a89cbfe74924536e413747d1392db3, and 6065a471f5f623abea57725d33d362d9eb806013. #2538 is valid against #2524 but not yet #2527. Core must stack it on #2527 and refresh these pins before the combined staged/integrated gate. No Perception edits to Core files.
+
+
+## Run50 exact CI completion — 2026-11-26
+
+The Perception audio branch's RAW EAR/libfvad comparison passed on Python 3.13/3.14; optional NumPy/A4 voice suite passed with 117 tests on each; source-bound A4/A5 feature-set passed on both; offline RuntimeDeploy integrity passed. The shared staged/integrated workflow failed: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Exact failure is Core-owned: recovery candidate expects stale audio builder blob 831080… instead of Perception candidate 5d21b77…; arithmetic candidate pin for contracts.py is stale (current Git blob 6065a47…); observer fairness pin and two migration assertions also fail on the #2524 parent. Core PR #2538 now passes these shared gates on #2524, but its pins still target the old audio branch. Next: stack #2538 onto #2527, update audio-builder and contracts pins, rerun combined stage. No Perception edits to Core recovery/stage/deployer files.
