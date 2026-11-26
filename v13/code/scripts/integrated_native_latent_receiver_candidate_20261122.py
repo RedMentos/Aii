@@ -8,7 +8,7 @@ from pathlib import Path
 
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
+    "v13/callosum.py": "f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
@@ -28,6 +28,27 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
         register_packet_contract()
+        from . import native_probe_approval as approval
+        lease_token=getattr(self.r,"_native_probe_lease_nonce",None)
+        approval._require_runtime_probe_lease(self.r,lease_token)
+        consumed,_=self.s.state(approval.KEY,None)
+        if (not isinstance(consumed,dict) or consumed.get("status")!="CONSUMED"
+                or consumed.get("probe_kind")!="NATIVE_RECEIVER"
+                or consumed.get("sender_role")!=sender_role
+                or consumed.get("receiver_role")!=receiver_role
+                or consumed.get("session_id")!=self.r.session
+                or consumed.get("event_id")!=e.get("event_id")
+                or consumed.get("brain_generation_id")!=e.get("brain_generation_id")
+                or consumed.get("source_ref")!=source_ref):
+            raise PermissionError("Native receiver requires the exact consumed local one-shot approval")
+        approved_models={
+            sender_role:approval._model_binding(self.r,sender_role),
+            receiver_role:approval._model_binding(self.r,receiver_role),
+        }
+        if consumed.get("models")!=approved_models:
+            raise PermissionError("Native receiver model identity changed after local approval")
+        if self.r.cancel_event.is_set() or time.monotonic()>=deadline:
+            raise InterruptedError("Native receiver probe cancelled or deadline expired")
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
         if (not isinstance(source_ref,dict) or not isinstance(e,dict)
@@ -145,34 +166,14 @@ REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT bloc
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
 OPERATOR_HELP_OLD = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
 OPERATOR_HELP_NEW = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
-OPERATOR_PREFIX_NEW = r"""    c=controller(r)
-    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
-        sender,receiver=args[1],args[2]
-        if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
-            raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
-        r.require_idle()
-        last=r.last_answer()
-        if not last:raise ValueError('Erst eine abgeschlossene Eingabe erzeugen')
-        row=r.store.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))
-        if not row:raise ValueError('Letztes Ereignis fehlt')
-        event=json.loads(row['packet'])
-        ref=event.get('source_ref')
-        if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Letzte Eingabe hat keine gültige SourceRef')
-        r.models.path_for(receiver)
-        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
-        try:
-            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
-        finally:
-            r.pool.unload()
-        return dumps({**packet,'queued':False,'completed':True,
-                      'sender_role':sender,'receiver_role':receiver,
-                      'requires_explicit_confirmation':True,'production_route':False,
-                      'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
-                      'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
+OPERATOR_PREFIX_NEW = r"""    if args and args[0] in {'arm-probe','native-probe','revoke-probe'}:
+        from .native_probe_approval import operator_command as native_probe_command
+        return native_probe_command(r,args)
+    c=controller(r)
 """
 
-OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
-OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
+OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
+OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
