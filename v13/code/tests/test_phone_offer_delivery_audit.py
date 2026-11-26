@@ -214,7 +214,7 @@ class PhoneOfferAudit(unittest.TestCase):
         self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
         self.assertTrue(gate["native_request_prompt_hash_match_observed"])
         self.assertTrue(gate["native_prefill_token_count_match_observed"])
-        self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
         turn = out["turns"][0]
         self.assertTrue(turn["native_prefill_token_count_matched"])
         self.assertTrue(turn["native_prompt_offer_inclusion_verified"])
