@@ -1,11 +1,14 @@
 import contextlib
 import hashlib
 import json
+import os
 import struct
 import sys
 import time
 import threading
 import types
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -217,13 +220,32 @@ def _patch_core(monkeypatch, runtime, sender, receiver):
     )
     runtime.source_ref_main = runtime.store_event_main["source_ref"]
 
+    models_root = Path(runtime.home) / "models"
+    models_root.mkdir(parents=True, exist_ok=True)
+    model_paths = {}
+    model_identities = {}
+    expected_by_role = {sender["role"]: sender, receiver["role"]: receiver}
+    for role in expected_by_role:
+        path = models_root / (role + ".gguf")
+        path.write_bytes(b"x" * 4096)
+        st = os.stat(path, follow_symlinks=False)
+        model_paths[role] = path
+        model_identities[role] = [
+            st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns,
+        ]
+    runtime.models = SimpleNamespace(
+        revision=lambda role: expected_by_role[role]["model_revision"],
+        path_for=lambda role: model_paths[role],
+    )
+
     def model_binding(_runtime, role):
-        expected = sender if role == sender["role"] else receiver
+        expected = expected_by_role[role]
+        path = model_paths[role]
         return {
             "revision": expected["model_revision"],
             "sha256": expected["model_sha256"],
-            "canonical_path": str(_runtime.home) + "/models/" + role + ".gguf",
-            "file_identity": [1, 2, 4096, 3, 4],
+            "canonical_path": str(path.resolve()),
+            "file_identity": model_identities[role],
         }
 
     monkeypatch.setattr(approval, "_model_binding", model_binding)
@@ -467,6 +489,52 @@ def test_nonfinite_matrix_approval_expiry_fails_closed(monkeypatch, tmp_path, ba
     final, _ = runtime.store.state(matrix_runtime.KEY, None)
     assert final["status"] == "INVALID_EXPIRY"
     assert matrix._closed is True
+
+
+def test_matrix_status_reports_model_route_staleness_without_mutating_pending_record(monkeypatch, tmp_path):
+    runtime, _matrix, _ids, _pair, _events, _texts, sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+    from v13 import native_probe_approval as approval
+
+    original_revision = runtime.models.revision
+    runtime.models.revision = lambda role: (
+        "changed-revision" if role == sender["role"] else original_revision(role)
+    )
+    monkeypatch.setattr(
+        approval, "_model_binding",
+        lambda *_args: (_ for _ in ()).throw(AssertionError("status must not rehash a GGUF")),
+    )
+    before, version = runtime.store.state(matrix_runtime.KEY, None)
+
+    status = matrix_runtime._status(runtime)
+
+    assert status["approval_status"] == "PENDING"
+    assert status["approval_liveness"] == "STALE_MODEL"
+    after, after_version = runtime.store.state(matrix_runtime.KEY, None)
+    assert after == before
+    assert after_version == version
+
+
+def test_matrix_clear_invalidates_changed_model_file_identity(monkeypatch, tmp_path):
+    runtime, matrix, _ids, _pair, _events, _texts, sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+    model_path = runtime.models.path_for(sender["role"])
+    with model_path.open("r+b") as stream:
+        stream.seek(0)
+        stream.write(b"y")
+
+    cleared = matrix_runtime._clear(runtime)
+
+    assert cleared["status"] == "CLEARED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_MODEL"
+    assert state["invalidated_reason"] == "STALE_MODEL"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
 
 
 def test_stage_replaces_restart_stale_pending_approval_without_reusing_it(monkeypatch, tmp_path):

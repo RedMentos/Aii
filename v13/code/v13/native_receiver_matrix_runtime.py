@@ -10,7 +10,9 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import secrets
+import stat
 import struct
 import time
 from collections.abc import Mapping
@@ -360,6 +362,38 @@ def _valid_approval_window(record, *, now=None):
     return True
 
 
+def _model_route_is_current(runtime, record, sender, receiver):
+    """Cheaply detect model-route drift; native execution still rehashes the full GGUF."""
+    models = record.get("models")
+    if not isinstance(models, dict):
+        return False
+    for role, expected in ((sender["role"], sender), (receiver["role"], receiver)):
+        binding = models.get(role)
+        if not isinstance(binding, dict):
+            return False
+        if (binding.get("revision") != expected.get("model_revision")
+                or binding.get("sha256") != expected.get("model_sha256")):
+            return False
+        if runtime.models.revision(role) != binding.get("revision"):
+            return False
+        selected_path = Path(runtime.models.path_for(role))
+        if selected_path.is_symlink():
+            return False
+        resolved = selected_path.resolve(strict=True)
+        if str(resolved) != binding.get("canonical_path"):
+            return False
+        selected_stat = os.stat(selected_path, follow_symlinks=False)
+        if not stat.S_ISREG(selected_stat.st_mode):
+            return False
+        identity = [
+            selected_stat.st_dev, selected_stat.st_ino, selected_stat.st_size,
+            selected_stat.st_mtime_ns, selected_stat.st_ctime_ns,
+        ]
+        if identity != binding.get("file_identity"):
+            return False
+    return True
+
+
 def _approval_liveness(runtime, record, *, now=None):
     """Classify a persisted one-shot approval without changing Store state."""
     if not isinstance(record, dict) or record.get("schema") != SCHEMA:
@@ -382,6 +416,11 @@ def _approval_liveness(runtime, record, *, now=None):
         _matrix, receipt, _target_ids, _pair, sender, receiver = _staged(runtime)
     except Exception:
         return "STALE_MATRIX"
+    try:
+        if not _model_route_is_current(runtime, record, sender, receiver):
+            return "STALE_MODEL"
+    except Exception:
+        return "STALE_MODEL"
     for field in (
         "matrix_sha256", "approval_binding_sha256", "session_id",
         "task_event_id", "task_generation_id", "task_group_id",
@@ -400,7 +439,7 @@ def _approval_liveness(runtime, record, *, now=None):
 
 
 def _invalidate_stale_approval(runtime, record, version, reason):
-    if reason not in {"EXPIRED", "INVALID_EXPIRY", "STALE_RUNTIME", "STALE_MATRIX", "STALE_SOURCE"}:
+    if reason not in {"EXPIRED", "INVALID_EXPIRY", "STALE_RUNTIME", "STALE_MATRIX", "STALE_MODEL", "STALE_SOURCE"}:
         reason = "STALE_APPROVAL"
     updated = dict(record)
     updated.update({
