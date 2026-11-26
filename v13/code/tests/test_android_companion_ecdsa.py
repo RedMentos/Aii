@@ -14,8 +14,8 @@ from v13.android_companion_ecdsa import _G, _N, _point_mul
 def _der_integer(value):
     raw = value.to_bytes(max(1, (value.bit_length() + 7) // 8), "big")
     if raw[0] & 0x80:
-        raw = b"\\x00" + raw
-    return b"\\x02" + bytes([len(raw)]) + raw
+        raw = b"\x00" + raw
+    return b"\x02" + bytes([len(raw)]) + raw
 
 
 def _sign_test_body(body):
@@ -41,7 +41,7 @@ def _sign_test_body(body):
         if s > _N // 2:
             s = _N - s
         body_der = _der_integer(r) + _der_integer(s)
-        signature_der = b"\\x30" + bytes([len(body_der)]) + body_der
+        signature_der = b"\x30" + bytes([len(body_der)]) + body_der
         return base64.b64encode(signature_der).decode("ascii")
 
 from v13.android_companion_protocol import CompanionDenied
