@@ -587,8 +587,11 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if version.returncode != 0:
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
-    if version_data.get("task_matrix_supported") is not True or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1":
-        raise NativeReceiverUnavailable("native receiver binary does not advertise eight-condition task scoring")
+    if (version_data.get("task_matrix_supported") is not True
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1"
+            or version_data.get("kv_snapshot_supported") is not True
+            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
