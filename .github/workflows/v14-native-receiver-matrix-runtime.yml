@@ -1,16 +1,8 @@
 name: V14 Core native receiver matrix Runtime consumer
 on:
-  push:
-    branches:
-      - core/v14-native-receiver-matrix-runtime-consumer-20261126-run1
-    paths:
-      - "v13/code/v13/native_receiver_matrix_runtime.py"
-      - "v13/code/v13/callosum.py"
-      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
-      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
   pull_request:
     branches:
-      - core/v14-native-target-score-repair-20261126-run1
+      - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/callosum.py"
