@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T05:25:03+01:00",
+  "updated_at": "2026-11-26T11:04:42+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
-  "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
+  "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n\n\nCore & Harness Run 30 (2026-11-26): PR #2530 head 2e3befdeb0202ac8391ca0e950f7dc70f186ae1d adds stat-only STALE_MODEL detection for persisted native matrix approvals. LOCAL_LINUX isolated helper 4/4 PASS; exact Core CI 45799300401 PASS on Python 3.13/3.14; staged-runtime and integrated-regression 45799300380 PASS. Full local Aii suite NOT_RUN; no GGUF, no native Android/Redmi receipt; B3 OFF; NOT_RELEASED.",
   "tickets": [
     {
       "id": "V14-001",
@@ -521,6 +521,21 @@
         2506,
         2507
       ]
+    },
+    {
+      "id": "V14-023",
+      "title": "Fail-closed native matrix approval liveness after model-route drift",
+      "owner": "Core & Harness",
+      "reviewer": "Boss & QA",
+      "priority": "P1",
+      "status": "CODE_AND_CI_GREEN_NOT_RELEASED",
+      "scope": "Persisted one-shot matrix approvals must become stale when the sender/receiver model revision, selected canonical route or file identity changes, without rehashing multi-GB GGUF files during status/clear.",
+      "acceptance": "Read-only status reports STALE_MODEL without Store mutation; clear invalidates the stale approval and closes the staged matrix; unchanged model route remains PENDING; native execution still performs full manifest/hash verification; exact Python 3.13/3.14 and staged/integrated regressions pass.",
+      "proof_environment": "LOCAL_LINUX isolated helper 4/4 PASS; exact Core workflow 45799300401 PASS on Python 3.13/3.14; exact staged-runtime and integrated-regression 45799300380 PASS; full local Aii checkout NOT_RUN; REAL_GGUF_UNVERIFIED; REDMI_UNVERIFIED.",
+      "next_step": "Independent Boss/QA review and integration with the K/V-aware Runtime consumer; then reconcile with the fair-budget and greeting-fastpath branches before normal-turn B1/B2 → C4 → C3 acceptance.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-26",
+      "proof": "PR #2530, commit 2e3befdeb0202ac8391ca0e950f7dc70f186ae1d. Runtime blob d4efc3a6cfb8bc546e47314eec47fd199b227cc3; test blob b2b9c01aaced316d4d27059d6c8c5e7b09698f68. Core CI 45799300401 SUCCESS (Python 3.13/3.14); staged/integrated CI 45799300380 SUCCESS. No GGUF, native Android or Redmi evidence."
     }
   ],
   "current_redmi_status": "Latest available consented private V13OBS #115 snapshot remains historical (2026-11-24T09:28:11Z): updater enabled and pipeline/dashboard/runtime reported UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. Last recorded turn: 7 generated tokens, TTFT 2.046s, prompt 358 tokens; correctness NOT SCORED. B1/B2 TIME_BUDGET and zero valid offers remain in the five-turn metadata; native latent exchange and C3 semantic use false. Older owner-read requests #915-917 are expired with no comments. Fresh read-only requests #948 HEALTH, #949 PIPELINE_STATUS and #950 DIAGNOSTICS had no comments at 2026-11-26T02:03:41Z (expiry 1795658868). No LOG_PAGE and no device action. REDMI_UNVERIFIED.",
@@ -1510,6 +1525,21 @@
   },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
+    "package_id": "V14-NATIVE-MATRIX-APPROVAL-LIVENESS-002",
+    "branch": "core/v14-native-matrix-approval-recovery-20261126-run1",
+    "base_dependency": "Core PR #2525 head 9fdf321c9c14ab3b27d0d5947eaca443d5796df3; Perception PR #2524 K/V-aware matrix consumer",
+    "head_sha": "2e3befdeb0202ac8391ca0e950f7dc70f186ae1d",
+    "pull_request": "https://github.com/RedMentos/Aii/pull/2530",
+    "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+    "local_linux": "PASS: isolated exact stat-only model-route liveness helper 4/4 (unchanged route, revision drift, file-identity drift, symlink substitution). Full local Aii checkout/pytest NOT_RUN; no checkout mounted and GitHub DNS unavailable.",
+    "ci_python_313_314": "PASS: exact Core workflow 45799300401 on Python 3.13 and 3.14; compile, Core Runtime/matrix regressions, staged Termux candidate and legacy native receiver acceptance all succeeded.",
+    "staged_integrated": "PASS: exact staged-runtime and integrated-regression workflow 45799300380; both jobs SUCCESS. This is CI evidence, not a Redmi install or native GGUF run.",
+    "redmi": "REDMI_UNVERIFIED; no fresh authenticated device receipt, no install/update request, no model/weight/permission/data change.",
+    "proof": "Added STALE_MODEL liveness classification for persisted one-shot native receiver matrix approvals. Status/clear now compare exact current sender/receiver model revisions, selected canonical paths and stat identity (device, inode, size, mtime_ns, ctime_ns) without hashing multi-GB GGUF files. The actual native run retains the existing full manifest/hash verification before execution. Added read-only status and stale-file invalidation tests; no native authority or production route added.",
+    "next_action": "Boss/QA review and integrate this fix with the K/V-aware matrix consumer. Then reconcile the Core K/V matrix stack with fair-budget #2488 → #2490 → #2493 and fastpath #2529, rebind the source-pin chain bottom-up without weakening hashes, and continue the normal-turn B1/B2 → C4 → C3 offer-consumption path. A real GGUF probe still needs separate local authorization; B3 remains OFF."
+  },
+  "previous_core_checkpoint": {
+    "owner": "Core & Harness",
     "package_id": "V14-NATIVE-TARGET-SCORE-001",
     "branch": "core/v14-native-target-score-repair-20261126-run1",
     "base_dependency": "Core PR #2515 head 13cfe43a7a94d4b35d4a3be0249bd725b6f06c23; #2512 native tokenwise receiver consumer; Perception #2511 evaluator lineage",
@@ -1560,37 +1590,6 @@
       "86a1226cc1cc12ca8defb2d6992cb5045163f121",
       "68c3de91ede75bd0d1381524690e46505451aeda"
     ]
-  },
-  "previous_core_checkpoint": {
-    "owner": "Core & Harness",
-    "package_id": "V14-NATIVE-TARGET-SCORE-001",
-    "branch": "core/v14-native-target-score-20261125-run1",
-    "base_dependency": "Core PR #2512 (head 10c2f66f8c110516e02d165e2b60183199527116); Perception evaluator copied byte-for-byte from PR #2511 latest head",
-    "head_sha": "54a72bc38213f0c1e551e4ae216f450106371230",
-    "pull_request": "https://github.com/RedMentos/Aii/pull/2515",
-    "status": "DRAFT_CI_PENDING",
-    "local_linux": "PASS: isolated C++17 logprob math with -Wall -Wextra -Werror; full checkout/pytest NOT_RUN (GitHub DNS unavailable)",
-    "ci_python_313_314": "NOT_YET_OBSERVED",
-    "native_build": "PENDING_EXACT_HEAD_GITHUB_CI",
-    "redmi": "REDMI_UNVERIFIED",
-    "proof": "Native C++ receiver gains bounded teacher-forced target-token scoring (1..512) after positive embedding decode; Python wrapper binds per-token logprobs to model/input/target/binary hashes, pinned llama.cpp revision/version, decode status and input-consumed evidence. Exact Perception native_receiver_utility.py carried unchanged. Core collector is ephemeral, capped at 160 receipts, rejects duplicates, and grants no training/production/B3 authority. Tokenwise probe currently emits LATENT_CANDIDATE only; no complete 8-condition utility cohort or real GGUF score yet. Documentation/handoff commits after code commit 1eee88b are docs-only; current branch/PR HEAD is 54a72bc.",
-    "parallel_prs": [
-      {
-        "number": 2512,
-        "url": "https://github.com/RedMentos/Aii/pull/2512",
-        "head_sha": "10c2f66f8c110516e02d165e2b60183199527116",
-        "status": "DRAFT_DEPENDENCY"
-      },
-      {
-        "number": 2513,
-        "url": "https://github.com/RedMentos/Aii/pull/2513",
-        "head_sha": "e2774a22c2f9d0a4acfee3c00d1024793b952f61",
-        "status": "DRAFT_CI_NOT_OBSERVED",
-        "scope": "consent-gated HTTPS ACTION_VIEW Android open_url"
-      }
-    ],
-    "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately.",
-    "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
   },
   "latest_owner_read_attempt": {
     "requested_at": "2026-11-26T01:57:48Z",

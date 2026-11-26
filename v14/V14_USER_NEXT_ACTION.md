@@ -2173,3 +2173,17 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Release/deployment: latest verified release-development branch HEAD remains `8d93236c753f0194224c19edc7411d8d7082b1d6`; no new release SHA and no device deployment. Last available private device receipt is historical (2026-11-24); no fresh authenticated Redmi receipt was obtained. Current behavior remains REDMI_UNVERIFIED.
 
 **Next:** Core stacks #2523 onto the exact #2524 branch and repairs the Core-owned source-pin chain. After exact integrated CI is green, obtain separate local operator authorization for the held-out real-GGUF cohort; do not enable B3 or change models based on this diagnostic alone.
+
+
+## Core & Harness Run 30 — model-bound approval liveness (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, user-data mutation or deployment was performed.
+
+- Draft PR [#2530](https://github.com/RedMentos/Aii/pull/2530), branch `core/v14-native-matrix-approval-recovery-20261126-run1`, code/test head `2e3befdeb0202ac8391ca0e950f7dc70f186ae1d`; NOT_RELEASED.
+- Core Runtime fix: persisted native receiver matrix approvals now classify sender/receiver model revision, selected canonical path, inode, size and timestamp drift as `STALE_MODEL`. Read-only status does not mutate Store state; clear invalidates the stale approval and closes the staged matrix. The liveness check is stat-only to avoid rehashing multi-GB GGUF files on mobile; the native run still performs the existing full manifest/hash verification before execution.
+- Code blobs: runtime `d4efc3a6cfb8bc546e47314eec47fd199b227cc3`; tests `b2b9c01aaced316d4d27059d6c8c5e7b09698f68`.
+- **LOCAL_LINUX isolated helper:** 4/4 PASS (unchanged model route, model revision drift, file-identity drift, symlink substitution). Full local Aii checkout/pytest NOT_RUN because no checkout is mounted and GitHub DNS is unavailable.
+- **Exact CI:** Core workflow [45799300401](https://github.com/RedMentos/Aii/actions/runs/45799300401) SUCCESS on Python 3.13 and 3.14; compile, focused Runtime/matrix regressions, exact staged candidate and legacy receiver acceptance succeeded. Shared staged/integrated workflow [45799300380](https://github.com/RedMentos/Aii/actions/runs/45799300380) SUCCESS for both staged-runtime and integrated-regression jobs.
+- **User effect:** stale approvals can now be cleared/replaced after model route drift instead of remaining misleadingly PENDING; unchanged approvals remain one-shot. This is diagnostic approval lifecycle hardening, not learned latent coupling, model-weight learning, production B3, or normal-turn answer correctness.
+- **Device:** no fresh authenticated receipt. The last available private V13OBS snapshot is historical (2026-11-24); it reported runtime STOPPED_BY_USER and autostart false. REDMI_UNVERIFIED. No device action.
+- **Next:** Boss/QA review and integrate this with the K/V-aware matrix consumer; then reconcile Core K/V with fair-budget #2488 → #2490 → #2493 and fastpath #2529, rebind source pins bottom-up, and continue the normal-turn B1/B2 → C4 → C3 path. Real GGUF testing requires separate local authorization; B3 remains OFF.
