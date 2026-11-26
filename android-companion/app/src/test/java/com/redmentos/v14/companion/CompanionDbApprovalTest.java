@@ -123,6 +123,7 @@ public final class CompanionDbApprovalTest {
         assertEquals(expectedHost, action.targetValue);
         assertFalse(action.requestJson.contains("/private/path"));
         assertFalse(action.requestJson.contains("session_token"));
+        assertFalse(action.requestJson.contains("#fragment_secret"));
         JSONObject request = new JSONObject(action.requestJson);
         assertEquals("open_url", request.getString("capability"));
         JSONObject args = request.getJSONObject("args");
@@ -212,6 +213,17 @@ public final class CompanionDbApprovalTest {
         CompanionDb.Action stored = second.get(ACTION_ID);
         assertEquals("CANCELLED", stored.status);
         assertOpenUrlRedacted(stored, "example.com");
+        assertNull(stored.receiptJson);
+    }
+
+    @Test public void malformedExpiredOpenUrlStillRedactsRawTarget() throws Exception {
+        String url = "https://example.com/private/path?session_token=secret#fragment_secret";
+        assertTrue(first.insertPending(ACTION_ID, "{malformed-json", url, NOW));
+        assertTrue(first.expire(ACTION_ID, NOW));
+        CompanionDb.Action stored = second.get(ACTION_ID);
+        assertEquals("EXPIRED", stored.status);
+        assertOpenUrlRedacted(stored, "example.com");
+        assertFalse(stored.requestJson.contains("malformed-json"));
         assertNull(stored.receiptJson);
     }
 
