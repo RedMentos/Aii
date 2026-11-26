@@ -400,6 +400,9 @@ class LlamaRunner:
         self._native_completion_http_200=False
         self._native_stream_completed=False
         self._native_single_step_completed=False
+        self._native_request_prompt_sha256=None
+        self._native_request_prompt_submitted=False
+        self._native_request_prompt_matches_admission=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -456,6 +459,9 @@ class LlamaRunner:
                             and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
                         'native_prompt_sha256':prompt_sha,
                         'native_token_ids_sha256':token_sha,
+                        'native_request_prompt_sha256':self._native_request_prompt_sha256,
+                        'native_request_prompt_submitted':self._native_request_prompt_submitted,
+                        'native_request_prompt_matches_admission':self._native_request_prompt_matches_admission,
                         'native_prompt_tokens':prompt_tokens,
                         'native_tokenizer':admission.get('native_tokenizer') if type(admission) is dict else None,
                         'native_prefill_observed':prefill_observed,
@@ -482,6 +488,15 @@ class LlamaRunner:
                         recovery=recovery | {'retained_warm':False,'reason':'USER_CANCELLED'}
                 self.last_metrics['interruption_unload']=recovery
                 self.last_metrics['warm_process_retained']=recovery.get('retained_warm') is True
+    def _record_native_prompt_request(self,prompt,*,submitted):
+        if not isinstance(prompt,str):return
+        prompt_sha=digest(prompt)
+        admission=getattr(self,'_prompt_admission',None)
+        expected=admission.get('rendered_prompt_sha256') if isinstance(admission,dict) else None
+        self._native_request_prompt_sha256=prompt_sha
+        self._native_request_prompt_matches_admission=(
+            type(expected) is str and prompt_sha==expected)
+        if submitted:self._native_request_prompt_submitted=True
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
         self.load(cancel,deadline);check(cancel,deadline)
@@ -495,7 +510,10 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
         try:
+            request_prompt=payload.get('prompt')
+            self._record_native_prompt_request(request_prompt,submitted=False)
             conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
+            self._record_native_prompt_request(request_prompt,submitted=True)
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
             result=json.loads(raw)
@@ -544,7 +562,11 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
         try:
-            conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
+            request_prompt=payload.get("prompt")
+            self._record_native_prompt_request(request_prompt,submitted=False)
+            conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key})
+            self._record_native_prompt_request(request_prompt,submitted=True)
+            response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
             self._native_completion_http_200=True
             while True:

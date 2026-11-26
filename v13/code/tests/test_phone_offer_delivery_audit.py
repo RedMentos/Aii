@@ -166,6 +166,9 @@ class PhoneOfferAudit(unittest.TestCase):
             "native_completion_http_200": True,
             "native_prompt_sha256": "a" * 64,
             "native_token_ids_sha256": "b" * 64,
+            "native_request_prompt_sha256": "a" * 64,
+            "native_request_prompt_submitted": True,
+            "native_request_prompt_matches_admission": True,
             "native_prompt_tokens": 521,
             "native_generation_completed": True,
             "source_span_revalidated_here": False,
@@ -205,12 +208,18 @@ class PhoneOfferAudit(unittest.TestCase):
         self._native_prefill_turn(prompt_n=500, cache_n=21)
         out = audit(self.db)
         gate = out["end_to_end_gate"]
-        self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED")
+        self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED")
         self.assertEqual(gate["both_body_native_prefill_token_count_matched_turns"], 1)
+        self.assertEqual(gate["both_body_native_prompt_inclusion_verified_turns"], 1)
+        self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(gate["native_request_prompt_hash_match_observed"])
         self.assertTrue(gate["native_prefill_token_count_match_observed"])
-        self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
         turn = out["turns"][0]
         self.assertTrue(turn["native_prefill_token_count_matched"])
+        self.assertTrue(turn["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(turn["c3_prompt_inclusion_proven"])
+        self.assertEqual(turn["native_prompt_inclusion_mode"], "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT")
         self.assertEqual(turn["native_prefill_prompt_tokens"], 521)
         self.assertEqual(turn["native_prefill_prompt_n"], 500)
         self.assertEqual(turn["native_prefill_cache_n"], 21)
@@ -250,6 +259,7 @@ class PhoneOfferAudit(unittest.TestCase):
         turn = out["turns"][0]
         self.assertTrue(turn["native_prefill_token_count_matched"])
         self.assertEqual(turn["native_prefill_timing_source"], "FIRST_TOKEN_STEP")
+        self.assertTrue(turn["native_prompt_offer_inclusion_verified"])
         self.assertEqual(turn["native_prefill_prompt_n"], 500)
         self.assertEqual(turn["native_prefill_cache_n"], 21)
         self.assertEqual(turn["native_prefill_prompt_ms"], 12.5)
@@ -264,12 +274,87 @@ class PhoneOfferAudit(unittest.TestCase):
         out = audit(self.db)
         turn = out["turns"][0]
         self.assertFalse(turn["native_prefill_token_count_matched"])
+        self.assertFalse(turn["native_prompt_offer_inclusion_verified"])
         self.assertEqual(turn["native_prefill_timing_source"], "FIRST_TOKEN_STEP")
         self.assertEqual(
             out["end_to_end_gate"]["status"],
             "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED",
         )
         self.assertNotIn("12345", json.dumps(out))
+
+
+    def test_request_prompt_hash_mismatch_keeps_count_match_but_not_inclusion(self):
+        self._native_prefill_turn(prompt_n=500, cache_n=21)
+        raw = self.db.execute(
+            "SELECT metadata FROM messages WHERE event_id=?", ("evt_native_prefill",)
+        ).fetchone()[0]
+        metadata = json.loads(raw)
+        metadata["runner"]["native_offer_prompt_receipt"]["native_request_prompt_sha256"] = "c" * 64
+        self.db.execute(
+            "UPDATE messages SET metadata=? WHERE event_id=?",
+            (json.dumps(metadata), "evt_native_prefill"),
+        )
+        out = audit(self.db)
+        turn = out["turns"][0]
+        self.assertTrue(turn["native_prefill_token_count_matched"])
+        self.assertFalse(turn["native_prompt_offer_inclusion_verified"])
+        self.assertEqual(
+            out["end_to_end_gate"]["status"],
+            "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED",
+        )
+
+    def test_exact_same_causal_prefill_can_verify_prompt_inclusion_without_http_count(self):
+        event = "evt_native_causal"
+        b1, b2 = "pkt_b1_causal", "pkt_b2_causal"
+        self.message(event, ids=(b1, b2))
+        self.packet(event, "B1_DETAIL", b1)
+        self.packet(event, "B2_GIST", b2)
+        self.log(event, "body_offer_delivered", "B1_DETAIL", packet_id=b1)
+        self.log(event, "body_offer_delivered", "B2_GIST", packet_id=b2)
+        raw = self.db.execute(
+            "SELECT metadata FROM messages WHERE event_id=?", (event,)
+        ).fetchone()[0]
+        metadata = json.loads(raw)
+        metadata["runner"]["native_context_binding"] = {
+            "scope": "EXACT_SAME_CAUSAL_PREFILL",
+            "live_generation_kv_tap": True,
+            "context_source_sha256": "c" * 64,
+            "pid": 123,
+            "handle_id": "d" * 64,
+            "features_sha256": "e" * 64,
+        }
+        metadata["runner"]["native_offer_prompt_receipt"] = {
+            "revision": "v13.native-offer-prompt-receipt/1",
+            "status": "RENDERED_WITH_QUOTES",
+            "native_template_rendered": True,
+            "native_template_submitted": True,
+            "native_completion_http_200": False,
+            "native_prompt_prefill_verified": True,
+            "native_generation_completed": True,
+            "native_prompt_sha256": "a" * 64,
+            "native_token_ids_sha256": "b" * 64,
+            "native_prompt_tokens": 521,
+            "source_span_revalidated_here": False,
+            "native_semantic_use_proven": False,
+            "offers": [
+                {"role": "B1_DETAIL", "packet_id": b1, "rendered_quote_count": 1},
+                {"role": "B2_GIST", "packet_id": b2, "rendered_quote_count": 1},
+            ],
+        }
+        self.db.execute(
+            "UPDATE messages SET metadata=? WHERE event_id=?",
+            (json.dumps(metadata), event),
+        )
+        out = audit(self.db)
+        turn = out["turns"][0]
+        self.assertTrue(turn["native_prompt_offer_inclusion_verified"])
+        self.assertEqual(turn["native_prompt_inclusion_mode"], "EXACT_SAME_CAUSAL_PREFILL")
+        self.assertEqual(turn["native_prefill_timing_source"], "EXACT_SAME_CAUSAL_PREFILL")
+        self.assertFalse(turn["native_prefill_token_count_matched"])
+        self.assertFalse(turn["roles"]["B1_DETAIL"]["native_template_http200_submitted"])
+        self.assertTrue(turn["roles"]["B1_DETAIL"]["native_template_submission_verified"])
+        self.assertFalse(turn["c3_semantic_use_proven"])
+        self.assertFalse(out["end_to_end_gate"]["learned_latent_exchange_verified"])
 
     def test_bounded_limit_and_bad_private_metadata_are_ignored(self):
         self.message("e5")
