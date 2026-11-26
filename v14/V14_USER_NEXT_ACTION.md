@@ -2283,3 +2283,8 @@ Current code/test head: \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`. The proxy 
 ### GCMI reuse/licence boundary (2026-11-26)
 
 No GCMI code or dependency was added. The upstream \`robince/gcmi\` package is GPL-3.0, requires NumPy/SciPy, and its native MATLAB MEX CI targets macOS/Linux x86_64 only; no Android/aarch64 proof is published. Aii has no root LICENSE at the working ref, so GPL compatibility is unknown. No user decision is needed now. If a future exact rIMI implementation proposes GPL code, request a separate explicit licence decision first.
+
+
+### Private device status (2026-11-26)
+
+Fresh read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests expired without an authenticated device receipt. Status: **NO_LIVE_RECEIPT**. The last V13OBS #115 snapshot is historical (2026-11-24); current Redmi runtime, updater and deployment are **REDMI_UNVERIFIED**. No device action was attempted and no user action is needed.
