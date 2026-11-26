@@ -234,7 +234,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX CPython 3.13.5 scratch unit tests; exact A4/A5 extractor integration test queued in GitHub CI; Android provider NOT_IMPLEMENTED/NOT_VERIFIED.",
-      "next_step": "Run 44 adds a session-local discrete rIMI proxy to the A4/A5 shadow diagnostic; scratch-equivalent LOCAL_LINUX compile and 6/6 assertions PASS, but exact PR CI is pending and the full repository local suite is unavailable. Keep it synthetic-only and do not change attention/JEPA. Core/Integrator must repair/recompose the audio-builder recovery → stage → RuntimeDeploy pin chain and normal-turn revocable audio lease. Perception next: source/session-disjoint held-out outcome evaluation with temporal-drift and switch controls only when a legitimate separately consented cohort exists.",
+      "next_step": "Core/Integrator must compose #2527 with #2525/#2524 and refresh the Core-owned recovery → stage → RuntimeDeploy audio-builder pin chain bottom-up without weakening hashes, then rerun exact staged/integrated gates. Perception keeps the proxy diagnostic-only; next is source/session-disjoint held-out outcomes with temporal-drift and switch controls only after a legitimate separately consented cohort exists.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-26T08:56:46+01:00",
       "latest_candidate_pr": {
@@ -1482,7 +1482,7 @@
     "research": "R-166 official arXiv abstract only; proxy is not exact paper rIMI; no code/data/weights reused.",
     "device": "REDMI_UNVERIFIED; last V13OBS #115 historical 2026-11-24; latest private read-only requests pending.",
     "release": "NOT_RELEASED",
-    "next_action": "Poll exact CI; Core repairs/recomposes audio builder pin chain and normal-turn revocable audio lease; Perception later evaluates legitimate session-disjoint held-out outcomes with drift/switch controls."
+    "next_action": "Core/Integrator must compose #2527 with #2525/#2524 and refresh the Core-owned recovery → stage → RuntimeDeploy audio-builder pin chain bottom-up without weakening hashes, then rerun exact staged/integrated gates. Perception keeps the proxy diagnostic-only; next is source/session-disjoint held-out outcomes with temporal-drift and switch controls only after a legitimate separately consented cohort exists."
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T01:57:48Z",
