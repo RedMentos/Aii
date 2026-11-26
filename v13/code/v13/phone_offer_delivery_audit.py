@@ -105,7 +105,9 @@ def _runtime_native_template_receipts(report, selected, events):
     witness = report.get("native_offer_prompt_receipt")
     if type(witness) is not dict:
         return set()
-    if (witness.get("revision") != "v13.native-offer-prompt-receipt/1"
+    revision = witness.get("revision")
+    if (revision not in ("v13.native-offer-prompt-receipt/1",
+                         "v13.native-offer-prompt-receipt/2")
             or witness.get("status") != "RENDERED_WITH_QUOTES"
             or witness.get("native_template_submitted") is not True
             or witness.get("native_completion_http_200") is not True
@@ -113,6 +115,15 @@ def _runtime_native_template_receipts(report, selected, events):
             or witness.get("source_span_revalidated_here") is not False
             or witness.get("native_semantic_use_proven") is not False):
         return set()
+    if revision.endswith("/2"):
+        prompt_sha = witness.get("native_prompt_sha256")
+        rendered_sha = witness.get("rendered_prompt_sha256")
+        if (witness.get("native_prompt_render_match") is not True
+                or type(prompt_sha) is not str or len(prompt_sha) != 64
+                or rendered_sha != prompt_sha
+                or type(witness.get("rendered_prompt_chars")) is not int
+                or witness["rendered_prompt_chars"] <= 0):
+            return set()
     rows = witness.get("offers")
     if type(rows) is not list or not 1 <= len(rows) <= len(ROLES):
         return set()
@@ -135,6 +146,60 @@ def _runtime_native_template_receipts(report, selected, events):
             return set()
         matched.add(role)
     return matched
+
+
+def _runtime_native_prompt_span_roles(report):
+    """Validate per-offer character spans against the exact submitted prompt hash."""
+    witness = report.get("native_offer_prompt_receipt")
+    if (type(witness) is not dict
+            or witness.get("revision") != "v13.native-offer-prompt-receipt/2"
+            or witness.get("status") != "RENDERED_WITH_QUOTES"
+            or witness.get("native_template_submitted") is not True
+            or witness.get("native_completion_http_200") is not True
+            or witness.get("native_prompt_render_match") is not True):
+        return set()
+    prompt_sha = witness.get("native_prompt_sha256")
+    rendered_sha = witness.get("rendered_prompt_sha256")
+    token_sha = witness.get("native_token_ids_sha256")
+    chars = witness.get("rendered_prompt_chars")
+    tokens = _count(witness.get("native_prompt_tokens"))
+    if (type(prompt_sha) is not str or len(prompt_sha) != 64
+            or any(char not in "0123456789abcdef" for char in prompt_sha)
+            or rendered_sha != prompt_sha
+            or type(token_sha) is not str or len(token_sha) != 64
+            or any(char not in "0123456789abcdef" for char in token_sha)
+            or type(chars) is not int or chars <= 0
+            or tokens is None or tokens <= 0):
+        return set()
+    rows = witness.get("offers")
+    if type(rows) is not list or not 1 <= len(rows) <= len(ROLES):
+        return set()
+    seen_roles, seen_ids, spans = set(), set(), []
+    for row in rows:
+        if type(row) is not dict:
+            return set()
+        role, ident = row.get("role"), row.get("packet_id")
+        start, end, span_sha = (
+            row.get("native_prompt_char_start"),
+            row.get("native_prompt_char_end"),
+            row.get("native_prompt_span_sha256"),
+        )
+        if (type(role) is not str or role not in ROLES or role in seen_roles
+                or type(ident) is not str or not 0 < len(ident) <= 256
+                or ident in seen_ids
+                or type(start) is not int or type(end) is not int
+                or start < 0 or end <= start or end > chars
+                or type(span_sha) is not str or len(span_sha) != 64
+                or any(char not in "0123456789abcdef" for char in span_sha)):
+            return set()
+        seen_roles.add(role)
+        seen_ids.add(ident)
+        spans.append((start, end))
+    spans.sort()
+    if any(spans[index][0] < spans[index - 1][1]
+           for index in range(1, len(spans))):
+        return set()
+    return seen_roles
 
 
 def _native_prefill_token_count_match(report, template_roles, native_c3_output, incomplete):
@@ -175,7 +240,8 @@ def _native_prefill_token_count_match(report, template_roles, native_c3_output, 
     matched = bool(
         native_c3_output and not incomplete
         and set(template_roles) == set(ROLES)
-        and witness.get("revision") == "v13.native-offer-prompt-receipt/1"
+        and witness.get("revision") in ("v13.native-offer-prompt-receipt/1",
+                                         "v13.native-offer-prompt-receipt/2")
         and witness.get("status") == "RENDERED_WITH_QUOTES"
         and witness.get("native_template_submitted") is True
         and witness.get("native_completion_http_200") is True
@@ -304,6 +370,10 @@ def _audit_one(conn, index, event_id, status, metadata):
         }
     native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)
                              if native_c3_output and not incomplete else set())
+    native_prompt_span_roles = (
+        _runtime_native_prompt_span_roles(report) & native_template_roles
+        if native_c3_output and not incomplete else set()
+    )
     (native_prefill_token_count_matched, native_prefill_prompt_tokens,
      native_prefill_prompt_n, native_prefill_cache_n, native_prefill_prompt_ms) = (
         _native_prefill_token_count_match(
@@ -318,6 +388,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         )
     for role in ROLES:
         roles[role]["native_template_http200_submitted"] = role in native_template_roles
+        roles[role]["native_prompt_span_bound"] = role in native_prompt_span_roles
         roles[role]["native_prefill_token_count_matched"] = bool(
             native_prefill_token_count_matched and role in native_template_roles)
     c3phases = _safe_phases(report)
@@ -330,6 +401,8 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_generated_tokens": native_c3_tokens,
         "c3_native_output_observed": native_c3_output,
         "native_template_http200_submitted_roles": sorted(native_template_roles),
+        "native_prompt_span_bound_roles": sorted(native_prompt_span_roles),
+        "native_prompt_span_bound": set(native_prompt_span_roles) == set(ROLES),
         "native_prefill_token_count_matched": native_prefill_token_count_matched,
         "native_prefill_prompt_tokens": native_prefill_prompt_tokens,
         "native_prefill_prompt_n": native_prefill_prompt_n,
@@ -392,6 +465,10 @@ def audit(conn, limit=10):
         and t["native_prefill_token_count_matched"]
         and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
         for t in turns)
+    both_native_prompt_spans_bound = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and t["native_prompt_span_bound"]
+        for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
         and t["c3_reporter"] and t["c3_generated_tokens"] == 0
@@ -411,6 +488,8 @@ def audit(conn, limit=10):
             "both_body_selected_delivered_and_c3_generated_turns": both,
             "both_body_native_template_http200_reported_turns": both_native,
             "both_body_native_prefill_token_count_matched_turns": both_native_prefill_count_matched,
+            "both_body_native_prompt_span_bound_turns": both_native_prompt_spans_bound,
+            "native_prompt_span_binding_observed": both_native_prompt_spans_bound > 0,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
             "native_prompt_offer_inclusion_verified": False,
