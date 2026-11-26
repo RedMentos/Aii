@@ -1,11 +1,12 @@
 """Measured-failure recovery for the *whole-turn* native compute envelope.
 
-A short turn with repeated real C3 zero-token prefill failures reserves a
-measured minimum for the outward C3 path. The remaining pre-answer window is
-shared fairly by sequential B1/B2 passes; one body cannot consume the peer's
-entire opportunity. A body is deferred to the existing post-commit path only
-when its own remaining slice is below the minimum. Long/deep turns keep the
-ordinary 45% observer window. Age and learning rights are unchanged.
+A short turn with repeated real C3 zero-token prefill failures reserves
+measured windows for the outward C3 path and the C4 focal loop. The remaining
+pre-answer window is shared fairly by sequential B1/B2 passes; one body cannot
+consume the peer's entire opportunity. A body is deferred to the existing
+post-commit path only when its own remaining slice is below the minimum.
+Long/deep turns keep the ordinary 45% observer window. Age and learning rights
+are unchanged.
 """
 
 from __future__ import annotations
@@ -244,9 +245,9 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         allotted=ordinary_end
         reason="NORMAL_COGNITIVE_PREANSWER"
     # The total pre-answer envelope includes both initial body work and C4.
-    # During C3 recovery, reserve its final second for focal selection/re-entry;
-    # B1/B2 receive only the earlier body window. Normal turns keep the old
-    # shared observer/focal envelope unchanged.
+    # During C3 recovery, reserve the measured C4 focal window after the body
+    # passes; B1/B2 receive only the earlier body window. Normal turns keep the
+    # old shared observer/focal envelope unchanged.
     preanswer_end=max(start,allotted)
     focal_reserve=(min(focal_reserve,max(0.,preanswer_end-start)) if recover else 0.)
     body_end=max(start,preanswer_end-focal_reserve)
