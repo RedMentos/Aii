@@ -35,10 +35,37 @@ def _load(code_dir: Path, relative: str, expected: str):
     return module
 
 
+
+AUDIO_COGNITION_PREVIOUS_BLOB_SHA1 = "06de0acf2c6d30d50301d5073f5569822edff813"
+AUDIO_COGNITION_CURRENT_BLOB_SHA1 = "deb8c274022e2a4419dd38adb11ca14481c4bd91"
+
+
+def _rebind_audio_cognition_pin(code_dir: Path, audio) -> None:
+    """Rebind only the exact Cognition blob updated by the current Perception base.
+
+    The Perception-owned audio composer still pins the prior Cognition blob.
+    All its other source pins remain unchanged and are checked by apply_sources().
+    """
+    path = code_dir / "v13/cognition.py"
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("current Perception Cognition source missing or unsafe")
+    actual = _git_blob_sha1(path.read_bytes())
+    if actual != AUDIO_COGNITION_CURRENT_BLOB_SHA1:
+        raise ValueError("current Perception Cognition source differs from the reviewed exact blob")
+    pins = getattr(audio, "SOURCE_BLOBS", None)
+    if (not isinstance(pins, dict)
+            or pins.get("v13/cognition.py") != AUDIO_COGNITION_PREVIOUS_BLOB_SHA1):
+        raise ValueError("Perception audio Cognition pin changed; a new review is required")
+    rebound = dict(pins)
+    rebound["v13/cognition.py"] = actual
+    audio.SOURCE_BLOBS = rebound
+
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
     audio = _load(code_dir, AUDIO_BUILDER, AUDIO_BUILDER_BLOB_SHA1)
+    _rebind_audio_cognition_pin(code_dir, audio)
 
     result = base.build_sources(code_dir, include_postcommit=include_postcommit)
     focal_before = result.get("v13/focal.py")
