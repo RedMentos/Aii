@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T05:46:26.212Z",
+  "updated_at": "2026-11-26T07:10:58Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6; Core active child chain #2478 → #2485 → #2488 → #2490, with #2493 adding fail-closed warm retention on the exact #2490 head. All remain DRAFT / NOT_RELEASED pending review and integration. Redmi remains REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "LOCAL_LINUX isolated matcher + exact-head CI; REDMI_UNVERIFIED; no native nontrivial-turn acceptance",
-      "next_step": "Review/integrate Core #2493 warm-retention stack and child #2529 greeting reflex on one current base. Then obtain a fresh consented Redmi mixed-turn run. The greeting reflex is only for exact whole-text greetings; the highest open functional gap remains useful native B1_DETAIL + B2_GIST offers delivered to and selected by C4, consumed in the C3 native prompt, and a correct final answer on the same nontrivial turn.",
+      "proof_environment": "LOCAL_LINUX exact fetched matcher/test blobs; CPython 3.13.5 matcher 2/2 PASS; CI Python 3.13/3.14 fastpath workflow PASS; staged/integrated source-pin failure; REDMI_UNVERIFIED.",
+      "next_step": "Core/Boss/JEPA coordinate a strict bottom-up rebind of the staged Runtime consumer chain to the current exact Runtime SHA-256 6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df (the old integrated-online-world consumer expects 1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47); do not weaken pins. Then re-run staged/integrated/migration, safely compose #2493/#2529, and return to the P0 B1/B2→C4→C3 same-turn path.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26T05:46:26.212Z",
-      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.\n\n2026-11-25 Core Run 25: parent #2478 exact head 55db58ae exposed one common staged blocker: controller guard omitted the exact composed arithmetic/fair-budget Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0. Parent CI runs 45540305517 and 45540305597 failed at that same pin; direct same-turn B1/B2→C4→C3 tests passed 3/3 on Python 3.13 and 3.14 before staged composition. Child PR #2485 adds only this exact SHA to the finite allowlist and rebinds guard→recovery-12→recovery-21→stage→RuntimeDeploy bottom-up. Exact child head 1660a81281279a873bff676b4733ee62f14d37ba; six exact-head workflows queued (45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694). LOCAL_LINUX isolated arithmetic 21/21 PASS on CPython 3.13.5/pytest 9.0.2; full Aii checkout NOT_RUN/BLOCKED because GitHub DNS fails. No Redmi receipt, deployment, model/weight/permission/data change. PR remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.\n\n2026-11-25 final Core Run 25 readback: child #2485 code/test SHA fd1c58e2998ad018dcafdf8ac3367eb45f543575 is exact-head CI GREEN. Controller guard 45542286279 SUCCESS; Lab Age/WebView 45542286382 SUCCESS; Runtime deployment integrity 45542286519 SUCCESS on Python 3.11/3.14; owner-read/bootstrap 45542286527 SUCCESS; two-checkout migration 45542286331 SUCCESS; staged/integrated 45542286369 SUCCESS. Staged Runtime: 288 passed, 10 skipped, 48 subtests; integrated regression: 424 passed, 3 skipped, 58 subtests; recovery shell syntax PASS. Isolated LOCAL_LINUX arithmetic module 21/21 PASS on CPython 3.13.5/pytest 9.0.2. This is CI/synthetic integration, not native model utility or Redmi proof. Child remains DRAFT/NOT_RELEASED, stacked on #2478. PRs #2482/#2483 modify the same pin chain for A4 attention and must be reconciled on one reviewed base. Private relay HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #888–890 have no device_status comments; latest available #115 snapshot (2026-11-24 09:28 UTC) is historical and reports STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers. No UPDATE_REQUEST, Termux command, model/weight/permission change or deployment occurred.\n\n2026-11-25 Core Run 27: child PR #2493 (core/v14-runner-warm-retention-current-stack-20261125-run1) is stacked on green #2490 head cb3b8c16ea4061bc9ed2ef33cbff3c179b9bb406. LlamaRunner now attempts warm retention only after a DEADLINE and only if the same process/lifecycle remains current and every well-formed /slots entry reports is_processing=false; otherwise it unloads. User cancellation and native errors still unload immediately; /slots payloads are never persisted. Local isolated logic harness: 6/6 PASS. Exact-source Python 3.13/3.14 workflow is queued on current head ced17d1a60156c6ea353672f0b3e7c88e24bd62d. Initial inherited CI found a stale integrated_native_latent_receiver_candidate_20261122.py pin for v13/runners.py; repaired exact runner SHA-256 8c95128d... and rebound native receiver blob → recovery-21 builder → stage builder → RuntimeDeploy. New exact-head staged/integrated/migration workflows are pending. Full local Aii checkout NOT_RUN/BLOCKED by GitHub DNS. No GGUF, native pair, Redmi test, device action, model/weight/permission change or deployment. PR #2493 remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.\n\nCore & Harness Run 28 (2026-11-26): PR #2529 on core/v14-greeting-fastpath-runtime-20261126-run1, code head 82f3bc511529c365d96ee43b59f9451e6096465b, DRAFT / NOT_RELEASED, stacked on #2493. Exact greeting Runtime/SQLite path and non-greeting fallthrough: CI SUCCESS on Python 3.13 and 3.14 (3/3 greeting tests each; arithmetic 22/22; runner retention 9/9; py_compile PASS). LOCAL_LINUX isolated matcher 1/1 PASS with exact blob readback; full local Aii suite BLOCKED by GitHub DNS/no checkout. REDMI_UNVERIFIED; no updater/device/model/permission/data action.",
+      "last_checkpoint": "2026-11-26T07:10:58Z",
+      "proof": "PR #2462 exact code head 85fda5fbc0997da5d495a023967d0ce7eadc44ff. New late-watch completion path delivers a B1/B2 OfferPacket that finishes after C3 returns exactly once through the gated selfmodel.late_offer path without rewriting the committed C3 answer; if the original source_ref has been revoked/unavailable, it records DEFERRED_SOURCE_UNAVAILABLE and drops the offer. CI Python 3.13 and 3.14 Core regression step: 99 passed, 7 subtests passed on each; direct same-turn B1/B2->C4->C3 consumer: 3 passed on each. The separate staged-composition step fails 3/2 because shared Runtime consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38 while current Runtime SHA-256 is 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Staged-runtime exact run: 23 failed, 146 passed, 1 skipped, 2 errors, 33 subtests; integrated-regression, phone-offer receipt, coordinated source-contract and owner-read bootstrap fail closed at the same pin. Other JEPA, native tap, native stream and runtime deployment checks pass. Full local Aii checkout not available; git ls-remote fails DNS. Redmi REDMI_UNVERIFIED; no fresh device read or action.\n\n2026-11-25 Core Run 25: parent #2478 exact head 55db58ae exposed one common staged blocker: controller guard omitted the exact composed arithmetic/fair-budget Runtime SHA-256 2c4c8ed8b85e1e16b19ab93bf8ace1042c1435dfbe039dcbcbe739d179603dc0. Parent CI runs 45540305517 and 45540305597 failed at that same pin; direct same-turn B1/B2→C4→C3 tests passed 3/3 on Python 3.13 and 3.14 before staged composition. Child PR #2485 adds only this exact SHA to the finite allowlist and rebinds guard→recovery-12→recovery-21→stage→RuntimeDeploy bottom-up. Exact child head 1660a81281279a873bff676b4733ee62f14d37ba; six exact-head workflows queued (45541777745, 45541777692, 45541777855, 45541777819, 45541777707, 45541777694). LOCAL_LINUX isolated arithmetic 21/21 PASS on CPython 3.13.5/pytest 9.0.2; full Aii checkout NOT_RUN/BLOCKED because GitHub DNS fails. No Redmi receipt, deployment, model/weight/permission/data change. PR remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.\n\n2026-11-25 final Core Run 25 readback: child #2485 code/test SHA fd1c58e2998ad018dcafdf8ac3367eb45f543575 is exact-head CI GREEN. Controller guard 45542286279 SUCCESS; Lab Age/WebView 45542286382 SUCCESS; Runtime deployment integrity 45542286519 SUCCESS on Python 3.11/3.14; owner-read/bootstrap 45542286527 SUCCESS; two-checkout migration 45542286331 SUCCESS; staged/integrated 45542286369 SUCCESS. Staged Runtime: 288 passed, 10 skipped, 48 subtests; integrated regression: 424 passed, 3 skipped, 58 subtests; recovery shell syntax PASS. Isolated LOCAL_LINUX arithmetic module 21/21 PASS on CPython 3.13.5/pytest 9.0.2. This is CI/synthetic integration, not native model utility or Redmi proof. Child remains DRAFT/NOT_RELEASED, stacked on #2478. PRs #2482/#2483 modify the same pin chain for A4 attention and must be reconciled on one reviewed base. Private relay HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #888–890 have no device_status comments; latest available #115 snapshot (2026-11-24 09:28 UTC) is historical and reports STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers. No UPDATE_REQUEST, Termux command, model/weight/permission change or deployment occurred.\n\n2026-11-25 Core Run 27: child PR #2493 (core/v14-runner-warm-retention-current-stack-20261125-run1) is stacked on green #2490 head cb3b8c16ea4061bc9ed2ef33cbff3c179b9bb406. LlamaRunner now attempts warm retention only after a DEADLINE and only if the same process/lifecycle remains current and every well-formed /slots entry reports is_processing=false; otherwise it unloads. User cancellation and native errors still unload immediately; /slots payloads are never persisted. Local isolated logic harness: 6/6 PASS. Exact-source Python 3.13/3.14 workflow is queued on current head ced17d1a60156c6ea353672f0b3e7c88e24bd62d. Initial inherited CI found a stale integrated_native_latent_receiver_candidate_20261122.py pin for v13/runners.py; repaired exact runner SHA-256 8c95128d... and rebound native receiver blob → recovery-21 builder → stage builder → RuntimeDeploy. New exact-head staged/integrated/migration workflows are pending. Full local Aii checkout NOT_RUN/BLOCKED by GitHub DNS. No GGUF, native pair, Redmi test, device action, model/weight/permission change or deployment. PR #2493 remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.\n\nCore & Harness Run 28 (2026-11-26): PR #2529 on core/v14-greeting-fastpath-runtime-20261126-run1, code head 82f3bc511529c365d96ee43b59f9451e6096465b, DRAFT / NOT_RELEASED, stacked on #2493. Exact greeting Runtime/SQLite path and non-greeting fallthrough: CI SUCCESS on Python 3.13 and 3.14 (3/3 greeting tests each; arithmetic 22/22; runner retention 9/9; py_compile PASS). LOCAL_LINUX isolated matcher 1/1 PASS with exact blob readback; full local Aii suite BLOCKED by GitHub DNS/no checkout. REDMI_UNVERIFIED; no updater/device/model/permission/data action.\n\n2026-11-26 Core Run 29 / PR #2529 exact head b8e68c9cb65c987da46004438b2404aff2e8650e: greeting reflex now verifies that the supplied text is the entire text SourceRef (char_start=0, char_end=len(text), lowercase SHA-256 exactly matches UTF-8 input) and fails closed on malformed modality declarations or audio/image/video source fields. Regression tests cover source-hash mismatch, truncated/nonzero spans, malformed modality values and multimodal field presence. LOCAL_LINUX CPython 3.13.5: exact fetched Git blobs match remote (module f20ecdaa592f2427b7ed5450ef32764dc83a22d2; test 294501262aa58795d0308918546fe5c2c300680b); py_compile PASS; focused matcher 2/2 PASS; baseline negative control fails as expected because old code accepted a mismatched source hash plus modalities='image'. Exact CI run 45773215054: Python 3.13 and 3.14 both SUCCESS; runner-retention 9/9, arithmetic 22/22, greeting Runtime/fallthrough 4/4, py_compile PASS per version. Shared staged/integrated run 45773214858 remains FAIL: staged 33 failed / 253 passed / 10 skipped / 2 errors / 37 subtests; integrated 1 failed. Root cause is strict source-pin drift: integrated_online_world expects runtime SHA-256 1a0f36bc... while exact current runtime.py is 6f4e023c...; the same changed-runtime pin propagates into postcommit, arithmetic, observer fairness, controller guards and migration. No pin was weakened. PR #2529 remains DRAFT / NOT_RELEASED. No local full Aii checkout, no native model test and no Redmi test.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -623,69 +623,32 @@
       "proof": "v14/m1/data.py + array_data.py + test_data.py + test_array_data.py. Two-pass direct-to-array UCI ingestion; data/split hash parity; 256 MiB batch allocation ceiling; vectorized missing-window checks; monthly rejection stats; test gate logs and fsyncs before any test-window materialization/unlock. Latest M1 CI queued, not passed."
     }
   ],
-  "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",
-  "last_code_release_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
-  "latest_integrated_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
-  "latest_integrated_head_verified_at": "2026-11-23T11:07:22.216Z",
+  "current_redmi_status": "Latest available consented V13OBS owner-read snapshot is private RedMentos/Aiiii #115 (2026-11-24 09:28 UTC): installed/runtime target 8d93236c753f0194224c19edc7411d8d7082b1d6, pipeline/dashboard UP_TO_DATE, auto-update enabled. Later 2026-11-24 17:50 UTC report says AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers. Read-only relay requests #862–864 have no authenticated device response; no newer receipt. REDMI_UNVERIFIED; do not restart, send another update request or mutate device.",
+  "last_code_release_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+  "latest_integrated_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+  "latest_integrated_head_verified_at": "2026-11-26T07:10:58Z",
   "release_gate_status": "Exact release SHA b20e9b1f3dd53af472055adb43da628785494ec4: 37/37 GitHub check-runs SUCCESS, including staged-runtime and integrated-regression. Device installation NOT_CONFIRMED: PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from a pre-green snapshot; auto-update is enabled. Functional and native Android acceptance remain OPEN.",
   "phone_receipt": {
-    "state": "B20E9_CI_GREEN_PHONE_RECEIPT_STALE_8BF44CB",
-    "pipeline_status_issue": 767,
-    "diagnostics_issue": 764,
-    "health_issue": 765,
-    "learning_status_issue": 766,
-    "update_request_issue": 737,
-    "installed_sha": "8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c",
-    "auto_update": "ENABLED",
-    "runtime": "CI_WAIT",
-    "dashboard": "CI_WAIT",
-    "last_result": "CI_WAIT",
-    "last_error": "NONE",
-    "latest_turn": {
-      "status": "FINAL",
-      "duration_s": 57.73882742600108,
-      "ttft_s": 41.626904203003505,
-      "prefill_s": 38.945270141004585,
-      "prompt_tokens": 751,
-      "generated_tokens": 2,
-      "correctness": "UNKNOWN_NOT_SCORED"
-    },
-    "native_probe": {
-      "status": "SMOKE_PARTIAL",
-      "B1_DETAIL": "TIME_BUDGET_53.2S",
-      "B2_GIST": "TIME_BUDGET_54.2S",
-      "C3": "OK_3.1S",
-      "fresh_probe_run": false
-    },
-    "instant_residency": {
-      "sample_kind": "INSTANT_NATIVE_PROCESSES",
-      "mapped_processes": 0,
-      "mapped_pss_mib": 0,
-      "mapped_rss_mib": 0,
-      "readability": "UNKNOWN_NO_GROUP_CHILDREN",
-      "memory_accounting": "PROCESS_PSS_NOT_FREE_RAM_OR_SUSTAINED_RESIDENCY"
-    },
-    "lab_age": {
-      "official_stage": 0,
-      "requested_stage": 10,
-      "effective_implemented_stage": 5,
-      "physical_feature_execution_verified": false,
-      "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
-    },
-    "health_snapshot": {
-      "disk_free_mib": 1030,
-      "memavailable_mib": 1209,
-      "memtotal_mib": 5569,
-      "runtime_field": "UNAVAILABLE_IN_HEALTH"
-    },
-    "update_request": {
-      "issue": 737,
-      "status": "QUEUED",
-      "request_id": "af21a9865a591266329a4b70c6b1b387",
-      "install_receipt": false
-    },
-    "redmi_status": "8BF44CB_LAST_AUTHENTICATED; B20E9_CI_GREEN_NOT_YET_DEVICE_VERIFIED",
-    "note": "PIPELINE_STATUS #767 predates final b20e9 CI completion. Auto-update is enabled; wait for a later read-only receipt. No duplicate request, manual command, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or user-data mutation."
+    "state": "LAST_AUTHENTICATED_8D932_STOPPED_BY_USER_NO_NEW_RECEIPT",
+    "source": "private RedMentos/Aiiii V13OBS issue #115",
+    "snapshot_at": "2026-11-24T09:28:00Z",
+    "later_state_at": "2026-11-24T17:50:00Z",
+    "installed_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "pipeline_status": "UP_TO_DATE_AT_SNAPSHOT",
+    "dashboard": "UP_TO_DATE_AT_SNAPSHOT",
+    "auto_update": "ENABLED_AT_SNAPSHOT",
+    "runtime_later": "STOPPED_BY_USER",
+    "native_model_process_later": "STOPPED",
+    "managed_native_processes_later": 0,
+    "b1_detail": "2 attempts / 2 failed / 0 valid offers",
+    "b2_gist": "2 attempts / 2 failed / 0 valid offers",
+    "newer_authenticated_receipt": false,
+    "pending_read_only_requests": [
+      862,
+      863,
+      864
+    ],
+    "redmi_status": "REDMI_UNVERIFIED"
   },
   "capability_snapshot": [
     {
@@ -1541,19 +1504,16 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-25T03:52:13.616Z",
+    "timestamp": "2026-11-26T07:10:58Z",
     "owner": "Core & Harness",
-    "primary_runtime_pr": 2478,
-    "pin_rebind_pr": 2485,
-    "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2",
-    "pin_rebind_branch": "core/v14-fair-budget-guard-rebind-20261125-run1",
-    "tested_code_head": "fd1c58e2998ad018dcafdf8ac3367eb45f543575",
-    "documentation_head": "213708d1c7a0fea2cd6a7db6e3c720fa1032cda6",
-    "status": "CI_GREEN_DRAFT_STACKED_NOT_RELEASED",
-    "exact_ci": "Controller guard, Lab Age/WebView, runtime deployment, owner-read, two-checkout migration and staged/integrated all SUCCESS; staged 288/10/48, integrated 424/3/58.",
-    "local_linux": "Isolated arithmetic 21/21 PASS; full checkout BLOCKED by GitHub DNS.",
-    "redmi": "REDMI_UNVERIFIED; private relay #888-890 no response; last available #115 snapshot is historical and user-stopped.",
-    "next_action": "Review/reconcile #2485 with #2482/#2483 on one strict source chain; then port #2451 diagnostic native receiver overlay."
+    "pull_request": 2529,
+    "branch": "core/v14-greeting-fastpath-runtime-20261126-run1",
+    "tested_code_head": "b8e68c9cb65c987da46004438b2404aff2e8650e",
+    "status": "FOCUSED_CI_GREEN_STAGED_INTEGRATION_BLOCKED_NOT_RELEASED",
+    "exact_ci": "45773215054 SUCCESS: Python 3.13/3.14 each py_compile PASS, runner 9/9, arithmetic 22/22, greeting Runtime/fallthrough 4/4. Shared staged/integrated 45773214858 FAIL at strict runtime.py source pin (33 failed/253 passed/10 skipped/2 errors; integrated 1 failed).",
+    "local_linux": "Exact fetched blobs read back; CPython 3.13.5 py_compile PASS, matcher 2/2 PASS, baseline negative control fails as expected; full checkout BLOCKED by DNS/no checkout.",
+    "redmi": "REDMI_UNVERIFIED; latest available #115 snapshot from 2026-11-24 later reports STOPPED_BY_USER; no new receipt.",
+    "next_action": "Coordinate strict staged-builder pin rebind to exact runtime.py bytes, then resume whole-system B1/B2→C4→C3 integration."
   },
   "core_run21_checkpoint": {
     "date": "2026-11-24T13:19:13Z",
@@ -1671,5 +1631,100 @@
     "device": "REDMI_UNVERIFIED; no fresh private receipt, no Termux command, no update request or device action.",
     "next_action": "Poll exact #2493 CI. Fix any newly exposed source-pin/consumer regression; then request independent Boss/QA review and compose with #2492 telemetry on one base.",
     "user_action_required": false
+  },
+  "previous_phone_receipt": {
+    "state": "B20E9_CI_GREEN_PHONE_RECEIPT_STALE_8BF44CB",
+    "pipeline_status_issue": 767,
+    "diagnostics_issue": 764,
+    "health_issue": 765,
+    "learning_status_issue": 766,
+    "update_request_issue": 737,
+    "installed_sha": "8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c",
+    "auto_update": "ENABLED",
+    "runtime": "CI_WAIT",
+    "dashboard": "CI_WAIT",
+    "last_result": "CI_WAIT",
+    "last_error": "NONE",
+    "latest_turn": {
+      "status": "FINAL",
+      "duration_s": 57.73882742600108,
+      "ttft_s": 41.626904203003505,
+      "prefill_s": 38.945270141004585,
+      "prompt_tokens": 751,
+      "generated_tokens": 2,
+      "correctness": "UNKNOWN_NOT_SCORED"
+    },
+    "native_probe": {
+      "status": "SMOKE_PARTIAL",
+      "B1_DETAIL": "TIME_BUDGET_53.2S",
+      "B2_GIST": "TIME_BUDGET_54.2S",
+      "C3": "OK_3.1S",
+      "fresh_probe_run": false
+    },
+    "instant_residency": {
+      "sample_kind": "INSTANT_NATIVE_PROCESSES",
+      "mapped_processes": 0,
+      "mapped_pss_mib": 0,
+      "mapped_rss_mib": 0,
+      "readability": "UNKNOWN_NO_GROUP_CHILDREN",
+      "memory_accounting": "PROCESS_PSS_NOT_FREE_RAM_OR_SUSTAINED_RESIDENCY"
+    },
+    "lab_age": {
+      "official_stage": 0,
+      "requested_stage": 10,
+      "effective_implemented_stage": 5,
+      "physical_feature_execution_verified": false,
+      "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
+    },
+    "health_snapshot": {
+      "disk_free_mib": 1030,
+      "memavailable_mib": 1209,
+      "memtotal_mib": 5569,
+      "runtime_field": "UNAVAILABLE_IN_HEALTH"
+    },
+    "update_request": {
+      "issue": 737,
+      "status": "QUEUED",
+      "request_id": "af21a9865a591266329a4b70c6b1b387",
+      "install_receipt": false
+    },
+    "redmi_status": "8BF44CB_LAST_AUTHENTICATED; B20E9_CI_GREEN_NOT_YET_DEVICE_VERIFIED",
+    "note": "PIPELINE_STATUS #767 predates final b20e9 CI completion. Auto-update is enabled; wait for a later read-only receipt. No duplicate request, manual command, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or user-data mutation."
+  },
+  "core_run29_checkpoint": {
+    "date": "2026-11-26T07:10:58Z",
+    "owner": "Core & Harness",
+    "branch": "core/v14-greeting-fastpath-runtime-20261126-run1",
+    "pull_request": 2529,
+    "code_and_test_head": "b8e68c9cb65c987da46004438b2404aff2e8650e",
+    "commits": [
+      "cd2568ca7bbbc3d56823e2c73b65c5a82f3cccf9",
+      "b8e68c9cb65c987da46004438b2404aff2e8650e"
+    ],
+    "status": "FOCUSED_CI_GREEN_STAGED_INTEGRATION_BLOCKED_NOT_RELEASED",
+    "changes": [
+      "Bind the entire greeting input to its exact text SourceRef hash and full span.",
+      "Fail closed on malformed modalities and audio/image/video source fields.",
+      "Preserve the existing Runtime/C5 fixed-rule path and non-greeting multi-organ fallthrough."
+    ],
+    "local_linux": {
+      "python": "CPython 3.13.5",
+      "py_compile": "PASS",
+      "exact_blob_readback": "PASS: module f20ecdaa592f2427b7ed5450ef32764dc83a22d2; test 294501262aa58795d0308918546fe5c2c300680b",
+      "focused_matcher": "PASS: 2/2",
+      "baseline_negative_control": "EXPECTED_FAIL: previous code accepted a mismatched SourceRef hash and malformed modalities='image'",
+      "full_repository": "BLOCKED/NOT_RUN: no checkout; GitHub DNS unavailable"
+    },
+    "ci": {
+      "fastpath_run": 45773215054,
+      "python_3_13": "PASS: py_compile; runner 9/9; arithmetic 22/22; greeting 4/4",
+      "python_3_14": "PASS: py_compile; runner 9/9; arithmetic 22/22; greeting 4/4",
+      "staged_integrated_run": 45773214858,
+      "staged": "FAIL: 33 failed, 253 passed, 10 skipped, 2 errors, 37 subtests",
+      "integrated": "FAIL: 1 source-stage test",
+      "cause": "integrated_online_world expects runtime.py SHA-256 1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47; current exact runtime.py SHA-256 6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df. Other staged consumers and migration fail downstream. Keep hash gates strict."
+    },
+    "device": "REDMI_UNVERIFIED; latest available private V13OBS #115 is 2026-11-24 snapshot, later STOPPED_BY_USER; no fresh authenticated receipt.",
+    "next_action": "Coordinate Core/Boss/JEPA strict source-pin rebind bottom-up, then rerun staged/integrated/migration and resume the P0 B1/B2→C4→C3 consumer."
   }
 }
