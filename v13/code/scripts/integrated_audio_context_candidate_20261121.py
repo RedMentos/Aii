@@ -13,7 +13,8 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "deb8c274022e2a4419dd38adb11ca14481c4bd91",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "b372d52b83c1b35077732755f076e48b62e90ac0",
+    "v13/audio_voice_cues.py": "b79d5c941dbde22ca287067d8491cb169634badd",
+    "v13/audio_teacher_ear.py": "255c51fd6ade37ada2fc3309fb0cf3e18afe954d",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
     "v13/audio_temporal_evidence.py": "cacf649007a89cbfe74924536e413747d1392db3",
     "v13/audio_ear.py": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
@@ -80,7 +81,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     "consent_receipt", "consent_check", "consent_guard", "finality",
     "consent_revocation_subscribe",
 }
-_AUDIO_WINDOW_OPTIONAL_FIELDS = set()
+_AUDIO_WINDOW_OPTIONAL_FIELDS = {"teacher_ear"}
 
 
 def _validate_audio_window(value):
@@ -114,6 +115,37 @@ def _validate_audio_window(value):
     if not callable(value["consent_revocation_subscribe"]):
         raise ValueError("audio_window requires a two-phase consent revocation subscription")
     result = {key: value[key] for key in _AUDIO_WINDOW_REQUIRED_FIELDS}
+    teacher = value.get("teacher_ear")
+    if teacher is not None:
+        teacher_fields = {
+            "result", "teacher_receipt", "transcript_receipt",
+            "consent_check", "consent_guard", "consent_revocation_subscribe",
+        }
+        if type(teacher) is not dict or set(teacher) != teacher_fields:
+            raise ValueError("teacher_ear must use the exact separate consent fields")
+        if type(teacher["result"]) is not dict:
+            raise ValueError("teacher_ear result must be an object")
+        for name in ("teacher_receipt", "transcript_receipt"):
+            receipt_value = teacher[name]
+            if type(receipt_value) is not str or not receipt_value.strip() or len(receipt_value) > 256:
+                raise ValueError("teacher_ear receipt is invalid")
+        if teacher["teacher_receipt"] == teacher["transcript_receipt"]:
+            raise ValueError("teacher-use and transcript-use require distinct receipts")
+        if not callable(teacher["consent_check"]):
+            raise ValueError("teacher_ear requires a separate consent provider")
+        if not callable(teacher["consent_guard"]):
+            raise ValueError("teacher_ear requires a separate linearizable guard")
+        if teacher["consent_guard"] is value["consent_guard"]:
+            raise ValueError("teacher_ear must use a distinct provider guard")
+        if not callable(teacher["consent_revocation_subscribe"]):
+            raise ValueError("teacher_ear requires two-phase revocation subscriptions")
+        try:
+            teacher_bytes = len(dumps(teacher["result"]).encode("utf-8"))
+        except Exception:
+            raise ValueError("teacher_ear result is not bounded JSON") from None
+        if teacher_bytes > 8192:
+            raise ValueError("teacher_ear result exceeds the 8192-byte queue bound")
+        result["teacher_ear"] = dict(teacher)
     return result
 
 
@@ -124,7 +156,7 @@ class Runtime:
     runtime = _replace(
         runtime,
         b"    def submit(self,text):\n        b=len(text.encode())\n",
-        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        text_bytes=len(text.encode())\n        b=text_bytes+(len(audio_window['pcm16']) if audio_window is not None else 0)\n",
+        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        text_bytes=len(text.encode())\n        teacher_bytes=(len(dumps(audio_window['teacher_ear']['result']).encode('utf-8')) if audio_window is not None and 'teacher_ear' in audio_window else 0)\n        b=text_bytes+(len(audio_window['pcm16']) if audio_window is not None else 0)+teacher_bytes\n",
         "submit audio queue bounds",
     )
     runtime = _replace(
@@ -183,13 +215,18 @@ class Runtime:
         b"                    audio_result=consume_pcm16_voice_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
         b"                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,source_id=audio_window['source_id'],\n"
         b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],consent_guard=audio_window['consent_guard'],consent_lease=audio_window.get('_consent_lease'),\n"
-        b"                        token_budget=512,finality=audio_window['finality'])\n"
+        b"                        token_budget=512,finality=audio_window['finality'],\n"
+        b"                        teacher_result=(audio_window['teacher_ear'].get('result') if audio_window.get('teacher_ear') and audio_window['teacher_ear'].get('_teacher_lease') else None),\n"
+        b"                        teacher_lease=(audio_window['teacher_ear'].get('_teacher_lease') if audio_window.get('teacher_ear') else None),\n"
+        b"                        teacher_receipt=(audio_window['teacher_ear'].get('teacher_receipt') if audio_window.get('teacher_ear') else None),\n"
+        b"                        transcript_receipt=(audio_window['teacher_ear'].get('transcript_receipt') if audio_window.get('teacher_ear') else None))\n"
         b"                    meta['audio_input']={'status':'A5_A4_C3_VOICE_CUE_ADMISSION','packet_id':audio_result['packet']['packet_id'],\n"
         b"                        'voice_activity_hint':audio_result['a4']['voice_activity_hint'],\n"
         b"                        'voice_cue_method':audio_result['a4']['voice_cues']['method'],\n"
         b"                        'source_id':audio_window['source_id'],'finality':audio_window['finality'],\n"
         b"                        'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
-        b"                        'learning_authority':False,'action_authority':False}\n"
+        b"                        'learning_authority':False,'action_authority':False,\n"
+        b"                        'teacher_ear_status':audio_result.get('teacher_ear_status','NOT_SUPPLIED')}\n"
         b"                    audio_context=self._audio_context_record(eid,audio_result,audio_window)\n"
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
         b"                except Exception as exc:\n"
@@ -258,6 +295,19 @@ class Runtime:
         b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]",
         "C3 context source lineage",
     )
+    runtime = _replace(
+        runtime,
+        b"                mark('native_answer')\n",
+        b"                if runner.role=='C3_LANGUAGE' and audio_source_ref is not None and audio_result is not None:\n"
+        b"                    teacher_ear=audio_result.get('teacher_ear')\n"
+        b"                    if teacher_ear is not None:\n"
+        b"                        from .audio_teacher_ear import append_teacher_hypothesis\n"
+        b"                        messages=append_teacher_hypothesis(messages,teacher_ear)\n"
+        b"                        if 'audio_input' in meta:meta['audio_input']['teacher_ear_dispatch_only']=True\n"
+        b"                mark('native_answer')\n",
+        "ephemeral C3-only teacher dispatch after final runner selection",
+    )
+
 
     cognition_base = (code_dir / "v13/cognition.py").read_bytes()
     # Preserve upstream Cognition overlays (notably fair B1/B2 recovery scheduling).
@@ -405,6 +455,13 @@ def _audio_lease_turn(self, event):
     self.turn_event = event
     subscribe = window.get("consent_revocation_subscribe")
     unsubscribe = None
+    teacher_window = window.get("teacher_ear")
+    teacher_window_ref = teacher_window
+    teacher_manager = None
+    teacher_lease_open = False
+    teacher_lease_active = threading.Event()
+    teacher_request_seen = threading.Event()
+    teacher_unsubscribers = []
     request_seen = threading.Event()
     lease_active = threading.Event()
 
@@ -451,6 +508,49 @@ def _audio_lease_turn(self, event):
         self.notice("Audio input skipped; revocation protection could not be registered.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
+
+    if isinstance(teacher_window, dict):
+        try:
+            teacher_subscribe = teacher_window.get("consent_revocation_subscribe")
+            if not callable(teacher_subscribe):
+                raise TypeError("teacher two-phase revocation provider is missing")
+            def on_teacher_revoke_requested():
+                teacher_request_seen.set()
+                if isinstance(teacher_window_ref, dict):
+                    teacher_window_ref.pop("result", None)
+                if teacher_lease_active.is_set():
+                    active = getattr(self, "turn_event", None)
+                    if (getattr(self, "current", None) == "turn"
+                            and isinstance(active, dict)
+                            and active.get("event_id") == event_id
+                            and self.store.generation_id == generation_id):
+                        self.cancel_event.set()
+            def on_teacher_revoked():
+                if isinstance(teacher_window_ref, dict):
+                    teacher_window_ref.pop("result", None)
+                    teacher_window_ref["_revoked"] = True
+            for teacher_receipt_value in (
+                teacher_window["teacher_receipt"],
+                teacher_window["transcript_receipt"],
+            ):
+                teacher_unsubscribe = teacher_subscribe(
+                    source_id, teacher_receipt_value, generation_id,
+                    on_teacher_revoke_requested, on_teacher_revoked,
+                )
+                if not callable(teacher_unsubscribe):
+                    raise TypeError("teacher revocation subscription must return unsubscribe")
+                teacher_unsubscribers.append(teacher_unsubscribe)
+        except Exception as exc:
+            for teacher_unsubscribe in teacher_unsubscribers:
+                try:
+                    teacher_unsubscribe()
+                except Exception:
+                    pass
+            teacher_unsubscribers.clear()
+            window.pop("teacher_ear", None)
+            teacher_window = None
+            self.store.log("teacher_ear_unavailable", event_id,
+                           {"stage": "revocation_subscription", "error": type(exc).__name__})
     from .audio_voice_cues import audio_consent_lease
     try:
         manager = audio_consent_lease(
@@ -475,19 +575,76 @@ def _audio_lease_turn(self, event):
         self.notice("Audio input skipped; Runtime consent lease could not be opened.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
+    if isinstance(teacher_window, dict):
+        try:
+            from .audio_teacher_ear import teacher_ear_consent_lease
+            teacher_manager = teacher_ear_consent_lease(
+                source_id, generation_id,
+                teacher_window["teacher_receipt"], teacher_window["transcript_receipt"],
+                teacher_window["consent_check"], teacher_window["consent_guard"],
+            )
+            teacher_lease = teacher_manager.__enter__()
+            teacher_lease_open = True
+            teacher_lease_active.set()
+            teacher_window["_teacher_lease"] = teacher_lease
+            if teacher_request_seen.is_set():
+                self.cancel_event.set()
+        except Exception as exc:
+            teacher_lease_active.clear()
+            if teacher_lease_open and teacher_manager is not None:
+                teacher_lease_open = False
+                try:
+                    teacher_manager.__exit__(None, None, None)
+                except Exception:
+                    pass
+            teacher_manager = None
+            for teacher_unsubscribe in teacher_unsubscribers:
+                try:
+                    teacher_unsubscribe()
+                except Exception:
+                    pass
+            teacher_unsubscribers.clear()
+            window.pop("teacher_ear", None)
+            teacher_window = None
+            self.store.log("teacher_ear_unavailable", event_id,
+                           {"stage": "separate_consent_lease", "error": type(exc).__name__})
+
     window["_consent_lease"] = lease
     try:
         try:
             result = _AUDIO_ORIGINAL_TURN(self, event)
         except BaseException as exc:
-            manager.__exit__(type(exc), exc, exc.__traceback__)
-            lease_active.clear()
+            teacher_lease_active.clear()
+            try:
+                if teacher_lease_open and teacher_manager is not None:
+                    teacher_lease_open = False
+                    teacher_manager.__exit__(type(exc), exc, exc.__traceback__)
+            finally:
+                manager.__exit__(type(exc), exc, exc.__traceback__)
+                lease_active.clear()
             raise
         else:
-            manager.__exit__(None, None, None)
-            lease_active.clear()
+            teacher_lease_active.clear()
+            try:
+                if teacher_lease_open and teacher_manager is not None:
+                    teacher_lease_open = False
+                    teacher_manager.__exit__(None, None, None)
+            finally:
+                manager.__exit__(None, None, None)
+                lease_active.clear()
             return result
     finally:
+        teacher_lease_active.clear()
+        if isinstance(teacher_window_ref, dict):
+            teacher_window_ref.pop("_teacher_lease", None)
+            teacher_window_ref.pop("result", None)
+        window.pop("teacher_ear", None)
+        for teacher_unsubscribe in teacher_unsubscribers:
+            try:
+                teacher_unsubscribe()
+            except Exception as exc:
+                self.store.log("teacher_ear_unavailable", event_id,
+                               {"stage": "revocation_unsubscribe", "error": type(exc).__name__})
         lease_active.clear()
         window.pop("_consent_lease", None)
         try:
