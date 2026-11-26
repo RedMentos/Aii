@@ -102,7 +102,8 @@ class CaptureAttention:
 
 
 def run_consumer_sequence(runtime, event, monkeypatch, sequence, capture,
-                          *, receipt=RECEIPT, registry_override=None):
+                          *, receipt=RECEIPT, registry_override=None,
+                          event_registry_override=None):
     cues_iter = iter(sequence)
 
     def fake_extract(_pcm, _sample_rate, backend="python"):
@@ -115,6 +116,12 @@ def run_consumer_sequence(runtime, event, monkeypatch, sequence, capture,
             audio_voice_module,
             "_runtime_audio_temporal_prediction_registry",
             lambda _runtime: registry_override,
+        )
+    if event_registry_override is not None:
+        monkeypatch.setattr(
+            audio_voice_module,
+            "_runtime_audio_event_expectation_registry",
+            lambda _runtime: event_registry_override,
         )
     results = []
     for index in range(len(sequence)):
@@ -366,11 +373,14 @@ def test_consent_scope_rotation_and_explicit_reset_clear_consumer_state(tmp_path
             finality="FINAL",
         )
         registry = _runtime_audio_temporal_prediction_registry(runtime)
+        event_registry = audio_voice_module._runtime_audio_event_expectation_registry(runtime)
         assert len(registry) == 1
+        assert len(event_registry) == 1
         reset_runtime_temporal_voice_states(
             runtime, source_id=SOURCE, generation_id=event["brain_generation_id"],
         )
         assert len(registry) == 0
+        assert len(event_registry) == 0
         consume_pcm16_voice_window(
             runtime, tone(phase=0.2), sample_rate=16000, start_ms=1100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
@@ -379,6 +389,7 @@ def test_consent_scope_rotation_and_explicit_reset_clear_consumer_state(tmp_path
             finality="FINAL",
         )
         assert len(registry) == 1
+        assert len(event_registry) == 1
         assert registry._states[(SOURCE, event["brain_generation_id"])].predictor.updates == 0
     finally:
         runtime.store.close()
@@ -583,3 +594,69 @@ def test_a4_consumer_routes_audio_omission_to_novelty_not_interrupt(tmp_path, mo
         assert predictor_attention.calls[-1]["novelty"] >= control_attention.calls[-1]["novelty"]
     finally:
         control_runtime.store.close()
+
+
+def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monkeypatch):
+    sequence = [
+        VOICED, SILENCE, VOICED, SILENCE, VOICED,
+        SILENCE, VOICED, SILENCE, SILENCE,
+    ]
+    runtime, event = make_runtime(tmp_path)
+    predictor_attention = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            predicted = run_consumer_sequence(runtime, event, patch, sequence, predictor_attention)
+        last = predicted[-1]
+        expectation = last["a4"]["audio_event_expectation"]
+        omission_novelty = last["a4"]["audio_event_omission_novelty"]
+        assert expectation["status"] == "SHADOW_MEASURED"
+        assert expectation["omission_detected"] is True
+        assert omission_novelty > 0.0
+        assert omission_novelty <= 0.05
+        assert last["a4"]["learning_authority"] is False
+        assert last["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+    class DisabledEventRegistry:
+        def update(self, **_kwargs):
+            return audio_voice_module.unavailable_expectation("DISABLED_CONTROL")
+
+    control_runtime, control_event = make_runtime(tmp_path / "event-control")
+    control_attention = CaptureAttention()
+    try:
+        with monkeypatch.context() as patch:
+            control = run_consumer_sequence(
+                control_runtime, control_event, patch, sequence, control_attention,
+                event_registry_override=DisabledEventRegistry(),
+            )
+        assert control[-1]["a4"]["audio_event_omission_novelty"] == 0.0
+        assert predictor_attention.calls[-1]["external_interrupt"] == pytest.approx(
+            control_attention.calls[-1]["external_interrupt"]
+        )
+        assert predictor_attention.calls[-1]["novelty"] >= control_attention.calls[-1]["novelty"]
+    finally:
+        control_runtime.store.close()
+
+
+def test_integrated_audio_candidate_pins_all_current_sources():
+    import hashlib
+    from pathlib import Path
+
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    namespace = {}
+    source = builder_path.read_text(encoding="utf-8")
+    exec(compile(source, str(builder_path), "exec"), namespace)
+    pins = namespace["SOURCE_BLOBS"]
+    assert "v13/audio_voice_cues.py" in pins
+    assert "v13/audio_temporal_prediction.py" in pins
+    assert "v13/audio_event_expectation.py" in pins
+    for relative, expected in pins.items():
+        path = code_dir / relative
+        assert path.is_file(), relative
+        raw = path.read_bytes()
+        actual = hashlib.sha1(
+            b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+        ).hexdigest()
+        assert actual == expected, relative
