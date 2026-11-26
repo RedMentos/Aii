@@ -1350,3 +1350,10 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Device boundary:** no Android microphone/AudioRecord provider, native audio model, Termux or Redmi execution was available. The last board receipt (#767) is stale and predates the final b20e9 CI result; no fresh private owner-read receipt was obtained in this run. REDMI_UNVERIFIED / NOT_RELEASED.
 
 **Status:** ABSTRACT_ONLY_RESEARCH_LEAD / CODE_AND_CONSUMER_WIRED_ON_PERCEPTION_BRANCH / LOCAL_LINUX_SCRATCH_11_OF_11_NOT_EXACT_BLOB / SOURCE_PIN_AUDIT_14_OF_14 / EXACT_HEAD_CI_PENDING / CORE_RECOVERY_PIN_BLOCKED / NO_ANDROID_PROOF / NO_WEIGHT_UPDATE.
+
+
+**Exact-head CI follow-up (2026-11-26 00:24 UTC; code SHA d7988f2e1031910a1013db44b24b81ce6ee784d0):**
+- RAW EAR fastpath: PASS on Python 3.13 and 3.14; 135 tests passed in each job, including py_compile of audio_event_expectation.py and the actual audio consumer tests.
+- RAW EAR/libfvad comparison: PASS on Python 3.13 and 3.14; 9 tests passed in each job.
+- Offline runtime-integrity: PASS on Python 3.11 and 3.14; 41 tests passed in each job.
+- Staged runtime/integrated regression: FAIL. The staged runtime job reports 17 failed, 236 passed, 10 skipped and 2 errors; the integrated regression job reports 1 failed. All observed failures trace to the inherited Core/QA pin AUDIO_BUILDER_BLOB_SHA1=831080bceec90711bd42e0fa4eba47c669975c98, while the Perception builder blob is 18f9177be26720f0daa41dd21123238ffb249d47. Two-checkout migration therefore returns PARTIAL instead of UPDATED. The pin gate is functioning as intended; no bypass was applied.
