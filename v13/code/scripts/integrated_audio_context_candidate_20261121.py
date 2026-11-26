@@ -53,14 +53,24 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     runtime = result.get("v13/runtime.py")
     if not isinstance(runtime, bytes):
         raise ValueError("upstream integrated Runtime candidate missing")
-    required = (
-        b"arithmetic_answer",
-        b"LOCAL_EXACT_ARITHMETIC",
-        b"source_recall_refs",
+    runtime_required = (
+        b"class Runtime:\\n",
+        b"    def submit(self,text):\\n",
+        b"    def _turn(self,e):\\n",
         b"latewatch.start",
     )
-    if any(marker not in runtime for marker in required):
-        raise ValueError("upstream Runtime is not the reviewed arithmetic/context/observer composition")
+    if any(marker not in runtime for marker in runtime_required):
+        raise ValueError("upstream Runtime is not the reviewed submit/turn/observer composition")
+
+    cognition = result.get("v13/cognition.py")
+    if not isinstance(cognition, bytes):
+        raise ValueError("upstream integrated Cognition candidate missing")
+    cognition_required = (
+        b"Consumer query scope changed",
+        b"enlightened_source_refs",
+    )
+    if any(marker not in cognition for marker in cognition_required):
+        raise ValueError("upstream Cognition is not the reviewed source-bound consumer composition")
 
     runtime = _replace(
         runtime,
