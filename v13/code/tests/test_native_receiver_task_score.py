@@ -152,8 +152,8 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
     assert result["status"] == "FIXTURE_ONLY"
     assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
     assert effect["snapshot_count"] == 8
-    assert effect["candidate_differs_from_no_message"] is True
-    assert effect["candidate_differs_from_exact_message"] is True
+    assert effect["candidate_differs_from_no_message_count"] == 1
+    assert effect["candidate_differs_from_exact_message_count"] == 1
     assert effect["distinct_from_no_message_by_condition"]["NO_MESSAGE"] is False
     assert effect["same_input_consistency_passed"] is True
     assert effect["semantic_use_proven"] is False
@@ -169,8 +169,9 @@ def test_identical_input_digest_requires_identical_kv_snapshot():
     input_overrides = {"EXACT_MESSAGE": shared_input, "LATENT_CANDIDATE": shared_input}
     kv_overrides = {condition: "kv-" + condition for condition in CONDITIONS}
 
-    with pytest.raises(NativeReceiverTaskScoreError, match="identical receiver input digest"):
+    with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
+    assert "identical receiver input digest" in str(error.value.__cause__)
     assert task_score_status(runtime)["receipt_count"] == 7
     assert task_score_status(runtime)["incomplete_task_group_count"] == 1
 
@@ -191,13 +192,14 @@ def test_identical_input_and_kv_snapshot_is_consistent():
     effect = result["kv_snapshot_effect"]
     assert effect["duplicate_input_groups_checked"] == 1
     assert effect["same_input_consistency_passed"] is True
-    assert effect["candidate_differs_from_exact_message"] is False
+    assert effect["candidate_differs_from_exact_message_count"] == 0
 
 
 def test_partial_kv_snapshot_coverage_is_rejected():
     runtime = type("Runtime", (), {"session": "session-A"})()
-    with pytest.raises(NativeReceiverTaskScoreError, match="partial native K/V snapshot coverage"):
+    with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
+    assert "partial native K/V snapshot coverage" in str(error.value.__cause__)
     assert task_score_status(runtime)["receipt_count"] == 7
 
 
