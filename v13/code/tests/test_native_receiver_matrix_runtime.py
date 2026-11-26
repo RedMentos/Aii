@@ -373,3 +373,22 @@ def test_operator_dispatch_is_local_command_scoped(monkeypatch, tmp_path):
     assert status["status"] == "READY"
     with pytest.raises(ValueError, match="matrix-status"):
         matrix_runtime.operator_command(runtime, ["matrix-run"])
+
+def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkeypatch, tmp_path):
+    runtime, matrix, _ids, _pair, _events, _texts, _sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    from v13 import callosum
+
+    status = json.loads(callosum.operator_command(runtime, ["matrix-status"]))
+    assert status["status"] == "READY"
+    assert runtime.store.states == {}
+
+    with pytest.raises(PermissionError, match="no local one-shot approval"):
+        callosum.operator_command(runtime, ["matrix-run"])
+
+    with pytest.raises(ValueError) as error:
+        callosum.operator_command(runtime, ["unknown"])
+    assert "matrix-status" in str(error.value)
+    assert "native-tokenwise-probe" in str(error.value)
+    assert matrix._closed is False
