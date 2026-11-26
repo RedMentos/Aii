@@ -2030,3 +2030,18 @@ User action required: **none**. No model alternative or download is recommended 
 - **Next:** finish exact-head CI; fix any newly exposed source pin or integration failure; then Boss/QA should compose #2493 with the #2492 B1/B2→C4→C3 telemetry branch on one reviewed base and obtain fresh consented Redmi evidence after release.
 
 Run start/end time: UNKNOWN (not measured by the execution environment).
+
+---
+
+## Core & Harness — Run 28 — 2026-11-26
+
+- **New Runtime function:** the exact text-only greeting reflex is now connected to `Runtime._turn` after operator-authored exact rules and before arithmetic. It is a bounded allowlist, requires a text SourceRef, rejects mixed/non-text modality and control characters, stores a source-bound `BUILTIN_GREETING_REFLEX` answer, and uses the existing C5 fixed-rule output/commit/broker path. It is not model-generated and does not invoke native models.
+- **Full-path preservation:** “Hi, how are you?” and other non-exact messages fall through to the normal Perception/multi-organ route. This is only a greeting reflex; it does not replace B1/B2/C4/C3 or establish their nontrivial-turn utility.
+- **Code / PR:** [#2529](https://github.com/RedMentos/Aii/pull/2529), branch `core/v14-greeting-fastpath-runtime-20261126-run1`. Code-bearing head `82f3bc511529c365d96ee43b59f9451e6096465b`; latest handoff commit before this note `92e8ba6ca00853173651055b597ad556e7418049`. DRAFT / NOT_RELEASED, stacked on #2493 → #2490 → #2488.
+- **LOCAL_LINUX:** isolated exact matcher test **1/1 PASS**; exact fetched matcher and test Git blob hashes match GitHub readback. Full local Aii checkout / Runtime suite **BLOCKED / NOT_RUN** because this environment cannot resolve github.com and has no repository checkout mounted.
+- **Exact-head CI:** run [45763142595](https://github.com/RedMentos/Aii/actions/runs/45763142595) **SUCCESS** on Python 3.13 and 3.14. Per version: py_compile PASS, runner interruption/warm-retention **9/9 PASS**, arithmetic regression **22/22 PASS**, greeting Runtime + negative fallthrough **3/3 PASS**. Run [45763142633](https://github.com/RedMentos/Aii/actions/runs/45763142633) is a separate private-bridge workflow and is not evidence for greeting behavior.
+- **User effect:** exact greetings can use the deterministic C5 reflex without loading B1/B2/C3; actual Redmi TTFT/quality has not been measured. Longer questions retain the normal route.
+- **Updater / deployment:** PR is still draft and not integrated or released. No UPDATE_REQUEST or manual Termux command was sent. No current receipt for this candidate; installed-device effect remains **REDMI_UNVERIFIED**.
+- **Next:** review/integrate #2493 and #2529 on a compatible base, then measure cold/warm greeting TTFT on Redmi. The higher-priority open product gap remains useful B1_DETAIL + B2_GIST source-bound offers selected by C4 and consumed in C3 on the same nontrivial turn, followed by correct final output and a fresh phone receipt.
+
+**User action required: NONE.** No model download/swap, permission change, device action or manual Termux command is justified.
