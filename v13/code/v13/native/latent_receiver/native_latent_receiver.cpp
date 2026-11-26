@@ -584,7 +584,7 @@ bool run_hybrid_state_roundtrip(
         return false;
     }
     const std::size_t copied_bytes = llama_state_seq_get_data(
-        source, state.bytes.data(), state.bytes.size(), 0);
+        source_context.value, state.bytes.data(), state.bytes.size(), 0);
     const uint64_t capture_duration_us = static_cast<uint64_t>(
         std::chrono::duration_cast<std::chrono::microseconds>(
             std::chrono::steady_clock::now() - capture_started).count());
