@@ -202,7 +202,7 @@ def test_b1_attempt_is_joined_to_c4_and_native_c3_prefill_without_claiming_seman
 
 
 def test_native_prefill_token_count_must_match_server_timing_for_selected_body():
-    query_id, packet_id = _id("pkt", "p"), _id("pkt", "q")
+    query_id, packet_id = _id("pkt", "c"), _id("pkt", "d")
     runtime = _runtime(
         receipt=_native_receipt(packet_id),
         c4={
@@ -230,7 +230,7 @@ def test_native_prefill_token_count_must_match_server_timing_for_selected_body()
 
 
 def test_native_prefill_token_count_mismatch_does_not_promote_offer_consumption():
-    query_id, packet_id = _id("pkt", "r"), _id("pkt", "s")
+    query_id, packet_id = _id("pkt", "e"), _id("pkt", "f")
     runtime = _runtime(
         receipt=_native_receipt(packet_id),
         c4={
@@ -254,7 +254,7 @@ def test_native_prefill_token_count_mismatch_does_not_promote_offer_consumption(
 
 
 def test_native_prefill_token_count_requires_http_success_and_completed_generation():
-    query_id, packet_id = _id("pkt", "t"), _id("pkt", "u")
+    query_id, packet_id = _id("pkt", "1"), _id("pkt", "2")
     receipt = _native_receipt(packet_id)
     receipt["native_completion_http_200"] = False
     runtime = _runtime(
