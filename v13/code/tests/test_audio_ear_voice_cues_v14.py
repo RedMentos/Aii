@@ -1526,5 +1526,5 @@ def test_integrated_audio_candidate_rejects_unreviewed_runtime_and_cognition_sou
     bad_cognition["v13/cognition.py"] = bad_cognition["v13/cognition.py"].replace(
         b"Consumer query scope changed", b"Consumer query scope changed?", 1
     )
-    with pytest.raises(ValueError, match="reviewed source-bound consumer"):
+    with pytest.raises(ValueError, match="analyst audio source verification"):
         module.apply_sources(code_dir, bad_cognition)
