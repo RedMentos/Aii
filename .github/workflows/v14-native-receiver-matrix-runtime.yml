@@ -6,7 +6,10 @@ on:
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/callosum.py"
+      - "v13/code/v13/cognition.py"
       - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - "v13/code/tests/test_native_latent_receiver_runtime.py"
+      - "v13/code/tests/test_callosum.py"
       - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
 permissions:
   contents: read
@@ -24,6 +27,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install focused test dependency
         run: python -m pip install --upgrade pytest
+      - name: Report source hashes for dependent QA pins
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          for name in ("v13/code/v13/cognition.py", "v13/code/v13/callosum.py"):
+              print(name, hashlib.sha256(Path(name).read_bytes()).hexdigest())
+          PY
       - name: Compile changed Python modules
         run: |
           python -m py_compile \
