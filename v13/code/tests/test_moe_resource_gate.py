@@ -25,6 +25,10 @@ class ProcParsingTests(unittest.TestCase):
             p.write_text("MemAvailable: 12 MB\n")
             self.assertIsNone(G.read_memavailable_mib(p))
 
+    def test_current_host_proc_metrics_are_readable(self):
+        self.assertGreater(G.read_memavailable_mib(), 0)
+        self.assertGreater(G.read_vmhwm_mib(__import__(\"os\").getpid()), 0)
+
     def test_vmhwm_reads_process_high_water(self):
         with tempfile.TemporaryDirectory() as td:
             status = Path(td) / "123" / "status"
