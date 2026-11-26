@@ -1,4 +1,5 @@
 import hashlib
+import struct
 
 import pytest
 
@@ -26,7 +27,8 @@ def sha(value):
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None):
+def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
+                 input_sha_override=None, kv_digest_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
@@ -45,7 +47,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         message_source_ref = source_ref
         adapter_sha256 = ADAPTER_SHA256
     target_sha = sha(f"target-{task_index}")
-    input_sha = sha(f"input-{task_index}-{condition}")
+    input_sha = input_sha_override or sha(f"input-{task_index}-{condition}")
     native = {
         "schema": "v14.native-receiver-target-score/1",
         "execution_kind": "SYNTHETIC_FIXTURE",
@@ -62,6 +64,36 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
     }
+    if kv_digest_override is not None:
+        position_sha = hashlib.sha256(struct.pack("<i", 0)).hexdigest()
+        combined_sha = sha("kv-combined-" + kv_digest_override)
+        native["kv_snapshot"] = {
+            "schema": "v14.native-receiver-kv-snapshot/1",
+            "status": "READ_ONLY_SNAPSHOT",
+            "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
+            "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+            "sequence_id": 0,
+            "layer_id": 0,
+            "attention_layer_count": 12,
+            "active_cell_count": 1,
+            "position_ids": [0],
+            "position_sha256": position_sha,
+            "k_shape": [64, 8, 128, 1],
+            "v_shape": [128, 8, 64, 1],
+            "k_type": "f16",
+            "v_type": "f16",
+            "k_sha256": sha("kv-k-" + kv_digest_override),
+            "v_sha256": sha("kv-v-" + kv_digest_override),
+            "combined_sha256": combined_sha,
+            "stable_read_sha256": combined_sha,
+            "bytes_read_per_snapshot": 64,
+            "double_read_bytes_read": 128,
+            "duration_us": 5,
+            "read_only": True,
+            "double_read_stable": True,
+            "raw_data_exported": False,
+            "recurrent_state_included": False,
+        }
     return build_native_receiver_task_score_receipt(
         condition=condition,
         task_group_id=task_group_id,
@@ -79,11 +111,20 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
     )
 
 
-def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC", source_ref_override=None):
+def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC",
+                   source_ref_override=None, input_overrides=None, kv_overrides=None):
     result = None
+    input_overrides = input_overrides or {}
+    kv_overrides = kv_overrides or {}
     for condition in CONDITIONS:
         result = record_task_score_receipt(
-            runtime, make_receipt(task_index, session_id, task_family, condition, source_ref_override=source_ref_override)
+            runtime,
+            make_receipt(
+                task_index, session_id, task_family, condition,
+                source_ref_override=source_ref_override,
+                input_sha_override=input_overrides.get(condition),
+                kv_digest_override=kv_overrides.get(condition),
+            ),
         )
     return result
 
@@ -100,6 +141,64 @@ def test_single_complete_synthetic_task_group_is_not_enough_for_utility():
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert result["persisted"] is False
     assert task_score_status(runtime)["status"] == "COHORT_READY"
+
+
+def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    kv_overrides = {condition: "kv-" + condition for condition in CONDITIONS}
+    result = complete_group(runtime, kv_overrides=kv_overrides)
+    effect = result["kv_snapshot_effect"]
+
+    assert result["status"] == "FIXTURE_ONLY"
+    assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
+    assert effect["snapshot_count"] == 8
+    assert effect["candidate_differs_from_no_message"] is True
+    assert effect["candidate_differs_from_exact_message"] is True
+    assert effect["distinct_from_no_message_by_condition"]["NO_MESSAGE"] is False
+    assert effect["same_input_consistency_passed"] is True
+    assert effect["semantic_use_proven"] is False
+    assert effect["generated_answer_correctness_proven"] is False
+    assert effect["production_route"] is False
+    assert effect["training_authority"] == effect["native_receiver_authority"] == 0
+    assert effect["persisted"] is False
+
+
+def test_identical_input_digest_requires_identical_kv_snapshot():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    shared_input = sha("identical-receiver-input")
+    input_overrides = {"EXACT_MESSAGE": shared_input, "LATENT_CANDIDATE": shared_input}
+    kv_overrides = {condition: "kv-" + condition for condition in CONDITIONS}
+
+    with pytest.raises(NativeReceiverTaskScoreError, match="identical receiver input digest"):
+        complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
+    assert task_score_status(runtime)["receipt_count"] == 7
+    assert task_score_status(runtime)["incomplete_task_group_count"] == 1
+
+
+def test_identical_input_and_kv_snapshot_is_consistent():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    shared_input = sha("identical-receiver-input")
+    shared_kv = "same-sampled-kv-state"
+    input_overrides = {"EXACT_MESSAGE": shared_input, "LATENT_CANDIDATE": shared_input}
+    kv_overrides = {
+        "EXACT_MESSAGE": shared_kv,
+        "LATENT_CANDIDATE": shared_kv,
+        **{condition: "kv-" + condition for condition in CONDITIONS
+           if condition not in {"EXACT_MESSAGE", "LATENT_CANDIDATE"}},
+    }
+
+    result = complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
+    effect = result["kv_snapshot_effect"]
+    assert effect["duplicate_input_groups_checked"] == 1
+    assert effect["same_input_consistency_passed"] is True
+    assert effect["candidate_differs_from_exact_message"] is False
+
+
+def test_partial_kv_snapshot_coverage_is_rejected():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    with pytest.raises(NativeReceiverTaskScoreError, match="partial native K/V snapshot coverage"):
+        complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
+    assert task_score_status(runtime)["receipt_count"] == 7
 
 
 def test_twenty_task_groups_across_two_sessions_are_fixture_only():

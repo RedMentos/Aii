@@ -60,6 +60,99 @@ def _validate_duplicate_input_digests(group):
                 )
 
 
+def _kv_snapshot_signature(snapshot):
+    """Stable one-layer K/V identity; deliberately excludes capture duration."""
+    return (
+        snapshot["schema"], snapshot["cache_kind"], snapshot["snapshot_scope"],
+        snapshot["sequence_id"], snapshot["layer_id"], snapshot["attention_layer_count"],
+        snapshot["position_count"], snapshot["position_sha256"],
+        tuple(snapshot["k_shape"]), tuple(snapshot["v_shape"]),
+        snapshot["k_type"], snapshot["v_type"], snapshot["k_sha256"],
+        snapshot["v_sha256"], snapshot["combined_sha256"],
+        snapshot["stable_read_sha256"], snapshot["bytes_read_per_snapshot"],
+        snapshot["double_read_bytes_read"],
+    )
+
+
+def _validate_duplicate_kv_snapshots(group):
+    """Check sampled K/V state determinism without treating it as task utility.
+
+    Identical receiver input bytes, model, target and runner must produce the
+    same sampled K/V state. Different inputs may legitimately collapse to the
+    same state (a negative result), so that case is reported rather than
+    rejected. The snapshot covers one attention layer, not LFM2 recurrent state.
+    """
+    snapshots = {
+        condition: group[condition]["native"].get("kv_snapshot")
+        for condition in CONDITIONS
+    }
+    present = [snapshot is not None for snapshot in snapshots.values()]
+    if not any(present):
+        return None
+    if not all(present):
+        raise NativeReceiverUtilityError("partial native K/V snapshot coverage in task group")
+
+    geometry = None
+    by_input = defaultdict(list)
+    for condition in CONDITIONS:
+        item = group[condition]
+        snapshot = snapshots[condition]
+        if not isinstance(snapshot, Mapping):
+            raise NativeReceiverUtilityError("native K/V snapshot is malformed")
+        if (snapshot.get("condition") != condition
+                or snapshot.get("input_sha256") != item["input_sha256"]
+                or snapshot.get("receiver_model_sha256") != item["receiver"]["model_sha256"]):
+            raise NativeReceiverUtilityError("native K/V snapshot lost its condition/model/input binding")
+        current_geometry = (
+            snapshot["schema"], snapshot["cache_kind"], snapshot["snapshot_scope"],
+            snapshot["sequence_id"], snapshot["layer_id"], snapshot["attention_layer_count"],
+            tuple(snapshot["k_shape"]), tuple(snapshot["v_shape"]),
+            snapshot["k_type"], snapshot["v_type"],
+        )
+        if geometry is None:
+            geometry = current_geometry
+        elif current_geometry != geometry:
+            raise NativeReceiverUtilityError("native K/V snapshot geometry changed across conditions")
+        by_input[item["input_sha256"]].append(snapshot)
+
+    duplicate_groups_checked = 0
+    for same_input in by_input.values():
+        if len(same_input) < 2:
+            continue
+        duplicate_groups_checked += 1
+        if len({_kv_snapshot_signature(snapshot) for snapshot in same_input}) != 1:
+            raise NativeReceiverUtilityError(
+                "identical receiver input digest produced different native K/V snapshots"
+            )
+
+    baseline_sha = snapshots["NO_MESSAGE"]["combined_sha256"]
+    distinct = {
+        condition: snapshots[condition]["combined_sha256"] != baseline_sha
+        for condition in CONDITIONS
+    }
+    return {
+        "status": "READ_ONLY_SAMPLE_ONLY",
+        "snapshot_count": len(CONDITIONS),
+        "scope": snapshots["NO_MESSAGE"]["snapshot_scope"],
+        "sampled_layer_id": snapshots["NO_MESSAGE"]["layer_id"],
+        "attention_layer_count": snapshots["NO_MESSAGE"]["attention_layer_count"],
+        "distinct_from_no_message_by_condition": distinct,
+        "candidate_differs_from_no_message": distinct["LATENT_CANDIDATE"],
+        "candidate_differs_from_exact_message": (
+            snapshots["LATENT_CANDIDATE"]["combined_sha256"]
+            != snapshots["EXACT_MESSAGE"]["combined_sha256"]
+        ),
+        "duplicate_input_groups_checked": duplicate_groups_checked,
+        "same_input_consistency_passed": True,
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+
+
 def _digest(value: Mapping) -> str:
     try:
         raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()
@@ -362,6 +455,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     correlated questions from one message could inflate the bootstrap sample
     count. Every observed session must also contain every observed task family.
     This is still a likelihood proxy, never answer-correctness proof.
+    Optional one-layer K/V differences are reported as read-only structural
+    evidence and never contribute to the task-utility pass/fail decision.
     """
     if not isinstance(receipts, Sequence) or isinstance(receipts, (str, bytes)) or not receipts:
         raise NativeReceiverUtilityError("task-score receipts must be a non-empty sequence")
@@ -396,6 +491,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     source_hashes = set()
     scores = defaultdict(list)
     deltas = {name: [] for name in CONDITIONS if name != "LATENT_CANDIDATE"}
+    kv_snapshot_effects = []
+    kv_snapshot_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
@@ -431,6 +528,14 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
                 raise NativeReceiverUtilityError("in-distribution message source mismatch")
             scores[condition].append(item["mean_target_logprob"])
         _validate_duplicate_input_digests(group)
+        kv_effect = _validate_duplicate_kv_snapshots(group)
+        has_kv_snapshot = kv_effect is not None
+        if kv_snapshot_mode is None:
+            kv_snapshot_mode = has_kv_snapshot
+        elif kv_snapshot_mode != has_kv_snapshot:
+            raise NativeReceiverUtilityError("K/V snapshot coverage changed across task cohort")
+        if kv_effect is not None:
+            kv_snapshot_effects.append(kv_effect)
         adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
         if len(adapter_hashes) != 1:
             raise NativeReceiverUtilityError("latent controls use different adapter revisions")
@@ -466,6 +571,49 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         delta_report[control] = {"mean_delta_nats_per_token": mean,
             "median_delta_nats_per_token": statistics.median(values), "win_rate": win,
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
+    if kv_snapshot_effects:
+        kv_snapshot_effect = {
+            "status": "READ_ONLY_SAMPLE_ONLY",
+            "task_group_count": len(kv_snapshot_effects),
+            "snapshot_count": sum(item["snapshot_count"] for item in kv_snapshot_effects),
+            "candidate_differs_from_no_message_count": sum(
+                item["candidate_differs_from_no_message"] for item in kv_snapshot_effects
+            ),
+            "candidate_differs_from_exact_message_count": sum(
+                item["candidate_differs_from_exact_message"] for item in kv_snapshot_effects
+            ),
+            "distinct_from_no_message_task_groups_by_condition": {
+                condition: sum(
+                    item["distinct_from_no_message_by_condition"][condition]
+                    for item in kv_snapshot_effects
+                )
+                for condition in CONDITIONS
+            },
+            "duplicate_input_groups_checked": sum(
+                item["duplicate_input_groups_checked"] for item in kv_snapshot_effects
+            ),
+            "same_input_consistency_passed": True,
+            "scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+            "semantic_use_proven": False,
+            "generated_answer_correctness_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    else:
+        kv_snapshot_effect = {
+            "status": "UNAVAILABLE",
+            "task_group_count": 0,
+            "snapshot_count": 0,
+            "same_input_consistency_passed": None,
+            "semantic_use_proven": False,
+            "generated_answer_correctness_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
     kind, env = native_binding[:2]
     if kind == "SYNTHETIC_FIXTURE": status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
     elif not enough: status, evidence = "INSUFFICIENT_HOLDOUT", env
@@ -491,6 +639,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "holdout_status": "SUFFICIENT_HOLDOUT" if enough else "INSUFFICIENT_HOLDOUT",
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
+        "kv_snapshot_effect": kv_snapshot_effect,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,
         "training_authority": 0, "native_receiver_authority": 0, "persisted": False}
