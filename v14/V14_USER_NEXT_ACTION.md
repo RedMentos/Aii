@@ -2309,3 +2309,8 @@ Parent #2524 exact CI readback: native receiver workflow 45890208766 failed only
 ### Core #2538 follow-up — 2026-11-26
 
 Core replacement PR #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) now refreshes observer/recovery/audio/stage/RuntimeDeploy pins against the current #2524 parent and supersedes #2525. Its exact-head CI is queued, not passed. Because #2538 is based on #2524 rather than the parent-advanced audio PR #2527, Core should stack/rebase #2538 onto #2527 after #2527's exact A4/A5 CI is green, then refresh the audio pins to the new blobs. Do not treat the queued checks as release proof.
+
+
+### Exact #2538 audio-pin mismatch — 2026-11-26
+
+The current #2538 integrated audio candidate still expects old blobs: audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025; audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1; contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 Perception blobs are b372d52b83c1b35077732755f076e48b62e90ac0, cacf649007a89cbfe74924536e413747d1392db3, and 6065a471f5f623abea57725d33d362d9eb806013. #2538 is refreshed for #2524 but not #2527; Core must stack #2538 on #2527 and refresh these exact pins after Perception CI passes.

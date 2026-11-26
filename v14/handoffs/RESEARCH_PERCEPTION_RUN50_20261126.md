@@ -70,3 +70,8 @@ Exact workflow 45890208766: Linux pinned API PASS; Android arm64 cross-compile P
 ## Core replacement PR #2538
 
 After the parent #2524 failures recorded above, Core opened replacement PR #2538 (branch core/v14-native-receiver-kv-integration-20261126-run50-core, head ddeca6a939399786753ecc6ae13086a99e68802e) and reports refreshing the observer/recovery/audio/stage/RuntimeDeploy pin chain against the current #2524 parent without weakening guards. Its exact-head CI runs 45891049901, 45891050110, 45891050131, 45891049890, 45891049926 and 45891049936 were QUEUED at first poll (only the Lab Age control check 45891052157 had completed PASS). This is not yet a verified fix. #2538 is based on #2524, not #2527; after #2527 exact A4/A5 CI is green, Core must stack/rebase #2538 onto the #2527 audio branch and refresh the A4 audio pins. Perception will not edit Core-owned recovery/stage/deployer files.
+
+
+## Exact audio pin mismatch in Core #2538
+
+Current #2538 branch source: integrated_audio_context_candidate_20261121.py blob 831080bceec90711bd42e0fa4eba47c669975c98. Its current expected pins are audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025, audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1, and contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 blobs are audio_voice_cues b372d52b83c1b35077732755f076e48b62e90ac0, audio_temporal_evidence cacf649007a89cbfe74924536e413747d1392db3, and contracts 6065a471f5f623abea57725d33d362d9eb806013. Thus #2538 is refreshed for #2524 but not yet for #2527. A Core-owned stack/rebase and exact pin refresh is still required after #2527 CI; do not modify Core files from this lane.

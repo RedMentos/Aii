@@ -1705,3 +1705,8 @@ PR #2527 is being advanced from its stale #2524 parent onto #2524 head a47907c4a
 ## Core #2538 parent-stack follow-up — 2026-11-26
 
 Core replacement #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) has refreshed the current #2524 observer/recovery/audio/stage/RuntimeDeploy pin chain; exact CI remains queued. It is still based on #2524, not #2527. Once #2527's exact A4/A5 checks complete, Core must stack/rebase #2538 onto #2527 and recompute any A4 audio pins against the new Perception blobs before staged/integrated acceptance. Do not edit Core-owned files from Perception.
+
+
+## Exact #2538 audio source-pin mismatch — 2026-11-26
+
+Read-only comparison: Core #2538 integrated_audio_context_candidate still expects old audio_voice_cues b18e450162b062b09368a12b1ca18924ed8c5025, audio_temporal_evidence 098ce2ec6bb0b744166d711a3401b7acf0252de1, and contracts 7b21d9c5076015716851b5d432a5730e4e17da92. Current #2527 Perception blobs are b372d52b83c1b35077732755f076e48b62e90ac0, cacf649007a89cbfe74924536e413747d1392db3, and 6065a471f5f623abea57725d33d362d9eb806013. #2538 is valid against #2524 but not yet #2527. Core must stack it on #2527 and refresh these pins before the combined staged/integrated gate. No Perception edits to Core files.
