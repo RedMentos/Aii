@@ -88,7 +88,7 @@ def _a4_attention_score_vector(attention_result: dict) -> dict:
     gains = attention_result.get("gains")
     expected_gains = {"perceptual", "callosum", "workspace", "focal", "action"}
     if type(gains) is not dict or set(gains) != expected_gains:
-        raise ValueError("A4 attention gain vector is incomplete")
+        raise ValueError("A4 attention score vector: gain vector is incomplete")
     salience = attention_result.get("salience")
     caution = attention_result.get("caution")
     if any(type(value) not in (int, float) or not math.isfinite(float(value))
