@@ -11,6 +11,8 @@ PR [#2498](https://github.com/RedMentos/Aii/pull/2498), branch \`research-percep
 
 **Next internal step:** Core/QA and Boss compose the A4 guard, Runtime allowlist and Perception audio composer on one reviewed base, then rebind the complete recovery→wrapper→stage→deployer hash chain and rerun staged/integrated/migration. The exact run 45730324811 currently FAILS only at the stale recovery builder composer pin (expected 831080bceec90711bd42e0fa4eba47c669975c98; actual d6d634857b42fc9dd29fa9bb2481220fd414e8bf); migration is PARTIAL. Perception then runs held-out/shuffled timing controls. No manual Termux command or model swap is requested.
 
+**Separate B3 boundary:** the audited llama.cpp selected-row API is staging/WIP and returns static token-embedding-table rows, not contextual hidden states; the current V14 llama.cpp pin predates it. Core still needs the native extractor plus a separate sender contextual-activation tap, trainable projection and receiver injection. B3 remains OFF; no latent-learning or Android proof is claimed.
+
 ---
 
 # Research & Perception — latest verified checkpoint (2026-11-25)
