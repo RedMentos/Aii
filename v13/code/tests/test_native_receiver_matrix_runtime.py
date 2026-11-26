@@ -387,6 +387,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
     with open(callosum.__file__, encoding="utf-8") as source_file:
         source = source_file.read()
     assert "matrix-status" in source
+    assert "matrix-build" in source
     assert "native-tokenwise-probe" in source
 
     status = json.loads(callosum.operator_command(runtime, ["matrix-status"]))
@@ -395,4 +396,229 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
 
     with pytest.raises(PermissionError, match="no local one-shot approval"):
         callosum.operator_command(runtime, ["matrix-run"])
+    with pytest.raises(ValueError, match="no source-disjoint tokenwise alignment candidate"):
+        callosum.operator_command(runtime, [
+            "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC", "aaaaaaaa", "bbbbbbbb", "--confirm",
+        ])
     assert matrix._closed is False
+
+
+def _producer_record(source_id, text, event_id, token_ids, *, entity=False, ood=False):
+    source_ref = _source(text, source_id)
+    sender = {
+        "role": "B1_DETAIL", "tap_id": "B1_HIDDEN_PREFILL_FINAL_RMSNORM",
+        "model_revision": "b1-rev-1", "model_sha256": "2" * 64,
+        "tokenizer_revision": "tokenizer-rev-1",
+    }
+    receiver = {
+        "role": "C3_LANGUAGE", "tap_id": "C3_NATIVE_INPUT_EMBEDDING",
+        "model_revision": "c3-rev-1", "model_sha256": "1" * 64,
+        "tokenizer_revision": "tokenizer-rev-1", "embedding_dim": 2,
+        "token_ids": list(token_ids), "token_spans": [[0, 4], [5, 7], [8, max(8, len(text) - 1)]],
+    }
+    rows = [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
+    if entity:
+        receiver["token_ids"] = [token_ids[0], token_ids[1], token_ids[2] + 1]
+        rows[2] = [0.7, 0.8]
+    if ood:
+        rows = [[0.2, 0.1], [0.4, 0.3], [0.6, 0.5]]
+    pairs = [
+        {"pair_id": source_id + "-" + str(i), "token_position": i,
+         "receiver_vector": list(row), "sender_vector": [0.01, 0.02],
+         "source_id": source_id, "source_sha256": source_ref["sha256"],
+         "session_id": "session-1", "alignment_method": "UTF8_BYTE_PIECE_OVERLAP_V1",
+         "alignment_coverage": 1.0}
+        for i, row in enumerate(rows)
+    ]
+    return {
+        "schema": "v14.native-tokenwise-pairing/1", "status": "PAIRED_DIAGNOSTIC",
+        "source_ref": source_ref, "session_id": "session-1", "event_id": event_id,
+        "brain_generation_id": "generation-1", "sender": sender, "receiver": receiver,
+        "pairs": pairs, "record_sha256": hashlib.sha256(("record:" + source_id).encode()).hexdigest(),
+        "persisted": False, "production_route": False, "semantic_use_proven": False,
+        "training_authority": 0, "native_receiver_authority": 0,
+    }
+
+
+def _producer_packet(record, adapter_sha):
+    rows = [list(pair["receiver_vector"]) for pair in record["pairs"]]
+    flat = [float(value) for row in rows for value in row]
+    digest = hashlib.sha256(struct.pack("<" + "f" * len(flat), *flat)).hexdigest()
+    sender, receiver = record["sender"], record["receiver"]
+    return {
+        "schema": "v14.native-tokenwise-anchor-residual-input/1",
+        "input_strategy": "ANCHOR_PLUS_CAPPED_RESIDUAL_V1",
+        "vectors": rows, "position_ids": [0, 1, 2],
+        "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+        "input_rows": 3, "input_dim": 2, "input_sha256": digest,
+        "anchor_sha256": digest, "tokenizer_revision": receiver["tokenizer_revision"],
+        "token_count": 3, "source_ref": dict(record["source_ref"]),
+        "event_id": record["event_id"], "brain_generation_id": record["brain_generation_id"],
+        "session_id": record["session_id"], "record_sha256": record["record_sha256"],
+        "adapter_sha256": adapter_sha, "sender_role": sender["role"],
+        "sender_tap_id": sender["tap_id"], "sender_model_revision": sender["model_revision"],
+        "sender_model_sha256": sender["model_sha256"], "sender_tokenizer_revision": sender["tokenizer_revision"],
+        "receiver_role": receiver["role"], "receiver_tap_id": receiver["tap_id"],
+        "receiver_model_revision": receiver["model_revision"], "receiver_model_sha256": receiver["model_sha256"],
+        "receiver_tokenizer_revision": receiver["tokenizer_revision"],
+        "residual_gain": 0.0, "max_relative_residual": 0.25,
+        "mean_preclip_relative_residual": 0.0, "max_preclip_relative_residual": 0.0,
+        "mean_applied_relative_residual": 0.0, "max_applied_relative_residual": 0.0,
+        "clipped_rows": 0, "anchor_rows_preserved_as_base": True,
+        "production_route": False, "semantic_use_proven": False,
+        "training_authority": 0, "native_receiver_authority": 0, "persisted": False,
+    }
+
+
+def test_runtime_matrix_build_calls_real_perception_builder_then_approved_bridge(monkeypatch, tmp_path):
+    from v13 import native_probe_approval as approval
+    from v13 import native_tokenwise_pairing
+    from v13 import native_input_embedding_capture as input_capture
+    from v13 import native_input_embedding_extractor
+
+    main_text, ood_text, entity_text = "What is 2+2?", "Explain photosynthesis.", "What is 3+3?"
+    main = _producer_record("src-main", main_text, "event-main", [11, 22, 33])
+    ood = _producer_record("src-ood", ood_text, "event-ood", [41, 42, 43], ood=True)
+    entity = _producer_record("src-entity", entity_text, "event-entity", [11, 22, 33], entity=True)
+    texts = {"src-main": main_text, "src-ood": ood_text, "src-entity": entity_text}
+    events = {item["event_id"]: _event(item["event_id"], item["brain_generation_id"], item["source_ref"])
+              for item in (main, ood, entity)}
+    store = FakeStore(events, texts)
+    store.queue_stats = lambda: {"count": 0}
+    runtime = FakeRuntime(store, tmp_path)
+    runtime.stop, runtime.jobs = threading.Event(), __import__("queue").Queue()
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": "event-main", "text": "4"}
+    sender, receiver = main["sender"], main["receiver"]
+
+    class Runner:
+        def load(self, cancel_event, deadline):
+            return None
+
+        def _json(self, method, path, payload, deadline, timeout_cap=None):
+            if payload["content"] == main_text and payload["add_special"] is True:
+                return {"tokens": [
+                    {"id": 1, "piece": "<bos>"}, {"id": 11, "piece": "What"},
+                    {"id": 22, "piece": "is"}, {"id": 33, "piece": "2+2?"},
+                ]}
+            if payload["content"] == "4":
+                return {"tokens": [{"id": 101, "piece": "4"}]}
+            raise AssertionError("unexpected tokenizer input")
+
+    class Pool:
+        def get_tap(self, role):
+            assert role == "C3_LANGUAGE"
+            return Runner()
+
+    runtime.pool = Pool()
+    runtime.store_event_main, runtime.source_ref_main = events["event-main"], main["source_ref"]
+    adapter_sha = "a" * 64
+    adapter = {
+        "status": "ALIGNMENT_CANDIDATE", "projection_scope": "TOKENWISE",
+        "adapter_sha256": adapter_sha, "production_route": False,
+        "semantic_use_proven": False, "training_authority": 0, "native_receiver_authority": 0,
+    }
+    hashes = [main["record_sha256"], ood["record_sha256"], entity["record_sha256"]]
+    runtime._native_tokenwise_candidate = {
+        "adapter": adapter, "record": main,
+        "fit_manifest": {"session_disjoint": True, "source_disjoint": True,
+                         "holdout_session_ids": ["session-1", "holdout-2"], "record_sha256s": hashes},
+        "cohort_records": [main, ood, entity],
+    }
+
+    def model_binding(_runtime, role):
+        expected = sender if role == sender["role"] else receiver
+        return {"revision": expected["model_revision"], "sha256": expected["model_sha256"],
+                "canonical_path": str(tmp_path / "models" / (role + ".gguf")),
+                "file_identity": [1, 2, 4096, 3, 4]}
+
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    monkeypatch.setattr(approval, "_current_event", lambda _r: (events["event-main"], main["source_ref"]))
+    monkeypatch.setattr(approval, "_model_binding", model_binding)
+    monkeypatch.setattr(approval, "_resource_preflight", lambda *_: {"status": "PASS"})
+    monkeypatch.setattr(approval, "_runtime_nonce", lambda _r: "f" * 32)
+    monkeypatch.setattr(approval, "_require_runtime_probe_lease", lambda *_: None)
+    monkeypatch.setattr(approval, "consume", lambda *a, **k: {"approval_id": "input-tap-once"})
+
+    @contextlib.contextmanager
+    def lease(_runtime):
+        _runtime.current = "probe"
+        _runtime._native_probe_active = True
+        _runtime._native_probe_lease_nonce = "lease-token"
+        try:
+            yield "lease-token"
+        finally:
+            _runtime.current = None
+            _runtime._native_probe_active = False
+            _runtime._native_probe_lease_nonce = None
+
+    monkeypatch.setattr(approval, "runtime_probe_lease", lease)
+    monkeypatch.setattr(input_capture, "_unload_pool", lambda _runtime: None)
+    monkeypatch.setattr(input_capture, "_managed_pids", lambda _runtime: [])
+    monkeypatch.setattr(
+        native_input_embedding_extractor, "extract_native_input_embedding_rows",
+        lambda *a, **k: (k["prepare_idle"]() or {
+            "status": "COMPLETE", "rows": [[0.91, 0.82], [0.11, 0.22]],
+            "receipt": {"model_sha256": receiver["model_sha256"], "requested_token_ids": [1, 11]},
+        }),
+    )
+    monkeypatch.setattr(native_tokenwise_pairing, "_validate_native_pair_record", lambda value: dict(value))
+    monkeypatch.setattr(native_tokenwise_pairing, "build_anchor_preserving_native_receiver_input",
+                        lambda _adapter, record: _producer_packet(record, adapter_sha))
+    monkeypatch.setattr(matrix_runtime, "platform_tag", lambda: "linux-x86_64")
+
+    runtime.last_answer = lambda: {"status": "DEADLINE", "event_id": "event-main", "text": "partial"}
+    with pytest.raises(ValueError, match="FINAL assistant output"):
+        matrix_runtime.operator_command(runtime, [
+            "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC",
+            ood["record_sha256"][:12], entity["record_sha256"][:12], "--confirm",
+        ])
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": "event-main", "text": "4"}
+    staged = json.loads(matrix_runtime.operator_command(runtime, [
+        "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC",
+        ood["record_sha256"][:12], entity["record_sha256"][:12], "--confirm",
+    ]))
+    assert staged["status"] == "STAGED_NOT_APPROVED"
+    assert staged["condition_count"] == 8
+    assert staged["target_kind"] == "SELF_GENERATED_FINAL_OUTPUT"
+    assert staged["generated_answer_correctness_proven"] is False
+    assert staged["task_family_source"] == "LOCAL_OPERATOR_ASSERTION"
+    assert runtime._native_receiver_matrix_target_token_ids == (101,)
+    receipt = runtime._native_receiver_condition_matrix.receipt
+    assert receipt["target_token_count"] == 1 and len(receipt["source_bindings"]) == 3
+    assert "target_token_ids" not in receipt
+    status = json.loads(matrix_runtime.operator_command(runtime, ["matrix-status"]))
+    assert status["target_kind"] == "SELF_GENERATED_FINAL_OUTPUT"
+    assert status["generated_answer_correctness_proven"] is False
+
+    matrix_runtime._arm(runtime)
+    seen = []
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+
+    def fake_bridge(runtime_arg, matrix_arg, **kwargs):
+        receipt_arg = matrix_arg.receipt
+        inputs = list(matrix_arg.iter_inputs(approval=kwargs["approval"],
+                                             approval_validator=kwargs["approval_validator"]))
+        kwargs["source_validator"](receipt_arg, "BEFORE_NATIVE")
+        kwargs["source_validator"](receipt_arg, "AFTER_NATIVE")
+        seen.extend(item["condition"] for item in inputs)
+        return {"status": "SCORED_DIAGNOSTIC", "condition_count": len(inputs),
+                "environment": kwargs["target_environment"], "semantic_use_proven": False,
+                "training_authority": 0, "native_receiver_authority": 0}
+
+    module.score_and_record_native_receiver_condition_matrix = fake_bridge
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+    result = matrix_runtime._run(runtime)
+    assert result["status"] == "SCORED_DIAGNOSTIC"
+    assert seen == list(CONDITIONS)
+    assert runtime._native_receiver_condition_matrix is None
+
+
+def test_runtime_matrix_build_rejects_family_mismatch_before_any_probe(monkeypatch, tmp_path):
+    runtime, _matrix, _ids, _pair, _events, _texts, sender, receiver = _fixture(tmp_path)
+    _patch_core(monkeypatch, runtime, sender, receiver)
+    with pytest.raises(ValueError, match="families must match"):
+        matrix_runtime.operator_command(runtime, [
+            "matrix-build", "ARITHMETIC", "RELATION", "ENTITY_RECALL",
+            "aaaaaaaa", "bbbbbbbb", "--confirm",
+        ])
+
