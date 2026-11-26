@@ -2229,3 +2229,16 @@ Nutzeraktion: keine Aktion nötig. No Termux command, UPDATE_REQUEST, runtime re
 - Current exact branch head before this research checkpoint was 18ededfbe84a46b0a1a396f2f07e485cd6b0e860; new research files and ledger/handoff commits will advance the PR branch. Exact CI for the new head must be read separately; do not inherit prior-head CI.
 - Latest historical private V13OBS #115 receipt remains 2026-11-24T09:28:11Z and is not current device proof. Read-only HEALTH and PIPELINE_STATUS requests were submitted; if no authenticated reply arrives, record NO_LIVE_RECEIPT. Redmi/Termux remains REDMI_UNVERIFIED; microphone capture OFF; release NOT_RELEASED.
 - Next executable step: Core/Integrator composes #2525 and #2527, refreshes the recovery → stage → RuntimeDeploy pins bottom-up and reruns exact staged/integrated CI. In parallel, Perception's next research step is a source-bound A4/A5 feature-set probe with shuffled-time and goal/action controls; keep it shadow-only until held-out utility is demonstrated.
+
+
+## Research & Perception Run 44 — current verified state (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, CHAT_SEND, restart, model download/swap, weight update, permission change, user-data mutation or deployment was performed.
+
+- PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch \`research-perception/v14-audio-temporal-window-order-20261126-run41b\`, remains DRAFT / NOT_RELEASED and is stacked on #2524. New code commit \`f4c0648af9d84dae8b8e11ab00431f24413d96a6\` adds a session-local discrete relative-information proxy to the existing A4/A5 shadow diagnostic; tests are in \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`.
+- LOCAL_LINUX CPython 3.13.5 scratch-equivalent implementation: compile PASS and 6/6 assertions PASS. This is not the exact repository test run; full checkout/pytest/native build remain NOT_RUN because the repository is not mounted and GitHub DNS is unavailable locally.
+- Synthetic-only 128-record / 4-session XOR fixture: proxy rIMI 1.000; 128-permutation p=0.00775. This does not establish human auditory attention, real intent prediction, production A4 policy or JEPA learning. R-166 is still abstract-only; this is not an exact paper reproduction.
+- Exact CI for the new head is pending: feature-set 45780338189 QUEUED; RAW EAR comparison 45780338123 IN_PROGRESS; staged/integrated 45780338096 IN_PROGRESS; RuntimeDeploy 45780338147 QUEUED.
+- The previous shared staged/integrated run failed at the Core-owned audio-builder source pin (Core expected \`831080...\`; current Perception builder \`f9a0ed...\`). Core/Integrator owns the recovery/stage/deployer chain; Perception did not edit those files.
+- Last private V13OBS #115 remains historical (2026-11-24) and reports STOPPED_BY_USER with no current install/runtime proof. Fresh read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests are pending in the private relay; until authenticated replies arrive, REDMI_UNVERIFIED. Release-development SHA remains \`8d93236c753f0194224c19edc7411d8d7082b1d6\`; no newer release SHA or deployment is claimed.
+- Next: poll exact PR CI, coordinate Core's pin repair and normal-turn audio lease, then design session-disjoint holdout/drift/switch controls only when a legitimate consented outcome cohort exists. No microphone or learning permission is requested.
