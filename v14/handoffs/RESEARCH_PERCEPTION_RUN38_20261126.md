@@ -5,7 +5,7 @@
 - Repository: `RedMentos/Aii`
 - Lane branch: `research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34`
 - Draft PR: [#2519](https://github.com/RedMentos/Aii/pull/2519)
-- Current PR head: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`
+- Branch head before this docs-only batch: `95b8bcaae0d0163f9b00f289c1789de86ee3517f`
 - Matrix/bridge code SHA: `16d64120ba1cb0d690d249a7fed62ddfcb345663`
 - Workflow-only CI correction: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`
 - Base: Core PR #2520, branch `core/v14-native-target-score-repair-20261126-run1`, exact head `2032888020a2f409ee976abe222cc99e0818159c`.
@@ -15,13 +15,13 @@
 
 The Perception branch contains the source-bound eight-condition matrix producer and teacher-forced native target-token likelihood bridge. `NO_MESSAGE` is represented by zero injected rows and zero positions; BOS remains internal to the receiver. The bridge consumes one-shot approval, revalidates source/event/generation before and after native execution, validates all eight receipts and atomically records them in Core's ephemeral task-score collector.
 
-The exact native workflow 45738564334 is **SUCCESS** at PR head `8b25f4e`:
+The exact native workflow 45739394614 on branch head `95b8bc` is **SUCCESS** at PR head `8b25f4e`:
 - Python 3.13: 19 focused matrix/task-score tests PASS; 59 broader taps/receiver/stage/tokenwise/matrix tests PASS; py_compile PASS; public privacy scan CLEAN.
 - Python 3.14: same 19 + 59 PASS; py_compile PASS; privacy scan CLEAN.
 - Pinned llama.cpp Linux native build and selftest PASS.
 - Android arm64-v8a cross-compile PASS only. This is not a phone test.
 
-The shared staged/integrated workflow 45738564326 was **IN_PROGRESS** at last poll. Its final result must be checked before describing the entire PR as green.
+Runtime deployment integrity workflow 45739394621 is **SUCCESS**. The shared staged/integrated workflow 45739394594 was **IN_PROGRESS** at 2026-11-26T02:03:41Z. Its final result must be checked before describing the entire PR as green.
 
 The workflow correction removes `test_native_latent_receiver_runtime.py` from this Perception-specific pytest invocation because it asserts removed Core `Cognition.native_receive` and legacy `:callosum native-probe` APIs. The test file remains present and syntax-compiled. This is not a Canon waiver: Core must restore the capability or provide an explicitly equivalent, tested replacement.
 
@@ -47,7 +47,7 @@ Full-text review recorded in `v14/V14_RESEARCH_LEDGER.md`:
 - Local CPython 3.13.5 exists, but full Aii checkout/pytest is **NOT RUN**: no checkout mounted and `git ls-remote` fails due github.com DNS resolution.
 - No real GGUF task cohort, generated-answer correctness, gradient/parameter retention, restart/rollback or Android native execution.
 - Last available private V13OBS snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled and dashboard/runtime UP_TO_DATE at `8d93236`, but AI STOPPED_BY_USER and native model process stopped. No fresh authenticated device receipt at this checkpoint.
-- Fresh read-only private relay issues #948 HEALTH, #949 PIPELINE_STATUS and #950 DIAGNOSTICS were created; first poll returned no device comments. No LOG_PAGE, shell, CHAT_SEND, UPDATE_REQUEST or other device action.
+- Fresh read-only private relay issues #948 HEALTH, #949 PIPELINE_STATUS and #950 DIAGNOSTICS were created; polls through 2026-11-26T02:03:41Z returned no device comments (expiry 02:07:48Z). No LOG_PAGE, shell, CHAT_SEND, UPDATE_REQUEST or other device action.
 - Redmi: **REDMI_UNVERIFIED**. Release: **NOT_RELEASED**. B3: **OFF**. No model/weight/permission/user-data change.
 
 ## Next concrete action
@@ -58,3 +58,8 @@ Full-text review recorded in `v14/V14_RESEARCH_LEDGER.md`:
 4. Audit pinned llama.cpp per-layer K/V cache support; do not enable or download a mobile adapter before a real consumer and resource measurements exist.
 
 No user action is required for this draft checkpoint.
+
+
+## R-159 — pinned llama.cpp K/V cache audit
+
+At exact pin `ggml-org/llama.cpp@b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (MIT), the stable C API exposes only opaque memory handles and sequence operations. Internal C++ exposes LFM2 hybrid attention K/V access through `llama_memory_hybrid::get_mem_attn()`, `llama_kv_cache_context::get_k/get_v`, and cell metadata `seq_has/pos_get`; recurrent state is separate. Internal `cpy_k/cpy_v` can build graph writes but require exact cell mapping, dtype/layout, backend sync and generation checks. Read-only access is plausible with pinned internal headers; write injection is not implemented and no stable ABI exists. Next: one-sequence/one-layer read-only probe with no-mutation evidence. No model loaded and no B3 promotion.

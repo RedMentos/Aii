@@ -1586,3 +1586,10 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 2. Core stacks #2522 on #2519 and adds a real source-bound matrix producer path/test; preserve old native-receive capability acceptance.
 3. Run >=20 held-out task groups, >=2 sessions and >=2 task families on a pinned real GGUF; require candidate to beat every control, then test generated-answer correctness, retention, restart and rollback.
 4. Independently audit pinned llama.cpp K/V cache capture/injection feasibility; do not implement or enable a mobile adapter until a real consumer path and resource gates exist.
+
+
+### R-159 follow-up — pinned llama.cpp K/V cache feasibility (2026-11-26)
+
+Audited exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (MIT). The stable C API exposes only opaque memory handles and sequence operations; internal C++ classes expose a plausible read path through `llama_memory_hybrid::get_mem_attn()`, `llama_kv_cache_context::get_k/get_v`, and sequence-cell metadata. LFM2/LFM2MOE are hybrid and keep recurrent state separately from attention K/V. Internal `cpy_k/cpy_v` can participate in graph writes, but require exact cell indices, dtype/layout, backend synchronization and generation validation. This is a pinned internal API, not a stable generic ABI. No code was added and no model was loaded. Next: Core builds a read-only single-sequence/one-layer probe first; only then consider a separate gated one-layer write test. R-159 in the research ledger contains exact source paths, revision and MIT license.
+
+**Run 38 latest readback:** Perception branch head before this docs-only batch `95b8bcaae0d0163f9b00f289c1789de86ee3517f`; exact native workflow 45739394614 SUCCESS (Python 3.13/3.14: 19 focused + 59 broader tests each; py_compile, privacy scan, pinned Linux build/selftest and Android arm64 cross-compile PASS). Runtime deployment integrity workflow 45739394621 SUCCESS. Shared staged/integrated workflow 45739394594 remained IN_PROGRESS at 2026-11-26T02:03:41Z. Private read-only issues #948/#949/#950 had no comments at 02:03:41Z and expire at 02:07:48Z; no fresh phone receipt.

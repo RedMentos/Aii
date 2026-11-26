@@ -4,10 +4,10 @@
 
 ## Verified code / CI checkpoint
 - Draft PR [#2519](https://github.com/RedMentos/Aii/pull/2519), branch `research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34`.
-- Current exact PR head / workflow-only correction: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`. Matrix/bridge code SHA: `16d64120ba1cb0d690d249a7fed62ddfcb345663`.
+- Current branch head before this docs-only batch: `95b8bcaae0d0163f9b00f289c1789de86ee3517f` (docs-only commits follow the tested code head). Workflow-only correction SHA: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`. Matrix/bridge code SHA: `16d64120ba1cb0d690d249a7fed62ddfcb345663`.
 - Parent Core #2520 branch head: `2032888020a2f409ee976abe222cc99e0818159c`.
-- Exact native receiver workflow 45738564334: **SUCCESS**. Python 3.13 and 3.14 each: 19 focused matrix/task-score tests PASS + 59 broader taps/receiver/stage/tokenwise/matrix tests PASS; py_compile PASS; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a cross-compile PASS (not device execution); privacy scan CLEAN.
-- Shared staged/integrated workflow 45738564326 was still **IN_PROGRESS** at last poll. Poll exact result before claiming the full PR CI is green.
+- Exact native receiver workflow 45739394614 on branch head `95b8bc`: **SUCCESS**. Runtime deployment integrity workflow 45739394621: **SUCCESS**. Python 3.13 and 3.14 each: 19 focused matrix/task-score tests PASS + 59 broader taps/receiver/stage/tokenwise/matrix tests PASS; py_compile PASS; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a cross-compile PASS (not device execution); privacy scan CLEAN.
+- Shared staged/integrated workflow 45739394594 was still **IN_PROGRESS** at 2026-11-26T02:03:41Z. Poll exact result before claiming the full PR CI is green.
 - LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN**. Local CPython 3.13.5 is available, but no repository checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve.
 
 ## Actual product effect / open gaps
@@ -22,7 +22,7 @@
 - Therefore current installation and runtime state remain **REDMI_UNVERIFIED**. GitHub push is not deployment. No UPDATE_REQUEST, restart, model/weight/permission/data change or device action occurred.
 
 ## Research note / next executable step
-- R-158 records full-text LCF (arXiv:2605.22863, ICML 2026/PMLR 306) and the scoped negative Pythia transfer study (arXiv:2606.03280). LCF uses per-layer K/V residuals and span pooling, but the tested training used A100 80GB / RTX PRO 6000; 13 MB adapter size is not total runtime memory. The negative study shows cosine≈0.97 alignment can still yield no causal utility. Current llama.cpp selected-row API reads static token embeddings, not contextual K/V caches.
+- R-158 records full-text LCF (arXiv:2605.22863, ICML 2026/PMLR 306) and the scoped negative Pythia transfer study (arXiv:2606.03280). LCF uses per-layer K/V residuals and span pooling, but the tested training used A100 80GB / RTX PRO 6000; 13 MB adapter size is not total runtime memory. The negative study shows cosine≈0.97 alignment can still yield no causal utility. Current llama.cpp selected-row API reads static token embeddings, not contextual K/V caches. R-159 audits pinned llama.cpp b29c606e: a read-only internal C++ K/V path appears feasible for LFM2 hybrid attention layers, but not through the stable public C API; write injection remains unimplemented and requires graph/cell/backend validation.
 - Next: finish workflow 45738564326; then Core rebases #2522 on #2519 and adds a real source-bound producer integration test. After that, run >=20 held-out groups across >=2 sessions and >=2 task families on a pinned real GGUF, requiring candidate wins over every control plus generated-answer correctness, retention, restart and rollback. No user action required.
 
 ---
