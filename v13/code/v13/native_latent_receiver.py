@@ -557,8 +557,9 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  context_sha256=None):
     """Score the fixed eight-condition task matrix with one native model load.
 
-    Only hashes, target-token log-probabilities and dimensions are returned.
-    No input text, token IDs, vectors, learning, routing or persistence are added.
+    Only hashes, target-token log-probabilities, dimensions and optional sanitized
+    same-model hybrid-state metrics are returned. No raw state, text, token IDs,
+    vectors, learning, routing or persistence are added.
     """
     from .native_receiver_utility import validate_native_receiver_kv_snapshot
 
@@ -566,11 +567,6 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
     )
-    if type(include_hybrid_state_roundtrip) is not bool:
-        raise NativeReceiverError("hybrid-state roundtrip opt-in must be boolean")
-    if include_hybrid_state_roundtrip and (len(target_token_ids) > 64
-            or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
-        raise NativeReceiverError("hybrid-state roundtrip requires 1..64 target IDs and receiver tokenizer revision")
     if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
         raise NativeReceiverError("unsupported or identical sender/receiver roles")
     if not all(isinstance(value, str) and value for value in (
@@ -592,6 +588,11 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
+    if type(include_hybrid_state_roundtrip) is not bool:
+        raise NativeReceiverError("hybrid-state roundtrip opt-in must be boolean")
+    if include_hybrid_state_roundtrip and (len(target_token_ids) > 64
+            or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
+        raise NativeReceiverError("hybrid-state roundtrip requires 1..64 target IDs and receiver tokenizer revision")
     target_ids = tuple(target_token_ids)
     try:
         target_payload = struct.pack("<" + "i" * len(target_ids), *target_ids)
