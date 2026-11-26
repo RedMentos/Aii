@@ -168,6 +168,7 @@ def score_and_record_native_receiver_condition_matrix(
     cancel_event=None,
     device_execution_receipt_sha256=None,
     device_runtime_build_id=None,
+    include_hybrid_state_roundtrip=False,
 ):
     """Consume one approved matrix, score all conditions, and atomically record eight receipts.
 
@@ -185,6 +186,10 @@ def score_and_record_native_receiver_condition_matrix(
             raise NativeReceiverTaskMatrixBridgeError("one-shot approval and source validators are required")
         if target_environment not in _ENVIRONMENTS:
             raise NativeReceiverTaskMatrixBridgeError("an explicit native execution environment is required")
+        if type(include_hybrid_state_roundtrip) is not bool:
+            raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip opt-in must be boolean")
+        if include_hybrid_state_roundtrip and len(target_token_ids) > 64:
+            raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip is limited to 64 continuation tokens")
         if type(threads) is not int or not 1 <= threads <= 2:
             raise NativeReceiverTaskMatrixBridgeError("native task-matrix threads must be 1 or 2")
         if type(deadline) not in (int, float) or not math.isfinite(float(deadline)):
@@ -282,6 +287,9 @@ def score_and_record_native_receiver_condition_matrix(
             target_environment=target_environment,
             device_execution_receipt_sha256=device_execution_receipt_sha256,
             device_runtime_build_id=device_runtime_build_id,
+            include_hybrid_state_roundtrip=include_hybrid_state_roundtrip,
+            receiver_tokenizer_revision=receiver["tokenizer_revision"],
+            context_sha256=receipt["context_sha256"],
         )
 
         _validate_source(source_validator, receipt, "after")
@@ -399,6 +407,7 @@ def score_and_record_native_receiver_condition_matrix(
             "status": "TASK_GROUP_SCORED",
             "cohort_status": cohort.get("status"),
             "evidence_class": cohort.get("evidence_class"),
+            "hybrid_state_roundtrip": condition_scores["NO_MESSAGE"].get("hybrid_state_roundtrip"),
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),

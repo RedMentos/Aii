@@ -6,6 +6,7 @@ on:
       - core/v14-native-receiver-matrix-runtime-integration-20261126-run2
       - core/v14-native-receiver-matrix-integrated-20261126-run3
       - core/v14-native-receiver-kv-integration-20261126-run5
+      - core/v14-native-matrix-approval-recovery-20261126-run1
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"
@@ -29,6 +30,7 @@ on:
       - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
       - core/v14-native-receiver-matrix-integrated-20261126-run3
       - research-perception/v14-kv-snapshot-consumer-20261126-run35
+      - core/v14-native-receiver-kv-integration-20261126-run5
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"

@@ -2377,3 +2377,19 @@ The K/V summary is structural diagnostic evidence only: SHA-256 is not a MAC; sa
 **Cross-lane integration blocker:** Exact #2524 staged CI fails at the Core-owned integrated candidate pin for `v13/native_latent_receiver.py`. Shared staged runtime: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression: 1 failed. The Perception-focused suite passes 26/26 on Python 3.13/3.14. Core owns the pin refresh; Perception did not edit recovery/stage/deployer files.
 
 **Research:** R-162 reviews HMAC-bound K/V transport integrity (arXiv:2606.28958) and CacheBridge (arXiv:2609.00891 v2). CacheBridge is GPU/same-family dense-GQA evidence and its public project license is pending; no code or weights reused. These findings do not authorize B3 activation.
+
+
+
+## Research & Perception Run 47 — B3 information-use evidence overlay (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| B3 / Enlightened Space — native receiver utility | The existing eight-condition task-utility result now reports system gain vs NO_MESSAGE separately from content-specific gain vs the source-bound ENTITY_SUBSTITUTION counterfactual. The content-specific status requires sufficient crossed holdout; overall gain alone cannot produce a content-specific signal. | Perception PR #2524 head 7bd80e419c851471d95b44cc032efe205a23ab91; utility blob 10277a18634d37a3322289c12189f7b69b9b8ea7; test blob 395b2d868718a4f94e2fe13b9d22e25c73aa5a37; LOCAL_LINUX isolated CPython 3.13.5 gate reproduction 3/3 PASS; exact native/staged CI was IN_PROGRESS at checkpoint. | Exact repository CI, Core #2525 rebase and source-pin repair, real GGUF matched/negative-control cohort, unrelated-question no-fixed-point donor permutation, generated-answer correctness, gradient/retention, restart/rollback, native RSS/TTFT and Redmi receipt. | CODE_PRESENT / SYNTHETIC_LOGIC_TEST / NATIVE_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
+
+This is a diagnostic reporting improvement, not a trained latent channel. It is narrower than Draft-KV: ENTITY_SUBSTITUTION is a source-bound near-counterfactual, not an unrelated-question derangement. semantic_use_proven=false, full_derangement_tested=false, production_route=false, and all learning/receiver authorities remain zero. No other Canon family is promoted.
+
+
+
+### Run 47 exact-CI closeout — 2026-11-26
+
+Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91: the focused receiver suites report 83 passed / 1 failed on both Python 3.13 and 3.14; all three new information-use audit regressions passed. The sole focused failure is the staged composition gate, which rejects a Core-owned observer fairness source pin for v13/cognition.py. Shared staged/integrated CI reports 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, with the same pin mismatch and two migration PARTIAL assertions. Pinned Linux native API build PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline integrity PASS; privacy scan CLEAN. Core owns the pin refresh. The B3 classification remains SYNTHETIC_DIAGNOSTIC / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / OFF.

@@ -7,21 +7,27 @@ import hashlib
 from pathlib import Path
 
 BASE_PINS = {
-    "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748",
+    "v13/cognition.py": "208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90",
+    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
-    "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
+    "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5d2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "db2a9f46d76b8b0612d9b4fe6297c069ce5790f4d6f263ffe83689fb7d7e2517",
+    "v13/native_latent_receiver.py": "9ac0af07105b2962a1e1718d98e82b4ddd9f682aba7f167092f91d28b279984c",
     "v13/native/latent_receiver/CMakeLists.txt": "6884bf0ce7613b20c2f02ffe1a1213d2609f56b9318d947f0a1bd0fb40cfe516",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "1bccf4156ca2c27d3d63077ff39329d680845201f0c94ae669924ffb710afb8f",
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "298db5d20183f45f01d7f5b394b458bc281332b062ffe060118d401116633bb6",
     "v13/native/latent_receiver/native_receiver_kv_snapshot.cpp": "a2968af85c5e0875ba6408047b88a915efe2b9d5fe815442685179b382f5fefc",
     "v13/native/latent_receiver/native_receiver_kv_snapshot.hpp": "69a706f6a38e6faca434c6079bfee693acfc8bfba18acb7df48b491dc760eac9",
     "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
-    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0"
+    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0",
+    "v13/native_hybrid_state.py": "ffbe46375cf3770d39cebf206b56fed2a2b1b14dc07a49a77158cd82c00c0cf8",
+    "v13/native_receiver_task_matrix_bridge.py": "02043e26d1822f19b398f9d54c894610418eef381a1e1cb9dc4b74bf0e351cd8",
+    "v13/native_receiver_condition_matrix.py": "409d9c7237acb9c7ec4b976ea88dddbcf2bafdd4a83110d7cc9d289cd724be6f",
+    "v13/native_receiver_task_score.py": "2b10140795e4ef3afec31fb6290f1c6a9304342dcd466e092e2554965c424545",
+    "v13/native_receiver_utility.py": "33e470a1f7423c2ce6d196210e1ad24314d25617c9301abacc0ad19fa806ccaa",
+    "v13/native_receiver_matrix_runtime.py": "0a1911df1c9d1bc36e11e871515b1afaca5d70f3eedb070499f21784dc376a21"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):

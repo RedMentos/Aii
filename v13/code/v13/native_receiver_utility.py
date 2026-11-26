@@ -15,6 +15,12 @@ import random
 import statistics
 import struct
 
+from .native_hybrid_state import (
+    NativeHybridStateReceiptError,
+    summarize_native_hybrid_state_roundtrips,
+    validate_native_hybrid_state_roundtrip,
+)
+
 TASK_SCHEMA = "v14.native-receiver-task-score/1"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
 RESULT_SCHEMA = "v14.native-receiver-task-utility/1"
@@ -58,6 +64,102 @@ def _validate_duplicate_input_digests(group):
                 raise NativeReceiverUtilityError(
                     "identical input digest produced different target scores"
                 )
+
+
+def _audit_ood_donor_derangement(groups):
+    """Require a session-local, cross-family, no-fixed-point OOD donor permutation.
+
+    An OOD receipt is a real unrelated-question control only when every task
+    in each session donates exactly once to another task in that same session.
+    External, cross-session, self, same-family and duplicate donors fail closed.
+    Only aggregate counts leave this helper; source IDs and hashes stay private.
+    """
+    by_session = defaultdict(list)
+    source_owner = {}
+    for task_group_id, group in groups.items():
+        anchor = group["NO_MESSAGE"]
+        source_ref = anchor["source_ref"]
+        source_key = (source_ref["source_id"], source_ref["sha256"])
+        if source_key in source_owner:
+            raise NativeReceiverUtilityError("duplicate task source in derangement cohort")
+        owner = {
+            "task_group_id": task_group_id,
+            "session_id": anchor["session_id"],
+            "task_family": anchor["task_family"],
+        }
+        source_owner[source_key] = owner
+        by_session[owner["session_id"]].append(owner)
+
+    totals = {
+        "task_group_count": len(groups),
+        "matched_donor_count": 0,
+        "unique_donor_count": 0,
+        "fixed_point_count": 0,
+        "same_family_count": 0,
+        "external_donor_count": 0,
+        "cross_session_donor_count": 0,
+        "duplicate_donor_count": 0,
+    }
+    session_reports = []
+    all_pass = bool(by_session)
+    for session_id, owners in sorted(by_session.items()):
+        task_ids = {owner["task_group_id"] for owner in owners}
+        donors = []
+        fixed_points = same_family = external = cross_session = 0
+        for owner in owners:
+            message_ref = groups[owner["task_group_id"]]["OOD"]["message_source_ref"]
+            donor_key = (message_ref["source_id"], message_ref["sha256"])
+            donor = source_owner.get(donor_key)
+            if donor is None:
+                external += 1
+            elif donor["session_id"] != session_id:
+                cross_session += 1
+            elif donor["task_group_id"] == owner["task_group_id"]:
+                fixed_points += 1
+            elif donor["task_family"] == owner["task_family"]:
+                same_family += 1
+            else:
+                donors.append(donor["task_group_id"])
+
+        unique = len(set(donors))
+        duplicates = len(donors) - unique
+        passed = (
+            len(owners) >= 2
+            and len(donors) == len(owners)
+            and unique == len(owners)
+            and set(donors) == task_ids
+            and not (fixed_points or same_family or external or cross_session or duplicates)
+        )
+        session_reports.append({
+            "task_group_count": len(owners),
+            "matched_donor_count": len(donors),
+            "unique_donor_count": unique,
+            "fixed_point_count": fixed_points,
+            "same_family_count": same_family,
+            "external_donor_count": external,
+            "cross_session_donor_count": cross_session,
+            "duplicate_donor_count": duplicates,
+            "pass": passed,
+        })
+        for key, value in (
+            ("matched_donor_count", len(donors)),
+            ("unique_donor_count", unique),
+            ("fixed_point_count", fixed_points),
+            ("same_family_count", same_family),
+            ("external_donor_count", external),
+            ("cross_session_donor_count", cross_session),
+            ("duplicate_donor_count", duplicates),
+        ):
+            totals[key] += value
+        all_pass &= passed
+
+    return {
+        "status": "PASS" if all_pass else "NOT_ESTABLISHED",
+        "session_count": len(by_session),
+        **totals,
+        "sessions": session_reports,
+        "source_identity": "SOURCE_ID_AND_SHA256",
+    }
 
 
 def _kv_snapshot_signature(snapshot):
@@ -136,6 +238,7 @@ def _validate_duplicate_kv_snapshots(group):
         "scope": snapshots["NO_MESSAGE"]["snapshot_scope"],
         "sampled_layer_id": snapshots["NO_MESSAGE"]["layer_id"],
         "attention_layer_count": snapshots["NO_MESSAGE"]["attention_layer_count"],
+        "_geometry": geometry,
         "distinct_from_no_message_by_condition": distinct,
         "candidate_differs_from_no_message": distinct["LATENT_CANDIDATE"],
         "candidate_differs_from_exact_message": (
@@ -313,7 +416,8 @@ def validate_native_receiver_kv_snapshot(value, *, expected_rows=None,
     return result
 
 
-def _native_score(value, receiver_sha, input_sha, target_sha, target_count, condition):
+def _native_score(value, receiver_sha, input_sha, target_sha, target_count, condition,
+                  context_sha, model_revision, tokenizer_revision):
     if not isinstance(value, Mapping) or value.get("schema") != NATIVE_SCHEMA:
         raise NativeReceiverUtilityError("native target-score schema mismatch")
     kind, env = value.get("execution_kind"), value.get("environment")
@@ -349,6 +453,24 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
             value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
         native_data["device_runtime_build_id"] = _id(
             value.get("device_runtime_build_id"), "native.device_runtime_build_id")
+    if "hybrid_state_roundtrip" in value:
+        if condition != "NO_MESSAGE":
+            raise NativeReceiverUtilityError("hybrid-state roundtrip is only allowed on NO_MESSAGE")
+        try:
+            native_data["hybrid_state_roundtrip"] = validate_native_hybrid_state_roundtrip(
+                value.get("hybrid_state_roundtrip"),
+                expected_model_sha256=model_sha,
+                expected_model_revision=model_revision,
+                expected_tokenizer_revision=tokenizer_revision,
+                expected_llama_cpp_revision=native_data["llama_cpp_revision"],
+                expected_binary_sha256=native_data["binary_sha256"],
+                expected_context_sha256=context_sha,
+                expected_input_sha256=input_hash,
+                expected_target_token_ids_sha256=target_hash,
+                expected_target_token_count=target_count,
+            )
+        except NativeHybridStateReceiptError as exc:
+            raise NativeReceiverUtilityError(str(exc)) from exc
     if "kv_snapshot" in value:
         native_data["kv_snapshot"] = validate_native_receiver_kv_snapshot(
             value.get("kv_snapshot"),
@@ -400,7 +522,11 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
         elif message_source != source:
             raise NativeReceiverUtilityError("in-distribution latent control source mismatch")
         _sha(adapter_sha256, "adapter_sha256")
-    native = _native_score(native_receipt, receiver_data["model_sha256"], input_hash, target_sha, target_token_count, condition)
+    native = _native_score(
+        native_receipt, receiver_data["model_sha256"], input_hash, target_sha,
+        target_token_count, condition, context_sha, receiver_data["model_revision"],
+        receiver_data["tokenizer_revision"],
+    )
     material = {
         "schema": TASK_SCHEMA, "status": "SCORED", "condition": condition,
         "task_group_id": task_id, "task_family": task_family, "session_id": session,
@@ -493,10 +619,21 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     deltas = {name: [] for name in CONDITIONS if name != "LATENT_CANDIDATE"}
     kv_snapshot_effects = []
     kv_snapshot_mode = None
+    kv_cohort_geometry = None
+    hybrid_state_roundtrips = []
+    hybrid_state_roundtrip_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
         first = group["NO_MESSAGE"]
+        roundtrip = first["native"].get("hybrid_state_roundtrip")
+        has_roundtrip = roundtrip is not None
+        if hybrid_state_roundtrip_mode is None:
+            hybrid_state_roundtrip_mode = has_roundtrip
+        elif hybrid_state_roundtrip_mode != has_roundtrip:
+            raise NativeReceiverUtilityError("hybrid-state roundtrip coverage changed across task cohort")
+        if has_roundtrip:
+            hybrid_state_roundtrips.append(roundtrip)
         common = (first["session_id"], first["task_family"], first["source_ref"],
             first["target_token_ids_sha256"], first["target_token_count"], first["context_sha256"], first["receiver"])
         source_hash = first["source_ref"]["sha256"]
@@ -535,6 +672,13 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         elif kv_snapshot_mode != has_kv_snapshot:
             raise NativeReceiverUtilityError("K/V snapshot coverage changed across task cohort")
         if kv_effect is not None:
+            current_geometry = kv_effect["_geometry"]
+            if kv_cohort_geometry is None:
+                kv_cohort_geometry = current_geometry
+            elif current_geometry != kv_cohort_geometry:
+                raise NativeReceiverUtilityError(
+                    "native K/V snapshot geometry changed across task cohort"
+                )
             kv_snapshot_effects.append(kv_effect)
         adapter_hashes = {group[name]["adapter_sha256"] for name in LATENT_CONDITIONS}
         if len(adapter_hashes) != 1:
@@ -571,6 +715,55 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         delta_report[control] = {"mean_delta_nats_per_token": mean,
             "median_delta_nats_per_token": statistics.median(values), "win_rate": win,
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
+    system_gain = delta_report["NO_MESSAGE"]
+    entity_specificity_gain = delta_report["ENTITY_SUBSTITUTION"]
+    unrelated_donor_gain = delta_report["OOD"]
+    donor_derangement = _audit_ood_donor_derangement(groups)
+    full_derangement_tested = donor_derangement["status"] == "PASS"
+    system_gain_pass = bool(enough and system_gain["pass"])
+    entity_specificity_pass = bool(enough and entity_specificity_gain["pass"])
+    unrelated_donor_gain_pass = bool(
+        enough and full_derangement_tested and unrelated_donor_gain["pass"]
+    )
+    if not enough:
+        information_use_status = "INSUFFICIENT_HOLDOUT"
+    elif system_gain_pass and entity_specificity_pass and unrelated_donor_gain_pass:
+        information_use_status = "CONTENT_SPECIFIC_SIGNAL"
+    elif system_gain_pass and entity_specificity_pass:
+        information_use_status = "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    elif system_gain_pass:
+        information_use_status = "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+    else:
+        information_use_status = "NO_SYSTEM_GAIN_ESTABLISHED"
+    information_use_audit = {
+        "schema": "v14.native-receiver-information-use-audit/1",
+        "status": information_use_status,
+        "system_gain_vs_no_message": dict(system_gain),
+        "entity_specificity_gain_vs_counterfactual": dict(entity_specificity_gain),
+        "unrelated_donor_gain_vs_deranged_control": dict(unrelated_donor_gain),
+        "unrelated_donor_derangement": donor_derangement,
+        "system_gain_pass": system_gain_pass,
+        "entity_specificity_pass": entity_specificity_pass,
+        "unrelated_donor_gain_pass": unrelated_donor_gain_pass,
+        "holdout_sufficient": bool(enough),
+        "counterfactual_kind": (
+            "SESSION_LOCAL_NO_FIXED_POINT_CROSS_FAMILY_DONOR_PERMUTATION"
+            if full_derangement_tested
+            else "ENTITY_ONLY_SOURCE_PAIR; OOD_DERANGEMENT_NOT_ESTABLISHED"
+        ),
+        "full_derangement_tested": full_derangement_tested,
+        "interpretation_limit": (
+            "Teacher-forced target-logprob proxy only; a complete matched-versus-"
+            "deranged donor effect is necessary but does not prove generated-answer "
+            "correctness or semantic use."
+        ),
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
     if kv_snapshot_effects:
         kv_snapshot_effect = {
             "status": "READ_ONLY_SAMPLE_ONLY",
@@ -614,6 +807,10 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "native_receiver_authority": 0,
             "persisted": False,
         }
+    try:
+        hybrid_state_roundtrip_effect = summarize_native_hybrid_state_roundtrips(hybrid_state_roundtrips)
+    except NativeHybridStateReceiptError as exc:
+        raise NativeReceiverUtilityError(str(exc)) from exc
     kind, env = native_binding[:2]
     if kind == "SYNTHETIC_FIXTURE": status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
     elif not enough: status, evidence = "INSUFFICIENT_HOLDOUT", env
@@ -640,6 +837,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "kv_snapshot_effect": kv_snapshot_effect,
+        "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
+        "information_use_audit": information_use_audit,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,
         "training_authority": 0, "native_receiver_authority": 0, "persisted": False}

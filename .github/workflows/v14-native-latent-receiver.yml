@@ -85,7 +85,7 @@ jobs:
           cmake -S v13/code/v13/native/latent_receiver -B build-native -DLLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp" -DV14_LLAMA_REVISION=b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF
           cmake --build build-native --target native_latent_receiver -j2
           build-native/bin/native_latent_receiver --selftest
-          build-native/bin/native_latent_receiver --version
+          build-native/bin/native_latent_receiver --version | python -c "import json,sys; v=json.load(sys.stdin); assert v.get(\"hybrid_state_roundtrip_supported\") is True and v.get(\"hybrid_state_roundtrip_schema\") == \"v14.native-hybrid-state-roundtrip/1\""
   android-arm64-cross-compile:
     runs-on: ubuntu-latest
     timeout-minutes: 25

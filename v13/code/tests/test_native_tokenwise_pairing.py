@@ -45,7 +45,10 @@ def fixture():
         "event_id": "event-1",
         "brain_generation_id": "generation-1",
         "source_ref": source_ref,
-        "tap_id": "b1.final-rmsnorm.v1",
+        "tap_id": "lfm2.result_norm.final.v1",
+        "activation_space": "FINAL_RMSNORM_PREFILL_F32",
+        "capture_method": "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY",
+        "runner_revision": "b10964",
         "model_revision": "sender-r1",
         "token_ids": sender_prefill_ids,
         "role_state": "INDEPENDENT_READ_ONLY_PREFILL",
@@ -56,8 +59,17 @@ def fixture():
         "feature_path": "data/blobs/tap-fixture.json",
         "feature_sha256": "f" * 64,
         "metrics": {
+            "operation": "PREFILL_TAP",
+            "normalization": "native_final_RMSNorm_only",
             "whole_sequence_prefill": True,
             "pooling": "none",
+            "CAN_LATENT_TAP": True,
+            "CAN_LATENT_INJECT": False,
+            "CAN_TRAIN_BODY": False,
+            "role": "B1_DETAIL",
+            "tap_id": "lfm2.result_norm.final.v1",
+            "runner_revision": "b10964",
+            "embedding_dim": 2,
             "prompt_tokens": 5,
         },
     }
@@ -102,7 +114,7 @@ def fixture():
         "brain_generation_id": "generation-1",
         "sender_role": "B1_DETAIL",
         "receiver_role": "C3_LANGUAGE",
-        "sender_tap_id": "b1.final-rmsnorm.v1",
+        "sender_tap_id": "lfm2.result_norm.final.v1",
         "receiver_tap_id": "c3.input-embedding.v1",
         "sender_model_revision": "sender-r1",
         "receiver_model_revision": "receiver-r1",
@@ -115,7 +127,7 @@ def fixture():
 
 def test_pairs_sender_final_rmsnorm_to_receiver_input_rows_across_tokenizers():
     record = build_native_tokenwise_pair_record(**fixture())
-    assert record["schema"] == "v14.native-tokenwise-pairing/1"
+    assert record["schema"] == "v14.native-tokenwise-pairing/2"
     assert record["status"] == "PAIRED_DIAGNOSTIC"
     assert record["pair_count"] == 4
     assert record["minimum_coverage"] == pytest.approx(1.0)
@@ -477,3 +489,22 @@ def test_anchor_preserving_native_receiver_input_bounds_residual_and_model_bindi
             wrong_fit["adapter"], records[8],
         )
 
+
+
+def test_rejects_static_input_embedding_rows_as_sender_context():
+    args = fixture()
+    args["sender_tap_packet"] = dict(
+        args["sender_tap_packet"], activation_space="INPUT_EMBEDDING_F32",
+    )
+    with pytest.raises(LatentAdapterError, match="final-RMSNorm prefill"):
+        build_native_tokenwise_pair_record(**args)
+
+
+def test_rejects_pooled_sender_tap_even_with_matching_dimensions():
+    args = fixture()
+    args["sender_tap_packet"] = dict(
+        args["sender_tap_packet"],
+        metrics=dict(args["sender_tap_packet"]["metrics"], pooling="mean"),
+    )
+    with pytest.raises(LatentAdapterError, match="final-RMSNorm prefill"):
+        build_native_tokenwise_pair_record(**args)

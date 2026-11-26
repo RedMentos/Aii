@@ -1574,3 +1574,149 @@ The previously pending staged/integrated run 45678205707 has now completed PASS:
 **Evidence/limits:** exact CI on `8f7c73065e8f92e5988fe12fa88038dc41ece530`: focused task-score/condition suite 26/26 PASS on Python 3.13 and 3.14; pinned llama.cpp Linux build/selftest PASS; Android arm64 cross-compile PASS (compile only); RuntimeDeploy offline Python 3.11/3.14 PASS; privacy scan CLEAN. Shared staged/integrated remains FAIL on the Core-owned source pin for `v13/native_latent_receiver.py`. LOCAL_LINUX scratch helper/aggregate reproduction 5/5 PASS; full Aii checkout/pytest NOT_RUN (no checkout mounted; GitHub DNS unavailable). No real GGUF cohort, answer correctness, trained latent coupling, gradients/retention, Android/Termux or Redmi proof. B3 OFF; REDMI_UNVERIFIED; NOT_RELEASED.
 
 **Sources:** https://arxiv.org/abs/2606.28958 ; https://arxiv.org/abs/2609.00891 ; https://github.com/WHU-XingyuQu/CacheBridge ; https://github.com/WHU-XingyuQu/CacheBridge/blob/main/LICENSE_STATUS.md
+
+## R-163 — Hybrid latent handoff must account for recurrent state, not only attention K/V (2026-11-26)
+
+**Primary paper reviewed:** Simon P. Villani, *LatentPort: Beyond KV Cache — Cross-Model Transfer of Recurrent Memory in Hybrid Language Models*, arXiv:2609.25053 (first submitted 2026-09-07; author-hosted arXiv preprint; no peer-reviewed venue or maintained public code/license was identified in the inspected record). Full-text review covered the method, experiments, limitations and runtime appendix. No code, weights or datasets were downloaded or reused.
+
+**Main result and exact scope:** one directed Qwen3.5-4B-Base → Qwen3.5-9B-Base pair with matched Gated DeltaNet (GDN) persistent-state geometry. The models have 24 GDN layers plus 8 full-attention layers; each GDN layer carries a recurrent matrix of shape 32×128×128 (FP32) and convolution history 8192×4 (BF16). The selected handoff translates attention K/V but directly reuses the recurrent and convolution package, including initialization semantics. On 64 PG19 documents with a 4K prefix and 64 teacher-forced continuation tokens, adding the GDN package to fixed translated K/V lowers NLL by 0.7473 nats/token (paired 95% document-bootstrap CI [0.6921, 0.8047]); all 64 documents improve. The direct recurrent/conv package outperforms the tested learned recurrent/conv maps in that pair.
+
+**Do not overstate it:** the paper's full-state correction reaches excess NLL 0.076, JS 0.022 and native-context-recovery 0.918 on a separate 64-document set, but misses its preregistered near-native gate. The 16K branch was not run; free-generation equivalence and downstream task success are unproven. The primary contrast does not isolate recurrent matrices from convolution history and initialization semantics. Only one direction and one geometry-matched Qwen sibling pair were tested. The 4K full tensor payload is 186,122,240 bytes; the E001 operator bundle is 322,222,408 bytes. Both experiments use BF16 Base models and an RTX 5090 with 32,607 MiB reported VRAM. These sizes are not LFM2 measurements, but they rule out assuming a similar full-state transfer is mobile-cheap.
+
+**Related primary result:** Yuzhe Liu, Haolin Tian & Tonghan Wang, *ACCT: Asymmetric Cross-LLM Context Transfer*, arXiv:2610.42116 (submitted 2026-10-30; preprint). Its same-family cross-scale method separates query-aware token selection (Cartographer), global per-layer/head cache budgeting (Allocator), and target-K/V construction (Compiler). It reports matching or exceeding target-native inference while reducing cache tokens by 75%, with 6.5–21.2× cache-conversion speed over target prefill at ~19K context. This is still a same-family cache-transfer result, not evidence for LFM2 or cross-family recurrent-state portability.
+
+**Concrete V14 consequence:** the current #2524 consumer validates only one attention-layer/one-sequence K/V snapshot and explicitly reports recurrent_state_included=false. That is an honest partial diagnostic, not a complete LFM2 hybrid latent. Before any cross-organ activation claim, Core must inventory the exact pinned LFM2/LFM2MOE memory components and metadata separately: attention K/V, recurrent state, convolution/history buffers, initialization/previous-state flags, positions and stream/sequence mapping. First prove same-model capture/restore fidelity and no-mutation on the exact llama.cpp pin; then compare K/V-only against complete hybrid-state transfer under wrong-donor, zero, shuffle and empty-state controls. Direct recurrent-state reuse is only a hypothesis if exact functional geometry and update semantics match; otherwise each component needs its own learned adapter and held-out behavioral validation. Do not copy Qwen GDN tensors or assume a common state ABI.
+
+**Mobile/licensing boundary:** the paper's tested Qwen Base checkpoints, BF16 state payload and RTX 5090 environment do not establish Redmi/ARM feasibility. No public implementation or code license was found; no code/weights are eligible for reuse. The separate ACCT preprint also supplies no LFM2 proof or mobile artifact. No model download, weight update, production swap, cache write or B3 enablement is authorized.
+
+**Status:** RESEARCHED_FROM_FULLTEXT / HYBRID_STATE_GAP_IDENTIFIED / LFM2_STATE_CAPTURE_NOT_IMPLEMENTED / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF.
+
+**Sources:** https://arxiv.org/abs/2609.25053 ; https://arxiv.org/abs/2610.42116
+
+## R-164 — Exact LFM2 hybrid-state path in pinned llama.cpp (2026-11-26)
+
+**Primary implementation inspected:** ggml-org/llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 (repository LICENSE is MIT). This is source inspection at the exact receiver pin, not a native model execution.
+
+- src/models/lfm2.cpp (blob 07b71ccd3a60f87a74f543d5bf637c8a67d9fa9f) sets each layer recurrent when n_head_kv(il)==0. Recurrent LFM2 layers instantiate shortconv weights. build_shortconv_block reads the layer history through llama_memory_recurrent_context::get_r_l(il), concatenates it to the current convolution input, then writes the final/rollback history back to that recurrent cache.
+- src/llama-model.cpp (blob 3b2536283c5712de811f82cdef6390f7499b95d4) constructs llama_memory_hybrid for hybrid architectures. src/llama-memory-hybrid.cpp (blob 42c7381a9e6fa507c925ba66a35a7e433c4447b8) owns both mem_attn (llama_kv_cache) and mem_recr (llama_memory_recurrent); state_write/state_read serialize both components unless the caller explicitly requests PARTIAL_ONLY. Therefore LFM2's non-attention shortconv history is part of sequence state, not an optional metadata detail.
+- include/llama.h (blob 3ab935939c6d183e5862aba93f346691e658403b) exposes llama_state_seq_get_size/get_data/set_data. src/llama-context.cpp (blob 6334f3ccab304749bbf7b51362dee7c9348771d7) synchronizes before sequence get_data and delegates sequence read/write to the memory module; for llama_memory_hybrid this includes both attention K/V and recurrent shortconv state. This is a plausible exact-pinned same-model roundtrip API. It is not a cross-model compatibility guarantee or a learned latent interface.
+
+**Target model architecture check:** the official LiquidAI LFM2.5-1.2B-Base config at commit 8bc7cff62e8ee875578cf2af58781ad074d4e145 reports 16 layers, 10 conv layers, 6 full-attention layers, hidden_size 2048, num_key_value_heads 8 and conv_L_cache 3. The Instruct GGUF model card identifies QAD Q4_0 as a distinct 696 MB artifact. With 10 shortconv layers and a 2- or 3-step FP32 history, a simple tensor-only estimate is roughly 160–240 KiB per sequence before alignment, sequence metadata and rollback slots. This is [gerechnet], not measured; the exact serialized byte count must come from llama_state_seq_get_size on the actual GGUF and runtime settings.
+
+**License/model provenance:** the QAD GGUF repository labels the model LFM1.0 and includes the LFM Open License v1.0. Its text conditions commercial use on the relevant legal entity remaining below USD 10 million annual revenue; this is not an unrestricted MIT/Apache-style model license. The QAD README says the FP32 source checkpoint is for fine-tuning/experimentation and that published QAD results apply to Q4_0, not direct FP32/BF16 inference. No model was downloaded, changed or swapped.
+
+**Concrete V14 implementation consequence:** replace the assumption that a one-layer K/V receipt approximates all LFM2 state with two separate gates: (1) the current K/V diagnostic remains explicitly partial; (2) Core builds a native same-model sequence-state roundtrip using llama_state_seq_get_size/get_data/set_data on one exact pinned LFM2.5-1.2B QAD GGUF. Prefill a fixed prompt in context A, capture sequence 0, restore into fresh context B with identical model SHA/revision/context parameters, then compare continuation token logprobs or logits for fixed next tokens. Add truncated/corrupted state, wrong model hash, wrong llama.cpp revision, wrong sequence, and mismatched context-parameter negatives. Record serialized bytes, capture/restore latency and RSS. Do not persist raw state or write into the installed runtime. Only after same-model fidelity passes should B1/B2 same-architecture but different-weight transfer be evaluated against zero, shuffled, wrong-donor and no-message controls.
+
+**Status:** EXACT_LFM2_SHORTCONV_STATE_PATH_IDENTIFIED / PUBLIC_SEQUENCE_STATE_API_FOUND / SAME_MODEL_ROUNDTRIP_NOT_IMPLEMENTED / REAL_GGUF_NOT_RUN / REDMI_UNVERIFIED / B3_OFF.
+
+**Sources:** https://github.com/ggml-org/llama.cpp/tree/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Base/blob/8bc7cff62e8ee875578cf2af58781ad074d4e145/config.json ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/qad/README.md ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE
+
+
+## R-165 — 2026-11-26 — LFM2 full-hybrid sequence-state roundtrip implementation
+
+**Question:** Can the pinned llama.cpp sequence-state API restore the complete LFM2 receiver memory, including recurrent short-convolution history, into a fresh context of the same model, and can that be checked without exporting or persisting raw state?
+
+**Primary OSS source audit (exact pin b29c606e28a01b1bc8c1351026a0fa6e616bf6c4):**
+- include/llama.h declares llama_state_seq_get_size, llama_state_seq_get_data and llama_state_seq_set_data.
+- src/llama-context.cpp delegates sequence state serialization to the memory implementation and returns the consumed byte count. Truncated input is rejected by the read path.
+- src/llama-memory-hybrid.cpp serializes both mem_attn (attention/KV) and mem_recr (recurrent state), except when a caller explicitly requests partial-only state.
+- src/models/lfm2.cpp contains the LFM2 recurrent short-convolution state path. This is why a K/V-only snapshot cannot represent the complete LFM2 sequence state.
+- The pinned LICENSE is MIT. No upstream source was copied wholesale; the receiver uses the public API.
+- This is an implementation-source audit, not a new paper review. No paper is claimed as newly read in this run.
+
+**Code added on Perception PR #2524, exact branch head 076a973eaad808b537c7f74337464d02cf41d633:**
+- Native C++ matrix runner now has an explicit, opt-in --hybrid-state-roundtrip path, restricted to general.architecture values beginning with lfm2; default behavior remains unchanged.
+- The probe creates two fresh, identically configured small contexts (one sequence, one-token batches, context bounded by the fixed continuation length), prefills BOS, captures sequence 0, attempts a truncated restore as a negative control, clears the destination, performs a full restore, then teacher-forces the same continuation into both contexts and compares the full next-token logits after each continuation token.
+- The comparison is same-model/same-weight state restoration only. It does not transfer a sender model's hidden state or prove cross-model latent compatibility.
+- State buffer is capped at 16 MiB, hashed in memory and zeroized. Raw state bytes are not returned or persisted. The probe reports only byte counts, durations, hashes and fidelity metrics; it does not touch the installed runtime, edit weights, train, or enable production routing.
+- Python binds the receipt to receiver model SHA/revision, receiver tokenizer revision, pinned llama.cpp revision, native binary SHA, task context SHA, NO_MESSAGE input SHA and target-token-ID SHA. The receipt is attached to the NO_MESSAGE condition and passed through native_receiver_task_matrix_bridge; the opt-in is false by default.
+- The hybrid-state validator now requires a successful truncated-state rejection negative control and enforces the 16 MiB bound.
+
+**Exact-head CI 45813438280 (head 076a973...):**
+- Python 3.13 focused tests: PASS; staged receiver/deploy-chain compile: PASS; public-diff privacy scan: CLEAN.
+- Python 3.14 focused tests: PASS; staged receiver/deploy-chain compile: PASS; public-diff privacy scan: CLEAN.
+- Android arm64-v8a cross-compile step: PASS (review-only artifact upload was still running at last poll; this is not a device test).
+- Linux pinned llama.cpp build: IN_PROGRESS at last poll.
+- Shared source-tap gate: FAIL/BLOCKED because this Perception branch does not contain the Core-owned native_receiver_matrix_runtime.py producer hook. The error is the expected cross-lane integration gap, not a focused Python test failure. Core PR #2525 must rebase and expose the opt-in flag.
+- LOCAL_LINUX full checkout/pytest: BLOCKED; no Aii checkout is mounted in the local runtime and GitHub DNS is unavailable. CI is not reported as a local test.
+
+**Acceptance limits:** no real GGUF execution yet; no measured RSS/TTFT or native logits on a model; no Redmi/Termux receipt; no release/deployment. REDMI_UNVERIFIED, NOT_RELEASED, B3_OFF. The result is a native implementation candidate plus CI compile/test evidence, not a verified model run, not trained latent coupling and not a Canon completion claim.
+
+**Next executable step:** Core rebases #2525 onto the latest #2524 head and exposes the diagnostic behind a separate explicit local-lab flag (default OFF). Then run it on an already-present, explicitly approved LFM2 GGUF with a fixed 32–64-token continuation; record exact model/binary/context hashes, state bytes, capture/restore time, peak RSS, top-1 agreement, max/RMS logit difference and truncated-restore rejection. Only after that same-model gate passes should the roundtrip be extended from BOS to a real LATENT_CANDIDATE prefill and then to different-weight sender/receiver experiments.
+
+
+## R-166 — Draft-KV: content-dependent latent communication and the information-use gap (2026-11-26)
+
+**Primary paper:** Wu et al., *Draft-KV: Learning Useful Latent Communication Between Language Models*, arXiv:2609.34754v1, first submitted 2026-09-28. Full arXiv HTML and the official project repository were inspected. This is an arXiv preprint; no peer-reviewed venue was identified.
+
+**Finding:** higher receiver accuracy does not establish that a receiver used the sharer's message. The paper reports that in five audited method–dataset pairs, replacing each message with one from an unrelated question changes accuracy by at most 0.60 percentage points even though communication adds up to 15.44 points over receiver-only. Draft-KV separates system gain G = A_M - A_R from pairing gain P = A_M - A_D. Its method passes only the KV states produced while a frozen sharer drafts an answer, maps them through a 1.05M-parameter gated bridge at four communication layers, and reads them as separate side memory. The receiver and sharer backbones stay frozen. Training progresses through reconstruction (16k updates), answer alignment (4k) and task alignment (5k), with reconstruction replay and a one-sided guard against harm from a deranged message.
+
+**Reported evidence / boundaries:** Qwen3-8B → Qwen2.5-0.5B-Instruct on MMLU-Redux: 78.04% Matched, 36.40% Deranged, 37.45% receiver-only. The repository reports content-dependent gains in all 35 Public settings and 14/14 Private settings. These are the authors' reported experiments, not independent replication. The paper's compute setup is one 96-GB GPU, BF16, PyTorch 2.6.0, CUDA 12.4 and Transformers 4.52.4; model weights dominate memory. This is not a Redmi/Termux recipe.
+
+**OSS / licence / reuse audit:** official repository https://github.com/Svardfox/Draft-KV, inspected at main commit e369f1b2629875642fe5a87feb4d432c6f4971b8. Code licence: Apache-2.0 (LICENSE blob 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64). README blob b1c5794642818d232d2029c95e44d11dabc814f6; pinned environment blob 7206060b1c0fb655d789c262c8fb153c59fa878f; method doc blob 07a93ff6bf5ef57e605334ea7b8674ef8d7144ee; Stage-3 doc blob 77b0090e2ddc7451b0fbb2c79df46bcfd4dd901c. The repository README says trained bridge checkpoints are still “coming soon”; model and dataset licences remain separate from the code licence. No code, weights or dependency were copied into Aii.
+
+**V14 adaptation implemented on Perception PR #2524:** the existing eight-condition task-utility consumer now emits information_use_audit, explicitly separating candidate system gain versus NO_MESSAGE from source-specificity gain versus the existing ENTITY_SUBSTITUTION counterfactual. Both gates require the complete held-out cohort. If system gain passes but the counterfactual gain does not, the result is SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL; one positive overall score can no longer be described as evidence that the message content mattered. Three synthetic regressions cover that gap, positive specificity and insufficient holdout. This is deliberately not the paper's unrelated-question no-fixed-point derangement protocol: full_derangement_tested=false, semantic_use_proven=false, production_route=false, and both authorities remain zero. A full donor-permutation condition remains OPEN.
+
+**Status:** FULL_TEXT_READ / OSS_APACHE_2_VERIFIED / MOBILE_TRAINING_NOT_APPLICABLE / INFORMATION_USE_AUDIT_CODE_PRESENT / SYNTHETIC_REGRESSION_PENDING_EXACT_CI / FULL_DERANGEMENT_OPEN / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF.
+
+**Sources:** https://arxiv.org/abs/2609.34754 ; https://github.com/Svardfox/Draft-KV ; https://github.com/Svardfox/Draft-KV/blob/main/LICENSE ; https://github.com/Svardfox/Draft-KV/blob/main/docs/METHOD.md ; https://github.com/Svardfox/Draft-KV/blob/main/docs/STAGE3.md
+
+
+## R-167 — Hybrid State Transfer: full-state mapping needs continuation compatibility (2026-11-26)
+
+**Primary paper:** Cai et al., *Beyond K/V Caches: Cross-Model State Handoff in Hybrid Linear-Attention LLMs*, arXiv:2611.08133, submitted 2026-11-05. Full arXiv HTML reviewed. This is a preprint; no peer-reviewed venue or official maintained implementation/licence was identified in the primary source or the accompanying search.
+
+**Method:** within Qwen3.5 hybrid models, transfer all three state families at one aligned prefix boundary: full-attention K/V caches, recurrent Gated DeltaNet matrices (REC), and ordered convolution histories (Conv). Pair-specific structural maps are then functionally calibrated through the frozen target's continuation. The paper shows that Conv perturbations can alter later REC updates even after convolution slots are overwritten; lower local REC reconstruction error can still produce worse continuation KL. That is a direct warning against accepting latent adapters on reconstruction or shape parity alone.
+
+**Reported evidence / limits:** Qwen3.5 4B→27B and 9B→27B achieve 89.88% and 94.11% mean task retention over five benchmarks. The reported 21.66×/21.91× speedups are handoff-body timings on synthetic 16K inputs with source caches already available; they exclude source prefill, vocabulary projection and answer generation. Evaluation used two 80-GB A800 GPUs, batch 1, BF16 weights/KV and FP32 recurrent state. The authors explicitly limit evidence to Qwen3.5 with Gated DeltaNet; other linear-attention families, MoE and broad long-context use remain untested.
+
+**V14 consequence:** the current LFM2 llama_state_seq_get_size/get_data/set_data same-model roundtrip is only a state-serialization/fidelity prerequisite. It is not a cross-model mapping. Any future LFM2/B1/B2 transfer needs architecture-specific K/V + recurrent/shortconv correspondence, identical prefix boundaries/position metadata, and continuation-level output/task tests with wrong-donor, zero and native-target controls. Do not accept a low state-reconstruction error as utility.
+
+**Status:** FULL_TEXT_READ / PREPRINT / NO_OFFICIAL_OSS_REUSE_FOUND / QWEN3_5_ONLY / LFM2_TRANSFER_UNVERIFIED / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF.
+
+**Sources:** https://arxiv.org/abs/2611.08133
+
+
+
+## Run 47 exact-CI closeout — 2026-11-26
+
+The exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91 completed CI with the following results:
+
+- V14 native latent receiver workflow 45856881120: FAIL at the shared staged Runtime source-tap identity test. Python 3.13 and 3.14 each reported 83 passed / 1 failed in the focused receiver suite. The three new information-use audit regressions passed; the single failure is the stage-composition test failing on the Core-owned observer fairness pin for v13/cognition.py.
+- V13 staged context and integrated regression workflow 45856880943: FAIL, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. The failures converge on the same Core-owned ValueError: observer fairness source changed: v13/cognition.py. Two migration assertions also remain PARTIAL rather than UPDATED.
+- Native build evidence in 45856881120: pinned Linux API build PASS; Android arm64 cross-compile PASS (compile only, not device proof).
+- V13 RuntimeDeploy offline integrity 45856880964: PASS. This does not install or update a phone.
+- Public repository privacy scan in the failing workflow: CLEAN.
+
+This is an integration failure outside the two files changed by Run 47. Do not weaken or bypass the source pin. Core must refresh its recovery/observer source pin chain and rebase #2525 onto the current Perception branch. The information-use code/test slice itself passed in both Python versions.
+
+
+## R-168 — Latent-in-the-Middle: cross-model handoffs change safety, privacy and capability (2026-11-26)
+
+**Primary source:** Baser, Jain, Yeo Hui Min, Yang, Muthu Selva Annamalai & Divakaran, *Latent-in-the-Middle: On the Security of Cross-Model Latent Communication in Multi-Agent Systems*, arXiv:2611.34278v1, submitted 2026-11-25. Full arXiv HTML reviewed: Sections 1–10 and Appendices A–D. This is a preprint, not a peer-reviewed result as of 2026-11-26. No official public Chasm/HandoffGuard implementation repository or code/weight licence was identified in the primary paper or search; do not reuse an unlicensed implementation.
+
+**Experimental scope:** Qwen3, Llama 3 and Ministral 3 model families; 3B–32B; four mapper types (ridge, MLP, CacheBridge, SwaT), two calibration corpora and 24 within-family settings plus cross-family SwaT pairs. Experiments used BF16, PyTorch/Transformers and NVIDIA H200 GPUs. The prompt-injection study used Meta-SecAlign-8B and Llama-3.2-3B. This is not evidence for LFM2, GGUF, 6-GB Android, or V14 hardware.
+
+**Main results:** A target with 0.4% native AlpacaFarm injection success reached up to 44.2% through SwaT (Chat); other default mappers reached 26.2–29.7%. A de-aligned source increased HarmBench ASR by 16.3–45.4 percentage points across all 24 settings. Template attacks gained up to 69.2 pp; mapper-aware GCG reached 92.5% on Llama versus 37.5% for ordinary target-only GCG. Repeated cache remapping without intervening generation raised ASR in 16/24 settings; after six hops GSM8K fell 28.0–92.4 points, with 16/24 chains solving at most 10%. The no-generation switching protocol is a limitation, not a realistic multi-turn estimate.
+
+**Defence and privacy limits:** HandoffGuard p1 brought the tested de-aligned-source HarmBench ASR to within 4.5 points of native on all three pairs, but a guard-aware source LoRA still reached 73.3–87.5% ASR. p2 over-refused (including 87.4% of benign Llama role-play in one setting); its injection reduction was partly fail-closed refusal rather than restoration of the input-role defence. The Ministral-14B guard had about 10M parameters and was trained for 1,000 steps on H200; this is not an Android-ready drop-in. Mapped-cache inversion recovered 94.6% of tokens and all ten synthetic record fields in 500 Qwen records at layer 0. Poisoned mapper calibration could create trigger backdoors while ordinary fit/utility checks remained deceptively acceptable.
+
+**V14 consequence:** A foreign latent/cache handoff is untrusted input even when the target model and mapper shapes match. A SHA-bound receipt provides integrity of recorded bytes, not cryptographic producer authentication (the current native receiver receipt builder states this explicitly). Future B3 acceptance must separately cover source/model/mapper provenance and authenticity, transport integrity, trust/consent labels, target-side treatment of untrusted segments, prompt-injection and jailbreak red-teaming, cache privacy/inversion, poisoned calibration/backdoors, repeated-hop capability retention, and benign utility/over-refusal. A target-side guard is a research direction, not a proven solution; do not port the 10M-parameter H200 result to Android without a measured smaller alternative and adaptive-attacker tests. Keep B3 OFF.
+
+**Run 48 implementation link:** PR #2524 extends the existing native receiver information-use audit so CONTENT_SPECIFIC_SIGNAL requires a complete session-local, cross-family, no-fixed-point OOD donor permutation plus a positive matched-versus-deranged teacher-forced target-logprob delta. Invalid/external/duplicate/cross-session/same-family donors remain diagnostic failures. This is source-pairing evidence only; it does not authenticate a source, prove semantic use or answer correctness, add a safety guard, enable production routing, or grant learning authority. Exact exact-head CI 45861303391 completed: the focused Perception matrix/task-score tests were 49/49 PASS on both Python 3.13 and 3.14; the only additional failure in each job is the Core-owned stage-composition test rejecting the stale observer fairness pin for v13/cognition.py. Linux pinned API build PASS; Android arm64 cross-compile PASS (compile only); privacy scan CLEAN. Shared staged/integrated run 45861303423 remains blocked by the same Core source pin (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; two migration assertions report PARTIAL). RuntimeDeploy offline integrity 45861303433 PASS on Python 3.11 and 3.14. LOCAL_LINUX isolated helper tests 6/6 PASS and py_compile 2/2 PASS; full local repository suite NOT_RUN because no checkout is mounted and GitHub DNS is unavailable. Redmi and real GGUF remain unverified.
+
+**Status:** FULL_TEXT_READ / PREPRINT / NO_OFFICIAL_OSS_REUSE_FOUND / H200_ONLY_SECURITY_EVIDENCE / NO_LFM2_OR_ANDROID_GENERALIZATION / SOURCE_AUTHENTICATION_OPEN / REDMI_UNVERIFIED / B3_OFF.
+
+**Source:** https://arxiv.org/abs/2611.34278
+
+
+## Run 48 exact-CI closeout — 2026-11-26
+
+Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility blob: `7d90a187f537a62d08ae3d0b0eefa23e3536b81c`; test blob: `fb559b3214df987695d1b5a48e3174681fe16302`.
+
+- The exact Perception task-score + condition-matrix suite passed 49/49 on Python 3.13 and 3.14. The additional native workflow stage-composition test failed because the Core-owned `integrated_observer_fair_budget_candidate_20261116.py` rejects the current `v13/cognition.py` bytes against its stale source pin. This is outside the two changed Perception files; do not weaken the pin.
+- Shared staged/integrated workflow 45861303423: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Failures converge on the same Core-owned observer fairness pin; two migration assertions report PARTIAL rather than UPDATED.
+- Pinned Linux native API build PASS; Android arm64 cross-compile PASS (compile only); public privacy scan CLEAN.
+- RuntimeDeploy offline integrity 45861303433 PASS on Python 3.11 and 3.14. It is not a phone deployment.
+- LOCAL_LINUX CPython 3.13.5 isolated donor-permutation reproduction 6/6 PASS; `py_compile` 2/2 PASS. Full local Aii checkout/pytest NOT_RUN: no mounted checkout and GitHub DNS resolution unavailable.
+- B3 remains OFF. No GGUF execution, native Android/Termux/Redmi proof, release or deployment. Last device observation is historical; read-only owner relay #978/#979 had NO_LIVE_RECEIPT at last poll.

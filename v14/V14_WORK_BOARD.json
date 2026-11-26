@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T05:25:03+01:00",
+  "updated_at": "2026-11-26T16:50:03Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -234,9 +234,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Continue RAW EAR/A0-A5 as a separate open workstream; do not treat this B3 diagnostic as audio completion. Perception #2524 now carries the read-only K/V snapshot through the task-utility consumer and checks same-input consistency/geometry. Core must stack #2523 onto #2524 and repair its integrated source pins. After exact integration is green, run the held-out real-GGUF cohort and resource/retention checks. Keep B3 OFF; no microphone or Android permission without explicit consent.",
+      "next_step": "Core refreshes its observer fairness/recovery source pin chain and rebases #2525 onto the latest #2524 branch HEAD (code/test head 7bd80e419c851471d95b44cc032efe205a23ab91; docs/handoff head 315eed441ad422869e2e856cade65059f67161ac at last readback). Perception then reruns exact focused/staged CI. Once integrated CI is green, run the diagnostic only on an already-present GGUF after separate explicit local approval; inspect system gain vs entity-counterfactual gain, then implement a true no-fixed-point unrelated-question donor permutation. Continue RAW EAR/A0-A5 separately; microphone provider and Redmi capture remain unverified.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26",
+      "last_checkpoint": "2026-11-26T16:24:43Z",
       "latest_candidate_pr": {
         "pr": 2487,
         "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
@@ -245,7 +245,7 @@
         "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
         "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n"
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n\nRun 47: Perception #2524 head 7bd80e419c851471d95b44cc032efe205a23ab91 adds a holdout-gated information_use_audit separating candidate-vs-NO_MESSAGE system gain from candidate-vs-ENTITY_SUBSTITUTION source-specificity gain. Three synthetic regressions cover system-only gain, content-specific signal, and insufficient holdout. LOCAL_LINUX CPython 3.13.5 isolated logic 3/3 PASS; full local Aii suite NOT_RUN; exact native/staged CI 45856881120/45856880943 IN_PROGRESS at checkpoint; RuntimeDeploy 45856880964 PASS. R-166 Draft-KV full-text/Apache-2.0 OSS review and R-167 HST full-text review recorded. Full unrelated-question derangement, real GGUF, generated-answer correctness and Redmi remain OPEN.\nRun 47 exact CI closeout: code/test head 7bd80e419c851471d95b44cc032efe205a23ab91. Native receiver workflow 45856881120: Python 3.13/3.14 each 83 passed / 1 failed; all three new information-use audit tests passed; sole failure is the Core-owned observer fairness source pin for v13/cognition.py. Staged/integrated 45856880943: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, same pin mismatch plus two migration PARTIAL assertions. Pinned Linux API build PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline integrity 45856880964 PASS; privacy scan CLEAN. Full local Aii suite NOT_RUN; local isolated gate 3/3 PASS. No GGUF or Redmi proof.\nPrivate device boundary: last authenticated V13OBS #115 is historical (2026-11-24 09:28:11Z): auto-update/dashboard/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER/model process STOPPED; last turn C3 7 tokens (~6.30s, TTFT ~2.05s), B1/B2 TIME_BUDGET and zero valid offers, native probe SMOKE_PARTIAL. Fresh read-only relay issues #978 HEALTH and #979 PIPELINE_STATUS had NO_LIVE_RECEIPT at 16:23:13Z. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart or device action. Current updater state UNVERIFIED."
     },
     {
       "id": "V14-007",
@@ -1439,74 +1439,161 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
-    "timestamp": "2026-11-26T05:25:03+01:00",
+    "timestamp": "2026-11-26T16:46:45Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
     "pr": 2524,
     "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
     "base_pr": 2519,
     "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
-    "code_test_sha": "8f7c73065e8f92e5988fe12fa88038dc41ece530",
-    "implementation_commit": "68d90606a312bdda739253664d7a51632715c87c",
-    "test_correction_commits": [
-      "d353faf846a62329f5bac502ecd53ce6662648b6",
-      "8f7c73065e8f92e5988fe12fa88038dc41ece530"
+    "code_test_sha": "91cae713b409e1b5e95bc06c446a5152e726cbd9",
+    "implementation_commits": [
+      "61e0045443fbecfdc9a229c202322f943eddaf8e",
+      "3efb9e1e530b0304e485a85d7c6b882a85a69bb5",
+      "743a74234c43a4ce08f6c3f0fac09496212939c2",
+      "91cae713b409e1b5e95bc06c446a5152e726cbd9"
     ],
-    "status": "DRAFT_FOCUSED_TESTS_GREEN_SHARED_STAGE_BLOCKED_CORE_PIN",
+    "head_sha": "e1ba8f22aec81d913f983393be52738a4ca9d678",
+    "docs_only_commits_after_code_head": [
+      "1a180690b77fbd9054937ab882a2133de346c7a8",
+      "d801cd924a6fba28a763dfcbb6d8e1d9ba3c694b",
+      "aed3a6a06e61db3cd7a236328eb442be5dd83715",
+      "fd62994e9e44a5e33a0ac02ca53f1eb271cb6771",
+      "e51901ee120e49edbc6e6b9b1b34fa2b32c0dc73",
+      "1927c8513d286073c02f9d165ec5b3d9363f47fe",
+      "842d4852085f810552d550ceab5467a61e509850",
+      "e1ba8f22aec81d913f983393be52738a4ca9d678"
+    ],
+    "status": "DRAFT_FOCUSED_49_PASS_STAGE_BLOCKED_CORE_OBSERVER_PIN_NATIVE_BUILD_ARM64_COMPILE_PASS_RUNTIMEDEPLOY_OFFLINE_PASS_P0_1904_OPEN",
+    "workflow_runs": {
+      "native_receiver": 45861303391,
+      "staged_integrated": 45861303423,
+      "runtime_deploy_offline": 45861303433
+    },
     "tests": {
-      "focused_python_313": "26/26 PASS",
-      "focused_python_314": "26/26 PASS",
-      "native_linux_pinned_build_selftest": "PASS",
-      "android_arm64_cross_compile": "PASS_COMPILE_ONLY",
-      "runtime_deploy_offline_311_314": "PASS",
-      "privacy_scan": "CLEAN",
-      "shared_staged_runtime": "FAIL: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; Core integrated candidate source pin mismatch for v13/native_latent_receiver.py",
-      "integrated_regression": "FAIL: 1 failed; same Core source pin",
-      "local_linux_scratch": "5/5 PASS; CPython 3.13.5",
-      "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable"
+      "local_linux_isolated_derangement": "6/6 PASS; CPython 3.13.5",
+      "local_linux_py_compile": "2/2 PASS; isolated scratch files",
+      "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable",
+      "focused_python_313": "49/49 Perception matrix/task-score tests PASS; separate stage-composition test FAIL on Core-owned v13/cognition.py observer fairness pin",
+      "focused_python_314": "49/49 Perception matrix/task-score tests PASS; separate stage-composition test FAIL on Core-owned v13/cognition.py observer fairness pin",
+      "linux_pinned_api_build": "PASS",
+      "android_arm64_cross_compile": "PASS_COMPILE_ONLY; no device execution",
+      "shared_staged_integrated": "FAIL; 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; same Core pin plus two migration PARTIAL assertions",
+      "runtime_deploy_offline": "PASS on Python 3.11 and 3.14; no deployment",
+      "public_privacy_scan": "CLEAN",
+      "redmi_native": "REDMI_UNVERIFIED"
     },
-    "consumer": "native_receiver_utility.evaluate_native_receiver_task_utility now consumes read-only K/V snapshot metadata, checks identical-input consistency and geometry, rejects partial coverage, and emits aggregate sampled-state differences; no raw K/V persistence and no change to likelihood utility gate. Core #2523 provides a manual local-TTY one-shot diagnostic producer/consumer, not a normal-turn hook; normal user chat remains unconnected.",
+    "consumer": "native_receiver_utility -> task-score cohort result -> native_receiver_task_matrix_bridge. CONTENT_SPECIFIC_SIGNAL now requires system gain, entity-specific gain and a positive OOD delta under a session-local cross-family no-fixed-point donor permutation. Aggregate counts only; semantic_use_proven=false; generated_answer_correctness_proven=false; production_route=false; training_authority=0; native_receiver_authority=0; persisted=false. Core Runtime consumer was previously observed to return the result unchanged, but #2525 is stale-base and this remains opt-in diagnostic, not normal-turn chat.",
     "cross_lane_core_pr": {
-      "number": 2523,
-      "head_sha": "241743cfe7728586c3d4e07c88bfc3da1387e04f",
-      "ci": "7/7 workflows SUCCESS",
-      "base_pr": 2519,
-      "status": "MANUAL_DIAGNOSTIC_CI_GREEN_NOT_NORMAL_TURN_NOT_STACKED_ON_2524",
-      "mode": "MANUAL_LOCAL_TTY_DIAGNOSTIC_NOT_NORMAL_TURN"
+      "number": 2525,
+      "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
+      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "last_observed_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+      "status": "DRAFT_STALE_BASE_REBASE_REQUIRED_MERGEABLE_FALSE",
+      "normal_turn": "NOT_CONNECTED",
+      "next_action": "Core rebase #2525 onto current #2524 and refresh exact observer/recovery/source pins; rerun staged/integrated CI without weakening pin checks."
     },
-    "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; last available private snapshot is historical 2026-11-24; no device action.",
-    "release": "NOT_RELEASED",
-    "research": "R-162 full-text review: When Latent Agents Lie HMAC transport integrity boundary; CacheBridge same-family dense-GQA/GPU limits and project license pending. No code/weights reused.",
-    "next_action": "Core stacks #2523 onto #2524, refresh Core-owned integrated source pins and reruns staged/integrated CI; then separately authorize a >=20-group real-GGUF held-out cohort. B3 remains OFF."
+    "device": "REDMI_UNVERIFIED; V13OBS #115 is historical 2026-11-24: auto-update enabled/runtime UP_TO_DATE at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; owner-read #978/#979 had NO_LIVE_RECEIPT at last poll; no UPDATE_REQUEST or deployment.",
+    "release": "NOT_RELEASED; no deployment",
+    "research": "R-168 full-text arXiv:2611.34278v1 preprint (2026-11-25): cross-model KV handoffs can undermine safety and prompt-injection defence, leak cache content and degrade capability after repeated remapping. H200 / 3B-32B only; no official code/licence found; no LFM2 or Android generalization. Source hashes are integrity, not producer authentication. Future B3 gates need provenance/authenticity, transport integrity, trust/consent, injection/backdoor/privacy and multi-hop retention tests.",
+    "next_action": "Core refreshes #2525 onto latest #2524 and reruns exact staged/integrated gates. P0 #1904 remains OPEN. After integration is green, use only an already-present GGUF with separate explicit local approval for a native diagnostic. Before B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention gates. No user action needed now; B3 OFF.",
+    "parallel_perception_prs": {
+      "2527_raw_ear_temporal_chronology": {
+        "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
+        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "ahead_by": 74,
+        "behind_by": 9,
+        "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
+        "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
+      },
+      "2498_raw_ear_next_delta": {
+        "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+        "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+        "base_branch": "research-perception/latent-event-scope-20261125-run12",
+        "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+        "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+        "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+      }
+    },
+    "p0_issue_1904": {
+      "status": "OPEN",
+      "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; Run 48 is diagnostic-only and does not close this gate.",
+      "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
+      "release_or_redmi_proof": false
+    }
   },
   "previous_perception_checkpoint": {
-    "timestamp": "2026-11-26T01:57:48Z",
+    "timestamp": "2026-11-26T12:29:47+01:00",
     "owner": "Research & Perception",
-    "branch": "research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34",
-    "pr": 2519,
-    "pr_url": "https://github.com/RedMentos/Aii/pull/2519",
-    "base_pr": 2520,
-    "base_branch": "core/v14-native-target-score-repair-20261126-run1",
-    "base_sha": "2032888020a2f409ee976abe222cc99e0818159c",
-    "code_test_sha": "16d64120ba1cb0d690d249a7fed62ddfcb345663",
-    "workflow_fix_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
-    "head_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
-    "status": "DRAFT_NATIVE_WORKFLOW_GREEN_SHARED_STAGED_PENDING",
+    "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+    "pr": 2524,
+    "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
+    "base_pr": 2519,
+    "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
+    "code_test_sha": "076a973eaad808b537c7f74337464d02cf41d633",
+    "head_sha": "26517cbb950dc41ab0e0b736ce522e7d2886318a",
+    "implementation_commit": "076a973eaad808b537c7f74337464d02cf41d633",
+    "docs_only_commits_after_code_head": [
+      "64caf31cf1b908e8be71fe167abedc07b6e73887",
+      "58ef3d854797d035175a9c317eab57e75166633c",
+      "26517cbb950dc41ab0e0b736ce522e7d2886318a"
+    ],
+    "status": "DRAFT_NATIVE_HYBRID_STATE_CODE_PRESENT_FOCUSED_CI_PASS_CORE_SOURCE_TAP_BLOCKED",
+    "workflow_run": 45813438280,
     "tests": {
-      "workflow_45738564334": "SUCCESS",
-      "python_313": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
-      "python_314": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
-      "native_linux": "Pinned llama.cpp build and native selftest PASS",
-      "android_arm64": "arm64-v8a cross-compile PASS only; no device execution",
-      "shared_staged_integrated": "workflow 45738564326 IN_PROGRESS at last poll",
-      "local_full_checkout": "NOT_RUN; CPython 3.13.5 present, but no Aii checkout and git ls-remote fails due github.com DNS"
+      "focused_python_313": "PASS",
+      "focused_python_314": "PASS",
+      "staged_receiver_deploy_chain_compile_313": "PASS",
+      "staged_receiver_deploy_chain_compile_314": "PASS",
+      "public_diff_privacy_scan": "CLEAN",
+      "android_arm64_cross_compile": "PASS_COMPILE_ONLY; artifact upload pending at last poll",
+      "linux_pinned_api_build": "IN_PROGRESS at last poll",
+      "shared_source_tap_identity": "FAIL/BLOCKED: Core-owned native_receiver_matrix_runtime.py producer hook is absent from this Perception branch; Core PR #2525 must rebase and expose the opt-in",
+      "local_linux_full_checkout": "NOT_RUN/BLOCKED: no mounted Aii checkout; GitHub DNS unavailable",
+      "local_native_gguf_run": "NOT_RUN: no local GGUF execution evidence",
+      "redmi_native": "REDMI_UNVERIFIED"
     },
-    "consumer": "Perception source-bound eight-condition builder and teacher-forced target-token likelihood bridge are CI-tested; normal Runtime/Android turn does not call the bridge. Core #2522 has a fixture-only staging test, no real producer call site, and is not stacked on this PR.",
-    "old_runtime_tests": "test_native_latent_receiver_runtime.py remains present and syntax-compiled but is excluded from the Perception-specific pytest list because it asserts removed Core Cognition.native_receive/legacy Callosum APIs. This is not a Canon waiver; Core must restore or equivalently replace the capability.",
-    "device": "REDMI_UNVERIFIED. No fresh receipt. Last available private snapshot 2026-11-24 09:28 UTC: auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only.",
-    "release": "NOT_RELEASED",
-    "research": "R-158 full-text LCF and negative Pythia activation-transfer evidence recorded; KV-cache bridge is a research candidate, not implemented; no code/weights reused.",
-    "next_action": "Finish workflow 45738564326; Core stacks #2522 on #2519 and adds a real source-bound producer→builder→Runtime stage→one-shot approval→bridge integration test. Then >=20 held-out groups, >=2 sessions, >=2 task families on pinned real GGUF with generated-answer utility, all controls, retention, restart and rollback."
+    "consumer": "Opt-in native_latent_receiver.py --hybrid-state-roundtrip -> native_hybrid_state validator -> native_receiver_utility task-score aggregate -> native_receiver_task_matrix_bridge. LFM2-only, same-model state restoration, 1–64 continuation tokens, 16 MiB buffer cap, truncated-state negative control, full next-token logits comparison, hash-only receipt and zeroization. Core TTY Runtime flag not yet exposed; normal turns do not call it.",
+    "cross_lane_core_pr": {
+      "number": 2525,
+      "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
+      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "last_observed_base_sha": "076a973eaad808b537c7f74337464d02cf41d633",
+      "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+      "ahead_by": 11,
+      "behind_by": 9,
+      "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+      "normal_turn": "NOT_CONNECTED",
+      "next_action": "Rebase onto current #2524 head and expose include_hybrid_state_roundtrip as an explicit local-lab-only flag, default OFF."
+    },
+    "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; no device action",
+    "release": "NOT_RELEASED; no deployment",
+    "research": "R-163 LatentPort remains a separate hybrid Qwen-family result. R-164 exact llama.cpp b29c606 source audit: LFM2 shortconv r_l plus llama_memory_hybrid state_write/read; public sequence state API includes attention/KV and recurrent state. R-165 implements an opt-in same-model LFM2 roundtrip. llama.cpp pinned LICENSE is MIT; LFM2.5 QAD model license remains LFM Open License v1.0; no model downloaded or swapped. This is not cross-model latent coupling and no new paper is claimed read.",
+    "next_action": "Core rebase #2525 onto #2524 head 076a973... and expose the opt-in lab flag (default OFF). Finish Linux pinned build. Then run the roundtrip against an already-present and explicitly approved LFM2 GGUF with 32–64 tokens; measure state bytes, capture/restore latency, peak RSS, max/RMS logit difference and truncated-restore rejection. After same-model pass, test a real LATENT_CANDIDATE prefill, then different-weight sender/receiver transfer with zero/shuffle/wrong-donor controls. Keep B3 OFF until the full cross-organ acceptance gates pass.",
+    "parallel_perception_prs": {
+      "2527_raw_ear_temporal_chronology": {
+        "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
+        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "ahead_by": 74,
+        "behind_by": 9,
+        "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
+        "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
+      },
+      "2498_raw_ear_next_delta": {
+        "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+        "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+        "base_branch": "research-perception/latent-event-scope-20261125-run12",
+        "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+        "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+        "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+      }
+    }
   },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
@@ -1609,5 +1696,212 @@
     "status": "NO_LIVE_RECEIPT_AT_SECOND_POLL",
     "source": "private owner-read relay",
     "effect": "read-only; no device action"
-  }
+  },
+  "older_perception_checkpoint": {
+    "timestamp": "2026-11-26T01:57:48Z",
+    "owner": "Research & Perception",
+    "branch": "research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34",
+    "pr": 2519,
+    "pr_url": "https://github.com/RedMentos/Aii/pull/2519",
+    "base_pr": 2520,
+    "base_branch": "core/v14-native-target-score-repair-20261126-run1",
+    "base_sha": "2032888020a2f409ee976abe222cc99e0818159c",
+    "code_test_sha": "16d64120ba1cb0d690d249a7fed62ddfcb345663",
+    "workflow_fix_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
+    "head_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
+    "status": "DRAFT_NATIVE_WORKFLOW_GREEN_SHARED_STAGED_PENDING",
+    "tests": {
+      "workflow_45738564334": "SUCCESS",
+      "python_313": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
+      "python_314": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
+      "native_linux": "Pinned llama.cpp build and native selftest PASS",
+      "android_arm64": "arm64-v8a cross-compile PASS only; no device execution",
+      "shared_staged_integrated": "workflow 45738564326 IN_PROGRESS at last poll",
+      "local_full_checkout": "NOT_RUN; CPython 3.13.5 present, but no Aii checkout and git ls-remote fails due github.com DNS"
+    },
+    "consumer": "Perception source-bound eight-condition builder and teacher-forced target-token likelihood bridge are CI-tested; normal Runtime/Android turn does not call the bridge. Core #2522 has a fixture-only staging test, no real producer call site, and is not stacked on this PR.",
+    "old_runtime_tests": "test_native_latent_receiver_runtime.py remains present and syntax-compiled but is excluded from the Perception-specific pytest list because it asserts removed Core Cognition.native_receive/legacy Callosum APIs. This is not a Canon waiver; Core must restore or equivalently replace the capability.",
+    "device": "REDMI_UNVERIFIED. No fresh receipt. Last available private snapshot 2026-11-24 09:28 UTC: auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only.",
+    "release": "NOT_RELEASED",
+    "research": "R-158 full-text LCF and negative Pythia activation-transfer evidence recorded; KV-cache bridge is a research candidate, not implemented; no code/weights reused.",
+    "next_action": "Finish workflow 45738564326; Core stacks #2522 on #2519 and adds a real source-bound producer→builder→Runtime stage→one-shot approval→bridge integration test. Then >=20 held-out groups, >=2 sessions, >=2 task families on pinned real GGUF with generated-answer utility, all controls, retention, restart and rollback."
+  },
+  "perception_checkpoint_history": [
+    {
+      "timestamp": "2026-11-26T01:57:48Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34",
+      "pr": 2519,
+      "pr_url": "https://github.com/RedMentos/Aii/pull/2519",
+      "base_pr": 2520,
+      "base_branch": "core/v14-native-target-score-repair-20261126-run1",
+      "base_sha": "2032888020a2f409ee976abe222cc99e0818159c",
+      "code_test_sha": "16d64120ba1cb0d690d249a7fed62ddfcb345663",
+      "workflow_fix_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
+      "head_sha": "8b25f4e2b2fabae19ba08e962ed2304194dd35df",
+      "status": "DRAFT_NATIVE_WORKFLOW_GREEN_SHARED_STAGED_PENDING",
+      "tests": {
+        "workflow_45738564334": "SUCCESS",
+        "python_313": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
+        "python_314": "19 focused + 59 broader tests PASS; py_compile PASS; privacy scan CLEAN",
+        "native_linux": "Pinned llama.cpp build and native selftest PASS",
+        "android_arm64": "arm64-v8a cross-compile PASS only; no device execution",
+        "shared_staged_integrated": "workflow 45738564326 IN_PROGRESS at last poll",
+        "local_full_checkout": "NOT_RUN; CPython 3.13.5 present, but no Aii checkout and git ls-remote fails due github.com DNS"
+      },
+      "consumer": "Perception source-bound eight-condition builder and teacher-forced target-token likelihood bridge are CI-tested; normal Runtime/Android turn does not call the bridge. Core #2522 has a fixture-only staging test, no real producer call site, and is not stacked on this PR.",
+      "old_runtime_tests": "test_native_latent_receiver_runtime.py remains present and syntax-compiled but is excluded from the Perception-specific pytest list because it asserts removed Core Cognition.native_receive/legacy Callosum APIs. This is not a Canon waiver; Core must restore or equivalently replace the capability.",
+      "device": "REDMI_UNVERIFIED. No fresh receipt. Last available private snapshot 2026-11-24 09:28 UTC: auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; historical only.",
+      "release": "NOT_RELEASED",
+      "research": "R-158 full-text LCF and negative Pythia activation-transfer evidence recorded; KV-cache bridge is a research candidate, not implemented; no code/weights reused.",
+      "next_action": "Finish workflow 45738564326; Core stacks #2522 on #2519 and adds a real source-bound producer→builder→Runtime stage→one-shot approval→bridge integration test. Then >=20 held-out groups, >=2 sessions, >=2 task families on pinned real GGUF with generated-answer utility, all controls, retention, restart and rollback."
+    },
+    {
+      "timestamp": "2026-11-26T11:32:06+01:00",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "pr": 2524,
+      "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
+      "base_pr": 2519,
+      "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
+      "code_test_sha": "5f17b865ab2647d9085a019904f2e581986758db",
+      "implementation_commit": "5f17b865ab2647d9085a019904f2e581986758db",
+      "test_correction_commits": [
+        "d353faf846a62329f5bac502ecd53ce6662648b6",
+        "8f7c73065e8f92e5988fe12fa88038dc41ece530"
+      ],
+      "status": "DRAFT_FOCUSED_30_PASS_SHARED_STAGE_BLOCKED_CORE_SOURCE_PIN",
+      "tests": {
+        "focused_python_313": "30/30 PASS",
+        "focused_python_314": "30/30 PASS",
+        "broader_python_313": "70 PASS / 1 FAIL; only Core source-pin mismatch",
+        "broader_python_314": "70 PASS / 1 FAIL; only Core source-pin mismatch",
+        "native_linux_pinned_build_selftest": "PASS",
+        "android_arm64_cross_compile": "PASS_COMPILE_ONLY",
+        "runtime_deploy_offline_311_314": "PASS",
+        "privacy_scan": "CLEAN",
+        "shared_staged_runtime": "FAIL: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; Core-owned v13/native_latent_receiver.py source-pin mismatch",
+        "integrated_regression": "FAIL: 1 failed; same Core source-pin mismatch",
+        "local_linux_scratch": "5/5 PASS; CPython 3.13.5; py_compile PASS",
+        "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable"
+      },
+      "consumer": "Cohort-wide read-only K/V geometry invariant added to native_receiver_utility; four regressions reject layer, attention-layer-count, K-shape and dtype drift across task groups. No raw K/V persistence, cache write, recurrent-state transfer, semantic utility or normal-turn hook.",
+      "cross_lane_core_pr": {
+        "number": 2525,
+        "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
+        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "last_observed_base_sha": "b3250b751249b27e9c9352ca79dc05fd0f16b8bd",
+        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "ahead_by": 11,
+        "behind_by": 9,
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "normal_turn": "NOT_CONNECTED"
+      },
+      "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; no device action",
+      "release": "NOT_RELEASED",
+      "research": "R-163 LatentPort: hybrid Qwen3.5 state transfer needs recurrent/conv state in addition to K/V; not LFM2 evidence. R-164 exact llama.cpp b29c606 source confirms LFM2 shortconv r_l state and public llama_state_seq_get_data/set_data full-hybrid sequence roundtrip; same-model diagnostic is next. LFM2.5-1.2B config 16 layers (10 conv/6 attention), conv_L_cache 3; ~160–240 KiB FP32 conv-history estimate is calculated, not measured. QAD GGUF uses LFM Open License v1.0 with USD 10M commercial-use threshold; no swap.",
+      "next_action": "Core first rebases #2527 and #2525 onto the latest #2524 branch (currently b3250b751249b27e9c9352ca79dc05fd0f16b8bd), refreshes native/audio composer pins bottom-up, then runs shared stage/integrated regression. Preserve #2527 RAW EAR chronology and #2498 next-delta A4 path as separate consumers; integrate only after exact pins and privacy/consent gates pass. Next native research: same-model LFM2.5 QAD sequence-state roundtrip via llama_state_seq_get_size/get_data/set_data; K/V-only remains partial.",
+      "parallel_perception_prs": {
+        "2527_raw_ear_temporal_chronology": {
+          "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
+          "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+          "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+          "ahead_by": 74,
+          "behind_by": 9,
+          "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
+          "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+          "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
+          "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
+        },
+        "2498_raw_ear_next_delta": {
+          "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+          "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+          "base_branch": "research-perception/latent-event-scope-20261125-run12",
+          "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+          "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+          "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-11-26T12:29:47+01:00",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "pr": 2524,
+      "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
+      "base_pr": 2519,
+      "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
+      "code_test_sha": "076a973eaad808b537c7f74337464d02cf41d633",
+      "head_sha": "26517cbb950dc41ab0e0b736ce522e7d2886318a",
+      "implementation_commit": "076a973eaad808b537c7f74337464d02cf41d633",
+      "docs_only_commits_after_code_head": [
+        "64caf31cf1b908e8be71fe167abedc07b6e73887",
+        "58ef3d854797d035175a9c317eab57e75166633c",
+        "26517cbb950dc41ab0e0b736ce522e7d2886318a"
+      ],
+      "status": "DRAFT_NATIVE_HYBRID_STATE_CODE_PRESENT_FOCUSED_CI_PASS_CORE_SOURCE_TAP_BLOCKED",
+      "workflow_run": 45813438280,
+      "tests": {
+        "focused_python_313": "PASS",
+        "focused_python_314": "PASS",
+        "staged_receiver_deploy_chain_compile_313": "PASS",
+        "staged_receiver_deploy_chain_compile_314": "PASS",
+        "public_diff_privacy_scan": "CLEAN",
+        "android_arm64_cross_compile": "PASS_COMPILE_ONLY; artifact upload pending at last poll",
+        "linux_pinned_api_build": "IN_PROGRESS at last poll",
+        "shared_source_tap_identity": "FAIL/BLOCKED: Core-owned native_receiver_matrix_runtime.py producer hook is absent from this Perception branch; Core PR #2525 must rebase and expose the opt-in",
+        "local_linux_full_checkout": "NOT_RUN/BLOCKED: no mounted Aii checkout; GitHub DNS unavailable",
+        "local_native_gguf_run": "NOT_RUN: no local GGUF execution evidence",
+        "redmi_native": "REDMI_UNVERIFIED"
+      },
+      "consumer": "Opt-in native_latent_receiver.py --hybrid-state-roundtrip -> native_hybrid_state validator -> native_receiver_utility task-score aggregate -> native_receiver_task_matrix_bridge. LFM2-only, same-model state restoration, 1–64 continuation tokens, 16 MiB buffer cap, truncated-state negative control, full next-token logits comparison, hash-only receipt and zeroization. Core TTY Runtime flag not yet exposed; normal turns do not call it.",
+      "cross_lane_core_pr": {
+        "number": 2525,
+        "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
+        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "last_observed_base_sha": "076a973eaad808b537c7f74337464d02cf41d633",
+        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "ahead_by": 11,
+        "behind_by": 9,
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "normal_turn": "NOT_CONNECTED",
+        "next_action": "Rebase onto current #2524 head and expose include_hybrid_state_roundtrip as an explicit local-lab-only flag, default OFF."
+      },
+      "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; no device action",
+      "release": "NOT_RELEASED; no deployment",
+      "research": "R-163 LatentPort remains a separate hybrid Qwen-family result. R-164 exact llama.cpp b29c606 source audit: LFM2 shortconv r_l plus llama_memory_hybrid state_write/read; public sequence state API includes attention/KV and recurrent state. R-165 implements an opt-in same-model LFM2 roundtrip. llama.cpp pinned LICENSE is MIT; LFM2.5 QAD model license remains LFM Open License v1.0; no model downloaded or swapped. This is not cross-model latent coupling and no new paper is claimed read.",
+      "next_action": "Core rebase #2525 onto #2524 head 076a973... and expose the opt-in lab flag (default OFF). Finish Linux pinned build. Then run the roundtrip against an already-present and explicitly approved LFM2 GGUF with 32–64 tokens; measure state bytes, capture/restore latency, peak RSS, max/RMS logit difference and truncated-restore rejection. After same-model pass, test a real LATENT_CANDIDATE prefill, then different-weight sender/receiver transfer with zero/shuffle/wrong-donor controls. Keep B3 OFF until the full cross-organ acceptance gates pass.",
+      "parallel_perception_prs": {
+        "2527_raw_ear_temporal_chronology": {
+          "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
+          "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+          "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+          "ahead_by": 74,
+          "behind_by": 9,
+          "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
+          "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+          "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
+          "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
+        },
+        "2498_raw_ear_next_delta": {
+          "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+          "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+          "base_branch": "research-perception/latent-event-scope-20261125-run12",
+          "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+          "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+          "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-11-26T16:46:45Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "pr": 2524,
+      "code_test_sha": "91cae713b409e1b5e95bc06c446a5152e726cbd9",
+      "head_sha": "fd62994e9e44a5e33a0ac02ca53f1eb271cb6771",
+      "status": "DRAFT_FOCUSED_49_PASS_STAGE_BLOCKED_CORE_OBSERVER_PIN_NATIVE_BUILD_ARM64_COMPILE_PASS_RUNTIMEDEPLOY_OFFLINE_PASS",
+      "next_action": "Core refreshes #2525 onto latest #2524 and reruns exact staged/integrated gates. After integration is green, use only an already-present GGUF with separate explicit local approval for a native diagnostic. Before B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention gates. No user action needed now; B3 OFF."
+    }
+  ]
 }

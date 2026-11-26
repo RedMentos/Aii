@@ -1,10 +1,14 @@
 import contextlib
 import hashlib
 import json
+import os
 import struct
 import sys
+import time
 import threading
 import types
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -216,17 +220,40 @@ def _patch_core(monkeypatch, runtime, sender, receiver):
     )
     runtime.source_ref_main = runtime.store_event_main["source_ref"]
 
+    models_root = Path(runtime.home) / "models"
+    models_root.mkdir(parents=True, exist_ok=True)
+    model_paths = {}
+    model_identities = {}
+    expected_by_role = {sender["role"]: sender, receiver["role"]: receiver}
+    for role in expected_by_role:
+        path = models_root / (role + ".gguf")
+        path.write_bytes(b"x" * 4096)
+        st = os.stat(path, follow_symlinks=False)
+        model_paths[role] = path
+        model_identities[role] = [
+            st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns,
+        ]
+    runtime.models = SimpleNamespace(
+        revision=lambda role: expected_by_role[role]["model_revision"],
+        path_for=lambda role: model_paths[role],
+    )
+
     def model_binding(_runtime, role):
-        expected = sender if role == sender["role"] else receiver
+        expected = expected_by_role[role]
+        path = model_paths[role]
         return {
             "revision": expected["model_revision"],
             "sha256": expected["model_sha256"],
-            "canonical_path": str(_runtime.home) + "/models/" + role + ".gguf",
-            "file_identity": [1, 2, 4096, 3, 4],
+            "canonical_path": str(path.resolve()),
+            "file_identity": model_identities[role],
         }
 
     monkeypatch.setattr(approval, "_model_binding", model_binding)
-    monkeypatch.setattr(approval, "_runtime_nonce", lambda _runtime: "f" * 32)
+    runtime._native_probe_approval_runtime_nonce = "f" * 32
+    monkeypatch.setattr(
+        approval, "_runtime_nonce",
+        lambda current: getattr(current, "_native_probe_approval_runtime_nonce", "f" * 32),
+    )
     monkeypatch.setattr(approval, "_resource_preflight", lambda *_: {"status": "PASS"})
     monkeypatch.setattr(approval, "_require_runtime_probe_lease", lambda *_: None)
 
@@ -314,11 +341,43 @@ def test_matrix_run_requires_one_shot_local_approval_and_uses_real_bridge_contra
     assert len(calls) == 1
     assert calls[0]["threads"] == 1
     assert calls[0]["target_environment"] == "LOCAL_LINUX"
+    assert calls[0]["include_hybrid_state_roundtrip"] is False
     state, _ = runtime.store.state(matrix_runtime.KEY, None)
     assert state["status"] == "COMPLETED"
     assert runtime._native_receiver_condition_matrix is None
     assert matrix._closed is True
 
+
+
+def test_hybrid_state_roundtrip_requires_explicit_arm_and_is_bound_to_native_run(monkeypatch, tmp_path):
+    runtime, matrix, _ids, _pair, _events, _texts, _sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
+    armed = matrix_runtime._arm(runtime, include_hybrid_state_roundtrip=True)
+    assert armed["include_hybrid_state_roundtrip"] is True
+    calls = []
+
+    def fake_bridge(runtime_arg, matrix_arg, **kwargs):
+        receipt = matrix_arg.receipt
+        assert kwargs["include_hybrid_state_roundtrip"] is True
+        assert kwargs["approval_validator"](kwargs["approval"], receipt["approval_binding_sha256"]) is True
+        assert kwargs["source_validator"](receipt, "BEFORE_NATIVE") is True
+        assert kwargs["source_validator"](receipt, "AFTER_NATIVE") is True
+        calls.append(kwargs)
+        return {
+            "status": "SCORED_DIAGNOSTIC",
+            "condition_count": 8,
+            "environment": kwargs["target_environment"],
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+    module.score_and_record_native_receiver_condition_matrix = fake_bridge
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+    result = matrix_runtime._run(runtime)
+    assert result["status"] == "SCORED_DIAGNOSTIC"
+    assert calls[0]["include_hybrid_state_roundtrip"] is True
+    assert matrix._closed is True
 
 def test_source_drift_between_arming_and_native_run_revokes_the_attempt(monkeypatch, tmp_path):
     runtime, matrix, _ids, _pair, _events, texts, _sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
@@ -365,6 +424,168 @@ def test_revoke_and_clear_are_separate_explicit_operations(monkeypatch, tmp_path
     assert cleared["status"] == "CLEARED"
     assert cleared["matrix_was_staged"] is True
     assert runtime._native_receiver_condition_matrix is None
+
+
+def test_live_pending_matrix_approval_still_requires_explicit_revoke_before_clear(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    with pytest.raises(PermissionError, match="live pending matrix approval"):
+        matrix_runtime._clear(runtime)
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "PENDING"
+    assert matrix._closed is False
+
+
+def test_matrix_status_reports_restart_staleness_without_mutating_the_pending_record(monkeypatch, tmp_path):
+    runtime, _matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    before, version = runtime.store.state(matrix_runtime.KEY, None)
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_status"] == "PENDING"
+    assert status["approval_liveness"] == "STALE_RUNTIME"
+    after, after_version = runtime.store.state(matrix_runtime.KEY, None)
+    assert after == before
+    assert after_version == version
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+
+
+def test_matrix_clear_invalidates_restart_stale_approval_and_closes_matrix(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    cleared = matrix_runtime._clear(runtime)
+    assert cleared["status"] == "CLEARED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_RUNTIME"
+    assert state["invalidated_reason"] == "STALE_RUNTIME"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+
+
+def test_matrix_clear_invalidates_expired_approval(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    now = time.time()
+    state["issued_at"] = now - matrix_runtime.TTL_SECONDS - 1
+    state["expires_at"] = now - 1
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "EXPIRED"
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "EXPIRED"
+    assert matrix._closed is True
+
+
+def test_matrix_approval_cannot_extend_beyond_its_issued_ttl(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    now = time.time()
+    state["issued_at"] = now - 10
+    state["expires_at"] = now + matrix_runtime.TTL_SECONDS * 10
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "INVALID_EXPIRY"
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "INVALID_EXPIRY"
+    assert matrix._closed is True
+
+
+@pytest.mark.parametrize("bad_expiry", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_matrix_approval_expiry_fails_closed(monkeypatch, tmp_path, bad_expiry):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    state["expires_at"] = bad_expiry
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "INVALID_EXPIRY"
+    assert status["approval_expires_at"] is None
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "INVALID_EXPIRY"
+    assert matrix._closed is True
+
+
+def test_matrix_status_reports_model_route_staleness_without_mutating_pending_record(monkeypatch, tmp_path):
+    runtime, _matrix, _ids, _pair, _events, _texts, sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+    from v13 import native_probe_approval as approval
+
+    original_revision = runtime.models.revision
+    runtime.models.revision = lambda role: (
+        "changed-revision" if role == sender["role"] else original_revision(role)
+    )
+    monkeypatch.setattr(
+        approval, "_model_binding",
+        lambda *_args: (_ for _ in ()).throw(AssertionError("status must not rehash a GGUF")),
+    )
+    before, version = runtime.store.state(matrix_runtime.KEY, None)
+
+    status = matrix_runtime._status(runtime)
+
+    assert status["approval_status"] == "PENDING"
+    assert status["approval_liveness"] == "STALE_MODEL"
+    after, after_version = runtime.store.state(matrix_runtime.KEY, None)
+    assert after == before
+    assert after_version == version
+
+
+def test_matrix_clear_invalidates_changed_model_file_identity(monkeypatch, tmp_path):
+    runtime, matrix, _ids, _pair, _events, _texts, sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+    model_path = runtime.models.path_for(sender["role"])
+    with model_path.open("r+b") as stream:
+        stream.seek(0)
+        stream.write(b"y")
+
+    cleared = matrix_runtime._clear(runtime)
+
+    assert cleared["status"] == "CLEARED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_MODEL"
+    assert state["invalidated_reason"] == "STALE_MODEL"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+
+
+def test_stage_replaces_restart_stale_pending_approval_without_reusing_it(monkeypatch, tmp_path):
+    runtime, matrix, target_ids, pair, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    receipt = matrix.receipt
+    matrix.close()
+    runtime._native_receiver_condition_matrix = None
+    runtime._native_receiver_matrix_target_token_ids = None
+    runtime._native_receiver_matrix_pair_record = None
+    runtime._native_receiver_matrix_staged_at = None
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    replacement = type(matrix)(receipt)
+    staged = matrix_runtime.stage_native_receiver_matrix(runtime, replacement, target_ids, pair)
+    assert staged["status"] == "STAGED_NOT_APPROVED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_RUNTIME"
+    assert runtime._native_receiver_condition_matrix is replacement
 
 
 def test_operator_dispatch_is_local_command_scoped(monkeypatch, tmp_path):
@@ -521,3 +742,104 @@ def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_thro
     assert calls[0]["condition_inputs"][0]["vectors"] == []
     assert calls[0]["condition_inputs"][0]["position_ids"] == []
     assert runtime._native_receiver_condition_matrix is None
+
+
+def _tamper_matrix_approval_record(record, field, sender_role):
+    if field == "task_group_id":
+        record[field] = "tampered-task-group"
+    elif field == "source_bindings":
+        record[field] = []
+    elif field == "sender_role":
+        record[field] = "B2_GIST" if sender_role != "B2_GIST" else "B1_DETAIL"
+    elif field == "receiver_role":
+        record[field] = "INVALID_RECEIVER"
+    elif field == "models":
+        record[field][sender_role]["revision"] = "tampered-model-revision"
+    else:
+        raise AssertionError("unknown tamper field")
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["task_group_id", "source_bindings", "sender_role", "receiver_role", "models"],
+)
+def test_matrix_run_rejects_persisted_approval_binding_tampering(
+    monkeypatch, tmp_path, field
+):
+    runtime, matrix, *_rest, sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    _tamper_matrix_approval_record(state, field, sender["role"])
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    native_calls = []
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+    module.score_and_record_native_receiver_condition_matrix = (
+        lambda *_args, **_kwargs: native_calls.append(True)
+    )
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+
+    assert native_calls == []
+    persisted, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert persisted["status"] == "FAILED_REVOKED"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["task_group_id", "source_bindings", "sender_role", "receiver_role", "models"],
+)
+def test_matrix_consume_rejects_persisted_approval_binding_tampering(
+    monkeypatch, tmp_path, field
+):
+    runtime, matrix, *_rest, sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    _tamper_matrix_approval_record(state, field, sender["role"])
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_runtime_probe_lease", lambda *_args: None)
+    persisted, _ = runtime.store.state(matrix_runtime.KEY, None)
+
+    with pytest.raises(PermissionError, match="approval is not live"):
+        matrix_runtime._consume_approval(
+            runtime,
+            persisted["nonce"],
+            matrix.receipt["approval_binding_sha256"],
+            matrix.receipt,
+            object(),
+        )
+
+    after, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert after["status"] == "PENDING"
+
+
+@pytest.mark.parametrize(
+    "expires_at",
+    [float("nan"), float("inf"), float("-inf"), None, True, "invalid", 0],
+)
+def test_matrix_arm_requires_explicit_revoke_of_any_pending_single_probe_approval(
+    monkeypatch, tmp_path, expires_at
+):
+    runtime, _matrix, *_rest = _stage(monkeypatch, tmp_path)
+    from v13 import native_probe_approval as approval
+
+    state, version = runtime.store.state(approval.KEY, None)
+    runtime.store.set_state(
+        approval.KEY,
+        {"schema": approval.SCHEMA, "status": "PENDING", "expires_at": expires_at},
+        expected=version,
+    )
+
+    with pytest.raises(PermissionError, match="separate native probe approval"):
+        matrix_runtime._arm(runtime)
+
+    existing, _ = runtime.store.state(approval.KEY, None)
+    assert existing["status"] == "PENDING"
+    matrix_approval, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert matrix_approval is None

@@ -36,7 +36,10 @@ def record(source_id, text, token_ids, candidate_rows, receiver_rows=None):
     receiver_rows = receiver_rows or [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
     spans = [[0, 3], [4, 7], [8, 12]]
     src = {"source_id": source_id, "sha256": sha(text), "char_start": 0, "char_end": len(text)}
-    sender = {"role": "B1_DETAIL", "tap_id": "B1_HIDDEN_PREFILL_FINAL_RMSNORM",
+    sender = {"role": "B1_DETAIL", "tap_id": "lfm2.result_norm.final.v1",
+              "activation_space": "FINAL_RMSNORM_PREFILL_F32",
+              "capture_method": "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY",
+              "embedding_dim": 2, "runner_revision": "b10964",
               "model_revision": "b1-r1", "model_sha256": "c" * 64, "tokenizer_revision": "b1-tok-r1"}
     receiver = {"role": "C3_LANGUAGE", "tap_id": "C3_NATIVE_INPUT_EMBEDDING",
                 "model_revision": "c3-r1", "model_sha256": "b" * 64,
@@ -47,7 +50,7 @@ def record(source_id, text, token_ids, candidate_rows, receiver_rows=None):
               "source_id": source_id, "source_sha256": src["sha256"], "session_id": "session-1",
               "alignment_method": "UTF8_BYTE_PIECE_OVERLAP_V1", "alignment_coverage": 1.0}
              for i, row in enumerate(receiver_rows)]
-    return {"schema": "v14.native-tokenwise-pairing/1", "status": "PAIRED_DIAGNOSTIC",
+    return {"schema": "v14.native-tokenwise-pairing/2", "status": "PAIRED_DIAGNOSTIC",
             "source_ref": src, "session_id": "session-1", "event_id": "event-" + source_id,
             "brain_generation_id": "generation-" + source_id, "sender": sender, "receiver": receiver,
             "pairs": pairs, "record_sha256": sha("record-" + source_id),
