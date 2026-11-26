@@ -1736,3 +1736,10 @@ Tested code/test head: \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`.
 - The exact feature-set workflow runs all 14 tests on both Python versions; no exact code/test CI is being inherited from a prior head.
 - Full local Aii checkout/pytest/native build remains NOT_RUN because no checkout is mounted and GitHub DNS is unavailable locally. The local CPython 3.13.5 scratch reproduction remains separate from exact CI.
 - Status remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No microphone, model, weight, permission, device or user-data action.
+
+
+### R-166 full-text review correction (2026-11-26)
+
+The complete 12-page author-hosted PDF has now been read; replace the earlier abstract-only status with **FULL_TEXT_REVIEWED**. The paper's variables are AAD model score vectors \(f(n)\) and attended-speaker labels \(y(n)\); its CSD/IMI/rIMI definitions condition on prior predictions, with a five-second stacked score history for short windows. It uses Gaussian-copula/GCMI estimation and evaluates 13 AV-GC participants with 64-channel EEG and instructed switches. The preprint recommends at least a five-minute temporal buffer (ideally different sessions), switch-focused evaluation and confound control. See the dated R-166 full-text note in the research ledger.
+
+**Correction to Run 44 naming:** the current acoustic-feature → later-action proxy is neither paper rIMI nor paper CSD. The output now names its dependence term \`conditional_feature_history_dependence_bits\` and declares the metric scope explicitly. It remains a synthetic diagnostic, not an A4 attention policy or JEPA signal. A faithful rIMI implementation waits for actual A4 prediction scores and trusted attended-state/outcome labels.
