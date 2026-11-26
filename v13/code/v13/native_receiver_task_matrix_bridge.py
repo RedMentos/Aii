@@ -19,7 +19,12 @@ from .native_receiver_condition_matrix import (
     NativeReceiverConditionMatrix,
 )
 from .native_receiver_task_score import record_task_score_receipts
-from .native_receiver_utility import CONDITIONS, SCORE_METHOD, build_native_receiver_task_score_receipt
+from .native_receiver_utility import (
+    CONDITIONS,
+    SCORE_METHOD,
+    build_native_receiver_task_score_receipt,
+    validate_native_receiver_kv_snapshot,
+)
 
 BRIDGE_SCHEMA = "v14.native-receiver-task-matrix-bridge/1"
 NATIVE_MATRIX_SCHEMA = "v14.native-receiver-task-matrix/1"
@@ -163,6 +168,7 @@ def score_and_record_native_receiver_condition_matrix(
     cancel_event=None,
     device_execution_receipt_sha256=None,
     device_runtime_build_id=None,
+    include_hybrid_state_roundtrip=False,
 ):
     """Consume one approved matrix, score all conditions, and atomically record eight receipts.
 
@@ -180,6 +186,10 @@ def score_and_record_native_receiver_condition_matrix(
             raise NativeReceiverTaskMatrixBridgeError("one-shot approval and source validators are required")
         if target_environment not in _ENVIRONMENTS:
             raise NativeReceiverTaskMatrixBridgeError("an explicit native execution environment is required")
+        if type(include_hybrid_state_roundtrip) is not bool:
+            raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip opt-in must be boolean")
+        if include_hybrid_state_roundtrip and len(target_token_ids) > 64:
+            raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip is limited to 64 continuation tokens")
         if type(threads) is not int or not 1 <= threads <= 2:
             raise NativeReceiverTaskMatrixBridgeError("native task-matrix threads must be 1 or 2")
         if type(deadline) not in (int, float) or not math.isfinite(float(deadline)):
@@ -277,6 +287,9 @@ def score_and_record_native_receiver_condition_matrix(
             target_environment=target_environment,
             device_execution_receipt_sha256=device_execution_receipt_sha256,
             device_runtime_build_id=device_runtime_build_id,
+            include_hybrid_state_roundtrip=include_hybrid_state_roundtrip,
+            receiver_tokenizer_revision=receiver["tokenizer_revision"],
+            context_sha256=receipt["context_sha256"],
         )
 
         _validate_source(source_validator, receipt, "after")
@@ -322,6 +335,7 @@ def score_and_record_native_receiver_condition_matrix(
         if type(llama_version) is not str or not llama_version:
             raise NativeReceiverTaskMatrixBridgeError("native llama.cpp version is missing")
         score_receipts = []
+        kv_geometry = None
         for condition, item in zip(CONDITIONS, condition_inputs):
             native_score = condition_scores[condition]
             if (not isinstance(native_score, Mapping)
@@ -345,6 +359,32 @@ def score_and_record_native_receiver_condition_matrix(
             elif binary_sha != native_score["binary_sha256"]:
                 raise NativeReceiverTaskMatrixBridgeError("native binary revision changed across conditions")
 
+            try:
+                kv_snapshot = validate_native_receiver_kv_snapshot(
+                    native_score.get("kv_snapshot"),
+                    expected_rows=(item["input_rows"] if item["input_rows"] > 0 else 1),
+                    expected_condition=condition,
+                    expected_model_sha256=receiver["model_sha256"],
+                    expected_input_sha256=item["input_sha256"],
+                    allow_sanitized=True,
+                )
+            except Exception as exc:
+                raise NativeReceiverTaskMatrixBridgeError(
+                    "native K/V snapshot rejected: " + str(exc)
+                ) from exc
+            geometry = (
+                kv_snapshot["layer_id"], kv_snapshot["attention_layer_count"],
+                tuple(kv_snapshot["k_shape"]), tuple(kv_snapshot["v_shape"]),
+                kv_snapshot["k_type"], kv_snapshot["v_type"],
+            )
+            if kv_geometry is None:
+                kv_geometry = geometry
+            elif kv_geometry != geometry:
+                raise NativeReceiverTaskMatrixBridgeError(
+                    "native K/V snapshot geometry changed across matrix conditions"
+                )
+            native_receipt = dict(native_score)
+            native_receipt["kv_snapshot"] = kv_snapshot
             score_receipts.append(build_native_receiver_task_score_receipt(
                 condition=condition,
                 task_group_id=receipt["task_group_id"],
@@ -357,7 +397,7 @@ def score_and_record_native_receiver_condition_matrix(
                 target_token_count=len(token_ids),
                 context_sha256=receipt["context_sha256"],
                 input_sha256=item["input_sha256"],
-                native_receipt=dict(native_score),
+                native_receipt=native_receipt,
                 adapter_sha256=item.get("adapter_sha256"),
             ))
 
@@ -367,6 +407,7 @@ def score_and_record_native_receiver_condition_matrix(
             "status": "TASK_GROUP_SCORED",
             "cohort_status": cohort.get("status"),
             "evidence_class": cohort.get("evidence_class"),
+            "hybrid_state_roundtrip": condition_scores["LATENT_CANDIDATE"].get("hybrid_state_roundtrip"),
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),
@@ -382,6 +423,10 @@ def score_and_record_native_receiver_condition_matrix(
             "enough_holdout": cohort.get("enough_holdout", False),
             "holdout_status": cohort.get("holdout_status"),
             "candidate_beats_all_controls": cohort.get("candidate_beats_all_controls", False),
+            "kv_snapshot_count": len(score_receipts),
+            "kv_snapshot_layer_id": kv_geometry[0] if kv_geometry is not None else None,
+            "kv_snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+            "kv_snapshot_stable": kv_geometry is not None,
             "semantic_use_proven": False,
             "generated_answer_correctness_proven": False,
             "production_route": False,

@@ -194,12 +194,21 @@ def probe_native_tokenwise_candidate(
             raise ValueError("local Linux target scoring must not carry Android device metadata")
     elif any(value is not None for value in (task_score_metadata, target_environment, device_execution_receipt_sha256, device_runtime_build_id)):
         raise ValueError("task-score metadata requires target token IDs")
-    if not isinstance(record, dict) or record.get("schema") != "v14.native-tokenwise-pairing/1":
+    if not isinstance(record, dict) or record.get("schema") != "v14.native-tokenwise-pairing/2":
         raise NativeTokenwiseReceiverProbeError("a native tokenwise pair record is required")
     if (record.get("status") != "PAIRED_DIAGNOSTIC" or record.get("persisted") is not False
             or record.get("production_route") is not False or record.get("semantic_use_proven") is not False
             or record.get("training_authority") != 0 or record.get("native_receiver_authority") != 0):
         raise NativeTokenwiseReceiverProbeError("pair record is not an authority-zero diagnostic")
+    sender_binding = record.get("sender")
+    if (not isinstance(sender_binding, dict)
+            or sender_binding.get("activation_space") != "FINAL_RMSNORM_PREFILL_F32"
+            or sender_binding.get("capture_method") != "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY"
+            or type(sender_binding.get("embedding_dim")) is not int
+            or not 1 <= sender_binding.get("embedding_dim") <= 8192
+            or type(sender_binding.get("runner_revision")) is not str
+            or not sender_binding.get("runner_revision")):
+        raise NativeTokenwiseReceiverProbeError("pair record sender activation-space binding is missing")
     if approval_module is None:
         from . import native_probe_approval as approval_module
     if packet_builder is None:

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -207,6 +208,21 @@ std::string sha256_hex(const std::vector<uint8_t> & input) {
     return output.str();
 }
 
+std::string float32_le_sha256(const std::vector<float> & values) {
+    static_assert(sizeof(float) == sizeof(uint32_t), "native receiver inputs must be float32");
+    std::vector<uint8_t> bytes;
+    bytes.reserve(values.size() * sizeof(uint32_t));
+    for (float value : values) {
+        uint32_t bits = 0;
+        std::memcpy(&bits, &value, sizeof(bits));
+        bytes.push_back(static_cast<uint8_t>(bits & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 8u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 16u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 24u) & 0xffu));
+    }
+    return sha256_hex(bytes);
+}
+
 std::string target_token_ids_sha256(const std::vector<int32_t> & tokens) {
     std::vector<uint8_t> bytes;
     bytes.reserve(tokens.size() * 4u);
@@ -367,6 +383,8 @@ int selftest() {
     if (logprob_from_logits(negative_infinity_logits, 2, 0, logprob)) return 22;
     if (!valid_sha256_hex(std::string(64, 'a')) || valid_sha256_hex(std::string(63, 'a'))) return 23;
     if (sha256_hex(std::vector<uint8_t>{'a', 'b', 'c'}) != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad") return 24;
+    const std::vector<float> float_hash_input{0.25f, -0.5f, 1.0f, 0.75f};
+    if (float32_le_sha256(float_hash_input) != "1d69f4a00c2e8858dc6bbe93e2f5662292fad203f2e2b4f30ccce70c029abd9b") return 28;
     const std::vector<int32_t> target_ids{0, 1, 2};
     const std::string target_ids_sha = "ad5dc1478de06a4c2728ea528bd9361a4b945e92a414bf4d180cedaaeaa5f4cc";
     if (!target_token_ids_hash_matches(target_ids, target_ids_sha)) return 25;
@@ -465,12 +483,261 @@ bool score_target_tokens(llama_context * ctx, const llama_model * model, int inp
     return token_logprobs.size() == target_tokens.size() && decode_status == 0;
 }
 
+
+
+bool decode_roundtrip_token(llama_context * ctx, int32_t token, int32_t position, int & decode_status) {
+    if (!ctx || token < 0 || position < 0) return false;
+    BatchGuard batch;
+    batch.value = llama_batch_init(1, 0, 1);
+    batch.active = true;
+    if (!batch.value.token || !batch.value.pos || !batch.value.n_seq_id ||
+        !batch.value.seq_id || !batch.value.logits || !batch.value.seq_id[0]) return false;
+    batch.value.n_tokens = 1;
+    batch.value.token[0] = static_cast<llama_token>(token);
+    batch.value.pos[0] = position;
+    batch.value.n_seq_id[0] = 1;
+    batch.value.seq_id[0][0] = 0;
+    batch.value.logits[0] = 1;
+    decode_status = llama_decode(ctx, batch.value);
+    return decode_status == 0;
+}
+
+std::string context_params_sha256(const llama_context_params & params) {
+    std::ostringstream material;
+    material << "n_ctx=" << params.n_ctx
+             << ";n_batch=" << params.n_batch
+             << ";n_ubatch=" << params.n_ubatch
+             << ";n_seq_max=" << params.n_seq_max
+             << ";n_threads=" << params.n_threads
+             << ";n_threads_batch=" << params.n_threads_batch
+             << ";embeddings=" << (params.embeddings ? 1 : 0)
+             << ";pooling_type=" << static_cast<int>(params.pooling_type)
+             << ";attention_type=" << static_cast<int>(params.attention_type);
+    const std::string text = material.str();
+    const std::vector<uint8_t> bytes(text.begin(), text.end());
+    return v14::sha256_hex(bytes);
+}
+
+std::string logits_step_sha256(const float * logits, int vocab_size) {
+    if (!logits || vocab_size < 1) return {};
+    static_assert(sizeof(float) == sizeof(uint32_t), "native logits must be IEEE-754 float32");
+    std::vector<uint8_t> bytes;
+    bytes.reserve(static_cast<std::size_t>(vocab_size) * sizeof(float));
+    for (int i = 0; i < vocab_size; ++i) {
+        uint32_t bits = 0;
+        std::memcpy(&bits, logits + i, sizeof(bits));
+        bytes.push_back(static_cast<uint8_t>(bits & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 8u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 16u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((bits >> 24u) & 0xffu));
+    }
+    return v14::sha256_hex(bytes);
+}
+
+struct MatrixInput {
+    std::string condition;
+    int rows = 0;
+    std::vector<int> positions;
+    std::vector<float> values;
+};
+
+bool run_hybrid_state_roundtrip(
+        llama_model * model,
+        const llama_context_params & base_context_params,
+        const MatrixInput & prefill,
+        int input_dim,
+        int output_dim,
+        const std::vector<int32_t> & continuation_tokens,
+        std::string & receipt_json) {
+    if (!model || prefill.condition != "LATENT_CANDIDATE" ||
+        prefill.rows < 1 || prefill.rows > v14::kMaxRows ||
+        !v14::valid_batch(prefill.rows, input_dim, prefill.values) ||
+        !v14::valid_positions(prefill.rows, prefill.positions, v14::kMaxPosition) ||
+        prefill.positions.size() != static_cast<std::size_t>(prefill.rows) ||
+        continuation_tokens.empty() || continuation_tokens.size() > 64) return false;
+
+    char architecture[128] = {};
+    if (llama_model_meta_val_str(model, "general.architecture", architecture, sizeof(architecture)) <= 0 ||
+        std::string(architecture).rfind("lfm2", 0) != 0) {
+        std::cerr << "full hybrid state roundtrip is restricted to LFM2 architectures\n";
+        return false;
+    }
+
+    const int model_context = llama_model_n_ctx_train(model);
+    if (model_context <= 0 ||
+        prefill.rows + static_cast<int>(continuation_tokens.size()) > model_context) return false;
+    llama_context_params roundtrip_params = base_context_params;
+    roundtrip_params.n_ctx = static_cast<uint32_t>(std::min(
+        model_context, std::max(64, prefill.rows + static_cast<int>(continuation_tokens.size()))));
+    roundtrip_params.n_batch = std::max(
+        base_context_params.n_batch, static_cast<uint32_t>(prefill.rows));
+    roundtrip_params.n_ubatch = std::max(
+        base_context_params.n_ubatch, static_cast<uint32_t>(prefill.rows));
+    roundtrip_params.n_seq_max = 1;
+    roundtrip_params.embeddings = true;
+    roundtrip_params.pooling_type = LLAMA_POOLING_TYPE_NONE;
+    roundtrip_params.attention_type = LLAMA_ATTENTION_TYPE_CAUSAL;
+    ContextGuard source_context;
+    ContextGuard destination;
+    source_context.value = llama_init_from_model(model, roundtrip_params);
+    destination.value = llama_init_from_model(model, roundtrip_params);
+    if (!source_context.value || !destination.value) return false;
+    std::vector<float> source_prefill_output;
+    int source_prefill_status = -999;
+    if (!decode_embeddings(source_context.value, model, prefill.rows, input_dim, output_dim,
+                           prefill.positions, prefill.values, source_prefill_output,
+                           source_prefill_status)) return false;
+    std::fill(source_prefill_output.begin(), source_prefill_output.end(), 0.0f);
+    const std::string prefill_input_sha256 = v14::float32_le_sha256(prefill.values);
+    if (!v14::valid_sha256_hex(prefill_input_sha256)) return false;
+
+    struct ZeroizingState {
+        std::vector<uint8_t> bytes;
+        ~ZeroizingState() { std::fill(bytes.begin(), bytes.end(), 0u); }
+    } state;
+    const auto capture_started = std::chrono::steady_clock::now();
+    const std::size_t state_size = llama_state_seq_get_size(source_context.value, 0);
+    if (state_size == 0 || state_size > 16u * 1024u * 1024u) return false;
+    try {
+        state.bytes.resize(state_size);
+    } catch (...) {
+        return false;
+    }
+    const std::size_t copied_bytes = llama_state_seq_get_data(
+        source_context.value, state.bytes.data(), state.bytes.size(), 0);
+    const uint64_t capture_duration_us = static_cast<uint64_t>(
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::steady_clock::now() - capture_started).count());
+    if (copied_bytes != state_size) return false;
+    const std::string state_sha256 = v14::sha256_hex(state.bytes);
+
+    const std::size_t truncated_bytes = llama_state_seq_set_data(
+        destination.value, state.bytes.data(), state_size > 0 ? state_size - 1 : 0, 0);
+    const bool truncated_restore_rejected = truncated_bytes != state_size;
+    llama_memory_clear(llama_get_memory(destination.value), true);
+
+    const auto restore_started = std::chrono::steady_clock::now();
+    const std::size_t restored_bytes = llama_state_seq_set_data(
+        destination.value, state.bytes.data(), state.bytes.size(), 0);
+    const uint64_t restore_duration_us = static_cast<uint64_t>(
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::steady_clock::now() - restore_started).count());
+    if (restored_bytes != state_size) return false;
+
+    const llama_vocab * vocab = llama_model_get_vocab(model);
+    const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
+    if (vocab_size < 1) return false;
+
+    std::vector<uint8_t> baseline_digest_material;
+    std::vector<uint8_t> restored_digest_material;
+    baseline_digest_material.reserve(continuation_tokens.size() * 64u);
+    restored_digest_material.reserve(continuation_tokens.size() * 64u);
+    uint64_t top1_match_count = 0;
+    long double squared_error_sum = 0.0L;
+    uint64_t compared_logit_count = 0;
+    double max_abs_logit_diff = 0.0;
+    int source_decode_status = 0;
+    int destination_decode_status = 0;
+
+    for (std::size_t i = 0; i < continuation_tokens.size(); ++i) {
+        const int32_t token = continuation_tokens[i];
+        if (token < 0 || token >= vocab_size) return false;
+        const int32_t position = prefill.rows + static_cast<int32_t>(i);
+        if (!decode_roundtrip_token(source_context.value, token, position, source_decode_status) ||
+            !decode_roundtrip_token(destination.value, token, position, destination_decode_status)) return false;
+
+        const float * source_logits = llama_get_logits_ith(source_context.value, -1);
+        const float * destination_logits = llama_get_logits_ith(destination.value, -1);
+        if (!source_logits || !destination_logits) return false;
+        int source_top1 = -1;
+        int destination_top1 = -1;
+        float source_best = -std::numeric_limits<float>::infinity();
+        float destination_best = -std::numeric_limits<float>::infinity();
+        for (int j = 0; j < vocab_size; ++j) {
+            const float a = source_logits[j];
+            const float b = destination_logits[j];
+            if (std::isnan(a) || std::isnan(b)) return false;
+            if (a > source_best) { source_best = a; source_top1 = j; }
+            if (b > destination_best) { destination_best = b; destination_top1 = j; }
+            double diff = 0.0;
+            if (a == b) {
+                diff = 0.0;
+            } else if (std::isinf(a) || std::isinf(b)) {
+                diff = 1.0e30;
+            } else {
+                diff = std::abs(static_cast<double>(a) - static_cast<double>(b));
+            }
+            max_abs_logit_diff = std::max(max_abs_logit_diff, diff);
+            squared_error_sum += static_cast<long double>(diff) * diff;
+            ++compared_logit_count;
+        }
+        if (source_top1 >= 0 && source_top1 == destination_top1) ++top1_match_count;
+
+        const std::string source_step_sha = logits_step_sha256(source_logits, vocab_size);
+        const std::string destination_step_sha = logits_step_sha256(destination_logits, vocab_size);
+        if (!v14::valid_sha256_hex(source_step_sha) ||
+            !v14::valid_sha256_hex(destination_step_sha)) return false;
+        baseline_digest_material.insert(
+            baseline_digest_material.end(), source_step_sha.begin(), source_step_sha.end());
+        restored_digest_material.insert(
+            restored_digest_material.end(), destination_step_sha.begin(), destination_step_sha.end());
+    }
+
+    const double rms_logit_diff = compared_logit_count == 0 ? 0.0 :
+        std::sqrt(static_cast<double>(squared_error_sum / compared_logit_count));
+    const std::string baseline_logits_sha256 = v14::sha256_hex(baseline_digest_material);
+    const std::string restored_logits_sha256 = v14::sha256_hex(restored_digest_material);
+    std::fill(state.bytes.begin(), state.bytes.end(), 0u);
+    const bool state_buffer_zeroized = std::all_of(
+        state.bytes.begin(), state.bytes.end(), [](uint8_t value) { return value == 0u; });
+    const std::string params_sha256 = context_params_sha256(roundtrip_params);
+    const bool roundtrip_passed = truncated_restore_rejected && state_buffer_zeroized &&
+        state_size == copied_bytes && state_size == restored_bytes &&
+        top1_match_count == continuation_tokens.size() &&
+        max_abs_logit_diff <= 1.0e-4 && rms_logit_diff <= 1.0e-5;
+
+    std::ostringstream out;
+    out << "{\"schema\":\"v14.native-hybrid-state-roundtrip/2\""
+        << ",\"status\":\"READ_ONLY_ROUNDTRIP\""
+        << ",\"state_api\":\"LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA\""
+        << ",\"state_scope\":\"FULL_HYBRID_SEQUENCE\""
+        << ",\"state_components\":[\"ATTENTION_KV\",\"RECURRENT_SHORTCONV\"]"
+        << ",\"prefill_condition\":\"LATENT_CANDIDATE\""
+        << ",\"prefill_rows\":" << prefill.rows
+        << ",\"prefill_input_sha256\":\"" << prefill_input_sha256 << "\""
+        << ",\"prefill_decode_status\":" << source_prefill_status
+        << ",\"source_sequence_id\":0,\"destination_sequence_id\":0"
+        << ",\"state_bytes\":" << state_size
+        << ",\"get_size_bytes\":" << state_size
+        << ",\"get_data_bytes\":" << copied_bytes
+        << ",\"set_data_bytes\":" << restored_bytes
+        << ",\"state_sha256\":\"" << state_sha256 << "\""
+        << ",\"capture_duration_us\":" << capture_duration_us
+        << ",\"restore_duration_us\":" << restore_duration_us
+        << ",\"baseline_logits_sha256\":\"" << baseline_logits_sha256 << "\""
+        << ",\"restored_logits_sha256\":\"" << restored_logits_sha256 << "\""
+        << ",\"continuation_token_count\":" << continuation_tokens.size()
+        << ",\"top1_match_count\":" << top1_match_count
+        << ",\"max_abs_logit_diff\":" << v14::number(max_abs_logit_diff)
+        << ",\"rms_logit_diff\":" << v14::number(rms_logit_diff)
+        << ",\"roundtrip_passed\":" << (roundtrip_passed ? "true" : "false")
+        << ",\"truncated_restore_rejected\":" << (truncated_restore_rejected ? "true" : "false")
+        << ",\"attention_kv_included\":true,\"recurrent_shortconv_included\":true"
+        << ",\"raw_state_exported\":false,\"state_persisted\":false"
+        << ",\"state_buffer_zeroized\":" << (state_buffer_zeroized ? "true" : "false")
+        << ",\"installed_runtime_touched\":false,\"production_route\":false"
+        << ",\"training_authority\":0,\"native_receiver_authority\":0"
+        << ",\"context_params_sha256\":\"" << params_sha256 << "\"}";
+    receipt_json = out.str();
+    return true;
+}
+
 void print_version() {
     const char * version = llama_version();
     std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown")
-              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\"}\n";
+              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
@@ -602,13 +869,6 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     return 0;
 }
 
-struct MatrixInput {
-    std::string condition;
-    int rows = 0;
-    std::vector<int> positions;
-    std::vector<float> values;
-};
-
 bool decode_bos(llama_context * ctx, const llama_model * model, int & decode_status) {
     if (!ctx || !model) return false;
     llama_memory_clear(llama_get_memory(ctx), true);
@@ -633,14 +893,17 @@ bool decode_bos(llama_context * ctx, const llama_model * model, int & decode_sta
 int run_native_matrix(const std::string & model_path, int input_dim, int threads,
                       const std::vector<MatrixInput> & matrices,
                       const std::vector<int32_t> & target_tokens,
-                      const std::string & target_hash) {
+                      const std::string & target_hash,
+                      bool include_hybrid_state_roundtrip) {
     const std::vector<std::string> expected_conditions = {
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
     };
     const std::string verified_target_hash = v14::target_token_ids_sha256(target_tokens);
     if (matrices.size() != expected_conditions.size() || target_tokens.empty() ||
-        target_tokens.size() > 512 || !v14::target_token_ids_hash_matches(target_tokens, target_hash)) return 2;
+        target_tokens.size() > 512 ||
+        (include_hybrid_state_roundtrip && target_tokens.size() > 64) ||
+        !v14::target_token_ids_hash_matches(target_tokens, target_hash)) return 2;
     int max_rows = 1;
     int max_position = 0;
     for (std::size_t i = 0; i < matrices.size(); ++i) {
@@ -689,6 +952,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
     if (!context.value) return 5;
     std::ostringstream condition_json;
     condition_json << "[";
+    std::string hybrid_state_roundtrip_json;
     for (std::size_t i = 0; i < matrices.size(); ++i) {
         const auto & item = matrices[i];
         std::vector<float> output;
@@ -699,6 +963,14 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
             : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
+        if (include_hybrid_state_roundtrip && item.condition == "LATENT_CANDIDATE") {
+            if (!run_hybrid_state_roundtrip(model.value, context_params, item,
+                                            input_dim, output_dim, target_tokens,
+                                            hybrid_state_roundtrip_json)) {
+                std::cerr << "native full-hybrid same-model roundtrip failed\n";
+                return 9;
+            }
+        }
         v14::NativeKvSnapshot kv_snapshot;
         std::string kv_snapshot_error;
         if (!v14::capture_readonly_kv_snapshot(context.value, 0, kv_snapshot, kv_snapshot_error)) {
@@ -745,7 +1017,12 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
               << ",\"output_dim\":" << output_dim
               << ",\"target_token_count\":" << target_tokens.size()
               << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
-              << ",\"conditions\":" << condition_json.str() << "}\n";
+              << ",\"conditions\":" << condition_json.str();
+    if (include_hybrid_state_roundtrip) {
+        if (hybrid_state_roundtrip_json.empty()) return 9;
+        std::cout << ",\"hybrid_state_roundtrip\":" << hybrid_state_roundtrip_json;
+    }
+    std::cout << "}\n";
     return 0;
 }
 }  // namespace
@@ -762,6 +1039,7 @@ int main(int argc, char ** argv) {
     }
     std::string model_path, positions_text, target_hash, conditions_text;
     int rows = 0, input_dim = 0, threads = 1, target_count = 0, matrix_count = 0;
+    bool include_hybrid_state_roundtrip = false;
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
         if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
@@ -773,6 +1051,7 @@ int main(int argc, char ** argv) {
         else if (arg == "--target-token-ids-sha256" && i + 1 < argc) target_hash = argv[++i];
         else if (arg == "--matrix-count" && i + 1 < argc) matrix_count = std::atoi(argv[++i]);
         else if (arg == "--conditions" && i + 1 < argc) conditions_text = argv[++i];
+        else if (arg == "--hybrid-state-roundtrip") include_hybrid_state_roundtrip = true;
         else {
             std::cerr << "unknown or incomplete argument\n";
             return 64;
@@ -790,8 +1069,9 @@ int main(int argc, char ** argv) {
         if (model_path.empty() || rows != 0 || !positions_text.empty() || input_dim < 1 ||
             threads < 1 || matrix_count != static_cast<int>(expected_conditions.size()) ||
             conditions != expected_conditions || target_count < 1 || target_count > 512 ||
+            (include_hybrid_state_roundtrip && target_count > 64) ||
             !v14::valid_sha256_hex(target_hash)) {
-            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256\n";
+            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip]\n";
             return 64;
         }
         std::vector<MatrixInput> matrices;
@@ -842,16 +1122,17 @@ int main(int argc, char ** argv) {
             std::cerr << "unexpected trailing binary input payload\n";
             return 67;
         }
-        return run_native_matrix(model_path, input_dim, threads, matrices, target_tokens, target_hash);
+        return run_native_matrix(model_path, input_dim, threads, matrices, target_tokens, target_hash,
+                                  include_hybrid_state_roundtrip);
     }
     std::vector<int> positions;
-    if (model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
+    if (include_hybrid_state_roundtrip || model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
         target_count < 0 || target_count > 512 ||
         (target_count == 0 && !target_hash.empty()) ||
         (target_count > 0 && !v14::valid_sha256_hex(target_hash)) ||
         !v14::valid_batch(rows, input_dim, std::vector<float>(static_cast<std::size_t>(rows) * input_dim, 0.0f)) ||
         !v14::parse_positions(positions_text, rows, positions)) {
-        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --positions CSV --threads N [--target-count N --target-token-ids-sha256 SHA256]\n";
+        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --positions CSV --threads N [--target-count N --target-token-ids-sha256 SHA256] [--hybrid-state-roundtrip]\n";
         return 64;
     }
     const std::size_t count = static_cast<std::size_t>(rows) * input_dim;

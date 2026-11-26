@@ -15,6 +15,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from .native_hybrid_state import HYBRID_STATE_SCHEMA, validate_native_hybrid_state_roundtrip
+
 SCHEMA = "v14.native-latent-receiver/2"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
@@ -450,17 +452,132 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     }
 
 
+
+def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
+        receiver_model_revision, receiver_tokenizer_revision, context_sha256,
+        binary_sha256, input_sha256, prefill_rows, target_sha256, target_count):
+    """Bind native same-model state metrics to the already-verified matrix identities."""
+    required = {
+        "schema", "status", "state_api", "state_scope", "state_components",
+        "prefill_condition", "prefill_rows", "prefill_input_sha256", "prefill_decode_status",
+        "source_sequence_id", "destination_sequence_id", "state_bytes",
+        "get_size_bytes", "get_data_bytes", "set_data_bytes", "state_sha256",
+        "capture_duration_us", "restore_duration_us", "baseline_logits_sha256",
+        "restored_logits_sha256", "continuation_token_count", "top1_match_count",
+        "max_abs_logit_diff", "rms_logit_diff", "roundtrip_passed",
+        "truncated_restore_rejected", "attention_kv_included",
+        "recurrent_shortconv_included", "raw_state_exported", "state_persisted",
+        "state_buffer_zeroized", "installed_runtime_touched", "production_route",
+        "training_authority", "native_receiver_authority", "context_params_sha256",
+    }
+    if not isinstance(raw, dict) or set(raw) != required:
+        raise NativeReceiverError("native hybrid-state receipt fields are missing or unexpected")
+    if (type(receiver_model_revision) is not str or not receiver_model_revision
+            or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
+        raise NativeReceiverError("hybrid-state receiver model/tokenizer revision binding is missing")
+    if not isinstance(context_sha256, str) or len(context_sha256) != 64 or any(
+            ch not in "0123456789abcdef" for ch in context_sha256):
+        raise NativeReceiverError("hybrid-state task context SHA is malformed")
+    if raw.get("prefill_condition") != "LATENT_CANDIDATE":
+        raise NativeReceiverError("native hybrid-state prefill condition is not LATENT_CANDIDATE")
+    if type(raw.get("prefill_rows")) is not int or raw["prefill_rows"] != prefill_rows:
+        raise NativeReceiverError("native hybrid-state prefill row count is misbound")
+    if type(raw.get("prefill_decode_status")) is not int or raw["prefill_decode_status"] != 0:
+        raise NativeReceiverError("native hybrid-state prefill decode did not pass")
+    prefill_input_sha256 = raw.get("prefill_input_sha256")
+    if (not isinstance(prefill_input_sha256, str) or len(prefill_input_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in prefill_input_sha256)
+            or prefill_input_sha256 != input_sha256):
+        raise NativeReceiverError("native hybrid-state prefill input binding mismatch")
+    context_params_sha256 = raw.get("context_params_sha256")
+    if not isinstance(context_params_sha256, str) or len(context_params_sha256) != 64 or any(
+            ch not in "0123456789abcdef" for ch in context_params_sha256):
+        raise NativeReceiverError("hybrid-state native context-parameter SHA is malformed")
+    receipt = {
+        "schema": raw["schema"],
+        "status": raw["status"],
+        "state_api": raw["state_api"],
+        "state_scope": raw["state_scope"],
+        "state_components": raw["state_components"],
+        "source_sequence_id": raw["source_sequence_id"],
+        "destination_sequence_id": raw["destination_sequence_id"],
+        "source_model_sha256": expected_model_sha256,
+        "destination_model_sha256": expected_model_sha256,
+        "source_model_revision": receiver_model_revision,
+        "destination_model_revision": receiver_model_revision,
+        "source_tokenizer_revision": receiver_tokenizer_revision,
+        "destination_tokenizer_revision": receiver_tokenizer_revision,
+        "source_llama_cpp_revision": PINNED_LLAMA_REVISION,
+        "destination_llama_cpp_revision": PINNED_LLAMA_REVISION,
+        "source_binary_sha256": binary_sha256,
+        "destination_binary_sha256": binary_sha256,
+        "source_context_sha256": context_sha256,
+        "destination_context_sha256": context_sha256,
+        "source_input_sha256": prefill_input_sha256,
+        "prefill_condition": raw["prefill_condition"],
+        "prefill_rows": raw["prefill_rows"],
+        "prefill_decode_status": raw["prefill_decode_status"],
+        "continuation_token_ids_sha256": target_sha256,
+        "source_context_params_sha256": context_params_sha256,
+        "destination_context_params_sha256": context_params_sha256,
+        "state_bytes": raw["state_bytes"],
+        "get_size_bytes": raw["get_size_bytes"],
+        "get_data_bytes": raw["get_data_bytes"],
+        "set_data_bytes": raw["set_data_bytes"],
+        "state_sha256": raw["state_sha256"],
+        "capture_duration_us": raw["capture_duration_us"],
+        "restore_duration_us": raw["restore_duration_us"],
+        "baseline_logits_sha256": raw["baseline_logits_sha256"],
+        "restored_logits_sha256": raw["restored_logits_sha256"],
+        "continuation_token_count": raw["continuation_token_count"],
+        "top1_match_count": raw["top1_match_count"],
+        "max_abs_logit_diff": raw["max_abs_logit_diff"],
+        "rms_logit_diff": raw["rms_logit_diff"],
+        "roundtrip_passed": raw["roundtrip_passed"],
+        "truncated_restore_rejected": raw["truncated_restore_rejected"],
+        "attention_kv_included": raw["attention_kv_included"],
+        "recurrent_shortconv_included": raw["recurrent_shortconv_included"],
+        "raw_state_exported": raw["raw_state_exported"],
+        "state_persisted": raw["state_persisted"],
+        "state_buffer_zeroized": raw["state_buffer_zeroized"],
+        "installed_runtime_touched": raw["installed_runtime_touched"],
+        "production_route": raw["production_route"],
+        "training_authority": raw["training_authority"],
+        "native_receiver_authority": raw["native_receiver_authority"],
+    }
+    try:
+        return validate_native_hybrid_state_roundtrip(
+            receipt,
+            expected_model_sha256=expected_model_sha256,
+            expected_model_revision=receiver_model_revision,
+            expected_tokenizer_revision=receiver_tokenizer_revision,
+            expected_llama_cpp_revision=PINNED_LLAMA_REVISION,
+            expected_binary_sha256=binary_sha256,
+            expected_context_sha256=context_sha256,
+            expected_input_sha256=input_sha256,
+            expected_target_token_ids_sha256=target_sha256,
+            expected_target_token_count=target_count,
+        )
+    except Exception as exc:
+        raise NativeReceiverError("native hybrid-state roundtrip receipt failed validation") from exc
+
+
 def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
                  sender_tap_id, sender_model_revision, sender_model_sha256, tokenizer_revision,
                  receiver_model_revision, source_id, generation_id, condition_inputs,
                  target_token_ids, position_mode, deadline, threads=1, binary_path=None,
                  cancel_event=None, target_environment=None,
-                 device_execution_receipt_sha256=None, device_runtime_build_id=None):
+                 device_execution_receipt_sha256=None, device_runtime_build_id=None,
+                 include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
+                 context_sha256=None):
     """Score the fixed eight-condition task matrix with one native model load.
 
-    Only hashes, target-token log-probabilities and dimensions are returned.
-    No input text, token IDs, vectors, learning, routing or persistence are added.
+    Only hashes, target-token log-probabilities, dimensions and optional sanitized
+    same-model hybrid-state metrics are returned. No raw state, text, token IDs,
+    vectors, learning, routing or persistence are added.
     """
+    from .native_receiver_utility import validate_native_receiver_kv_snapshot
+
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
@@ -486,6 +603,11 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
+    if type(include_hybrid_state_roundtrip) is not bool:
+        raise NativeReceiverError("hybrid-state roundtrip opt-in must be boolean")
+    if include_hybrid_state_roundtrip and (len(target_token_ids) > 64
+            or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
+        raise NativeReceiverError("hybrid-state roundtrip requires 1..64 target IDs and receiver tokenizer revision")
     target_ids = tuple(target_token_ids)
     try:
         target_payload = struct.pack("<" + "i" * len(target_ids), *target_ids)
@@ -585,8 +707,14 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if version.returncode != 0:
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
-    if version_data.get("task_matrix_supported") is not True or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1":
-        raise NativeReceiverUnavailable("native receiver binary does not advertise eight-condition task scoring")
+    if (version_data.get("task_matrix_supported") is not True
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1"
+            or version_data.get("kv_snapshot_supported") is not True
+            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
+    if include_hybrid_state_roundtrip and (version_data.get("hybrid_state_roundtrip_supported") is not True
+            or version_data.get("hybrid_state_roundtrip_schema") != HYBRID_STATE_SCHEMA):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned full-hybrid state roundtrip")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
@@ -597,6 +725,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         "--threads", str(max(1, min(int(threads), 2))),
         "--target-count", str(len(target_ids)), "--target-token-ids-sha256", target_sha256,
     ]
+    if include_hybrid_state_roundtrip:
+        command.append("--hybrid-state-roundtrip")
     started = time.monotonic()
     returncode, stdout, stderr = _run_cancelable(command, bytes(matrix_payload), deadline, cancel_event)
     duration_s = time.monotonic() - started
@@ -614,19 +744,50 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             or raw.get("target_token_ids_sha256") != target_sha256
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
+    hybrid_state_roundtrip = None
+    if include_hybrid_state_roundtrip:
+        hybrid_state_roundtrip = _build_native_hybrid_state_roundtrip_receipt(
+            raw.get("hybrid_state_roundtrip"),
+            expected_model_sha256=expected_model_sha256,
+            receiver_model_revision=receiver_model_revision,
+            receiver_tokenizer_revision=receiver_tokenizer_revision,
+            context_sha256=context_sha256,
+            binary_sha256=binary_sha256_before,
+            input_sha256=prepared[2]["input_sha256"],
+            prefill_rows=prepared[2]["rows"],
+            target_sha256=target_sha256,
+            target_count=len(target_ids),
+        )
+    elif "hybrid_state_roundtrip" in raw:
+        raise NativeReceiverError("native receiver returned an unrequested hybrid-state roundtrip")
+
     native_conditions = raw.get("conditions")
     if not isinstance(native_conditions, list) or len(native_conditions) != len(conditions):
         raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
     condition_scores = {}
     for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
+        expected_context_rows = 1 if prepared_item["rows"] == 0 else prepared_item["rows"]
         if (not isinstance(native_item, dict) or native_item.get("condition") != expected
                 or native_item.get("input_rows") != prepared_item["rows"]
+                or native_item.get("context_rows") != expected_context_rows
                 or native_item.get("input_dim") != input_dim
                 or native_item.get("position_ids") != prepared_item["positions"]
                 or native_item.get("position_mode") != position_mode
                 or type(native_item.get("decode_status")) is not int or native_item.get("decode_status") != 0
                 or native_item.get("native_input_consumed") is not True):
             raise NativeReceiverError("native receiver condition receipt is missing or misbound: " + expected)
+        try:
+            kv_snapshot = validate_native_receiver_kv_snapshot(
+                native_item.get("kv_snapshot"),
+                expected_rows=expected_context_rows,
+                expected_condition=expected,
+                expected_model_sha256=expected_model_sha256,
+                expected_input_sha256=prepared_item["input_sha256"],
+            )
+        except Exception as exc:
+            raise NativeReceiverError(
+                "native receiver K/V snapshot is missing or misbound: " + expected
+            ) from exc
         score = native_item.get("target_score")
         token_scores = score.get("token_logprobs") if isinstance(score, dict) else None
         if (not isinstance(score, dict) or score.get("schema") != "v14.native-receiver-target-score/1"
@@ -657,8 +818,11 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         if target_env in {"TERMUX_ANDROID", "REDMI"}:
             receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
             receipt["device_runtime_build_id"] = device_runtime_build_id
+        receipt["kv_snapshot"] = kv_snapshot
         condition_scores[expected] = receipt
 
+    if hybrid_state_roundtrip is not None:
+        condition_scores["LATENT_CANDIDATE"]["hybrid_state_roundtrip"] = hybrid_state_roundtrip
     if _sha256_file(model) != expected_model_sha256:
         raise NativeReceiverError("receiver model changed during task-matrix probe")
     if _sha256_file(binary) != binary_sha256_before:

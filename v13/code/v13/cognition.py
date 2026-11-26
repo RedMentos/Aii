@@ -7,6 +7,7 @@ from .inputs import looks_like_terminal_log
 from .common import dumps,uid,atomic_write,file_hash,Limits
 from .memory import relevance,entities
 from .runners import check
+from .native_tap_contract import validate_native_final_rmsnorm_output
 from .enlightened_space import EnlightenedSpace
 ROUTES=['simple','detail','gist','both']
 def scaffold_route(text):
@@ -163,22 +164,27 @@ class Cognition:
         """Source-bound native body observation; no receiver or learning authority."""
         if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
         text=self.s.read_source(source_ref);tap_runner=self.r.pool.get_tap(role);native=tap_runner.tap(text,self.r.cancel_event,deadline)
-        bound_tap_id=getattr(tap_runner,'tap_id',None)
-        if (not isinstance(bound_tap_id,str) or native.get('tap_id')!=bound_tap_id or
-                native.get('metrics',{}).get('tap_id')!=bound_tap_id):
-            raise ValueError('Native tap identity differs from the validated model binding')
+        tap_contract=validate_native_final_rmsnorm_output(native,tap_runner,role)
+        bound_tap_id=tap_contract['tap_id']
         path=self.r.home/'data/blobs'/(uid('tap')+'.json');atomic_write(path,dumps({'token_ids':native['token_ids'],'vectors':native['vectors']}))
         prediction=None
         try:prediction=self.r.learner.predict_states(role,native['vectors'])
         except Exception as exc:self.s.log('local_predictor_unavailable',e['event_id'],{'role':role,'error':type(exc).__name__})
         p=packet('LatentTapPacket',role,e['event_id'],e['brain_generation_id'],[source_ref],role=role,source_ref=source_ref,
-                 tap_id=bound_tap_id,model_revision=self.r.models.revision(role),runner_revision='b10964',
-                 token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
+                 tap_id=bound_tap_id,activation_space=tap_contract['activation_space'],
+                 capture_method=tap_contract['capture_method'],model_revision=self.r.models.revision(role),
+                 runner_revision=tap_contract['runner_revision'],token_ids=native['token_ids'],
+                 feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),
+                 shape=[len(native['vectors']),tap_contract['embedding_dim']],
                  role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=native['metrics'],local_prediction=prediction)
         self.s.add_packet('LatentTapPacket',p);self.s.log('native_tap',e['event_id'],native['metrics']|{'model_revision':p['model_revision'],'source_ref':source_ref});return p
     def read_tap(self,p):
         row=self.s.one("SELECT payload FROM packets WHERE kind='LatentTapPacket' AND id=?",(p['packet_id'],))
         if not row or json.loads(row['payload'])!=p:raise ValueError('Tap packet is not the stored observation')
+        if ("activation_space" in p or "capture_method" in p) and (
+                p.get("activation_space")!="FINAL_RMSNORM_PREFILL_F32" or
+                p.get("capture_method")!="LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY"):
+            raise ValueError('Tap activation-space/capture provenance invalid')
         self.s.read_source(p['source_ref']);path=(self.r.home/p['feature_path']).resolve()
         if not path.is_relative_to((self.r.home/'data/blobs').resolve()) or file_hash(path)!=p['feature_sha256']:raise ValueError('Tap feature file/source binding invalid')
         data=json.loads(path.read_text())

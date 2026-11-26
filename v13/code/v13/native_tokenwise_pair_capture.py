@@ -17,6 +17,8 @@ import math
 import time
 from pathlib import Path
 
+from .native_tap_contract import SENDER_ACTIVATION_SPACE, SENDER_CAPTURE_METHOD, validate_latent_tap_packet
+
 from .native_input_embedding_capture import (
     DEFAULT_TIMEOUT_SECONDS,
     MAX_SOURCE_BYTES,
@@ -46,7 +48,7 @@ MAX_SINGLE_PAIR_VECTOR_BYTES = 8 * 1024 * 1024
 
 def _in_memory_pair_record_bytes(record):
     if (not isinstance(record, dict)
-            or record.get("schema") != "v14.native-tokenwise-pairing/1"
+            or record.get("schema") != "v14.native-tokenwise-pairing/2"
             or record.get("status") != "PAIRED_DIAGNOSTIC"
             or record.get("persisted") is not False
             or record.get("production_route") is not False
@@ -101,7 +103,7 @@ def _verify_pair_record(record, *, source_ref, event, session_id, sender_role,
                         receiver_role, sender_binding, receiver_binding, tap_packet):
     if not isinstance(record, dict):
         raise NativeTokenwisePairCaptureError("tokenwise pair builder returned no record")
-    if (record.get("schema") != "v14.native-tokenwise-pairing/1"
+    if (record.get("schema") != "v14.native-tokenwise-pairing/2"
             or record.get("status") != "PAIRED_DIAGNOSTIC"
             or record.get("persisted") is not False
             or record.get("production_route") is not False
@@ -126,6 +128,10 @@ def _verify_pair_record(record, *, source_ref, event, session_id, sender_role,
             or sender.get("model_revision") != sender_binding.get("revision")
             or sender.get("model_sha256") != sender_binding.get("sha256")
             or sender.get("tap_id") != tap_packet.get("tap_id")
+            or sender.get("activation_space") != SENDER_ACTIVATION_SPACE
+            or sender.get("capture_method") != SENDER_CAPTURE_METHOD
+            or sender.get("embedding_dim") != tap_packet.get("shape", [None, None])[1]
+            or sender.get("runner_revision") != tap_packet.get("runner_revision")
             or sender.get("feature_sha256") != tap_packet.get("feature_sha256")
             or receiver.get("role") != receiver_role
             or receiver.get("model_revision") != receiver_binding.get("revision")
@@ -223,6 +229,10 @@ def capture_native_tokenwise_pair_record(
             _check_live(runtime, deadline, "sender tap")
             tap_packet = cognition.tap(sender_role, event, source_ref, deadline)
             sender_tap_data = cognition.read_tap(tap_packet)
+            validate_latent_tap_packet(
+                tap_packet, sender_tap_data, sender_role,
+                expected_runner_revision=RUNNER_REVISION,
+            )
             _check_live(runtime, deadline, "sender content tokenization")
             sender_runner = runtime.pool.get_tap(sender_role)
             sender_runner.load(runtime.cancel_event, deadline)
@@ -364,6 +374,9 @@ def capture_native_tokenwise_pair_record(
             "receiver_model_revision": receiver_binding["revision"],
             "receiver_model_sha256": receiver_binding["sha256"],
             "sender_tap_id": tap_packet["tap_id"],
+            "sender_activation_space": tap_packet["activation_space"],
+            "sender_capture_method": tap_packet["capture_method"],
+            "sender_embedding_dim": tap_packet["shape"][1],
             "sender_feature_sha256": tap_packet["feature_sha256"],
             "receiver_tap_id": receiver["tap_id"],
             "receiver_manifest_sha256": receiver["manifest_sha256"],

@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+import v13.native_latent_receiver as native_receiver
 from v13.native_latent_receiver import (
     NativeReceiverError,
     NativeReceiverUnavailable,
@@ -16,6 +17,7 @@ from v13.native_latent_receiver import (
     POSITION_MODE,
     SCHEMA,
     probe,
+    probe_matrix,
 )
 
 
@@ -148,6 +150,223 @@ def test_probe_reports_native_decode_and_input_effect(tmp_path):
         struct.pack("<4f", 0.25, -0.5, 1.0, 0.75)
     ).hexdigest()
     assert model.read_bytes() == b"pinned-test-model-bytes"
+
+
+def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_path, monkeypatch):
+    home, model, binary, model_sha = fixture(tmp_path)
+    binary.write_text("#!/bin/sh\\nexit 0\\n", encoding="utf-8")
+    binary.chmod(0o755)
+    conditions = (
+        "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
+        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
+    )
+    condition_inputs = []
+    native_conditions = []
+    target_ids = [101, 202]
+    target_sha = hashlib.sha256(struct.pack("<ii", *target_ids)).hexdigest()
+    position_sha = hashlib.sha256(struct.pack("<i", 0)).hexdigest()
+    for condition in conditions:
+        vectors = [] if condition == "NO_MESSAGE" else [[0.25, -0.5]]
+        positions = [] if condition == "NO_MESSAGE" else [0]
+        condition_inputs.append({"condition": condition, "vectors": vectors, "position_ids": positions})
+        snapshot_digest = hashlib.sha256(("snapshot-" + condition).encode()).hexdigest()
+        native_conditions.append({
+            "condition": condition,
+            "input_rows": len(vectors),
+            "context_rows": 1,
+            "input_dim": 2,
+            "position_ids": positions,
+            "position_mode": POSITION_MODE,
+            "decode_status": 0,
+            "native_input_consumed": True,
+            "kv_snapshot": {
+                "schema": "v14.native-receiver-kv-snapshot/1",
+                "status": "READ_ONLY_SNAPSHOT",
+                "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
+                "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+                "sequence_id": 0,
+                "layer_id": 0,
+                "attention_layer_count": 12,
+                "active_cell_count": 1,
+                "position_ids": [0],
+                "position_sha256": position_sha,
+                "k_shape": [64, 8, 128, 1],
+                "v_shape": [128, 8, 64, 1],
+                "k_type": "f16",
+                "v_type": "f16",
+                "k_sha256": hashlib.sha256(("k-" + condition).encode()).hexdigest(),
+                "v_sha256": hashlib.sha256(("v-" + condition).encode()).hexdigest(),
+                "combined_sha256": snapshot_digest,
+                "stable_read_sha256": snapshot_digest,
+                "bytes_read_per_snapshot": 64,
+                "double_read_bytes_read": 128,
+                "duration_us": 5,
+                "read_only": True,
+                "double_read_stable": True,
+                "raw_data_exported": False,
+                "recurrent_state_included": False,
+            },
+            "target_score": {
+                "schema": "v14.native-receiver-target-score/1",
+                "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
+                "target_token_count": len(target_ids),
+                "target_token_ids_sha256": target_sha,
+                "token_logprobs": [-0.75, -0.5],
+                "decode_status": 0,
+                "native_input_consumed": True,
+            },
+        })
+    raw = {
+        "schema": "v14.native-receiver-task-matrix/1",
+        "runner_revision": PINNED_LLAMA_REVISION,
+        "llama_version": "b10964",
+        "status": "SCORED",
+        "receiver_input_dim": 2,
+        "output_dim": 8,
+        "target_token_count": len(target_ids),
+        "target_token_ids_sha256": target_sha,
+        "conditions": native_conditions,
+        "hybrid_state_roundtrip": {
+            "schema": "v14.native-hybrid-state-roundtrip/2",
+            "status": "READ_ONLY_ROUNDTRIP",
+            "state_api": "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA",
+            "state_scope": "FULL_HYBRID_SEQUENCE",
+            "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
+            "prefill_condition": "LATENT_CANDIDATE",
+            "prefill_rows": 1,
+            "prefill_input_sha256": hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest(),
+            "prefill_decode_status": 0,
+            "source_sequence_id": 0,
+            "destination_sequence_id": 0,
+            "state_bytes": 4096,
+            "get_size_bytes": 4096,
+            "get_data_bytes": 4096,
+            "set_data_bytes": 4096,
+            "state_sha256": hashlib.sha256(b"state").hexdigest(),
+            "capture_duration_us": 100,
+            "restore_duration_us": 120,
+            "baseline_logits_sha256": hashlib.sha256(b"baseline").hexdigest(),
+            "restored_logits_sha256": hashlib.sha256(b"restored").hexdigest(),
+            "continuation_token_count": len(target_ids),
+            "top1_match_count": len(target_ids),
+            "max_abs_logit_diff": 0.0,
+            "rms_logit_diff": 0.0,
+            "roundtrip_passed": True,
+            "truncated_restore_rejected": True,
+            "attention_kv_included": True,
+            "recurrent_shortconv_included": True,
+            "raw_state_exported": False,
+            "state_persisted": False,
+            "state_buffer_zeroized": True,
+            "installed_runtime_touched": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "context_params_sha256": hashlib.sha256(b"params").hexdigest(),
+        },
+    }
+    version = {
+        "schema": SCHEMA,
+        "runner_revision": PINNED_LLAMA_REVISION,
+        "llama_version": "b10964",
+        "task_matrix_supported": True,
+        "task_matrix_schema": "v14.native-receiver-task-matrix/1",
+        "kv_snapshot_supported": True,
+        "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
+        "hybrid_state_roundtrip_supported": True,
+        "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/2",
+    }
+    monkeypatch.setattr(
+        native_receiver.subprocess, "run",
+        lambda *args, **kwargs: type("Completed", (), {
+            "returncode": 0, "stdout": json.dumps(version).encode(), "stderr": b"",
+        })(),
+    )
+    commands = []
+    def fake_matrix_run(command, *args, **kwargs):
+        commands.append(list(command))
+        return 0, json.dumps(raw).encode(), b""
+    monkeypatch.setattr(native_receiver, "_run_cancelable", fake_matrix_run)
+    result = probe_matrix(
+        home=home,
+        model_path=model,
+        expected_model_sha256=model_sha,
+        sender_role="B2_GIST",
+        receiver_role="C3_LANGUAGE",
+        sender_tap_id="qwen35.result_norm.final.v1",
+        sender_model_revision="qwen35-r1",
+        sender_model_sha256="b" * 64,
+        tokenizer_revision=None,
+        receiver_model_revision="lfm2-r1",
+        source_id="source-1",
+        generation_id="generation-1",
+        condition_inputs=condition_inputs,
+        target_token_ids=target_ids,
+        position_mode=POSITION_MODE,
+        deadline=time.monotonic() + 10,
+        threads=1,
+        binary_path=binary,
+        target_environment="SYNTHETIC",
+        include_hybrid_state_roundtrip=True,
+        receiver_tokenizer_revision="lfm2-tokenizer-r1",
+        context_sha256="c" * 64,
+    )
+    assert "--hybrid-state-roundtrip" in commands[0]
+    assert result["status"] == "SCORED"
+    assert len(result["condition_scores"]) == 8
+    for condition in conditions:
+        score = result["condition_scores"][condition]
+        snapshot = score["kv_snapshot"]
+        assert snapshot["condition"] == condition
+        assert snapshot["receiver_model_sha256"] == model_sha
+        assert snapshot["position_count"] == 1
+        assert "position_ids" not in snapshot
+        if condition == "NO_MESSAGE":
+            assert score["input_sha256"] == hashlib.sha256(b"").hexdigest()
+            assert "hybrid_state_roundtrip" not in score
+        elif condition == "LATENT_CANDIDATE":
+            roundtrip = score["hybrid_state_roundtrip"]
+            candidate_input_sha = hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest()
+            assert roundtrip["status"] == "READ_ONLY_ROUNDTRIP"
+            assert roundtrip["prefill_condition"] == "LATENT_CANDIDATE"
+            assert roundtrip["prefill_rows"] == 1
+            assert roundtrip["state_components"] == ["ATTENTION_KV", "RECURRENT_SHORTCONV"]
+            assert roundtrip["truncated_restore_rejected"] is True
+            assert roundtrip["source_input_sha256"] == candidate_input_sha
+            assert roundtrip["source_context_sha256"] == "c" * 64
+            assert roundtrip["source_tokenizer_revision"] == "lfm2-tokenizer-r1"
+            assert roundtrip["roundtrip_passed"] is True
+
+    expected_input_sha = hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest()
+    binary_sha = hashlib.sha256(binary.read_bytes()).hexdigest()
+    wrong_hash = dict(raw["hybrid_state_roundtrip"], prefill_input_sha256="f" * 64)
+    with pytest.raises(NativeReceiverError, match="prefill input binding"):
+        native_receiver._build_native_hybrid_state_roundtrip_receipt(
+            wrong_hash,
+            expected_model_sha256=model_sha,
+            receiver_model_revision="lfm2-r1",
+            receiver_tokenizer_revision="lfm2-tokenizer-r1",
+            context_sha256="c" * 64,
+            binary_sha256=binary_sha,
+            input_sha256=expected_input_sha,
+            prefill_rows=1,
+            target_sha256=target_sha,
+            target_count=len(target_ids),
+        )
+    wrong_rows = dict(raw["hybrid_state_roundtrip"], prefill_rows=2)
+    with pytest.raises(NativeReceiverError, match="prefill row count"):
+        native_receiver._build_native_hybrid_state_roundtrip_receipt(
+            wrong_rows,
+            expected_model_sha256=model_sha,
+            receiver_model_revision="lfm2-r1",
+            receiver_tokenizer_revision="lfm2-tokenizer-r1",
+            context_sha256="c" * 64,
+            binary_sha256=binary_sha,
+            input_sha256=expected_input_sha,
+            prefill_rows=1,
+            target_sha256=target_sha,
+            target_count=len(target_ids),
+        )
 
 
 def test_dimension_mismatch_is_explicit_and_never_consumed(tmp_path):
