@@ -1,4 +1,4 @@
-"""Exact, text-only greeting reflex; never a general-purpose answer path."""
+"""Exact, text-only greeting and acknowledgment reflex; never a general-purpose answer path."""
 from __future__ import annotations
 
 import hashlib
@@ -90,7 +90,7 @@ def _event_is_exact_text_source(text: str, encoded: bytes, event: object) -> boo
 
 
 def match(text: str, event: dict | None = None) -> dict | None:
-    """Return a minimal deterministic acknowledgement only for an exact greeting.
+    """Return a deterministic reply only for an exact greeting or acknowledgment.
 
     A caller-provided event must bind the entire input to a matching text
     SourceRef. Audio, image, video, mixed-modality, malformed and longer

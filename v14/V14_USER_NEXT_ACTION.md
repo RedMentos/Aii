@@ -2075,3 +2075,11 @@ A child PR is stacked on the verified greeting Runtime pin-repair branch:
 - No full local Aii checkout; LOCAL_LINUX full-suite NOT_RUN. Redmi/Termux REDMI_UNVERIFIED. No device/model/weight/permission/data action.
 - User action: none. This is a draft candidate, not released or installed.
 
+
+
+## Exact-head follow-up — 2026-11-26
+
+- GitHub readback confirms PR #2536 head `987bcd22ac77bc1baeb1f302873a8900f0a58364` contains the matcher and Runtime tests; parent #2534 remains the exact base.
+- LOCAL_LINUX Python 3.13.5 isolated matcher harness: `py_compile` PASS; 14 allow/deny, source-hash, modality and normal-path fallthrough checks PASS. This is an isolated copy of the matcher logic, not the full Aii Runtime suite.
+- Exact GitHub CI: Runtime deployment integrity PASS; Core fastpath/interrupted-runner retention PASS; staged/integrated regression still IN_PROGRESS at the last poll. Do not mark PR green until that job completes on the final head.
+- REDMI_UNVERIFIED / NOT_RELEASED. No device action or user approval required.

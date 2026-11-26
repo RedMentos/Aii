@@ -15,3 +15,11 @@
 
 ## Next
 Run the exact PR CI, repair only measured failures, then review the stacked greeting/acknowledgment path against the existing normal-path fallthrough and output-policy gates.
+
+
+## Exact-head follow-up — 2026-11-26
+
+- LOCAL_LINUX Python 3.13.5: isolated matcher `py_compile` PASS and 14 source-bound allow/deny checks PASS. This is not a full repository or Runtime integration run.
+- GitHub CI on initial code head `987bcd22ac77bc1baeb1f302873a8900f0a58364`: runtime deployment integrity PASS; Core fastpath/interrupted-runner retention PASS; staged/integrated regression still IN_PROGRESS at last poll.
+- A follow-up commit corrects the module/function docstrings to describe both greetings and acknowledgments; exact CI must be read again on that new head.
+- Redmi remains REDMI_UNVERIFIED; PR remains draft and NOT_RELEASED.
