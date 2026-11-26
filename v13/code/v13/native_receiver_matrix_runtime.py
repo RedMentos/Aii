@@ -408,7 +408,7 @@ def _arm(runtime):
     other, _ = runtime.store.state(approval.KEY, None)
     if isinstance(other, dict) and other.get("status") == "PENDING":
         expires = other.get("expires_at")
-        if _valid_expiry(expires) and time.time() < expires:
+        if type(expires) in (int, float) and time.time() < expires:
             raise PermissionError("revoke the separate native probe approval before arming a matrix")
     current, version = runtime.store.state(KEY, None)
     if isinstance(current, dict) and current.get("schema") == SCHEMA and current.get("status") == "PENDING":
