@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import secrets
 import struct
 import time
@@ -256,9 +257,13 @@ def stage_native_receiver_matrix(runtime, matrix, target_token_ids, pair_record)
     runtime.require_idle()
     if getattr(runtime, "_native_receiver_condition_matrix", None) is not None:
         raise PermissionError("clear the already-staged native receiver matrix before staging another")
-    pending, _ = runtime.store.state(KEY, None)
-    if isinstance(pending, dict) and pending.get("status") == "PENDING":
-        raise PermissionError("revoke the pending native receiver matrix approval before staging another")
+    pending, pending_version = runtime.store.state(KEY, None)
+    if (isinstance(pending, dict) and pending.get("schema") == SCHEMA
+            and pending.get("status") == "PENDING"):
+        liveness = _approval_liveness(runtime, pending)
+        if liveness == "PENDING":
+            raise PermissionError("revoke the live pending native receiver matrix approval before staging another")
+        _invalidate_stale_approval(runtime, pending, pending_version, liveness)
     receipt = _matrix_receipt(matrix)
     ids = _target_ids(target_token_ids, receipt)
     record, sender, receiver = _pair_bindings(pair_record, receipt)
@@ -326,6 +331,67 @@ def _model_snapshot_matches(runtime, record):
     return models, sender, receiver
 
 
+def _valid_expiry(value):
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(float(value))
+    except (OverflowError, ValueError):
+        return False
+
+
+def _approval_liveness(runtime, record, *, now=None):
+    """Classify a persisted one-shot approval without changing Store state."""
+    if not isinstance(record, dict) or record.get("schema") != SCHEMA:
+        return "NONE"
+    if record.get("status") != "PENDING":
+        return record.get("status") if type(record.get("status")) is str else "INVALID_RECORD"
+
+    expires_at = record.get("expires_at")
+    if not _valid_expiry(expires_at):
+        return "INVALID_EXPIRY"
+    current_time = time.time() if now is None else now
+    if current_time >= expires_at:
+        return "EXPIRED"
+
+    runtime_nonce = getattr(runtime, "_native_probe_approval_runtime_nonce", None)
+    if type(runtime_nonce) is not str or runtime_nonce != record.get("runtime_nonce"):
+        return "STALE_RUNTIME"
+
+    try:
+        _matrix, receipt, _target_ids, _pair, sender, receiver = _staged(runtime)
+    except Exception:
+        return "STALE_MATRIX"
+    for field in (
+        "matrix_sha256", "approval_binding_sha256", "session_id",
+        "task_event_id", "task_generation_id", "task_group_id",
+    ):
+        if record.get(field) != receipt.get(field):
+            return "STALE_MATRIX"
+    if (record.get("source_bindings") != list(receipt.get("source_bindings", []))
+            or record.get("sender_role") != sender.get("role")
+            or record.get("receiver_role") != receiver.get("role")):
+        return "STALE_MATRIX"
+    try:
+        _validate_matrix_sources(runtime, receipt, require_current=True)
+    except Exception:
+        return "STALE_SOURCE"
+    return "PENDING"
+
+
+def _invalidate_stale_approval(runtime, record, version, reason):
+    if reason not in {"EXPIRED", "INVALID_EXPIRY", "STALE_RUNTIME", "STALE_MATRIX", "STALE_SOURCE"}:
+        reason = "STALE_APPROVAL"
+    updated = dict(record)
+    updated.update({
+        "status": reason,
+        "invalidated_at": time.time(),
+        "invalidated_reason": reason,
+    })
+    runtime.store.set_state(KEY, updated, expected=version)
+    return updated
+
+
 def _approval_record(runtime):
     record, version = runtime.store.state(KEY, None)
     if not isinstance(record, dict) or record.get("schema") != SCHEMA:
@@ -342,14 +408,15 @@ def _arm(runtime):
     other, _ = runtime.store.state(approval.KEY, None)
     if isinstance(other, dict) and other.get("status") == "PENDING":
         expires = other.get("expires_at")
-        if type(expires) in (int, float) and time.time() < expires:
+        if _valid_expiry(expires) and time.time() < expires:
             raise PermissionError("revoke the separate native probe approval before arming a matrix")
     current, version = runtime.store.state(KEY, None)
-    if isinstance(current, dict) and current.get("status") == "PENDING":
-        expires = current.get("expires_at")
-        if (current.get("runtime_nonce") == approval._runtime_nonce(runtime)
-                and type(expires) in (int, float) and time.time() < expires):
-            raise PermissionError("a native receiver matrix approval is already pending; revoke it first")
+    if isinstance(current, dict) and current.get("schema") == SCHEMA and current.get("status") == "PENDING":
+        liveness = _approval_liveness(runtime, current)
+        if liveness == "PENDING":
+            raise PermissionError("a live native receiver matrix approval is already pending; revoke it first")
+        _invalidate_stale_approval(runtime, current, version, liveness)
+        current, version = runtime.store.state(KEY, None)
     nonce = secrets.token_hex(16)
     record = {
         "schema": SCHEMA,
@@ -389,7 +456,7 @@ def _consume_approval(runtime, nonce, expected_binding_sha256, receipt, lease_to
     if (record.get("status") != "PENDING"
             or record.get("nonce") != nonce
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or type(record.get("expires_at")) not in (int, float)
+            or not _valid_expiry(record.get("expires_at"))
             or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt.get("matrix_sha256")
             or record.get("approval_binding_sha256") != expected_binding_sha256
@@ -424,7 +491,7 @@ def _run(runtime):
     now = time.time()
     if (record.get("status") != "PENDING"
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
-            or type(record.get("expires_at")) not in (int, float)
+            or not _valid_expiry(record.get("expires_at"))
             or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt["matrix_sha256"]
             or record.get("approval_binding_sha256") != receipt["approval_binding_sha256"]
@@ -559,13 +626,16 @@ def _status(runtime):
     expires_at = (
         approval_record.get("expires_at")
         if isinstance(approval_record, dict) and approval_record.get("schema") == SCHEMA
+                and _valid_expiry(approval_record.get("expires_at"))
         else None
     )
+    approval_liveness = _approval_liveness(runtime, approval_record)
     return {
         "schema": SCHEMA,
         "status": "READY" if staged else "NO_MATRIX_STAGED",
         "staged": staged,
         "approval_status": approval_status,
+        "approval_liveness": approval_liveness,
         "approval_expires_at": expires_at,
         "android_status": "REDMI_UNVERIFIED",
         "native_execution_environment": "LOCAL_LINUX_ONLY_UNTIL_DEVICE_RECEIPT_INTEGRATION",
@@ -580,9 +650,13 @@ def _status(runtime):
 def _clear(runtime):
     approval._require_local_tty()
     runtime.require_idle()
-    record, _ = runtime.store.state(KEY, None)
-    if isinstance(record, dict) and record.get("status") == "PENDING":
-        raise PermissionError("revoke the pending matrix approval before clearing the staged matrix")
+    record, version = runtime.store.state(KEY, None)
+    if (isinstance(record, dict) and record.get("schema") == SCHEMA
+            and record.get("status") == "PENDING"):
+        liveness = _approval_liveness(runtime, record)
+        if liveness == "PENDING":
+            raise PermissionError("revoke the live pending matrix approval before clearing the staged matrix")
+        _invalidate_stale_approval(runtime, record, version, liveness)
     matrix = getattr(runtime, "_native_receiver_condition_matrix", None)
     if matrix is not None:
         close = getattr(matrix, "close", None)

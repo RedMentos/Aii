@@ -226,7 +226,11 @@ def _patch_core(monkeypatch, runtime, sender, receiver):
         }
 
     monkeypatch.setattr(approval, "_model_binding", model_binding)
-    monkeypatch.setattr(approval, "_runtime_nonce", lambda _runtime: "f" * 32)
+    runtime._native_probe_approval_runtime_nonce = "f" * 32
+    monkeypatch.setattr(
+        approval, "_runtime_nonce",
+        lambda current: getattr(current, "_native_probe_approval_runtime_nonce", "f" * 32),
+    )
     monkeypatch.setattr(approval, "_resource_preflight", lambda *_: {"status": "PASS"})
     monkeypatch.setattr(approval, "_require_runtime_probe_lease", lambda *_: None)
 
@@ -365,6 +369,101 @@ def test_revoke_and_clear_are_separate_explicit_operations(monkeypatch, tmp_path
     assert cleared["status"] == "CLEARED"
     assert cleared["matrix_was_staged"] is True
     assert runtime._native_receiver_condition_matrix is None
+
+
+def test_live_pending_matrix_approval_still_requires_explicit_revoke_before_clear(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    with pytest.raises(PermissionError, match="live pending matrix approval"):
+        matrix_runtime._clear(runtime)
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "PENDING"
+    assert matrix._closed is False
+
+
+def test_matrix_status_reports_restart_staleness_without_mutating_the_pending_record(monkeypatch, tmp_path):
+    runtime, _matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    before, version = runtime.store.state(matrix_runtime.KEY, None)
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_status"] == "PENDING"
+    assert status["approval_liveness"] == "STALE_RUNTIME"
+    after, after_version = runtime.store.state(matrix_runtime.KEY, None)
+    assert after == before
+    assert after_version == version
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+
+
+def test_matrix_clear_invalidates_restart_stale_approval_and_closes_matrix(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    cleared = matrix_runtime._clear(runtime)
+    assert cleared["status"] == "CLEARED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_RUNTIME"
+    assert state["invalidated_reason"] == "STALE_RUNTIME"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+
+
+def test_matrix_clear_invalidates_expired_approval(monkeypatch, tmp_path):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    state["expires_at"] = -1
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "EXPIRED"
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "EXPIRED"
+    assert matrix._closed is True
+
+
+@pytest.mark.parametrize("bad_expiry", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_matrix_approval_expiry_fails_closed(monkeypatch, tmp_path, bad_expiry):
+    runtime, matrix, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    state["expires_at"] = bad_expiry
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    status = matrix_runtime._status(runtime)
+    assert status["approval_liveness"] == "INVALID_EXPIRY"
+    assert status["approval_expires_at"] is None
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+    matrix_runtime._clear(runtime)
+    final, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert final["status"] == "INVALID_EXPIRY"
+    assert matrix._closed is True
+
+
+def test_stage_replaces_restart_stale_pending_approval_without_reusing_it(monkeypatch, tmp_path):
+    runtime, matrix, target_ids, pair, *_rest = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    receipt = matrix.receipt
+    matrix.close()
+    runtime._native_receiver_condition_matrix = None
+    runtime._native_receiver_matrix_target_token_ids = None
+    runtime._native_receiver_matrix_pair_record = None
+    runtime._native_receiver_matrix_staged_at = None
+    runtime._native_probe_approval_runtime_nonce = "e" * 32
+
+    replacement = type(matrix)(receipt)
+    staged = matrix_runtime.stage_native_receiver_matrix(runtime, replacement, target_ids, pair)
+    assert staged["status"] == "STAGED_NOT_APPROVED"
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "STALE_RUNTIME"
+    assert runtime._native_receiver_condition_matrix is replacement
 
 
 def test_operator_dispatch_is_local_command_scoped(monkeypatch, tmp_path):
