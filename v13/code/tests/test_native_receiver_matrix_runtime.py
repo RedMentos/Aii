@@ -396,7 +396,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
 
     with pytest.raises(PermissionError, match="no local one-shot approval"):
         callosum.operator_command(runtime, ["matrix-run", "--confirm"])
-    with pytest.raises(ValueError, match="no source-disjoint tokenwise alignment candidate"):
+    with pytest.raises(PermissionError, match="clear the already-staged matrix"):
         callosum.operator_command(runtime, [
             "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC", "aaaaaaaa", "bbbbbbbb", "--confirm",
         ])
@@ -653,4 +653,15 @@ def test_runtime_matrix_build_rejects_control_model_identity_mismatch(monkeypatc
         matrix_runtime.operator_command(runtime, [
             "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC",
             ood["record_sha256"][:12], entity["record_sha256"][:12], "--confirm",
+        ])
+
+def test_matrix_build_requires_a_tokenwise_candidate_before_any_native_probe(monkeypatch, tmp_path):
+    from v13 import native_probe_approval as approval
+
+    runtime, _matrix, _ids, _pair, _events, _texts, _sender, _receiver = _fixture(tmp_path)
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    with pytest.raises(ValueError, match="no source-disjoint tokenwise alignment candidate"):
+        matrix_runtime.operator_command(runtime, [
+            "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC",
+            "aaaaaaaa", "bbbbbbbb", "--confirm",
         ])
