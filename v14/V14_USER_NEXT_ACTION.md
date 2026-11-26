@@ -2033,10 +2033,10 @@ Run start/end time: UNKNOWN (not measured by the execution environment).
 
 ## 2026-11-26 Core Run 31 — current verified state
 
-- C3 first-token-bias single-step prefill receipt fix: PR #2533, head `1677c3c58b4505ec40831c11151829e0e6fe46bc`, stacked on #2532. Exact phone-offer, source-contract, runtime-deploy, owner-read, native-stream, fastpath/warm-retention, Lab-Age and two-checkout workflows are PASS; staged/integrated run 45838222818 was still IN_PROGRESS at the last readback.
+- C3 first-token-bias single-step prefill receipt fix: PR #2533, head `1677c3c58b4505ec40831c11151829e0e6fe46bc`, stacked on #2532. Exact code head 1677c3c58b4505ec40831c11151829e0e6fe46bc is GREEN across all nine observed workflows, including staged/integrated run 45838222818 (staged 292 passed / 10 skipped / 51 subtests; integrated 424 passed / 3 skipped / 58 subtests).
 - The code preserves prompt-bearing native first-step timing on the early-return path and tests 24 prompt tokens = 20 processed + 4 cached through a loopback native HTTP server.
 - Full local Aii checkout is unavailable because GitHub DNS fails in this execution environment. No local full-suite result is claimed.
 - Android action stack: #2513 open_url and #2528 terminal URL redaction have focused CI evidence; #2379 MediaProjection provider, #2406 registry/recovery and #2375 RAW EYE ingress are not yet one compatible current-base stack. Screen capture remains OFF.
 - Redmi/Termux status: REDMI_UNVERIFIED. No new private receipt, APK install, MediaProjection prompt, update request or device action. No model/weight/permission/data change.
 
-**User action: none.** The next step is exact-head staged/integrated CI readback, then independent Boss/QA review. Do not run a manual Termux command or request an update until a reviewed release exists and a fresh authenticated device receipt establishes the updater path.
+**User action: none.** The next step is independent Boss/QA review of #2533 and #2532. Do not run a manual Termux command or request an update until a reviewed release exists and a fresh authenticated device receipt establishes the updater path.
