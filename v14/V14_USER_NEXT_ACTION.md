@@ -9,7 +9,7 @@ PR [#2498](https://github.com/RedMentos/Aii/pull/2498), branch \`research-percep
 - Research R-164: Aurich et al., *European Journal of Neuroscience* (2026-02-25), N=41, found action/context-sensitive auditory omission responses; low-level silence alone is not a reliable semantic prediction. A4 remains a non-calibrated timing novelty shadow, not a semantic omission detector.
 - Redmi/Termux/microphone: REDMI_UNVERIFIED. No AudioRecord provider, native audio test, model/weight/permission change or deployment was performed. No user action required.
 
-**Next internal step:** Core/QA rebind the exact recovery→stage→deployer pins to the current Perception composer, rerun staged/integrated and migration; then Perception runs held-out and shuffled timing controls. No manual Termux command or model swap is requested.
+**Next internal step:** Core/QA and Boss compose the A4 guard, Runtime allowlist and Perception audio composer on one reviewed base, then rebind the complete recovery→wrapper→stage→deployer hash chain and rerun staged/integrated/migration. The exact run 45730324811 currently FAILS only at the stale recovery builder composer pin (expected 831080bceec90711bd42e0fa4eba47c669975c98; actual d6d634857b42fc9dd29fa9bb2481220fd414e8bf); migration is PARTIAL. Perception then runs held-out/shuffled timing controls. No manual Termux command or model swap is requested.
 
 ---
 
