@@ -395,7 +395,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
     assert runtime.store.states == {}
 
     with pytest.raises(PermissionError, match="no local one-shot approval"):
-        callosum.operator_command(runtime, ["matrix-run"])
+        callosum.operator_command(runtime, ["matrix-run", "--confirm"])
     with pytest.raises(ValueError, match="no source-disjoint tokenwise alignment candidate"):
         callosum.operator_command(runtime, [
             "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC", "aaaaaaaa", "bbbbbbbb", "--confirm",
@@ -622,3 +622,35 @@ def test_runtime_matrix_build_rejects_family_mismatch_before_any_probe(monkeypat
             "aaaaaaaa", "bbbbbbbb", "--confirm",
         ])
 
+def test_runtime_matrix_build_rejects_control_model_identity_mismatch(monkeypatch, tmp_path):
+    from v13 import native_probe_approval as approval
+    from v13 import native_tokenwise_pairing
+
+    main = _producer_record("src-main", "What is 2+2?", "event-main", [11, 22, 33])
+    ood = _producer_record("src-ood", "Explain photosynthesis.", "event-ood", [41, 42, 43], ood=True)
+    entity = _producer_record("src-entity", "What is 3+3?", "event-entity", [11, 22, 33], entity=True)
+    # Token IDs/spans may differ by source; the installed model identity may not.
+    entity["receiver"]["model_revision"] = "c3-revision-drift"
+    runtime = FakeRuntime(FakeStore({}, {}), tmp_path)
+    runtime._native_tokenwise_candidate = {
+        "adapter": {
+            "status": "ALIGNMENT_CANDIDATE", "projection_scope": "TOKENWISE",
+            "adapter_sha256": "a" * 64, "production_route": False,
+            "semantic_use_proven": False, "training_authority": 0, "native_receiver_authority": 0,
+        },
+        "record": main,
+        "fit_manifest": {
+            "session_disjoint": True, "source_disjoint": True,
+            "holdout_session_ids": ["session-1", "holdout-2"],
+            "record_sha256s": [main["record_sha256"], ood["record_sha256"], entity["record_sha256"]],
+        },
+        "cohort_records": [main, ood, entity],
+    }
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    monkeypatch.setattr(native_tokenwise_pairing, "_validate_native_pair_record", lambda value: dict(value))
+
+    with pytest.raises(ValueError, match="different sender/receiver model bindings"):
+        matrix_runtime.operator_command(runtime, [
+            "matrix-build", "ARITHMETIC", "RELATION", "ARITHMETIC",
+            ood["record_sha256"][:12], entity["record_sha256"][:12], "--confirm",
+        ])
