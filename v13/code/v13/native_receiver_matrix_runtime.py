@@ -422,19 +422,19 @@ def _run(runtime):
             or record.get("task_generation_id") != receipt["task_generation_id"]):
         raise PermissionError("fresh matching :callosum matrix-arm --confirm approval is required")
     _validate_matrix_sources(runtime, receipt, require_current=True)
-    try:
-        from .native_receiver_task_matrix_bridge import score_and_record_native_receiver_condition_matrix
-    except ImportError as exc:
-        raise PermissionError(
-            "Perception native matrix bridge is not integrated yet; no model was loaded and approval remains staged"
-        ) from exc
-
     environment = platform_tag()
     if not environment.startswith("linux"):
         raise PermissionError(
             "native matrix execution on Android requires a verified private device-execution receipt; "
             "TERMUX_ANDROID/REDMI remain UNVERIFIED"
         )
+
+    try:
+        from .native_receiver_task_matrix_bridge import score_and_record_native_receiver_condition_matrix
+    except ImportError as exc:
+        raise PermissionError(
+            "Perception native matrix bridge is not integrated yet; no model was loaded and approval remains staged"
+        ) from exc
 
     bridge_started = False
     try:
