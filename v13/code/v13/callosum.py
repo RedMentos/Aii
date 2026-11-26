@@ -368,42 +368,6 @@ def _clear_tokenwise_lab(runtime, args):
         "persisted": False,
     })
 
-def _task_score_operator_command(runtime, args):
-    """Local read-only/effect-limited view of the ephemeral native target-score cohort."""
-    from . import native_probe_approval as approval
-    approval._require_local_tty()
-    runtime.require_idle()
-    if args == ["task-score", "status"]:
-        from .native_receiver_task_score import task_score_status
-        return dumps({
-            "schema": "v14.native-receiver-task-score-operator/1",
-            "operation": "STATUS",
-            "cohort": task_score_status(runtime),
-            "production_route": False,
-            "semantic_use_proven": False,
-            "generated_answer_correctness_proven": False,
-        })
-    if args == ["task-score", "evaluate"]:
-        from .native_receiver_task_score import evaluate_task_score_cohort
-        return dumps({
-            "schema": "v14.native-receiver-task-score-operator/1",
-            "operation": "EVALUATE",
-            "evaluation": evaluate_task_score_cohort(runtime),
-            "production_route": False,
-        })
-    if args == ["task-score", "clear", "--confirm"]:
-        pending, _ = runtime.store.state(approval.KEY, None)
-        if isinstance(pending, dict) and pending.get("status") == "PENDING":
-            raise PermissionError("revoke the pending local probe approval before clearing task-score receipts")
-        from .native_receiver_task_score import clear_task_score_cohort
-        return dumps({
-            "schema": "v14.native-receiver-task-score-operator/1",
-            "operation": "CLEAR",
-            **clear_task_score_cohort(runtime),
-        })
-    raise ValueError("usage: :callosum task-score status|evaluate|clear --confirm")
-
-
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
@@ -418,8 +382,6 @@ def operator_command(r,args):
         return _run_tokenwise_native_probe(r,args)
     if args and args[0] == "clear-tokenwise-lab":
         return _clear_tokenwise_lab(r,args)
-    if args and args[0] == "task-score":
-        return _task_score_operator_command(r,args)
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
@@ -432,6 +394,5 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|'
-        'task-score status|evaluate|clear --confirm]'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'
     )
