@@ -100,8 +100,13 @@ def _runtime(*, status="FINAL", receipt=None, c4=None, body_rows=(), runner_extr
 
 def _native_receipt(packet_id):
     return {
+        "revision": "v13.native-offer-prompt-receipt/1",
         "status": "RENDERED_WITH_QUOTES",
+        "native_template_rendered": True,
         "native_template_submitted": True,
+        "native_completion_http_200": True,
+        "source_span_revalidated_here": False,
+        "native_semantic_use_proven": False,
         "native_prompt_sha256": "a" * 64,
         "native_token_ids_sha256": "b" * 64,
         "native_prompt_tokens": 173,
@@ -194,6 +199,81 @@ def test_b1_attempt_is_joined_to_c4_and_native_c3_prefill_without_claiming_seman
     assert body["semantic_use_proven"] is False
     assert "PRIVATE PROMPT" not in repr(latest)
     assert "PRIVATE HYPOTHESIS" not in repr(latest)
+
+
+def test_native_prefill_token_count_must_match_server_timing_for_selected_body():
+    query_id, packet_id = _id("pkt", "c"), _id("pkt", "d")
+    runtime = _runtime(
+        receipt=_native_receipt(packet_id),
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+        runner_extra={"timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5}},
+    )
+
+    latest = brain_panel._latest_native_evidence(runtime)
+    flow = latest["offer_flow"]
+    body = flow["body_attempts"][0]
+    assert flow["native_prefill_token_count_matched"] is True
+    assert flow["native_prefill_prompt_tokens"] == 173
+    assert flow["native_prefill_processed_tokens"] == 153
+    assert flow["native_prefill_cached_tokens"] == 20
+    assert flow["native_prefill_prompt_ms"] == 12.5
+    assert body["native_prefill_token_count_matched"] is True
+    assert body["consumption_state"] == (
+        "C4_SELECTED_C3_NATIVE_PREFILL_TOKEN_COUNT_MATCHED_AND_GENERATION_COMPLETED"
+    )
+    assert body["semantic_use_proven"] is False
+    assert flow["semantic_use_proven"] is False
+
+
+def test_native_prefill_token_count_mismatch_does_not_promote_offer_consumption():
+    query_id, packet_id = _id("pkt", "e"), _id("pkt", "f")
+    runtime = _runtime(
+        receipt=_native_receipt(packet_id),
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+        runner_extra={"timings": {"prompt_n": 152, "cache_n": 20, "prompt_ms": 12.5}},
+    )
+
+    latest = brain_panel._latest_native_evidence(runtime)
+    flow = latest["offer_flow"]
+    body = flow["body_attempts"][0]
+    assert flow["native_prefill_token_count_matched"] is False
+    assert body["native_prefill_token_count_matched"] is False
+    assert body["consumption_state"] == (
+        "C4_SELECTED_C3_NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED"
+    )
+
+
+def test_native_prefill_token_count_requires_http_success_and_completed_generation():
+    query_id, packet_id = _id("pkt", "1"), _id("pkt", "2")
+    receipt = _native_receipt(packet_id)
+    receipt["native_completion_http_200"] = False
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+        runner_extra={"timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5}},
+    )
+
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["native_prefill_token_count_matched"] is False
+    assert flow["semantic_use_proven"] is False
 
 
 def test_zero_token_b2_deadline_is_visible_without_inventing_delivery():

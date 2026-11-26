@@ -25,7 +25,7 @@ ROLES = ("B1_DETAIL", "B2_GIST")
 STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
-SCHEMA = "v13.phone-offer-delivery-audit/1"
+SCHEMA = "v13.phone-offer-delivery-audit/2"
 MAX_JSON_BYTES = 262144
 MAX_ROWS_PER_TURN = 2000
 ADMISSION_STATUSES = frozenset(("ADMITTED","PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"))
@@ -135,6 +135,50 @@ def _runtime_native_template_receipts(report, selected, events):
             return set()
         matched.add(role)
     return matched
+
+
+def _native_prefill_token_count_match(report, template_roles, native_c3_output, incomplete):
+    """Compare the local tokenizer total with llama-server's reported prompt_n plus cache_n.
+
+    This is a runtime-reported count parity check, not an attestation of exact
+    token identity, attention, semantic use or learned latent exchange.
+    """
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return False, None, None
+    timings = report.get("timings")
+    timings = timings if type(timings) is dict else {}
+    expected = _count(witness.get("native_prompt_tokens"))
+    runner_count = _count(report.get("prompt_tokens"))
+    prefill_prompt_n = _count(timings.get("prompt_n"))
+    prefill_cache_n = _count(timings.get("cache_n"))
+    prefill_count = (
+        prefill_prompt_n + prefill_cache_n
+        if prefill_prompt_n is not None and prefill_cache_n is not None
+        and prefill_prompt_n + prefill_cache_n <= 100000 else None
+    )
+    prefill_ms = _duration(timings.get("prompt_ms"))
+    prompt_sha = witness.get("native_prompt_sha256")
+    token_sha = witness.get("native_token_ids_sha256")
+    hashes_valid = all(
+        type(value) is str and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+        for value in (prompt_sha, token_sha)
+    )
+    matched = bool(
+        native_c3_output and not incomplete
+        and set(template_roles) == set(ROLES)
+        and witness.get("revision") == "v13.native-offer-prompt-receipt/1"
+        and witness.get("status") == "RENDERED_WITH_QUOTES"
+        and witness.get("native_template_submitted") is True
+        and witness.get("native_completion_http_200") is True
+        and witness.get("native_generation_completed") is True
+        and hashes_valid
+        and expected is not None and expected > 0
+        and runner_count == expected
+        and prefill_count == expected
+    )
+    return matched, prefill_count, prefill_prompt_n, prefill_cache_n, prefill_ms
 
 
 def _audit_one(conn, index, event_id, status, metadata):
@@ -253,8 +297,15 @@ def _audit_one(conn, index, event_id, status, metadata):
         }
     native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)
                              if native_c3_output and not incomplete else set())
+    (native_prefill_token_count_matched, native_prefill_prompt_tokens,
+     native_prefill_prompt_n, native_prefill_cache_n, native_prefill_prompt_ms) = (
+        _native_prefill_token_count_match(
+            report, native_template_roles, native_c3_output, incomplete)
+    )
     for role in ROLES:
         roles[role]["native_template_http200_submitted"] = role in native_template_roles
+        roles[role]["native_prefill_token_count_matched"] = bool(
+            native_prefill_token_count_matched and role in native_template_roles)
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -265,6 +316,11 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_generated_tokens": native_c3_tokens,
         "c3_native_output_observed": native_c3_output,
         "native_template_http200_submitted_roles": sorted(native_template_roles),
+        "native_prefill_token_count_matched": native_prefill_token_count_matched,
+        "native_prefill_prompt_tokens": native_prefill_prompt_tokens,
+        "native_prefill_prompt_n": native_prefill_prompt_n,
+        "native_prefill_cache_n": native_prefill_cache_n,
+        "native_prefill_prompt_ms": native_prefill_prompt_ms,
         "audit_incomplete": incomplete,
         "c3_prompt_inclusion_proven": False,
         "c3_semantic_use_proven": False,
@@ -316,6 +372,11 @@ def audit(conn, limit=10):
         t["c3_native_output_observed"] and not t["audit_incomplete"]
         and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
         for t in turns)
+    both_native_prefill_count_matched = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and t["native_prefill_token_count_matched"]
+        and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
+        for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
         and t["c3_reporter"] and t["c3_generated_tokens"] == 0
@@ -323,6 +384,7 @@ def audit(conn, limit=10):
     incomplete_turns = sum(t["audit_incomplete"] for t in turns)
     proof_status = ("NO_ASSISTANT_TURNS" if not turns
                     else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED" if both_native_prefill_count_matched
                     else "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED" if both_native
                     else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
                     else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
@@ -333,9 +395,11 @@ def audit(conn, limit=10):
             "status": proof_status,
             "both_body_selected_delivered_and_c3_generated_turns": both,
             "both_body_native_template_http200_reported_turns": both_native,
+            "both_body_native_prefill_token_count_matched_turns": both_native_prefill_count_matched,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
             "native_prompt_offer_inclusion_verified": False,
+            "native_prefill_token_count_match_observed": both_native_prefill_count_matched > 0,
             "native_template_submission_reported_by_runtime": both_native > 0,
             "source_span_revalidated_by_audit": False,
             "learned_latent_exchange_verified": False,
@@ -343,9 +407,11 @@ def audit(conn, limit=10):
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_REPORTED_NATIVE_PREFILL_TOKEN_COUNT_MATCH"
+            if both_native_prefill_count_matched else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.",
+        "warning": "A prefill count match means the local /tokenize total equals llama-server prompt_n plus cache_n (freshly processed plus reused prompt tokens) for the submitted prompt. It does not attest the exact token sequence, attention, semantic use, learned latent exchange or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
