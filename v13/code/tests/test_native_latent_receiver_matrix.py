@@ -8,6 +8,7 @@ from v13 import native_probe_approval as approval
 from v13 import native_probe_matrix as matrix
 from v13.models import model_key
 from v13.runtime import Runtime
+from v13.operator import Operator
 
 
 @pytest.fixture(autouse=True)
@@ -162,5 +163,61 @@ def test_matrix_revoke_does_not_revoke_single_pair_approval(tmp_path):
         record, _ = runtime.store.state(approval.KEY, None)
         assert record["status"] == "PENDING"
         assert record["schema"] == approval.SCHEMA
+    finally:
+        runtime.close()
+
+
+
+def test_operator_callosum_dispatches_the_local_one_shot_matrix(tmp_path, monkeypatch):
+    runtime, event, paths, unload_calls = setup_matrix_runtime(tmp_path)
+    calls = []
+    _install_fake_receiver(monkeypatch, calls)
+    operator = Operator(runtime)
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe-matrix --last-source --confirm"
+        ))
+        assert armed["status"] == "ARMED"
+        assert armed["pair_count"] == 4
+        assert armed["source_bound"] is True
+        assert armed["all_three_model_revisions_hashes_paths_and_file_identities_bound"] is True
+
+        result = json.loads(operator.run(
+            ":callosum native-probe-matrix --last-source --confirm"
+        ))
+        assert result["schema"] == matrix.RESULT_SCHEMA
+        assert result["status"] == "COMPLETE"
+        assert result["completed_pairs"] == 4
+        assert [(p["sender_role"], p["receiver_role"]) for p in result["pairs"]] == list(matrix.PAIRS)
+        assert all(p["production_route"] is False for p in result["pairs"])
+        assert all(p["training_authority"] == 0 for p in result["pairs"])
+        assert len(calls) == 4
+        assert all(call[2] == event["event_id"] for call in calls)
+        assert all(call[3] == event["source_ref"]["source_id"] for call in calls)
+        assert len(unload_calls) >= 7
+
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "CONSUMED"
+        assert record["schema"] == matrix.MATRIX_SCHEMA
+        with pytest.raises(PermissionError):
+            operator.run(":callosum native-probe-matrix --last-source --confirm")
+        assert len(calls) == 4
+    finally:
+        runtime.close()
+
+
+def test_operator_callosum_matrix_arm_requires_a_local_tty(tmp_path, monkeypatch):
+    runtime, event, paths, unload_calls = setup_matrix_runtime(tmp_path)
+    calls = []
+    _install_fake_receiver(monkeypatch, calls)
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: False)
+    try:
+        with pytest.raises(PermissionError, match="local TTY"):
+            Operator(runtime).run(
+                ":callosum arm-probe-matrix --last-source --confirm"
+            )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record is None
+        assert calls == []
     finally:
         runtime.close()

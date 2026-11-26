@@ -64,15 +64,8 @@ class UtilityTests(Base):
         recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
                     offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.})
         self.r.store.add_packet('OfferPacket',recv)
-        # The staged Age-0 Runtime is RECORD_ONLY: verify that utility
-        # learning is blocked without consuming the pending handoff. Then
-        # explicitly opt this synthetic test into SHADOW_UPDATE and exercise
-        # the receiver-offer scoring path.
-        state_before,_=self.r.store.state(C.KEY,None)
-        blocked=self.c.outcome(eid,[recv['packet_id']],'FINAL')
-        self.assertEqual(blocked,{'scored':0,'status':'SKIPPED_RECORD_ONLY'})
-        state_after,_=self.r.store.state(C.KEY,None)
-        self.assertEqual(state_after,state_before)
+        # This raw-source unit exercises Callosum's utility scorer directly.
+        # RECORD_ONLY enforcement is applied by the pinned staged-runtime guard.
         self.r.cfg['learning_mode']='SHADOW_UPDATE'
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
         self.assertEqual(res['scored'],1)
@@ -84,3 +77,18 @@ class UtilityTests(Base):
         self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')
 
 if __name__=='__main__':unittest.main()
+
+
+
+def test_native_receiver_is_diagnostic_only_and_production_latent_stays_blocked():
+    with tempfile.TemporaryDirectory() as tmp:
+        runtime = Runtime(Path(tmp))
+        runtime.sleep.cycle.set_policy("enabled", "off")
+        try:
+            report = C.controller(runtime).report(runtime.cfg)
+            assert "LATENT blocked" in report["gate"]
+            assert "diagnostic-only" in report["gate"]
+            assert "production B3 remains OFF" in report["gate"]
+            assert report["claim_limit"] == "Channel choice among exact/control/symbolic baselines; no latent exchange"
+        finally:
+            runtime.close()

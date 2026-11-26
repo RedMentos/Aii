@@ -442,7 +442,7 @@ def test_native_probe_deadline_is_hard_capped_at_120_seconds(tmp_path, monkeypat
         }
     )
     operator = Operator(runtime)
-    monkeypatch.setattr(callosum.time, "monotonic", lambda: 1000.0)
+    monkeypatch.setattr(approval.time, "monotonic", lambda: 1000.0)
     try:
         operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
         result = json.loads(operator.run(
@@ -684,7 +684,7 @@ def test_operator_rejects_empty_native_receiver_result(tmp_path):
 
 
 
-def test_operator_routes_probe_commands_to_approval_not_raw_callosum(tmp_path, monkeypatch):
+def test_operator_routes_probe_commands_through_callosum_to_approval(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     operator = Operator(runtime)
     calls = []
@@ -693,10 +693,12 @@ def test_operator_routes_probe_commands_to_approval_not_raw_callosum(tmp_path, m
         approval, "operator_command",
         lambda r, args: calls.append(("approved", list(args))) or "approved",
     )
-    monkeypatch.setattr(
-        callosum, "operator_command",
-        lambda r, args: calls.append(("raw", list(args))) or "raw",
-    )
+
+    class FakeCallosum:
+        def report(self, cfg):
+            return {"status": "ordinary_callosum_status"}
+
+    monkeypatch.setattr(callosum, "controller", lambda r: FakeCallosum())
     try:
         command = ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
         assert operator.run(command) == "approved"
@@ -707,8 +709,9 @@ def test_operator_routes_probe_commands_to_approval_not_raw_callosum(tmp_path, m
         with pytest.raises(ValueError, match="lokale Operator"):
             operator.run(command, origin="REMOTE_OWNER")
         assert len(calls) == 1
-        assert operator.run(":callosum status") == "raw"
-        assert calls[-1] == ("raw", ["status"])
+        assert json.loads(operator.run(":callosum status")) == {
+            "status": "ordinary_callosum_status"
+        }
     finally:
         runtime.close()
 
