@@ -1,0 +1,62 @@
+# Research & Perception Run 50 — A4 audio temporal path and V14 integration checkpoint
+
+**Started:** 2026-11-26T21:23:14+01:00 (Europe/Berlin). **Checkpoint:** 2026-11-26T20:35:45.865Z (UTC).
+**Repository:** RedMentos/Aii.
+**Branch:** research-perception/v14-audio-temporal-window-order-20261126-run41b.
+**PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT / NOT_RELEASED.
+**Parent before this checkpoint:** #2524 branch head a47907c4a0603e602581c6462ecb845211eb0445.
+**Previous PR head:** a12d765e63e8c16f0ce9d388df840e1aa587a9f3.
+**Functional merge checkpoint SHA:** pending commit/readback in this handoff's first commit; final docs-only readback SHA will be added after remote verification.
+
+## Why this checkpoint exists
+
+PR #2527 was still based on an old #2524 parent (b298719), while the current parent had advanced to a47907c. Its branch was 96 commits ahead / 120 behind and not mergeable. The Perception audio files had no overlapping edits in the newer #2524 delta; the latter changed the native latent receiver, task-score, Core integration and shared status files. This checkpoint advances the existing audio work without force-push, retaining the old branch head as a second parent and using the latest #2524 tree as first parent. It does not change the V14 master or historical V13 Canon.
+
+## Executable A4/A5 work retained
+
+- TemporalVoiceEvidence is a deterministic RAW EAR attack/release smoother, not a trained VAD or calibrated speech probability. It now rejects backward window starts before state mutation, allows equal-start cumulative windows when end advances, counts only newly observed overlap suffixes, decays through short gaps, resets across source/generation or long gaps, and exposes a reversible provisional preview state.
+- consume_pcm16_voice_window accepts caller-supplied PCM16 under an AudioConsentLease/consent guard, emits A5_AUDIO PerceptPacket data, routes extracted voice/prosody/non-speech cues through A4 attention modulation, and persists an A4AttentionReceipt with source_ref, event/generation/time, FINAL/PROVISIONAL status, score vector, learning_authority=false, action_authority=false and truth_authority=0. Provisional VAD and speaker-lookback state are not committed.
+- The A4 receipt is stored through Runtime.store.add_packet. However, checked runtime.py has no normal-turn call site for consume_pcm16_voice_window. This is a helper-level caller-supplied PCM path tested with a Runtime-like fixture, not an integrated normal-turn audio route.
+- The A4/A5 feature-set probe consumes FINAL source-bound PerceptPackets and separately sourced later action outcomes, with session/goal stratification, within-stratum permutations and provenance checks. It remains diagnostic/synthetic; it does not update attention policy or JEPA weights.
+- The predictive-closure probe is a separate research diagnostic, not a runtime organ.
+
+## Files carried forward
+
+Perception-owned audio source/contracts, temporal and voice-cue tests, A4/A5 feature-set and predictive-closure experiments/tests, the two dedicated GitHub workflows, the audio context candidate's Perception source pins, and the Run41–Run45 handoffs are preserved. Current #2524 workboard/workplan/next-action/ledger/coverage versions are retained; this checkpoint appends only the Run50 evidence and R-170 research entry. No Core recovery/stage/deployer implementation is changed.
+
+## Local tests
+
+Environment: LOCAL_LINUX, CPython 3.13.
+- Scratch reconstitution of the fetched TemporalVoiceEvidence source and focused tests: py_compile **PASS**.
+- pytest focused temporal suite: **17/17 PASS**.
+- This scratch reconstitution is not byte-identical to the repository files; the full Aii checkout is not mounted. Full repository suite, exact source checkout, native C++ build and native model execution: **NOT_RUN**.
+- GitHub DNS from the local container fails; repository files were read through the connected GitHub integration, not a local clone.
+
+## Exact CI evidence already available (not inherited as proof for the new merge head)
+
+- On the previous code/test checkpoint of #2527, the feature-set workflow reported **15/15 PASS on Python 3.13 and 3.14**, including the repository A4 extractor → A5 PerceptPacket integration test.
+- The model-lab workflow reported **58 tests PASS**; four optional native/WebRTC tests were skipped because the pinned libfvad shared library / test-only WebRTC wrapper was not built or installed.
+- Offline bridge security workflow PASS.
+- These are GitHub-hosted Linux CI results, not local full-checkout tests, Android, native GGUF, learned weights or Redmi evidence. Fresh exact-head CI for the new parent-advanced checkpoint is required.
+- The shared staged/integrated path has previously failed on Core-owned recovery/stage/RuntimeDeploy source pins. Those files are not modified here; Core must refresh the pin chain against the current audio blobs and the latest native receiver.
+
+## Research R-170
+
+Full text reviewed: Yashengjiang et al., *End-to-End Markov State Sequence Learning for Auditory Attention Decoding*, arXiv:2607.18614, 2026-07-21 preprint. A two-state CRF trains window-level EEG/speech emissions under a transition prior; on AVGC it reports 86.5% causal / 92.4% non-causal accuracy at 1-second windows, with 23.3-second mean causal switch delay. AVGC uses 13 normal-hearing participants, 64-channel EEG, two competing streams, six 10-minute trials each and participant-dependent leave-one-trial-out evaluation; one programmed within-trial switch is used. KUL/USTC are static trials; results vary by backbone. Experiments used an RTX 4090. The cited AAD-CRF GitHub URL returned 404 in this run, so code/license are unverified and no reuse occurred.
+
+V14 implication is limited: future attention evaluation should measure sequence coherence, false flips and switch delay, not only window accuracy. The paper does not validate RAW EAR acoustic cues as EEG attention evidence. No AAD posterior or trained attention model is added; a future experiment requires a real source-bound A4 score sequence and separately sourced attended-state outcomes.
+
+## Device, release and risks
+
+- Latest available private V13OBS #115 remains historical (2026-11-24 09:28 UTC). New read-only relay requests #989 HEALTH and #990 PIPELINE_STATUS were created; at first check they were open with no device comments. If no later signed response appears, record NO_LIVE_RECEIPT.
+- Auto-update was historically reported enabled, but the latest install/updater state is not authenticated for this run. REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, CHAT_SEND, remote shell, restart, model/weight/permission/data mutation or device deployment was performed.
+- B3 remains OFF. Native cross-model latent exchange, native GGUF task utility, persistent weight learning, Android microphone/AudioRecord, normal-turn audio lease through C3, full-duplex voice and Redmi behavior remain unverified.
+- Push/PR is not deployment. NOT_RELEASED.
+
+## Next executable action
+
+1. Core/Integrator refreshes the recovery → stage → RuntimeDeploy audio source pins and the #2525/#2523 native receiver integration against the current #2524 parent; rerun exact staged/integrated and migration gates.
+2. Core adds a normal-turn caller that holds the revocable AudioConsentLease through A4 admission and the complete C3 generator; keep the fast text path and deeper multi-organ path intact.
+3. Perception then adds a real source/session-bound A4 score-sequence evaluation with trusted attended-state outcomes, held-out sessions, switch-delay, false-flip, drift and shuffled-outcome controls. Do not map EEG AAD results directly onto acoustic cues.
+4. No model swap or user action is needed. Keep microphone capture OFF until the Android provider, consent/revocation and zeroization path are independently verified.

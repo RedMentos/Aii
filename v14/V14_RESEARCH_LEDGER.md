@@ -1739,3 +1739,16 @@ Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility b
 **Status:** FULL_TEXT_READ / PREPRINT / PAPER_CC_BY_4.0 / NO_PUBLIC_TRANSLATOR_CODE_OR_WEIGHTS / OBJECT_SPECIFIC_TRANSFER / SAME_MODEL_BASELINE_ONLY / NO_LFM2_OR_ANDROID_GENERALIZATION / REDMI_UNVERIFIED / B3_OFF.
 
 **Source:** https://arxiv.org/abs/2611.12062
+
+  
+## R-170 — End-to-End Markov State Sequence Learning for Auditory Attention Decoding
+
+**Source:** Yashengjiang et al., *End-to-End Markov State Sequence Learning for Auditory Attention Decoding*, arXiv:2607.18614, submitted 2026-07-21 (preprint; no peer-reviewed venue identified in the inspected record). Full arXiv HTML reviewed on 2026-11-26: https://arxiv.org/abs/2607.18614. The paper's cited implementation URL is https://github.com/YusanX/AAD-CRF; the GitHub repository lookup returned 404 in this run, so code availability and license are **unverified**. No source, data, checkpoint or dependency reused.
+
+**Method/result:** A two-state CRF treats per-window EEG/speech logits as emissions and trains the emission backbone jointly with a transition prior, rather than applying HMM smoothing only after independent-window training. The paper reports AVGC 1-second ESCNet results of 86.5% causal and 92.4% non-causal accuracy, versus 77.5% causal / 84.3% non-causal for fixed-rate post-HMM; fixed-rate CRF control reaches 86.0% / 92.2%, suggesting most gain comes from sequence-level emission training, not merely learning the transition rate. It also reports a 23.3-second mean causal switch delay at 1-second windows. KUL/USTC static-trial results are smaller and backbone-dependent.
+
+**Conditions/limits:** AVGC has 13 normal-hearing participants, six 10-minute trials each, 64-channel EEG and two competing speech streams; participant-dependent leave-one-trial-out evaluation yields 78 fold models. The reported dynamic benchmark has one programmed within-trial switch around five minutes, not naturalistic repeated switching. Training used 50 epochs and an RTX 4090. The paper itself notes the long switch delay, controlled EEG/known competing streams, lack of hearing-impaired participants and need for wearable/ear-EEG and natural-scene validation. It is not a mobile resource result.
+
+**V14 mapping:** supports treating attention as a temporally persistent trajectory and measuring both false flips and switch latency, not only per-window accuracy. It does **not** justify treating our acoustic RAW EAR activity cues or A4AttentionReceipt control-score vector as an EEG-derived attended-speaker posterior. No EEG, trusted attended-speaker labels or multi-speaker AAD consumer exists in the current Android audio path. Keep the current deterministic RAW EAR attack/release filter explicitly heuristic. Future experiment: once a real, consented, source-bound A4 score sequence and separately sourced attention outcome exist, compare independent-window baseline, causal temporal prior and a sequence-trained adapter on session-held-out data, with switch-delay and false-trigger metrics; no policy or weight promotion before that evidence.
+
+**Status:** READ_FULL_TEXT; PREPRINT; CODE_LICENSE_UNVERIFIED; NO_REUSE; EXPERIMENT_IDEA_ONLY; no runtime or weight change.
