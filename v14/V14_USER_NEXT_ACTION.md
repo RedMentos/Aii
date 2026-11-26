@@ -16,7 +16,7 @@
 - No pinned real GGUF task-matrix scoring run has been executed.
 - No trained cross-organ latent coupling, semantic utility, production B3 route, weight update or training authority is established by target-token likelihood.
 - Android arm64 CI is a cross-compile only. No APK installation, connected device, Redmi native probe, or Redmi deployment has been verified.
-- Current release remains b20e9; latest private phone receipt #767 still predates the green release CI. Do not claim installation from GitHub push or CI.
+- Current release branch HEAD is the signed merge commit `8d93236c753f0194224c19edc7411d8d7082b1d6` (2026-11-23T16:24:48Z, PR #2444); the last available private V13OBS #115 snapshot (2026-11-24T09:28:11Z) reports that exact SHA installed, with updater/pipeline/dashboard/runtime UP_TO_DATE. That snapshot also reports AI runtime STOPPED_BY_USER, model process STOPPED and autostart false; last C3 turn was 7 tokens with TTFT 2.046 s and 358 prompt tokens, while historical B1/B2 native failures and zero valid offers remain. Fresh read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests issued 2026-11-26T00:56Z had NO_LIVE_RECEIPT at first poll, so the 2026-11-24 snapshot remains the last evidence. No device command or restart was sent. Do not claim PR #2520 is installed.
 
 ## Parallel Core/Perception work
 
