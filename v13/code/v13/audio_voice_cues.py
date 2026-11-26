@@ -20,6 +20,7 @@ from statistics import median
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_speaker_novelty import speaker_similarity_novelty
 from .audio_temporal_prediction import (
     AudioTemporalPredictionError,
     AudioTemporalPredictionRegistry,
@@ -797,24 +798,39 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
         if speaker_embeddings is not None:
-            try:
-                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
-                    source_id=source_id, generation_id=generation_id,
-                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
-                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
-                )
-            except SpeakerEvidenceError as exc:
-                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+            if finality != "FINAL":
+                # Provisional frames cannot seed speaker history or influence A4.
                 speaker_evidence = {
                     "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
-                    "status": "REJECTED",
-                    "error": type(exc).__name__,
+                    "status": "PROVISIONAL_SUPPRESSED",
                     "speaker_label": None,
                     "identity_authority": False,
                     "learning_authority": False,
                     "action_authority": False,
                 }
+            else:
+                try:
+                    speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                        source_id=source_id, generation_id=generation_id,
+                        start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                        current_chunk_sha256=raw["source_ref"]["sha256"],
+                        activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                    )
+                except SpeakerEvidenceError as exc:
+                    runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                    speaker_evidence = {
+                        "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                        "status": "REJECTED",
+                        "error": type(exc).__name__,
+                        "speaker_label": None,
+                        "identity_authority": False,
+                        "learning_authority": False,
+                        "action_authority": False,
+                    }
         speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
+        speaker_similarity_novelty_score = speaker_similarity_novelty(
+            speaker_evidence, activity_hint=cues["activity_hint"], finality=finality
+        )
         if speaker_evidence is not None:
             speaker_evidence["decision"] = speaker_change_decision
             audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
@@ -932,6 +948,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
+            speaker_similarity_novelty_score,
         )
         prosody_interrupt = (0.25 * cues["prosody_change_score"]
                              if temporal_voice["voice_active"] else 0.0)
@@ -963,6 +980,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "audio_event_omission_novelty": audio_event_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
+            "speaker_similarity_novelty": speaker_similarity_novelty_score,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -1024,6 +1042,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "audio_event_expectation": audio_event_expectation,
             "audio_event_omission_novelty": audio_event_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
+            "speaker_similarity_novelty": speaker_similarity_novelty_score,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
