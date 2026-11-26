@@ -10,7 +10,7 @@ GREETING_MODULE_GIT_BLOB_SHA1 = "a96e613e6852df241f047705e09a2c652e86c3fa"
 OLD = (
     b"            from .output_policy import match\n"
     b"            mark('policy_check');fixed_policy=match(self.store,text)\n"
-    b"            mark('perception_and_state')\n"
+    b"            from .arithmetic_reflex import exact_arithmetic\n"
 )
 NEW = (
     b"            from .output_policy import match\n"
@@ -26,7 +26,7 @@ NEW = (
     b"                        meta['greeting_fastpath']={k:greeting[k] for k in ('rule_id','language','scope','input_sha256','response_sha256')}|{'answer_ref':answer_ref,'native_models_invoked':False}\n"
     b"                        self.store.log('greeting_fastpath',eid,{'rule_id':greeting['rule_id'],'scope':greeting['scope'],'exact':True})\n"
     b"                except Exception as exc:self.store.log('greeting_fastpath_unavailable',eid,{'error':type(exc).__name__})\n"
-    b"            mark('perception_and_state')\n"
+    b"            from .arithmetic_reflex import exact_arithmetic\n"
 )
 
 
