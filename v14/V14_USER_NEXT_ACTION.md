@@ -2083,3 +2083,12 @@ A child PR is stacked on the verified greeting Runtime pin-repair branch:
 - LOCAL_LINUX Python 3.13.5 isolated matcher harness: `py_compile` PASS; 14 allow/deny, source-hash, modality and normal-path fallthrough checks PASS. This is an isolated copy of the matcher logic, not the full Aii Runtime suite.
 - Exact GitHub CI: Runtime deployment integrity PASS; Core fastpath/interrupted-runner retention PASS; staged/integrated regression still IN_PROGRESS at the last poll. Do not mark PR green until that job completes on the final head.
 - REDMI_UNVERIFIED / NOT_RELEASED. No device action or user approval required.
+
+
+# Core & Harness — whole-system continuity update (2026-11-26)
+
+- #2535 exact head `e00f6e0da57f94c1c5f06a103fc96bfd1bb18d54`: 9/9 exact-head workflows SUCCESS. B1/B2 source-bound offers are now bound to the exact native C3 HTTP prompt hash plus prefill evidence. This proves request inclusion, not attention, semantic use, correct answer or Redmi behavior.
+- #2525 exact head `ce1a73944428819ab14b583904284a15b4c030ee`: 7/7 exact-head workflows SUCCESS. The K/V-aware native receiver matrix is connected to Runtime/Callosum; it remains diagnostic-only, with no GGUF pair or Redmi run.
+- #2536 current head `d958545d5e3eabbd9ffcab558bd6d527d8056412`: exact source-bound acknowledgment fastpath added on #2534. LOCAL_LINUX CPython 3.13.5 isolated matcher harness: py_compile + 14 allow/deny/source/modality checks PASS. Runtime-deploy and fastpath-retention CI PASS; staged/integrated run 45883760571 was still IN_PROGRESS at last poll.
+- Full local Aii checkout remains BLOCKED by missing checkout/GitHub DNS. Redmi remains REDMI_UNVERIFIED. No update request, device action, model/weight/permission/data change.
+- Next: poll #2536 exact-head staged/integrated CI; then Boss/Integrator review the stacked P0 B1/B2→C4→C3 chain and #2524→#2525, followed by a fresh consented Redmi correctness receipt. Production B3 stays OFF. No user action required.
