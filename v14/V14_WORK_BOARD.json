@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T00:42:00.727Z",
+  "updated_at": "2026-11-26T00:44:02.490Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX exact module + isolated checks; CI exact-head IN_PROGRESS at checkpoint; REDMI_UNVERIFIED",
-      "next_step": "Core/QA: rebind recovery builder AUDIO_BUILDER_BLOB_SHA1 to exact Perception composer blob d6d634857b42fc9dd29fa9bb2481220fd414e8bf, then recompute stage/deployer pins and rerun staged-runtime, integrated-regression and two-checkout migration. After green exact-head CI, run held-out periodic/omitted/shuffled and uncertainty-gap controls; no microphone/Redmi capture until the companion consent/provider path is accepted.",
+      "proof_environment": "LOCAL_LINUX exact fetched module + CI (Python 3.13/3.14); staged/integrated CI FAIL at Core recovery pin; REDMI_UNVERIFIED",
+      "next_step": "Core/QA: compose the current Perception audio builder with #2482/#2483 A4 guard and #2485 Runtime allowlist on one reviewed base; rebind AUDIO_BUILDER_BLOB_SHA1 to the final composed builder, then recompute wrapper/stage/deployer pins and rerun staged-runtime, integrated-regression and two-checkout migration. Do not simply pin a sibling branch's intermediate blob or weaken exact-byte gates. After green integration, run held-out periodic/omitted/shuffled and uncertainty-gap controls.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26T00:42:00.727Z",
+      "last_checkpoint": "2026-11-26T00:44:02.490Z",
       "latest_candidate_pr": {
         "pr": 2487,
         "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
@@ -208,7 +208,7 @@
         "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
         "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required. 2026-11-26: PR #2498 head 8167033a8f133c8feb89c341df3720a5db765504 adds uncertainty/low-confidence censoring and full expected-window coverage. Exact fetched module 4571b12aeb665f2865d53c54561cacd2562d6f95 py_compile PASS and 5/5 LOCAL_LINUX focused checks PASS; GitHub CI runs 45730324785/45730324780/45730324811/45730324844 IN_PROGRESS at checkpoint. Composer blob d6d634857b42fc9dd29fa9bb2481220fd414e8bf now pins module 4571b12aeb665f2865d53c54561cacd2562d6f95. Aurich et al. (EJN 2026, N=41) supports context-gated silence prediction; A4 remains low-level shadow novelty only. No Android/Redmi proof.",
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required. 2026-11-26: PR #2498 head 8167033a8f133c8feb89c341df3720a5db765504 adds uncertainty/low-confidence censoring and full expected-window coverage. Exact fetched module 4571b12aeb665f2865d53c54561cacd2562d6f95 py_compile PASS and 5/5 LOCAL_LINUX focused checks PASS; GitHub CI runs 45730324785/45730324780/45730324811/45730324844 IN_PROGRESS at checkpoint. Composer blob d6d634857b42fc9dd29fa9bb2481220fd414e8bf now pins module 4571b12aeb665f2865d53c54561cacd2562d6f95. Aurich et al. (EJN 2026, N=41) supports context-gated silence prediction; A4 remains low-level shadow novelty only. No Android/Redmi proof. 2026-11-26 Run37 exact results: Exact code-bearing SHA 8167033a8f133c8feb89c341df3720a5db765504: RAW_EAR_FASTPATH 138/138 PASS on Python 3.13 and 3.14 (py_compile + privacy CLEAN); VAD comparison 9/9 PASS on each (pinned libfvad/WebRTC); offline runtime integrity 41/41 PASS on Python 3.11 and 3.14. Staged/integrated run 45730324811 FAIL: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; all failures originate from Core recovery AUDIO_BUILDER_BLOB_SHA1 expecting 831080bceec90711bd42e0fa4eba47c669975c98 while the exact current Perception composer blob is d6d634857b42fc9dd29fa9bb2481220fd414e8bf. Two-checkout migration returns PARTIAL. No Android microphone, AudioRecord, Termux or Redmi proof; A4 remains low-level SHADOW only.",
       "research_perception_run13": {
         "pr": 2498,
         "branch": "research-perception/v14-raw-ear-next-delta-20261125-run13",
@@ -222,15 +222,14 @@
       "research_perception_run14": {
         "pr": 2498,
         "branch": "research-perception/v14-raw-ear-next-delta-20261125-run13",
-        "head_sha": "8167033a8f133c8feb89c341df3720a5db765504",
-        "module_commit": "2b7fa35f0769333942fbd1e8bb072929b9852a42",
-        "composer_commit": "516df12482def70f4cc32f329c303e32d1589555",
+        "code_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+        "latest_docs_head": "b5fa240f4f29f562aa0a771f7187504a9757c273",
         "module_blob": "4571b12aeb665f2865d53c54561cacd2562d6f95",
         "composer_blob": "d6d634857b42fc9dd29fa9bb2481220fd414e8bf",
         "local": "CPython 3.13.5 exact fetched module py_compile PASS; 5/5 focused runtime checks PASS; full Aii checkout NOT_MOUNTED",
-        "ci": "IN_PROGRESS_AT_CHECKPOINT: 45730324785, 45730324780, 45730324811, 45730324844",
+        "ci": "RAW_EAR_FASTPATH 138/138 PASS on Python 3.13/3.14; VAD compare 9/9 PASS each; offline runtime integrity 41/41 PASS on Python 3.11/3.14; staged/integrated FAIL 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; migration PARTIAL due AUDIO_BUILDER_BLOB_SHA1 expected 831080bceec90711bd42e0fa4eba47c669975c98 vs current composer d6d634857b42fc9dd29fa9bb2481220fd414e8bf",
         "device": "REDMI_UNVERIFIED; no AudioRecord, microphone, Termux or Android test",
-        "next_action": "Core/QA rebind downstream recovery/stage/deployer exact pins; rerun staged/integrated/migration; then held-out and shuffled temporal controls"
+        "next_action": "Core/QA compose the final shared guard/runtime/audio recovery chain and rebind all exact pins; then rerun staged/integrated/migration"
       }
     },
     {
