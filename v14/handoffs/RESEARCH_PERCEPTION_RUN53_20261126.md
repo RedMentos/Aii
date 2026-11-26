@@ -24,7 +24,7 @@ No historical V13 source file, V14 master or Canon appendix was changed.
 - RAW EAR prosody-to-attention: PASS on Python 3.11 and 3.13.
 - Consent revocation: PASS.
 - A4/A5 feature-set probe: PASS on Python 3.13 and 3.14.
-- WebRTC/libfvad: Python 3.13 PASS, 9 comparator tests plus 133 source-bound audio tests; native libfvad shared-library and WebRTC backend smoke passed. Python 3.14 comparator was IN_PROGRESS at this handoff.
+- WebRTC/libfvad: Python 3.13 PASS, 9 comparator tests plus 133 source-bound audio tests; native libfvad shared-library and WebRTC backend smoke passed. Python 3.14 comparator also PASS (9 comparator tests and 133 source-bound audio tests).
 - Privacy scan CLEAN; private bridge tests PASS; offline Python 3.11/3.14 PASS.
 - Staged runtime FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Root causes are stale Core-owned pins for the audio candidate, `v13/contracts.py` and `v13/cognition.py`, plus two migration assertions expecting UPDATED where the exact result is PARTIAL.
 - Integrated regression FAIL: one failure because Core's `termux_runtime_recovery_candidate_20261121.py` still pins the old audio candidate blob `831080bceec90711bd42e0fa4eba47c669975c98`.
@@ -54,3 +54,7 @@ No model candidate was downloaded or swapped.
 Core PR #2538 was notified to rebase onto #2540 and refresh its own recovery/stage/deployer pins. QA must reconcile the PARTIAL-vs-UPDATED migration assertions. Perception did not edit Core-owned files. Finish the Python 3.14 libfvad comparison, then rerun staged/integrated after Core/QA pin repair.
 
 No device command, update request, model/weight change or permission change was made. No user action required.
+
+## Final CI closeout
+
+The Python 3.14 WebRTC/libfvad comparison completed PASS: 9 comparator tests and 133 source-bound audio tests. This closes the focused Perception CI matrix on Python 3.11/3.13/3.14 as applicable. The staged/integrated Core pin failures remain unchanged.

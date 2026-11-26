@@ -1718,3 +1718,5 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 
 **Next action:** finish Python 3.14 libfvad comparison; Core/QA refresh the stale pins and rerun staged/integrated CI. After that, independently review the Runtime consumer and obtain explicit permission before any microphone/provider or device experiment. No user action required.
 
+
+Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PASS (9 comparator tests + 133 source-bound audio tests). All Perception-focused checks at code/test SHA 6911d2f are green; staged/integrated remain blocked by Core/QA-owned pins and migration expectations.
