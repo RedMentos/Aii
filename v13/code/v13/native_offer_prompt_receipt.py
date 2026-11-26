@@ -6,6 +6,7 @@ attention, semantic use or native latent exchange. HTTP transport is separate.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 
@@ -19,77 +20,140 @@ VOLATILE_HEAD = "Context for the next message (reference material, not a questio
 ROLES = ("B1_DETAIL", "B2_GIST")
 
 
-def _result(status, offers=()):
-    return {"revision": REVISION, "status": status, "offers": list(offers),
-            "native_template_rendered": status == "RENDERED_WITH_QUOTES",
-            "source_span_revalidated_here": False,
-            "native_semantic_use_proven": False,
-            "learned_latent_exchange_proven": False}
+def _result(status, offers=(), *, rendered_prompt_sha256=None, rendered_prompt_chars=None):
+    result = {"revision": REVISION, "status": status, "offers": list(offers),
+              "native_template_rendered": status == "RENDERED_WITH_QUOTES",
+              "source_span_revalidated_here": False,
+              "native_semantic_use_proven": False,
+              "learned_latent_exchange_proven": False}
+    if rendered_prompt_sha256 is not None and rendered_prompt_chars is not None:
+        result["rendered_prompt_sha256"] = rendered_prompt_sha256
+        result["rendered_prompt_chars"] = rendered_prompt_chars
+    return result
+
+
+def _array_object_spans(array_text, expected_values):
+    """Return exact JSON-object character spans, or None on any shape ambiguity."""
+    decoder = json.JSONDecoder()
+    pos = 0
+    while pos < len(array_text) and array_text[pos] in " \\r\\n\\t":
+        pos += 1
+    if pos >= len(array_text) or array_text[pos] != "[":
+        return None
+    pos += 1
+    spans = []
+    while True:
+        while pos < len(array_text) and array_text[pos] in " \\r\\n\\t":
+            pos += 1
+        if pos >= len(array_text):
+            return None
+        if array_text[pos] == "]":
+            pos += 1
+            break
+        start = pos
+        try:
+            value, end = decoder.raw_decode(array_text, pos)
+        except (TypeError, ValueError, RecursionError):
+            return None
+        if type(value) is not dict:
+            return None
+        spans.append((start, end, value))
+        pos = end
+        while pos < len(array_text) and array_text[pos] in " \\r\\n\\t":
+            pos += 1
+        if pos >= len(array_text):
+            return None
+        if array_text[pos] == ",":
+            pos += 1
+            continue
+        if array_text[pos] == "]":
+            pos += 1
+            break
+        return None
+    while pos < len(array_text) and array_text[pos] in " \\r\\n\\t":
+        pos += 1
+    if pos != len(array_text) or len(spans) != len(expected_values):
+        return None
+    if any(value != expected_values[index] for index, (_, _, value) in enumerate(spans)):
+        return None
+    return [(start, end) for start, end, _ in spans]
 
 
 def inspect(messages, rendered_prompt, hypothesis_heading):
-    """No text or quotation is returned; malformed or unknown layouts fail closed."""
+    """Return no text: exact offer JSON spans are bound to the rendered prompt hash.
+
+    The runner later attaches the native tokenizer token-ID hash/count and HTTP
+    completion status. This proves prompt-span inclusion in that submitted
+    prompt, not token-level span offsets, attention, semantic use or latent exchange.
+    """
     if (type(messages) is not list or not 2 <= len(messages) <= 256
             or type(rendered_prompt) is not str or len(rendered_prompt) > MAX_TEMPLATE_CHARS
             or type(hypothesis_heading) is not str
             or not 1 <= len(hypothesis_heading) <= 256):
         return _result("INVALID_ENVELOPE")
+    prompt_sha256 = hashlib.sha256(rendered_prompt.encode("utf-8")).hexdigest()
+    prompt_chars = len(rendered_prompt)
+
+    def result(status, offers=()):
+        return _result(status, offers, rendered_prompt_sha256=prompt_sha256,
+                       rendered_prompt_chars=prompt_chars)
+
     if (any(type(m) is not dict or set(m) != {"role", "content"}
             or type(m["content"]) is not str for m in messages)
             or messages[0]["role"] != "system"
             or messages[-1]["role"] != "user"):
-        return _result("INVALID_MESSAGE_SHAPE")
+        return result("INVALID_MESSAGE_SHAPE")
     candidates = []
     if (len(messages) >= 3 and messages[-2]["role"] == "user"
-            and messages[-2]["content"].startswith(VOLATILE_HEAD + "\n")):
+            and messages[-2]["content"].startswith(VOLATILE_HEAD + "\\n")):
         candidates.append(messages[-2]["content"])
     candidates.append(messages[0]["content"])
-    marker = "\n" + hypothesis_heading
+    marker = "\\n" + hypothesis_heading
     raw_layer = None
     for value in candidates:
         if value.count(marker) > 1:
-            return _result("AMBIGUOUS_HYPOTHESES")
+            return result("AMBIGUOUS_HYPOTHESES")
         pos = value.find(marker)
         if pos < 0:
             continue
         if raw_layer is not None:
-            return _result("AMBIGUOUS_HYPOTHESES")
+            return result("AMBIGUOUS_HYPOTHESES")
         start = pos + len(marker)
-        while start < len(value) and value[start] in " \r\t":
+        while start < len(value) and value[start] in " \\r\\t":
             start += 1
         if len(value) - start > MAX_LAYER_CHARS:
-            return _result("OVERSIZED_HYPOTHESES")
+            return result("OVERSIZED_HYPOTHESES")
         try:
             parsed, used = json.JSONDecoder().raw_decode(value, start)
         except (TypeError, ValueError, RecursionError):
-            return _result("MALFORMED_HYPOTHESES")
-        if used < len(value) and value[used] not in "\n\r\t ":
-            return _result("AMBIGUOUS_LAYER_BOUNDARY")
-        raw_layer = (value[pos:used], parsed)
+            return result("MALFORMED_HYPOTHESES")
+        if used < len(value) and value[used] not in "\\n\\r\\t ":
+            return result("AMBIGUOUS_LAYER_BOUNDARY")
+        raw_layer = (value[pos:used], parsed, pos, start, used)
     if raw_layer is None:
-        return _result("NO_TYPED_HYPOTHESES")
-    fragment, values = raw_layer
+        return result("NO_TYPED_HYPOTHESES")
+    fragment, values, marker_start, array_start, array_end = raw_layer
     if (type(values) is not list or not 1 <= len(values) <= MAX_OFFERS
             or len(fragment) > MAX_LAYER_CHARS):
-        return _result("INVALID_SELECTED_OFFERS")
+        return result("INVALID_SELECTED_OFFERS")
     offers = []
     seen_roles, seen_ids = set(), set()
     for value in values:
         if type(value) is not dict:
-            return _result("INVALID_SELECTED_OFFERS")
+            return result("INVALID_SELECTED_OFFERS")
         role, packet_id, quotes = (value.get("role"), value.get("offer_packet_id"),
                                    value.get("verified_quotes"))
         if (type(role) is not str or role not in ROLES or role in seen_roles
                 or type(packet_id) is not str or not IDENTIFIER.fullmatch(packet_id)
                 or packet_id in seen_ids or type(quotes) is not list
                 or len(quotes) > MAX_QUOTES):
-            return _result("INVALID_SELECTED_OFFERS")
+            return result("INVALID_SELECTED_OFFERS")
         seen_roles.add(role)
         seen_ids.add(packet_id)
         valid = 0
         for quote in quotes:
             if type(quote) is not dict:
-                return _result("INVALID_SELECTED_QUOTES")
+                return result("INVALID_SELECTED_QUOTES")
             ref, body = quote.get("source_ref"), quote.get("text")
             if (type(body) is not str or not 1 <= len(body) <= 8192
                     or type(ref) is not dict
@@ -103,14 +167,34 @@ def inspect(messages, rendered_prompt, hypothesis_heading):
                     or type(ref.get("char_end")) is not int
                     or ref["char_start"] < 0 or ref["char_end"] <= ref["char_start"]
                     or ref["char_end"] - ref["char_start"] != len(body)):
-                return _result("INVALID_SELECTED_QUOTES")
+                return result("INVALID_SELECTED_QUOTES")
             valid += 1
         offers.append({"role": role, "packet_id": packet_id,
                        "rendered_quote_count": valid})
-    # Demand the entire exact selected-hypothesis JSON slice in the actual
-    # native-rendered prompt, not loose IDs in unrelated old/user messages.
-    if fragment not in rendered_prompt:
-        return _result("HYPOTHESES_NOT_IN_NATIVE_TEMPLATE")
+
+    # The exact selected-hypothesis JSON slice must occur once in the rendered
+    # prompt. Its full prompt hash is later compared with the native tokenizer
+    # witness; duplicate copies are ambiguous and fail closed.
+    if rendered_prompt.count(fragment) != 1:
+        return result("AMBIGUOUS_NATIVE_TEMPLATE")
+    fragment_start = rendered_prompt.find(fragment)
+    array_text = fragment[ array_start - marker_start : array_end - marker_start ]
+    object_spans = _array_object_spans(array_text, values)
+    if object_spans is None:
+        return result("INVALID_SELECTED_OFFERS")
+    array_prompt_start = fragment_start + (array_start - marker_start)
+    for offer_item, (relative_start, relative_end) in zip(offers, object_spans):
+        absolute_start = array_prompt_start + relative_start
+        absolute_end = array_prompt_start + relative_end
+        span_text = rendered_prompt[absolute_start:absolute_end]
+        if (absolute_end <= absolute_start or len(span_text) != relative_end - relative_start):
+            return result("INVALID_SELECTED_OFFERS")
+        offer_item["native_prompt_char_start"] = absolute_start
+        offer_item["native_prompt_char_end"] = absolute_end
+        offer_item["native_prompt_span_sha256"] = hashlib.sha256(
+            span_text.encode("utf-8")
+        ).hexdigest()
+
     if any(o["rendered_quote_count"] == 0 for o in offers):
-        return _result("RENDERED_WITH_UNQUOTED_OFFER", offers)
-    return _result("RENDERED_WITH_QUOTES", offers)
+        return result("RENDERED_WITH_UNQUOTED_OFFER", offers)
+    return result("RENDERED_WITH_QUOTES", offers)
