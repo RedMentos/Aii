@@ -72,9 +72,24 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertAlmostEqual(d["focal_reserve_estimate_seconds"], 5.5)
         self.assertAlmostEqual(d["focal_reserved_seconds"], 5.5)
         self.assertFalse(d["focal_reserve_capped"])
-        self.assertEqual(d["recent_focal_successes"], 1)
+        self.assertEqual(d["recent_focal_samples"], 1)
         self.assertAlmostEqual(d["c3_reserved_seconds"], 9.775)
         self.assertAlmostEqual(d["preanswer_seconds_available"], 14.725)
+
+    def test_completed_c4_stage_from_c3_deadline_still_informs_reserve(self):
+        rows = [
+            turn(),
+            turn(),
+            turn("DEADLINE", generated=0, phase="prefill", focal_duration_s=4.0),
+        ]
+        d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["focal_reserve_source"], "RECENT_FOCAL_MAX")
+        self.assertAlmostEqual(d["focal_reserved_seconds"], 5.5)
+        self.assertEqual(d["recent_focal_samples"], 1)
+        self.assertEqual(d["c3_reserve_source"], "FALLBACK_DEFAULT")
+        self.assertAlmostEqual(d["c3_reserved_seconds"], 10.0)
+        self.assertAlmostEqual(d["preanswer_seconds_available"], 14.5)
 
     def test_slow_focal_reserve_is_capped_without_starving_both_body_slices(self):
         rows = [
@@ -102,7 +117,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         d = budget.plan(100, 130, 100, recent=rows, background_enabled=True)
         self.assertTrue(d["recovery"])
         self.assertEqual(d["focal_reserve_source"], "FALLBACK_DEFAULT")
-        self.assertEqual(d["recent_focal_successes"], 0)
+        self.assertEqual(d["recent_focal_samples"], 0)
         self.assertEqual(d["focal_reserve_estimate_seconds"], 1.0)
         self.assertEqual(d["focal_reserved_seconds"], 1.0)
 
