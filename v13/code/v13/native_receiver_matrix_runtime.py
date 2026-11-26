@@ -764,10 +764,35 @@ def _build_matrix_from_runtime(runtime, args):
             or len({main["source_ref"]["sha256"], ood_record["source_ref"]["sha256"],
                     entity_record["source_ref"]["sha256"]}) != 3):
         raise ValueError("main, OOD and entity controls must use three distinct source records")
-    if (main.get("sender") != ood_record.get("sender") or main.get("sender") != entity_record.get("sender")
-            or main.get("receiver") != ood_record.get("receiver")
-            or main.get("receiver") != entity_record.get("receiver")):
-        raise ValueError("control pair records use different sender/receiver model bindings")
+    # Token IDs/spans are source-specific and are expected to differ between
+    # task/OOD/entity records. Compare only the stable model/tap/tokenizer
+    # identity, matching fit_adapter_from_native_pair_records()'s cohort rule.
+    binding_fields = ("role", "tap_id", "model_revision", "model_sha256", "tokenizer_revision")
+
+    def pair_model_binding(record, side, label):
+        value = record.get(side)
+        if not isinstance(value, Mapping):
+            raise ValueError(label + " " + side + " model binding is missing")
+        result = []
+        for field in binding_fields:
+            item = value.get(field)
+            if field == "model_sha256":
+                item = _sha(item, label + " " + side + ".model_sha256")
+            elif type(item) is not str or not item or len(item) > 256:
+                raise ValueError(label + " " + side + "." + field + " is invalid")
+            result.append(item)
+        return tuple(result)
+
+    main_bindings = {
+        side: pair_model_binding(main, side, "main")
+        for side in ("sender", "receiver")
+    }
+    for label, control_record in (("OOD", ood_record), ("entity", entity_record)):
+        if any(
+            pair_model_binding(control_record, side, label) != main_bindings[side]
+            for side in ("sender", "receiver")
+        ):
+            raise ValueError("control pair records use different sender/receiver model bindings")
 
     event, source_ref = approval._current_event(runtime)
     if (main.get("event_id") != event.get("event_id")
