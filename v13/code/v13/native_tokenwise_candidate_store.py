@@ -182,7 +182,8 @@ class CandidateStore:
         for item in root.iterdir():
             if item.name.startswith(prefix) and _SHA.fullmatch(item.name):
                 info = item.lstat()
-                if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+                if (stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode)
+                        or info.st_mode & 0o077):
                     raise CandidateStoreError("candidate entry is not a private directory")
                 matches.append(item)
         if len(matches) != 1:
@@ -198,9 +199,14 @@ class CandidateStore:
         fit = _fit_manifest(candidate.get("fit_manifest"))
         adapter_sha = _sha(adapter.get("adapter_sha256"), "adapter digest")
         root = self._root(create=True)
-        existing = [item for item in root.iterdir() if _SHA.fullmatch(item.name) and item.is_dir()]
-        if len(existing) >= MAX_CANDIDATES:
-            raise CandidateStoreError("candidate store limit reached; no automatic pruning is allowed")
+        existing = []
+        for item in root.iterdir():
+            if not _SHA.fullmatch(item.name):
+                continue
+            info = item.lstat()
+            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode) or info.st_mode & 0o077:
+                raise CandidateStoreError("candidate store contains a non-private or non-directory entry")
+            existing.append(item)
         final_dir = root / adapter_sha
         if final_dir.exists() or final_dir.is_symlink():
             loaded = self.load(adapter_sha)
@@ -221,6 +227,8 @@ class CandidateStore:
                     "native_receiver_authority": 0,
                 }
             raise CandidateStoreError("candidate ID collision with different fit evidence")
+        if len(existing) >= MAX_CANDIDATES:
+            raise CandidateStoreError("candidate store limit reached; no automatic pruning is allowed")
         temporary = Path(tempfile.mkdtemp(prefix=".pending-", dir=str(root)))
         os.chmod(temporary, 0o700)
         try:
@@ -348,8 +356,8 @@ class CandidateStore:
             if not _SHA.fullmatch(item.name):
                 continue
             info = item.lstat()
-            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
-                raise CandidateStoreError("candidate entry is not a regular directory")
+            if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode) or info.st_mode & 0o077:
+                raise CandidateStoreError("candidate entry is not a private directory")
             wrapper = _read_json(item / "manifest.json")
             material = dict(wrapper)
             supplied = _sha(material.pop("manifest_sha256", None), "checkpoint manifest digest")
