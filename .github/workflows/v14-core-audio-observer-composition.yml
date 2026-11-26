@@ -37,4 +37,4 @@ jobs:
       - name: Test exact audio + fair-budget + native receiver composition
         env:
           PYTHONPATH: v13/code
-        run: python -m pytest -q v13/code/tests/test_core_audio_observer_composition_20261127.py
+        run: python -m pytest -q -s v13/code/tests/test_core_audio_observer_composition_20261127.py
