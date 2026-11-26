@@ -657,6 +657,6 @@ def test_integrated_audio_candidate_pins_all_current_sources():
         assert path.is_file(), relative
         raw = path.read_bytes()
         actual = hashlib.sha1(
-            b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+            b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
         ).hexdigest()
         assert actual == expected, relative
