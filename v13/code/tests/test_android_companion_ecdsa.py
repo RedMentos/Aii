@@ -197,8 +197,9 @@ def test_recovered_unknown_execution_receipt_persists_without_learning_authority
 
     stored = store.one("SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],))
     assert stored["kind"] == "ActionOutcome"
-    actual = json.loads(stored["payload"])["actual"]
-    assert actual["status"] == "COMPANION_EXECUTION_OUTCOME_UNKNOWN"
+    stored_payload = json.loads(stored["payload"])
+    assert stored_payload["status"] == "COMPANION_EXECUTION_OUTCOME_UNKNOWN"
+    actual = stored_payload["actual"]
     assert actual["receipt_status"] == "EXECUTION_OUTCOME_UNKNOWN"
     assert actual["observed"] is False
     assert actual["world_learning_eligible"] is False
