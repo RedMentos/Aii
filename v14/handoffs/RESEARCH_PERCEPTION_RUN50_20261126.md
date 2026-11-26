@@ -65,3 +65,8 @@ V14 implication is limited: future attention evaluation should measure sequence 
 ## Parent #2524 CI failure readback after this checkpoint
 
 Exact workflow 45890208766: Linux pinned API PASS; Android arm64 cross-compile PASS; Python 3.13 and 3.14 each report 92 passed / 1 failed. The sole failure is test_native_receiver_is_composed_and_runtime_contracts_pass, which reaches integrated_observer_fair_budget_candidate_20261116.py and raises ValueError: observer fairness source changed: v13/cognition.py. Exact shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed. The same stale observer fairness pin causes the staged failures; two migration tests additionally expect UPDATED but receive PARTIAL. This is a Core-owned source-pin/migration chain, not a Perception audio test failure. Perception did not alter Core recovery/stage/deployer files. Core/Integrator must rebind and retest.
+
+
+## Core replacement PR #2538
+
+After the parent #2524 failures recorded above, Core opened replacement PR #2538 (branch core/v14-native-receiver-kv-integration-20261126-run50-core, head ddeca6a939399786753ecc6ae13086a99e68802e) and reports refreshing the observer/recovery/audio/stage/RuntimeDeploy pin chain against the current #2524 parent without weakening guards. Its exact-head CI runs 45891049901, 45891050110, 45891050131, 45891049890, 45891049926 and 45891049936 were QUEUED at first poll (only the Lab Age control check 45891052157 had completed PASS). This is not yet a verified fix. #2538 is based on #2524, not #2527; after #2527 exact A4/A5 CI is green, Core must stack/rebase #2538 onto the #2527 audio branch and refresh the A4 audio pins. Perception will not edit Core-owned recovery/stage/deployer files.

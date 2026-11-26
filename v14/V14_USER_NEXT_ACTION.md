@@ -2304,3 +2304,8 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 ### Run 50 CI follow-up — 2026-11-26
 
 Parent #2524 exact CI readback: native receiver workflow 45890208766 failed only the staged Runtime test on Python 3.13/3.14 (92 passed, 1 failed each), because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; failures cascade from the same pin, with two migration assertions returning PARTIAL rather than UPDATED. Linux pinned API and Android arm64 cross-compile jobs passed. This is a Core-owned pin/migration blocker; Perception did not modify recovery/stage/deployer files. New #2527 exact-head workflows remain queued at first poll.
+
+
+### Core #2538 follow-up — 2026-11-26
+
+Core replacement PR #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) now refreshes observer/recovery/audio/stage/RuntimeDeploy pins against the current #2524 parent and supersedes #2525. Its exact-head CI is queued, not passed. Because #2538 is based on #2524 rather than the parent-advanced audio PR #2527, Core should stack/rebase #2538 onto #2527 after #2527's exact A4/A5 CI is green, then refresh the audio pins to the new blobs. Do not treat the queued checks as release proof.

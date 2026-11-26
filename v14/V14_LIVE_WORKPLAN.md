@@ -1700,3 +1700,8 @@ PR #2527 is being advanced from its stale #2524 parent onto #2524 head a47907c4a
 ## Run 50 parent CI failure readback — 2026-11-26
 
 #2524 exact native receiver workflow 45890208766: Linux pinned API and Android arm64 cross-compile PASS; Python 3.13 and 3.14 each fail one staged Runtime test (92 passed, 1 failed) because the Core-owned observer fairness pin rejects v13/cognition.py. Shared staged/integrated workflow 45890208703: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed; most cascade from the same pin, and two migration assertions return PARTIAL instead of UPDATED. Core/Integrator owns the pin and migration repair. Do not change Perception files to bypass it. #2527 own exact-head CI is queued; no acceptance or release claim.
+
+
+## Core #2538 parent-stack follow-up — 2026-11-26
+
+Core replacement #2538 (head ddeca6a939399786753ecc6ae13086a99e68802e) has refreshed the current #2524 observer/recovery/audio/stage/RuntimeDeploy pin chain; exact CI remains queued. It is still based on #2524, not #2527. Once #2527's exact A4/A5 checks complete, Core must stack/rebase #2538 onto #2527 and recompute any A4 audio pins against the new Perception blobs before staged/integrated acceptance. Do not edit Core-owned files from Perception.
