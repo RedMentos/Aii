@@ -17,7 +17,7 @@
 
 - Code-bearing commit `63b05800ca08167b894f2a48e2a7e9ec73d0ee12`: Android Gradle/Robolectric job **SUCCESS** (run 45769108967); offline bridge security **SUCCESS** (run 45769108891). This includes the malformed-JSON/fragment regression.
 - Emulator process-restart job from run 45769108967 was still **IN_PROGRESS** at last read.
-- Hardening commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`: Android Gradle/Robolectric **SUCCESS** on exact PR-head run 45769580810; emulator process-restart remains **IN_PROGRESS**. Latest code commit `2526e24c8521707d7065fed28d495dde856245c6` adds a direct provider negative-path test; its Android Gradle/emulator/security jobs are queued or in progress (runs 45770231218 / 45770226511 / 45770226583). No PASS is claimed for that new test until the exact checks finish.
+- Hardening commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`: Android Gradle/Robolectric **SUCCESS** on exact PR-head run 45769580810; emulator process-restart remains **IN_PROGRESS**. Latest code commit `2526e24c8521707d7065fed28d495dde856245c6` adds a direct provider negative-path test. Android Gradle/Robolectric **SUCCESS** on run 45770231218 (including the new test); offline bridge security **SUCCESS** on run 45770226583; emulator process-restart remains **IN_PROGRESS** on run 45770231218.
 - LOCAL_LINUX: Java 21 present; Gradle absent; Android SDK variables unset. Android Gradle/Robolectric is BLOCKED locally. Full checkout also BLOCKED by GitHub DNS.
 - TERMUX/REDMI: REDMI_UNVERIFIED; read-only private relay HEALTH #959 and PIPELINE_STATUS #960 have NO_LIVE_RECEIPT (no `device_status` comment). No device action.
 
@@ -27,4 +27,4 @@ No user URL, private device data, model weights, permission, app install or user
 
 ## Next exact action
 
-Poll exact-head checks for `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`; fix failures, then request QA review. Separately coordinate the #2529 Runtime source-pin cascade with the affected owners; do not merge #2529 while staged-runtime/integrated-regression are red.
+Poll the exact-head emulator process-restart job in run 45770231218; if it passes, request QA review. If it fails, repair and rerun. Separately coordinate the #2529 Runtime source-pin cascade with the affected owners; do not merge #2529 while staged-runtime/integrated-regression are red.
