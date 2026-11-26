@@ -44,8 +44,12 @@ def stage(code_dir: Path, destination: Path) -> dict:
     if code_dir == destination or code_dir in destination.parents:
         raise ValueError('destination overlaps source tree')
     builder = code_dir / BUILDER
-    if builder.is_symlink() or hashlib.sha256(builder.read_bytes()).hexdigest() != BUILDER_SHA:
-        raise ValueError('integrated builder hash mismatch')
+    builder_sha = hashlib.sha256(builder.read_bytes()).hexdigest() if builder.is_file() else "MISSING"
+    if builder.is_symlink() or builder_sha != BUILDER_SHA:
+        raise ValueError(
+            f"integrated builder hash mismatch: symlink={builder.is_symlink()} "
+            f"expected={BUILDER_SHA} actual={builder_sha}"
+        )
     spec = importlib.util.spec_from_file_location('v13_pinned_integrated_builder', builder)
     if spec is None or spec.loader is None:
         raise RuntimeError('integrated builder is not loadable')
