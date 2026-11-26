@@ -210,7 +210,9 @@ class FakeCognition:
             "event_id": runtime.event["event_id"],
             "brain_generation_id": runtime.event["brain_generation_id"],
             "source_ref": runtime.source_ref,
-            "tap_id": "b1.result_norm.final.v1",
+            "tap_id": "lfm2.result_norm.final.v1",
+            "activation_space": "FINAL_RMSNORM_PREFILL_F32",
+            "capture_method": "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY",
             "model_revision": runtime.model_bindings["B1_DETAIL"]["revision"],
             "runner_revision": "b10964",
             "token_ids": [1, 10, 11, 12, 13],
@@ -222,8 +224,17 @@ class FakeCognition:
             "receiver_injection_authority": 0,
             "body_learning_authority": 0,
             "metrics": {
+                "operation": "PREFILL_TAP",
+                "normalization": "native_final_RMSNorm_only",
                 "whole_sequence_prefill": True,
                 "pooling": "none",
+                "CAN_LATENT_TAP": True,
+                "CAN_LATENT_INJECT": False,
+                "CAN_TRAIN_BODY": False,
+                "role": "B1_DETAIL",
+                "tap_id": "lfm2.result_norm.final.v1",
+                "runner_revision": "b10964",
+                "embedding_dim": 2,
                 "prompt_tokens": 5,
             },
         }
@@ -257,7 +268,7 @@ def make_record(runtime, kwargs):
     assert kwargs["sender_model_sha256"] == runtime.model_bindings["B1_DETAIL"]["sha256"]
     assert kwargs["receiver_model_sha256"] == runtime.model_bindings["C3_LANGUAGE"]["sha256"]
     return {
-        "schema": "v14.native-tokenwise-pairing/1",
+        "schema": "v14.native-tokenwise-pairing/2",
         "status": "PAIRED_DIAGNOSTIC",
         "source_ref": {
             "source_id": runtime.source_ref["source_id"],
@@ -270,7 +281,11 @@ def make_record(runtime, kwargs):
         "brain_generation_id": runtime.event["brain_generation_id"],
         "sender": {
             "role": "B1_DETAIL",
-            "tap_id": "b1.result_norm.final.v1",
+            "tap_id": "lfm2.result_norm.final.v1",
+            "activation_space": "FINAL_RMSNORM_PREFILL_F32",
+            "capture_method": "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY",
+            "embedding_dim": 2,
+            "runner_revision": "b10964",
             "model_revision": runtime.model_bindings["B1_DETAIL"]["revision"],
             "model_sha256": runtime.model_bindings["B1_DETAIL"]["sha256"],
             "tokenizer_revision": kwargs["sender_tokenizer_revision"],
@@ -469,7 +484,7 @@ def test_pair_operator_requires_distinct_approval_kind_and_routes_capture():
         ["native-tokenwise-pair", "B1_DETAIL", "C3_LANGUAGE", "--last-source", "--confirm"],
         approval_module=commands,
         capture_fn=lambda r, s, t, return_record=False: {
-            "schema": "v14.native-tokenwise-pairing/1",
+            "schema": "v14.native-tokenwise-pairing/2",
             "status": "PAIRED_DIAGNOSTIC",
             "persisted": False,
             "production_route": False,

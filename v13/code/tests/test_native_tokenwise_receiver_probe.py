@@ -156,7 +156,7 @@ class FakeApproval:
 
 def pair_record(runtime):
     return {
-        "schema": "v14.native-tokenwise-pairing/1",
+        "schema": "v14.native-tokenwise-pairing/2",
         "status": "PAIRED_DIAGNOSTIC",
         "persisted": False,
         "production_route": False,
@@ -175,7 +175,11 @@ def pair_record(runtime):
             "role": "B1_DETAIL",
             "model_revision": runtime.bindings["B1_DETAIL"]["revision"],
             "model_sha256": runtime.bindings["B1_DETAIL"]["sha256"],
-            "tap_id": "b1.final-rmsnorm.v1",
+            "tap_id": "lfm2.result_norm.final.v1",
+            "activation_space": "FINAL_RMSNORM_PREFILL_F32",
+            "capture_method": "LLAMA_SERVER_EMBEDDINGS_FINAL_RMSNORM_ONLY",
+            "embedding_dim": 2,
+            "runner_revision": "b10964",
             "tokenizer_revision": "llama-server:b10964;gguf:" + runtime.bindings["B1_DETAIL"]["sha256"],
         },
         "receiver": {

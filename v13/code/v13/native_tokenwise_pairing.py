@@ -22,13 +22,17 @@ from .latent_adapter import (
     fit_adapter,
     project_rows,
 )
+from .native_tap_contract import (
+    SENDER_ACTIVATION_SPACE, SENDER_CAPTURE_METHOD, SENDER_TAP_IDS,
+    NativeTapContractError, validate_latent_tap_packet,
+)
 from .native_input_embedding_tap import (
     _manifest_digest,
     _validate_extractor_receipt,
     build_native_input_embedding_tap_manifest_from_extractor_output,
 )
 
-SCHEMA = "v14.native-tokenwise-pairing/1"
+SCHEMA = "v14.native-tokenwise-pairing/2"
 _SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 _RECEIVER_TAPS = {
     "B1_DETAIL": "b1.input-embedding.v1",
@@ -62,7 +66,7 @@ def _record_digest(material: Mapping) -> str:
     raw = json.dumps(
         dict(material), sort_keys=True, separators=(",", ":"), allow_nan=False,
     ).encode("utf-8")
-    return hashlib.sha256(b"V14-NATIVE-TOKENWISE-PAIRING/1\0" + raw).hexdigest()
+    return hashlib.sha256(b"V14-NATIVE-TOKENWISE-PAIRING/2\0" + raw).hexdigest()
 
 
 def build_native_tokenwise_pair_record(
@@ -136,6 +140,13 @@ def build_native_tokenwise_pair_record(
         raise LatentAdapterError("validated sender LatentTapPacket and tap data are required")
     if set(sender_tap_data) != {"token_ids", "vectors"}:
         raise LatentAdapterError("sender tap data must be the exact Cognition.read_tap result")
+    try:
+        sender_contract = validate_latent_tap_packet(
+            sender_tap_packet, sender_tap_data, sender_role,
+            expected_tap_id=sender_tap_id,
+        )
+    except NativeTapContractError as exc:
+        raise LatentAdapterError("sender LatentTapPacket is not a validated final-RMSNorm prefill") from exc
     sender_prefill_token_ids = sender_tap_data.get("token_ids")
     sender_prefill_activation_rows = sender_tap_data.get("vectors")
     if (not isinstance(sender_prefill_token_ids, (list, tuple))
@@ -225,6 +236,10 @@ def build_native_tokenwise_pair_record(
     sender_meta = {
         "role": sender_role,
         "tap_id": sender_tap_id,
+        "activation_space": sender_contract["activation_space"],
+        "capture_method": sender_contract["capture_method"],
+        "embedding_dim": sender_contract["embedding_dim"],
+        "runner_revision": sender_contract["runner_revision"],
         "model_revision": sender_model_revision,
         "model_sha256": sender_model_sha256,
         "tokenizer_revision": sender_tokenizer_revision,
@@ -407,6 +422,18 @@ def _validate_native_pair_record(record: Mapping) -> dict:
             or len(set(pair_ids)) != len(pair_ids)
             or not isinstance(coverages, list) or len(coverages) != len(pairs)):
         raise LatentAdapterError("native tokenwise pair record row manifest is inconsistent")
+    sender = record["sender"]
+    sender_role = sender.get("role")
+    sender_dimension = sender.get("embedding_dim")
+    if (sender_role not in SENDER_TAP_IDS
+            or sender.get("tap_id") not in SENDER_TAP_IDS.get(sender_role, frozenset())
+            or sender.get("activation_space") != SENDER_ACTIVATION_SPACE
+            or sender.get("capture_method") != SENDER_CAPTURE_METHOD
+            or type(sender_dimension) is not int or not 1 <= sender_dimension <= 8192
+            or type(sender.get("runner_revision")) is not str or not sender.get("runner_revision")
+            or any(not isinstance(pair.get("sender_vector"), (list, tuple))
+                   or len(pair.get("sender_vector", ())) != sender_dimension for pair in pairs)):
+        raise LatentAdapterError("native pair record sender activation-space manifest is invalid")
     _validate_receiver_manifest_binding(record, pairs)
     for pair, coverage in zip(pairs, coverages):
         pair_coverage = pair.get("alignment_coverage")
@@ -471,7 +498,10 @@ def fit_adapter_from_native_pair_records(
     source_ids, source_hashes = set(), set()
     first = checked[0]
     sender, receiver = first["sender"], first["receiver"]
-    binding_fields = ("role", "tap_id", "model_revision", "model_sha256", "tokenizer_revision")
+    binding_fields = (
+        "role", "tap_id", "activation_space", "capture_method", "embedding_dim",
+        "runner_revision", "model_revision", "model_sha256", "tokenizer_revision",
+    )
     for record in checked:
         source_id = record["source_ref"]["source_id"]
         source_sha = record["source_ref"]["sha256"]
