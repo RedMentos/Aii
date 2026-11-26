@@ -154,7 +154,7 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
     assert effect["snapshot_count"] == 8
     assert effect["candidate_differs_from_no_message_count"] == 1
     assert effect["candidate_differs_from_exact_message_count"] == 1
-    assert effect["distinct_from_no_message_by_condition"]["NO_MESSAGE"] is False
+    assert effect["distinct_from_no_message_task_groups_by_condition"]["NO_MESSAGE"] == 0
     assert effect["same_input_consistency_passed"] is True
     assert effect["semantic_use_proven"] is False
     assert effect["generated_answer_correctness_proven"] is False
