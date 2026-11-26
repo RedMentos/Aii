@@ -360,8 +360,18 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    admitted_sha = self._prompt_admission.get('rendered_prompt_sha256')
+                    witness_sha = witness.get('rendered_prompt_sha256')
+                    witness_chars = witness.get('rendered_prompt_chars')
+                    self._prompt_admission['offer_template_witness'] = {
+                        **witness,
+                        'native_prompt_render_match': bool(
+                            type(admitted_sha) is str and len(admitted_sha) == 64
+                            and witness_sha == admitted_sha
+                            and type(witness_chars) is int and witness_chars == len(p)
+                            and self._prompt_admission.get('native_prompt_tokens') == count),
+                    }
                 return p,count,truncated
             candidate=admission.reduce_once(
                 work,self.role,self.cfg,
@@ -383,8 +393,18 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    admitted_sha = self._prompt_admission.get('rendered_prompt_sha256')
+                    witness_sha = witness.get('rendered_prompt_sha256')
+                    witness_chars = witness.get('rendered_prompt_chars')
+                    self._prompt_admission['offer_template_witness'] = {
+                        **witness,
+                        'native_prompt_render_match': bool(
+                            type(admitted_sha) is str and len(admitted_sha) == 64
+                            and witness_sha == admitted_sha
+                            and type(witness_chars) is int and witness_chars == len(p)
+                            and self._prompt_admission.get('native_prompt_tokens') == count),
+                    }
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
         raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
@@ -451,9 +471,11 @@ class LlamaRunner:
                     self.last_metrics['native_offer_prompt_receipt']={
                         **witnessed,
                         'native_completion_http_200':self._native_completion_http_200,
+                        'native_prompt_render_match':witnessed.get('native_prompt_render_match') is True,
                         'native_template_submitted':bool(
                             self._native_completion_http_200
-                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
+                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'
+                            and witnessed.get('native_prompt_render_match') is True),
                         'native_prompt_sha256':prompt_sha,
                         'native_token_ids_sha256':token_sha,
                         'native_prompt_tokens':prompt_tokens,
@@ -722,8 +744,12 @@ class CausalStreamRunner:
                 except Exception as exc:
                     offer_witness={'status':'RECEIPT_UNAVAILABLE','reason':type(exc).__name__,
                         'offers':[],'native_semantic_use_proven':False}
+                native_prompt_render_match = bool(
+                    offer_witness.get('rendered_prompt_sha256') == digest(prompt)
+                    and offer_witness.get('rendered_prompt_chars') == len(prompt))
                 self.last_metrics['native_offer_prompt_receipt']={
                     **offer_witness,'native_completion_http_200':False,
+                    'native_prompt_render_match':native_prompt_render_match,
                     'native_template_submitted':False,'native_prompt_prefill_verified':False,
                     'native_prompt_sha256':digest(prompt),
                     'native_token_ids_sha256':digest(dumps(ids)),
@@ -751,6 +777,7 @@ class CausalStreamRunner:
                 prefill_verified=bool(
                     type(offer_receipt) is dict
                     and offer_receipt.get('status')=='RENDERED_WITH_QUOTES'
+                    and offer_receipt.get('native_prompt_render_match') is True
                     and type(native_binding) is dict
                     and native_binding.get('scope')=='EXACT_SAME_CAUSAL_PREFILL'
                     and native_binding.get('live_generation_kv_tap') is True
