@@ -15,7 +15,7 @@ BASE_PINS = {
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
+    "v13/native_latent_receiver.py": "db2a9f46d76b8b0612d9b4fe6297c069ce5790f4d6f263ffe83689fb7d7e2517",
     "v13/native/latent_receiver/CMakeLists.txt": "6884bf0ce7613b20c2f02ffe1a1213d2609f56b9318d947f0a1bd0fb40cfe516",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "1bccf4156ca2c27d3d63077ff39329d680845201f0c94ae669924ffb710afb8f",
     "v13/native/latent_receiver/native_receiver_kv_snapshot.cpp": "a2968af85c5e0875ba6408047b88a915efe2b9d5fe815442685179b382f5fefc",
