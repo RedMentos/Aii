@@ -139,7 +139,10 @@ class FakeCompletionHandler(BaseHTTPRequestHandler):
     answer_status = 200
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
-        self.rfile.read(length)
+        request = json.loads(self.rfile.read(length))
+        prompt = request.get("prompt")
+        if isinstance(prompt, str):
+            self.server.last_prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         self.send_response(self.answer_status)
         self.send_header("Content-Type", "text/event-stream")
         if self.answer_status == 200:
@@ -159,6 +162,9 @@ class FakeFirstTokenHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
         request = json.loads(self.rfile.read(length))
+        prompt = request.get("prompt")
+        if isinstance(prompt, str):
+            self.server.last_prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         if request.get("stream") is not False or request.get("n_predict") != 1:
             self.send_response(400)
             self.end_headers()
@@ -225,6 +231,9 @@ class NativeHTTPBound(unittest.TestCase):
         self.assertEqual(receipt["status"], "RENDERED_WITH_QUOTES")
         self.assertTrue(receipt["native_template_submitted"])
         self.assertTrue(receipt["native_completion_http_200"])
+        self.assertTrue(receipt["native_request_prompt_submitted"])
+        self.assertTrue(receipt["native_request_prompt_matches_admission"])
+        self.assertEqual(receipt["native_request_prompt_sha256"], self.server.last_prompt_sha256)
         self.assertEqual(runner.last_metrics["status"], "FINAL")
         self.assertNotIn(SECRET, json.dumps(runner.last_metrics))
         self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(runner.last_metrics))
@@ -252,6 +261,9 @@ class NativeHTTPBound(unittest.TestCase):
         receipt = metrics["native_offer_prompt_receipt"]
         self.assertTrue(receipt["native_completion_http_200"])
         self.assertTrue(receipt["native_generation_completed"])
+        self.assertTrue(receipt["native_request_prompt_submitted"])
+        self.assertTrue(receipt["native_request_prompt_matches_admission"])
+        self.assertEqual(receipt["native_request_prompt_sha256"], self.server.last_prompt_sha256)
         matched, count, prompt_n, cache_n, prompt_ms = _native_prefill_token_count_match(
             metrics, {"B1_DETAIL", "B2_GIST"}, True, False
         )
@@ -274,6 +286,8 @@ class NativeHTTPBound(unittest.TestCase):
             list(runner.generate(messages([offer("B1_DETAIL", "b1")]),
                                  threading.Event(), time.monotonic() + 20))
         receipt = runner.last_metrics["native_offer_prompt_receipt"]
+        self.assertTrue(receipt["native_request_prompt_submitted"])
+        self.assertTrue(receipt["native_request_prompt_matches_admission"])
         self.assertFalse(receipt["native_completion_http_200"])
         self.assertFalse(receipt["native_template_submitted"])
 
