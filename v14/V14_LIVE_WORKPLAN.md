@@ -1687,3 +1687,40 @@ P0 correct/fast normal chat and B1/B2 valid-offer delivery remain OPEN. No norma
 - Shared staged/integrated [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687): FAIL at Core-owned `AUDIO_BUILDER_BLOB_SHA1`. Expected `831080bceec90711bd42e0fa4eba47c669975c98`; current Perception builder blob `f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0`. Staged: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests passed; failures cascade from this pin mismatch, including migration tests returning PARTIAL. Integrated regression fails at the same pin. Core PR #2525 owns the repair; no foreign files changed here.
 - Cross-lane: Core #2529's bounded exact-greeting reflex has CI success, but does not close nontrivial normal chat or B1/B2 → C4 → C3.
 - Result remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No mic, device, model, weights, permission or data changes.
+
+
+## Research & Perception Run 44 — session-local relative information diagnostic (2026-11-26)
+
+**Owner:** Research & Perception. **Branch:** \`research-perception/v14-audio-temporal-window-order-20261126-run41b\`. **PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT child of #2524. Code commit \`f4c0648af9d84dae8b8e11ab00431f24413d96a6\`; test commit \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`. New source blob \`aeb63ea214fac0d68a7f8bcf9e4701247406ceb1\`; test blob \`75e4bf6fa4a7e0de528484ddc5be16e6dca24d8d\`.
+
+### Implementation / consumer
+- Extends the existing shadow-only A4/A5 feature-set diagnostic. \`evaluate_feature_set()\` now also returns \`evaluate_relative_incremental_information()\`.
+- The proxy measures incremental information from current FINAL A4/A5 cue tuples about a later, separately sourced action outcome, conditioned on goal plus a session-local history summary.
+- History is bounded to a 5,000 ms window, uses the last prior feature tuple plus a capped count, excludes prior windows that have not ended before the current window, and resets at each session boundary.
+- Reports discrete plug-in incremental MI, remaining conditional action entropy, their ratio, conditional self-dependence, a no-history baseline, per-session results and a permutation null stratified within session × goal.
+- Adds four tests for multi-session information gain, session-boundary reset, missing/single-session rejection, chronology rejection and invalid parameters. The fixture now has four synthetic sessions.
+
+### Local evidence
+LOCAL_LINUX / CPython 3.13.5 scratch reproduction (the full Aii checkout is not mounted):
+- Equivalent proxy implementation compiled: PASS.
+- Six focused assertions: PASS (4-session result, history reset, session-stratified shuffle negative, per-session consistency, single-session rejection, non-monotonic chronology rejection).
+- 128 synthetic records / 4 sessions / 32 records per session: proxy rIMI 1.000; incremental MI 0.64995 bits; remaining conditional action entropy 0.64995 bits; conditional self-dependence 0.55702 bits; no-history goal-conditioned CMI 0.96568 bits; 128-permutation p=0.00775; shuffled rIMI p95=0.71029; 96.875% of rows had prior history.
+- This is a deliberately deterministic XOR fixture. It is not a human-audio result or a claim of general feature utility. The local scratch reproduction is not the exact repository module/test run.
+
+### Scientific boundary
+R-166 remains **ABSTRACT_VERIFIED only**: the official arXiv abstract introduces rIMI and warns that consecutive AAD predictions can repeat prior information and exploit temporal feature drift. The full paper was not reviewed in this run. This implementation is explicitly **not** the paper's exact rIMI: it uses discrete plug-in MI and a coarse prior-feature summary, not the paper's Gaussian-copula estimator over past prediction scores. No paper code, datasets, checkpoints or weights were reused.
+
+### Exact CI / integration
+- Exact new feature-set workflow: run 45780338189 QUEUED at checkpoint.
+- RAW EAR comparison: run 45780338123 IN_PROGRESS.
+- Shared staged/integrated regression: run 45780338096 IN_PROGRESS; the previous exact run failed on the Core-owned recovery audio-builder pin (Core expected \`831080bceec90711bd42e0fa4eba47c669975c98\`, current Perception builder \`f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0\`). Perception did not edit Core-owned recovery/stage/deployer files.
+- RuntimeDeploy offline integrity: run 45780338147 QUEUED.
+- Full local Aii checkout, full pytest and native build: NOT_RUN because no checkout is mounted and GitHub DNS is unavailable in the local environment.
+
+### Product / device boundary
+- Canon path: A4 RAW EAR / A5_AUDIO PerceptPacket / active-attention evidence evaluation.
+- Classification: WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
+- No normal Runtime, A4 attention policy, JEPA learner or C3 consumer was changed. No microphone provider, AudioRecord capture, real user audio, raw PCM persistence, model download/swap, weight update, permission change, device action or deployment occurred.
+- B3 remains OFF; PR #2527 remains DRAFT / NOT_RELEASED. P0 normal chat and B1/B2 valid-offer delivery remain OPEN.
+
+**Next:** poll the exact new CI; Core/Integrator must compose #2527 with the current #2525/#2524 native receiver work and repair the Core-owned recovery → stage → RuntimeDeploy audio-builder pin chain. Perception's next research step is a source/session-disjoint held-out evaluation with temporal-drift and switch-focused controls, but only after a legitimate, separately consented outcome cohort and the normal-turn revocable audio lease exist. Do not turn this diagnostic into an attention decision or learning signal.
