@@ -386,6 +386,17 @@ class Runtime:
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
             if fixed_policy is None:
+                try:  # exact whole-text greeting reflex only; questions and mixed modalities keep the multi-organ path
+                    from .greeting_fastpath import match as greeting_match
+                    greeting=greeting_match(text,event=e)
+                    if greeting is not None:
+                        answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_REFLEX')
+                        fixed_policy={'kind':'FIXED_EXACT','rule_id':greeting['rule_id'],'rule_version':'builtin-v1',
+                                      'query_ref':e['source_ref'],'answer_ref':answer_ref,'answer':greeting['reply']}
+                        meta['greeting_fastpath']={k:greeting[k] for k in ('rule_id','language','scope','input_sha256','response_sha256')}|{'answer_ref':answer_ref,'native_models_invoked':False}
+                        self.store.log('greeting_fastpath',eid,{'rule_id':greeting['rule_id'],'scope':greeting['scope'],'exact':True})
+                except Exception as exc:self.store.log('greeting_fastpath_unavailable',eid,{'error':type(exc).__name__})
+            if fixed_policy is None:
                 try:  # exact single-expression arithmetic only; all other queries keep the full multi-organ path
                     from .arithmetic_fastpath import match as arithmetic_match
                     arithmetic=arithmetic_match(text,event=e)
