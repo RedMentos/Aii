@@ -164,6 +164,104 @@ def _model_binding(runtime, role):
     }
 
 
+def _hash_adapter_file(path):
+    """Hash one bounded regular adapter file without following links or racing replacement."""
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    nonblock = getattr(os, "O_NONBLOCK", None)
+    if nofollow is None or nonblock is None:
+        raise PermissionError("latent adapter platform lacks safe no-follow/nonblocking open")
+    flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(str(path), flags)
+    except OSError as exc:
+        raise PermissionError("latent adapter cannot be opened safely") from exc
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or not 1 <= before.st_size <= 64 * 1024 * 1024:
+            raise PermissionError("latent adapter must be a bounded regular file")
+        digest = hashlib.sha256()
+        with os.fdopen(os.dup(fd), "rb") as stream:
+            while True:
+                chunk = stream.read(1024 * 1024)
+                if not chunk:
+                    break
+                digest.update(chunk)
+        after = os.fstat(fd)
+        try:
+            path_stat = os.stat(path, follow_symlinks=False)
+        except OSError as exc:
+            raise PermissionError("latent adapter path changed while hashing") from exc
+        identity = lambda value: (
+            value.st_dev, value.st_ino, value.st_size,
+            value.st_mtime_ns, value.st_ctime_ns,
+        )
+        if (not stat.S_ISREG(path_stat.st_mode)
+                or identity(before) != identity(after)
+                or identity(after) != identity(path_stat)):
+            raise PermissionError("latent adapter changed while hashing")
+        return digest.hexdigest(), identity(after)
+    finally:
+        os.close(fd)
+
+
+def _adapter_binding(runtime, adapter_name, sender_role, receiver_role, models):
+    """Bind one event-pooled candidate to exact installed models and receiver input space."""
+    if (type(adapter_name) is not str or not adapter_name or len(adapter_name) > 128
+            or Path(adapter_name).name != adapter_name or adapter_name in {".", ".."}):
+        raise PermissionError("latent adapter name must be one bounded filename")
+    root = Path(runtime.home) / "data" / "latent_adapters"
+    if root.is_symlink() or not root.is_dir():
+        raise PermissionError("latent adapter directory must be an existing real directory")
+    path = root / adapter_name
+    if path.is_symlink() or not path.is_file():
+        raise PermissionError("latent adapter checkpoint is missing or linked")
+    resolved_root = root.resolve(strict=True)
+    resolved = path.resolve(strict=True)
+    if not resolved.is_relative_to(resolved_root):
+        raise PermissionError("latent adapter escaped its registered directory")
+    digest, identity = _hash_adapter_file(resolved)
+    try:
+        from .latent_adapter import load_adapter
+        adapter = load_adapter(resolved)
+    except Exception as exc:
+        raise PermissionError("latent adapter checkpoint failed typed validation") from exc
+    digest_after, identity_after = _hash_adapter_file(resolved)
+    if digest_after != digest or identity_after != identity or adapter.get("adapter_sha256") != digest:
+        raise PermissionError("latent adapter changed during typed validation")
+    expected_input_tap = {
+        "B1_DETAIL": "b1.input-embedding.v1",
+        "B2_GIST": "b2.input-embedding.v1",
+        "C3_LANGUAGE": "c3.input-embedding.v1",
+    }.get(receiver_role)
+    if (adapter.get("status") != "ALIGNMENT_CANDIDATE"
+            or adapter.get("projection_scope") != "EVENT_POOLED_NONZERO_MEAN"
+            or adapter.get("sender_role") != sender_role
+            or adapter.get("receiver_role") != receiver_role
+            or adapter.get("receiver_tap_id") != expected_input_tap
+            or adapter.get("production_route") is not False
+            or adapter.get("semantic_use_proven") is not False
+            or adapter.get("training_authority") != 0
+            or adapter.get("native_receiver_authority") != 0):
+        raise PermissionError("latent adapter is not an authority-zero event-pooled receiver-input candidate")
+    sender_binding = models.get(sender_role)
+    receiver_binding = models.get(receiver_role)
+    if (not isinstance(sender_binding, dict) or not isinstance(receiver_binding, dict)
+            or adapter.get("sender_model_revision") != sender_binding.get("revision")
+            or adapter.get("sender_model_sha256") != sender_binding.get("sha256")
+            or adapter.get("receiver_model_revision") != receiver_binding.get("revision")
+            or adapter.get("receiver_model_sha256") != receiver_binding.get("sha256")):
+        raise PermissionError("latent adapter model revision/hash differs from installed model bindings")
+    return {
+        "name": adapter_name,
+        "sha256": digest,
+        "file_identity": list(identity),
+        "projection_scope": adapter["projection_scope"],
+        "sender_tap_id": adapter["sender_tap_id"],
+        "receiver_tap_id": adapter["receiver_tap_id"],
+        "adapter_status": adapter["status"],
+    }
+
+
 def _current_event(runtime):
     last = runtime.last_answer()
     if not last or last.get("status") != "FINAL" or not last.get("event_id"):
@@ -199,7 +297,7 @@ def _require_local_tty():
         raise PermissionError("native probe approval requires an interactive local TTY")
 
 
-def arm(runtime, sender_role, receiver_role, *, now=None):
+def arm(runtime, sender_role, receiver_role, *, now=None, adapter_name=None):
     """Arm one exact probe only from an interactive local terminal."""
     _require_local_tty()
     runtime.require_idle()
@@ -209,6 +307,10 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
         sender_role: _model_binding(runtime, sender_role),
         receiver_role: _model_binding(runtime, receiver_role),
     }
+    adapter_binding = (
+        _adapter_binding(runtime, adapter_name, sender_role, receiver_role, models)
+        if adapter_name is not None else None
+    )
     # Start the short approval window only after the full model-byte verification.
     clock = _clock(now)
     runtime_nonce = _runtime_nonce(runtime)
@@ -235,8 +337,14 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
         "receiver_role": receiver_role,
         "models": models,
     }
+    if adapter_binding is not None:
+        record.update({
+            "input_mode": "LATENT_PREFIX_V1",
+            "adapter_name": adapter_name,
+            "adapter": adapter_binding,
+        })
     runtime.store.set_state(KEY, record, expected=version)
-    return {
+    result = {
         "status": "ARMED",
         "approval_id": nonce[:12],
         "expires_in_seconds": TTL_SECONDS,
@@ -250,6 +358,13 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
+    if adapter_binding is not None:
+        result.update({
+            "input_mode": "LATENT_PREFIX_V1",
+            "adapter_sha256": adapter_binding["sha256"],
+            "projection_scope": adapter_binding["projection_scope"],
+        })
+    return result
 
 
 
@@ -446,7 +561,7 @@ def _resource_preflight(runtime, receiver_binding):
     }
 
 
-def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None):
+def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None, adapter_name=None):
     """Consume the local approval atomically before any native receiver work."""
     _require_local_tty()
     if lease_token is None:
@@ -483,6 +598,16 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None,
     }
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
+    if adapter_name is None:
+        if record.get("input_mode") == "LATENT_PREFIX_V1" or "adapter" in record:
+            raise PermissionError("native token-prefill command cannot consume a latent-prefix approval")
+    else:
+        if (record.get("input_mode") != "LATENT_PREFIX_V1"
+                or record.get("adapter_name") != adapter_name
+                or record.get("adapter") != _adapter_binding(
+                    runtime, adapter_name, sender_role, receiver_role, models,
+                )):
+            raise PermissionError("latent-prefix adapter differs from the local approval")
     if runtime.cancel_event.is_set():
         raise InterruptedError("native probe cancelled before execution; local approval remains pending")
     resource_preflight = _resource_preflight(runtime, models[receiver_role])
@@ -502,6 +627,8 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None,
         "event_id": record["event_id"],
         "consumed": True,
         "resource_preflight": resource_preflight,
+        **({"input_mode": "LATENT_PREFIX_V1", "adapter_sha256": record["adapter"]["sha256"]}
+           if adapter_name is not None else {}),
     }
 
 
@@ -559,16 +686,73 @@ def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, 
     return packet
 
 
+def _native_receive_prefix_interruptibly(runtime, sender, receiver, event, source_ref,
+                                          adapter_name, deadline):
+    """Run the event-pooled prefix receiver while preserving Ctrl+C/Runtime cancellation."""
+    outcome = {}
+
+    def invoke():
+        try:
+            outcome["packet"] = runtime.cognition.native_receive_prefix(
+                sender, receiver, event, source_ref, adapter_name, deadline,
+            )
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=invoke, name="v14-native-prefix-probe", daemon=True)
+    worker.start()
+    interrupted = False
+    while worker.is_alive():
+        try:
+            worker.join(0.1)
+        except KeyboardInterrupt:
+            if worker.is_alive():
+                runtime.cancel_event.set()
+                interrupted = True
+    if interrupted:
+        raise InterruptedError("Native latent-prefix probe cancelled by local operator")
+    error = outcome.get("error")
+    if error is not None:
+        raise error
+    if runtime.cancel_event.is_set():
+        raise InterruptedError("Native latent-prefix probe cancelled by Runtime shutdown")
+    packet = outcome.get("packet")
+    if not isinstance(packet, dict):
+        raise RuntimeError("Native latent-prefix receiver returned no result packet")
+    return packet
+
+
 def operator_command(runtime, args):
     """Local :callosum native-probe workflow; every stage requires a real TTY."""
-    if (len(args) == 5 and args[0] == "arm-probe"
-            and args[3:] == ["--last-source", "--confirm"]):
-        return dumps(arm(runtime, args[1], args[2]))
+    normal_arm = (
+        len(args) == 5 and args[0] == "arm-probe"
+        and args[3:] == ["--last-source", "--confirm"]
+    )
+    prefix_arm = (
+        len(args) == 7 and args[0] == "arm-probe"
+        and args[3] == "--latent-prefix"
+        and args[5:] == ["--last-source", "--confirm"]
+    )
+    if normal_arm or prefix_arm:
+        return dumps(arm(
+            runtime, args[1], args[2],
+            adapter_name=args[4] if prefix_arm else None,
+        ))
     if args == ["revoke-probe"]:
         return dumps(revoke(runtime))
-    if (len(args) == 5 and args[0] == "native-probe"
-            and args[3:] == ["--last-source", "--confirm"]):
+
+    normal_run = (
+        len(args) == 5 and args[0] == "native-probe"
+        and args[3:] == ["--last-source", "--confirm"]
+    )
+    prefix_run = (
+        len(args) == 7 and args[0] == "native-probe"
+        and args[3] == "--latent-prefix"
+        and args[5:] == ["--last-source", "--confirm"]
+    )
+    if normal_run or prefix_run:
         sender, receiver = args[1], args[2]
+        adapter_name = args[4] if prefix_run else None
         _roles(sender, receiver)
         with runtime_probe_lease(runtime) as lease_token:
             last = runtime.last_answer()
@@ -585,14 +769,20 @@ def operator_command(runtime, args):
             if not isinstance(source_ref, dict) or not source_ref.get("source_id"):
                 raise ValueError("Last event has no valid SourceRef")
             approval = consume(
-                runtime, sender, receiver, event, source_ref, lease_token=lease_token,
+                runtime, sender, receiver, event, source_ref,
+                lease_token=lease_token, adapter_name=adapter_name,
             )
             runtime.models.path_for(receiver)
             deadline = time.monotonic() + 120.0
             try:
-                packet = _native_receive_interruptibly(
-                    runtime, sender, receiver, event, source_ref, deadline,
-                )
+                if adapter_name is None:
+                    packet = _native_receive_interruptibly(
+                        runtime, sender, receiver, event, source_ref, deadline,
+                    )
+                else:
+                    packet = _native_receive_prefix_interruptibly(
+                        runtime, sender, receiver, event, source_ref, adapter_name, deadline,
+                    )
             finally:
                 runtime.pool.unload()
             return dumps({
@@ -606,14 +796,16 @@ def operator_command(runtime, args):
                 "resource_preflight": approval["resource_preflight"],
                 "runtime_exclusive": True,
                 "requires_explicit_confirmation": False,
+                "input_mode": "LATENT_PREFIX_V1" if adapter_name is not None else "TOKEN_PREFILL",
+                **({"adapter_sha256": approval["adapter_sha256"]} if adapter_name is not None else {}),
                 "production_route": False,
                 "semantic_use_proven": False,
                 "training_authority": 0,
                 "native_receiver_authority": 0,
-                "notice": "Synchronous probe under an exclusive Runtime lease after one-shot local TTY approval; no weight or routing change",
+                "notice": "Synchronous diagnostic under an exclusive Runtime lease after one-shot local TTY approval; no weight or routing change",
             })
     raise ValueError(
         ":callosum [status|shadow|active|degrade|promote <direction>|"
-        "arm-probe <sender> <receiver> --last-source --confirm|"
-        "native-probe <sender> <receiver> --last-source --confirm|revoke-probe]"
+        "arm-probe <sender> <receiver> [--latent-prefix <adapter-name>] --last-source --confirm|"
+        "native-probe <sender> <receiver> [--latent-prefix <adapter-name>] --last-source --confirm|revoke-probe]"
     )

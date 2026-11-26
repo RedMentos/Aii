@@ -15,8 +15,9 @@ import subprocess
 import time
 from pathlib import Path
 
-SCHEMA = "v14.native-latent-receiver/3"
+SCHEMA = "v14.native-latent-receiver/4"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
+LATENT_PREFIX_MODE = "LATENT_PREFIX_V1"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
@@ -52,10 +53,16 @@ def _finite_number(value) -> bool:
 
 
 def _validate_positions(position_ids, rows, position_mode):
+    if not isinstance(position_ids, (list, tuple)) or len(position_ids) != rows:
+        raise NativeReceiverError("position row count differs from input rows")
+    if position_mode == LATENT_PREFIX_MODE:
+        # One event-level vector occupies one virtual prefix position in a fresh
+        # receiver context. It is not a tokenizer token or a text prefill row.
+        if rows != 1 or type(position_ids[0]) is not int or position_ids[0] != 0:
+            raise NativeReceiverError("LATENT_PREFIX_V1 requires exactly one event vector at virtual position zero")
+        return [0]
     if position_mode != POSITION_MODE:
         raise NativeReceiverError("unsupported sender position mode")
-    if not isinstance(position_ids, (list, tuple)) or len(position_ids) != rows:
-        raise NativeReceiverError("position row count differs from tap rows")
     positions = []
     previous = -1
     for value in position_ids:
@@ -190,6 +197,19 @@ def validate_packet(value):
     if not 1 <= value["input_rows"] <= MAX_ROWS or not 1 <= value["input_dim"] <= MAX_DIM or value["input_rows"] * value["input_dim"] > MAX_ELEMENTS:
         raise NativeReceiverError("LatentReceiverPacket input geometry")
     _validate_positions(value["position_ids"], value["input_rows"], value["position_mode"])
+    if value["position_mode"] == LATENT_PREFIX_MODE:
+        digest = value.get("adapter_sha256")
+        if value["input_dim"] < 2:
+            raise NativeReceiverError("LATENT_PREFIX_V1 requires at least two dimensions for a nontrivial shuffle control")
+        if (value.get("tokenizer_revision") is not None
+                or value.get("input_semantics") != "SINGLE_EVENT_PREFIX"
+                or value.get("projection_scope") != "EVENT_POOLED_NONZERO_MEAN"
+                or value.get("adapter_status") != "ALIGNMENT_CANDIDATE"
+                or not isinstance(digest, str) or len(digest) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest.lower())):
+            raise NativeReceiverError("LATENT_PREFIX_V1 adapter/sequence binding is invalid")
+    elif any(name in value for name in ("adapter_sha256", "projection_scope", "input_semantics", "adapter_status")):
+        raise NativeReceiverError("token-prefill receipt cannot carry latent-prefix adapter metadata")
     if type(value["receiver_input_dim"]) is not int or type(value["output_dim"]) is not int or not 1 <= value["receiver_input_dim"] <= MAX_DIM or not 1 <= value["output_dim"] <= MAX_DIM:
         raise NativeReceiverError("LatentReceiverPacket receiver geometry")
     for name in ("output_norm", "input_effect_rms"):
@@ -310,9 +330,13 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         raise NativeReceiverError("sender model hash missing or malformed")
     if tokenizer_revision is not None and (not isinstance(tokenizer_revision, str) or not tokenizer_revision):
         raise NativeReceiverError("tokenizer revision malformed")
+    if position_mode == LATENT_PREFIX_MODE and tokenizer_revision is not None:
+        raise NativeReceiverError("LATENT_PREFIX_V1 cannot carry tokenizer revision or token IDs")
     expected_model_sha256 = expected_model_sha256.lower()
     sender_model_sha256 = sender_model_sha256.lower()
     rows, input_dim, payload, input_sha256 = _vector_payload(vectors)
+    if position_mode == LATENT_PREFIX_MODE and input_dim < 2:
+        raise NativeReceiverError("LATENT_PREFIX_V1 requires at least two dimensions for a nontrivial shuffle control")
     positions = _validate_positions(position_ids, rows, position_mode)
 
     root = Path(home).resolve()
@@ -357,6 +381,7 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     returncode, stdout, stderr = _run_cancelable(
         [str(binary), "--model", str(model), "--rows", str(rows),
          "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
+         "--position-mode", position_mode,
          "--threads", str(max(1, min(int(threads), 2)))],
         payload, deadline, cancel_event,
     )
@@ -366,7 +391,7 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     if raw.get("llama_version") != version_data.get("llama_version"):
         raise NativeReceiverError("native receiver version changed between invocations")
     if raw.get("position_ids") != positions or raw.get("position_mode") != position_mode:
-        raise NativeReceiverError("native receiver position mapping differs from the sender tap")
+        raise NativeReceiverError("native receiver position mapping differs from the sender input contract")
 
     receiver_input_dim = raw.get("receiver_input_dim")
     output_dim = raw.get("output_dim")

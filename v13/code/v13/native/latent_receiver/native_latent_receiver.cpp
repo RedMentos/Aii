@@ -24,6 +24,7 @@ constexpr int kMaxRows = 64;
 constexpr int kMaxDim = 8192;
 constexpr int kMaxPosition = 131072;
 constexpr const char * kPositionMode = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL";
+constexpr const char * kLatentPrefixMode = "LATENT_PREFIX_V1";
 constexpr std::size_t kMaxElements = 262144;
 constexpr double kEffectEpsilon = 1.0e-7;
 constexpr double kLogitEffectEpsilon = 1.0e-6;
@@ -48,6 +49,17 @@ bool valid_positions(int rows, const std::vector<int> & positions, int context_l
         previous = position;
     }
     return true;
+}
+
+bool valid_positions_for_mode(int rows, const std::vector<int> & positions,
+                              int context_limit, const std::string & mode) {
+    if (mode == kPositionMode) return valid_positions(rows, positions, context_limit);
+    if (mode == kLatentPrefixMode) {
+        // One event vector is a virtual prefix at position zero in a fresh context.
+        return rows == 1 && positions.size() == 1 && positions[0] == 0
+            && context_limit >= 1 && context_limit <= kMaxPosition;
+    }
+    return false;
 }
 
 std::vector<float> zero_control(std::size_t size) {
@@ -179,7 +191,8 @@ std::string positions_json(const std::vector<int> & positions) {
     return out.str();
 }
 
-bool parse_positions(const std::string & raw, int rows, std::vector<int> & positions) {
+bool parse_positions(const std::string & raw, int rows, const std::string & mode,
+                     std::vector<int> & positions) {
     std::stringstream stream(raw);
     std::string token;
     while (std::getline(stream, token, ',')) {
@@ -189,7 +202,7 @@ bool parse_positions(const std::string & raw, int rows, std::vector<int> & posit
         if (end == token.c_str() || *end != '\0' || value < 0 || value >= kMaxPosition) return false;
         positions.push_back(static_cast<int>(value));
     }
-    return valid_positions(rows, positions, kMaxPosition);
+    return valid_positions_for_mode(rows, positions, kMaxPosition, mode);
 }
 
 int selftest() {
@@ -216,7 +229,11 @@ int selftest() {
     if (valid_positions(2, std::vector<int>{1, 0}, 64)) return 14;
     if (valid_positions(2, std::vector<int>{0, 0}, 64)) return 15;
     if (valid_positions(2, std::vector<int>{0, 64}, 64)) return 16;
-    if (reverse_rows(input, 2, 2) == input) return 17;
+    if (!valid_positions_for_mode(1, std::vector<int>{0}, 64, kLatentPrefixMode)) return 17;
+    if (valid_positions_for_mode(2, std::vector<int>{0, 1}, 64, kLatentPrefixMode)) return 18;
+    if (valid_positions_for_mode(1, std::vector<int>{1}, 64, kLatentPrefixMode)) return 19;
+    if (valid_positions_for_mode(1, std::vector<int>{0}, 64, "UNKNOWN")) return 20;
+    if (reverse_rows(input, 2, 2) == input) return 21;
     TokenSummary token_summary;
     if (!summarize_logits(std::vector<float>{1.0f, 3.0f, 2.0f}, token_summary)) return 18;
     if (token_summary.token_id != 1 || std::abs(token_summary.margin - 1.0) > 1.0e-12) return 19;
@@ -294,14 +311,16 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
 
 void print_version() {
     const char * version = llama_version();
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/4\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown") << "\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
-               const std::vector<int> & positions, const std::vector<float> & input) {
-    if (!v14::valid_batch(rows, input_dim, input)) {
+               const std::vector<int> & positions, const std::string & position_mode,
+               const std::vector<float> & input) {
+    if (!v14::valid_batch(rows, input_dim, input)
+        || (position_mode == v14::kLatentPrefixMode && input_dim < 2)) {
         std::cerr << "invalid input batch\n";
         return 2;
     }
@@ -317,7 +336,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         return 3;
     }
     const int model_context = llama_model_n_ctx_train(model.value);
-    if (model_context <= 0 || !v14::valid_positions(rows, positions, model_context)) {
+    if (model_context <= 0 || !v14::valid_positions_for_mode(rows, positions, model_context, position_mode)) {
         std::cerr << "sender position mapping exceeds receiver model context\n";
         return 4;
     }
@@ -331,14 +350,14 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         return 4;
     }
     if (receiver_input_dim != input_dim) {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/4\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\""
                   << v14::json_escape(llama_version() ? llama_version() : "unknown")
                   << "\",\"status\":\"DIMENSION_MISMATCH\",\"input_rows\":" << rows
                   << ",\"input_dim\":" << input_dim << ",\"receiver_input_dim\":" << receiver_input_dim
                   << ",\"output_dim\":" << output_dim
                   << ",\"position_ids\":" << v14::positions_json(positions)
-                  << ",\"position_mode\":\"" << v14::kPositionMode << "\""
+                  << ",\"position_mode\":\"" << v14::json_escape(position_mode) << "\""
                   << ",\"row_shuffle_control_applicable\":false,\"row_shuffle_control_cosine\":null"
                   << ",\"receiver_vocab_size\":" << vocab_size
                   << ",\"receiver_next_token_id\":null,\"zero_control_next_token_id\":null"
@@ -388,14 +407,14 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     const double logit_effect = v14::rms_delta(positive_token.logits, zero_token.logits);
     const double logit_similarity = v14::cosine(positive_token.logits, zero_token.logits);
     const bool next_token_effect = logit_effect > v14::kLogitEffectEpsilon;
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/4\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(llama_version() ? llama_version() : "unknown")
               << "\",\"status\":\"DECODED\",\"input_rows\":" << rows
               << ",\"input_dim\":" << input_dim << ",\"receiver_input_dim\":" << receiver_input_dim
               << ",\"output_dim\":" << output_dim
               << ",\"position_ids\":" << v14::positions_json(positions)
-              << ",\"position_mode\":\"" << v14::kPositionMode << "\""
+              << ",\"position_mode\":\"" << v14::json_escape(position_mode) << "\""
               << ",\"decode_status\":" << positive_status
               << ",\"output_norm\":" << v14::number(output_norm)
               << ",\"input_effect_rms\":" << v14::number(input_effect)
@@ -434,7 +453,7 @@ int main(int argc, char ** argv) {
         print_version();
         return 0;
     }
-    std::string model_path, positions_text;
+    std::string model_path, positions_text, position_mode;
     int rows = 0, input_dim = 0, threads = 1;
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
@@ -442,6 +461,7 @@ int main(int argc, char ** argv) {
         else if (arg == "--rows" && i + 1 < argc) rows = std::atoi(argv[++i]);
         else if (arg == "--input-dim" && i + 1 < argc) input_dim = std::atoi(argv[++i]);
         else if (arg == "--positions" && i + 1 < argc) positions_text = argv[++i];
+        else if (arg == "--position-mode" && i + 1 < argc) position_mode = argv[++i];
         else if (arg == "--threads" && i + 1 < argc) threads = std::atoi(argv[++i]);
         else {
             std::cerr << "unknown or incomplete argument\n";
@@ -451,8 +471,10 @@ int main(int argc, char ** argv) {
     std::vector<int> positions;
     if (model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
         !v14::valid_batch(rows, input_dim, std::vector<float>(static_cast<std::size_t>(rows) * input_dim, 0.0f)) ||
-        !v14::parse_positions(positions_text, rows, positions)) {
-        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --positions CSV --threads N\n";
+        (position_mode != v14::kPositionMode && position_mode != v14::kLatentPrefixMode) ||
+        (position_mode == v14::kLatentPrefixMode && input_dim < 2) ||
+        !v14::parse_positions(positions_text, rows, position_mode, positions)) {
+        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --positions CSV --position-mode MODE --threads N\n";
         return 64;
     }
     const std::size_t count = static_cast<std::size_t>(rows) * input_dim;
@@ -463,10 +485,10 @@ int main(int argc, char ** argv) {
         std::cerr << "invalid binary input payload\n";
         return 65;
     }
-    return run_native(model_path, rows, input_dim, threads, positions, input);
+    return run_native(model_path, rows, input_dim, threads, positions, position_mode, input);
 #else
     if (argc == 2 && std::string(argv[1]) == "--version") {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/4\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\"LOCAL_CORE_ONLY\"}\n";
         return 0;
     }

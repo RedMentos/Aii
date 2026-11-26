@@ -11,6 +11,7 @@ from v13.models import model_key
 from v13.contracts import validate
 from v13.callosum import controller, operator_command
 from v13 import native_latent_receiver as native
+from v13 import native_probe_approval as approval
 
 
 def receipt(model_sha, sender_sha):
@@ -64,6 +65,7 @@ def setup_runtime(tmp_path):
     runtime = Runtime(Path(tmp_path))
     runtime.sleep.cycle.set_policy("enabled", "off")
     event = runtime.store.event(runtime.session, "private source text stays local")
+    runtime.store.message(runtime.session, event["event_id"], "assistant", "test answer", "FINAL", {})
     model_dir = runtime.home / "models"
     model_dir.mkdir(parents=True, exist_ok=True)
     model_path = model_dir / "receiver.gguf"
@@ -74,7 +76,11 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "lfm2-r1",
         "main_file": "receiver.gguf",
-        "files": {"receiver.gguf": {"sha256": digest}},
+        "files": {"receiver.gguf": {
+            "sha256": digest,
+            "path": str(model_path.relative_to(runtime.home)),
+            "size": len(model_path.read_bytes()),
+        }},
     }
     sender_dir = model_dir / "gist"
     sender_dir.mkdir(parents=True, exist_ok=True)
@@ -86,7 +92,11 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "qwen35-r1",
         "main_file": "sender.gguf",
-        "files": {"sender.gguf": {"sha256": sender_digest}},
+        "files": {"sender.gguf": {
+            "sha256": sender_digest,
+            "path": str(sender_path.relative_to(runtime.home)),
+            "size": len(sender_path.read_bytes()),
+        }},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
     runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
@@ -341,9 +351,9 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
-    runtime.last_answer = lambda: {"event_id": event["event_id"]}
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": event["event_id"]}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
     packet = {
@@ -360,6 +370,12 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
     )
     runtime.pool.unload = lambda: calls.append("unload")
+    # Simulate the local interactive approval boundary; production still checks os.isatty(0).
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    armed = json.loads(operator_command(
+        runtime, ["arm-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
+    ))
+    assert armed["status"] == "ARMED"
     result = json.loads(operator_command(
         runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
@@ -367,10 +383,182 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     assert result["queued"] is False
     assert result["production_route"] is False
     assert calls[0] == "idle"
-    assert calls[1][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
-    assert calls[2] == "unload"
+    assert calls[1] == "unload"  # preflight releases every managed runner before the native probe
+    assert calls[2][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
+    assert calls[-1] == "unload"  # final cleanup after the synchronous probe
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "C3_LANGUAGE", "B2_GIST", "--last-source", "--confirm"])
+    runtime.close()
+
+
+
+def _make_event_pooled_c3_adapter(runtime, sender_digest, receiver_digest):
+    from v13.latent_adapter import fit_adapter, save_adapter
+
+    train = []
+    for index in range(12):
+        x = float(index + 1)
+        train.append({
+            "pair_id": "train-pair-" + str(index),
+            "source_id": "train-source-" + str(index),
+            "sender_vector": [x, 2.0 * x],
+            "receiver_vector": [3.0 * x + 1.0, -2.0 * x + 4.0],
+        })
+    holdout = []
+    for index in range(4):
+        x = float(index + 20)
+        holdout.append({
+            "pair_id": "holdout-pair-" + str(index),
+            "source_id": "holdout-source-" + str(index),
+            "sender_vector": [x, 2.0 * x],
+            "receiver_vector": [3.0 * x + 1.0, -2.0 * x + 4.0],
+        })
+    adapter = fit_adapter(
+        train, holdout,
+        sender_role="B2_GIST",
+        receiver_role="C3_LANGUAGE",
+        sender_tap_id="qwen35.result_norm.final.v1",
+        receiver_tap_id="c3.input-embedding.v1",
+        sender_model_revision="qwen35-r1",
+        receiver_model_revision="lfm2-r1",
+        sender_model_sha256=sender_digest,
+        receiver_model_sha256=receiver_digest,
+        rank=1,
+        ridge=1e-4,
+        min_relative_improvement=0.01,
+        seed=7,
+        projection_scope="EVENT_POOLED_NONZERO_MEAN",
+    )
+    assert adapter["status"] == "ALIGNMENT_CANDIDATE"
+    root = runtime.home / "data" / "latent_adapters"
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / "event-pooled-c3.v14lat"
+    digest = save_adapter(adapter, path)
+    return path.name, adapter, digest
+
+
+def test_native_receive_prefix_projects_one_event_vector_into_virtual_receiver_prefix(tmp_path, monkeypatch):
+    from v13.latent_adapter import load_adapter, project_event
+
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    adapter_name, adapter, adapter_digest = _make_event_pooled_c3_adapter(
+        runtime, sender_digest, digest,
+    )
+    tap = {
+        "packet_id": "tap-prefix-1",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 3},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {
+        "token_ids": [101, 202, 303],
+        "vectors": [[99.0, 99.0], [1.0, 2.0], [3.0, 4.0]],
+    }
+    runtime.pool.unload = lambda: None
+    runtime.pool.pids = lambda: []
+    runtime.needle.pids = lambda: []
+    runtime.memory.semantic_keys.encoder.pids = lambda: []
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    # Runtime reloads the float32-persisted adapter; compute the expected
+    # vector from the same durable bytes rather than the pre-serialization fit.
+    persisted_adapter = load_adapter(runtime.home / "data" / "latent_adapters" / adapter_name)
+    expected = project_event(
+        persisted_adapter, [2.0, 3.0],
+        sender_model_sha256=sender_digest,
+        receiver_model_sha256=digest,
+        sender_tap_id="qwen35.result_norm.final.v1",
+        receiver_tap_id="c3.input-embedding.v1",
+    )
+    calls = []
+
+    def fake_probe(**kwargs):
+        calls.append(kwargs)
+        assert kwargs["vectors"] == [expected]
+        assert kwargs["position_ids"] == [0]
+        assert kwargs["position_mode"] == native.LATENT_PREFIX_MODE
+        assert kwargs["tokenizer_revision"] is None
+        value = receipt(digest, sender_digest)
+        value.update({
+            "input_rows": 1,
+            "position_ids": [0],
+            "position_mode": native.LATENT_PREFIX_MODE,
+            "row_shuffle_control_cosine": None,
+            "row_shuffle_control_applicable": False,
+            "row_shuffle_control_next_token_id": None,
+            "next_token_changed_vs_row_shuffle": False,
+        })
+        return value
+
+    monkeypatch.setattr(native, "probe", fake_probe)
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", adapter_name=adapter_name)
+    with approval.runtime_probe_lease(runtime) as lease_token:
+        armed = approval.consume(
+            runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+            lease_token=lease_token, adapter_name=adapter_name,
+        )
+        assert armed["input_mode"] == native.LATENT_PREFIX_MODE
+        packet = runtime.cognition.native_receive_prefix(
+            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+            adapter_name, time.monotonic() + 30,
+        )
+        assert packet["status"] == "NATIVE_INPUT_EFFECT"
+        assert packet["input_rows"] == 1
+        assert packet["position_ids"] == [0]
+        assert packet["position_mode"] == native.LATENT_PREFIX_MODE
+        assert packet["tokenizer_revision"] is None
+        assert packet["adapter_sha256"] == adapter_digest
+        assert packet["projection_scope"] == "EVENT_POOLED_NONZERO_MEAN"
+        assert packet["input_semantics"] == "SINGLE_EVENT_PREFIX"
+        assert packet["sender_tap_packet_id"] == "tap-prefix-1"
+        assert packet["production_route"] is False
+        assert packet["semantic_use_proven"] is False
+        assert packet["training_authority"] == packet["native_receiver_authority"] == 0
+    assert len(calls) == 1
+    stored = json.loads(runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='LatentReceiverPacket' ORDER BY rowid DESC LIMIT 1"
+    )["payload"])
+    assert stored == packet
+    approval_record, _ = runtime.store.state(approval.KEY, None)
+    assert approval_record["status"] == "COMPLETED"
+    assert approval_record["input_mode"] == native.LATENT_PREFIX_MODE
+    status = controller(runtime).report(runtime.cfg)["native_receiver_probe"]
+    assert status["position_mode"] == native.LATENT_PREFIX_MODE
+    assert status["adapter_sha256"] == adapter_digest
+    assert status["input_semantics"] == "SINGLE_EVENT_PREFIX"
+    runtime.close()
+
+
+def test_native_receive_prefix_refuses_unapproved_prefix(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    adapter_name, adapter, _ = _make_event_pooled_c3_adapter(runtime, sender_digest, digest)
+    tap = {
+        "packet_id": "tap-prefix-unapproved",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101, 202], "vectors": [[9.0, 9.0], [1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("unapproved prefix must not reach native"))
+    with pytest.raises(PermissionError, match="exclusive approved Runtime lease"):
+        runtime.cognition.native_receive_prefix(
+            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+            adapter_name, time.monotonic() + 30,
+        )
     runtime.close()

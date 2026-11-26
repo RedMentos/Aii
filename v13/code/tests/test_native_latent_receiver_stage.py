@@ -17,9 +17,11 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     manifest = builder.stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
+    assert "v13/latent_adapter.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    approval = (destination / "v13/native_probe_approval.py").read_text(encoding="utf-8")
     operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
     runtime = (destination / "v13/runtime.py").read_text(encoding="utf-8")
     assert "v13/native_probe_approval.py" in manifest["files_sha256"]
@@ -33,12 +35,18 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "from .native_probe_approval import operator_command as probe_operator_command" in operator
     assert operator.index("if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}") < operator.index("if cmd=='callosum':")
     assert "def native_receive(" in cognition
+    assert "def native_receive_prefix(" in cognition
+    assert "LATENT_PREFIX_V1" in cognition
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
     assert "semantic_use_proven=False" in cognition
-    assert "import time" in callosum
-    assert "if len(args)==5 and args[0]=='native-probe'" in callosum
-    assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
+    assert "import time" in approval
+    assert "def operator_command(runtime, args):" in approval
+    assert "prefix_run" in approval
+    probe_dispatch = 'if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:'
+    assert probe_dispatch in callosum
+    assert callosum.index(probe_dispatch) < callosum.index("c=controller(r)")
+    assert "return probe_command(r, args)" in callosum
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
     assert "native_receiver_probe" in callosum
     staged_budget = (destination / "v13/native_turn_budget.py").read_text(encoding="utf-8")
@@ -47,8 +55,10 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "budgeted=False" in staged_schedule
     assert "native_body_budgeted_for_c3" in cognition
     assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
-    assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
-    assert "native-probe <sender> <receiver>" in callosum
+    assert "'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (" in callosum
+    assert "production B3 remains OFF pending parity/zero/shuffle/OOD controls" in callosum
+    assert "'claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'" in callosum
+    assert "native-probe <sender> <receiver>" in operator
     assert "arm-probe-matrix --last-source --confirm" in operator
     assert "native-probe-matrix --last-source --confirm" in operator
     assert "guard_runtime_close(self)" in runtime

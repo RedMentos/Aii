@@ -770,3 +770,142 @@ def test_arm_rejects_non_interactive_stdin(tmp_path, monkeypatch):
         assert record is None
     finally:
         runtime.close()
+
+
+
+def _write_prefix_candidate(runtime, sender_path, receiver_path, *, receiver_tap_id="c3.input-embedding.v1"):
+    from v13.latent_adapter import fit_adapter, save_adapter
+
+    sender_digest = hashlib.sha256(sender_path.read_bytes()).hexdigest()
+    receiver_digest = hashlib.sha256(receiver_path.read_bytes()).hexdigest()
+    train = []
+    for index in range(12):
+        x = float(index + 1)
+        train.append({
+            "pair_id": "prefix-train-" + str(index),
+            "source_id": "prefix-train-source-" + str(index),
+            "sender_vector": [x, 2.0 * x],
+            "receiver_vector": [3.0 * x + 1.0, -2.0 * x + 4.0],
+        })
+    holdout = []
+    for index in range(4):
+        x = float(index + 20)
+        holdout.append({
+            "pair_id": "prefix-holdout-" + str(index),
+            "source_id": "prefix-holdout-source-" + str(index),
+            "sender_vector": [x, 2.0 * x],
+            "receiver_vector": [3.0 * x + 1.0, -2.0 * x + 4.0],
+        })
+    adapter = fit_adapter(
+        train, holdout,
+        sender_role="B2_GIST",
+        receiver_role="C3_LANGUAGE",
+        sender_tap_id="qwen35.result_norm.final.v1",
+        receiver_tap_id=receiver_tap_id,
+        sender_model_revision="sender-r1",
+        receiver_model_revision="receiver-r1",
+        sender_model_sha256=sender_digest,
+        receiver_model_sha256=receiver_digest,
+        rank=1,
+        ridge=1e-4,
+        min_relative_improvement=0.01,
+        seed=7,
+        projection_scope="EVENT_POOLED_NONZERO_MEAN",
+    )
+    assert adapter["status"] == "ALIGNMENT_CANDIDATE"
+    root = runtime.home / "data" / "latent_adapters"
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / "candidate.v14lat"
+    digest = save_adapter(adapter, path)
+    return path, digest
+
+
+def test_prefix_adapter_approval_is_bound_and_consumed_once_by_operator(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    adapter_path, adapter_digest = _write_prefix_candidate(runtime, sender_path, receiver_path)
+    calls = []
+    runtime.cognition.native_receive_prefix = lambda sender, receiver, e, ref, name, deadline: (
+        calls.append((sender, receiver, e["event_id"], ref["source_id"], name)) or {
+            "status": "NATIVE_INPUT_EFFECT",
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+    )
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    operator = Operator(runtime)
+    command = (
+        ":callosum native-probe B2_GIST C3_LANGUAGE "
+        "--latent-prefix candidate.v14lat --last-source --confirm"
+    )
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE "
+            "--latent-prefix candidate.v14lat --last-source --confirm"
+        ))
+        assert armed["status"] == "ARMED"
+        assert armed["input_mode"] == "LATENT_PREFIX_V1"
+        assert armed["adapter_sha256"] == adapter_digest
+        assert armed["projection_scope"] == "EVENT_POOLED_NONZERO_MEAN"
+        result = json.loads(operator.run(command))
+        assert result["completed"] is True
+        assert result["input_mode"] == "LATENT_PREFIX_V1"
+        assert result["local_approval_consumed"] is True
+        assert result["adapter_sha256"] == adapter_digest
+        assert result["production_route"] is False
+        assert result["training_authority"] == 0
+        assert calls == [(
+            "B2_GIST", "C3_LANGUAGE", event["event_id"],
+            event["source_ref"]["source_id"], "candidate.v14lat",
+        )]
+        with pytest.raises(PermissionError):
+            operator.run(command)
+        assert len(calls) == 1
+    finally:
+        runtime.close()
+
+
+def test_prefix_adapter_change_after_arm_invalidates_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    adapter_path, _ = _write_prefix_candidate(runtime, sender_path, receiver_path)
+    calls = []
+    runtime.cognition.native_receive_prefix = lambda *args: calls.append(args)
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    operator = Operator(runtime)
+    try:
+        operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE "
+            "--latent-prefix candidate.v14lat --last-source --confirm"
+        )
+        raw = adapter_path.read_bytes()
+        adapter_path.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+        with pytest.raises(PermissionError, match="typed validation|changed"):
+            operator.run(
+                ":callosum native-probe B2_GIST C3_LANGUAGE "
+                "--latent-prefix candidate.v14lat --last-source --confirm"
+            )
+        assert calls == []
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+    finally:
+        runtime.close()
+
+
+def test_prefix_adapter_must_target_exact_receiver_input_embedding_tap(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    _write_prefix_candidate(
+        runtime, sender_path, receiver_path, receiver_tap_id="c3.final-rmsnorm.v1",
+    )
+    try:
+        with pytest.raises(PermissionError, match="receiver-input candidate"):
+            approval.arm(
+                runtime, "B2_GIST", "C3_LANGUAGE",
+                adapter_name="candidate.v14lat", now=1000.0,
+            )
+    finally:
+        runtime.close()

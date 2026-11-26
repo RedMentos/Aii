@@ -6,13 +6,16 @@ on:
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-probe-staged-overlay-20261123-run2
       - core/v14-native-probe-fair-budget-20261125-run1
+      - core/v14-latent-prefix-v1-receiver-20261125-run1
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
       - core/v14-fair-budget-guard-rebind-20261125-run1
+      - core/v14-body-offer-role-binding-20261125-run2
     paths:
       - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/latent_adapter.py"
       - "v13/code/v13/native_probe_approval.py"
       - "v13/code/v13/native_probe_matrix.py"
       - "v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py"
