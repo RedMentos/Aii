@@ -147,7 +147,7 @@ class PhoneOfferAudit(unittest.TestCase):
         self.assertEqual(roles["B1_DETAIL"]["delivery"],"SELECTED_BUT_REPORT_UNFINISHED")
         self.assertEqual(roles["B2_GIST"]["delivery"],"DELIVERED_NOT_SELECTED")
 
-    def _native_prefill_turn(self, prefill_tokens=521):
+    def _native_prefill_turn(self, prompt_n=500, cache_n=21):
         event = "evt_native_prefill"
         b1, b2 = "pkt_b1_native", "pkt_b2_native"
         self.message(event, ids=(b1, b2))
@@ -177,10 +177,12 @@ class PhoneOfferAudit(unittest.TestCase):
         ).fetchone()[0]
         metadata = json.loads(raw)
         metadata["runner"]["native_offer_prompt_receipt"] = receipt
-        if prefill_tokens is not None:
+        if prompt_n is not None:
             metadata["runner"]["timings"] = {
-                "prompt_n": prefill_tokens, "prompt_ms": 12.5
+                "prompt_n": prompt_n, "prompt_ms": 12.5
             }
+            if cache_n is not None:
+                metadata["runner"]["timings"]["cache_n"] = cache_n
         self.db.execute(
             "UPDATE messages SET metadata=? WHERE event_id=?",
             (json.dumps(metadata), event),
@@ -188,7 +190,7 @@ class PhoneOfferAudit(unittest.TestCase):
         return event
 
     def test_matching_native_prefill_count_is_reported_without_semantic_claim(self):
-        self._native_prefill_turn(prefill_tokens=521)
+        self._native_prefill_turn(prompt_n=500, cache_n=21)
         out = audit(self.db)
         gate = out["end_to_end_gate"]
         self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED")
@@ -198,6 +200,8 @@ class PhoneOfferAudit(unittest.TestCase):
         turn = out["turns"][0]
         self.assertTrue(turn["native_prefill_token_count_matched"])
         self.assertEqual(turn["native_prefill_prompt_tokens"], 521)
+        self.assertEqual(turn["native_prefill_prompt_n"], 500)
+        self.assertEqual(turn["native_prefill_cache_n"], 21)
         self.assertEqual(turn["native_prefill_prompt_ms"], 12.5)
         for role in ("B1_DETAIL", "B2_GIST"):
             self.assertTrue(turn["roles"][role]["native_prefill_token_count_matched"])
