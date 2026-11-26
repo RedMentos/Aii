@@ -408,18 +408,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "LOCAL_LINUX helper + CI pending; REDMI_UNVERIFIED",
+      "next_step": "Read exact CI on d124e89 and repair any new regression; Core/QA must rebind the recovery→stage→deployer pin chain to composer blob 4b8b99f5 and rerun staged/integrated migration. Then evaluate a licensed real speaker encoder on held-out stable-speaker/true-change/brief-turn/noise/shuffle/no-embedding controls; preserve A4-only cap until measured. No model/weight or Android capture change.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-26T01:18:25Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2498,
+        "head_sha": "d124e89fa692f9d5b55bab06f30fb8770667b41f",
+        "base_sha": "ace68f1fa44989101849a2c78087aaa03010b5d8",
+        "ci": "PENDING_EXACT_HEAD",
+        "tested_code_sha": "d124e89fa692f9d5b55bab06f30fb8770667b41f"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence.\n\n2026-11-26 Research & Perception Run 38: PR #2498 now includes source-bound speaker-evidence v2 (current PCM SHA binding; non-voiced frames excluded from reference history), FINAL-only speaker embeddings, and a low-gain A4 novelty hint capped at 0.05 for uncalibrated voiced-final similarity. C3 retains similarity-only evidence; no identity, interrupt, learning or action authority. New helper blob 656aaacef71d12da7e2e920e974f515e239db48c; voice consumer blob 4cb3a6a8e1bb0defc1db70ab1888731d676a152a; composer blob 4b8b99f5 (readback in PR branch). LOCAL_LINUX helper py_compile PASS and 11/11 focused helper tests PASS; exact helper Git blob matches local git hash. Full Aii local suite NOT_RUN (no checkout; GitHub DNS unavailable). Exact CI on d124e89 is pending: runtime deployment integrity and private bridge tests SUCCESS; RAW EAR backend, VAD comparator and staged/integrated still in progress. Prior exact heads exposed and fixed test/benchmark provenance mismatches; do not count prior runs as final success. No Android microphone or Redmi evidence."
     },
     {
       "id": "V14-019",
