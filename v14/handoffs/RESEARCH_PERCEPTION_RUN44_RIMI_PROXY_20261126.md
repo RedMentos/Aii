@@ -43,3 +43,14 @@ Environment: LOCAL_LINUX / CPython 3.13.5.
 2. Core/Integrator composes #2527 with #2525/#2524 and repairs the recovery → stage → RuntimeDeploy audio-builder pin chain; Perception does not edit Core-owned files.
 3. After a normal-turn revocable AudioConsentLease exists and a legitimate separately consented outcome cohort is available, evaluate source/session-disjoint holdouts plus drift and switch-focused controls.
 4. Keep this probe diagnostic-only; do not change attention policy, train JEPA or request microphone access from these results.
+
+
+## Exact CI completion addendum (2026-11-26)
+
+Tested code/test head: \`c0d68f97e250fecb036dd0f445c9b733bc2ce76e\`.
+- Feature-set workflow [45780338189](https://github.com/RedMentos/Aii/actions/runs/45780338189): 14/14 PASS on Python 3.13 and 3.14, including actual A4 RAW EAR extractor → A5 PerceptPacket integration.
+- RAW EAR comparison [45780338123](https://github.com/RedMentos/Aii/actions/runs/45780338123): 9/9 PASS on Python 3.13 and 3.14.
+- RuntimeDeploy offline integrity [45780338147](https://github.com/RedMentos/Aii/actions/runs/45780338147): PASS on Python 3.11 and 3.14; not a deployment.
+- Shared staged/integrated [45780338096](https://github.com/RedMentos/Aii/actions/runs/45780338096): FAIL; staged 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated 1 failed. Exact source-pin mismatch confirmed by readback: Perception composer blob \`f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0\`; Core recovery blob \`b44fe9a21412c570a5f19472719972a53b3447d8\` expects \`831080bceec90711bd42e0fa4eba47c669975c98\`.
+- This is a Core-owned integration blocker; no Core recovery/stage/deployer file was changed by Perception.
+- Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No device, microphone, model, weight, permission or data action.
