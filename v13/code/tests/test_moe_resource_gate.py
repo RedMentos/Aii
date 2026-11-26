@@ -1,4 +1,5 @@
 """Local contract tests for the native MoE benchmark RAM admission gate."""
+import os
 import sys
 import tempfile
 import unittest
@@ -27,7 +28,7 @@ class ProcParsingTests(unittest.TestCase):
 
     def test_current_host_proc_metrics_are_readable(self):
         self.assertGreater(G.read_memavailable_mib(), 0)
-        self.assertGreater(G.read_vmhwm_mib(__import__(\"os\").getpid()), 0)
+        self.assertGreater(G.read_vmhwm_mib(os.getpid()), 0)
 
     def test_vmhwm_reads_process_high_water(self):
         with tempfile.TemporaryDirectory() as td:
