@@ -45,7 +45,7 @@ jobs:
       - name: Install test-only WebRTC comparator
         run: |
           python -m pip install --upgrade pip
-          python -m pip install webrtcvad-wheels==2.0.14.post1
+          python -m pip install pytest==9.2.0 webrtcvad-wheels==2.0.14.post1
       - name: Build pinned native libfvad shared library
         run: |
           sudo apt-get update
@@ -71,9 +71,17 @@ jobs:
             v13/code/v13/audio_temporal_evidence.py \
             v14/experiments/raw_ear_vad_compare.py \
             v14/experiments/test_raw_ear_vad_compare.py
+      - name: Run RAW EAR temporal and A4 integration regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_audio_temporal_evidence.py \
+            v13/code/tests/test_audio_ear_voice_cues_v14.py \
+            v13/code/tests/test_audio_speaker_evidence.py
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
-          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
+          V14_EXPECTED_RAW_EAR_V3_BLOB: b372d52b83c1b35077732755f076e48b62e90ac0
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: ea20e43eec1209521518e2c8b4e68e7850a12ad4
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
