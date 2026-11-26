@@ -32,6 +32,11 @@ def _git_blob_sha1(raw: bytes) -> str:
 def _replace(raw: bytes, old: bytes, new: bytes, label: str) -> bytes:
     count = raw.count(old)
     if count != 1:
+        if label == "analyst audio source verification":
+            marker = b"Consumer query scope changed"
+            at = raw.find(marker)
+            excerpt = raw[max(0, at - 100):at + 420] if at >= 0 else raw[-520:]
+            raise ValueError("audio candidate semantic anchor mismatch: " + label + " count=" + str(count) + " excerpt=" + repr(excerpt))
         raise ValueError("audio candidate semantic anchor mismatch: " + label + " count=" + str(count))
     return raw.replace(old, new, 1)
 

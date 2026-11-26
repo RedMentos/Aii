@@ -1488,7 +1488,7 @@ def test_integrated_audio_candidate_surfaces_missing_revocation_hook_on_legacy_q
     result = candidate_runtime._audio_lease_turn(runtime, event)
     assert result == "MISSING_REVOCATION_SUBSCRIPTION"
     assert "_audio_window" not in event
-    assert notices and "Widerrufsschutz" in notices[0]
+    assert notices and "two-phase revocation protection" in notices[0]
 
 def test_integrated_audio_candidate_embedded_runtime_bytes_literal_is_ascii():
     script = (
