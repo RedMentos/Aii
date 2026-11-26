@@ -19,6 +19,7 @@ FIELDS={
  "EventEnvelope":{"source_ref":dict,"authority":str,"kind":str},
  "SourceRef":{"source_id":str,"sha256":str,"char_start":int,"char_end":int,"modality":str},
  "PerceptPacket":{"source_ref":dict,"segments":list,"modality":str},
+ "A4AttentionReceipt":{"source_ref":dict,"percept_packet_id":str,"start_ms":int,"end_ms":int,"finality":str,"score_vector":dict,"learning_authority":bool,"action_authority":bool,"truth_authority":int},
  "OfferPacket":{"role":str,"based_on_state_version":int,"deadline_monotonic_ns":int,"evidence_refs":list,"offer":dict,"confidence":(int,float)},
  "QueryPacket":{"target_role":str,"goal":str,"source_refs":list},
  "MessagePacket":{"channel":str,"sender":str,"receiver":str,"source_refs":list,"content":dict},
