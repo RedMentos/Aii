@@ -1673,7 +1673,7 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 
 ## Research & Perception Run 49 — candidate-prefilled full-hybrid state roundtrip (2026-11-26)
 
-**Owner branch / PR:** research-perception/v14-kv-snapshot-consumer-20261126-run35, PR #2524, draft / NOT_RELEASED. Exact branch head at checkpoint: 1417250fb28c4e30c5c4e0d8150e673248ad10a8.
+**Owner branch / PR:** research-perception/v14-kv-snapshot-consumer-20261126-run35, PR #2524, draft / NOT_RELEASED. Exact code/test SHA at checkpoint: 1417250fb28c4e30c5c4e0d8150e673248ad10a8; docs/handoff branch head at checkpoint: 82d79103af7aa80d1ec29b688ec2f3ecca78acc8.
 
 **Functional change:** The opt-in LFM2 same-model full-hybrid state roundtrip no longer primes its source context with BOS. It decodes the actual LATENT_CANDIDATE matrix into the source context, captures the resulting full sequence state (attention/KV plus recurrent shortconv), restores it into a fresh same-model context, applies the same fixed teacher-forced continuation at positions after the candidate rows, and compares next-token logits. The sanitized schema is v14.native-hybrid-state-roundtrip/2 and binds prefill_condition, prefill_rows, prefill_input_sha256 and prefill_decode_status. Python binds the native digest and row count to the prepared candidate matrix; the receipt is attached to the candidate condition and the task-score/Runtime bridge consumes it there. The truncated-state negative control, 16 MiB cap, zeroization and authority-zero/read-only flags remain. No raw state is exported or persisted.
 
