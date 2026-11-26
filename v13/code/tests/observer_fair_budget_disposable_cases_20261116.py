@@ -47,12 +47,12 @@ class SchedulingTests(unittest.TestCase):
             return role
 
         plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
-        offers = obs.run(plan, ask, 1.5, lambda role, exc: errors.append((role, type(exc).__name__)),
+        offers = obs.run(plan, ask, 2.0, lambda role, exc: errors.append((role, type(exc).__name__)),
                          clock=lambda: now[0], budgeted=True)
         self.assertEqual(offers, ['B2_GIST'])
         self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
-        self.assertAlmostEqual(seen[0][1], .75, places=2)
-        self.assertAlmostEqual(seen[1][1], 1.5, places=2)
+        self.assertAlmostEqual(seen[0][1], 1.0, places=2)
+        self.assertAlmostEqual(seen[1][1], 2.0, places=2)
         self.assertEqual(errors, [('B1_DETAIL', 'Limits')])
 
     def test_budgeted_scheduler_runs_both_roles_at_exact_minimum_slice(self):
@@ -70,7 +70,7 @@ class SchedulingTests(unittest.TestCase):
             return role
 
         plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
-        offers = obs.run(plan, ask, 2.0, lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
+        offers = obs.run(plan, ask, 4.0, lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
                          clock=lambda: now[0], budgeted=True)
         self.assertEqual(offers, ['B1_DETAIL', 'B2_GIST'])
         self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
@@ -139,10 +139,11 @@ class SchedulingTests(unittest.TestCase):
         fair = native_budget.plan(100, 130, 104, recent=[failed, failed],
                                   background_enabled=True, observer_deadline=113.5)
         self.assertTrue(fair['recovery'])
-        self.assertEqual(fair['preanswer_end_monotonic'], 113.5)
+        self.assertEqual(fair['preanswer_end_monotonic'], 120.0)
+        self.assertEqual(fair['body_preanswer_end_monotonic'], 119.0)
         self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
-        self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
-        self.assertEqual(fair['minimum_role_slice_s'], 1.0)
+        self.assertAlmostEqual(fair['c3_reserved_seconds'], 10.0, places=2)
+        self.assertEqual(fair['minimum_role_slice_s'], 2.0)
         first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
                                         background_enabled=True, observer_deadline=106.75)
         self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
@@ -346,6 +347,29 @@ class RuntimeObserverTests(unittest.TestCase):
                 self.assertFalse(r.pool.pids())
             finally:
                 r.close()
+
+
+    def test_focal_reentry_bypasses_initial_preanswer_budget(self):
+        class LocalStore:
+            def __init__(self):
+                self.logs = []
+            def log(self, *args):
+                self.logs.append(args)
+            def read_source(self, ref):
+                raise AssertionError("focal re-entry reached source read")
+        class FakeRuntime:
+            def __init__(self):
+                self.cfg = {"deadline_seconds": 30, "observer_mode": "background"}
+                self.store = LocalStore()
+                self.cancel_event = threading.Event()
+                self.session = "s-focal-reentry"
+        runtime = FakeRuntime()
+        end = time.monotonic() + 30
+        with self.assertRaisesRegex(AssertionError, "focal re-entry reached source read"):
+            cognition_module.Cognition(runtime).offer(
+                "B1_DETAIL", {"event_id": "e-focal", "source_ref": {}}, 1,
+                end - 18, valid_until=end, preanswer_budgeted=False)
+        self.assertEqual(runtime.store.logs, [])
 
 
 if __name__ == '__main__':
