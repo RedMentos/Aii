@@ -184,6 +184,144 @@ class Cognition:
         data=json.loads(path.read_text())
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
         return data
+    def native_receive(self, sender_role, receiver_role, e, source_ref, deadline):
+        """Run one approved, source-bound native receiver diagnostic; never route or train."""
+        from . import native_latent_receiver as native
+        from . import native_probe_approval as approval
+
+        lease_token = getattr(self.r, "_native_probe_lease_nonce", None)
+        approval._require_runtime_probe_lease(self.r, lease_token)
+        approval_record, _ = self.s.state(approval.KEY, None)
+        if (not isinstance(approval_record, dict)
+                or approval_record.get("status") != "CONSUMED"
+                or approval_record.get("probe_kind") != "NATIVE_RECEIVER"
+                or approval_record.get("runtime_nonce") != approval._runtime_nonce(self.r)
+                or approval_record.get("sender_role") != sender_role
+                or approval_record.get("receiver_role") != receiver_role
+                or approval_record.get("event_id") != e.get("event_id")
+                or approval_record.get("brain_generation_id") != e.get("brain_generation_id")
+                or approval_record.get("source_ref") != source_ref
+                or approval_record.get("session_id") != self.r.session
+                or approval_record.get("input_mode") == "LATENT_PREFIX_V1"):
+            raise PermissionError("native receiver requires a consumed matching token-prefill approval")
+        if (not isinstance(e, dict) or not isinstance(source_ref, dict)
+                or source_ref != e.get("source_ref")
+                or not isinstance(e.get("event_id"), str)
+                or not isinstance(e.get("brain_generation_id"), str)):
+            raise PermissionError("native receiver event/source binding is invalid")
+        self.s.read_source(source_ref)
+
+        sender_binding = approval._model_binding(self.r, sender_role)
+        receiver_binding = approval._model_binding(self.r, receiver_role)
+        tap = None
+        try:
+            tap = self.tap(sender_role, e, source_ref, deadline)
+            if (not isinstance(tap, dict)
+                    or tap.get("role") != sender_role
+                    or tap.get("event_id") != e["event_id"]
+                    or tap.get("brain_generation_id") != e["brain_generation_id"]
+                    or tap.get("source_ref") != source_ref
+                    or tap.get("model_revision") != sender_binding["revision"]
+                    or not isinstance(tap.get("tap_id"), str) or not tap.get("tap_id")
+                    or not isinstance(tap.get("packet_id"), str) or not tap.get("packet_id")):
+                raise PermissionError("sender tap differs from the approved source/model binding")
+            metrics = tap.get("metrics")
+            if (not isinstance(metrics, dict)
+                    or metrics.get("whole_sequence_prefill") is not True
+                    or metrics.get("pooling") != "none"):
+                raise ValueError("native receiver requires a whole-sequence position map from the sender tap")
+            tap_data = self.read_tap(tap)
+        finally:
+            # The sender runner must be gone before the separate receiver process loads.
+            self.r.pool.unload()
+
+        token_ids = tap_data.get("token_ids") if isinstance(tap_data, dict) else None
+        vectors = tap_data.get("vectors") if isinstance(tap_data, dict) else None
+        if (not isinstance(token_ids, (list, tuple)) or not token_ids
+                or any(type(token) is not int or token < 0 for token in token_ids)
+                or metrics.get("prompt_tokens") != len(token_ids)):
+            raise ValueError("native receiver requires a complete whole-sequence position map")
+        rows, _input_dim, _payload, _input_sha = native._vector_payload(vectors)
+        if len(rows) != len(token_ids):
+            raise ValueError("native receiver token IDs and activation rows differ")
+        if tap.get("token_ids") is not None and list(tap["token_ids"]) != list(token_ids):
+            raise ValueError("native receiver token IDs differ from the stored tap packet")
+
+        # Recheck the exact installed inode and bytes after the sender runner has unloaded.
+        if (approval._model_binding(self.r, sender_role) != sender_binding
+                or approval._model_binding(self.r, receiver_role) != receiver_binding):
+            raise PermissionError("native receiver sender/receiver model binding changed after tap capture")
+        receipt = native.probe(
+            home=self.r.home,
+            model_path=receiver_binding["canonical_path"],
+            expected_model_sha256=receiver_binding["sha256"],
+            sender_role=sender_role,
+            receiver_role=receiver_role,
+            sender_tap_id=tap["tap_id"],
+            sender_model_revision=sender_binding["revision"],
+            sender_model_sha256=sender_binding["sha256"],
+            tokenizer_revision=tap.get("tokenizer_revision"),
+            receiver_model_revision=receiver_binding["revision"],
+            source_id=source_ref["source_id"],
+            generation_id=e["brain_generation_id"],
+            vectors=vectors,
+            position_ids=list(range(len(token_ids))),
+            position_mode=native.POSITION_MODE,
+            deadline=deadline,
+            threads=1,
+            cancel_event=self.r.cancel_event,
+        )
+        if (approval._model_binding(self.r, sender_role) != sender_binding
+                or approval._model_binding(self.r, receiver_role) != receiver_binding):
+            raise PermissionError("native receiver model binding changed during probe")
+
+        native.register_packet_contract()
+        receipt_fields = (
+            "sender_role", "receiver_role", "sender_tap_id", "sender_model_revision",
+            "sender_model_sha256", "tokenizer_revision", "receiver_model_revision",
+            "receiver_model_sha256", "runner_revision", "llama_version", "input_rows",
+            "input_dim", "receiver_input_dim", "output_dim", "input_sha256",
+            "position_ids", "position_mode", "decode_status", "output_norm",
+            "input_effect_rms", "zero_control_cosine", "shuffle_control_cosine",
+            "row_shuffle_control_cosine", "row_shuffle_control_applicable",
+            "repeat_cosine", "native_input_consumed", "input_effect_detected", "status",
+        )
+        if not isinstance(receipt, dict) or any(key not in receipt for key in receipt_fields):
+            raise native.NativeReceiverError("native receiver returned an incomplete receipt")
+        packet_payload = {key: receipt[key] for key in receipt_fields}
+        packet_payload.update({
+            "source_ref": dict(source_ref),
+            "sender_tap_packet_id": tap["packet_id"],
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        })
+        result = packet(
+            "LatentReceiverPacket", "Cognition", e["event_id"],
+            e["brain_generation_id"], [dict(source_ref)], **packet_payload,
+        )
+        native.validate_packet(result)
+        self.s.add_packet("LatentReceiverPacket", result)
+        self.s.log("native_receiver_probe", e["event_id"], {
+            "sender_role": sender_role,
+            "receiver_role": receiver_role,
+            "sender_model_sha256": sender_binding["sha256"],
+            "receiver_model_sha256": receiver_binding["sha256"],
+            "runner_revision": result["runner_revision"],
+            "status": result["status"],
+            "input_rows": result["input_rows"],
+            "input_dim": result["input_dim"],
+            "receiver_input_dim": result["receiver_input_dim"],
+            "native_input_consumed": result["native_input_consumed"],
+            "input_effect_detected": result["input_effect_detected"],
+            "input_effect_rms": result["input_effect_rms"],
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        })
+        return result
+
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
 
