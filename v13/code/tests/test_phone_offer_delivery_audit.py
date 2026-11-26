@@ -159,20 +159,27 @@ class PhoneOfferAudit(unittest.TestCase):
         self.log(event, "body_offer_delivered", "B1_DETAIL", packet_id=b1)
         self.log(event, "body_offer_delivered", "B2_GIST", packet_id=b2)
         receipt = {
-            "revision": "v13.native-offer-prompt-receipt/1",
+            "revision": "v13.native-offer-prompt-receipt/2",
             "status": "RENDERED_WITH_QUOTES",
             "native_template_rendered": True,
             "native_template_submitted": True,
             "native_completion_http_200": True,
+            "native_prompt_render_match": True,
             "native_prompt_sha256": "a" * 64,
+            "rendered_prompt_sha256": "a" * 64,
+            "rendered_prompt_chars": 1000,
             "native_token_ids_sha256": "b" * 64,
             "native_prompt_tokens": 521,
             "native_generation_completed": True,
             "source_span_revalidated_here": False,
             "native_semantic_use_proven": False,
             "offers": [
-                {"role": "B1_DETAIL", "packet_id": b1, "rendered_quote_count": 1},
-                {"role": "B2_GIST", "packet_id": b2, "rendered_quote_count": 1},
+                {"role": "B1_DETAIL", "packet_id": b1, "rendered_quote_count": 1,
+                 "native_prompt_char_start": 100, "native_prompt_char_end": 180,
+                 "native_prompt_span_sha256": "c" * 64},
+                {"role": "B2_GIST", "packet_id": b2, "rendered_quote_count": 1,
+                 "native_prompt_char_start": 220, "native_prompt_char_end": 300,
+                 "native_prompt_span_sha256": "d" * 64},
             ],
         }
         raw = self.db.execute(
@@ -207,6 +214,8 @@ class PhoneOfferAudit(unittest.TestCase):
         gate = out["end_to_end_gate"]
         self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED")
         self.assertEqual(gate["both_body_native_prefill_token_count_matched_turns"], 1)
+        self.assertEqual(gate["both_body_native_prompt_span_bound_turns"], 1)
+        self.assertTrue(gate["native_prompt_span_binding_observed"])
         self.assertTrue(gate["native_prefill_token_count_match_observed"])
         self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
         turn = out["turns"][0]
@@ -216,7 +225,9 @@ class PhoneOfferAudit(unittest.TestCase):
         self.assertEqual(turn["native_prefill_cache_n"], 21)
         self.assertEqual(turn["native_prefill_prompt_ms"], 12.5)
         self.assertEqual(turn["native_prefill_timing_source"], "STREAM_COMPLETION")
+        self.assertTrue(turn["native_prompt_span_bound"])
         for role in ("B1_DETAIL", "B2_GIST"):
+            self.assertTrue(turn["roles"][role]["native_prompt_span_bound"])
             self.assertTrue(turn["roles"][role]["native_prefill_token_count_matched"])
         self.assertFalse(turn["c3_semantic_use_proven"])
         self.assertFalse(turn["native_latent_exchange_proven"])
@@ -270,6 +281,68 @@ class PhoneOfferAudit(unittest.TestCase):
             "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED",
         )
         self.assertNotIn("12345", json.dumps(out))
+
+    def test_prompt_span_binding_fails_closed_on_hash_mismatch_or_overlap(self):
+        for mutation in ("hash", "overlap", "bad_span_hash"):
+            with self.subTest(mutation=mutation):
+                self.db.execute("DELETE FROM messages")
+                self.db.execute("DELETE FROM packets")
+                self.db.execute("DELETE FROM telemetry")
+                event = self._native_prefill_turn()
+                raw = self.db.execute(
+                    "SELECT metadata FROM messages WHERE event_id=?", (event,)
+                ).fetchone()[0]
+                metadata = json.loads(raw)
+                receipt = metadata["runner"]["native_offer_prompt_receipt"]
+                if mutation == "hash":
+                    receipt["native_prompt_render_match"] = False
+                    receipt["rendered_prompt_sha256"] = "e" * 64
+                elif mutation == "overlap":
+                    receipt["offers"][1]["native_prompt_char_start"] = 150
+                else:
+                    receipt["offers"][1]["native_prompt_span_sha256"] = "NOT_A_HASH"
+                self.db.execute(
+                    "UPDATE messages SET metadata=? WHERE event_id=?",
+                    (json.dumps(metadata), event),
+                )
+                out = audit(self.db)
+                turn = out["turns"][0]
+                self.assertFalse(turn["native_prompt_span_bound"])
+                self.assertFalse(out["end_to_end_gate"]["native_prompt_span_binding_observed"])
+                if mutation == "hash":
+                    self.assertEqual(turn["native_template_http200_submitted_roles"], [])
+                else:
+                    self.assertEqual(
+                        turn["native_template_http200_submitted_roles"],
+                        ["B1_DETAIL", "B2_GIST"],
+                    )
+
+    def test_legacy_receipt_remains_readable_but_has_no_prompt_span_proof(self):
+        event = self._native_prefill_turn()
+        raw = self.db.execute(
+            "SELECT metadata FROM messages WHERE event_id=?", (event,)
+        ).fetchone()[0]
+        metadata = json.loads(raw)
+        receipt = metadata["runner"]["native_offer_prompt_receipt"]
+        receipt["revision"] = "v13.native-offer-prompt-receipt/1"
+        receipt.pop("native_prompt_render_match", None)
+        receipt.pop("rendered_prompt_sha256", None)
+        receipt.pop("rendered_prompt_chars", None)
+        for row in receipt["offers"]:
+            row.pop("native_prompt_char_start", None)
+            row.pop("native_prompt_char_end", None)
+            row.pop("native_prompt_span_sha256", None)
+        self.db.execute(
+            "UPDATE messages SET metadata=? WHERE event_id=?",
+            (json.dumps(metadata), event),
+        )
+        out = audit(self.db)
+        turn = out["turns"][0]
+        self.assertEqual(
+            turn["native_template_http200_submitted_roles"],
+            ["B1_DETAIL", "B2_GIST"],
+        )
+        self.assertFalse(turn["native_prompt_span_bound"])
 
     def test_bounded_limit_and_bad_private_metadata_are_ignored(self):
         self.message("e5")
