@@ -223,6 +223,81 @@ class PhoneOfferAudit(unittest.TestCase):
                 )
                 self.assertFalse(out["turns"][0]["native_prefill_token_count_matched"])
 
+    def _native_prefill_turn(self, prefill_tokens=521):
+        event = "evt_native_prefill"
+        b1, b2 = "pkt_b1_native", "pkt_b2_native"
+        self.message(event, ids=(b1, b2))
+        self.packet(event, "B1_DETAIL", b1)
+        self.packet(event, "B2_GIST", b2)
+        self.log(event, "body_offer_delivered", "B1_DETAIL", packet_id=b1)
+        self.log(event, "body_offer_delivered", "B2_GIST", packet_id=b2)
+        receipt = {
+            "revision": "v13.native-offer-prompt-receipt/1",
+            "status": "RENDERED_WITH_QUOTES",
+            "native_template_rendered": True,
+            "native_template_submitted": True,
+            "native_completion_http_200": True,
+            "native_prompt_sha256": "a" * 64,
+            "native_token_ids_sha256": "b" * 64,
+            "native_prompt_tokens": 521,
+            "native_generation_completed": True,
+            "source_span_revalidated_here": False,
+            "native_semantic_use_proven": False,
+            "offers": [
+                {"role": "B1_DETAIL", "packet_id": b1, "rendered_quote_count": 1},
+                {"role": "B2_GIST", "packet_id": b2, "rendered_quote_count": 1},
+            ],
+        }
+        raw = self.db.execute(
+            "SELECT metadata FROM messages WHERE event_id=?", (event,)
+        ).fetchone()[0]
+        metadata = json.loads(raw)
+        metadata["runner"]["native_offer_prompt_receipt"] = receipt
+        if prefill_tokens is not None:
+            metadata["runner"]["timings"] = {
+                "prompt_n": prefill_tokens, "prompt_ms": 12.5
+            }
+        self.db.execute(
+            "UPDATE messages SET metadata=? WHERE event_id=?",
+            (json.dumps(metadata), event),
+        )
+
+    def test_matching_native_prefill_count_is_reported_without_semantic_claim(self):
+        self._native_prefill_turn(prefill_tokens=521)
+        out = audit(self.db)
+        gate = out["end_to_end_gate"]
+        self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PREFILL_TOKEN_COUNT_MATCHED")
+        self.assertEqual(gate["both_body_native_prefill_token_count_matched_turns"], 1)
+        self.assertTrue(gate["native_prefill_token_count_match_observed"])
+        self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+        turn = out["turns"][0]
+        self.assertTrue(turn["native_prefill_token_count_matched"])
+        self.assertEqual(turn["native_prefill_prompt_tokens"], 521)
+        self.assertEqual(turn["native_prefill_prompt_ms"], 12.5)
+        for role in ("B1_DETAIL", "B2_GIST"):
+            self.assertTrue(turn["roles"][role]["native_prefill_token_count_matched"])
+        self.assertFalse(turn["c3_semantic_use_proven"])
+        self.assertFalse(turn["native_latent_exchange_proven"])
+        self.assertEqual(gate["device_functional_acceptance"], "NOT_VERIFIED")
+        self.assertNotIn("PRIVATE", json.dumps(out))
+
+    def test_native_prefill_count_mismatch_or_missing_timing_does_not_promote(self):
+        for prefill_tokens in (520, None):
+            with self.subTest(prefill_tokens=prefill_tokens):
+                self.db.execute("DELETE FROM messages")
+                self.db.execute("DELETE FROM packets")
+                self.db.execute("DELETE FROM telemetry")
+                self._native_prefill_turn(prefill_tokens=prefill_tokens)
+                out = audit(self.db)
+                self.assertEqual(
+                    out["end_to_end_gate"]["status"],
+                    "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED",
+                )
+                self.assertFalse(
+                    out["end_to_end_gate"]["native_prefill_token_count_match_observed"]
+                )
+                self.assertFalse(out["turns"][0]["native_prefill_token_count_matched"])
+
     def test_bounded_limit_and_bad_private_metadata_are_ignored(self):
         self.message("e5")
         self.db.execute("UPDATE messages SET metadata=?",('{"secret":"PRIVATE"}',))
