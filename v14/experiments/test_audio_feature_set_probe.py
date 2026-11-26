@@ -263,6 +263,9 @@ class AudioFeatureSetProbeTests(unittest.TestCase):
         self.assertLessEqual(result["permutation_p_value"], 0.05)
         self.assertTrue(all(item["rimi_proxy"] > 0.99 for item in result["per_session"]))
         self.assertFalse(result["paper_exact_rimi"])
+        self.assertIn("conditional_feature_history_dependence_bits", result)
+        self.assertNotIn("conditional_self_dependence_bits", result)
+        self.assertEqual(result["metric_scope"], "ACOUSTIC_FEATURES_TO_LATER_ACTION_OUTCOME_NOT_AAD_ATTENTION_SCORE")
         self.assertFalse(result["runtime_integrated"])
 
     def test_relative_incremental_information_rejects_missing_or_single_session(self):
