@@ -81,7 +81,7 @@ def validate_native_hybrid_state_roundtrip(
 
     required = {
         "schema", "status", "state_api", "state_scope", "state_components",
-        "source_sequence_id", "destination_sequence_id",
+        "prefill_decode_status", "source_sequence_id", "destination_sequence_id,
         "source_model_sha256", "destination_model_sha256",
         "source_model_revision", "destination_model_revision",
         "source_tokenizer_revision", "destination_tokenizer_revision",
@@ -118,6 +118,9 @@ def validate_native_hybrid_state_roundtrip(
     if value.get("prefill_condition") != "LATENT_CANDIDATE":
         raise NativeHybridStateReceiptError("hybrid-state prefill must be LATENT_CANDIDATE")
     prefill_rows = _count(value.get("prefill_rows"), "prefill_rows", minimum=1, maximum=64)
+    prefill_decode_status = value.get("prefill_decode_status")
+    if type(prefill_decode_status) is not int or prefill_decode_status != 0:
+        raise NativeHybridStateReceiptError("hybrid-state latent prefill decode did not pass")
 
     sequence_id = _count(value.get("source_sequence_id"), "source_sequence_id", maximum=255)
     destination_sequence_id = _count(value.get("destination_sequence_id"), "destination_sequence_id", maximum=255)
@@ -217,6 +220,7 @@ def validate_native_hybrid_state_roundtrip(
         "source_input_sha256": input_sha,
         "prefill_condition": "LATENT_CANDIDATE",
         "prefill_rows": prefill_rows,
+        "prefill_decode_status": prefill_decode_status,
         "continuation_token_ids_sha256": target_sha,
         "source_context_params_sha256": context_params_sha,
         "destination_context_params_sha256": context_params_sha,
