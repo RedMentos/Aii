@@ -407,7 +407,7 @@ def score_and_record_native_receiver_condition_matrix(
             "status": "TASK_GROUP_SCORED",
             "cohort_status": cohort.get("status"),
             "evidence_class": cohort.get("evidence_class"),
-            "hybrid_state_roundtrip_effect": cohort.get("hybrid_state_roundtrip_effect"),
+            "hybrid_state_roundtrip": condition_scores["NO_MESSAGE"].get("hybrid_state_roundtrip"),
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),
