@@ -22,16 +22,16 @@ NEW = (
     b"                    if greeting is not None:\n"
     b"                        answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_REFLEX')\n"
     b"                        fixed_policy={'kind':'FIXED_EXACT','rule_id':greeting['rule_id'],'rule_version':'builtin-v1',\n"
-    b\"                                      'query_ref':e['source_ref'],'answer_ref':answer_ref,'answer':greeting['reply']}\\n\"
-    b\"                        meta['greeting_fastpath']={k:greeting[k] for k in ('rule_id','language','scope','input_sha256','response_sha256')}|{'answer_ref':answer_ref,'native_models_invoked':False}\\n\"
-    b\"                        self.store.log('greeting_fastpath',eid,{'rule_id':greeting['rule_id'],'scope':greeting['scope'],'exact':True})\\n\"
-    b\"                except Exception as exc:self.store.log('greeting_fastpath_unavailable',eid,{'error':type(exc).__name__})\\n\"
+    b"                                      'query_ref':e['source_ref'],'answer_ref':answer_ref,'answer':greeting['reply']}\n"
+    b"                        meta['greeting_fastpath']={k:greeting[k] for k in ('rule_id','language','scope','input_sha256','response_sha256')}|{'answer_ref':answer_ref,'native_models_invoked':False}\n"
+    b"                        self.store.log('greeting_fastpath',eid,{'rule_id':greeting['rule_id'],'scope':greeting['scope'],'exact':True})\n"
+    b"                except Exception as exc:self.store.log('greeting_fastpath_unavailable',eid,{'error':type(exc).__name__})\n"
     b"            mark('perception_and_state')\n"
 )
 
 
 def _git_blob_sha1(raw: bytes) -> str:
-    header = b"blob " + str(len(raw)).encode("ascii") + b"\\0"
+    header = b"blob " + str(len(raw)).encode("ascii") + bytes((0,))
     return hashlib.sha1(header + raw).hexdigest()
 
 
