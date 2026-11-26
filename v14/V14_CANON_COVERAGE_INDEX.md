@@ -2422,3 +2422,12 @@ Corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\` renames th
 ### Corrected Run 44 exact-CI result
 
 Corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`: A4/A5 feature-set probe **14/14 PASS** on Python 3.13/3.14 (45781255306); RAW EAR comparison **9/9 PASS** on both (45781255440); RuntimeDeploy offline integrity PASS on Python 3.11/3.14 (45781255519). Shared staged/integrated FAIL (45781255404): 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; Core audio-builder pin mismatch is the main cascade, plus two migration assertions return PARTIAL instead of UPDATED. This does not change the Canon classification: WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
+
+
+## Research & Perception Run 45 — A4/A5 session-stratified diagnostic correction (2026-11-26)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A4/A5 audio attention evaluation | Shadow-only feature-set probe now validates monotonic time per session, conditions feature/action CMI on session × goal, permutes within the same strata, and computes self-MI without crossing session boundaries. The synthetic fixture resets clocks independently per session and includes a between-session confound negative control. | Draft PR #2527 head `4d1dc7a3315c8fec0016d1162f361f431ee0a4c1`; source blob `c59f3b4387434b4c0c5f0c14dea052ee047c9f10`, test blob `3f568b0323cf2a3cdd9eb29c69358bbee7d0d6cf`. LOCAL_LINUX CPython 3.13.5 scratch-equivalent 4/4 PASS. Exact GitHub CI 15/15 PASS on Python 3.13 and 3.14 (45836865270), including A4 RAW EAR extractor → A5 PerceptPacket integration. | Real A4 prediction-score vector and trusted attended-state label; ≥5-minute temporal buffer; session-disjoint holdout, switch-focused/drift controls; normal Runtime/attention consumer; microphone consent provider; native GGUF and Redmi evidence. | WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED |
+
+No attention policy, JEPA update, model weight, microphone permission, Runtime route or user data was changed. Parent #2524 staged/integrated remains blocked by the Core-owned native receiver source pin; PR #2527 is DRAFT / NOT_RELEASED. P0 chat, B1/B2 delivery, B3 and all other Canon families remain unaccepted.
