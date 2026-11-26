@@ -212,7 +212,7 @@ def test_native_prefill_token_count_must_match_server_timing_for_selected_body()
             "count": 1,
         },
         body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
-        runner_extra={"timings": {"prompt_n": 173, "prompt_ms": 12.5}},
+        runner_extra={"timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5}},
     )
 
     latest = brain_panel._latest_native_evidence(runtime)
@@ -220,6 +220,8 @@ def test_native_prefill_token_count_must_match_server_timing_for_selected_body()
     body = flow["body_attempts"][0]
     assert flow["native_prefill_token_count_matched"] is True
     assert flow["native_prefill_prompt_tokens"] == 173
+    assert flow["native_prefill_processed_tokens"] == 153
+    assert flow["native_prefill_cached_tokens"] == 20
     assert flow["native_prefill_prompt_ms"] == 12.5
     assert body["native_prefill_token_count_matched"] is True
     assert body["consumption_state"] == (
@@ -240,7 +242,7 @@ def test_native_prefill_token_count_mismatch_does_not_promote_offer_consumption(
             "count": 1,
         },
         body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
-        runner_extra={"timings": {"prompt_n": 172, "prompt_ms": 12.5}},
+        runner_extra={"timings": {"prompt_n": 152, "cache_n": 20, "prompt_ms": 12.5}},
     )
 
     latest = brain_panel._latest_native_evidence(runtime)
@@ -266,7 +268,7 @@ def test_native_prefill_token_count_requires_http_success_and_completed_generati
             "count": 1,
         },
         body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
-        runner_extra={"timings": {"prompt_n": 173, "prompt_ms": 12.5}},
+        runner_extra={"timings": {"prompt_n": 153, "cache_n": 20, "prompt_ms": 12.5}},
     )
 
     flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
