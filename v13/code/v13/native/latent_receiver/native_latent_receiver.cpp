@@ -467,6 +467,28 @@ bool score_target_tokens(llama_context * ctx, const llama_model * model, int inp
 }
 
 
+
+bool decode_roundtrip_bos(llama_context * ctx, llama_model * model, int & decode_status) {
+    if (!ctx || !model) return false;
+    llama_memory_clear(llama_get_memory(ctx), true);
+    const llama_vocab * vocab = llama_model_get_vocab(model);
+    const llama_token bos = vocab ? llama_vocab_bos(vocab) : -1;
+    if (bos < 0) return false;
+    BatchGuard batch;
+    batch.value = llama_batch_init(1, 0, 1);
+    batch.active = true;
+    if (!batch.value.token || !batch.value.pos || !batch.value.n_seq_id ||
+        !batch.value.seq_id || !batch.value.logits || !batch.value.seq_id[0]) return false;
+    batch.value.n_tokens = 1;
+    batch.value.token[0] = bos;
+    batch.value.pos[0] = 0;
+    batch.value.n_seq_id[0] = 1;
+    batch.value.seq_id[0][0] = 0;
+    batch.value.logits[0] = 1;
+    decode_status = llama_decode(ctx, batch.value);
+    return decode_status == 0;
+}
+
 bool decode_roundtrip_token(llama_context * ctx, int32_t token, int32_t position, int & decode_status) {
     if (!ctx || token < 0 || position < 0) return false;
     BatchGuard batch;
@@ -517,14 +539,11 @@ std::string logits_step_sha256(const float * logits, int vocab_size) {
 }
 
 bool run_hybrid_state_roundtrip(
-        llama_context * source,
         llama_model * model,
-        const llama_context_params & context_params,
+        const llama_context_params & base_context_params,
         const std::vector<int32_t> & continuation_tokens,
-        int source_context_rows,
         std::string & receipt_json) {
-    if (!source || !model || continuation_tokens.empty() ||
-        continuation_tokens.size() > 64 || source_context_rows < 1) return false;
+    if (!model || continuation_tokens.empty() || continuation_tokens.size() > 64) return false;
 
     char architecture[128] = {};
     if (llama_model_meta_val_str(model, "general.architecture", architecture, sizeof(architecture)) <= 0 ||
@@ -533,14 +552,37 @@ bool run_hybrid_state_roundtrip(
         return false;
     }
 
+    const int model_context = llama_model_n_ctx_train(model);
+    if (model_context <= 0 || 1 + static_cast<int>(continuation_tokens.size()) > model_context) return false;
+    llama_context_params roundtrip_params = base_context_params;
+    roundtrip_params.n_ctx = static_cast<uint32_t>(std::min(
+        model_context, std::max(64, 1 + static_cast<int>(continuation_tokens.size()))));
+    roundtrip_params.n_batch = 1;
+    roundtrip_params.n_ubatch = 1;
+    roundtrip_params.n_seq_max = 1;
+    roundtrip_params.embeddings = true;
+    roundtrip_params.pooling_type = LLAMA_POOLING_TYPE_NONE;
+    roundtrip_params.attention_type = LLAMA_ATTENTION_TYPE_CAUSAL;
+    ContextGuard source_context;
+    ContextGuard destination;
+    source_context.value = llama_init_from_model(model, roundtrip_params);
+    destination.value = llama_init_from_model(model, roundtrip_params);
+    if (!source_context.value || !destination.value) return false;
+    int source_bos_status = -999;
+    if (!decode_roundtrip_bos(source_context.value, model, source_bos_status)) return false;
+
     struct ZeroizingState {
         std::vector<uint8_t> bytes;
         ~ZeroizingState() { std::fill(bytes.begin(), bytes.end(), 0u); }
     } state;
     const auto capture_started = std::chrono::steady_clock::now();
-    const std::size_t state_size = llama_state_seq_get_size(source, 0);
-    if (state_size == 0 || state_size > 512u * 1024u * 1024u) return false;
-    state.bytes.resize(state_size);
+    const std::size_t state_size = llama_state_seq_get_size(source_context.value, 0);
+    if (state_size == 0 || state_size > 16u * 1024u * 1024u) return false;
+    try {
+        state.bytes.resize(state_size);
+    } catch (...) {
+        return false;
+    }
     const std::size_t copied_bytes = llama_state_seq_get_data(
         source, state.bytes.data(), state.bytes.size(), 0);
     const uint64_t capture_duration_us = static_cast<uint64_t>(
@@ -548,10 +590,6 @@ bool run_hybrid_state_roundtrip(
             std::chrono::steady_clock::now() - capture_started).count());
     if (copied_bytes != state_size) return false;
     const std::string state_sha256 = v14::sha256_hex(state.bytes);
-
-    ContextGuard destination;
-    destination.value = llama_init_from_model(model, context_params);
-    if (!destination.value) return false;
 
     const std::size_t truncated_bytes = llama_state_seq_set_data(
         destination.value, state.bytes.data(), state_size > 0 ? state_size - 1 : 0, 0);
@@ -584,11 +622,11 @@ bool run_hybrid_state_roundtrip(
     for (std::size_t i = 0; i < continuation_tokens.size(); ++i) {
         const int32_t token = continuation_tokens[i];
         if (token < 0 || token >= vocab_size) return false;
-        const int32_t position = source_context_rows + static_cast<int32_t>(i);
-        if (!decode_roundtrip_token(source, token, position, source_decode_status) ||
+        const int32_t position = 1 + static_cast<int32_t>(i);
+        if (!decode_roundtrip_token(source_context.value, token, position, source_decode_status) ||
             !decode_roundtrip_token(destination.value, token, position, destination_decode_status)) return false;
 
-        const float * source_logits = llama_get_logits_ith(source, -1);
+        const float * source_logits = llama_get_logits_ith(source_context.value, -1);
         const float * destination_logits = llama_get_logits_ith(destination.value, -1);
         if (!source_logits || !destination_logits) return false;
         int source_top1 = -1;
@@ -632,7 +670,7 @@ bool run_hybrid_state_roundtrip(
     std::fill(state.bytes.begin(), state.bytes.end(), 0u);
     const bool state_buffer_zeroized = std::all_of(
         state.bytes.begin(), state.bytes.end(), [](uint8_t value) { return value == 0u; });
-    const std::string params_sha256 = context_params_sha256(context_params);
+    const std::string params_sha256 = context_params_sha256(roundtrip_params);
     const bool roundtrip_passed = truncated_restore_rejected && state_buffer_zeroized &&
         state_size == copied_bytes && state_size == restored_bytes &&
         top1_match_count == continuation_tokens.size() &&
@@ -909,10 +947,8 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
         if (include_hybrid_state_roundtrip && item.condition == "NO_MESSAGE") {
-            if (!run_hybrid_state_roundtrip(context.value, model.value, context_params,
-                                            target_tokens, target_context_rows,
-                                            hybrid_state_roundtrip_json) ||
-                !decode_bos(context.value, model.value, decode_status)) {
+            if (!run_hybrid_state_roundtrip(model.value, context_params,
+                                            target_tokens, hybrid_state_roundtrip_json)) {
                 std::cerr << "native full-hybrid same-model roundtrip failed\n";
                 return 9;
             }
