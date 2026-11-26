@@ -240,3 +240,22 @@ def test_equal_start_is_allowed_for_cumulative_windows_when_end_advances():
     assert cumulative["observed_ms"] == 20
     assert cumulative["elapsed_ms"] == 20
     assert cumulative["voice_evidence"] == pytest.approx(0.527633, abs=1e-6)
+
+def test_integrated_audio_context_candidate_pins_current_temporal_voice_blob():
+    import hashlib
+    import importlib.util
+    from pathlib import Path
+
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("v14_integrated_audio_context_candidate", builder_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    source = code_dir / "v13" / "audio_temporal_evidence.py"
+    raw = source.read_bytes()
+    actual_blob = hashlib.sha1(
+        b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+    ).hexdigest()
+    assert module.SOURCE_BLOBS["v13/audio_temporal_evidence.py"] == actual_blob
