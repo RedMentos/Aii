@@ -217,7 +217,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != 'a8634f8e155c8ab397dc8b383b519fda8c424337e4f6a969a790f831a0eddd39':
+        if hashlib.sha256(raw_candidate).hexdigest() != '8792046fe2535fb0cfe14c04c22fdedfc31dc2ed2054671c076936dff05db55f':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
