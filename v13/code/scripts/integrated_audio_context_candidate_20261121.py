@@ -21,7 +21,7 @@ SOURCE_BLOBS = {
     "v13/a5_audio_admission_bridge.py": "6d8790f29525b4c32c84b5b63d834cfd70a7037e",
     "v13/percept_admission.py": "4f44dc42e8784d1ae3aa71b3cc3c8cb184de8ea4",
     "v13/attention.py": "0f6a81e7380aa6716bbac4e4ef5834d108601a70",
-    "v13/contracts.py": "7b21d9c5076015716851b5d432a5730e4e17da92",
+    "v13/contracts.py": "6065a471f5f623abea57725d33d362d9eb806013",
 }
 
 
