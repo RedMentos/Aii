@@ -7,8 +7,9 @@ Per body and runner file (e.g. F16 and Q4_K_M):
            text tokens after neutral preambles P0/P1/P2 (as moe_router_bench)
   parity   F16 vs quantised routing on identical P0 tokens
   rss      peak RSS of the tap process (VmHWM; mmap pages actually touched)
-Optional --pair: run the first runner of every body at the same time and
-report the summed peak RSS (both halves resident together on this host).
+Optional --pair: run the last runner of every body concurrently only when the
+sum of measured single-run VmHWM plus a reserve fits current MemAvailable;
+otherwise skip the concurrent run. Missing measurements fail closed.
 
 Evidence level: Linux cloud CPU, not Redmi. Uses scripts/native_moe_router_tap.cpp.
 """
