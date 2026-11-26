@@ -7,6 +7,7 @@ on:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
@@ -22,6 +23,7 @@ on:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
@@ -69,6 +71,7 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/audio_temporal_prediction.py \
+            v13/code/v13/audio_event_expectation.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_temporal_evidence.py \
@@ -77,6 +80,6 @@ jobs:
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: 0cbec2a9f424f177d7e6e783c28571b236612419
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 454d8694692bc71d01abac70005403561774679d
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
