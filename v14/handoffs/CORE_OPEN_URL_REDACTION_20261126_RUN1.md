@@ -4,20 +4,20 @@
 **Owner:** Core & Harness  
 **Parent PR:** [#2528](https://github.com/RedMentos/Aii/pull/2528)  
 **Branch:** `core/v14-open-url-terminal-redaction-20261126-run1`  
-**Latest code commit:** `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`  
+**Latest code commit:** `2526e24c8521707d7065fed28d495dde856245c6`  
 **Release base:** `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`
 
 ## Runtime changes
 
 1. Terminal `open_url` actions redact the raw URL path/query/fragment from the durable action journal on `EXPIRED` and `CANCELLED`; only the public host and digest remain. Still-pending actions keep the URL for the visible local approval lifecycle. Malformed stored JSON uses a minimal redacted terminal envelope.
 2. The companion now rejects any top-level action-request fields outside the exact 11-field envelope. This closes a privacy gap because the request digest binds only `capability + args`; previously an extra unbound field could carry a second private URL into durable `request_json`.
-3. Tests cover direct and bulk expiry, cancellation, non-redaction of live requests, malformed JSON with a fragment, and rejection of unbound top-level fields.
+3. Tests cover direct and bulk expiry, cancellation, non-redaction of live requests, malformed JSON with a fragment, helper-level exact-field validation, and a provider `submitLocked` negative-path proving an unbound URL is rejected before durable insertion.
 
 ## Verification
 
 - Code-bearing commit `63b05800ca08167b894f2a48e2a7e9ec73d0ee12`: Android Gradle/Robolectric job **SUCCESS** (run 45769108967); offline bridge security **SUCCESS** (run 45769108891). This includes the malformed-JSON/fragment regression.
 - Emulator process-restart job from run 45769108967 was still **IN_PROGRESS** at last read.
-- Latest hardening commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`: Android Gradle, emulator process-restart and offline-security jobs queued (runs 45769457984 / 45769457901). No PASS is claimed until they finish.
+- Hardening commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`: Android Gradle/Robolectric **SUCCESS** on exact PR-head run 45769580810; emulator process-restart remains **IN_PROGRESS**. Latest code commit `2526e24c8521707d7065fed28d495dde856245c6` adds a direct provider negative-path test; its Android Gradle/emulator/security jobs are queued or in progress (runs 45770231218 / 45770226511 / 45770226583). No PASS is claimed for that new test until the exact checks finish.
 - LOCAL_LINUX: Java 21 present; Gradle absent; Android SDK variables unset. Android Gradle/Robolectric is BLOCKED locally. Full checkout also BLOCKED by GitHub DNS.
 - TERMUX/REDMI: REDMI_UNVERIFIED; read-only private relay HEALTH #959 and PIPELINE_STATUS #960 have NO_LIVE_RECEIPT (no `device_status` comment). No device action.
 
