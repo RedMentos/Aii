@@ -249,7 +249,8 @@ def _entity_positions(main, alternate, proof):
 
 def _build_rows(condition, baseline, exact, candidate, ood, entity, entity_positions, seed):
     if condition == "NO_MESSAGE":
-        return [list(row) for row in baseline], "BOS_ONLY_NO_SENDER_V1"
+        # No sender rows are injected; the native receiver decodes its own BOS.
+        return [], "NO_MESSAGE_NO_INJECTED_ROWS_V1"
     if condition == "EXACT_MESSAGE":
         message, recipe = exact, "BOS_PLUS_EXACT_RECEIVER_ROWS_V1"
     elif condition == "LATENT_CANDIDATE":
@@ -388,7 +389,9 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
 
     def build_one(condition):
         vectors, recipe = _build_rows(condition, baseline_rows, exact, candidate, ood_rows, entity_rows, changed, seed)
-        rows, dim = len(vectors), len(vectors[0])
+        rows = len(vectors)
+        # Empty NO_MESSAGE inputs still carry the receiver width as metadata.
+        dim = len(vectors[0]) if rows else len(baseline_rows[0])
         if rows > MAX_ROWS or rows * dim > MAX_ELEMENTS:
             raise NativeReceiverConditionMatrixError("condition input exceeds native receiver limits")
         if condition == "NO_MESSAGE":

@@ -120,8 +120,10 @@ def test_builds_eight_bound_conditions_and_streams_after_one_shot_approval(monke
     assert [x["condition"] for x in result] == list(CONDITIONS)
     assert result[0]["message_source_ref"] is None
     assert result[0]["input_rows"] == 0
+    assert result[0]["input_dim"] == 2
     assert result[0]["vectors"] == [] and result[0]["position_ids"] == []
     assert result[0]["input_sha256"] == sha(b"")
+    assert result[0]["control_recipe"] == "NO_MESSAGE_NO_INJECTED_ROWS_V1"
     assert result[1]["adapter_sha256"] is None
     assert result[2]["adapter_sha256"] == "a" * 64
     assert result[6]["message_source_ref"]["source_id"] == "source-ood"
