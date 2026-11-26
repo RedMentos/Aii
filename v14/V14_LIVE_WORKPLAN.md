@@ -1533,3 +1533,12 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - **Remaining gap:** only LATENT_CANDIDATE receipt production is wired. The seven other conditions and full held-out cohort are not implemented. Do not claim receiver utility or semantic correctness. No B3, training, model swap or production authority.
 - **Next:** build the eight-condition source/session-bound matrix; collect >=20 task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX and require candidate to beat every control. Then separately seek explicit device authorization and real Android receipts.
 
+
+
+## Core & Harness Run 3 — native target-token digest integrity (2026-11-26)
+
+- **Task / defect:** the native receiver accepted a target-token SHA-256 supplied by its Python caller and echoed it in the native receipt without recomputing the digest from the token IDs actually read and scored. This left the native evidence binding weaker than the claimed consumed-token provenance.
+- **Implementation:** PR #2520, exact head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8`, recomputes SHA-256 over explicit little-endian int32 token-ID bytes inside C++, rejects mismatches and negative IDs before model load/scoring, and emits the computed digest. Added known-vector and mismatch selftests. Builder/recovery/stage/RuntimeDeploy pins were refreshed and read back.
+- **Verification:** LOCAL_LINUX isolated C++17 helper compile/selftest PASS with `-Wall -Wextra -Werror`; full local Aii checkout and full llama.cpp-linked build NOT_RUN because GitHub DNS resolution failed. Exact-head CI all 7 workflows SUCCESS: pinned llama.cpp Linux build/selftest, Android arm64 cross-compile, Python 3.13/3.14 45/45 each, privacy scan CLEAN, RuntimeDeploy integrity, two-checkout migration, record-only controller, Lab Age/WebView, private owner-read bootstrap, staged/integrated 424 passed/3 skipped/58 subtests, staged runtime 255 passed/10 skipped/47 subtests.
+- **Boundary:** no real GGUF task matrix, no semantic utility, no production B3, no weight training, no Android device execution. REDMI_UNVERIFIED; NOT_RELEASED.
+- **Next:** Perception rebases #2519/#2517 onto this exact head; Core adds a distinct one-shot `NATIVE_RECEIVER_MATRIX` approval and real `:callosum` matrix consumer. Require >=20 held-out task groups, >=2 sessions and >=2 task families, all eight conditions, and candidate wins over every control on a pinned real GGUF before any B3 promotion.
