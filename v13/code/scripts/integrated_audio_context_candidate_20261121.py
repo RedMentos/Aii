@@ -254,8 +254,8 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
-        b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
-        b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
+        b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]",
+        b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]",
         "C3 context source lineage",
     )
 
