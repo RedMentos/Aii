@@ -619,6 +619,39 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         delta_report[control] = {"mean_delta_nats_per_token": mean,
             "median_delta_nats_per_token": statistics.median(values), "win_rate": win,
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
+    system_gain = delta_report["NO_MESSAGE"]
+    entity_specificity_gain = delta_report["ENTITY_SUBSTITUTION"]
+    system_gain_pass = bool(enough and system_gain["pass"])
+    entity_specificity_pass = bool(enough and entity_specificity_gain["pass"])
+    if not enough:
+        information_use_status = "INSUFFICIENT_HOLDOUT"
+    elif system_gain_pass and entity_specificity_pass:
+        information_use_status = "CONTENT_SPECIFIC_SIGNAL"
+    elif system_gain_pass:
+        information_use_status = "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+    else:
+        information_use_status = "NO_SYSTEM_GAIN_ESTABLISHED"
+    information_use_audit = {
+        "schema": "v14.native-receiver-information-use-audit/1",
+        "status": information_use_status,
+        "system_gain_vs_no_message": dict(system_gain),
+        "entity_specificity_gain_vs_counterfactual": dict(entity_specificity_gain),
+        "system_gain_pass": system_gain_pass,
+        "entity_specificity_pass": entity_specificity_pass,
+        "holdout_sufficient": bool(enough),
+        "counterfactual_kind": "ENTITY_ONLY_SOURCE_PAIR",
+        "full_derangement_tested": False,
+        "interpretation_limit": (
+            "Teacher-forced target-logprob effect only; entity-only counterfactual "
+            "is not an unrelated-question derangement and does not prove semantic use."
+        ),
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
     if kv_snapshot_effects:
         kv_snapshot_effect = {
             "status": "READ_ONLY_SAMPLE_ONLY",
@@ -693,6 +726,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "kv_snapshot_effect": kv_snapshot_effect,
         "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
+        "information_use_audit": information_use_audit,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,
         "training_authority": 0, "native_receiver_authority": 0, "persisted": False}
