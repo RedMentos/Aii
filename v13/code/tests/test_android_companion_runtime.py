@@ -1057,3 +1057,9 @@ def test_committed_receipt_recovery_rejects_tampered_signature_without_remote_re
     assert len(transport.submitted) == 1
     restarted.broker.close()
     runtime.store.close()
+
+
+def test_operator_android_help_includes_open_url(tmp_path):
+    runtime = make_runtime(tmp_path)
+    output = Operator(runtime).run(":android")
+    assert "open-url <https-url> --confirm" in output
