@@ -2301,3 +2301,14 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 - **New Core exact-head CI:** NOT_YET_VERIFIED at this handoff. The new merge/handoff commits have not yet yielded a read-back result; do not treat parent CI as Core-head CI.
 - **Device/release:** REDMI_UNVERIFIED; no fresh private receipt, no GGUF execution, no update request, no install/deploy, no model/weight/permission/data change. B3 OFF; RELEASE_SHA NOT_RELEASED. P0 #1904 remains OPEN.
 - **Next action:** inspect exact-head #2538 Actions, fix the two migration PARTIAL-vs-UPDATED assertions if still present, then rerun staged/integrated and native consumer gates. Only after CI is green may a separate explicit local approval authorize a diagnostic on an already-present GGUF; no download or productive swap. **User action: none for this CI step.**
+
+
+## Core & Harness — adaptive C4 reserve (Run 51, 2026-11-26)
+
+- **PR #2539:** `core/v14-adaptive-c4-budget-20261126-run2-core`, code head `f0465a3644c7b1c6e22779c5dc6eb4deadcd4aba`, DRAFT / NOT_RELEASED, based on Core #2535.
+- **Runtime behavior:** short-turn recovery now estimates the C4 focal-loop reserve from existing content-free `focal_loop` → `output_prepare` stage marks, including completed C4 work on a turn where the later C3 decode timed out. It uses max-of-three × 1.25 + 0.5 s, 1 s fallback, 6 s / 25% cap, and preserves the minimum C3 reserve plus two B1/B2 slices. The existing Runtime consumes the plan; no parallel scheduler, prompt text access, model/weight change, Age change or permission change.
+- **Pin-chain repair:** exact new `native_turn_budget.py` SHA-256 `d84bb43c83408369375af8b50233f2fc019615b36f77f7eb87b18796ae253baf`; observer candidate SHA-256 `4b47d850ceb5ba3b1cdf40e5046085b66ee3bebdf53df0c3771c6d32323f0f3a`; recovery-composer Git blob `b00c41e8f1e6fdab21fa0d9a4a04d8b91ba3fcac`; wrapper SHA-256 `fe766c140124eb87765b47a2ae462b8a1ddd25a80e9b2a99c2bac503856131f4`; stage builder SHA-256 `d7e03c8d77a34f54156906865d808bc11b771f98fee4bed07f3d449d2e20c57a`; RuntimeDeploy pin refreshed to the stage hash.
+- **Tests:** LOCAL_LINUX CPython 3.13.5 scratch-equivalent planner reproduction 4 new-case + 10 boundary checks PASS; not exact repo pytest. Previous exact CI on pre-pin head `b852f643...` failed at the stale observer pin, which cascaded into RuntimeDeploy failure and two migration PARTIAL-vs-UPDATED assertions. Those assertions were not weakened; exact CI on replacement head `f0465a3` is pending.
+- **Handoff:** `v14/handoffs/CORE_C4_BUDGET_RUN51_20261126.md`.
+- **Next:** inspect #2539 exact-head staged/runtime/migration workflows; verify the refreshed pins allow RuntimeDeploy and that migration states become UPDATED (or UP_TO_DATE only when the exact target is already present). No user action for CI.
+- **Device/release:** REDMI_UNVERIFIED; no GGUF, install, update, deployment or device receipt; B3 OFF; P0 #1904 OPEN; RELEASE_SHA NOT_RELEASED.
