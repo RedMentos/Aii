@@ -1,0 +1,60 @@
+name: V14 mobile MoE resource admission
+on:
+  push:
+    branches:
+      - research-perception/v14-mobile-moe-memory-gate-20261126-run47
+    paths:
+      - "v13/code/scripts/moe_resource_gate.py"
+      - "v13/code/scripts/moe_router_native_bench.py"
+      - "v13/code/tests/test_moe_resource_gate.py"
+      - "v13/code/tests/test_moe_router_native_bench_memory_gate.py"
+      - ".github/workflows/v14-mobile-moe-resource-gate.yml"
+  pull_request:
+    branches:
+      - research-perception/v14-kv-snapshot-consumer-20261126-run35
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - "v13/code/scripts/moe_resource_gate.py"
+      - "v13/code/scripts/moe_router_native_bench.py"
+      - "v13/code/tests/test_moe_resource_gate.py"
+      - "v13/code/tests/test_moe_router_native_bench_memory_gate.py"
+      - ".github/workflows/v14-mobile-moe-resource-gate.yml"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/V14_WORK_BOARD.json"
+      - "v14/handoffs/RESEARCH_PERCEPTION_RUN47_20261126.md"
+
+permissions:
+  contents: read
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Install only the benchmark's numeric dependency
+        run: python -m pip install numpy==2.3.5
+      - name: Compile exact benchmark and focused tests
+        run: |
+          python -m py_compile \
+            v13/code/scripts/moe_resource_gate.py \
+            v13/code/scripts/moe_router_native_bench.py \
+            v13/code/tests/test_moe_resource_gate.py \
+            v13/code/tests/test_moe_router_native_bench_memory_gate.py
+      - name: Run RAM parsing, fail-closed admission and benchmark consumer tests
+        run: python -m unittest discover -s v13/code/tests -p "test_moe*.py" -v
+      - name: Scan changed public content
+        if: always()
+        env:
+          BASE_REF: \${{ github.event.pull_request.base.ref || 'gpt6/v13-private-remote-bridge-20261111' }}
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base "origin/\${BASE_REF}" --head HEAD --no-worktree
