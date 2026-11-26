@@ -2278,3 +2278,8 @@ Current code/test head: \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`. The proxy 
 - Full local Aii checkout/pytest/native build remains NOT_RUN; local scratch-equivalent compile + six assertions PASS. Device remains REDMI_UNVERIFIED, no fresh owner-read receipt; NOT_RELEASED.
 
 **Next:** Core/Integrator fixes and rebinds the recovery → stage → RuntimeDeploy composer pin chain and investigates the two PARTIAL migration assertions, then reruns staged/integrated tests. Perception keeps the proxy diagnostic-only; a faithful rIMI still needs real A4 prediction scores, trusted attended-state labels, ≥5-minute temporal buffer, separate sessions and switch-focused tests.
+
+
+### GCMI reuse/licence boundary (2026-11-26)
+
+No GCMI code or dependency was added. The upstream \`robince/gcmi\` package is GPL-3.0, requires NumPy/SciPy, and its native MATLAB MEX CI targets macOS/Linux x86_64 only; no Android/aarch64 proof is published. Aii has no root LICENSE at the working ref, so GPL compatibility is unknown. No user decision is needed now. If a future exact rIMI implementation proposes GPL code, request a separate explicit licence decision first.
