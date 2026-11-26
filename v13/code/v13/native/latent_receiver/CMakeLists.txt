@@ -22,13 +22,14 @@ set(GGML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama.cpp" EXCLUDE_FROM_ALL)
 
-add_executable(native_latent_receiver native_latent_receiver.cpp)
+add_executable(native_latent_receiver native_latent_receiver.cpp native_receiver_kv_snapshot.cpp)
 target_compile_features(native_latent_receiver PRIVATE cxx_std_17)
+target_include_directories(native_latent_receiver PRIVATE "${LLAMA_CPP_DIR}/src" "${LLAMA_CPP_DIR}/ggml/include")
 target_compile_definitions(native_latent_receiver PRIVATE
     V14_WITH_LLAMA=1
     V14_LLAMA_REVISION="${V14_LLAMA_REVISION}"
 )
-target_link_libraries(native_latent_receiver PRIVATE llama)
+target_link_libraries(native_latent_receiver PRIVATE llama ggml)
 set_target_properties(native_latent_receiver PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )

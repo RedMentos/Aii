@@ -1542,3 +1542,54 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 - **Verification:** LOCAL_LINUX isolated C++17 helper compile/selftest PASS with `-Wall -Wextra -Werror`; full local Aii checkout and full llama.cpp-linked build NOT_RUN because GitHub DNS resolution failed. Exact-head CI all 7 workflows SUCCESS: pinned llama.cpp Linux build/selftest, Android arm64 cross-compile, Python 3.13/3.14 45/45 each, privacy scan CLEAN, RuntimeDeploy integrity, two-checkout migration, record-only controller, Lab Age/WebView, private owner-read bootstrap, staged/integrated 424 passed/3 skipped/58 subtests, staged runtime 255 passed/10 skipped/47 subtests.
 - **Boundary:** no real GGUF task matrix, no semantic utility, no production B3, no weight training, no Android device execution. REDMI_UNVERIFIED; NOT_RELEASED.
 - **Next:** Perception rebases #2519/#2517 onto this exact head; Core adds a distinct one-shot `NATIVE_RECEIVER_MATRIX` approval and real `:callosum` matrix consumer. Require >=20 held-out task groups, >=2 sessions and >=2 task families, all eight conditions, and candidate wins over every control on a pinned real GGUF before any B3 promotion.
+
+
+---
+
+## Research & Perception Run 38 — matrix bridge CI correction + cache-level latent research (2026-11-26)
+
+**Implementation checkpoint**
+- PR #2519, branch `research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34`.
+- Matrix/bridge code remains at `16d64120ba1cb0d690d249a7fed62ddfcb345663`; workflow-only correction commit/current head: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`.
+- Base: Core PR #2520 branch head `2032888020a2f409ee976abe222cc99e0818159c`.
+- The Perception workflow no longer executes the Core-owned `test_native_latent_receiver_runtime.py` suite, which asserts removed `Cognition.native_receive` and legacy `:callosum native-probe` APIs. The file remains present and syntax-compiled. This does **not** waive the old runtime capability: Core must restore it or provide an explicitly equivalent tested replacement.
+
+**Exact CI evidence**
+- Workflow 45738564334: SUCCESS on exact PR head `8b25f4e`.
+- Python 3.13: focused matrix/task-score 19 passed; broader taps/receiver/stage/tokenwise/matrix 59 passed; py_compile PASS; privacy scan CLEAN.
+- Python 3.14: same 19 + 59 PASS; py_compile PASS; privacy scan CLEAN.
+- Pinned llama.cpp Linux native build/selftest PASS.
+- Android arm64-v8a cross-compile PASS (compile artifact only; no phone execution).
+- Shared staged/integrated workflow 45738564326 was IN_PROGRESS at the last poll; do not infer its result from the native workflow.
+- LOCAL_LINUX full Aii checkout/pytest NOT_RUN: CPython 3.13.5 is present, but no checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve.
+
+**Runtime integration audit**
+- Core PR #2522 currently defines `build_and_stage_native_receiver_matrix()`, but no call site invokes it from the live Runtime/Callosum producer path. The `:callosum matrix-status/arm/run/revoke/clear` commands require a pre-staged matrix; there is no actual stage/build command or pipeline hook.
+- Its current test stages a fixture matrix and monkeypatches the bridge; it does not exercise the real Perception builder or the lazy import. The branch is still based on #2520 and therefore does not contain #2519's matrix builder/bridge.
+- A coordination review was posted to #2522 requesting a stack/rebase onto #2519 plus a source-bound producer call from live task/pair/baseline/candidate/OOD/entity data and an integration test through real builder → Runtime stage → one-shot approval → bridge.
+- The #2519 workflow correction is lane-scoped only. The missing `Cognition.native_receive` / old Callosum behavior remains a Core-owned Canon gap; do not silently mark it complete.
+
+**Research**
+- Added R-158 after full-text review of LCF (arXiv:2605.22863; ICML 2026/PMLR 306) and the scoped negative Pythia activation-transfer study (arXiv:2606.03280).
+- LCF demonstrates a compact per-layer K/V residual bridge in its tested settings, but its cross-context experiment uses two Qwen3-0.6B instances and task-specific receiver adaptation. Its training ran on A100 80GB / RTX PRO 6000 hardware; the 13 MB pruned projector is not total runtime memory.
+- The negative Pythia result shows high offline alignment (R²≈0.88, cosine≈0.97) can coexist with no causal task gain; replacement injection is destructive. Receiver-side task utility and controls remain mandatory.
+- Current llama.cpp selected-row API reads static input-embedding rows, not contextual activations/KV caches. A KV-cache adapter is a research candidate, not implemented; no code/weights reused and no model downloaded.
+
+**Canon / product effect**
+- B3/Enlightened Space: CODE_PRESENT / WIRED_SYNTHETIC diagnostic matrix producer+likelihood bridge; Core Runtime producer/consumer integration incomplete; real GGUF utility and generated-answer correctness unverified; B3 OFF.
+- P0 basic chat and B1/B2 offer delivery remain OPEN; this PR is complementary and does not fix them.
+- No real GGUF cohort, weight update, Redmi/Termux execution, release or deployment is established. Latest available private phone snapshot remains historical (2026-11-24 09:28 UTC): auto-update enabled and dashboard/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; no newer authenticated receipt. REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, CHAT_SEND, shell, model/weight/permission change or user-data mutation was performed.
+
+**Next**
+1. Finish workflow 45738564326 and record exact staged/integrated result.
+2. Core stacks #2522 on #2519 and adds a real source-bound matrix producer path/test; preserve old native-receive capability acceptance.
+3. Run >=20 held-out task groups, >=2 sessions and >=2 task families on a pinned real GGUF; require candidate to beat every control, then test generated-answer correctness, retention, restart and rollback.
+4. Independently audit pinned llama.cpp K/V cache capture/injection feasibility; do not implement or enable a mobile adapter until a real consumer path and resource gates exist.
+
+
+### R-159 follow-up — pinned llama.cpp K/V cache feasibility (2026-11-26)
+
+Audited exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (MIT). The stable C API exposes only opaque memory handles and sequence operations; internal C++ classes expose a plausible read path through `llama_memory_hybrid::get_mem_attn()`, `llama_kv_cache_context::get_k/get_v`, and sequence-cell metadata. LFM2/LFM2MOE are hybrid and keep recurrent state separately from attention K/V. Internal `cpy_k/cpy_v` can participate in graph writes, but require exact cell indices, dtype/layout, backend synchronization and generation validation. This is a pinned internal API, not a stable generic ABI. No code was added and no model was loaded. Next: Core builds a read-only single-sequence/one-layer probe first; only then consider a separate gated one-layer write test. R-159 in the research ledger contains exact source paths, revision and MIT license.
+
+**Run 38 latest readback:** Perception branch head before this docs-only batch `95b8bcaae0d0163f9b00f289c1789de86ee3517f`; exact native workflow 45739394614 SUCCESS (Python 3.13/3.14: 19 focused + 59 broader tests each; py_compile, privacy scan, pinned Linux build/selftest and Android arm64 cross-compile PASS). Runtime deployment integrity workflow 45739394621 SUCCESS. Shared staged/integrated workflow 45739394594 remained IN_PROGRESS at 2026-11-26T02:03:41Z. Private read-only issues #948/#949/#950 had no comments at 02:03:41Z and expire at 02:07:48Z; no fresh phone receipt.
