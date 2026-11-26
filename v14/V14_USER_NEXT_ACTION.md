@@ -2187,3 +2187,41 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - **User effect:** stale approvals can now be cleared/replaced after model route drift instead of remaining misleadingly PENDING; unchanged approvals remain one-shot. This is diagnostic approval lifecycle hardening, not learned latent coupling, model-weight learning, production B3, or normal-turn answer correctness.
 - **Device:** no fresh authenticated receipt. The last available private V13OBS snapshot is historical (2026-11-24); it reported runtime STOPPED_BY_USER and autostart false. REDMI_UNVERIFIED. No device action.
 - **Next:** Boss/QA review and integrate this with the K/V-aware matrix consumer; then reconcile Core K/V with fair-budget #2488 → #2490 → #2493 and fastpath #2529, rebind source pins bottom-up, and continue the normal-turn B1/B2 → C4 → C3 path. Real GGUF testing requires separate local authorization; B3 remains OFF.
+
+
+# Core & Harness — Run 4 checkpoint (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight swap, permission change or device-data mutation was performed or requested.
+
+## Core native receiver matrix approval recovery
+
+- Draft PR #2530 (https://github.com/RedMentos/Aii/pull/2530), branch core/v14-native-matrix-approval-recovery-20261126-run1, exact head bfacd35eac020c462fa67c9d426b2e9de262d961, based on Core #2525 head 9fdf321c9c14ab3b27d0d5947eaca443d5796df3 and the Perception K/V matrix consumer #2524. DRAFT / NOT_RELEASED.
+- Revalidated the complete persisted approval binding at both Runtime run admission and one-shot consumption: task group, exact source-binding set, sender/receiver roles, installed model revision/route/file identity, and the existing matrix/session/event/generation digests. A stale source now enters the existing failure cleanup path, marks the attempt FAILED_REVOKED, closes the staged matrix and clears Runtime references.
+- Matrix arming now fails closed if any separate single-probe approval remains PENDING, including malformed, non-finite or expired expires_at values. The operator must explicitly revoke the other approval; no implicit cross-approval cleanup occurs.
+- Added five tampered-binding negative cases at run admission, five at consumption, and seven cross-approval expiry/malformed cases. Existing source-drift cleanup behavior remains intact.
+
+## Verification
+
+- LOCAL_LINUX CPython 3.13.5: isolated approval-binding guard PASS (1 positive + 5 tamper negatives); isolated cross-approval exclusion PASS (7 malformed/expired expiry cases); full Aii checkout/pytest NOT_RUN/BLOCKED because no checkout is mounted and git ls-remote cannot resolve github.com.
+- Exact Core matrix workflow 45804302865 (https://github.com/RedMentos/Aii/actions/runs/45804302865): SUCCESS; Python 3.13 and 3.14 each report 71 Runtime/matrix tests plus 8 additional runtime-consumer tests PASS; offline Python 3.11/3.14 and bridge-security checks PASS.
+- Exact staged/integrated workflow 45804302886 (https://github.com/RedMentos/Aii/actions/runs/45804302886): SUCCESS for staged-runtime and integrated-regression.
+- These are GitHub-hosted Linux/synthetic/runtime-contract checks. No pinned GGUF was executed by this run, no model weights changed, and no trained latent/semantic utility was established.
+
+## Parallel Core fastpath pin repair
+
+- Existing draft PR #2529 (https://github.com/RedMentos/Aii/pull/2529), branch core/v14-greeting-fastpath-runtime-20261126-run1, was found to fail staged integration because the inherited online-world builder still pinned the pre-fastpath v13/runtime.py bytes.
+- Refreshed integrated_online_world_candidate_20261110.py to the independently recomputed exact runtime SHA-256 6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df (SHA implementation checked against the standard abc vector). Pin commit/head: 1aed9f55eb744baa7469f125fb9286c2dcafa198.
+- Exact fastpath Python 3.13/3.14 and JEPA/bridge checks are green; staged/integrated regression was still running at this checkpoint. Do not call #2529 merge-ready until that exact run completes and any further nested source pins are rebound.
+
+## Device and Canon boundary
+
+- REDMI_UNVERIFIED for current heads: no fresh authenticated owner-read receipt, no Termux install/deploy, no physical Redmi test, no native Android receiver run. GitHub push/CI is not deployment.
+- B3 remains OFF; official Age 0 and all model/weight/permission gates remain unchanged. The matrix is still a local diagnostic candidate, not production routing or learning authority.
+- Research context remains R-158 (LCF K/V residual/span pooling) and R-159 (pinned llama.cpp K/V internals): activation/likelihood alignment is not causal semantic utility, and the current stable public C API does not expose the contextual K/V write path. No model alternative or download is justified by this approval-state fix.
+
+## Next executable actions
+
+1. Finish exact #2529 staged/integrated checks and refresh any further inherited source pins bottom-up without weakening hashes.
+2. Boss/QA independently review #2530; integrate only after the Perception #2524 task-score/pin failures and Core #2525 dependency are reconciled. Keep #2530 DRAFT until then.
+3. Continue the normal-turn B1/B2 → C4/JEF → C3 source-bound offer-consumption path; the diagnostic matrix is not a substitute for it.
+4. A real-GGUF cohort or Redmi probe requires a separate explicit local/device authorization. No user action is needed for this checkpoint.
