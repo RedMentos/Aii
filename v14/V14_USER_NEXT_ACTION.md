@@ -2281,7 +2281,7 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 
 ## Research & Perception — latest verified next action (Run 49, 2026-11-26)
 
-- **Current code candidate:** PR #2524, branch research-perception/v14-kv-snapshot-consumer-20261126-run35, code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; docs/handoff head 82d79103af7aa80d1ec29b688ec2f3ecca78acc8; draft / NOT_RELEASED.
+- **Current code candidate:** PR #2524, branch research-perception/v14-kv-snapshot-consumer-20261126-run35, code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; initial handoff commit 82d79103af7aa80d1ec29b688ec2f3ecca78acc8; later docs/board commits follow on the same branch; draft / NOT_RELEASED.
 - **New function:** the optional LFM2 full-hybrid state roundtrip now pre-fills from the real LATENT_CANDIDATE input, not BOS. Schema v2 binds candidate condition, row count, float32 input SHA and decode status. The Python task-score and Runtime bridge attach/read the result on the candidate condition. It remains same-model, read-only diagnostic evidence; no cross-model latent coupling, trained weights, normal-turn chat, semantic use, generated-answer correctness or B3 production.
 - **Local tests:** CPython 3.13.5 isolated prefill-contract reproduction 6/6 PASS; standalone C++ float32-LE digest helper compiled and matched the Python digest. These are scratch tests, not the exact repository tests/native llama.cpp build. Full local Aii checkout/pytest/native build NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
 - **GitHub CI:** exact-head workflows 45888866164 (native receiver), 45888866275 (staged/integrated) and 45888866345 (RuntimeDeploy offline integrity) were QUEUED at checkpoint. Do not treat queued CI as PASS.
