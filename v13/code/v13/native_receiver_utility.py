@@ -454,8 +454,8 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
         native_data["device_runtime_build_id"] = _id(
             value.get("device_runtime_build_id"), "native.device_runtime_build_id")
     if "hybrid_state_roundtrip" in value:
-        if condition != "NO_MESSAGE":
-            raise NativeReceiverUtilityError("hybrid-state roundtrip is only allowed on NO_MESSAGE")
+        if condition != "LATENT_CANDIDATE":
+            raise NativeReceiverUtilityError("hybrid-state roundtrip is only allowed on LATENT_CANDIDATE")
         try:
             native_data["hybrid_state_roundtrip"] = validate_native_hybrid_state_roundtrip(
                 value.get("hybrid_state_roundtrip"),
@@ -626,7 +626,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
         first = group["NO_MESSAGE"]
-        roundtrip = first["native"].get("hybrid_state_roundtrip")
+        candidate = group["LATENT_CANDIDATE"]
+        roundtrip = candidate["native"].get("hybrid_state_roundtrip")
         has_roundtrip = roundtrip is not None
         if hybrid_state_roundtrip_mode is None:
             hybrid_state_roundtrip_mode = has_roundtrip
