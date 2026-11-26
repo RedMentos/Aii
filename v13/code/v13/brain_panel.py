@@ -85,9 +85,92 @@ def _identifier(value):
     return value if type(value) is str and len(value) <= 160 and _ID.fullmatch(value) else None
 
 
+def _source_ref_key(ref):
+    if type(ref) is not dict:
+        return None
+    source_id = _identifier(ref.get("source_id"))
+    sha256 = _sha256(ref.get("sha256"))
+    start = ref.get("char_start")
+    end = ref.get("char_end")
+    modality = ref.get("modality")
+    if (not source_id or not sha256 or type(start) is not int or type(end) is not int
+            or not 0 <= start < end or type(modality) is not str or not modality):
+        return None
+    return source_id, sha256, start, end, modality
+
+
+def _source_ref_contains(parent, child):
+    parent_key = _source_ref_key(parent)
+    child_key = _source_ref_key(child)
+    return bool(
+        parent_key and child_key
+        and parent_key[0] == child_key[0]
+        and parent_key[1] == child_key[1]
+        and parent_key[4] == child_key[4]
+        and parent_key[2] <= child_key[2]
+        and child_key[3] <= parent_key[3]
+    )
+
+
+def _verify_offer_packet(store, packet_id, event_id, event_generation_id, role, query_id):
+    """Verify persisted OfferPacket identity and its source spans without returning text."""
+    try:
+        row = store.one(
+            "SELECT kind,event_id,generation_id,payload FROM packets WHERE id=?",
+            (packet_id,),
+        )
+        if (not row or row.get("kind") != "OfferPacket"
+                or row.get("event_id") != event_id
+                or row.get("generation_id") != event_generation_id
+                or type(event_generation_id) is not str):
+            return {"offer_packet_verified": False, "source_bound": False,
+                    "verified_source_span_count": None}
+        payload = _mapping(row.get("payload"))
+        if (payload.get("packet_id") != packet_id
+                or payload.get("event_id") != event_id
+                or payload.get("brain_generation_id") != event_generation_id
+                or payload.get("producer_component") != role
+                or payload.get("role") != role
+                or payload.get("query_packet_id") != query_id):
+            return {"offer_packet_verified": False, "source_bound": False,
+                    "verified_source_span_count": None}
+        evidence_refs = payload.get("evidence_refs")
+        provenance = payload.get("provenance")
+        if (type(evidence_refs) is not list or len(evidence_refs) > 16
+                or type(provenance) is not list or len(provenance) > 64):
+            return {"offer_packet_verified": False, "source_bound": False,
+                    "verified_source_span_count": None}
+        if not evidence_refs:
+            return {"offer_packet_verified": True, "source_bound": False,
+                    "verified_source_span_count": 0}
+        verified = 0
+        all_bound = True
+        for ref in evidence_refs:
+            if not _source_ref_key(ref) or not any(
+                _source_ref_contains(parent, ref) for parent in provenance
+            ):
+                all_bound = False
+                continue
+            try:
+                store.read_source(ref)
+            except Exception:
+                all_bound = False
+                continue
+            verified += 1
+        return {
+            "offer_packet_verified": True,
+            "source_bound": bool(all_bound and verified == len(evidence_refs) and verified > 0),
+            "verified_source_span_count": verified,
+        }
+    except Exception:
+        return {"offer_packet_verified": False, "source_bound": False,
+                "verified_source_span_count": None}
+
+
 def _body_offer_evidence(
-    store, event_id, *, c4_ids=(), c4_recorded=False, c4_accepted=False,
-    template_ids=(), template_receipt_available=False, template_submitted=False, synthetic=False,
+    store, event_id, *, event_generation_id=None, c4_ids=(), c4_recorded=False, c4_accepted=False,
+    template_ids=(), template_role_by_id=None, template_receipt_available=False,
+    template_submitted=False, synthetic=False,
     native_prefill_verified=False, native_prefill_observed=False,
     native_generation_completed=False, synthetic_prefill_verified=False,
     synthetic_generation_completed=False,
@@ -116,7 +199,13 @@ def _body_offer_evidence(
     template_values = template_ids if type(template_ids) in (list, tuple, set) else ()
     c4_ids = {value for value in c4_values if _identifier(value)}
     template_ids = {value for value in template_values if _identifier(value)}
+    raw_template_roles = template_role_by_id if type(template_role_by_id) is dict else {}
+    template_roles = {
+        packet_id: role for packet_id, role in raw_template_roles.items()
+        if _identifier(packet_id) and type(role) is str and role in _BODY_ROLES
+    }
     by_role_query = {}
+    verified_packet_cache = {}
     for row in rows:
         if type(row) is not dict:
             continue
@@ -145,6 +234,12 @@ def _body_offer_evidence(
             "sampled_peak_pss_bytes": None,
             "evidence_environment": "UNAVAILABLE",
             "packet_id": None,
+            "native_template_role": None,
+            "template_role_matches": None,
+            "offer_packet_verified": False,
+            "source_bound": False,
+            "source_count_matches": False,
+            "reported_source_span_count": None,
             "verified_source_span_count": None,
             "delivery_duration_s": None,
             "selected_by_c4": None,
@@ -176,10 +271,29 @@ def _body_offer_evidence(
         else:
             item["delivered"] = True
             item["packet_id"] = packet_id
-            item["verified_source_span_count"] = _count(metrics.get("count"))
+            item["native_template_role"] = template_roles.get(packet_id)
+            item["template_role_matches"] = template_roles.get(packet_id) == role
+            item["reported_source_span_count"] = _count(metrics.get("count"))
+            verification = verified_packet_cache.get(packet_id)
+            if verification is None:
+                verification = _verify_offer_packet(
+                    store, packet_id, event_id, event_generation_id, role, query_id
+                )
+                verified_packet_cache[packet_id] = verification
+            item["offer_packet_verified"] = verification["offer_packet_verified"]
+            item["source_bound"] = verification["source_bound"]
+            item["verified_source_span_count"] = verification["verified_source_span_count"]
+            item["source_count_matches"] = bool(
+                item["offer_packet_verified"]
+                and item["verified_source_span_count"] is not None
+                and item["reported_source_span_count"] == item["verified_source_span_count"]
+            )
             item["delivery_duration_s"] = _seconds(metrics.get("duration_s"))
             item["selected_by_c4"] = packet_id in c4_ids if c4_accepted else None
-            item["included_in_c3_template"] = packet_id in template_ids if template_submitted else None
+            item["included_in_c3_template"] = (
+                packet_id in template_ids and item["template_role_matches"]
+                if template_submitted else None
+            )
             path_synthetic = synthetic or item["evidence_environment"] == "SYNTHETIC"
             item["native_prefill_observed"] = bool(not path_synthetic and native_prefill_observed)
             item["native_prefill_verified"] = bool(not path_synthetic and native_prefill_verified)
@@ -198,6 +312,14 @@ def _body_offer_evidence(
                 state = "C4_SELECTED_C3_TEMPLATE_NOT_SUBMITTED"
             elif packet_id not in template_ids:
                 state = "C4_C3_PACKET_ID_MISMATCH"
+            elif template_roles.get(packet_id) != role:
+                state = "C4_C3_PACKET_ROLE_MISMATCH"
+            elif not item["offer_packet_verified"]:
+                state = "DELIVERED_OFFER_PACKET_UNVERIFIED"
+            elif not item["source_bound"]:
+                state = "DELIVERED_WITHOUT_VERIFIED_SOURCE_SPANS"
+            elif not item["source_count_matches"]:
+                state = "DELIVERED_SOURCE_SPAN_COUNT_MISMATCH"
             elif path_synthetic:
                 state = (
                     "SYNTHETIC_PREFILL_AND_GENERATION_VERIFIED"
@@ -245,7 +367,16 @@ def _latest_native_evidence(r):
     c4_metrics = {}
     c4_recorded = False
     event_id = row.get("event_id")
+    event_generation_id = None
     if type(event_id) is str and event_id:
+        try:
+            event_row = r.store.one(
+                "SELECT generation_id FROM events WHERE id=?", (event_id,)
+            )
+            if event_row:
+                event_generation_id = event_row.get("generation_id")
+        except Exception:
+            event_generation_id = None
         try:
             c4_row = r.store.one(
                 "SELECT metrics FROM telemetry WHERE event_id=? AND kind='c4_offer_context_ready' "
@@ -268,6 +399,10 @@ def _latest_native_evidence(r):
     native_ids = (
         [_identifier(item.get("packet_id")) for item in native_offers]
         if native_ids_valid else []
+    )
+    native_role_by_id = (
+        {_identifier(item.get("packet_id")): item.get("role") for item in native_offers}
+        if native_ids_valid and len(set(native_ids)) == len(native_ids) else {}
     )
     raw_c4_ids = c4_metrics.get("selected_offer_ids")
     c4_ids_valid = (
@@ -347,10 +482,12 @@ def _latest_native_evidence(r):
     body_attempts = _body_offer_evidence(
         r.store,
         event_id,
+        event_generation_id=event_generation_id,
         c4_ids=c4_ids,
         c4_recorded=c4_recorded,
         c4_accepted=c4_accepted,
         template_ids=native_ids,
+        template_role_by_id=native_role_by_id,
         template_receipt_available=bool(receipt),
         template_submitted=submitted,
         synthetic=synthetic,
@@ -360,6 +497,22 @@ def _latest_native_evidence(r):
         synthetic_prefill_verified=synthetic_prefill_verified,
         synthetic_generation_completed=synthetic_generation_completed,
     )
+    selected_body_items = [
+        item for item in body_attempts
+        if item.get("delivered") and item.get("selected_by_c4") is True
+    ]
+    if (submitted and c4_recorded and c4_accepted and ids_match
+            and any(item.get("telemetry_truncated") for item in body_attempts)):
+        flow_status = prefix + "TEMPLATE_MATCHED_C4_BODY_TELEMETRY_TRUNCATED"
+    elif (submitted and c4_recorded and c4_accepted and ids_match and selected_body_items
+            and any(
+                item.get("template_role_matches") is not True
+                or item.get("offer_packet_verified") is not True
+                or item.get("source_bound") is not True
+                or item.get("source_count_matches") is not True
+                for item in selected_body_items
+            )):
+        flow_status = prefix + "TEMPLATE_MATCHED_C4_BODY_EVIDENCE_UNVERIFIED"
 
 
     return {
