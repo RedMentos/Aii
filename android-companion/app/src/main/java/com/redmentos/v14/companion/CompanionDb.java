@@ -85,11 +85,14 @@ final class CompanionDb extends SQLiteOpenHelper {
                     new String[]{Long.toString(nowMillis)})) {
                 while (c.moveToNext()) expired.add(c.getString(0));
             }
-            ContentValues values = new ContentValues();
-            values.put("status", "EXPIRED");
-            writable.update("actions", values,
-                    "status='PENDING_USER_APPROVAL' AND expires_at<=?",
-                    new String[]{Long.toString(nowMillis)});
+            for (String actionId : expired) {
+                ContentValues values = new ContentValues();
+                values.put("status", "EXPIRED");
+                redactTerminalOpenUrl(values, actionId);
+                writable.update("actions", values,
+                        "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                        new String[]{actionId, Long.toString(nowMillis)});
+            }
             writable.setTransactionSuccessful();
         } finally {
             writable.endTransaction();
@@ -104,6 +107,7 @@ final class CompanionDb extends SQLiteOpenHelper {
     synchronized boolean expire(String actionId, long nowMillis) {
         ContentValues values = new ContentValues();
         values.put("status", "EXPIRED");
+        redactTerminalOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at<=?",
                 new String[]{actionId, Long.toString(nowMillis)});
@@ -149,26 +153,43 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
-        redactCompletedOpenUrl(values, actionId);
+        redactTerminalOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=?", new String[]{actionId, expectedStatus});
         if (changed != 1) throw new IllegalStateException("action is no longer in expected state");
     }
 
-    private void redactCompletedOpenUrl(ContentValues values, String actionId) {
+    private void redactTerminalOpenUrl(ContentValues values, String actionId) {
         Action action = get(actionId);
-        if (action == null) throw new IllegalStateException("completed action disappeared");
+        if (action == null) return;
+        JSONObject request;
         try {
-            JSONObject request = new JSONObject(action.requestJson);
-            if (!"open_url".equals(request.optString("capability"))) return;
-            String host = Canonical.httpsHost(action.targetValue);
+            request = new JSONObject(action.requestJson);
+        } catch (Exception malformed) {
+            // The target column is a full URL only for open_url. If its JSON
+            // envelope is damaged, still erase the sensitive target on a
+            // terminal transition rather than preserving a query/path token.
+            if (action.targetValue == null || !action.targetValue.startsWith("https://")) return;
+            request = new JSONObject();
+        }
+        boolean openUrl = "open_url".equals(request.optString("capability"))
+                || (action.targetValue != null && action.targetValue.startsWith("https://"));
+        if (!openUrl) return;
+        String host = "[REDACTED]";
+        try {
+            host = Canonical.httpsHost(action.targetValue);
+        } catch (Exception invalidTarget) {
+            // Keep the privacy boundary even if a stored target no longer parses.
+        }
+        try {
+            request.put("capability", "open_url");
             request.put("args", new JSONObject().put("url_host", host));
-            // The v1 package_name column remains for on-device DB compatibility.
-            // Once a signed receipt is durable, the full URL is no longer needed.
+            // Keep the v1 package_name column for on-device DB compatibility.
+            // Terminal actions retain only a public host, never path/query/fragment.
             values.put("request_json", request.toString());
             values.put("package_name", host);
         } catch (Exception failure) {
-            throw new IllegalStateException("could not redact completed HTTPS target", failure);
+            throw new IllegalStateException("could not redact terminal HTTPS target", failure);
         }
     }
 
@@ -194,7 +215,7 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
-        redactCompletedOpenUrl(values, actionId);
+        redactTerminalOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=? AND receipt_json IS NULL",
                 new String[]{actionId, expectedStatus});
@@ -204,6 +225,7 @@ final class CompanionDb extends SQLiteOpenHelper {
     synchronized boolean cancel(String actionId) {
         ContentValues values = new ContentValues();
         values.put("status", "CANCELLED");
+        redactTerminalOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status='PENDING_USER_APPROVAL'", new String[]{actionId});
         return changed == 1;
