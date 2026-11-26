@@ -233,6 +233,8 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "llama_version": "b10964",
         "task_matrix_supported": True,
         "task_matrix_schema": "v14.native-receiver-task-matrix/1",
+        "kv_snapshot_supported": True,
+        "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
     }
     monkeypatch.setattr(
         native_receiver.subprocess, "run",
