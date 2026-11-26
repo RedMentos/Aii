@@ -27,6 +27,10 @@ C3_RESERVE_MARGIN = 1.35
 C3_RESERVE_PADDING_S = 1.0
 MIN_ROLE_SLICE_S = 2.0
 RECOVERY_FOCAL_RESERVE_S = 1.0
+FOCAL_RESERVE_MAX_S = 6.0
+FOCAL_RESERVE_MAX_FRACTION = .25
+FOCAL_RESERVE_MARGIN = 1.25
+FOCAL_RESERVE_PADDING_S = .5
 
 
 def register_store_telemetry():
@@ -111,6 +115,40 @@ def recent_c3_success_durations(rows):
     return durations
 
 
+def recent_focal_success_durations(rows):
+    """Recent successful C4 focal-loop durations from content-free stage marks."""
+    durations = []
+    for row in list(rows)[:MAX_RECENT]:
+        if not isinstance(row, dict) or row.get("status") != "FINAL":
+            continue
+        data = _metadata(row)
+        native = data.get("runner") if isinstance(data, dict) else None
+        if (not isinstance(native, dict)
+                or native.get("role") != "C3_LANGUAGE"
+                or type(native.get("generated_tokens")) is not int
+                or native.get("generated_tokens") <= 0):
+            continue
+        marks = data.get("stage_marks_s")
+        if type(marks) is not dict:
+            continue
+        start = marks.get("focal_loop")
+        end = marks.get("output_prepare")
+        if type(start) not in (int, float) or type(end) not in (int, float):
+            continue
+        try:
+            if not math.isfinite(start) or not math.isfinite(end):
+                continue
+            duration = float(end - start)
+        except (OverflowError, ValueError):
+            continue
+        if not math.isfinite(duration) or duration <= 0 or duration > FOCAL_RESERVE_MAX_S * 4:
+            continue
+        durations.append(duration)
+        if len(durations) == 3:
+            break
+    return durations
+
+
 def recent_proof(store):
     """Only bounded device-local metadata. Never selects raw user/model text."""
     try:
@@ -138,6 +176,15 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     bounded = list(recent)[:MAX_RECENT]
     failures = sum(zero_token_prefill_failure(row) for row in bounded)
     durations = recent_c3_success_durations(bounded)
+    focal_durations = recent_focal_success_durations(bounded)
+    if focal_durations:
+        focal_estimate = max(
+            RECOVERY_FOCAL_RESERVE_S,
+            max(focal_durations) * FOCAL_RESERVE_MARGIN + FOCAL_RESERVE_PADDING_S)
+        focal_source = "RECENT_FOCAL_MAX"
+    else:
+        focal_estimate = RECOVERY_FOCAL_RESERVE_S
+        focal_source = "FALLBACK_DEFAULT"
     if durations:
         reserve_estimate = max(C3_RESERVE_MIN_S,
                                max(durations) * C3_RESERVE_MARGIN + C3_RESERVE_PADDING_S)
@@ -170,13 +217,24 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         and failures >= 2 and recent_good < 2
     )
     reserve_capped = False
+    focal_reserve = 0.0
+    focal_reserve_capped = False
     if recover:
+        # Reserve a measured C4 focal-loop window while preserving both body slices
+        # and the minimum C3 output window.
+        maximum_focal_reserve = min(
+            FOCAL_RESERVE_MAX_S,
+            total * FOCAL_RESERVE_MAX_FRACTION,
+            max(0.0, total - (C3_RESERVE_MIN_S + 2 * MIN_ROLE_SLICE_S)),
+        )
+        focal_reserve = min(maximum_focal_reserve, focal_estimate)
+        focal_reserve_capped = focal_reserve + 1e-9 < focal_estimate
         # Use recent measured C3 completion time, not a fixed 26-second reserve.
         # Preserve a minimum attempt for each body plus the focal-selection slice.
         maximum_reserve = min(
             C3_RESERVE_MAX_S,
             total * C3_RESERVE_MAX_FRACTION,
-            max(0.0, total - (2 * MIN_ROLE_SLICE_S + RECOVERY_FOCAL_RESERVE_S)),
+            max(0.0, total - (2 * MIN_ROLE_SLICE_S + focal_reserve)),
         )
         requested_reserve = max(C3_RESERVE_MIN_S, reserve_estimate)
         reserve = min(maximum_reserve, requested_reserve)
@@ -192,8 +250,7 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     # B1/B2 receive only the earlier body window. Normal turns keep the old
     # shared observer/focal envelope unchanged.
     preanswer_end=max(start,allotted)
-    focal_reserve=(min(RECOVERY_FOCAL_RESERVE_S,max(0.,preanswer_end-start))
-                   if recover else 0.)
+    focal_reserve=(min(focal_reserve,max(0.,preanswer_end-start)) if recover else 0.)
     body_end=max(start,preanswer_end-focal_reserve)
     # Per-role callers may further cap the body window. Do not subtract the
     # focal reserve twice when Cognition checks an already allocated role slice.
@@ -206,6 +263,10 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         "preanswer_end_monotonic": preanswer_end,
         "body_preanswer_end_monotonic": body_end,
         "focal_reserved_seconds": round(focal_reserve,3),
+        "focal_reserve_estimate_seconds": round(focal_estimate,3),
+        "focal_reserve_source": focal_source,
+        "focal_reserve_capped": focal_reserve_capped,
+        "recent_focal_successes": len(focal_durations),
         "preanswer_seconds_available": round(remaining,3),
         "c3_reserved_seconds": round(reserve,3),
         "c3_reserve_estimate_seconds": round(reserve_estimate,3),
