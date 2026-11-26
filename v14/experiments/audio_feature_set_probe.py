@@ -179,9 +179,9 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
                          min_per_goal: int = 8) -> dict:
     """Measure feature-set/action information with within-goal time shuffles.
 
-    Outcomes are permuted within each goal, preserving goal/action marginals
-    while breaking the feature-to-outcome pairing. The result is diagnostic
-    only; no attention admission, training, persistence, or action follows.
+    Also returns a session-local, coarse-history rIMI proxy. Outcomes are
+    permuted within each goal, preserving goal/action marginals while breaking
+    feature-to-outcome pairing. All results are diagnostic only.
     """
     if type(seed) is not int or isinstance(seed, bool):
         raise ValueError("seed must be an integer")
@@ -269,6 +269,231 @@ def evaluate_feature_set(records: Iterable[dict], *, seed: int = 17,
         "goal_only_action_mi_bits": mutual_information_bits(goals, actions),
         "feature_self_predictive_mi_bits": self_mi,
         "trained_jepa": False,
+        "runtime_integrated": False,
+        "attention_policy_changed": False,
+        "learning_authority": 0,
+        "action_authority": 0,
+        "persisted": False,
+        "relative_incremental_information": evaluate_relative_incremental_information(
+            rows, seed=seed, permutations=permutations,
+        ),
+    }
+
+
+def _conditional_entropy_bits(values: Iterable[Any], conditions: Iterable[Any]) -> float:
+    """Empirical H(Y|Z) for discrete values, in bits."""
+    targets, cond = list(values), list(conditions)
+    if not targets or len(targets) != len(cond):
+        raise ValueError("conditional-entropy inputs must be non-empty and equally sized")
+    groups: dict[Any, list[Any]] = defaultdict(list)
+    for target, condition in zip(targets, cond):
+        groups[condition].append(target)
+    total = 0.0
+    n = len(targets)
+    for group in groups.values():
+        counts = Counter(group)
+        size = len(group)
+        entropy = -sum((count / size) * math.log2(count / size) for count in counts.values())
+        total += size / n * entropy
+    return total
+
+
+def evaluate_relative_incremental_information(
+    records: Iterable[dict], *, history_window_ms: int = 5000, seed: int = 17,
+    permutations: int = 64, min_records: int = 32, min_per_session: int = 8,
+) -> dict:
+    """Return a discrete, session-local rIMI *proxy*, not the paper's estimator.
+
+    Current FINAL A4/A5 feature tuples are tested for incremental information
+    about a later, separately sourced action outcome, conditioned on the goal
+    and a coarse summary of prior feature windows from the same session. The
+    history summary contains the last feature tuple plus a capped prior-window
+    count; only prior windows that ended before the current window are used.
+
+    This intentionally differs from Heintz et al.'s full rIMI method: it uses
+    discrete plug-in MI and a coarse feature-history state, not Gaussian-copula
+    estimates over the previous five seconds of prediction scores. It is a
+    synthetic diagnostic, not human auditory-attention decoding, a runtime
+    attention signal, JEPA learning, or decision authority.
+    """
+    rows = list(records)
+    if type(history_window_ms) is not int or isinstance(history_window_ms, bool) or not 1 <= history_window_ms <= 60000:
+        raise ValueError("history window must be an integer in [1, 60000] ms")
+    if type(seed) is not int or isinstance(seed, bool):
+        raise ValueError("seed must be an integer")
+    if type(permutations) is not int or isinstance(permutations, bool) or not 1 <= permutations <= 10000:
+        raise ValueError("permutations must be an integer in [1, 10000]")
+    if type(min_records) is not int or isinstance(min_records, bool) or min_records < 2:
+        raise ValueError("minimum record count is invalid")
+    if type(min_per_session) is not int or isinstance(min_per_session, bool) or min_per_session < 2:
+        raise ValueError("minimum session count is invalid")
+    if len(rows) < min_records:
+        raise ValueError("insufficient source-bound records")
+
+    session_ids = []
+    for record in rows:
+        session_id = record.get("session_id") if isinstance(record, dict) else None
+        if not isinstance(session_id, str) or not session_id.strip():
+            raise ValueError("session identity is missing")
+        session_ids.append(session_id)
+
+    parsed = [_validate_record(record) for record in rows]
+    generations = {record["packet"]["brain_generation_id"] for record in rows}
+    if len(generations) != 1:
+        raise ValueError("audio packets cross brain generations")
+    feature_sets = [
+        tuple(item[key] for key in ("pitch_band", "prosody_band", "activity_hint"))
+        for item, _goal, _action, _start in parsed
+    ]
+    goals = [item[1] for item in parsed]
+    actions = [item[2] for item in parsed]
+    starts = [item[3] for item in parsed]
+    ends = [record["packet"]["segments"][0]["end_ms"] for record in rows]
+
+    source_hashes = [record["packet"]["source_ref"]["sha256"] for record in rows]
+    event_ids = [record["packet"]["event_id"] for record in rows]
+    action_ids = [record["outcome"]["action_id"] for record in rows]
+    outcome_hashes = [record["outcome"]["source_ref"]["sha256"] for record in rows]
+    if (
+        len(set(source_hashes)) != len(rows)
+        or len(set(event_ids)) != len(rows)
+        or len(set(action_ids)) != len(rows)
+        or len(set(outcome_hashes)) != len(rows)
+    ):
+        raise ValueError("duplicate source/event/action binding in cohort")
+
+    session_rows: dict[str, list[int]] = defaultdict(list)
+    for index, session_id in enumerate(session_ids):
+        session_rows[session_id].append(index)
+    if len(session_rows) < 2:
+        raise ValueError("at least two sessions are required")
+
+    for indices in session_rows.values():
+        if len(indices) < min_per_session:
+            raise ValueError("session cohort is too small")
+        session_starts = [starts[index] for index in indices]
+        if any(right <= left for left, right in zip(session_starts, session_starts[1:])):
+            raise ValueError("session audio windows must advance monotonically")
+        goal_counts = Counter(goals[index] for index in indices)
+        if len(goal_counts) < 2 or min(goal_counts.values()) < 2:
+            raise ValueError("each session must include multiple goals with repeated outcomes")
+
+    histories: list[tuple] = [("EMPTY",)] * len(rows)
+    nonempty_history = 0
+    max_history_depth = 0
+    for indices in session_rows.values():
+        prior_indices: list[int] = []
+        for index in indices:
+            eligible = [
+                previous for previous in prior_indices
+                if 0 <= starts[index] - ends[previous] <= history_window_ms
+            ]
+            if eligible:
+                depth = min(len(eligible), 5)
+                histories[index] = ("HISTORY", depth, feature_sets[eligible[-1]])
+                nonempty_history += 1
+                max_history_depth = max(max_history_depth, depth)
+            prior_indices.append(index)
+
+    conditions = [
+        (session_ids[index], goals[index], histories[index])
+        for index in range(len(rows))
+    ]
+    incremental_mi = conditional_mutual_information_bits(feature_sets, actions, conditions)
+    remaining_entropy = _conditional_entropy_bits(actions, conditions)
+    rimi_proxy = (
+        None if remaining_entropy <= 1e-12
+        else min(1.0, max(0.0, incremental_mi / remaining_entropy))
+    )
+    conditional_self_dependence = conditional_mutual_information_bits(
+        feature_sets, histories,
+        [
+            (session_ids[index], goals[index], actions[index])
+            for index in range(len(rows))
+        ],
+    )
+    no_history_cmi = conditional_mutual_information_bits(
+        feature_sets, actions,
+        [
+            (session_ids[index], goals[index])
+            for index in range(len(rows))
+        ],
+    )
+
+    per_session = []
+    for ordinal, indices in enumerate(session_rows.values()):
+        session_features = [feature_sets[index] for index in indices]
+        session_actions = [actions[index] for index in indices]
+        session_conditions = [
+            (goals[index], histories[index]) for index in indices
+        ]
+        session_incremental = conditional_mutual_information_bits(
+            session_features, session_actions, session_conditions
+        )
+        session_entropy = _conditional_entropy_bits(session_actions, session_conditions)
+        per_session.append({
+            "session_index": ordinal,
+            "record_count": len(indices),
+            "incremental_mi_bits": session_incremental,
+            "remaining_entropy_bits": session_entropy,
+            "rimi_proxy": (
+                None if session_entropy <= 1e-12
+                else min(1.0, max(0.0, session_incremental / session_entropy))
+            ),
+        })
+
+    permutation_groups: dict[tuple[str, str], list[int]] = defaultdict(list)
+    for index, key in enumerate(zip(session_ids, goals)):
+        permutation_groups[key].append(index)
+    rng = random.Random(seed)
+    null_scores = []
+    for _ in range(permutations):
+        shuffled_actions = list(actions)
+        for indices in permutation_groups.values():
+            labels = [actions[index] for index in indices]
+            rng.shuffle(labels)
+            for index, label in zip(indices, labels):
+                shuffled_actions[index] = label
+        permuted_mi = conditional_mutual_information_bits(
+            feature_sets, shuffled_actions, conditions
+        )
+        permuted_entropy = _conditional_entropy_bits(shuffled_actions, conditions)
+        if permuted_entropy > 1e-12:
+            null_scores.append(min(1.0, max(0.0, permuted_mi / permuted_entropy)))
+
+    ordered_null = sorted(null_scores)
+    permutation_p = (
+        None if rimi_proxy is None or not null_scores
+        else (1 + sum(score >= rimi_proxy for score in null_scores)) / (len(null_scores) + 1)
+    )
+    p95_index = min(len(ordered_null) - 1, math.ceil(0.95 * len(ordered_null)) - 1)
+    return {
+        "schema": "v14.audio-relative-incremental-information-proxy/1",
+        "estimator": "DISCRETE_PLUGIN_COARSE_HISTORY_PROXY",
+        "paper_exact_rimi": False,
+        "evidence_class": "SYNTHETIC_FIXTURE_ONLY",
+        "record_count": len(rows),
+        "session_count": len(session_rows),
+        "minimum_records_per_session": min(len(indices) for indices in session_rows.values()),
+        "history_window_ms": history_window_ms,
+        "history_state": "LAST_FEATURE_SET_PLUS_CAPPED_PRIOR_WINDOW_COUNT",
+        "history_crosses_sessions": False,
+        "session_history_reset_verified": all(
+            histories[indices[0]] == ("EMPTY",) for indices in session_rows.values()
+        ),
+        "history_nonempty_fraction": nonempty_history / len(rows),
+        "history_depth_max": max_history_depth,
+        "relative_incremental_information_bits": incremental_mi,
+        "remaining_action_entropy_bits": remaining_entropy,
+        "rimi_proxy": rimi_proxy,
+        "conditional_self_dependence_bits": conditional_self_dependence,
+        "no_history_goal_conditioned_cmi_bits": no_history_cmi,
+        "per_session": per_session,
+        "permutation_strata": "SESSION_X_GOAL",
+        "permutation_p_value": permutation_p,
+        "permutation_p95_rimi_proxy": (
+            ordered_null[p95_index] if ordered_null else None
+        ),
         "runtime_integrated": False,
         "attention_policy_changed": False,
         "learning_authority": 0,
