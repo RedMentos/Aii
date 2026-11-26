@@ -2267,3 +2267,14 @@ The current V14 proxy uses acoustic cue tuples and a later action outcome, so it
 Current code/test head: \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`. The proxy output now explicitly labels the acoustic-feature → later-action scope and no longer calls its feature-history term CSD. Fresh exact feature-set CI is pending. The previous \`c0d68f\` head passed 14/14 on Python 3.13/3.14; that result is historical and does not yet validate \`ef61d48\`. R-166 full text has now been read; a faithful rIMI requires real A4 prediction scores and attended-state labels plus ≥5-minute temporal separation/session holdout and switch-focused tests. No such normal-turn consumer currently exists.
 
 **Nutzeraktion: keine Aktion nötig.** No device, model, weight, permission, updater or user-data action was performed.
+
+
+### Corrected Run 44 exact-CI status (head \`ef61d48\`)
+
+- A4/A5 feature-set: **14/14 PASS** on Python 3.13/3.14 (45781255306), including RAW EAR extractor → A5 PerceptPacket.
+- RAW EAR comparison: **9/9 PASS** on Python 3.13/3.14 (45781255440).
+- RuntimeDeploy offline integrity: **PASS** on Python 3.11/3.14 (45781255519); not a deployment.
+- Shared staged/integrated: **FAIL** (45781255404), staged 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated 1 failed. Main cascade: Core recovery pin expects composer SHA \`831080...\`, current Perception builder is \`f9a0ed...\`. Two additional migration assertions return PARTIAL instead of UPDATED. Core/Integrator owns these paths.
+- Full local Aii checkout/pytest/native build remains NOT_RUN; local scratch-equivalent compile + six assertions PASS. Device remains REDMI_UNVERIFIED, no fresh owner-read receipt; NOT_RELEASED.
+
+**Next:** Core/Integrator fixes and rebinds the recovery → stage → RuntimeDeploy composer pin chain and investigates the two PARTIAL migration assertions, then reruns staged/integrated tests. Perception keeps the proxy diagnostic-only; a faithful rIMI still needs real A4 prediction scores, trusted attended-state labels, ≥5-minute temporal buffer, separate sessions and switch-focused tests.
