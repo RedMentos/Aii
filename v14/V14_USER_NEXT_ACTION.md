@@ -2241,3 +2241,15 @@ The native receiver task-utility result now separates system gain against NO_MES
 - No real GGUF, Android/Termux, Redmi, updater or deployment test was performed. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED. No model, weight, permission, app or user data was changed.
 
 **No user action required.** The next step is internal CI/rebase work; any future native GGUF run must use an already-present model and separate explicit local approval.
+
+
+
+## Run 47 CI result — 2026-11-26
+
+Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91 completed:
+- Focused receiver tests on Python 3.13 and 3.14: 83 passed / 1 failed in each run. The three new information-use audit tests passed. The one failure is stage composition blocked by Core-owned observer fairness pin mismatch for v13/cognition.py.
+- Shared staged/integrated regression: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; same Core-owned source-pin mismatch, plus two migration assertions report PARTIAL instead of UPDATED.
+- Pinned native Linux API build PASS; Android arm64 cross-compile PASS only.
+- RuntimeDeploy offline integrity PASS; public privacy scan CLEAN.
+
+This is not a failure in the new audit tests and not evidence of a Redmi deployment. Core must repair its own source pin chain and rebase #2525. No user action is required now.
