@@ -522,10 +522,10 @@
       ]
     }
   ],
-  "current_redmi_status": "Latest available consented private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled and pipeline/dashboard/runtime reported UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. Last recorded C3 turn: 7 tokens, TTFT 2.046 s, 358 prompt tokens; one historical turn only. B1/B2 native failures and zero valid offers remain in the five-turn metadata; native latent exchange and C3 semantic use are false. Read-only relay requests PIPELINE_STATUS #915, DIAGNOSTICS #916 and HEALTH #917 were created 2026-11-25T15:25:01Z; no receipt at last poll. No current device proof; REDMI_UNVERIFIED.",
+  "current_redmi_status": "Latest available consented private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled and pipeline/dashboard/runtime reported UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. Last recorded C3 turn: 7 tokens, TTFT 2.046 s, 358 prompt tokens; one historical turn only. B1/B2 native failures and zero valid offers remain in the five-turn metadata; native latent exchange and C3 semantic use are false. Read-only relay requests PIPELINE_STATUS #915, DIAGNOSTICS #916 and HEALTH #917 were created 2026-11-25T15:25:01Z; no receipt at last poll. No current device proof; REDMI_UNVERIFIED. Fresh read-only owner requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS were issued 2026-11-26T00:56Z; no device comment/receipt was present at first poll. NO_LIVE_RECEIPT; the 2026-11-24 snapshot remains the last available evidence. No LOG_PAGE request and no device action.",
   "last_code_release_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
   "latest_integrated_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-  "latest_integrated_head_verified_at": "2026-11-24T09:28:11Z",
+  "latest_integrated_head_verified_at": "2026-11-23T16:24:49Z",
   "release_gate_status": "Exact release-development SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 has 22/22 observed GitHub Actions workflow runs SUCCESS and private V13OBS #115 confirms that exact SHA installed with auto-update enabled. Functional acceptance remains OPEN: AI runtime STOPPED_BY_USER, autostart false, model process stopped, B1/B2 zero valid offers and native latent exchange unproven. No fresh #915–917 receipt; REDMI_UNVERIFIED for current runtime behavior.",
   "phone_receipt": {
     "state": "LAST_AVAILABLE_PRIVATE_V13OBS_8D932_RUNTIME_STOPPED_READS_PENDING",
@@ -1545,5 +1545,16 @@
     ],
     "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately.",
     "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
+  },
+  "latest_owner_read_attempt": {
+    "requested_at": "2026-11-26T00:56:08Z",
+    "commands": [
+      "HEALTH",
+      "PIPELINE_STATUS",
+      "DIAGNOSTICS"
+    ],
+    "status": "NO_LIVE_RECEIPT_AT_FIRST_POLL",
+    "source": "private owner-read relay",
+    "effect": "read-only; no device action"
   }
 }
