@@ -61,3 +61,14 @@ No external code, checkpoints, datasets or model weights were reused.
 3. Core wires a normal-turn caller holding a revocable AudioConsentLease through A4 admission and the complete C3 generator.
 4. Perception adds history-aware rIMI, source/session-disjoint held-out outcomes and drift/shuffle controls before any attention-policy proposal.
 5. Only after a real Android provider, OS consent, revocation and zeroization are independently proven may microphone capture be tested. No model swap or weight learning is implied.
+
+
+## Run 43 exact-CI completion addendum (2026-11-26)
+- Tested code/test/workflow head: `fe7bb53674171fdececaf53c81a0c93f47256e48`. Later commits on this branch are documentation-only.
+- First feature-set workflow attempt failed before tests because the matrix expression included an escape character. Fixed in `fe7bb536`.
+- Exact feature-set workflow [45773907611](https://github.com/RedMentos/Aii/actions/runs/45773907611): PASS Python 3.13 and 3.14, 10/10 tests each; the actual repository A4 `extract_voice_cues` → A5 `PerceptPacket` test ran and passed on both.
+- RAW EAR comparison [45773907533](https://github.com/RedMentos/Aii/actions/runs/45773907533): PASS Python 3.13 and 3.14.
+- RuntimeDeploy integrity offline checks [45773907582](https://github.com/RedMentos/Aii/actions/runs/45773907582): PASS Python 3.11 and 3.14; not a deployment.
+- Shared staged/integrated [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687): FAIL. Core recovery expects audio builder blob `831080bceec90711bd42e0fa4eba47c669975c98`; exact current Perception blob is `f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0`. Staged job: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests passed; failures cascade from the pin mismatch, including migration tests returning PARTIAL. Integrated regression fails at the same pin. Core PR #2525 owns this repair; no Core-owned file was changed.
+- Core #2529 has a bounded greeting reflex with CI success; this is not full normal chat or nontrivial B1/B2 → C4 → C3 completion.
+- Status remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No device, mic, model, weight, permission or data action.
