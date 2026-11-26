@@ -32,13 +32,47 @@ _GREETINGS = {
     "guten abend": ("de", "Guten Abend."),
 }
 
+_MULTIMODAL_FIELDS = (
+    "audio_consent_lease", "raw_audio", "image_ref", "video_ref",
+    "_audio_window", "audio_window", "audio_source_ref",
+    "image_source_ref", "video_source_ref", "raw_ear", "raw_eye",
+)
+
+
+def _event_is_exact_text_source(text: str, encoded: bytes, event: object) -> bool:
+    if type(event) is not dict:
+        return False
+    source_ref = event.get("source_ref")
+    if type(source_ref) is not dict or source_ref.get("modality") != "text":
+        return False
+    source_id = source_ref.get("source_id")
+    source_hash = source_ref.get("sha256")
+    char_start = source_ref.get("char_start")
+    char_end = source_ref.get("char_end")
+    if (type(source_id) is not str or not source_id
+            or type(source_hash) is not str
+            or not re.fullmatch(r"[0-9a-f]{64}", source_hash)
+            or type(char_start) is not int or char_start != 0
+            or type(char_end) is not int or char_end != len(text)
+            or source_hash != hashlib.sha256(encoded).hexdigest()):
+        return False
+
+    if any(event.get(key) is not None for key in _MULTIMODAL_FIELDS):
+        return False
+    if "modalities" in event:
+        modalities = event["modalities"]
+        if (not isinstance(modalities, (list, tuple, set)) or not modalities
+                or any(value != "text" for value in modalities)):
+            return False
+    return True
+
 
 def match(text: str, event: dict | None = None) -> dict | None:
     """Return a minimal deterministic acknowledgement only for an exact greeting.
 
-    A caller-provided event must bind the input to a text SourceRef. Audio,
-    image, video, mixed-modality and longer conversational messages fall
-    through to the normal multi-organ path.
+    A caller-provided event must bind the entire input to a matching text
+    SourceRef. Audio, image, video, mixed-modality, malformed and longer
+    conversational messages fall through to the normal multi-organ path.
     """
     if type(text) is not str or not text or len(text) > MAX_INPUT_CHARS:
         return None
@@ -49,19 +83,8 @@ def match(text: str, event: dict | None = None) -> dict | None:
     if len(encoded) > MAX_INPUT_BYTES or any(ord(ch) < 32 for ch in text):
         return None
 
-    if event is not None:
-        if type(event) is not dict:
-            return None
-        source_ref = event.get("source_ref")
-        if type(source_ref) is not dict or source_ref.get("modality") != "text":
-            return None
-        if any(event.get(key) is not None for key in (
-            "audio_consent_lease", "raw_audio", "image_ref", "video_ref",
-        )):
-            return None
-        modalities = event.get("modalities")
-        if isinstance(modalities, (list, tuple, set)) and any(x != "text" for x in modalities):
-            return None
+    if event is not None and not _event_is_exact_text_source(text, encoded, event):
+        return None
 
     normalized = unicodedata.normalize("NFKC", text).casefold().strip()
     normalized = re.sub(r"[.!]+$", "", normalized).strip()
