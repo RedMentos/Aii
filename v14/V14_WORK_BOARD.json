@@ -1447,7 +1447,7 @@
     "base_pr": 2519,
     "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
     "code_test_sha": "1417250fb28c4e30c5c4e0d8150e673248ad10a8",
-    "head_sha": "1417250fb28c4e30c5c4e0d8150e673248ad10a8",
+    "head_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
     "implementation_commits": [
       "8d960c3ed21cd245afa24e7413392961d0865ae7",
       "6c7774775a68443c25265491aca4e0ebc9d5b429",
@@ -1494,12 +1494,12 @@
       "last_observed_base_sha": "ee27e03c89f69cf049e60b622c5be068a4b0cf2d",
       "status": "DRAFT_STALE_BASE_REBASE_REQUIRED_MERGEABLE_FALSE",
       "normal_turn": "NOT_CONNECTED",
-      "next_action": "After exact #2524 CI, Core must rebase #2525 onto 1417250fb28c4e30c5c4e0d8150e673248ad10a8, refresh exact observer/recovery/source pins, and rerun staged/integrated checks."
+      "next_action": "After exact #2524 CI, Core rebases #2525 onto the live #2524 branch ref (code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; docs/board commits follow on the same branch), refreshes exact observer/recovery/source pins and reruns staged/integrated checks."
     },
     "device": "REDMI_UNVERIFIED; no fresh authenticated receipt or device action. Historical V13OBS #115 (2026-11-24) reported auto-update enabled at 8d93236 but AI STOPPED_BY_USER and model process STOPPED. Current updater state is not re-verified; no UPDATE_REQUEST or deployment.",
     "release": "NOT_RELEASED; no deployment",
     "research": "R-169 full-text review of arXiv:2611.12062v1 (2026-11-09, preprint, paper CC BY 4.0): hybrid cache handoff needs object-specific token-wise K/V/MLA maps and separate recurrent-state copy/correction or target-recurrence replay. 16–48B GPU results do not generalize to LFM2/Android; translator code/weights are internal, not public OSS.",
-    "next_action": "Wait for exact #2524 native/staged/RuntimeDeploy workflows. If Perception tests and pinned build pass, Core rebases #2525 onto the exact parent head and refreshes pins. Only then, with separate explicit approval, run the diagnostic on an already-present LFM2 GGUF (no download/swap), measuring state bytes, capture/restore time, RSS and logit fidelity. Follow with different-weight transfer and zero/shuffle/wrong-donor controls. P0 #1904 remains OPEN; no user action needed for current CI; B3 OFF.",
+    "next_action": "Wait for exact #2524 native/staged/RuntimeDeploy workflows. If Perception tests and pinned build pass, Core rebases #2525 onto the live parent PR branch and refreshes exact pins. Only then, with separate explicit approval, run on an already-present LFM2 GGUF (no download/swap), measuring state bytes, capture/restore time, RSS and logit fidelity. Then test different-weight transfer with zero/shuffle/wrong-donor controls. P0 #1904 remains OPEN; no user action needed for current CI; B3 OFF.",
     "parallel_perception_prs": {
       "2527_raw_ear_temporal_chronology": {
         "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
@@ -1526,7 +1526,25 @@
       "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; Run 48 is diagnostic-only and does not close this gate.",
       "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
       "release_or_redmi_proof": false
-    }
+    },
+    "docs_head_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+    "handoff_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+    "branch_head_before_board_checkpoint_update": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+    "docs_commits": [
+      "0418fd596cb154380a0a036cd3ea1a7eb42a2782",
+      "27b41f8a38c14c38c87d54c4aed0cf60e0a78229",
+      "75bdb1ab10e495d420427b837272f443df57ae4d",
+      "c251960922c2f472da71de11289fee7eb46e7d64",
+      "82d79103af7aa80d1ec29b688ec2f3ecca78acc8",
+      "157101de663d34aa102c1750944654dca58ad30e",
+      "c34184e544b55ecc96b5505d036f118334e6c3a7",
+      "684ac3e91f943245ae3742be1779343c9d4df5d0",
+      "b83bb5f98a7bf4467f25811a83129ed0bbc17037",
+      "a75002c6370019383fb84f2e2240c8392ba6e24f",
+      "17e27c043cd2d04b80c17de4c49f69face78bae2",
+      "9e985a030f28757b9014c24060868dbd9421bccf",
+      "de50b857525496dfdc9c9f4e4846110b08abd8ef"
+    ]
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T16:46:45Z",
@@ -1932,7 +1950,7 @@
       "base_pr": 2519,
       "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
       "code_test_sha": "1417250fb28c4e30c5c4e0d8150e673248ad10a8",
-      "head_sha": "1417250fb28c4e30c5c4e0d8150e673248ad10a8",
+      "head_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
       "implementation_commits": [
         "8d960c3ed21cd245afa24e7413392961d0865ae7",
         "6c7774775a68443c25265491aca4e0ebc9d5b429",
@@ -1979,12 +1997,12 @@
         "last_observed_base_sha": "ee27e03c89f69cf049e60b622c5be068a4b0cf2d",
         "status": "DRAFT_STALE_BASE_REBASE_REQUIRED_MERGEABLE_FALSE",
         "normal_turn": "NOT_CONNECTED",
-        "next_action": "After exact #2524 CI, Core must rebase #2525 onto 1417250fb28c4e30c5c4e0d8150e673248ad10a8, refresh exact observer/recovery/source pins, and rerun staged/integrated checks."
+        "next_action": "After exact #2524 CI, Core rebases #2525 onto the live #2524 branch ref (code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; docs/board commits follow on the same branch), refreshes exact observer/recovery/source pins and reruns staged/integrated checks."
       },
       "device": "REDMI_UNVERIFIED; no fresh authenticated receipt or device action. Historical V13OBS #115 (2026-11-24) reported auto-update enabled at 8d93236 but AI STOPPED_BY_USER and model process STOPPED. Current updater state is not re-verified; no UPDATE_REQUEST or deployment.",
       "release": "NOT_RELEASED; no deployment",
       "research": "R-169 full-text review of arXiv:2611.12062v1 (2026-11-09, preprint, paper CC BY 4.0): hybrid cache handoff needs object-specific token-wise K/V/MLA maps and separate recurrent-state copy/correction or target-recurrence replay. 16–48B GPU results do not generalize to LFM2/Android; translator code/weights are internal, not public OSS.",
-      "next_action": "Wait for exact #2524 native/staged/RuntimeDeploy workflows. If Perception tests and pinned build pass, Core rebases #2525 onto the exact parent head and refreshes pins. Only then, with separate explicit approval, run the diagnostic on an already-present LFM2 GGUF (no download/swap), measuring state bytes, capture/restore time, RSS and logit fidelity. Follow with different-weight transfer and zero/shuffle/wrong-donor controls. P0 #1904 remains OPEN; no user action needed for current CI; B3 OFF.",
+      "next_action": "Wait for exact #2524 native/staged/RuntimeDeploy workflows. If Perception tests and pinned build pass, Core rebases #2525 onto the live parent PR branch and refreshes exact pins. Only then, with separate explicit approval, run on an already-present LFM2 GGUF (no download/swap), measuring state bytes, capture/restore time, RSS and logit fidelity. Then test different-weight transfer with zero/shuffle/wrong-donor controls. P0 #1904 remains OPEN; no user action needed for current CI; B3 OFF.",
       "parallel_perception_prs": {
         "2527_raw_ear_temporal_chronology": {
           "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
@@ -2011,7 +2029,25 @@
         "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; Run 48 is diagnostic-only and does not close this gate.",
         "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
         "release_or_redmi_proof": false
-      }
+      },
+      "docs_head_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+      "handoff_sha": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+      "branch_head_before_board_checkpoint_update": "de50b857525496dfdc9c9f4e4846110b08abd8ef",
+      "docs_commits": [
+        "0418fd596cb154380a0a036cd3ea1a7eb42a2782",
+        "27b41f8a38c14c38c87d54c4aed0cf60e0a78229",
+        "75bdb1ab10e495d420427b837272f443df57ae4d",
+        "c251960922c2f472da71de11289fee7eb46e7d64",
+        "82d79103af7aa80d1ec29b688ec2f3ecca78acc8",
+        "157101de663d34aa102c1750944654dca58ad30e",
+        "c34184e544b55ecc96b5505d036f118334e6c3a7",
+        "684ac3e91f943245ae3742be1779343c9d4df5d0",
+        "b83bb5f98a7bf4467f25811a83129ed0bbc17037",
+        "a75002c6370019383fb84f2e2240c8392ba6e24f",
+        "17e27c043cd2d04b80c17de4c49f69face78bae2",
+        "9e985a030f28757b9014c24060868dbd9421bccf",
+        "de50b857525496dfdc9c9f4e4846110b08abd8ef"
+      ]
     }
   ]
 }
