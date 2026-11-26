@@ -3,7 +3,11 @@ import struct
 
 import pytest
 
-from v13.native_receiver_utility import CONDITIONS, build_native_receiver_task_score_receipt
+from v13.native_receiver_utility import (
+    CONDITIONS,
+    NativeReceiverUtilityError,
+    build_native_receiver_task_score_receipt,
+)
 from v13.native_receiver_task_score import (
     MAX_TASK_SCORE_RECEIPTS,
     NativeReceiverTaskScoreError,
@@ -26,6 +30,82 @@ ADAPTER_SHA256 = "a" * 64
 def sha(value):
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
+
+
+
+def hybrid_state_roundtrip_for(base, overrides=None):
+    native = base["native"]
+    receiver = base["receiver"]
+    state = {
+        "schema": "v14.native-hybrid-state-roundtrip/1",
+        "status": "READ_ONLY_ROUNDTRIP",
+        "state_api": "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA",
+        "state_scope": "FULL_HYBRID_SEQUENCE",
+        "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
+        "source_sequence_id": 0,
+        "destination_sequence_id": 0,
+        "source_model_sha256": receiver["model_sha256"],
+        "destination_model_sha256": receiver["model_sha256"],
+        "source_model_revision": receiver["model_revision"],
+        "destination_model_revision": receiver["model_revision"],
+        "source_tokenizer_revision": receiver["tokenizer_revision"],
+        "destination_tokenizer_revision": receiver["tokenizer_revision"],
+        "source_llama_cpp_revision": native["llama_cpp_revision"],
+        "destination_llama_cpp_revision": native["llama_cpp_revision"],
+        "source_binary_sha256": native["binary_sha256"],
+        "destination_binary_sha256": native["binary_sha256"],
+        "source_context_sha256": base["context_sha256"],
+        "destination_context_sha256": base["context_sha256"],
+        "source_input_sha256": base["input_sha256"],
+        "continuation_token_ids_sha256": base["target_token_ids_sha256"],
+        "source_context_params_sha256": sha("native-context-params-r1"),
+        "destination_context_params_sha256": sha("native-context-params-r1"),
+        "state_bytes": 4096,
+        "get_size_bytes": 4096,
+        "get_data_bytes": 4096,
+        "set_data_bytes": 4096,
+        "state_sha256": sha("hybrid-state-" + base["task_group_id"]),
+        "capture_duration_us": 100,
+        "restore_duration_us": 120,
+        "baseline_logits_sha256": sha("baseline-" + base["task_group_id"]),
+        "restored_logits_sha256": sha("restored-" + base["task_group_id"]),
+        "continuation_token_count": base["target_token_count"],
+        "top1_match_count": base["target_token_count"],
+        "max_abs_logit_diff": 0.0,
+        "rms_logit_diff": 0.0,
+        "roundtrip_passed": True,
+        "attention_kv_included": True,
+        "recurrent_shortconv_included": True,
+        "raw_state_exported": False,
+        "state_persisted": False,
+        "state_buffer_zeroized": True,
+        "installed_runtime_touched": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    state.update(overrides or {})
+    return state
+
+
+def attach_hybrid_state_roundtrip(base, overrides=None):
+    native = dict(base["native"])
+    native["hybrid_state_roundtrip"] = hybrid_state_roundtrip_for(base, overrides)
+    return build_native_receiver_task_score_receipt(
+        condition=base["condition"],
+        task_group_id=base["task_group_id"],
+        task_family=base["task_family"],
+        session_id=base["session_id"],
+        source_ref=base["source_ref"],
+        message_source_ref=base["message_source_ref"],
+        receiver=base["receiver"],
+        target_token_ids_sha256=base["target_token_ids_sha256"],
+        target_token_count=base["target_token_count"],
+        context_sha256=base["context_sha256"],
+        input_sha256=base["input_sha256"],
+        native_receipt=native,
+        adapter_sha256=base["adapter_sha256"],
+    )
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None):
@@ -113,21 +193,22 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
 
 def complete_group(runtime, task_index=0, session_id="session-A", task_family="ARITHMETIC",
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
-                   kv_geometry_override=None):
+                   kv_geometry_override=None, include_hybrid_state_roundtrip=False,
+                   hybrid_state_roundtrip_override=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
     for condition in CONDITIONS:
-        result = record_task_score_receipt(
-            runtime,
-            make_receipt(
-                task_index, session_id, task_family, condition,
-                source_ref_override=source_ref_override,
-                input_sha_override=input_overrides.get(condition),
-                kv_digest_override=kv_overrides.get(condition),
-                kv_geometry_override=kv_geometry_override,
-            ),
+        receipt = make_receipt(
+            task_index, session_id, task_family, condition,
+            source_ref_override=source_ref_override,
+            input_sha_override=input_overrides.get(condition),
+            kv_digest_override=kv_overrides.get(condition),
+            kv_geometry_override=kv_geometry_override,
         )
+        if include_hybrid_state_roundtrip and condition == "NO_MESSAGE":
+            receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
+        result = record_task_score_receipt(runtime, receipt)
     return result
 
 
@@ -332,3 +413,92 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
     assert status["receipt_count"] == 15
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 1
+
+
+def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        result = complete_group(
+            runtime, task_index, session_id, family,
+            include_hybrid_state_roundtrip=True,
+        )
+    effect = result["hybrid_state_roundtrip_effect"]
+    assert result["status"] == "FIXTURE_ONLY"
+    assert result["candidate_beats_all_controls"] is False
+    assert effect["status"] == "SAME_MODEL_ROUNDTRIP_PASS"
+    assert effect["task_group_count"] == 20
+    assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
+    assert effect["top1_match_rate"] == 1.0
+    assert effect["same_model_only"] is True
+    assert effect["cross_model_transfer_proven"] is False
+    assert effect["trained_latent_coupling_proven"] is False
+    assert effect["influence_on_utility_gate"] is False
+    assert effect["production_route"] is False
+    assert effect["training_authority"] == effect["native_receiver_authority"] == 0
+    assert effect["persisted"] is False
+
+
+def test_hybrid_state_roundtrip_failure_is_reported_without_passing_task_utility():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = complete_group(
+        runtime, include_hybrid_state_roundtrip=True,
+        hybrid_state_roundtrip_override={
+            "top1_match_count": 1,
+            "max_abs_logit_diff": 0.01,
+            "rms_logit_diff": 0.002,
+            "roundtrip_passed": False,
+        },
+    )
+    effect = result["hybrid_state_roundtrip_effect"]
+    assert result["status"] == "FIXTURE_ONLY"
+    assert result["candidate_beats_all_controls"] is False
+    assert effect["status"] == "SAME_MODEL_ROUNDTRIP_FAIL"
+    assert effect["all_roundtrips_passed"] is False
+    assert effect["top1_match_rate"] == 0.5
+    assert effect["influence_on_utility_gate"] is False
+
+
+def test_hybrid_state_roundtrip_partial_cohort_coverage_fails_closed():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    complete_group(runtime, task_index=0, include_hybrid_state_roundtrip=True)
+    with pytest.raises(
+        NativeReceiverTaskScoreError,
+        match="complete task-score cohort failed validation",
+    ) as error:
+        complete_group(
+            runtime, task_index=1, session_id="session-B",
+            task_family="ENTITY_RECALL",
+        )
+    assert "hybrid-state roundtrip coverage changed across task cohort" in str(error.value.__cause__)
+    status = task_score_status(runtime)
+    assert status["complete_task_group_count"] == 1
+    assert status["incomplete_task_group_count"] == 1
+
+
+def test_hybrid_state_roundtrip_is_only_allowed_on_no_message_condition():
+    base = make_receipt(0, "session-A", "ARITHMETIC", "EXACT_MESSAGE")
+    with pytest.raises(NativeReceiverUtilityError, match="only allowed on NO_MESSAGE"):
+        attach_hybrid_state_roundtrip(base)
+
+
+@pytest.mark.parametrize("overrides,match", [
+    ({"destination_model_sha256": "e" * 64}, "model SHA"),
+    ({"destination_context_params_sha256": "e" * 64}, "context parameters SHA"),
+    ({"set_data_bytes": 4095}, "pass flag"),
+    ({"raw_state_blob": "must-not-be-present"}, "fields mismatch"),
+])
+def test_hybrid_state_roundtrip_rejects_wrong_binding_or_raw_payload(overrides, match):
+    base = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")
+    with pytest.raises(NativeReceiverUtilityError, match=match):
+        attach_hybrid_state_roundtrip(base, overrides)
+
+
+def test_hybrid_state_roundtrip_absence_is_explicitly_unavailable():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = complete_group(runtime)
+    assert result["hybrid_state_roundtrip_effect"]["status"] == "UNAVAILABLE"
+    assert result["hybrid_state_roundtrip_effect"]["cross_model_transfer_proven"] is False
+    assert result["hybrid_state_roundtrip_effect"]["influence_on_utility_gate"] is False
