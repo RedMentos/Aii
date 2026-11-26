@@ -42,3 +42,14 @@
 4. Preserve current native/Redmi evidence distinctions and keep B3 production OFF until its separate utility gates pass.
 
 **User action required:** NONE. No manual Termux command, model swap or permission change is justified.
+
+
+## Run 29 follow-up — exact source-binding hardening (2026-11-26 07:10 UTC)
+
+- New commits: `cd2568ca7bbbc3d56823e2c73b65c5a82f3cccf9` (module) and `b8e68c9cb65c987da46004438b2404aff2e8650e` (tests), current branch head `b8e68c9cb65c987da46004438b2404aff2e8650e`.
+- `match()` now requires a caller-provided SourceRef to bind the complete input: full span, non-empty source ID, lowercase SHA-256 matching the exact UTF-8 text. Malformed modality containers and explicit audio/image/video fields fail closed.
+- LOCAL_LINUX CPython 3.13.5: remote Git blob hashes matched local files; py_compile PASS; exact matcher regressions 2/2 PASS. The old implementation's negative control fails as expected.
+- Exact CI 45773215054: Python 3.13 and 3.14 PASS; greeting Runtime/fallthrough 4/4, arithmetic 22/22, runner retention 9/9, py_compile PASS per version.
+- Shared staged/integrated 45773214858 remains FAIL on the strict Runtime source-pin chain: expected SHA-256 `1a0f36bc...`, current exact `v13/runtime.py` SHA-256 `6f4e023c...`; staged 33 failed / 253 passed / 10 skipped / 2 errors / 37 subtests, integrated 1 failed. No pin was weakened. Cross-owner rebind is required before integration.
+- PR #2529 remains DRAFT / NOT_RELEASED. REDMI_UNVERIFIED; no fresh authenticated receipt, device action, updater request or manual command.
+- Next: coordinate Core/Boss/JEPA bottom-up pin rebind, then rerun staged/integrated/migration and continue the B1/B2→C4→C3 P0 path.
