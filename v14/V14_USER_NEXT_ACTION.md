@@ -2253,3 +2253,11 @@ Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91 completed:
 - RuntimeDeploy offline integrity PASS; public privacy scan CLEAN.
 
 This is not a failure in the new audit tests and not evidence of a Redmi deployment. Core must repair its own source pin chain and rebase #2525. No user action is required now.
+
+
+
+## Private device observation and relay boundary — 2026-11-26
+
+Last available authenticated V13OBS issue #115 is historical, updated 2026-11-24 09:28:11Z. It reports auto-update enabled and dashboard/runtime UP_TO_DATE at release SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but the AI runtime state is STOPPED_BY_USER and the model process is STOPPED. Its last observed turn generated 7 C3 tokens in about 6.30 seconds (TTFT about 2.05 seconds); B1 and B2 each ended in TIME_BUDGET and had zero valid offers. Native probe status was SMOKE_PARTIAL. These values are historical observations, not current device measurements.
+
+Read-only owner-relay requests were created as private issues #978 (HEALTH) and #979 (PIPELINE_STATUS), with ten-minute expiry. At the last poll (2026-11-26 16:23:13Z), both were still open with no device comment: NO_LIVE_RECEIPT. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell command, restart or device action was sent. The current #2524 candidate is not merged/released, so no updater deployment was attempted. Current updater/device state remains UNVERIFIED; REDMI_UNVERIFIED.
