@@ -1616,3 +1616,18 @@ Audited exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c
 **Canon / product status:** B3 remains OFF. This is `WIRED_SYNTHETIC_DIAGNOSTIC` only, not trained latent coupling, generated-answer correctness, weight learning or production routing. P0 basic chat and B1/B2 valid-offer delivery remain OPEN. No real GGUF cohort, Redmi/Termux test, release or deployment. Last phone receipt remains historical 2026-11-24; current device behavior `REDMI_UNVERIFIED`.
 
 **Next executable owner/action:** Core rebase/stack #2523 onto exact #2524 head, refresh integrated source pins bottom-up and rerun the exact stage suite. This remains a manual local-TTY diagnostic route; a normal-turn consumer and the P0 user-chat path are still missing. After that, with separate explicit local operator approval, run >=20 held-out groups across >=2 sessions and >=2 task families on pinned real GGUF, including all eight controls, generated-answer correctness, retention, restart/rollback and RSS/TTFT. Keep B3 OFF until those gates pass.
+
+
+## Perception Run 46 — native LFM2 full-hybrid state receipt (2026-11-26)
+
+**Owner:** Research & Perception. **PR:** #2524. **Branch head at checkpoint:** 076a973eaad808b537c7f74337464d02cf41d633 (documentation checkpoint follows separately).
+
+**Implementation:** The native receiver matrix now exposes an opt-in --hybrid-state-roundtrip path for LFM2 only. It creates two fresh small contexts with identical model and context settings, prefills BOS, captures sequence 0 with llama_state_seq_get_size/get_data, rejects a truncated restore as a negative control, restores into the fresh context with set_data, teacher-forces the same 1–64 token continuation into both contexts and compares full next-token logits. The state buffer is bounded to 16 MiB, hashed and zeroized. The Python wrapper binds model/revision/tokenizer/binary/context/input/target hashes and attaches the validated receipt to NO_MESSAGE. The Perception Runtime bridge can opt in explicitly; default remains OFF.
+
+**Consumer and limits:** native_latent_receiver.py → native_hybrid_state.py validator → native_receiver_utility task-score aggregate → native_receiver_task_matrix_bridge. This is a same-model state restoration prerequisite, not a sender→receiver latent transfer. The Core TTY Runtime does not yet expose the flag; normal turns do not call it. B3 remains OFF.
+
+**Exact CI head 076a973... / workflow 45813438280:** Python 3.13 and 3.14 focused tests PASS; staged receiver/deploy-chain compile PASS; privacy scan CLEAN; Android arm64-v8a cross-compile step PASS (compile only). The shared source-tap gate FAILS because Core's native_receiver_matrix_runtime.py producer hook is not yet present on this branch. Linux pinned llama.cpp build was still IN_PROGRESS at the last poll. No full local checkout is mounted, so local full pytest/build NOT_RUN.
+
+**Acceptance:** no actual GGUF execution, no measured native logits/RSS/TTFT, no Redmi/Termux receipt, no release/deployment. REDMI_UNVERIFIED / NOT_RELEASED / B3_OFF.
+
+**Next owner action:** Core rebase PR #2525 onto latest #2524 and expose the flag as an explicit local-lab-only option (default OFF). Then run on an already-present and explicitly approved LFM2 GGUF with fixed 32–64-token continuation, measuring state bytes, capture/restore time, peak RSS, max/RMS logit delta and truncated-restore rejection. Only after that passes, test the same roundtrip from a real LATENT_CANDIDATE prefill and then different-weight sender/receiver transfer with zero/shuffle/wrong-donor controls.
