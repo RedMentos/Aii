@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -8,13 +9,13 @@ from v13.greeting_fastpath import RULE_ID, match
 from v13.runtime import Runtime
 
 
-def _text_event(**extra):
+def _text_event(text, **extra):
     event = {
         "source_ref": {
             "source_id": "src_" + "a" * 32,
-            "sha256": "a" * 64,
+            "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
             "char_start": 0,
-            "char_end": 2,
+            "char_end": len(text),
             "modality": "text",
         },
         "modalities": ["text"],
@@ -44,20 +45,43 @@ def _wait_idle(runtime):
     assert runtime.idle()
 
 
-def test_greeting_match_is_exact_bounded_and_text_only():
-    result = match("  HI!!  ", event=_text_event())
+def test_greeting_match_is_exact_bounded_and_source_bound_text_only():
+    text = "  HI!!  "
+    result = match(text, event=_text_event(text))
     assert result is not None
     assert result["rule_id"] == RULE_ID
     assert result["reply"] == "Hi."
     assert result["model_generated"] is False
     assert result["native_models_invoked"] is False
 
-    assert match("hi, how are you?", event=_text_event()) is None
-    assert match("hi", event=_text_event(source_ref={"modality": "audio"})) is None
-    assert match("hi", event=_text_event(modalities=["text", "image"])) is None
-    assert match("hi", event=_text_event(raw_audio=b"not-empty")) is None
-    assert match("hi\nthere", event=_text_event()) is None
-    assert match("hi" * 40, event=_text_event()) is None
+    question = "hi, how are you?"
+    assert match(question, event=_text_event(question)) is None
+    assert match("hi", event=_text_event("hi", source_ref={"modality": "audio"})) is None
+    assert match("hi", event=_text_event("hi", modalities=["text", "image"])) is None
+    assert match("hi", event=_text_event("hi", raw_audio=b"not-empty")) is None
+    assert match("hi\nthere", event=_text_event("hi\nthere")) is None
+    long_text = "hi" * 40
+    assert match(long_text, event=_text_event(long_text)) is None
+
+
+def test_greeting_match_rejects_source_hash_span_and_malformed_modality():
+    text = "hello"
+    valid = _text_event(text)
+    assert match(text, event=valid) is not None
+
+    bad_hash = {**valid, "source_ref": {**valid["source_ref"], "sha256": "a" * 64}}
+    bad_span = {**valid, "source_ref": {**valid["source_ref"], "char_end": len(text) - 1}}
+    bad_start = {**valid, "source_ref": {**valid["source_ref"], "char_start": 1}}
+    assert match(text, event=bad_hash) is None
+    assert match(text, event=bad_span) is None
+    assert match(text, event=bad_start) is None
+
+    for modalities in ("text", "image", [], {}, ["text", "image"], ["audio"], [None]):
+        assert match("hi", event=_text_event("hi", modalities=modalities)) is None
+    assert match("hi", event=_text_event("hi", modalities=("text",))) is not None
+    assert match("hi", event=_text_event("hi", audio_window={})) is None
+    assert match("hi", event=_text_event("hi", image_source_ref={})) is None
+    assert match("hi", event=_text_event("hi", video_source_ref={})) is None
 
 
 def test_runtime_answers_exact_greeting_without_native_body_or_c3_calls():
