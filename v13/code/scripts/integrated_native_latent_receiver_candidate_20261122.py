@@ -16,8 +16,10 @@ BASE_PINS = {
 }
 NATIVE_FILES = {
     "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
-    "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "1567ff3b957436ba637faae2c7a2cfa32d4a13fb04bbac468da363216497af0c",
+    "v13/native/latent_receiver/CMakeLists.txt": "6884bf0ce7613b20c2f02ffe1a1213d2609f56b9318d947f0a1bd0fb40cfe516",
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "1bccf4156ca2c27d3d63077ff39329d680845201f0c94ae669924ffb710afb8f",
+    "v13/native/latent_receiver/native_receiver_kv_snapshot.cpp": "a2968af85c5e0875ba6408047b88a915efe2b9d5fe815442685179b382f5fefc",
+    "v13/native/latent_receiver/native_receiver_kv_snapshot.hpp": "69a706f6a38e6faca434c6079bfee693acfc8bfba18acb7df48b491dc760eac9",
     "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
     "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0"
 }
