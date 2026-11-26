@@ -100,14 +100,17 @@ def _runtime(*, status="FINAL", receipt=None, c4=None, body_rows=(), runner_extr
 
 def _native_receipt(packet_id):
     return {
-        "revision": "v13.native-offer-prompt-receipt/1",
+        "revision": "v13.native-offer-prompt-receipt/2",
         "status": "RENDERED_WITH_QUOTES",
         "native_template_rendered": True,
         "native_template_submitted": True,
         "native_completion_http_200": True,
+        "native_prompt_render_match": True,
         "source_span_revalidated_here": False,
         "native_semantic_use_proven": False,
         "native_prompt_sha256": "a" * 64,
+        "rendered_prompt_sha256": "a" * 64,
+        "rendered_prompt_chars": 1000,
         "native_token_ids_sha256": "b" * 64,
         "native_prompt_tokens": 173,
         "native_tokenizer": "LLAMA_SERVER_TOKENIZE",
@@ -119,6 +122,9 @@ def _native_receipt(packet_id):
             "role": "B1_DETAIL",
             "packet_id": packet_id,
             "rendered_quote_count": 1,
+            "native_prompt_char_start": 100,
+            "native_prompt_char_end": 180,
+            "native_prompt_span_sha256": "c" * 64,
         }],
     }
 
@@ -172,6 +178,10 @@ def test_b1_attempt_is_joined_to_c4_and_native_c3_prefill_without_claiming_seman
     assert flow["native_prefill_observed"] is True
     assert flow["native_prompt_prefill_verified"] is False
     assert flow["native_generation_completed"] is True
+    assert flow["native_prompt_render_match"] is True
+    assert flow["native_prompt_span_bound"] is False  # one of two bodies only
+    assert flow["native_prompt_span_bound_roles"] == ["B1_DETAIL"]
+    assert flow["offers"][0]["native_prompt_span_bound"] is True
     assert flow["c4_native_offer_ids_match"] is True
 
     assert len(flow["body_attempts"]) == 1
@@ -199,6 +209,54 @@ def test_b1_attempt_is_joined_to_c4_and_native_c3_prefill_without_claiming_seman
     assert body["semantic_use_proven"] is False
     assert "PRIVATE PROMPT" not in repr(latest)
     assert "PRIVATE HYPOTHESIS" not in repr(latest)
+
+
+def test_prompt_span_binding_requires_hash_and_nonoverlapping_offsets():
+    query_id, packet_id = _id("pkt", "m"), _id("pkt", "n")
+    receipt = _native_receipt(packet_id)
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+    )
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["offers"][0]["native_prompt_span_bound"] is True
+    assert flow["native_prompt_span_bound_roles"] == ["B1_DETAIL"]
+
+    receipt["native_prompt_render_match"] = False
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+    )
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["native_prompt_span_bound"] is False
+    assert flow["offers"][0]["native_prompt_span_bound"] is False
+
+    receipt = _native_receipt(packet_id)
+    receipt["offers"][0]["native_prompt_char_end"] = 1001
+    runtime = _runtime(
+        receipt=receipt,
+        c4={
+            "status": "PASS",
+            "role": "C3_LANGUAGE",
+            "selected_offer_ids": [packet_id],
+            "count": 1,
+        },
+        body_rows=_body_rows("B1_DETAIL", query_id, packet_id=packet_id),
+    )
+    flow = brain_panel._latest_native_evidence(runtime)["offer_flow"]
+    assert flow["native_prompt_span_bound"] is False
 
 
 def test_native_prefill_token_count_must_match_server_timing_for_selected_body():
