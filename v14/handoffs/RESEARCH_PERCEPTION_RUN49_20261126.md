@@ -64,7 +64,7 @@ This improves the diagnostic's source condition: the state roundtrip now uses th
 
 It does NOT create normal-turn chat, different-weight model transfer, trained latent projector/receiver weights, semantic use, generated-answer correctness, persistent state, learning, production B3 authority or Android control. B3 remains OFF. P0 issue #1904 remains OPEN.
 
-Classification: CODE_PRESENT / WIRED_SYNTHETIC_DIAGNOSTIC / LOCAL_SCRATCH_PASS / CI_QUEUED / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / NOT_RELEASED.
+Classification: CODE_PRESENT / WIRED_SYNTHETIC_DIAGNOSTIC / LOCAL_SCRATCH_PASS / CI_FOCUSED_PASS_CORE_PIN_BLOCKED_STAGED_FAIL_RUNTIMEDEPLOY_PASS / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / NOT_RELEASED.
 
 ## Research
 
