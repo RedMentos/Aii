@@ -6,7 +6,7 @@
 **PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT / NOT_RELEASED.
 **Parent before this checkpoint:** #2524 branch head a47907c4a0603e602581c6462ecb845211eb0445.
 **Previous PR head:** a12d765e63e8c16f0ce9d388df840e1aa587a9f3.
-**Functional merge checkpoint SHA:** pending commit/readback in this handoff's first commit; final docs-only readback SHA will be added after remote verification.
+**Functional merge checkpoint SHA:** 3834ac1cfb4947bb62d5f33aa0cc0fc7a60ca63a (two-parent merge checkpoint; first parent #2524 a47907c, second parent previous PR head a12d765).
 
 ## Why this checkpoint exists
 
