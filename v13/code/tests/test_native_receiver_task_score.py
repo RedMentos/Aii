@@ -37,11 +37,13 @@ def hybrid_state_roundtrip_for(base, overrides=None):
     native = base["native"]
     receiver = base["receiver"]
     state = {
-        "schema": "v14.native-hybrid-state-roundtrip/1",
+        "schema": "v14.native-hybrid-state-roundtrip/2",
         "status": "READ_ONLY_ROUNDTRIP",
         "state_api": "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA",
         "state_scope": "FULL_HYBRID_SEQUENCE",
         "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
+        "prefill_condition": "LATENT_CANDIDATE",
+        "prefill_rows": 1,
         "source_sequence_id": 0,
         "destination_sequence_id": 0,
         "source_model_sha256": receiver["model_sha256"],
@@ -216,7 +218,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             score_override=score_overrides.get(condition),
             ood_source_ref_override=ood_source_ref_override,
         )
-        if include_hybrid_state_roundtrip and condition == "NO_MESSAGE":
+        if include_hybrid_state_roundtrip and condition == "LATENT_CANDIDATE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
         result = record_task_score_receipt(runtime, receipt)
     return result
@@ -489,6 +491,9 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert result["candidate_beats_all_controls"] is False
     assert effect["status"] == "SAME_MODEL_ROUNDTRIP_PASS"
     assert effect["task_group_count"] == 20
+    assert effect["prefill_condition"] == "LATENT_CANDIDATE"
+    assert effect["prefill_rows_min"] == effect["prefill_rows_max"] == 1
+    assert effect["context_params_variant_count"] == 1
     assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
     assert effect["top1_match_rate"] == 1.0
     assert effect["truncated_restore_rejected_count"] == 20
@@ -642,21 +647,24 @@ def test_hybrid_state_roundtrip_partial_cohort_coverage_fails_closed():
     assert status["incomplete_task_group_count"] == 1
 
 
-def test_hybrid_state_roundtrip_is_only_allowed_on_no_message_condition():
-    base = make_receipt(0, "session-A", "ARITHMETIC", "EXACT_MESSAGE")
-    with pytest.raises(NativeReceiverUtilityError, match="only allowed on NO_MESSAGE"):
+def test_hybrid_state_roundtrip_is_only_allowed_on_latent_candidate_condition():
+    base = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")
+    with pytest.raises(NativeReceiverUtilityError, match="only allowed on LATENT_CANDIDATE"):
         attach_hybrid_state_roundtrip(base)
 
 
 @pytest.mark.parametrize("overrides,match", [
     ({"destination_model_sha256": "e" * 64}, "model SHA"),
     ({"destination_context_params_sha256": "e" * 64}, "context parameters SHA"),
+    ({"prefill_condition": "NO_MESSAGE"}, "prefill must be LATENT_CANDIDATE"),
+    ({"prefill_rows": 0}, "prefill_rows is outside"),
+    ({"source_input_sha256": "f" * 64}, "input binding mismatch"),
     ({"set_data_bytes": 4095}, "pass flag"),
     ({"truncated_restore_rejected": False}, "truncated restore negative control"),
     ({"raw_state_blob": "must-not-be-present"}, "fields mismatch"),
 ])
 def test_hybrid_state_roundtrip_rejects_wrong_binding_or_raw_payload(overrides, match):
-    base = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")
+    base = make_receipt(0, "session-A", "ARITHMETIC", "LATENT_CANDIDATE")
     with pytest.raises(NativeReceiverUtilityError, match=match):
         attach_hybrid_state_roundtrip(base, overrides)
 
