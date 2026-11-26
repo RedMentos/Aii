@@ -9,7 +9,7 @@ from collections.abc import Mapping, Sequence
 import math
 import statistics
 
-HYBRID_STATE_SCHEMA = "v14.native-hybrid-state-roundtrip/1"
+HYBRID_STATE_SCHEMA = "v14.native-hybrid-state-roundtrip/2"
 HYBRID_STATE_API = "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA"
 HYBRID_STATE_SCOPE = "FULL_HYBRID_SEQUENCE"
 HYBRID_STATE_COMPONENTS = ("ATTENTION_KV", "RECURRENT_SHORTCONV")
@@ -88,7 +88,8 @@ def validate_native_hybrid_state_roundtrip(
         "source_llama_cpp_revision", "destination_llama_cpp_revision",
         "source_binary_sha256", "destination_binary_sha256",
         "source_context_sha256", "destination_context_sha256",
-        "source_input_sha256", "continuation_token_ids_sha256",
+        "source_input_sha256", "prefill_condition", "prefill_rows",
+        "continuation_token_ids_sha256",
         "source_context_params_sha256", "destination_context_params_sha256",
         "state_bytes", "get_size_bytes", "get_data_bytes", "set_data_bytes",
         "state_sha256", "capture_duration_us", "restore_duration_us",
@@ -114,6 +115,9 @@ def validate_native_hybrid_state_roundtrip(
     components = value.get("state_components")
     if not isinstance(components, (list, tuple)) or tuple(components) != HYBRID_STATE_COMPONENTS:
         raise NativeHybridStateReceiptError("hybrid-state component coverage is incomplete")
+    if value.get("prefill_condition") != "LATENT_CANDIDATE":
+        raise NativeHybridStateReceiptError("hybrid-state prefill must be LATENT_CANDIDATE")
+    prefill_rows = _count(value.get("prefill_rows"), "prefill_rows", minimum=1, maximum=64)
 
     sequence_id = _count(value.get("source_sequence_id"), "source_sequence_id", maximum=255)
     destination_sequence_id = _count(value.get("destination_sequence_id"), "destination_sequence_id", maximum=255)
@@ -211,6 +215,8 @@ def validate_native_hybrid_state_roundtrip(
         "source_context_sha256": context_sha,
         "destination_context_sha256": context_sha,
         "source_input_sha256": input_sha,
+        "prefill_condition": "LATENT_CANDIDATE",
+        "prefill_rows": prefill_rows,
         "continuation_token_ids_sha256": target_sha,
         "source_context_params_sha256": context_params_sha,
         "destination_context_params_sha256": context_params_sha,
@@ -248,6 +254,9 @@ def summarize_native_hybrid_state_roundtrips(receipts):
     if not receipts:
         return {
             "status": "UNAVAILABLE", "task_group_count": 0,
+            "prefill_condition": None, "prefill_rows_min": None,
+            "prefill_rows_median": None, "prefill_rows_max": None,
+            "context_params_variant_count": 0,
             "all_roundtrips_passed": False, "same_model_only": True,
             "cross_model_transfer_proven": False, "trained_latent_coupling_proven": False,
             "semantic_use_proven": False, "generated_answer_correctness_proven": False,
@@ -257,9 +266,8 @@ def summarize_native_hybrid_state_roundtrips(receipts):
         }
     identity_fields = (
         "state_api", "state_scope", "state_components", "source_sequence_id",
-        "destination_sequence_id", "source_model_sha256", "source_model_revision",
+        "destination_sequence_id", "prefill_condition", "source_model_sha256", "source_model_revision",
         "source_tokenizer_revision", "source_llama_cpp_revision", "source_binary_sha256",
-        "source_context_params_sha256",
     )
     identity = tuple(receipts[0][field] for field in identity_fields)
     for receipt in receipts[1:]:
@@ -271,6 +279,13 @@ def summarize_native_hybrid_state_roundtrips(receipts):
     return {
         "status": "SAME_MODEL_ROUNDTRIP_PASS" if passed else "SAME_MODEL_ROUNDTRIP_FAIL",
         "task_group_count": len(receipts),
+        "prefill_condition": receipts[0]["prefill_condition"],
+        "prefill_rows_min": min(item["prefill_rows"] for item in receipts),
+        "prefill_rows_median": statistics.median(item["prefill_rows"] for item in receipts),
+        "prefill_rows_max": max(item["prefill_rows"] for item in receipts),
+        "context_params_variant_count": len({
+            item["source_context_params_sha256"] for item in receipts
+        }),
         "state_scope": HYBRID_STATE_SCOPE,
         "state_components": list(HYBRID_STATE_COMPONENTS),
         "model_sha256": receipts[0]["source_model_sha256"],
