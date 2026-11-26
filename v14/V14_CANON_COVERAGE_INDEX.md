@@ -2387,3 +2387,9 @@ The K/V summary is structural diagnostic evidence only: SHA-256 is not a MAC; sa
 | A4 RAW EAR temporal chronology | Existing `consume_pcm16_voice_window` → `TemporalVoiceEvidenceRegistry.update` → A4 modulation path rejects backward starts before state mutation while preserving cumulative equal-start and forward-overlap windows. | Draft PR #2527, prior local exact-blob CPython 3.13.5 evidence 14/14 focused tests PASS, old-source negative control fails to raise as expected; exact new shared CI remains IN_PROGRESS. | Core recovery → stage → RuntimeDeploy audio-builder source-pin refresh; normal-turn caller; real microphone/OS consent; native/Redmi proof. | CODE_PRESENT / CI_PENDING_INTEGRATION / REDMI_UNVERIFIED |
 
 This overlay does not promote A4/A5 to real microphone perception, JEPA learning, attention-policy acceptance, Android capture, B3, P0 chat or any other Canon family. No user audio, transcript, model weight, permission or device state was changed.
+
+
+### Run 43 exact-CI status update (2026-11-26)
+The A4/A5 source-bound feature-set diagnostic's actual RAW EAR extractor → A5 PerceptPacket integration passes 10/10 on Python 3.13 and 3.14 in workflow [45773907611](https://github.com/RedMentos/Aii/actions/runs/45773907611); the RAW EAR comparison passes both versions in [45773907533](https://github.com/RedMentos/Aii/actions/runs/45773907533). Classification remains **WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED** because all outcomes are synthetic and the probe is not connected to normal Runtime/attention/JEPA.
+
+The shared stage/integrated workflow [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687) fails at the Core-owned recovery audio-builder source pin (expected `831080...`, actual Perception blob `f9a0ed...`); this blocks integration/release but does not invalidate the focused A4/A5 CI. RuntimeDeploy offline checks pass but do not constitute deployment.
