@@ -75,5 +75,5 @@ jobs:
         env:
           PYTHONPATH: v14/experiments
           V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
-          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
