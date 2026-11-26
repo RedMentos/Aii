@@ -2417,3 +2417,8 @@ R-166 is now **FULL_TEXT_REVIEWED** (12-page author-hosted PDF; August 2026 prep
 ### Corrected Run 44 metric-scope code checkpoint
 
 Corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\` renames the feature-history dependence term to \`conditional_feature_history_dependence_bits\` and explicitly marks the acoustic-cue → later-action scope. Fresh exact feature-set CI is pending. The previous \`c0d68f\` head passed 14/14 on Python 3.13/3.14; do not report that as a pass on the corrected head. R-166 is now FULL_TEXT_REVIEWED; current proxy remains not paper rIMI/CSD, not runtime-wired and REDMI_UNVERIFIED.
+
+
+### Corrected Run 44 exact-CI result
+
+Corrected code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`: A4/A5 feature-set probe **14/14 PASS** on Python 3.13/3.14 (45781255306); RAW EAR comparison **9/9 PASS** on both (45781255440); RuntimeDeploy offline integrity PASS on Python 3.11/3.14 (45781255519). Shared staged/integrated FAIL (45781255404): 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; Core audio-builder pin mismatch is the main cascade, plus two migration assertions return PARTIAL instead of UPDATED. This does not change the Canon classification: WIRED_SYNTHETIC_DIAGNOSTIC / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
