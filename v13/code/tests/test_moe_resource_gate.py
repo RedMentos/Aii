@@ -41,13 +41,13 @@ class ProcParsingTests(unittest.TestCase):
 
 class PairAdmissionTests(unittest.TestCase):
     def test_exact_budget_is_admitted(self):
-        r = G.pair_memory_admission([700, 600], available_mib=1812, reserve_mib=512)
+        r = G.pair_memory_admission([700, 600], available_mib=2324, reserve_mib=1024)
         self.assertEqual(r["status"], "ADMITTED")
-        self.assertEqual(r["required_mib"], 1812)
+        self.assertEqual(r["required_mib"], 2324)
         self.assertEqual(r["headroom_after_required_mib"], 0)
 
     def test_one_mib_below_budget_is_blocked(self):
-        r = G.pair_memory_admission([700, 600], available_mib=1811, reserve_mib=512)
+        r = G.pair_memory_admission([700, 600], available_mib=2323, reserve_mib=1024)
         self.assertEqual(r["status"], "BLOCKED_INSUFFICIENT_MEMORY")
 
     def test_missing_peak_never_becomes_zero(self):
