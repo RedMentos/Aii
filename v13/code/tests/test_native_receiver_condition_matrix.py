@@ -7,7 +7,12 @@ from v13.native_receiver_condition_matrix import (
     NativeReceiverConditionMatrixError,
     build_native_receiver_condition_matrix,
 )
-from v13.native_receiver_utility import CONDITIONS, SCORE_METHOD
+from v13.native_receiver_utility import (
+    CONDITIONS,
+    SCORE_METHOD,
+    NativeReceiverUtilityError,
+    validate_native_receiver_kv_snapshot,
+)
 from v13.native_latent_receiver import PINNED_LLAMA_REVISION
 from v13.native_receiver_task_matrix_bridge import (
     NativeReceiverTaskMatrixBridgeError,
@@ -208,7 +213,7 @@ def test_identical_native_input_digests_are_valid_only_with_identical_token_scor
 
 # The following bridge tests use a stubbed native CLI. They prove the Python
 # approval/provenance/collector contract only, not native model execution.
-def _fake_matrix_probe(monkeypatch, *, wrong_condition=None):
+def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=None, missing_kv_condition=None):
     import v13.native_receiver_task_matrix_bridge as bridge
 
     calls = []
@@ -222,6 +227,42 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None):
             digest = item["input_sha256"]
             if item["condition"] == wrong_condition:
                 digest = "f" * 64
+            context_rows = item["input_rows"] if item["input_rows"] > 0 else 1
+            positions = list(range(context_rows))
+            position_sha = sha(struct.pack("<" + "i" * context_rows, *positions))
+            combined_sha = sha("kv-combined-" + item["condition"])
+            kv_snapshot = {
+                "schema": "v14.native-receiver-kv-snapshot/1",
+                "status": "READ_ONLY_SNAPSHOT",
+                "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
+                "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+                "sequence_id": 0,
+                "layer_id": 0,
+                "attention_layer_count": 12,
+                "active_cell_count": context_rows,
+                "position_count": context_rows,
+                "position_sha256": position_sha,
+                "k_shape": [64, 8, 128, 1],
+                "v_shape": [128, 8, 64, 1],
+                "k_type": "f16",
+                "v_type": "f16",
+                "k_sha256": sha("kv-k-" + item["condition"]),
+                "v_sha256": sha("kv-v-" + item["condition"]),
+                "combined_sha256": combined_sha,
+                "stable_read_sha256": combined_sha,
+                "bytes_read_per_snapshot": 4096,
+                "double_read_bytes_read": 8192,
+                "duration_us": 100,
+                "read_only": True,
+                "double_read_stable": True,
+                "raw_data_exported": False,
+                "recurrent_state_included": False,
+                "condition": item["condition"],
+                "receiver_model_sha256": receiver_sha,
+                "input_sha256": item["input_sha256"],
+            }
+            if item["condition"] == bad_kv_condition:
+                kv_snapshot["stable_read_sha256"] = "f" * 64
             scores[item["condition"]] = {
                 "schema": "v14.native-receiver-target-score/1",
                 "execution_kind": "SYNTHETIC_FIXTURE",
@@ -237,7 +278,10 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None):
                 "decode_status": 0,
                 "native_input_consumed": True,
                 "llama_version": "synthetic-fixture",
+                "kv_snapshot": kv_snapshot,
             }
+            if item["condition"] == missing_kv_condition:
+                scores[item["condition"]].pop("kv_snapshot")
         return {
             "schema": "v14.native-receiver-task-matrix/1",
             "status": "SCORED",
@@ -299,6 +343,10 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["enough_holdout"] is False
     assert result["condition_count"] == 8
+    assert result["kv_snapshot_count"] == 8
+    assert result["kv_snapshot_layer_id"] == 0
+    assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
+    assert result["kv_snapshot_stable"] is True
     assert result["execution_kind"] == "SYNTHETIC_FIXTURE"
     assert result["environment"] == "SYNTHETIC"
     assert result["persisted"] is False
@@ -315,8 +363,101 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert "target_token_ids" not in result and "source_text" not in result
     status = task_score_status(runtime)
     assert status["receipt_count"] == 8
+    stored = runtime._native_receiver_task_score_receipts
+    assert len(stored) == 8
+    for receipt in stored:
+        snapshot = receipt["native"]["kv_snapshot"]
+        assert snapshot["condition"] == receipt["condition"]
+        assert snapshot["receiver_model_sha256"] == receipt["receiver"]["model_sha256"]
+        assert snapshot["input_sha256"] == receipt["input_sha256"]
+        assert snapshot["double_read_stable"] is True
+        assert "position_ids" not in snapshot
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 0
+
+
+def test_native_kv_snapshot_validator_sanitizes_and_rejects_untrusted_payloads():
+    positions = [0, 1]
+    combined = sha("combined")
+    raw = {
+        "schema": "v14.native-receiver-kv-snapshot/1",
+        "status": "READ_ONLY_SNAPSHOT",
+        "cache_kind": "LLAMA_MEMORY_HYBRID_ATTENTION",
+        "snapshot_scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+        "sequence_id": 0,
+        "layer_id": 2,
+        "attention_layer_count": 8,
+        "active_cell_count": 2,
+        "position_ids": positions,
+        "position_sha256": sha(struct.pack("<ii", *positions)),
+        "k_shape": [64, 8, 128, 1],
+        "v_shape": [128, 8, 64, 1],
+        "k_type": "f16",
+        "v_type": "f16",
+        "k_sha256": sha("k"),
+        "v_sha256": sha("v"),
+        "combined_sha256": combined,
+        "stable_read_sha256": combined,
+        "bytes_read_per_snapshot": 4096,
+        "double_read_bytes_read": 8192,
+        "duration_us": 25,
+        "read_only": True,
+        "double_read_stable": True,
+        "raw_data_exported": False,
+        "recurrent_state_included": False,
+    }
+    checked = validate_native_receiver_kv_snapshot(
+        raw, expected_rows=2, expected_condition="LATENT_CANDIDATE",
+        expected_model_sha256="b" * 64, expected_input_sha256="c" * 64,
+    )
+    assert checked["position_count"] == 2
+    assert checked["condition"] == "LATENT_CANDIDATE"
+    assert checked["receiver_model_sha256"] == "b" * 64
+    assert checked["input_sha256"] == "c" * 64
+    assert "position_ids" not in checked
+    assert validate_native_receiver_kv_snapshot(
+        checked, expected_rows=2, expected_condition="LATENT_CANDIDATE",
+        expected_model_sha256="b" * 64, expected_input_sha256="c" * 64,
+        allow_sanitized=True,
+    ) == checked
+
+    bad_position = dict(raw, position_sha256="0" * 64)
+    with pytest.raises(NativeReceiverUtilityError, match="position digest"):
+        validate_native_receiver_kv_snapshot(bad_position, expected_rows=2)
+    raw_export = dict(raw, raw_data_exported=True)
+    with pytest.raises(NativeReceiverUtilityError, match="raw/recurrent"):
+        validate_native_receiver_kv_snapshot(raw_export, expected_rows=2)
+
+
+def test_matrix_bridge_rejects_unstable_kv_snapshot_atomically(monkeypatch):
+    task, matrix = build_with_task(monkeypatch)
+    calls = _fake_matrix_probe(monkeypatch, bad_kv_condition="LATENT_CANDIDATE")
+    runtime = type("Runtime", (), {"session": task["session_id"]})()
+    with pytest.raises(NativeReceiverTaskMatrixBridgeError, match="K/V snapshot rejected.*stable read"):
+        score_and_record_native_receiver_condition_matrix(
+            runtime, matrix, approval=matrix.receipt["approval_binding_sha256"],
+            approval_validator=lambda token, expected: token == expected,
+            source_validator=lambda receipt, phase: True,
+            target_token_ids=task["target_token_ids"],
+            home="/tmp/v14-home", model_path="/tmp/v14-home/models/receiver.gguf",
+            deadline=1.0e12, target_environment="SYNTHETIC")
+    assert len(calls) == 1
+    assert task_score_status(runtime)["receipt_count"] == 0
+
+
+def test_matrix_bridge_rejects_missing_kv_snapshot_atomically(monkeypatch):
+    task, matrix = build_with_task(monkeypatch)
+    _fake_matrix_probe(monkeypatch, missing_kv_condition="ZERO")
+    runtime = type("Runtime", (), {"session": task["session_id"]})()
+    with pytest.raises(NativeReceiverTaskMatrixBridgeError, match="K/V snapshot rejected.*schema"):
+        score_and_record_native_receiver_condition_matrix(
+            runtime, matrix, approval=matrix.receipt["approval_binding_sha256"],
+            approval_validator=lambda token, expected: token == expected,
+            source_validator=lambda receipt, phase: True,
+            target_token_ids=task["target_token_ids"],
+            home="/tmp/v14-home", model_path="/tmp/v14-home/models/receiver.gguf",
+            deadline=1.0e12, target_environment="SYNTHETIC")
+    assert task_score_status(runtime)["receipt_count"] == 0
 
 
 def test_matrix_bridge_rejects_wrong_approval_before_native_probe(monkeypatch):
