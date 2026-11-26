@@ -6,8 +6,9 @@ B3_MESSAGE (§85.2)       every MessagePacket carries salience, confidence, sign
                          hypothesis or flags an open issue; < 0: the sender's exact evidence contradicts it (numbers
                          or quotes differ), so the receiver is asked to damp its own claim.
 Channel policy (B3-5)    per direction a learned utility for NO_MESSAGE / SOURCE_EXACT / CONTROL / SYMBOLIC. All
-                         probabilities stay > 0 (B3-H9). LATENT stays at p = 0 and level `unavailable` until native L1+
-                         exists (B3-H3, B3-H12). SHADOW (default) logs the proposal next to the configured channel;
+                         probabilities stay > 0 (B3-H9). LATENT stays at p = 0 and level `unavailable` until a trained,
+                         source-disjoint receiver passes held-out utility/retention gates (B3-H3, B3-H12). A native input-effect
+                         probe is diagnostic only. SHADOW (default) logs the proposal next to the configured channel;
                          ACTIVE (`:callosum active`, explicit human) uses it and passes signed_gain/urgency to the
                          receiver as CONTROL fields.
 Utility (B3-H9)          task_gain (receiver offer reached the focal coalition) + uncertainty_reduction (receiver no
