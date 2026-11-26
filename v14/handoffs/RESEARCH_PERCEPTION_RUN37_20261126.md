@@ -4,7 +4,7 @@
 
 - Repository: \`RedMentos/Aii\`
 - Release-development branch readback: \`gpt6/v13-private-remote-bridge-20261111\` = \`8d93236c753f0194224c19edc7411d8d7082b1d6\` (latest readback; older than this lane's open PR stack).
-- Active Perception branch current HEAD: \`b5fa240f4f29f562aa0a771f7187504a9757c273\` (code-bearing SHA \`8167033a8f133c8feb89c341df3720a5db765504\`; later commits are board/ledger/workplan/next-action/handoff documentation only).
+- Active Perception branch current HEAD: \`393bf150d4ebcec786f5f9ee4f1bea0f8f46dd6f\` (code-bearing SHA \`8167033a8f133c8feb89c341df3720a5db765504\`; later commits are board/ledger/workplan/next-action/handoff documentation only).
 - Existing PR [#2498](https://github.com/RedMentos/Aii/pull/2498) was extended in place; no duplicate PR or force-push.
 - Whole-Canon epic: [#1984](https://github.com/RedMentos/Aii/issues/1984). Runtime/chat blocker: [#1904](https://github.com/RedMentos/Aii/issues/1904).
 
