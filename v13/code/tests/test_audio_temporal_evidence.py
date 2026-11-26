@@ -57,7 +57,7 @@ def test_unvoiced_noise_and_impulses_never_become_voice_evidence():
 def test_source_generation_and_long_gaps_reset_the_filter():
     state = TemporalVoiceEvidence()
     step(state, 0, "VOICED")
-    changed = step(state, 40, "VOICED", source="mic-b")
+    changed = step(state, 0, "VOICED", source="mic-b")
     assert changed["state_reset"] is True
     assert changed["reset_reason"] == "SOURCE_OR_GENERATION_CHANGED"
     assert changed["voice_evidence"] == pytest.approx(0.393469, abs=1e-6)
@@ -187,7 +187,7 @@ def test_registry_is_bounded_lru_and_preserves_recent_stream_state():
 def test_registry_replaces_old_generation_and_supports_explicit_reset():
     registry = TemporalVoiceEvidenceRegistry(max_streams=4)
     registry.update(
-        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
         cues=cue("VOICED"),
     )
     new_generation = registry.update(
@@ -204,3 +204,159 @@ def test_registry_replaces_old_generation_and_supports_explicit_reset():
     )
     assert registry.reset() == 1
     assert len(registry) == 0
+
+def test_backward_window_start_with_advancing_end_is_rejected_without_state_mutation():
+    state = TemporalVoiceEvidence()
+    state.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+
+    with pytest.raises(ValueError, match="start times must advance monotonically"):
+        state.update(
+            source_id="mic-a", generation_id="g1", start_ms=90, end_ms=160,
+            cues=cue("VOICED"),
+        )
+
+    recovered = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=120, end_ms=160,
+        cues=cue("VOICED"),
+    )
+    assert recovered["observed_ms"] == 20
+    assert recovered["elapsed_ms"] == 20
+    assert recovered["voice_evidence"] == pytest.approx(0.527633, abs=1e-6)
+
+
+def test_equal_start_is_allowed_for_cumulative_windows_when_end_advances():
+    state = TemporalVoiceEvidence()
+    state.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+    cumulative = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=160,
+        cues=cue("VOICED"),
+    )
+    assert cumulative["observed_ms"] == 20
+    assert cumulative["elapsed_ms"] == 20
+    assert cumulative["voice_evidence"] == pytest.approx(0.527633, abs=1e-6)
+
+def test_integrated_audio_context_candidate_pins_current_temporal_voice_blob():
+    import hashlib
+    import importlib.util
+    from pathlib import Path
+
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("v14_integrated_audio_context_candidate", builder_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    source = code_dir / "v13" / "audio_temporal_evidence.py"
+    raw = source.read_bytes()
+    actual_blob = hashlib.sha1(
+        b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+    ).hexdigest()
+    assert module.SOURCE_BLOBS["v13/audio_temporal_evidence.py"] == actual_blob
+
+
+def test_provisional_preview_accumulates_without_committing_and_final_promotes():
+    state = TemporalVoiceEvidence()
+    first = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    repeated = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert repeated == first
+    assert first["preview_only"] is True
+    assert first["preview_revision"] == 1
+    assert state._last_end_ms is None
+
+    second = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80,
+        cues=cue("VOICED"),
+    )
+    assert second["voice_onset"] is True
+    assert second["preview_revision"] == 2
+    assert state._last_end_ms is None
+
+    final = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=80,
+        cues=cue("VOICED"),
+    )
+    assert final["preview_only"] is False
+    assert state._last_end_ms == 80
+    assert state._preview_state is None
+
+
+def test_revised_provisional_window_rebuilds_from_committed_state():
+    state = TemporalVoiceEvidence()
+    state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    revised = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        cues=cue("SILENCE"),
+    )
+    assert revised["preview_only"] is True
+    assert revised["voice_evidence"] == 0.0
+    assert state._last_end_ms is None
+
+
+def test_registry_preview_is_shadow_only_until_final_update():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=2)
+    provisional = registry.preview(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+    state = registry._states[("mic-a", "g1")]
+    assert provisional["preview_only"] is True
+    assert state._last_end_ms is None
+
+    final = registry.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+    assert final["preview_only"] is False
+    assert state._last_end_ms == 140
+
+
+def test_preview_idempotence_cache_does_not_bypass_strict_input_types():
+    state = TemporalVoiceEvidence()
+    first = state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=1, end_ms=41,
+        cues=cue("VOICED", 1.0),
+    )
+
+    # bool compares equal to int/float in Python; it must not hit the cache
+    # before the strict timestamp/score type checks run.
+    with pytest.raises(ValueError, match="start_ms"):
+        state.preview(
+            source_id="mic-a", generation_id="g1", start_ms=True, end_ms=41,
+            cues=cue("VOICED", 1.0),
+        )
+    with pytest.raises(ValueError, match="activity_score"):
+        state.preview(
+            source_id="mic-a", generation_id="g1", start_ms=1, end_ms=41,
+            cues=cue("VOICED", True),
+        )
+
+    class StringSubclass(str):
+        pass
+
+    with pytest.raises(ValueError, match="source_id"):
+        state.preview(
+            source_id=StringSubclass("mic-a"), generation_id="g1",
+            start_ms=1, end_ms=41, cues=cue("VOICED", 1.0),
+        )
+
+    assert state.preview(
+        source_id="mic-a", generation_id="g1", start_ms=1, end_ms=41,
+        cues=cue("VOICED", 1.0),
+    ) == first
+    assert state._preview_revision == 1
