@@ -1411,7 +1411,7 @@ A loopback HTTP regression exercises the real `LlamaRunner.generate()` path with
 - Fastpath / interrupted-runner warm retention: PASS, run 45838222676.
 - Lab-Age / WebView truth: PASS, run 45838222757.
 - Two-checkout updater migration: PASS, run 45838222669.
-- Staged context + integrated regression: IN_PROGRESS, run 45838222818 at checkpoint time; do not call this green until readback.
+- Staged context + integrated regression: PASS, run 45838222818; staged 292 passed / 10 skipped / 51 subtests; integrated 424 passed / 3 skipped / 58 subtests.
 - Full local Aii checkout/pytest: BLOCKED / NOT_RUN because `git ls-remote` cannot resolve `github.com`; no checkout is mounted.
 - Redmi/Termux/Android: REDMI_UNVERIFIED; no device receipt, APK install, native GGUF run, permission, model, weight, updater or user-data action.
 
@@ -1421,7 +1421,7 @@ The first exact-head CI attempt found strict nested pins after the intentional `
 
 ### Next executable work
 
-1. Read the final result of staged/integrated run 45838222818. If green, request independent Boss/QA review of #2533 and #2532; do not merge a child without its parent.
+1. Request independent Boss/QA review of #2533 and parent #2532; do not merge a child without its parent. Exact code head 1677c3c58b4505ec40831c11151829e0e6fe46bc is green across all nine observed workflows.
 2. Continue the actual normal-turn B1/B2 → C4 → C3 quality path. Token-count parity proves prefill accounting, not semantic use, correctness, or trained latent coupling.
 3. Android: #2513 open_url and #2528 terminal redaction have green focused Android/bridge CI. MediaProjection provider #2379, registry/recovery #2406, and Perception RAW EYE ingress #2375 remain separate/stale stacks. Rebase and compose them on the current Android action stack before enabling screen_capture; keep it OFF until the combined provider, consent, transport, lease and Perception consumer pass.
 4. Keep production B3 OFF and do not claim Redmi proof. No user action is required at this checkpoint.
