@@ -430,7 +430,15 @@ def _latest_native_evidence(r):
     native_token_ids_sha256 = _sha256(receipt.get("native_token_ids_sha256"))
     native_prompt_tokens = _count(receipt.get("native_prompt_tokens"))
     native_timings = _mapping(runner.get("timings"))
-    native_prefill_prompt_tokens = _count(native_timings.get("prompt_n"))
+    native_prefill_processed_tokens = _count(native_timings.get("prompt_n"))
+    native_prefill_cached_tokens = _count(native_timings.get("cache_n"))
+    native_prefill_prompt_tokens = (
+        native_prefill_processed_tokens + native_prefill_cached_tokens
+        if native_prefill_processed_tokens is not None
+        and native_prefill_cached_tokens is not None
+        and native_prefill_processed_tokens + native_prefill_cached_tokens <= 100000
+        else None
+    )
     native_prefill_prompt_ms = _seconds(native_timings.get("prompt_ms"))
 
     synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
@@ -567,6 +575,8 @@ def _latest_native_evidence(r):
             "native_prefill_observed": native_prefill_observed,
             "native_prefill_token_count_matched": native_prefill_token_count_matched,
             "native_prefill_prompt_tokens": native_prefill_prompt_tokens if not synthetic else None,
+            "native_prefill_processed_tokens": native_prefill_processed_tokens if not synthetic else None,
+            "native_prefill_cached_tokens": native_prefill_cached_tokens if not synthetic else None,
             "native_prefill_prompt_ms": native_prefill_prompt_ms if not synthetic else None,
             "native_stream_completed": (not synthetic) and receipt.get("native_stream_completed") is True,
             "synthetic_stream_completed": synthetic and receipt.get("native_stream_completed") is True,
