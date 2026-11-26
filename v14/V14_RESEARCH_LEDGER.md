@@ -1610,3 +1610,36 @@ The previously pending staged/integrated run 45678205707 has now completed PASS:
 **Status:** EXACT_LFM2_SHORTCONV_STATE_PATH_IDENTIFIED / PUBLIC_SEQUENCE_STATE_API_FOUND / SAME_MODEL_ROUNDTRIP_NOT_IMPLEMENTED / REAL_GGUF_NOT_RUN / REDMI_UNVERIFIED / B3_OFF.
 
 **Sources:** https://github.com/ggml-org/llama.cpp/tree/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Base/blob/8bc7cff62e8ee875578cf2af58781ad074d4e145/config.json ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/qad/README.md ; https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE
+
+
+## R-165 — 2026-11-26 — LFM2 full-hybrid sequence-state roundtrip implementation
+
+**Question:** Can the pinned llama.cpp sequence-state API restore the complete LFM2 receiver memory, including recurrent short-convolution history, into a fresh context of the same model, and can that be checked without exporting or persisting raw state?
+
+**Primary OSS source audit (exact pin b29c606e28a01b1bc8c1351026a0fa6e616bf6c4):**
+- include/llama.h declares llama_state_seq_get_size, llama_state_seq_get_data and llama_state_seq_set_data.
+- src/llama-context.cpp delegates sequence state serialization to the memory implementation and returns the consumed byte count. Truncated input is rejected by the read path.
+- src/llama-memory-hybrid.cpp serializes both mem_attn (attention/KV) and mem_recr (recurrent state), except when a caller explicitly requests partial-only state.
+- src/models/lfm2.cpp contains the LFM2 recurrent short-convolution state path. This is why a K/V-only snapshot cannot represent the complete LFM2 sequence state.
+- The pinned LICENSE is MIT. No upstream source was copied wholesale; the receiver uses the public API.
+- This is an implementation-source audit, not a new paper review. No paper is claimed as newly read in this run.
+
+**Code added on Perception PR #2524, exact branch head 076a973eaad808b537c7f74337464d02cf41d633:**
+- Native C++ matrix runner now has an explicit, opt-in --hybrid-state-roundtrip path, restricted to general.architecture values beginning with lfm2; default behavior remains unchanged.
+- The probe creates two fresh, identically configured small contexts (one sequence, one-token batches, context bounded by the fixed continuation length), prefills BOS, captures sequence 0, attempts a truncated restore as a negative control, clears the destination, performs a full restore, then teacher-forces the same continuation into both contexts and compares the full next-token logits after each continuation token.
+- The comparison is same-model/same-weight state restoration only. It does not transfer a sender model's hidden state or prove cross-model latent compatibility.
+- State buffer is capped at 16 MiB, hashed in memory and zeroized. Raw state bytes are not returned or persisted. The probe reports only byte counts, durations, hashes and fidelity metrics; it does not touch the installed runtime, edit weights, train, or enable production routing.
+- Python binds the receipt to receiver model SHA/revision, receiver tokenizer revision, pinned llama.cpp revision, native binary SHA, task context SHA, NO_MESSAGE input SHA and target-token-ID SHA. The receipt is attached to the NO_MESSAGE condition and passed through native_receiver_task_matrix_bridge; the opt-in is false by default.
+- The hybrid-state validator now requires a successful truncated-state rejection negative control and enforces the 16 MiB bound.
+
+**Exact-head CI 45813438280 (head 076a973...):**
+- Python 3.13 focused tests: PASS; staged receiver/deploy-chain compile: PASS; public-diff privacy scan: CLEAN.
+- Python 3.14 focused tests: PASS; staged receiver/deploy-chain compile: PASS; public-diff privacy scan: CLEAN.
+- Android arm64-v8a cross-compile step: PASS (review-only artifact upload was still running at last poll; this is not a device test).
+- Linux pinned llama.cpp build: IN_PROGRESS at last poll.
+- Shared source-tap gate: FAIL/BLOCKED because this Perception branch does not contain the Core-owned native_receiver_matrix_runtime.py producer hook. The error is the expected cross-lane integration gap, not a focused Python test failure. Core PR #2525 must rebase and expose the opt-in flag.
+- LOCAL_LINUX full checkout/pytest: BLOCKED; no Aii checkout is mounted in the local runtime and GitHub DNS is unavailable. CI is not reported as a local test.
+
+**Acceptance limits:** no real GGUF execution yet; no measured RSS/TTFT or native logits on a model; no Redmi/Termux receipt; no release/deployment. REDMI_UNVERIFIED, NOT_RELEASED, B3_OFF. The result is a native implementation candidate plus CI compile/test evidence, not a verified model run, not trained latent coupling and not a Canon completion claim.
+
+**Next executable step:** Core rebases #2525 onto the latest #2524 head and exposes the diagnostic behind a separate explicit local-lab flag (default OFF). Then run it on an already-present, explicitly approved LFM2 GGUF with a fixed 32–64-token continuation; record exact model/binary/context hashes, state bytes, capture/restore time, peak RSS, top-1 agreement, max/RMS logit difference and truncated-restore rejection. Only after that same-model gate passes should the roundtrip be extended from BOS to a real LATENT_CANDIDATE prefill and then to different-weight sender/receiver experiments.
