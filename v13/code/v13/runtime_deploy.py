@@ -494,8 +494,9 @@ def _stage_integrated_runtime(source, target, *, expected_commit=None):
             if builder.is_symlink() or not builder.is_file():
                 raise RuntimeDeployError("Integrated stage builder missing or unsafe")
             raw = builder.read_bytes()
-            if hashlib.sha256(raw).hexdigest() != STAGER_SHA256:
-                raise RuntimeDeployError("Integrated stage builder changed")
+            actual_stager_sha = hashlib.sha256(raw).hexdigest()
+            if actual_stager_sha != STAGER_SHA256:
+                raise RuntimeDeployError("Integrated stage builder changed: actual=" + actual_stager_sha)
             namespace = {"__name__": "v13_checked_runtime_stager", "__file__": str(builder)}
             exec(compile(raw, str(builder), "exec"), namespace)
             manifest = namespace["stage"](frozen, target)
