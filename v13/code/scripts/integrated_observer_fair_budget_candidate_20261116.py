@@ -11,7 +11,7 @@ from pathlib import Path
 PINS = {
     'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     'v13/observer_schedule.py': '343a4544b873e13f3549556ee52849a46dc2b55242536535b56f959022272943',
-    'v13/native_turn_budget.py': 'c7317a81a3996eb55b0e801be1a57bb251873cc2e34b2056ec6fa0be3d803da1',
+    'v13/native_turn_budget.py': '527d7ca89667f1700b89ac643573f272f5ba1890133e64fdce658d2e7910bbf0',
     'v13/cognition.py': '208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90',
     'v13/store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
 }
