@@ -57,7 +57,7 @@ def test_unvoiced_noise_and_impulses_never_become_voice_evidence():
 def test_source_generation_and_long_gaps_reset_the_filter():
     state = TemporalVoiceEvidence()
     step(state, 0, "VOICED")
-    changed = step(state, 40, "VOICED", source="mic-b")
+    changed = step(state, 0, "VOICED", source="mic-b")
     assert changed["state_reset"] is True
     assert changed["reset_reason"] == "SOURCE_OR_GENERATION_CHANGED"
     assert changed["voice_evidence"] == pytest.approx(0.393469, abs=1e-6)
@@ -187,7 +187,7 @@ def test_registry_is_bounded_lru_and_preserves_recent_stream_state():
 def test_registry_replaces_old_generation_and_supports_explicit_reset():
     registry = TemporalVoiceEvidenceRegistry(max_streams=4)
     registry.update(
-        source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40,
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
         cues=cue("VOICED"),
     )
     new_generation = registry.update(
