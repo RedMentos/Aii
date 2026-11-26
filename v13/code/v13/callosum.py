@@ -179,6 +179,24 @@ class Callosum:
                     o=b3order.status(r.home,dname,out[dname]['body_revisions']);out[dname]['training_order']={k:o[k] for k in ('done','next','status','violations','locked_by_canon')}
                 except Exception as exc:out[dname]['training_order']={'error':type(exc).__name__}
         return out
+    def stage_native_receiver_matrix(self, *, task, pair_record, baseline_packet,
+                                     candidate_packet, ood_control, entity_control):
+        """Stage a Perception-built eight-condition matrix through the live Runtime.
+
+        This is an in-process diagnostic producer API, not a normal-turn hook.
+        The builder revalidates all three SourceRefs and the current FINAL task;
+        a separate local-TTY one-shot approval is still required before native use.
+        """
+        runtime = getattr(self, "r", None)
+        if runtime is None:
+            raise RuntimeError("Callosum matrix staging requires its owning Runtime")
+        from .native_receiver_matrix_runtime import build_and_stage_native_receiver_matrix
+        return build_and_stage_native_receiver_matrix(
+            runtime, task=task, pair_record=pair_record,
+            baseline_packet=baseline_packet, candidate_packet=candidate_packet,
+            ood_control=ood_control, entity_control=entity_control,
+        )
+
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
