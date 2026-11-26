@@ -1,3 +1,20 @@
+# Core & Harness — verified checkpoint (2026-11-26 07:10 UTC)
+
+**Current work:** [PR #2529](https://github.com/RedMentos/Aii/pull/2529), branch `core/v14-greeting-fastpath-runtime-20261126-run1`, exact code/test head `b8e68c9cb65c987da46004438b2404aff2e8650e`. DRAFT / NOT_RELEASED.
+
+- The exact whole-text greeting reflex now verifies the full text SourceRef: start 0, end equal to the input's character length, and SHA-256 equal to the UTF-8 input. It rejects malformed modality declarations and audio/image/video source fields. The Runtime still commits through the existing C5 fixed-rule path; questions and mixed-modality inputs fall through to the normal multi-organ route.
+- **LOCAL_LINUX, CPython 3.13.5:** exact fetched module/test Git blob hashes match GitHub; py_compile PASS; focused matcher tests 2/2 PASS. The old implementation's negative control fails as expected because it accepts a mismatched SourceRef hash together with `modalities="image"`. Full Aii checkout/runtime suite NOT_RUN: no checkout mounted and GitHub DNS fails.
+- **Exact CI:** run [45773215054](https://github.com/RedMentos/Aii/actions/runs/45773215054) SUCCESS on Python 3.13 and 3.14; each has py_compile PASS, runner-retention 9/9, arithmetic 22/22, greeting Runtime/fallthrough 4/4.
+- **Integration blocker:** shared staged/integrated run [45773214858](https://github.com/RedMentos/Aii/actions/runs/45773214858) FAIL. Staged: 33 failed / 253 passed / 10 skipped / 2 errors / 37 subtests; integrated: 1 failed. The strict integrated-online-world consumer expects Runtime SHA-256 `1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47`, but exact current `v13/runtime.py` is `6f4e023cf7f71e8106a672eaeee549e0e4cbd22aa752bc6422c81c0ab80b92df`. The same stale Runtime pin propagates through postcommit, arithmetic, observer-fairness, controller guards and migration. No hash gate was weakened.
+- **Device:** last available consented private V13OBS snapshot #115 is from 2026-11-24 09:28 UTC and reported 8d932 installed/up-to-date with auto-update enabled. A later 17:50 UTC update reported AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers. Read-only requests #862–864 have no authenticated response. Current Redmi state is **REDMI_UNVERIFIED**; no restart, UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model, weight, permission or data action was performed.
+- **Deployment:** NOT_RELEASED. No updater invocation is appropriate while this is an unmerged draft. No manual Termux command is needed.
+
+**Next executable action:** coordinate a strict bottom-up rebind of the staged Runtime consumers to the exact current Runtime bytes with Boss/JEPA owners; rerun staged, integrated and two-checkout migration. Then resume the P0 same-turn B1_DETAIL + B2_GIST → C4 → C3 native path. The greeting reflex does not satisfy that acceptance.
+
+**User action required: NONE.**
+
+---
+
 # Latest Core & Harness checkpoint — 2026-11-24T20:20:29.992Z
 
 - PR #2462 current head is `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07` (release base `8d93236c753f0194224c19edc7411d8d7082b1d6`), DRAFT / NOT_RELEASED.
