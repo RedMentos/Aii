@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T00:44:58.393Z",
+  "updated_at": "2026-11-26T00:50:54.872Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -460,7 +460,7 @@
       "last_checkpoint": "2026-11-25T11:18:46.133Z",
       "proof_environment": "LOCAL_LINUX isolated helper/receiver-validator reproduction + SYNTHETIC tokenwise vectors; exact repository staged CI in progress; runtime-deployment integrity CI PASS; no native GGUF or Redmi proof",
       "proof": "Research/Perception PR #2496 code head a1d8fe6c82ffd4573d81ab69769d12dce50827a6 is stacked on #2489. Adapter schema v2 records projection_scope; persisted B1/B2 final-RMSNorm fitting is EVENT_POOLED_NONZERO_MEAN; project_event handles one vector; project_rows rejects pooled adapters; tokenwise fit requires source-local contiguous token_position rows; build_native_receiver_input emits native receiver-v3 token-row payload only for TOKENWISE adapters bound to *.input-embedding.v1. LOCAL_LINUX CPython 3.13.5 isolated helper reproduction: py_compile PASS, 10/10 contract/position tests PASS; local receiver validator is a stub copied from the receiver contract, not exact repository modules. Exact staged/integrated CI IN_PROGRESS; runtime-deployment integrity SUCCESS. Full local Aii suite NOT_RUN; no native model pair, gradient/retention or Redmi proof.",
-      "next_step": "Core must provide either (a) source-bound receiver input-embedding taps and paired tokenwise cohorts with exact tokenizer/source positions, or (b) a separately typed LATENT_PREFIX_V1 position mode for pooled event vectors. Then run the existing local one-shot approved native receiver path and task-utility controls; keep production B3 OFF until held-out semantic/task utility, parity, zero/shuffle/repeat/OOD and rollback evidence pass.",
+      "next_step": "Core: the inspected llama.cpp selected-row API is staging/WIP and returns static model->tok_embd rows, not contextual hidden states. Build against an exact API-bearing revision only after ARM/ABI review; prevalidate IDs, bound element multiplication, verify model/tensor/vocab and extractor hashes, discard partial output on any non-exact return. Perception then tests real paired GGUF receiver utility. For true B3, add a separate sender contextual-activation tap + trainable projection + receiver injection and held-out utility/zero/shuffle/repeat/OOD/retention/rollback. Keep B3 OFF.",
       "parent_ticket": "V14-016",
       "related_prs": [
         2489,
@@ -468,7 +468,20 @@
         2488,
         2490
       ],
-      "user_action_required": false
+      "user_action_required": false,
+      "research_perception_run37_latent_api_audit": {
+        "upstream_repo": "ggml-org/llama.cpp",
+        "upstream_commit": "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40",
+        "created_at": "2026-10-15T23:46:42Z",
+        "license": "MIT",
+        "api_header": "src/llama-ext.h",
+        "api_stability": "STAGING_WIP",
+        "semantics": "static model->tok_embd rows converted to F32; not contextual hidden states",
+        "safeguards": "prevalidate all IDs; exact element count; uint32 overflow and memory bounds; verify actual vocabulary/model/tensor and extractor hashes; discard partial writes on any error",
+        "v14_pin": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 predates API",
+        "ci": "PR #2503 code SHA 787758a885294d63c614c4171c4a528ecc303dc8: 66 tests PASS on Python 3.13/3.14; no native build/GGUF/Android proof",
+        "next": "Core native extractor + sender contextual hidden-state tap + learned projection + receiver injection; B3 stays OFF until task utility and controls"
+      }
     },
     {
       "id": "V14-022",
