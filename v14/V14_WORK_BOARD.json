@@ -1471,16 +1471,39 @@
     "cross_lane_core_pr": {
       "number": 2525,
       "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
-      "base_sha": "53c6a45d02f3bf36f81d78bc05f78c71e5b73651",
-      "mergeable": false,
-      "status": "DRAFT_REBASE_REQUIRED",
-      "dependency": "rebase onto current #2524 head and refresh exact nested source pins",
+      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "last_observed_base_sha": "b3250b751249b27e9c9352ca79dc05fd0f16b8bd",
+      "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+      "ahead_by": 11,
+      "behind_by": 9,
+      "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
       "normal_turn": "NOT_CONNECTED"
     },
     "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; no device action",
     "release": "NOT_RELEASED",
     "research": "R-163 LatentPort: hybrid Qwen3.5 state transfer needs recurrent/conv state in addition to K/V; not LFM2 evidence. R-164 exact llama.cpp b29c606 source confirms LFM2 shortconv r_l state and public llama_state_seq_get_data/set_data full-hybrid sequence roundtrip; same-model diagnostic is next. LFM2.5-1.2B config 16 layers (10 conv/6 attention), conv_L_cache 3; ~160–240 KiB FP32 conv-history estimate is calculated, not measured. QAD GGUF uses LFM Open License v1.0 with USD 10M commercial-use threshold; no swap.",
-    "next_action": "Core builds exact-pinned same-model LFM2.5-1.2B QAD sequence-state roundtrip using llama_state_seq_get_size/get_data/set_data; compare fixed continuation logits/logprobs and test corrupt/truncated state, wrong model/revision/sequence/context. Then separately test B1/B2 different-weight transfer; K/V-only remains partial."
+    "next_action": "Core first rebases #2527 and #2525 onto the latest #2524 branch (currently b3250b751249b27e9c9352ca79dc05fd0f16b8bd), refreshes native/audio composer pins bottom-up, then runs shared stage/integrated regression. Preserve #2527 RAW EAR chronology and #2498 next-delta A4 path as separate consumers; integrate only after exact pins and privacy/consent gates pass. Next native research: same-model LFM2.5 QAD sequence-state roundtrip via llama_state_seq_get_size/get_data/set_data; K/V-only remains partial.",
+    "parallel_perception_prs": {
+      "2527_raw_ear_temporal_chronology": {
+        "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
+        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
+        "ahead_by": 74,
+        "behind_by": 9,
+        "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
+        "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
+      },
+      "2498_raw_ear_next_delta": {
+        "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+        "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+        "base_branch": "research-perception/latent-event-scope-20261125-run12",
+        "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+        "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+        "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+      }
+    }
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T01:57:48Z",
