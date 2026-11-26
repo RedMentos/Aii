@@ -499,7 +499,9 @@ def _latest_native_evidence(r):
         and native_prompt_tokens is not None and native_prompt_tokens > 0
     )
     native_prompt_span_by_id = {}
-    if (not synthetic and native_prompt_render_match and ids_match
+    if (not synthetic and native_submitted
+            and receipt.get("native_completion_http_200") is True
+            and native_prompt_render_match and ids_match
             and receipt.get("revision") == "v13.native-offer-prompt-receipt/2"):
         candidate_spans = []
         span_rows_valid = True
