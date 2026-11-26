@@ -1,6 +1,10 @@
 """Regression for composing consent-bound RAW EAR with Core fair-budget Cognition."""
 import hashlib
 import importlib.util
+import os
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -44,8 +48,10 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     source_before = source_path.read_bytes()
 
     composed = module.build_sources(CODE)
-    print("COMPOSED_RUNTIME_SHA256=" + hashlib.sha256(composed["v13/runtime.py"]).hexdigest())
     cognition = composed["v13/cognition.py"]
+    runtime = composed["v13/runtime.py"]
+    assert b"from .greeting_fastpath import match as greeting_match" in runtime
+    assert b"BUILTIN_GREETING_REFLEX" in runtime
 
     assert b"def _audio_context_query(" in cognition
     assert b"audio_context_refs" in cognition
@@ -55,3 +61,32 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     assert b"def native_receive(" in cognition
     assert b"c4_offer_context_ready" in cognition
     assert source_path.read_bytes() == source_before
+
+
+def test_staged_runtime_greeting_and_acknowledgment_path_end_to_end():
+    stage_path = CODE / "scripts/stage_integrated_candidate.py"
+    spec = importlib.util.spec_from_file_location("stage_for_greeting_runtime", stage_path)
+    stage_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(stage_module)
+
+    with tempfile.TemporaryDirectory(prefix="v14-greeting-stage-") as tmp:
+        staged = Path(tmp) / "staged"
+        manifest = stage_module.stage(CODE, staged)
+        assert "v13/runtime.py" in manifest["replaced_files"]
+        assert (staged / "v13/greeting_fastpath.py").is_file()
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(staged) + os.pathsep + str(CODE)
+        result = subprocess.run(
+            [
+                sys.executable, "-m", "pytest", "-q",
+                str(CODE / "tests/test_greeting_fastpath_runtime.py"),
+            ],
+            cwd=staged,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=240,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + "\n" + result.stderr
