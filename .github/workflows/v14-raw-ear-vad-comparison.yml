@@ -9,6 +9,7 @@ on:
       - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_speaker_novelty.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
@@ -25,6 +26,7 @@ on:
       - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_speaker_novelty.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
@@ -74,6 +76,7 @@ jobs:
             v13/code/v13/audio_event_expectation.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_speaker_evidence.py \
+            v13/code/v13/audio_speaker_novelty.py \
             v13/code/v13/audio_temporal_evidence.py \
             v14/experiments/raw_ear_vad_compare.py \
             v14/experiments/test_raw_ear_vad_compare.py
