@@ -25,6 +25,7 @@ MIN_INTERVAL_MS = 250
 MAX_INTERVAL_MS = 60_000
 MIN_INTERVALS = 3
 MIN_CONFIDENCE = 0.45
+MIN_ACTIVITY_SCORE = 0.5
 MAX_TOLERANCE_MS = 1000
 MIN_TOLERANCE_MS = 250
 ATTENTION_GAIN = 0.05
@@ -175,12 +176,23 @@ class AudioEventExpectationRegistry:
         state.last_start_ms = start_ms
         state.last_end_ms = end_ms
         self._states.move_to_end(key)
-        if activity == "UNCERTAIN":
-            result = self._base("CENSORED_UNCERTAIN", activity, len(self._states))
+        if activity == "UNCERTAIN" or activity_score < MIN_ACTIVITY_SCORE:
+            # A censored window breaks the current onset chain. Keep the bounded
+            # interval distribution, but never carry a pending omission across
+            # a window whose activity class is not reliable.
+            state.last_activity = None
+            for name in EVENT_CLASSES:
+                state.last_event_ms[name] = None
+                state.expected_next_ms[name] = None
+            status = (
+                "CENSORED_UNCERTAIN" if activity == "UNCERTAIN"
+                else "CENSORED_LOW_CONFIDENCE"
+            )
+            result = self._base(status, activity, len(self._states))
             result["interval_samples"] = sum(len(values) for values in state.intervals.values())
             return result
 
-        event_class = activity if activity in EVENT_CLASSES and activity_score >= 0.5 else None
+        event_class = activity if activity in EVENT_CLASSES else None
         new_onset = event_class is not None and state.last_activity != event_class
         omissions = []
         expected_events = []
@@ -214,7 +226,7 @@ class AudioEventExpectationRegistry:
                     # A continuous active window fulfils the expected event once.
                     # Do not leave an already-observed expectation pending until silence.
                     state.expected_next_ms[name] = int(round(expected + centre))
-            elif end_ms >= expected + tolerance and confidence >= MIN_CONFIDENCE:
+            elif start_ms <= expected and end_ms >= expected + tolerance and confidence >= MIN_CONFIDENCE:
                 omissions.append({
                     "activity_class": name,
                     "expected_at_ms": int(expected),
