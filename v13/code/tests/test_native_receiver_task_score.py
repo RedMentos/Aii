@@ -563,6 +563,11 @@ def test_entity_specificity_without_full_derangement_is_not_promoted():
     assert audit["semantic_use_proven"] is False
 
 
+def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
+    with pytest.raises(NativeReceiverUtilityError, match="OOD/entity-substitution source must differ"):
+        _record_information_use_cohort("fixed_point", _information_use_scores())
+
+
 @pytest.mark.parametrize(
     ("mode", "count_key", "expected_count"),
     [
@@ -572,11 +577,6 @@ def test_entity_specificity_without_full_derangement_is_not_promoted():
         ("external", "external_donor_count", 20),
     ],
 )
-def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
-    with pytest.raises(NativeReceiverUtilityError, match="OOD/entity-substitution source must differ"):
-        _record_information_use_cohort("fixed_point", _information_use_scores())
-
-
 def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key, expected_count):
     audit = _record_information_use_cohort(mode, _information_use_scores())
     derangement = audit["unrelated_donor_derangement"]
