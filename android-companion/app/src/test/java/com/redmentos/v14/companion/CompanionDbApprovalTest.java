@@ -21,6 +21,8 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -159,6 +161,41 @@ public final class CompanionDbApprovalTest {
         valid.remove("unbound_private_url");
         valid.remove("digest");
         assertFalse(CompanionProvider.hasExactActionRequestFields(valid));
+    }
+
+    @Test public void submitRejectsUnboundTopLevelFieldsBeforeDurableInsert() throws Exception {
+        String url = "https://example.com/private/path?session_token=secret";
+        JSONObject request = new JSONObject()
+                .put("schema", "v14.android-action-request/1")
+                .put("action_id", ACTION_ID)
+                .put("capability", "open_url")
+                .put("args", new JSONObject().put("url", url))
+                .put("digest", Canonical.requestDigest("open_url", url))
+                .put("expires_at", System.currentTimeMillis() / 1000.0 + 30.0)
+                .put("companion_local_consent_required", true)
+                .put("android_os_permission_required", false)
+                .put("permission_bypass", false)
+                .put("model_authority", false)
+                .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION")
+                .put("unbound_private_url", "https://example.com/duplicate?token=secret");
+
+        CompanionProvider provider = new CompanionProvider();
+        Field dbField = CompanionProvider.class.getDeclaredField("db");
+        dbField.setAccessible(true);
+        dbField.set(provider, first);
+        Method submit = CompanionProvider.class.getDeclaredMethod(
+                "submitLocked", Context.class, String.class);
+        submit.setAccessible(true);
+
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        try {
+            JSONObject result = (JSONObject) submit.invoke(provider, context, request.toString());
+            assertEquals("DENIED", result.getString("status"));
+            assertEquals("INVALID_REQUEST_FIELDS", result.getString("reason"));
+            assertNull("unbound request must not reach the durable action journal", first.get(ACTION_ID));
+        } finally {
+            CompanionProvider.setEnabled(context, false);
+        }
     }
 
     @Test public void completedOpenUrlReceiptsRedactPathAndQueryAfterDurableCommit() throws Exception {
