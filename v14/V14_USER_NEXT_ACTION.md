@@ -1,3 +1,30 @@
+# CURRENT NEXT ACTION — Research & Perception Run 41 (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** Do not send a Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft Perception change.
+
+## Current code checkpoint
+- Draft PR [#2527](https://github.com/RedMentos/Aii/pull/2527), branch `research-perception/v14-audio-temporal-window-order-20261126-run41b`, current code/test/pin head `998a8f02e3011b63581c2888316b4073b589d474`, based on current parent #2524 branch head `b298719af8faf75811d03d486de7725395a590b0`.
+- Source blob `f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb`; test blob `fe7a716b4ce88ed2868337deda9f2c454360561b`. Old draft #2526 was closed as superseded because it started two commits behind; no force-push.
+- The A4 temporal filter now rejects backward window starts before state mutation while preserving equal-start cumulative windows and forward-overlap suffix accounting.
+- LOCAL_LINUX / CPython 3.13.5: exact fetched module/test Git blob hashes match the local scratch files; py_compile PASS; focused tests **14/14 PASS**; old-source negative control reproduced DID NOT RAISE; deterministic stress 10,000 monotonic windows + 1,000 out-of-order rejects PASS.
+- Full Aii local checkout/full suite NOT_RUN: no repository checkout mounted and GitHub DNS unavailable.
+
+## CI and integration blockers
+- The first exact PR run's Perception RAW EAR/libfvad comparison workflow failed only because its expected temporal source blob was stale. The Perception-owned workflow pin is now updated to `f8ebe2c7...`; rerun `45759867790` is queued.
+- Shared staged-runtime run `45759546449` failed because Core-owned recovery/stage composition still expects the old `v13/audio_temporal_evidence.py` blob. Rerun `45759867775` is queued. Perception has not modified Core/QA-owned recovery, stage or RuntimeDeploy files. Core/Integrator must refresh the pin chain bottom-up.
+- Parent PR #2524 remains DRAFT. Its focused K/V tests passed, but shared staged/integrated CI still fails on Core-owned `v13/native_latent_receiver.py` pinning. Core PR #2523 is a manual local-TTY one-shot diagnostic, not a normal-turn hook. P0 basic chat, B1/B2 valid offers and normal-turn audio integration remain OPEN.
+
+## Device, deployment and permissions
+- Last available private V13OBS receipt is historical issue #115 (2026-11-24 09:28 UTC): auto-update enabled and dashboard/runtime UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI STOPPED_BY_USER and model processes stopped. Private read issues #862–#864 have no comments. Current install/runtime/updater state is REDMI_UNVERIFIED.
+- No device action, UPDATE_REQUEST, CHAT_SEND, model/weight/permission/data change. GitHub push is not deployment.
+- Caller-supplied PCM16 only. No Android AudioRecord/microphone provider, ASR, TTS/vocoder, full-duplex or audio learning. Microphone capture remains OFF; B3 remains OFF. No Redmi/native proof; NOT_RELEASED.
+
+## Research / next step
+- R-163: FASTDIAR (arXiv:2610.02941, 2026-10-02 preprint) is an optional frame-level speaker-embedding candidate. Code repo MIT; checkpoint-weight license not confirmed; 2.4M small checkpoint, PyTorch/torchaudio/torchcodec + FFmpeg, no Android/ARM64 proof. No download or model change.
+- Next: Core rebinds the audio source pins and the #2524 native receiver pins, then exact staged/integrated CI is rerun. After that, Core must connect a normal-turn caller that keeps the revocable audio lease alive through the complete C3 generator. Perception then adds the approved OS audio provider only after explicit device consent and revocation/zeroization proof.
+
+---
+
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
