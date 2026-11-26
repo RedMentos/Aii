@@ -1,0 +1,81 @@
+name: V14 Core native receiver matrix Runtime consumer
+on:
+  push:
+    branches:
+      - core/v14-native-receiver-matrix-runtime-consumer-20261126-run1
+      - core/v14-native-receiver-matrix-runtime-integration-20261126-run2
+    paths:
+      - "v13/code/v13/native_receiver_matrix_runtime.py"
+      - "v13/code/v13/native_receiver_condition_matrix.py"
+      - "v13/code/v13/native_receiver_task_matrix_bridge.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/record_only_controller_guard_20261116.py"
+      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - "v13/code/tests/test_native_receiver_condition_matrix.py"
+      - "v13/code/tests/test_native_latent_receiver_runtime.py"
+      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
+  pull_request:
+    branches:
+      - core/v14-native-target-score-repair-20261126-run1
+      - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
+    paths:
+      - "v13/code/v13/native_receiver_matrix_runtime.py"
+      - "v13/code/v13/native_receiver_condition_matrix.py"
+      - "v13/code/v13/native_receiver_task_matrix_bridge.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/record_only_controller_guard_20261116.py"
+      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - "v13/code/tests/test_native_receiver_condition_matrix.py"
+      - "v13/code/tests/test_native_latent_receiver_runtime.py"
+      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
+permissions:
+  contents: read
+jobs:
+  runtime-consumer:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install --upgrade pytest
+      - name: Compile Core and staged receiver modules
+        run: |
+          python -m py_compile \
+            v13/code/v13/native_receiver_matrix_runtime.py \
+            v13/code/v13/native_receiver_condition_matrix.py \
+            v13/code/v13/native_receiver_task_matrix_bridge.py \
+            v13/code/v13/callosum.py \
+            v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/scripts/record_only_controller_guard_20261116.py \
+            v13/code/tests/test_native_receiver_matrix_runtime.py \
+            v13/code/tests/test_native_receiver_condition_matrix.py \
+            v13/code/tests/test_native_latent_receiver_runtime.py
+      - name: Run Core Runtime producer and matrix regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_native_receiver_matrix_runtime.py
+      - name: Stage the exact integrated Termux candidate
+        run: |
+          python v13/code/scripts/stage_integrated_candidate.py \
+            --output "$RUNNER_TEMP/v14-native-receiver-stage"
+      - name: Run legacy native receiver acceptance against staged runtime
+        env:
+          PYTHONPATH: ${{ runner.temp }}/v14-native-receiver-stage
+        run: python -m pytest -q v13/code/tests/test_native_latent_receiver_runtime.py
