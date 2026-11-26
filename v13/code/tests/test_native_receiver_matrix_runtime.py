@@ -710,3 +710,77 @@ def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_thro
     assert calls[0]["condition_inputs"][0]["vectors"] == []
     assert calls[0]["condition_inputs"][0]["position_ids"] == []
     assert runtime._native_receiver_condition_matrix is None
+
+
+def _tamper_matrix_approval_record(record, field, sender_role):
+    if field == "task_group_id":
+        record[field] = "tampered-task-group"
+    elif field == "source_bindings":
+        record[field] = []
+    elif field == "sender_role":
+        record[field] = "B2_GIST" if sender_role != "B2_GIST" else "B1_DETAIL"
+    elif field == "receiver_role":
+        record[field] = "INVALID_RECEIVER"
+    elif field == "models":
+        record[field][sender_role]["revision"] = "tampered-model-revision"
+    else:
+        raise AssertionError("unknown tamper field")
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["task_group_id", "source_bindings", "sender_role", "receiver_role", "models"],
+)
+def test_matrix_run_rejects_persisted_approval_binding_tampering(
+    monkeypatch, tmp_path, field
+):
+    runtime, matrix, *_rest, sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    _tamper_matrix_approval_record(state, field, sender["role"])
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    native_calls = []
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+    module.score_and_record_native_receiver_condition_matrix = (
+        lambda *_args, **_kwargs: native_calls.append(True)
+    )
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+
+    with pytest.raises(PermissionError, match="fresh matching"):
+        matrix_runtime._run(runtime)
+
+    assert native_calls == []
+    persisted, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert persisted["status"] == "PENDING"
+    assert matrix._closed is False
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["task_group_id", "source_bindings", "sender_role", "receiver_role", "models"],
+)
+def test_matrix_consume_rejects_persisted_approval_binding_tampering(
+    monkeypatch, tmp_path, field
+):
+    runtime, matrix, *_rest, sender, _receiver, _staged = _stage(monkeypatch, tmp_path)
+    matrix_runtime._arm(runtime)
+    state, version = runtime.store.state(matrix_runtime.KEY, None)
+    _tamper_matrix_approval_record(state, field, sender["role"])
+    runtime.store.set_state(matrix_runtime.KEY, state, expected=version)
+
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_runtime_probe_lease", lambda *_args: None)
+    persisted, _ = runtime.store.state(matrix_runtime.KEY, None)
+
+    with pytest.raises(PermissionError, match="approval is not live"):
+        matrix_runtime._consume_approval(
+            runtime,
+            persisted["nonce"],
+            matrix.receipt["approval_binding_sha256"],
+            matrix.receipt,
+            object(),
+        )
+
+    after, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert after["status"] == "PENDING"
