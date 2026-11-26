@@ -60,7 +60,7 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "lfm2-r1",
         "main_file": "receiver.gguf",
-        "files": {"receiver.gguf": {"sha256": digest}},
+        "files": {"receiver.gguf": {"sha256": digest, "path": "models/receiver.gguf", "size": model_path.stat().st_size}},
     }
     sender_dir = model_dir / "gist"
     sender_dir.mkdir(parents=True, exist_ok=True)
@@ -72,11 +72,34 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "qwen35-r1",
         "main_file": "sender.gguf",
-        "files": {"sender.gguf": {"sha256": sender_digest}},
+        "files": {"sender.gguf": {"sha256": sender_digest, "path": "models/gist/sender.gguf", "size": sender_path.stat().st_size}},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
     runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": event["event_id"]}
     return runtime, event, model_path, digest, sender_path, sender_digest
+
+
+def _arm_native_probe(runtime, sender, receiver, monkeypatch):
+    from v13 import native_probe_approval as approval
+
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    monkeypatch.setattr(approval, "_resource_preflight", lambda *_: {"status": "PASS"})
+    approval.arm(runtime, sender, receiver)
+    return approval
+
+
+def _approved_native_receive(runtime, event, sender, receiver, deadline, monkeypatch, before_run=None):
+    approval = _arm_native_probe(runtime, sender, receiver, monkeypatch)
+    with approval.runtime_probe_lease(runtime) as lease_token:
+        approval.consume(
+            runtime, sender, receiver, event, event["source_ref"], lease_token=lease_token
+        )
+        if before_run is not None:
+            before_run()
+        return runtime.cognition.native_receive(
+            sender, receiver, event, event["source_ref"], deadline
+        )
 
 
 def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path, monkeypatch):
@@ -114,8 +137,8 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
 
     monkeypatch.setattr(native, "probe", fake_probe)
     before = model_path.read_bytes()
-    packet = runtime.cognition.native_receive(
-        "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+    packet = _approved_native_receive(
+        runtime, event, "B2_GIST", "C3_LANGUAGE", time.monotonic() + 30, monkeypatch
     )
     assert packet["status"] == "NATIVE_INPUT_EFFECT"
     assert packet["sender_tap_packet_id"] == "tap-packet-1"
@@ -161,8 +184,8 @@ def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatc
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
     with pytest.raises(ValueError, match="whole-sequence position map"):
-        runtime.cognition.native_receive(
-            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+        _approved_native_receive(
+            runtime, event, "B2_GIST", "C3_LANGUAGE", time.monotonic() + 30, monkeypatch
         )
     runtime.close()
 
@@ -204,8 +227,8 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "status": "DIMENSION_MISMATCH",
     })
     monkeypatch.setattr(native, "probe", lambda **kwargs: mismatch)
-    packet = runtime.cognition.native_receive(
-        "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+    packet = _approved_native_receive(
+        runtime, event, "B2_GIST", "C3_LANGUAGE", time.monotonic() + 30, monkeypatch
     )
     assert packet["status"] == "DIMENSION_MISMATCH"
     assert packet["native_input_consumed"] is False
@@ -229,11 +252,11 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
     runtime.pool.unload = lambda: None
-    sender_path.write_bytes(b"changed-after-tap")
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
-    with pytest.raises(ValueError, match="Sender model hash differs"):
-        runtime.cognition.native_receive(
-            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+    with pytest.raises(PermissionError, match="file hash differs"):
+        _approved_native_receive(
+            runtime, event, "B2_GIST", "C3_LANGUAGE", time.monotonic() + 30,
+            monkeypatch, before_run=lambda: sender_path.write_bytes(b"changed-after-tap")
         )
     runtime.close()
 
@@ -258,13 +281,11 @@ def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monke
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
-    try:
-        with pytest.raises(ValueError, match="Sender model must be an installed file under home/models"):
-            runtime.cognition.native_receive(
-                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
-            )
-    finally:
-        runtime.close()
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    with pytest.raises(PermissionError, match="selected model path differs"):
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+    runtime.close()
 
 
 def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
@@ -289,18 +310,19 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
     runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
     runtime.pool.unload = lambda: None
     monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
-    try:
-        with pytest.raises(ValueError, match="Sender model symlink refused"):
-            runtime.cognition.native_receive(
-                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
-            )
-    finally:
-        runtime.close()
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    with pytest.raises(PermissionError, match="selected model path is linked"):
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+    runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
-    runtime.last_answer = lambda: {"event_id": event["event_id"]}
+    runtime.last_answer = lambda: {"status": "FINAL", "event_id": event["event_id"]}
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_require_local_tty", lambda: None)
+    monkeypatch.setattr(approval, "_resource_preflight", lambda *_: {"status": "PASS"})
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
     packet = {
@@ -317,6 +339,10 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
     )
     runtime.pool.unload = lambda: calls.append("unload")
+    armed = json.loads(operator_command(
+        runtime, ["arm-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
+    ))
+    assert armed["status"] == "ARMED"
     result = json.loads(operator_command(
         runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
