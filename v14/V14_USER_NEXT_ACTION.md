@@ -1,3 +1,54 @@
+# V14 USER NEXT ACTION — Core & Harness Run 3 (2026-11-26)
+
+**Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, code head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8` (the PR branch was subsequently advanced to `68c3de91ede75bd0d1381524690e46505451aeda` by handoff-only documentation commits; no code changed after the green CI). It is stacked on Core PR #2515; it is not merged or released.
+
+## What changed and what is proven
+
+- The native receiver C++ process now recomputes SHA-256 from the exact little-endian int32 target-token vector it consumes, checks it against the supplied digest before scoring, and emits the computed digest. The receipt no longer relies on merely echoing a Python-supplied hash.
+- Added native selftests for the NIST SHA-256 `abc` vector, token IDs `[0,1,2]`, digest mismatch and negative-ID rejection.
+- Refreshed and read back the complete builder → recovery → stage → RuntimeDeploy source-pin chain. The earlier compile defect (undeclared native model pointer) remains fixed.
+- Local Linux: isolated C++17 SHA-256 helper compile/selftest PASS with `-Wall -Wextra -Werror`. Full Aii checkout/native llama.cpp local build NOT_RUN because GitHub DNS resolution failed in this environment.
+- Exact-head GitHub CI: all seven workflows SUCCESS. Pinned llama.cpp Linux build and native selftest PASS; Android arm64 cross-compile PASS (artifact only, not device execution); Python 3.13 and 3.14 each 45/45 PASS; privacy scan CLEAN; RuntimeDeploy integrity, two-checkout migration, record-only controller, Lab Age/WebView and private owner-read bootstrap PASS. Staged/integrated regression: 424 passed, 3 skipped, 6 warnings, 58 subtests. Staged runtime: 255 passed, 10 skipped, 47 subtests.
+- Standard reference: NIST FIPS 180-4 SHA-256, https://doi.org/10.6028/NIST.FIPS.180-4. No external SHA implementation was copied and no new dependency was added.
+
+## What is not proven
+
+- No pinned real GGUF task-matrix scoring run has been executed.
+- No trained cross-organ latent coupling, semantic utility, production B3 route, weight update or training authority is established by target-token likelihood.
+- Android arm64 CI is a cross-compile only. No APK installation, connected device, Redmi native probe, or Redmi deployment has been verified.
+- Current release branch HEAD is the signed merge commit `8d93236c753f0194224c19edc7411d8d7082b1d6` (2026-11-23T16:24:48Z, PR #2444); the last available private V13OBS #115 snapshot (2026-11-24T09:28:11Z) reports that exact SHA installed, with updater/pipeline/dashboard/runtime UP_TO_DATE. That snapshot also reports AI runtime STOPPED_BY_USER, model process STOPPED and autostart false; last C3 turn was 7 tokens with TTFT 2.046 s and 358 prompt tokens, while historical B1/B2 native failures and zero valid offers remain. Fresh read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests issued 2026-11-26T00:56Z had NO_LIVE_RECEIPT at first poll, so the 2026-11-24 snapshot remains the last evidence. No device command or restart was sent. Do not claim PR #2520 is installed.
+
+## Parallel Core/Perception work
+
+- PR #2519 (eight-condition matrix producer) and #2517 (utility sync) are still based on the older #2515 head and had stale-base failures. Perception should rebase them onto #2520 head `7ffe4e23` after this exact green checkpoint.
+- PR #2513 (consent-gated Android HTTPS ACTION_VIEW) is now at `736233e5af847706bd0270da2051fcdd973b4a8f`. Fixed overescaped Python ECDSA DER test literals, Java canonical-JSON escaping, and moved open-url discovery into the companion's own `:android` help (with an operator-level help test) so the global operator source pin remains unchanged. Exact-head CI is still in progress; independent Boss/QA review and all device proof remain open.
+
+## Next executable Core action
+
+1. After Perception rebases #2519/#2517, add a separate `NATIVE_RECEIVER_MATRIX` one-shot local-TTY approval bound to the exact `matrix_sha256`, task/source/session/generation, target-token digest and installed sender/receiver model manifests.
+2. Wire the matrix into a real `:callosum` Runtime command with source revalidation before/after native execution, resource preflight, bounded deadline, cancellation, atomic one-shot consumption, and zero production/training authority.
+3. Collect at least 20 held-out task groups across at least two sessions and two task families; run all eight conditions on a pinned real GGUF in LOCAL_LINUX and require the candidate to beat every control before any semantic/B3 claim.
+4. Only then ask separately for explicit Redmi test authorization. Do not send device commands or change models/weights without that authorization.
+
+**User action: none required now.** No model download/swap is recommended; this checkpoint is an evidence-integrity fix, not a model comparison. Keep B3 OFF, official Age 0, and the installed Termux updater path unchanged.
+ 
+---
+
+# Core & Harness — Run 2 checkpoint (2026-11-26)
+
+**No user action required.** No Termux command, UPDATE_REQUEST, restart, model/weight download or swap, permission change, or device-data mutation is required.
+
+- Draft repair PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, current handoff SHA `024c88a8e2c2bae77bb354d25038ef7ee4e5bfee`; code checkpoint before handoff `5476ae6148e455fb30e06cc2b87c7eef93f6737c`. Parent is Core PR #2515 at `13cfe43a7a94d4b35d4a3be0249bd725b6f06c23`. DRAFT / NOT_RELEASED.
+- Repaired the pinned C++ compile failure: `decode_embeddings` now receives the loaded `const llama_model *`, checks non-null context/model, and all six call sites pass `model.value`. Refreshed the full native-builder → recovery → stage-builder → RuntimeDeploy hash chain; no pin check was weakened.
+- Corrected CI scope: the Cognition/Callosum native-receiver test is already executed inside the staged-runtime subprocess, so the workflow no longer runs it directly against the unpatched source Runtime. The synthetic one-task evaluator test now expects the parent helper's current `FIXTURE_ONLY` result and still asserts insufficient holdout, no semantic proof, zero authority and no persistence.
+- Parent exact-head workflow run 45721544481 failed on the undeclared `model` symbol (Linux and Android arm64 cross-compile) plus 7 Python assertions caused by the staged/source test mismatch and the synthetic-status expectation. PR #2520 exact-head CI is pending/not yet observed.
+- LOCAL_LINUX full checkout/pytest: BLOCKED / NOT_RUN because `git ls-remote` cannot resolve `github.com`. No full local native llama.cpp build is claimed. The six call-site/source changes were inspected; this is not a compiler pass.
+- Redmi: **REDMI_UNVERIFIED**. No fresh private phone receipt, native GGUF score, install, restart, model/weight/permission change, or deployment. GitHub push/PR is not phone deployment. B3 remains OFF; target-token likelihood is only a proxy, not generated-answer correctness or trained latent utility.
+- Research boundary: arXiv:2608.16347v2 remains relevant—activation/likelihood alignment can fail to produce correct generated answers. Keep generated-answer correctness separate from receiver-input and target-logprob evidence.
+
+**Next executable action:** poll exact PR #2520 checks; fix any failures and re-test. If green, coordinate Perception's #2517/#2519 rebase onto the repaired Core head, then continue the full source/session-bound eight-condition real-GGUF matrix. Do not activate B3 or claim semantic utility from compile success.
+---
+
 # Current V14 handoff — Core & Harness Run 1 (2026-11-25)
 
 **User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.

@@ -141,6 +141,90 @@ bool valid_sha256_hex(const std::string & value) {
     });
 }
 
+
+uint32_t rotate_right(uint32_t value, unsigned int shift) {
+    return (value >> shift) | (value << (32u - shift));
+}
+
+std::string sha256_hex(const std::vector<uint8_t> & input) {
+    static const uint32_t constants[64] = {
+        0x428a2f98u, 0x71374491u, 0xb5c0fbcfu, 0xe9b5dba5u, 0x3956c25bu, 0x59f111f1u, 0x923f82a4u, 0xab1c5ed5u,
+        0xd807aa98u, 0x12835b01u, 0x243185beu, 0x550c7dc3u, 0x72be5d74u, 0x80deb1feu, 0x9bdc06a7u, 0xc19bf174u,
+        0xe49b69c1u, 0xefbe4786u, 0x0fc19dc6u, 0x240ca1ccu, 0x2de92c6fu, 0x4a7484aau, 0x5cb0a9dcu, 0x76f988dau,
+        0x983e5152u, 0xa831c66du, 0xb00327c8u, 0xbf597fc7u, 0xc6e00bf3u, 0xd5a79147u, 0x06ca6351u, 0x14292967u,
+        0x27b70a85u, 0x2e1b2138u, 0x4d2c6dfcu, 0x53380d13u, 0x650a7354u, 0x766a0abbu, 0x81c2c92eu, 0x92722c85u,
+        0xa2bfe8a1u, 0xa81a664bu, 0xc24b8b70u, 0xc76c51a3u, 0xd192e819u, 0xd6990624u, 0xf40e3585u, 0x106aa070u,
+        0x19a4c116u, 0x1e376c08u, 0x2748774cu, 0x34b0bcb5u, 0x391c0cb3u, 0x4ed8aa4au, 0x5b9cca4fu, 0x682e6ff3u,
+        0x748f82eeu, 0x78a5636fu, 0x84c87814u, 0x8cc70208u, 0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
+    };
+    std::vector<uint8_t> data = input;
+    const uint64_t bit_length = static_cast<uint64_t>(data.size()) * 8u;
+    data.push_back(0x80u);
+    while (data.size() % 64u != 56u) data.push_back(0u);
+    for (int shift = 56; shift >= 0; shift -= 8) {
+        data.push_back(static_cast<uint8_t>((bit_length >> shift) & 0xffu));
+    }
+
+    uint32_t state[8] = {
+        0x6a09e667u, 0xbb67ae85u, 0x3c6ef372u, 0xa54ff53au,
+        0x510e527fu, 0x9b05688cu, 0x1f83d9abu, 0x5be0cd19u
+    };
+    for (std::size_t offset = 0; offset < data.size(); offset += 64u) {
+        uint32_t words[64] = {};
+        for (int i = 0; i < 16; ++i) {
+            const std::size_t base = offset + static_cast<std::size_t>(i) * 4u;
+            words[i] = (static_cast<uint32_t>(data[base]) << 24u) |
+                       (static_cast<uint32_t>(data[base + 1]) << 16u) |
+                       (static_cast<uint32_t>(data[base + 2]) << 8u) |
+                       static_cast<uint32_t>(data[base + 3]);
+        }
+        for (int i = 16; i < 64; ++i) {
+            const uint32_t x = words[i - 15], y = words[i - 2];
+            const uint32_t s0 = rotate_right(x, 7u) ^ rotate_right(x, 18u) ^ (x >> 3u);
+            const uint32_t s1 = rotate_right(y, 17u) ^ rotate_right(y, 19u) ^ (y >> 10u);
+            words[i] = words[i - 16] + s0 + words[i - 7] + s1;
+        }
+        uint32_t a = state[0], b = state[1], c = state[2], d = state[3];
+        uint32_t e = state[4], f = state[5], g = state[6], h = state[7];
+        for (int i = 0; i < 64; ++i) {
+            const uint32_t sum1 = rotate_right(e, 6u) ^ rotate_right(e, 11u) ^ rotate_right(e, 25u);
+            const uint32_t choose = (e & f) ^ (~e & g);
+            const uint32_t temp1 = h + sum1 + choose + constants[i] + words[i];
+            const uint32_t sum0 = rotate_right(a, 2u) ^ rotate_right(a, 13u) ^ rotate_right(a, 22u);
+            const uint32_t majority = (a & b) ^ (a & c) ^ (b & c);
+            const uint32_t temp2 = sum0 + majority;
+            h = g; g = f; f = e; e = d + temp1;
+            d = c; c = b; b = a; a = temp1 + temp2;
+        }
+        state[0] += a; state[1] += b; state[2] += c; state[3] += d;
+        state[4] += e; state[5] += f; state[6] += g; state[7] += h;
+    }
+
+    std::ostringstream output;
+    output << std::hex << std::setfill('0');
+    for (uint32_t word : state) output << std::setw(8) << word;
+    return output.str();
+}
+
+std::string target_token_ids_sha256(const std::vector<int32_t> & tokens) {
+    std::vector<uint8_t> bytes;
+    bytes.reserve(tokens.size() * 4u);
+    for (int32_t token : tokens) {
+        const uint32_t value = static_cast<uint32_t>(token);
+        bytes.push_back(static_cast<uint8_t>(value & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((value >> 8u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((value >> 16u) & 0xffu));
+        bytes.push_back(static_cast<uint8_t>((value >> 24u) & 0xffu));
+    }
+    return sha256_hex(bytes);
+}
+
+bool target_token_ids_hash_matches(const std::vector<int32_t> & tokens, const std::string & supplied) {
+    if (tokens.empty() || !valid_sha256_hex(supplied) ||
+        std::any_of(tokens.begin(), tokens.end(), [](int32_t token) { return token < 0; })) return false;
+    return target_token_ids_sha256(tokens) == supplied;
+}
+
 bool all_finite(const std::vector<float> & values) {
     return std::all_of(values.begin(), values.end(), [](float value) { return std::isfinite(value); });
 }
@@ -279,6 +363,12 @@ int selftest() {
     const float negative_infinity_logits[] = {-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()};
     if (logprob_from_logits(negative_infinity_logits, 2, 0, logprob)) return 22;
     if (!valid_sha256_hex(std::string(64, 'a')) || valid_sha256_hex(std::string(63, 'a'))) return 23;
+    if (sha256_hex(std::vector<uint8_t>{'a', 'b', 'c'}) != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad") return 24;
+    const std::vector<int32_t> target_ids{0, 1, 2};
+    const std::string target_ids_sha = "ad5dc1478de06a4c2728ea528bd9361a4b945e92a414bf4d180cedaaeaa5f4cc";
+    if (!target_token_ids_hash_matches(target_ids, target_ids_sha)) return 25;
+    if (target_token_ids_hash_matches(target_ids, std::string(64, 'a'))) return 26;
+    if (target_token_ids_hash_matches(std::vector<int32_t>{0, 1, -1}, target_ids_sha)) return 27;
     std::cout << "PASS\n";
     return 0;
 }
@@ -304,10 +394,10 @@ struct BatchGuard {
     ~BatchGuard() { if (active) llama_batch_free(value); }
 };
 
-bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_dim,
+bool decode_embeddings(llama_context * ctx, const llama_model * model, int rows, int input_dim, int output_dim,
                        const std::vector<int> & positions, const std::vector<float> & input,
                        std::vector<float> & output, int & decode_status) {
-    if (!v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
+    if (!ctx || !model || !v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
     llama_memory_clear(llama_get_memory(ctx), true);
     BatchGuard batch;
     batch.value = llama_batch_init(rows, input_dim, 1);
@@ -387,6 +477,11 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         std::cerr << "invalid input batch\n";
         return 2;
     }
+    const std::string verified_target_hash = target_tokens.empty() ? std::string() : v14::target_token_ids_sha256(target_tokens);
+    if (!target_tokens.empty() && !v14::target_token_ids_hash_matches(target_tokens, target_hash)) {
+        std::cerr << "target token ID hash mismatch\n";
+        return 2;
+    }
     BackendGuard backend;
     ModelGuard model;
     ContextGuard context;
@@ -448,7 +543,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     std::vector<float> positive_out, zero_out, shuffled_out, row_shuffled_out, repeat_out;
     int positive_status = -999, zero_status = -999, shuffle_status = -999, row_shuffle_status = -999, repeat_status = -999;
     const bool row_shuffle_applicable = rows >= 2;
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status)) {
+    if (!decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status)) {
         std::cerr << "native positive decode failed\n";
         return 6;
     }
@@ -459,10 +554,10 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         std::cerr << "native teacher-forced target scoring failed\n";
         return 7;
     }
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
-        (row_shuffle_applicable && !decode_embeddings(context.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
+    if (!decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
+        !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
+        (row_shuffle_applicable && !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
+        !decode_embeddings(context.value, model.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
         std::cerr << "native control decode or output embedding failed\n";
         return 6;
     }
@@ -474,7 +569,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         target_score_json << ",\"target_score\":{\"schema\":\"v14.native-receiver-target-score/1\""
                           << ",\"score_method\":\"TEACHER_FORCED_TARGET_LOGPROB_V1\""
                           << ",\"target_token_count\":" << target_tokens.size()
-                          << ",\"target_token_ids_sha256\":\"" << target_hash << "\""
+                          << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
                           << ",\"token_logprobs\":[";
         for (std::size_t i = 0; i < target_logprobs.size(); ++i) {
             if (i) target_score_json << ",";
@@ -540,8 +635,9 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
     };
+    const std::string verified_target_hash = v14::target_token_ids_sha256(target_tokens);
     if (matrices.size() != expected_conditions.size() || target_tokens.empty() ||
-        target_tokens.size() > 512 || !v14::valid_sha256_hex(target_hash)) return 2;
+        target_tokens.size() > 512 || !v14::target_token_ids_hash_matches(target_tokens, target_hash)) return 2;
     int max_rows = 1;
     int max_position = 0;
     for (std::size_t i = 0; i < matrices.size(); ++i) {
@@ -597,7 +693,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         const int target_context_rows = item.rows == 0 ? 1 : item.rows;
         const bool decoded = item.rows == 0
             ? decode_bos(context.value, model.value, decode_status)
-            : decode_embeddings(context.value, item.rows, input_dim, output_dim,
+            : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
                                 item.positions, item.values, output, decode_status);
         if (!decoded) return 6;
         std::vector<double> token_logprobs;
@@ -616,7 +712,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                        << ",\"target_score\":{\"schema\":\"v14.native-receiver-target-score/1\""
                        << ",\"score_method\":\"TEACHER_FORCED_TARGET_LOGPROB_V1\""
                        << ",\"target_token_count\":" << target_tokens.size()
-                       << ",\"target_token_ids_sha256\":\"" << target_hash << "\""
+                       << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
                        << ",\"token_logprobs\":[";
         for (std::size_t j = 0; j < token_logprobs.size(); ++j) {
             if (j) condition_json << ",";
@@ -633,7 +729,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
               << ",\"receiver_input_dim\":" << receiver_input_dim
               << ",\"output_dim\":" << output_dim
               << ",\"target_token_count\":" << target_tokens.size()
-              << ",\"target_token_ids_sha256\":\"" << target_hash << "\""
+              << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
               << ",\"conditions\":" << condition_json.str() << "}\n";
     return 0;
 }
