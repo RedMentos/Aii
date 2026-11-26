@@ -1327,3 +1327,26 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Limitations / next test:** the cue predictor is still a 13-D hand-engineered feature model, not learned audio patch embeddings or a trained speech model. The omission signal is a salience proxy, not proof of an omitted semantic event. Run the exact RAW EAR fastpath workflow on the new head, then add held-out alternating/omitted-event, shuffled-cue, silence/noise, session-reset and consent-rotation ablations. Keep the signal shadow/capped and compare A4 decisions against a no-predictor control before any gain increase.
 
 **Status:** CODE_AND_TESTS_PUSHED / FORMULA_LEVEL_LOCAL_REPRODUCTION_PASS / EXACT_BRANCH_CI_NOT_YET_OBSERVED / FULL_LOCAL_AUDIO_SUITE_NOT_RUN / REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## R-163 — Timed acoustic activity expectations and omission windows (2026-11-26)
+
+**Primary research lead:** Yamada & Chao, *Joint encoding of “what” and “when” predictions through error-modulated plasticity in reservoir spiking networks*, arXiv:2510.14382 (2025-10-16): https://arxiv.org/abs/2510.14382
+
+**Evidence level:** ABSTRACT_ONLY. The arXiv record/abstract was inspected; the full text, methods, appendices, code repository, dataset terms and software license were not verified in this run. Do not describe this as a full-paper review or a reproduced result. No code, weights or dataset were reused.
+
+**Abstract-level idea:** the work separates prediction of event identity (“what”) from event timing (“when”), with distinct readouts over a simulated spiking reservoir and an error-modulated, attention-gated three-factor learning rule. This is a research lead for representing timing surprise separately from feature-vector prediction error. Its simulation setting is not evidence of mobile/Android feasibility, audio accuracy or a trained V14 organ.
+
+**V14 implementation hypothesis:** R-162 exposes signed RAW EAR next-feature-delta error; its negative component means the predicted acoustic feature change exceeded the observed change. That is not the same as a discrete expected activity event failing to occur. PR #2498 now adds a separate, deliberately small AudioEventExpectationRegistry (v13/code/v13/audio_event_expectation.py) to predict only the timing of existing heuristic VOICED/IMPULSIVE activity-class onsets. It retains at most 8 inter-onset intervals per class and 16 source/generation streams; confidence is explicitly an uncalibrated timing proxy. An omission is emitted only after a valid FINAL non-target/SILENCE window crosses the expected time window, or when a new onset arrives late. Continuous activity can fulfil an expected window. UNCERTAIN, PROVISIONAL, capture gaps, chronology resets and consent rotation are censored/reset rather than interpreted as missing sound.
+
+**Runtime consumer:** audio_voice_cues.consume_pcm16_voice_window() sends this bounded signal to A4 novelty only, capped at 0.05. It does not change external_interrupt, C3 summary/admission, speaker identity, source truth, learning/action authority or model weights. State is ephemeral and consent-scoped; no PCM, transcript, embeddings or training examples are persisted. This is an online timing-statistics shadow, not a neural predictor, semantic event recognizer, calibrated probability or JEPA replacement.
+
+**Code/test evidence in PR #2498:** added source-bound imports/Runtime registry/reset; explicit fail-closed behavior so an unavailable optional event registry cannot break the primary RAW EAR path; tests for regular/late/irregular timing, continuous-event fulfillment, uncertainty/provisional censoring, chronology/gap/consent reset, bounded capacity, A4-only routing and optional-registry failure. The integrated audio builder now pins all 14 direct sources, including both temporal predictor modules; GitHub readback audit found all 14 expected blob SHAs equal their exact current file blobs.
+
+**Local evidence:** CPython 3.13.5 LOCAL_LINUX scratch prototype: py_compile PASS and 11/11 isolated unit tests PASS. The scratch prototype blob SHA differs from the pushed GitHub module blob, so these results are not claimed as execution of the exact repository blob. No full local Aii checkout is mounted and git ls-remote/raw GitHub DNS failed; exact repository consumer tests are delegated to exact-head CI and remain pending.
+
+**Integration blocker:** the Perception integrated audio builder is now blob 18f9177be26720f0daa41dd21123238ffb249d47; Core/QA's downstream termux_runtime_recovery_candidate_20261121.py still pins the older builder blob 831080bceec90711bd42e0fa4eba47c669975c98. Do not weaken the hash gate. Core/QA must rebind the recovery pin, then recompute the stager and deployer pins in dependency order before staged/integrated acceptance.
+
+**Device boundary:** no Android microphone/AudioRecord provider, native audio model, Termux or Redmi execution was available. The last board receipt (#767) is stale and predates the final b20e9 CI result; no fresh private owner-read receipt was obtained in this run. REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Status:** ABSTRACT_ONLY_RESEARCH_LEAD / CODE_AND_CONSUMER_WIRED_ON_PERCEPTION_BRANCH / LOCAL_LINUX_SCRATCH_11_OF_11_NOT_EXACT_BLOB / SOURCE_PIN_AUDIT_14_OF_14 / EXACT_HEAD_CI_PENDING / CORE_RECOVERY_PIN_BLOCKED / NO_ANDROID_PROOF / NO_WEIGHT_UPDATE.
