@@ -1,3 +1,27 @@
+## Research & Perception Run 41 — RAW EAR temporal window chronology (2026-11-26T06:08:28+01:00)
+
+**Owner:** Research & Perception. **Branch:** `research-perception/v14-audio-temporal-window-order-20261126-run41b`. **PR:** [#2527](https://github.com/RedMentos/Aii/pull/2527), DRAFT, child of #2524. The branch is based on the current parent-branch head `b298719af8faf75811d03d486de7725395a590b0`; the earlier behind-base attempt #2526 was closed as superseded, without force-push.
+
+**Concrete defect / Canon path:** `TemporalVoiceEvidence.update()` checked only increasing `end_ms`. A later interval could have an earlier `start_ms` and a later end, so A4's source/generation-scoped voice-evidence filter could accept a temporally rewound interval. This disagreed with the existing speaker-evidence chronology rule. The function is consumed by `audio_voice_cues.consume_pcm16_voice_window()` through `TemporalVoiceEvidenceRegistry.update()` before A4 salience modulation.
+
+**Implementation:** the filter now tracks `last_start_ms` as well as `last_end_ms` per source/generation. A start earlier than the prior accepted start is rejected before state mutation. Equal starts remain valid for cumulative windows if the end advances; forward-moving overlapping windows still advance only the unseen suffix. Both clocks reset with source/generation changes and the existing long-gap reset. No microphone, ASR, speaker identity, learning/action authority or capture permission was added.
+
+**Exact code evidence:** source blob `f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb`; test blob `fe7a716b4ce88ed2868337deda9f2c454360561b`; comparator workflow pin updated in commit `998a8f02e3011b63581c2888316b4073b589d474`. PR head at this checkpoint: `998a8f02e3011b63581c2888316b4073b589d474`.
+
+**LOCAL_LINUX / CPython 3.13.5:** exact fetched module and test files were reconstructed in a scratch package and their Git blob hashes matched the pushed blobs. `py_compile` PASS; focused `test_audio_temporal_evidence.py` **14/14 PASS**. The new backward-start negative test fails against the old source with `DID NOT RAISE`, then passes with the patch. Deterministic stress: 10,000 monotonic overlapping windows PASS; 1,000 backward-start cases rejected; source/generation reset accepts a lower new time origin. The full Aii checkout/full suite was NOT_RUN locally (no checkout mounted; GitHub DNS unavailable).
+
+**CI:** first exact run exposed two separate issues. The Perception-owned RAW EAR/libfvad comparator failed only because its workflow still pinned the old temporal blob; that pin is now updated and rerun `45759867790` is queued. Shared staged-runtime run `45759546449` failed because the Core-owned recovery/stage chain still pins the old audio source blob; the failure is `audio source blob changed: v13/audio_temporal_evidence.py`. New staged rerun `45759867775` is queued. Do not edit Core/QA-owned recovery, stage or RuntimeDeploy pins from this lane; Core/Integrator must rebind them bottom-up to `f8ebe2c7d0a196642f0383a54a97025b4c1bbaeb`.
+
+**Actual user effect / limits:** the existing caller-supplied PCM16 A4 path now rejects rewound window starts. It does not create normal-turn microphone capture, ASR, speech output, full-duplex, learned audio weights or C3 generation. The producer still requires an external consent provider; mic capture remains OFF. No native GGUF, gradient/weight, Redmi/Termux or Android proof. B3 remains OFF; PR is NOT_RELEASED.
+
+**Device / updater:** historical private V13OBS issue #115 (2026-11-24 09:28 UTC) reported auto-update enabled and dashboard/runtime UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI was STOPPED_BY_USER and model processes stopped. No newer comments arrived on private read issues #862–#864. Current install and updater execution are therefore REDMI_UNVERIFIED; GitHub push is not deployment. No UPDATE_REQUEST, CHAT_SEND, restart, model/weight/permission/data mutation occurred.
+
+**Research R-163:** FASTDIAR (arXiv:2610.02941, 2026-10-02 preprint) is an abstract-reviewed candidate for optional frame-level speaker embeddings only. Official code repo is MIT; checkpoint-weight license is not separately established. Repo lists 2.4M/4.6M/10.4M checkpoints, 192-D embeddings every 80 ms, PyTorch/torchaudio/torchcodec and FFmpeg; no Android/ARM64 evidence. No code or weights reused/downloaded. Keep as a candidate pending weight licensing and CPU/ARM comparison.
+
+**Next executable step:** Core rebinds the recovery → stage → RuntimeDeploy audio-source pin chain and reruns exact CI; Perception reruns its comparator workflow. After integration, Core must still provide a normal-turn caller/lease spanning the full C3 generator. No user action required.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
