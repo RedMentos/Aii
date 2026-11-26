@@ -2274,3 +2274,6 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 - **Redmi / updater:** REDMI_UNVERIFIED. Last V13OBS #115 is historical (2026-11-24): auto-update enabled/runtime UP_TO_DATE at `8d93236`, but AI STOPPED_BY_USER and model process STOPPED. Owner-read #978/#979 had NO_LIVE_RECEIPT at last poll. No UPDATE_REQUEST or deployment was sent; current updater/device state is unverified.
 - **Next step:** Core refreshes #2525 on #2524, then run an already-present GGUF diagnostic only with separate explicit local approval. Before any B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention tests. B3 stays OFF.
 - **User action required:** none. No model, weights, app, permission or user data was changed.
+
+
+**Whole-system P0 status:** Issue #1904 remains OPEN. The last available device snapshot is historical and reports AI STOPPED_BY_USER with zero valid B1/B2 offers; no new authenticated device receipt was obtained. Run 48 is a complementary receiver-diagnostic improvement, not a basic-chat, offer-delivery, normal-turn or Redmi fix. Do not mark the P0 gate closed.
