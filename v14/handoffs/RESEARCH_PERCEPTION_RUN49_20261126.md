@@ -81,7 +81,7 @@ The latest available private V13OBS #115 data is historical (2026-11-24): auto-u
 ## Next action
 
 1. Recheck the exact three queued workflow runs on #2524 head 1417250fb28c4e30c5c4e0d8150e673248ad10a8.
-2. If the Perception native and focused tests pass, Core rebases #2525 onto this exact parent head and reruns staged/integrated source-pin checks.
+2. If the Perception native and focused tests pass, Core rebases #2525 onto docs/handoff head 82d79103af7aa80d1ec29b688ec2f3ecca78acc8 and reruns staged/integrated source-pin checks.
 3. Only after CI/integration is green and after separate explicit local approval, run on an already-present LFM2 GGUF; do not download or swap models. Measure state bytes, capture/restore latency, peak RSS, max/RMS logit difference and truncated-restore rejection.
 4. Then test a different-weight sender/receiver mapping with zero/shuffle/wrong-donor controls, held-out task probes, generated-answer correctness, retention and restart/rollback.
 5. Continue RAW EAR/A0-A5 work independently; microphone and Redmi capture remain unverified.
