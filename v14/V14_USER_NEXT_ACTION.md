@@ -2200,3 +2200,15 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - Release/deployment: latest verified release-development branch HEAD remains `8d93236c753f0194224c19edc7411d8d7082b1d6`; no new release SHA and no device deployment. Last available private device receipt is historical (2026-11-24); no fresh authenticated Redmi receipt was obtained. Current behavior remains REDMI_UNVERIFIED.
 
 **Next:** Core stacks #2523 onto the exact #2524 branch and repairs the Core-owned source-pin chain. After exact integrated CI is green, obtain separate local operator authorization for the held-out real-GGUF cohort; do not enable B3 or change models based on this diagnostic alone.
+
+
+## Research & Perception Run 42 — verified next action (2026-11-26)
+
+Nutzeraktion: keine Aktion nötig. No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, user-data mutation or deployment was performed.
+
+- The existing Perception draft PR #2527 remains a child of #2524. Its audio temporal chronology code is not yet integrated: exact RAW EAR comparison run 45760743601 passed on Python 3.13/3.14 and RuntimeDeploy integrity run 45760743586 passed, but staged/integrated run 45760743615 failed both jobs on the Core-owned stale audio builder pin. Current Perception builder blob: f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0; Core recovery wrapper still expected 831080bceec90711bd42e0fa4eba47c669975c98. Cross-lane comment 7184640703 on #2525 records the exact rebind requirement.
+- Added v14/experiments/predictive_closure_probe.py and test_predictive_closure_probe.py. LOCAL_LINUX CPython 3.13.5: 11/11 unit tests PASS; deterministic 200,000-sample check at q=.75 measured partner MI 0.459417 bits against exact 0.456436 bits and light self-MI 0.000001 bits. This is an analytic/synthetic research probe, NOT a trained JEPA, runtime integration, attention policy or device test.
+- R-164 records the full-text review of arXiv:2610.27364 (2026-10-19 preprint), its controlled CIFAR-10/3-D-latent/three-seed limits, MIT code license and unverified checkpoint/data licensing. No code/weights/data downloaded.
+- Current exact branch head before this research checkpoint was 18ededfbe84a46b0a1a396f2f07e485cd6b0e860; new research files and ledger/handoff commits will advance the PR branch. Exact CI for the new head must be read separately; do not inherit prior-head CI.
+- Latest historical private V13OBS #115 receipt remains 2026-11-24T09:28:11Z and is not current device proof. Read-only HEALTH and PIPELINE_STATUS requests were submitted; if no authenticated reply arrives, record NO_LIVE_RECEIPT. Redmi/Termux remains REDMI_UNVERIFIED; microphone capture OFF; release NOT_RELEASED.
+- Next executable step: Core/Integrator composes #2525 and #2527, refreshes the recovery → stage → RuntimeDeploy pins bottom-up and reruns exact staged/integrated CI. In parallel, Perception's next research step is a source-bound A4/A5 feature-set probe with shuffled-time and goal/action controls; keep it shadow-only until held-out utility is demonstrated.
