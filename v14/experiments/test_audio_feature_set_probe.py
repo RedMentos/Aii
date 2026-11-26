@@ -6,7 +6,10 @@ import sys
 import unittest
 from pathlib import Path
 
-from audio_feature_set_probe import evaluate_feature_set, feature_values_from_packet
+from audio_feature_set_probe import (
+    evaluate_feature_set, evaluate_relative_incremental_information,
+    feature_values_from_packet,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CODE_ROOT = REPO_ROOT / "v13" / "code"
@@ -123,8 +126,8 @@ def _build_packet(index, pitch_bit, prosody_bit):
 
 
 def _records(count=64, seed=11):
-    if count % 2 or count < 32:
-        raise ValueError("fixture count must be even and at least 32")
+    if count % 4 or count < 32:
+        raise ValueError("fixture count must be divisible by four and at least 32")
     rng = random.Random(seed)
     combinations = [(0, 0), (0, 1), (1, 0), (1, 1)]
     per_goal = count // 2
@@ -152,6 +155,7 @@ def _records(count=64, seed=11):
         }
         records.append({
             "evidence_class": "SYNTHETIC_FIXTURE",
+            "session_id": f"session-{index // max(1, count // 4)}",
             "packet": packet,
             "outcome": {
                 "goal_id": "goal-follow" if goal_bit else "goal-turn-taking",
@@ -243,6 +247,51 @@ class AudioFeatureSetProbeTests(unittest.TestCase):
             self.assertEqual(values["pitch_band"], "HIGH" if pitch_bit else "LOW")
             self.assertEqual(values["prosody_band"], "HIGH" if prosody_bit else "LOW")
             self.assertEqual(values["activity_hint"], "VOICED")
+
+
+    def test_relative_incremental_information_uses_session_local_history(self):
+        result = evaluate_relative_incremental_information(
+            _records(128), seed=17, permutations=128,
+        )
+        self.assertEqual(result["session_count"], 4)
+        self.assertEqual(result["minimum_records_per_session"], 32)
+        self.assertTrue(result["session_history_reset_verified"])
+        self.assertFalse(result["history_crosses_sessions"])
+        self.assertEqual(result["history_window_ms"], 5000)
+        self.assertGreater(result["history_nonempty_fraction"], 0.9)
+        self.assertGreater(result["rimi_proxy"], 0.99)
+        self.assertLessEqual(result["permutation_p_value"], 0.05)
+        self.assertTrue(all(item["rimi_proxy"] > 0.99 for item in result["per_session"]))
+        self.assertFalse(result["paper_exact_rimi"])
+        self.assertFalse(result["runtime_integrated"])
+
+    def test_relative_incremental_information_rejects_missing_or_single_session(self):
+        records = _records(64)
+        for record in records:
+            record.pop("session_id")
+        with self.assertRaisesRegex(ValueError, "session identity is missing"):
+            evaluate_relative_incremental_information(records)
+
+        records = _records(64)
+        for record in records:
+            record["session_id"] = "one-session"
+        with self.assertRaisesRegex(ValueError, "at least two sessions"):
+            evaluate_relative_incremental_information(records)
+
+    def test_relative_incremental_information_rejects_nonmonotonic_session_time(self):
+        records = _records(64)
+        records[1]["packet"]["segments"][0]["start_ms"] = (
+            records[0]["packet"]["segments"][0]["start_ms"]
+        )
+        with self.assertRaisesRegex(ValueError, "session audio windows must advance monotonically"):
+            evaluate_relative_incremental_information(records)
+
+    def test_relative_incremental_information_rejects_invalid_window_and_bool_permutations(self):
+        records = _records(64)
+        with self.assertRaisesRegex(ValueError, "history window"):
+            evaluate_relative_incremental_information(records, history_window_ms=0)
+        with self.assertRaisesRegex(ValueError, "permutations"):
+            evaluate_relative_incremental_information(records, permutations=True)
 
 
 if __name__ == "__main__":
