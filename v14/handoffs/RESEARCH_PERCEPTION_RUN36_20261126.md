@@ -58,3 +58,12 @@ R-163 records Yamada & Chao, arXiv:2510.14382, as ABSTRACT_ONLY. Full paper/meth
 2. Coordinate Core/QA's exact recovery→stager→deployer pin rebind; rerun staged/integrated and migration tests.
 3. Add frozen/held-out acoustic controls against persistence, no-event-predictor, shuffled timing, silence/noise, uncertain/censored windows and consent reset.
 4. Keep the new signal SHADOW/capped until held-out attention utility and source/voice retention are demonstrated.
+
+
+## Exact-head CI follow-up (2026-11-26 00:24 UTC; code SHA d7988f2e1031910a1013db44b24b81ce6ee784d0)
+
+- RAW EAR fastpath #45728258965: PASS, Python 3.13 and 3.14; 135 tests passed in each job, including compile and consumer tests.
+- RAW EAR/libfvad comparison #45728259057: PASS, Python 3.13 and 3.14; 9 tests passed in each job.
+- Offline runtime-integrity #45728258868: PASS, Python 3.11 and 3.14; 41 tests passed in each job.
+- Staged runtime/integrated #45728258860: FAIL. Staged runtime: 17 failed, 236 passed, 10 skipped, 2 errors. Integrated regression: 1 failed. The exact exception is the inherited Core/QA AUDIO_BUILDER_BLOB_SHA1 pin expecting 831080bceec90711bd42e0fa4eba47c669975c98 instead of the Perception builder blob 18f9177be26720f0daa41dd21123238ffb249d47. Two-checkout migration reports PARTIAL rather than UPDATED. Do not bypass the source gate.
+- The three Perception-specific CI lanes are green; the overall PR is not green and remains NOT_RELEASED. Next owner: Core/QA must rebind the recovery→stager→deployer chain and rerun the staged/integrated suite.
