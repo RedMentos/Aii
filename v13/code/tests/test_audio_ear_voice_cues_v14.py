@@ -1,7 +1,10 @@
 """Synthetic RAW EAR voice-cue extraction and real A4/C3 adapter regressions."""
 from concurrent.futures import ThreadPoolExecutor
+import ast
 import importlib.util
 import json
+import sys
+import types
 import math
 import random
 import struct
@@ -1323,3 +1326,164 @@ def test_integrated_audio_candidate_source_blob_pins_match_current_tree():
         if actual != expected:
             mismatches.append((relative, expected, actual))
     assert not mismatches, f"stale integrated audio candidate source pins: {mismatches}"
+
+
+def _load_integrated_audio_candidate_sources():
+    code_dir = Path(__file__).resolve().parents[1]
+    script = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("integrated_audio_context_candidate_run51", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    sources = {
+        relative: (code_dir / relative).read_bytes()
+        for relative in ("v13/runtime.py", "v13/cognition.py", "v13/arithmetic_reflex.py")
+    }
+    return module, module.apply_sources(code_dir, sources)
+
+
+def _load_candidate_audio_context_store(candidate, monkeypatch):
+    module = types.ModuleType("v13.audio_context_store")
+    module.__package__ = "v13"
+    source = candidate["v13/audio_context_store.py"]
+    exec(compile(source, "v13/audio_context_store.py", "exec"), module.__dict__)
+    monkeypatch.setitem(sys.modules, "v13.audio_context_store", module)
+    return module
+
+
+def test_integrated_audio_candidate_applies_compiles_and_requires_two_phase_revocation():
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    expected = {
+        "v13/runtime.py",
+        "v13/cognition.py",
+        "v13/arithmetic_reflex.py",
+        "v13/audio_context_store.py",
+    }
+    assert expected.issubset(candidate)
+    for path in sorted(expected):
+        compile(candidate[path], path, "exec")
+
+    runtime_source = candidate["v13/runtime.py"].decode("utf-8")
+    assert "audio_rejection=e.pop('_audio_rejection',None)" in runtime_source
+    assert "MISSING_REVOCATION_SUBSCRIPTION" in runtime_source
+    assert "meta['audio_input']={'status':'REJECTED'" in runtime_source
+    assert "Audio wird flüchtig verarbeitet und nicht als PCM gespeichert." in runtime_source
+
+    tree = ast.parse(runtime_source)
+    wanted = {"_AUDIO_WINDOW_REQUIRED_FIELDS", "_AUDIO_WINDOW_OPTIONAL_FIELDS"}
+    assignments = [
+        node for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id in wanted for target in node.targets)
+    ]
+    validator = next(
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_validate_audio_window"
+    )
+    namespace = {}
+    exec(compile(ast.Module(body=assignments + [validator], type_ignores=[]),
+                 "candidate_audio_validator.py", "exec"), namespace)
+    assert "consent_revocation_subscribe" in namespace["_AUDIO_WINDOW_REQUIRED_FIELDS"]
+    assert namespace["_AUDIO_WINDOW_OPTIONAL_FIELDS"] == set()
+
+    valid = {
+        "pcm16": b"\\x00\\x00" * 160,
+        "sample_rate": 16000,
+        "start_ms": 0,
+        "source_id": SOURCE_ID,
+        "consent_receipt": RECEIPT,
+        "consent_check": lambda *_: True,
+        "consent_guard": lambda *_: None,
+        "finality": "FINAL",
+        "consent_revocation_subscribe": lambda *_: (lambda: None),
+    }
+    assert namespace["_validate_audio_window"](valid) == valid
+    missing = dict(valid)
+    missing.pop("consent_revocation_subscribe")
+    with pytest.raises(ValueError, match="exact PCM16/consent fields"):
+        namespace["_validate_audio_window"](missing)
+    invalid = dict(valid)
+    invalid["consent_revocation_subscribe"] = None
+    with pytest.raises(ValueError, match="two-phase consent revocation subscription"):
+        namespace["_validate_audio_window"](invalid)
+
+
+def test_integrated_audio_candidate_context_store_is_source_bound_and_revocable(tmp_path, monkeypatch):
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    context_store = _load_candidate_audio_context_store(candidate, monkeypatch)
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    event_id = event["event_id"]
+    generation_id = event["brain_generation_id"]
+
+    with audio_consent_lease(
+        runtime, SOURCE_ID, generation_id, RECEIPT, provider.check, provider.lease
+    ) as lease:
+        audio_result = consume_pcm16_voice_window(
+            runtime,
+            tone(140),
+            sample_rate=16000,
+            start_ms=0,
+            event_id=event_id,
+            generation_id=generation_id,
+            source_id=SOURCE_ID,
+            consent_receipt=RECEIPT,
+            consent_check=None,
+            consent_guard=None,
+            consent_lease=lease,
+            finality="FINAL",
+            token_budget=256,
+        )
+        assert audio_result["c3_admission"].status == "ADMITTED"
+        audio_window = {
+            "source_id": SOURCE_ID,
+            "consent_receipt": RECEIPT,
+            "consent_check": provider.check,
+            "_consent_lease": lease,
+        }
+        context = context_store.record(runtime, event_id, audio_result, audio_window)
+        assert context is not None
+        visible = context_store.view(runtime, event_id, "C3")
+        assert visible is not None
+        summary = runtime.store.read_source(context["summary_source_ref"])
+        body = json.loads(summary)
+        assert body["transcript"] is None
+        assert body["learning_authority"] is False
+        assert body["action_authority"] is False
+        assert "pcm16" not in summary.lower()
+        assert "raw_pcm" not in summary.lower()
+
+    assert context_store.view(runtime, event_id, "C3") is None
+    assert context_store.has_context(runtime, event_id) is False
+
+
+def test_integrated_audio_candidate_surfaces_missing_revocation_hook_on_legacy_queue_item(tmp_path, monkeypatch):
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    _load_candidate_audio_context_store(candidate, monkeypatch)
+    runtime_source = candidate["v13/runtime.py"].decode("utf-8")
+    tree = ast.parse(runtime_source)
+    wrapper = next(
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_audio_lease_turn"
+    )
+    candidate_runtime = types.ModuleType("v13._candidate_runtime_run51")
+    candidate_runtime.__package__ = "v13"
+    candidate_runtime.threading = threading
+    candidate_runtime._AUDIO_ORIGINAL_TURN = lambda self, event: event.get("_audio_rejection")
+    exec(compile(ast.Module(body=[wrapper], type_ignores=[]),
+                 "candidate_audio_runtime.py", "exec"), candidate_runtime.__dict__)
+
+    runtime, event = make_runtime(tmp_path)
+    runtime._audio_contexts = {}
+    runtime._audio_revocation_contexts = {}
+    runtime.turn_event = None
+    runtime.current = None
+    runtime.cancel_event = threading.Event()
+    notices = []
+    runtime.notice = notices.append
+    event["_audio_window"] = {"source_id": SOURCE_ID, "consent_receipt": RECEIPT}
+
+    result = candidate_runtime._audio_lease_turn(runtime, event)
+    assert result == "MISSING_REVOCATION_SUBSCRIPTION"
+    assert "_audio_window" not in event
+    assert notices and "Widerrufsschutz" in notices[0]

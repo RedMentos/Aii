@@ -68,9 +68,9 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b'''_AUDIO_WINDOW_REQUIRED_FIELDS = {
     "pcm16", "sample_rate", "start_ms", "source_id",
     "consent_receipt", "consent_check", "consent_guard", "finality",
+    "consent_revocation_subscribe",
 }
-# Optional only for text-only fallback; when supplied, the callback must register both revoke phases.
-_AUDIO_WINDOW_OPTIONAL_FIELDS = {"consent_revocation_subscribe"}
+_AUDIO_WINDOW_OPTIONAL_FIELDS = set()
 
 
 def _validate_audio_window(value):
@@ -101,12 +101,9 @@ def _validate_audio_window(value):
         raise ValueError("audio_window requires a live consent provider")
     if not callable(value["consent_guard"]):
         raise ValueError("audio_window requires a linearizable consent guard")
-    if ("consent_revocation_subscribe" in value
-            and not callable(value["consent_revocation_subscribe"])):
-        raise ValueError("audio_window revocation subscription must be callable")
+    if not callable(value["consent_revocation_subscribe"]):
+        raise ValueError("audio_window requires a two-phase consent revocation subscription")
     result = {key: value[key] for key in _AUDIO_WINDOW_REQUIRED_FIELDS}
-    if "consent_revocation_subscribe" in value:
-        result["consent_revocation_subscribe"] = value["consent_revocation_subscribe"]
     return result
 
 
@@ -134,6 +131,12 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
+        b"self.wake.set();self.notice('Eingabe gespeichert.');return e['event_id']",
+        b"self.wake.set();self.notice('Eingabe gespeichert.' if audio_window is None else 'Eingabe gespeichert; Audio wird flüchtig verarbeitet und nicht als PCM gespeichert.');return e['event_id']",
+        "volatile audio submission notice",
+    )
+    runtime = _replace(
+        runtime,
         b"                    if kind=='turn':self.turn_event=None\n",
         b"                    if kind=='turn':\n                        try:\n                            from .audio_context_store import finish_turn\n                            finish_turn(self,payload['event_id'])\n                        except Exception as exc:self.store.log('audio_context_cleanup_failed',payload['event_id'],{'error':type(exc).__name__})\n                        self.turn_event=None\n",
         "audio context lifecycle cleanup",
@@ -151,8 +154,14 @@ class Runtime:
         b"        view=self._audio_context_view(eid,'C3')\n"
         b"        if not view:return None,None\n"
         b"        return ('RAW_EAR_ACOUSTIC','\\nRAW_EAR_ACOUSTIC (consent-bound; acoustic features only; not a transcript):',view),view['summary_source_ref']\n"
-        b"    def _turn(self,e):\n        audio_window=e.pop('_audio_window',None);audio_result=None;audio_source_ref=None\n        eid=e['event_id']",
+        b"    def _turn(self,e):\n        audio_window=e.pop('_audio_window',None);audio_rejection=e.pop('_audio_rejection',None);audio_result=None;audio_source_ref=None\n        eid=e['event_id']",
         "audio context methods and turn entry",
+    )
+    runtime = _replace(
+        runtime,
+        b"mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};status='FINAL';",
+        b"mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};\n        if audio_rejection:meta['audio_input']={'status':'REJECTED','reason':audio_rejection,'capture_authority':'CALLER_SUPPLIED_PCM16','learning_authority':False,'action_authority':False}\n        status='FINAL';",
+        "audio rejection metadata",
     )
     runtime = _replace(
         runtime,
@@ -175,6 +184,7 @@ class Runtime:
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
         b"                except Exception as exc:\n"
         b"                    self.store.log('audio_input_unavailable',eid,{'stage':'a5_a4_admission','error':type(exc).__name__})\n"
+        b"                    meta['audio_input']={'status':'REJECTED','reason':'A5_A4_ADMISSION_FAILED','capture_authority':'CALLER_SUPPLIED_PCM16','learning_authority':False,'action_authority':False}\n"
         b"            elif audio_window is not None:\n"
         b"                meta['audio_input']={'status':'SKIPPED_EXACT_FASTPATH'}\n"
         b"            exec_state=self.executive.begin",
@@ -370,6 +380,9 @@ def _audio_lease_turn(self, event):
     except Exception as exc:
         self.store.log("audio_input_unavailable", event.get("event_id"),
                        {"stage": "pre_turn_revocation_sweep", "error": type(exc).__name__})
+        event.pop("_audio_window", None)
+        event["_audio_rejection"] = "REVOCATION_SWEEP_FAILED"
+        self.notice("Audioeingabe übersprungen; Einwilligungsstatus konnte nicht sicher geprüft werden.")
 
     window = event.get("_audio_window")
     if type(window) is not dict:
@@ -389,8 +402,10 @@ def _audio_lease_turn(self, event):
     # before waiting for the guard, then tombstone cleanup after guard release.
     if not callable(subscribe):
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "MISSING_REVOCATION_SUBSCRIPTION"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "two_phase_revocation_subscription_required"})
+        self.notice("Audioeingabe übersprungen; der Zwei-Phasen-Widerrufsschutz fehlt.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     def on_revoke_requested():
@@ -420,8 +435,10 @@ def _audio_lease_turn(self, event):
             except Exception:
                 pass
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "REVOCATION_SUBSCRIPTION_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "revocation_subscription", "error": type(exc).__name__})
+        self.notice("Audioeingabe übersprungen; der Widerrufsschutz konnte nicht registriert werden.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     from .audio_voice_cues import audio_consent_lease
@@ -442,8 +459,10 @@ def _audio_lease_turn(self, event):
             except Exception:
                 pass
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "RUNTIME_CONSENT_LEASE_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "runtime_consent_lease", "error": type(exc).__name__})
+        self.notice("Audioeingabe übersprungen; die Runtime-Einwilligungslease konnte nicht geöffnet werden.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     window["_consent_lease"] = lease
