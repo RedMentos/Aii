@@ -102,6 +102,34 @@ public final class CompanionDbApprovalTest {
         assertTrue(first.insertPending(actionId, request.toString(), packageName, expiresAt));
     }
 
+    private void insertOpenUrlPending(String actionId, long expiresAt, String url) throws Exception {
+        JSONObject request = new JSONObject()
+                .put("schema", "v14.android-action-request/1")
+                .put("action_id", actionId)
+                .put("capability", "open_url")
+                .put("args", new JSONObject().put("url", url))
+                .put("digest", Canonical.requestDigest("open_url", url))
+                .put("expires_at", expiresAt / 1000.0)
+                .put("companion_local_consent_required", true)
+                .put("android_os_permission_required", false)
+                .put("permission_bypass", false)
+                .put("model_authority", false)
+                .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
+        assertTrue(first.insertPending(actionId, request.toString(), url, expiresAt));
+    }
+
+    private static void assertOpenUrlRedacted(CompanionDb.Action action, String expectedHost) throws Exception {
+        assertNotNull(action);
+        assertEquals(expectedHost, action.targetValue);
+        assertFalse(action.requestJson.contains("/private/path"));
+        assertFalse(action.requestJson.contains("session_token"));
+        JSONObject request = new JSONObject(action.requestJson);
+        assertEquals("open_url", request.getString("capability"));
+        JSONObject args = request.getJSONObject("args");
+        assertEquals(expectedHost, args.getString("url_host"));
+        assertFalse(args.has("url"));
+    }
+
     private static CompanionProvider.ReceiptIssuer receiptIssuer(AtomicInteger issued) {
         ReceiptFactory.Signer signer = new FakeReceiptSigner();
         return (action, status, localConsent, nowMillis) -> {
@@ -144,6 +172,57 @@ public final class CompanionDbApprovalTest {
             assertEquals(digest, redacted.getString("digest"));
             assertEquals(receipt, stored.receiptJson);
         }
+    }
+
+    @Test public void expiredOpenUrlIsRedactedWithoutCreatingAReceipt() throws Exception {
+        String url = "https://example.com/private/path?session_token=secret";
+        insertOpenUrlPending(ACTION_ID, NOW, url);
+        assertTrue(first.expire(ACTION_ID, NOW));
+        CompanionDb.Action stored = second.get(ACTION_ID);
+        assertEquals("EXPIRED", stored.status);
+        assertOpenUrlRedacted(stored, "example.com");
+        assertNull(stored.receiptJson);
+    }
+
+    @Test public void pendingReadRedactsOnlyExpiredOpenUrlRows() throws Exception {
+        String expiredId = "c".repeat(32);
+        String liveId = "d".repeat(32);
+        String expiredUrl = "https://expired.example/private/path?session_token=expired";
+        String liveUrl = "https://live.example/private/path?session_token=live";
+        insertOpenUrlPending(expiredId, NOW, expiredUrl);
+        insertOpenUrlPending(liveId, NOW + 1L, liveUrl);
+
+        List<String> expired = new ArrayList<>();
+        List<CompanionDb.Action> pending = first.pending(NOW, expired);
+        assertEquals(1, pending.size());
+        assertEquals(liveId, pending.get(0).actionId);
+        assertEquals(List.of(expiredId), expired);
+        assertOpenUrlRedacted(second.get(expiredId), "expired.example");
+
+        CompanionDb.Action stillPending = second.get(liveId);
+        assertEquals("PENDING_USER_APPROVAL", stillPending.status);
+        assertEquals(liveUrl, stillPending.targetValue);
+        assertTrue(stillPending.requestJson.contains("session_token=live"));
+    }
+
+    @Test public void cancelledOpenUrlIsRedactedWithoutCreatingAReceipt() throws Exception {
+        String url = "https://example.com/private/path?session_token=secret";
+        insertOpenUrlPending(ACTION_ID, NOW + 10_000L, url);
+        assertTrue(first.cancel(ACTION_ID));
+        CompanionDb.Action stored = second.get(ACTION_ID);
+        assertEquals("CANCELLED", stored.status);
+        assertOpenUrlRedacted(stored, "example.com");
+        assertNull(stored.receiptJson);
+    }
+
+    @Test public void unsuccessfulExpiryDoesNotRedactALiveOpenUrl() throws Exception {
+        String url = "https://example.com/private/path?session_token=still-pending";
+        insertOpenUrlPending(ACTION_ID, NOW + 10_000L, url);
+        assertFalse(first.expire(ACTION_ID, NOW));
+        CompanionDb.Action stored = second.get(ACTION_ID);
+        assertEquals("PENDING_USER_APPROVAL", stored.status);
+        assertEquals(url, stored.targetValue);
+        assertTrue(stored.requestJson.contains("session_token=still-pending"));
     }
 
     @Test public void concurrentApproveAndDenyHaveExactlyOneWinner() throws Exception {
