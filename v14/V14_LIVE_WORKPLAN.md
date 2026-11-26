@@ -1715,3 +1715,12 @@ Read-only comparison: Core #2538 integrated_audio_context_candidate still expect
 ## Run50 exact CI completion — 2026-11-26
 
 The Perception audio branch's RAW EAR/libfvad comparison passed on Python 3.13/3.14; optional NumPy/A4 voice suite passed with 117 tests on each; source-bound A4/A5 feature-set passed on both; offline RuntimeDeploy integrity passed. The shared staged/integrated workflow failed: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Exact failure is Core-owned: recovery candidate expects stale audio builder blob 831080… instead of Perception candidate 5d21b77…; arithmetic candidate pin for contracts.py is stale (current Git blob 6065a47…); observer fairness pin and two migration assertions also fail on the #2524 parent. Core PR #2538 now passes these shared gates on #2524, but its pins still target the old audio branch. Next: stack #2538 onto #2527, update audio-builder and contracts pins, rerun combined stage. No Perception edits to Core recovery/stage/deployer files.
+
+
+## Core Run52 closeout — 2026-11-26
+
+Core PR #2538 is stacked on the current Perception audio branch #2527 at code SHA `c48858e173f8174ff94781e838eff89a37596972`. The exact-head GitHub check set is 18/18 SUCCESS: staged Runtime 255 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests; native receiver Runtime consumer 75 + 8 tests PASS on Python 3.13 and 3.14. Exact cross-file source-pin audit 9/9 PASS. Core now verifies the Perception-owned Cognition source pin instead of rewriting it.
+
+The Callosum native receiver matrix command is a one-shot local-TTY diagnostic with exact matrix/source/session/generation/token/model binding, default OFF and no production B3 authority. It is not trained cross-model latent transfer or a normal-turn B1/B2→C4/JEF→C3 path. Full local Aii checkout and local pytest were NOT_RUN because no checkout is mounted and GitHub DNS fails. No GGUF or Redmi execution; REDMI_UNVERIFIED, NOT_RELEASED.
+
+Next Core package: reconcile the active #2539 adaptive C4/native-turn-budget reserve with this green branch; keep the newer audio/matrix source chain, refresh all dependent pins bottom-up, and rerun staged/integrated/migration. Then integrate #2536 exact acknowledgment fastpath via a Core-owned post-composer overlay, leaving Perception/JEPA/QA-owned files untouched. No user action or device command is required.
