@@ -107,6 +107,45 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(inspect(fake, render(fake), HEADER)["status"],
                          "NO_TYPED_HYPOTHESES")
 
+    def test_unicode_offsets_are_codepoints_and_span_hash_is_utf8(self):
+        selected = offer("B1_DETAIL", "b1")
+        body = "München🙂"
+        selected["verified_quotes"][0]["text"] = body
+        selected["verified_quotes"][0]["source_ref"]["char_end"] = len(body)
+        m = messages([selected])
+        prompt = "🙂" + render(m)
+        receipt = inspect(m, prompt, HEADER)
+        self.assertEqual(receipt["status"], "RENDERED_WITH_QUOTES")
+        row = receipt["offers"][0]
+        span = prompt[row["native_prompt_char_start"]:row["native_prompt_char_end"]]
+        expected = json.dumps([selected], ensure_ascii=False, sort_keys=True)[1:-1]
+        self.assertEqual(span, expected)
+        self.assertEqual(row["native_prompt_span_sha256"],
+                         hashlib.sha256(span.encode("utf-8")).hexdigest())
+        self.assertEqual(receipt["rendered_prompt_chars"], len(prompt))
+
+    def test_duplicate_prompt_fragment_and_duplicate_json_keys_fail_closed(self):
+        m = messages([offer("B1_DETAIL", "b1")])
+        prompt = render(m)
+        fragment = "\\n" + HEADER + json.dumps(
+            [offer("B1_DETAIL", "b1")], ensure_ascii=False, sort_keys=True)
+        self.assertEqual(
+            inspect(m, prompt + fragment, HEADER)["status"],
+            "AMBIGUOUS_NATIVE_TEMPLATE",
+        )
+        duplicate = (
+            "\\n" + HEADER
+            + '[{"role":"B1_DETAIL","role":"B2_GIST","offer_packet_id":"b1",'
+              '"hypothesis":{"summary":"x","uncertainty":"low","needs_reentry":false},'
+              '"verified_quotes":[]}]'
+        )
+        malformed = [{"role": "system", "content": "fixed" + duplicate},
+                     {"role": "user", "content": "PRIVATE_CURRENT_USER"}]
+        self.assertEqual(
+            inspect(malformed, render(malformed), HEADER)["status"],
+            "MALFORMED_HYPOTHESES",
+        )
+
     def test_unverified_or_inconsistent_source_quotes_do_not_count_as_rendered(self):
         original = offer("B1_DETAIL", "b1")
         for mutation in ("hash", "empty_source", "wrong_span", "unverified"):
