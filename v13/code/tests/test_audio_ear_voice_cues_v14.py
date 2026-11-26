@@ -1,10 +1,12 @@
 """Synthetic RAW EAR voice-cue extraction and real A4/C3 adapter regressions."""
 from concurrent.futures import ThreadPoolExecutor
+import importlib.util
 import json
 import math
 import random
 import struct
 import threading
+from pathlib import Path
 import time
 from contextlib import contextmanager
 from types import SimpleNamespace
@@ -1304,3 +1306,20 @@ def test_provisional_audio_does_not_advance_stateful_vad_or_speaker_registry(tmp
         assert "VAD" in result["packet"]["segments"][0]["unmeasured"]
     finally:
         runtime.store.close()
+
+
+def test_integrated_audio_candidate_source_blob_pins_match_current_tree():
+    code_dir = Path(__file__).resolve().parents[1]
+    candidate_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("v14_integrated_audio_candidate", candidate_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    mismatches = []
+    for relative, expected in module.SOURCE_BLOBS.items():
+        source = code_dir / relative
+        assert source.is_file() and not source.is_symlink(), relative
+        actual = module._git_blob_sha1(source.read_bytes())
+        if actual != expected:
+            mismatches.append((relative, expected, actual))
+    assert not mismatches, f"stale integrated audio candidate source pins: {mismatches}"

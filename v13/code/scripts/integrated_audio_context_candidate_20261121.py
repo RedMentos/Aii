@@ -11,7 +11,7 @@ from pathlib import Path
 
 SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
-    "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
+    "v13/cognition.py": "deb8c274022e2a4419dd38adb11ca14481c4bd91",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
     "v13/audio_voice_cues.py": "b372d52b83c1b35077732755f076e48b62e90ac0",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
