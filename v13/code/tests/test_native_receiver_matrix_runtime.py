@@ -752,8 +752,9 @@ def test_matrix_run_rejects_persisted_approval_binding_tampering(
 
     assert native_calls == []
     persisted, _ = runtime.store.state(matrix_runtime.KEY, None)
-    assert persisted["status"] == "PENDING"
-    assert matrix._closed is False
+    assert persisted["status"] == "FAILED_REVOKED"
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
 
 
 @pytest.mark.parametrize(
