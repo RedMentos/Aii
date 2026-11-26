@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-20",
-  "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
+  "updated_at": "2026-11-26",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 HEAD 8d93236c753f0194224c19edc7411d8d7082b1d6 (verified from Git ref; last integrated release-development commit 2026-11-23). Newer Core/Perception branches are review candidates, not releases. Core Run 29 adds exact Android companion CI coverage for PR #2528; Redmi remains REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
-  "state_notice": "Initial backlog, not proof of any functionality; update ticket evidence after actually running code and tests.",
+  "state_notice": "2026-11-26 evidence overlay: distinguish exact-head GitHub CI, local environment, native Linux, Android cross-compile/emulator and physical Redmi. Draft PRs are not releases; no CI result is a Redmi receipt.",
   "tickets": [
     {
       "id": "V14-001",
@@ -11,11 +11,11 @@
       "owner": "Core & Harness",
       "reviewer": "Boss & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect existing v13/code/v13/runtime.py consumer chain and current PRs; wire the first missing real consumer; run local integration tests",
+      "proof_environment": "PR #2525 exact-head Core checks 14/14 SUCCESS for Runtime/Callosum K/V matrix consumer; this is CI integration, not real GGUF semantic use. PR #2529 exact-head staged-runtime FAIL (33 failed, 253 passed, 10 skipped, 2 errors) and integrated-regression FAIL (1 failed) due runtime.py source-pin cascade and PARTIAL migration. Full LOCAL_LINUX checkout BLOCKED by github.com DNS; REDMI_UNVERIFIED.",
+      "next_step": "Coordinate owner-safe rebind of the exact runtime.py pin chain exposed by #2529 (integrated online-world, postcommit observer, arithmetic, observer fairness, online/controller guards and migration); then recompose #2492 B1/B2→C4→C3 evidence on the current #2493 stack. Do not treat the greeting reflex or a telemetry join as a correct native answer. Obtain fresh consented Redmi mixed-turn evidence only after reviewed release.",
       "user_action_required": false
     },
     {
@@ -37,11 +37,11 @@
       "owner": "Core & Harness",
       "reviewer": "JEPA & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inventory native hidden-state taps and compatible model revisions; implement testable receiver pathway in isolated branch",
+      "proof_environment": "Core PR #2525 exact-head CI 14/14 SUCCESS; Perception base PR #2524 still has Python/staged/integrated failures. Native Linux build / Android arm64 cross-compile are CI evidence only; no real sender/receiver GGUF pair, trained projection, gradient/retention proof or Redmi execution. Production B3 remains OFF.",
+      "next_step": "Wait for Perception owner to repair #2524 task-score and pin failures; then rerun the complete #2525 composed matrix and only afterward request separate local-TTY approval for a pinned-GGUF diagnostic. Keep B3 OFF until held-out task utility and all negative controls pass.",
       "user_action_required": false
     },
     {
@@ -107,6 +107,19 @@
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
       "proof_environment": "NOT_RUN",
       "next_step": "Keep last verified HEAD, deployed hash, tests, current blocker, next suggestion and permission question accurate",
+      "user_action_required": false
+    },
+    {
+      "id": "V14-009",
+      "title": "Android companion open_url terminal privacy lifecycle",
+      "owner": "Core & Harness",
+      "reviewer": "QA & Android",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "scope": "Android companion durable action journal; open_url expiry/cancellation; privacy-preserving terminal records",
+      "acceptance": "EXPIRED/CANCELLED rows remove full URL path/query from request_json and legacy target column while preserving host/digest; pending requests remain usable; Android Gradle/Robolectric and restart tests pass",
+      "proof_environment": "PR #2528 product tests added; previous offline-bridge-security 1/1 SUCCESS. Exact Android Gradle + emulator process-restart jobs queued after workflow trigger repair. LOCAL_LINUX Android build BLOCKED (Gradle/SDK absent); REDMI_UNVERIFIED.",
+      "next_step": "Verify exact-head android-companion and android-companion-process-restart CI; fix failures; QA review before merge. No physical phone claim and no new user permission.",
       "user_action_required": false
     }
   ]
