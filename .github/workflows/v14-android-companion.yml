@@ -13,6 +13,7 @@ on:
       - qa/v14-companion-instrumented-process-death-20261123-run4
       - core/v14-android-action-journal-instrumented-restart-20261124-run1
       - core/v14-android-open-url-api-20261125-run2
+      - core/v14-open-url-terminal-redaction-20261126-run1
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -27,6 +28,7 @@ on:
       - qa/v14-companion-stop-durability-followup-20261123-run3
       - core/v14-android-action-journal-qa-rebase-20261123-run1
       - core/v14-android-action-journal-instrumented-restart-20261124-run1
+      - core/v14-android-open-url-api-20261125-run2
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
