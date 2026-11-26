@@ -1380,3 +1380,12 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 **Integration pin:** composer blob is now \`d6d634857b42fc9dd29fa9bb2481220fd414e8bf\` and pins the updated event module blob \`4571b12aeb665f2865d53c54561cacd2562d6f95\`. Core/QA must rebind the downstream recovery builder, then stager/deployer hashes in dependency order; do not weaken the exact-byte gate.
 
 **Device/learning boundary:** REDMI_UNVERIFIED; no AudioRecord/microphone, Termux or Redmi test; no native weights, model, permission, persistent training data or device state changed. A4 signal remains heuristic, non-calibrated and shadow-only.
+
+
+**R-164 implementation/CI follow-up (2026-11-26; code SHA 8167033a8f133c8feb89c341df3720a5db765504):**
+- Exact RAW EAR optional NumPy/consumer workflow: Python 3.13 and 3.14 each **138 passed**; py_compile PASS; privacy scan CLEAN.
+- Exact VAD comparison workflow: Python 3.13 and 3.14 each **9 passed** against pinned libfvad/WebRTC comparison checks.
+- Offline runtime-integrity workflow: Python 3.11 and 3.14 each **41 passed**.
+- Staged/integrated regression: **FAIL** (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests). The first failure is the Core recovery builder's strict AUDIO_BUILDER_BLOB_SHA1 pin: expected `831080bceec90711bd42e0fa4eba47c669975c98`, actual current Perception composer blob `d6d634857b42fc9dd29fa9bb2481220fd414e8bf`. Two-checkout migration is PARTIAL. The exact hash gate is correctly rejecting an unreviewed composer change; do not relax it.
+- Exact fetched module local CPython 3.13.5 py_compile PASS and 5/5 targeted state-machine checks PASS. Full Aii checkout remains unavailable locally.
+- Next: coordinate a single composed guard/runtime/audio chain across #2482/#2483/#2485/#2498, then rebind recovery→wrapper→stage→deployer hashes and rerun all dependent suites. This is not a phone or release acceptance result.
