@@ -2260,3 +2260,10 @@ Nutzeraktion: keine Aktion nötig. No Termux command, UPDATE_REQUEST, runtime re
 The full 12-page author-hosted PDF has now been read; the earlier Run 44 note saying “abstract-only” is superseded. It is an August 2026 preprint, not identified as peer-reviewed. The paper uses AAD prediction scores plus an attended-speaker label, a five-second history of previous scores for short windows, Gaussian-copula/GCMI estimation, and recommends at least a five-minute temporal buffer (ideally separate sessions), switch-focused tests and confound controls.
 
 The current V14 proxy uses acoustic cue tuples and a later action outcome, so it is **not paper rIMI**, and the history-dependence term is **not paper CSD**. The code now names that term \`conditional_feature_history_dependence_bits\` and marks its scope explicitly. A real rIMI implementation still needs an actual A4 predictor score vector and a trusted attended-state/outcome label; no such normal-turn consumer exists yet. No attention policy or JEPA update follows from the synthetic result.
+
+
+### Corrected Run 44 code/test head (2026-11-26)
+
+Current code/test head: \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`. The proxy output now explicitly labels the acoustic-feature → later-action scope and no longer calls its feature-history term CSD. Fresh exact feature-set CI is pending. The previous \`c0d68f\` head passed 14/14 on Python 3.13/3.14; that result is historical and does not yet validate \`ef61d48\`. R-166 full text has now been read; a faithful rIMI requires real A4 prediction scores and attended-state labels plus ≥5-minute temporal separation/session holdout and switch-focused tests. No such normal-turn consumer currently exists.
+
+**Nutzeraktion: keine Aktion nötig.** No device, model, weight, permission, updater or user-data action was performed.
