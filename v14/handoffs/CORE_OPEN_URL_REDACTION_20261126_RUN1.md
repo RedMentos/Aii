@@ -28,3 +28,10 @@ No user URL, private device data, model weights, permission, app install or user
 ## Next exact action
 
 Poll the exact-head emulator process-restart job in run 45770231218; if it passes, request QA review. If it fails, repair and rerun. Separately coordinate the #2529 Runtime source-pin cascade with the affected owners; do not merge #2529 while staged-runtime/integrated-regression are red.
+
+## Relevant next research
+
+- R-090 deadline-aware prefill chunking is a design reference only (GPU-serving papers; no Android performance proof). Measure per-role cost from prompt tokens and warm/cold state before changing budgets; preserve B1/B2 opportunity and C3 reserve.
+- R-091 makes the key distinction: native input-embedding numerical response is not semantic latent transfer. Require same-model prefill parity and source-disjoint task utility with no-message, exact-source, zero, shuffle, row-shuffle and bidirectional controls; keep production B3 OFF.
+- R-107 Future-Aware Recall is conceptual only; the public implementation is CC BY-NC 4.0 and CUDA/H100-oriented. No reuse or model download.
+- No model alternative is recommended without comparable native Redmi measurements.
