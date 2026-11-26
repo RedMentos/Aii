@@ -94,7 +94,7 @@ def validate_native_hybrid_state_roundtrip(
         "state_sha256", "capture_duration_us", "restore_duration_us",
         "baseline_logits_sha256", "restored_logits_sha256",
         "continuation_token_count", "top1_match_count",
-        "max_abs_logit_diff", "rms_logit_diff", "roundtrip_passed",
+        "max_abs_logit_diff", "rms_logit_diff", "roundtrip_passed", "truncated_restore_rejected",
         "attention_kv_included", "recurrent_shortconv_included",
         "raw_state_exported", "state_persisted", "state_buffer_zeroized",
         "installed_runtime_touched", "production_route",
@@ -167,6 +167,8 @@ def validate_native_hybrid_state_roundtrip(
     max_diff = _metric(value.get("max_abs_logit_diff"), "max_abs_logit_diff")
     rms_diff = _metric(value.get("rms_logit_diff"), "rms_logit_diff")
 
+    if value.get("truncated_restore_rejected") is not True:
+        raise NativeHybridStateReceiptError("hybrid-state truncated restore negative control was not rejected")
     if value.get("attention_kv_included") is not True or value.get("recurrent_shortconv_included") is not True:
         raise NativeHybridStateReceiptError("hybrid-state receipt omits attention or recurrent shortconv state")
     if (value.get("raw_state_exported") is not False
@@ -179,7 +181,8 @@ def validate_native_hybrid_state_roundtrip(
         raise NativeHybridStateReceiptError("hybrid-state receipt exceeds read-only diagnostic authority")
 
     fidelity_passed = (
-        state_bytes == size_bytes == data_bytes == restored_bytes
+        value.get("truncated_restore_rejected") is True
+        and state_bytes == size_bytes == data_bytes == restored_bytes
         and top1_matches == target_count
         and max_diff <= MAX_ABS_LOGIT_DIFF
         and rms_diff <= MAX_RMS_LOGIT_DIFF
@@ -225,6 +228,7 @@ def validate_native_hybrid_state_roundtrip(
         "max_abs_logit_diff": max_diff,
         "rms_logit_diff": rms_diff,
         "roundtrip_passed": fidelity_passed,
+        "truncated_restore_rejected": True,
         "attention_kv_included": True,
         "recurrent_shortconv_included": True,
         "raw_state_exported": False,
@@ -281,6 +285,7 @@ def summarize_native_hybrid_state_roundtrips(receipts):
         "max_rms_logit_diff": max(item["rms_logit_diff"] for item in receipts),
         "top1_match_rate": matches / token_total,
         "all_roundtrips_passed": passed,
+        "truncated_restore_rejected_count": sum(1 for item in receipts if item["truncated_restore_rejected"]),
         "same_model_only": True,
         "cross_model_transfer_proven": False,
         "trained_latent_coupling_proven": False,
