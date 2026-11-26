@@ -1754,3 +1754,40 @@ Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility b
 **Daily research digest addendum (2026-11-26):** No new primary JEPA, continual-online-learning, plasticity or Android-memory result with comparable new empirical evidence was verified since the previous digest. R-170 is the material new finding for the latent-coupling/security boundary. The immediate V14 experiment is a small, source-authenticated receiver red-team matrix, not porting HandoffGuard's large-model training recipe to Android.
 
 **Source:** https://arxiv.org/abs/2611.34278
+
+
+## R-171 — La-JEPA: Compact Robot Policies with Latent World Modeling (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2611.08156v1, submitted 2026-11-05; preprint, abstract/metadata only in this pass. The abstract describes a compact action policy trained in a pretrained V-JEPA 2.1 feature space, with joint future-feature and action prediction during training and action-only generation at inference. Reported evaluations cover RoboTwin 2.0, LIBERO-Plus and four real-robot tasks, with the authors reporting performance comparable to pi0.5. These are author-reported abstract claims; the full paper and independent reproduction were not completed here.
+
+**OSS/license:** Official repository https://github.com/mt-clemente/lajepa, inspected at `1d767f958171e5089b30a345a430a66597039ce2`. README is a placeholder saying code is coming; no LICENSE, implementation or weights were present at readback. **No code/weight reuse.**
+
+**V14 relevance:** useful architectural hypothesis for separating a predictive latent training objective from a low-latency action decoder. It does not demonstrate Android feasibility, native B3 coupling or cross-organ learning. Candidate experiment only: a tiny source-bound future-UI-state predictor compared against an action-only baseline, with session-disjoint holdout and zero/shuffle controls. No implementation or model change authorized by this paper.
+
+## R-172 — mzCache: On-Device LLM Memory Management under Multitasking (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2609.01338v1; ACM MobiCom 2026, DOI 10.1145/3795866.3844495. Full paper text was reviewed through an arXiv HTML mirror; artifact documentation was checked directly. The system overlaps CPU restoration with GPU prefill and uses fine-grained memory/KV-cache eviction and restoration to reduce multitasking interference. Its reported results are tied to its specific rooted Snapdragon test devices and llama.cpp/OpenCL implementation; they are not a generic Android benchmark.
+
+**OSS/license/revision:** Official repository https://github.com/HongseungYu/mzcache, read at `f06f5ba155cfa1dcd837b3b9aa6a7efc95b919ff`; repository LICENSE is MIT. The artifact is based on a pinned llama.cpp revision and includes OpenCL SVM/shared-buffer hooks. Model-weight licenses remain separate and must be checked per model; the repository MIT license does not grant rights to Qwen/EXAONE weights.
+
+**Hardware boundary:** EVALUATION.md specifies rooted Android, Snapdragon 8 Elite/8 Gen 3, 12 GB RAM and 30 GB free device storage; host preparation requires about 70 GB, with large model/state files. This is outside the Redmi 6-GB-class target. No port or benchmark was run.
+
+**V14 relevance:** design reference only for overlapping memory restoration with prefill and measuring KV residency. Not a current port candidate: hardware/driver/root assumptions are incompatible, and no model/weight download or swap was performed. No code reused.
+
+## R-173 — Adaptive Guard: Memory-Efficient On-Device LLM Inference on Android via Dynamic Quantization and ART GC Co-Design (reviewed 2026-11-26)
+
+**Source/status:** IEEE GAISS 2026, DOI 10.1109/GAISS66401.2026.11779656; conference dates reported as 2026-10-28 to 2026-10-30. Only the IEEE abstract/metadata were accessible; full text was blocked by the publisher in this pass. The abstract reports dynamic FP16/INT8/INT4 selection from Android memory-pressure callbacks, GC-pause coordination and KV-cache eviction, with claimed reductions in OOM/GC spikes and sub-500-ms median token latency on its tested models/devices. These are abstract-level claims, not independently reproduced results.
+
+**OSS/license:** No official implementation or weight license was found in this pass. No reuse.
+
+**V14 relevance:** a hypothesis for a future Android ResourceGuard experiment: correlate trim callbacks and ART GC pauses with PSS, prefill and TTFT before considering any quantization transition. Do not implement dynamic model switching or change installed weights based on abstract-only results.
+
+## R-174 — Learning Dynamics of Continual Learning (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2609.33620, preprint (2026-09); abstract/metadata only in this pass. The paper frames continual-learning behavior in terms of layer/token interactions, forgetting and plasticity loss. Detailed experimental conditions were not re-read here, so no quantitative claim is promoted.
+
+**OSS/license:** Author repository https://github.com/Joshua-Ren/learning-dynamics-cl, inspected at `b4962ccf5646754b800981f1b207ef65a1a89b6f`; README links the arXiv paper, but no LICENSE file was present. The code stack is research-oriented and heavyweight; no reuse.
+
+**V14 relevance:** supports measuring update effects and interference at layer/task granularity rather than using a single global learning-rate or blanket freeze. Candidate future probe: log per-layer update norms, old-task held-out loss, new-task gain and post-restart retention for each bounded update. No production weight update was run.
+
+**Cross-entry conclusion:** These sources do not justify a model swap or a new Android capability. La-JEPA and Adaptive Guard remain abstract-only; mzCache is fully artifact/license-checked but hardware-incompatible; Learning Dynamics has no reuse license. R-004 (“Stability Does Not Mirror Plasticity”) remains abstract-only with full-text/code verification still pending.
