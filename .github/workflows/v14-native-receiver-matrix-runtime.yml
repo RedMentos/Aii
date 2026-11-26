@@ -7,6 +7,7 @@ on:
       - core/v14-native-receiver-matrix-integrated-20261126-run3
       - core/v14-native-receiver-kv-integration-20261126-run5
       - core/v14-native-matrix-approval-recovery-20261126-run1
+      - core/v14-tokenwise-candidate-checkpoint-20261126-run52-core
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"
@@ -14,6 +15,8 @@ on:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native_receiver_utility.py"
       - "v13/code/v13/callosum.py"
+      - "v13/code/v13/native_tokenwise_candidate_store.py"
+      - "v13/code/tests/test_native_tokenwise_candidate_store.py"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
@@ -31,6 +34,7 @@ on:
       - core/v14-native-receiver-matrix-integrated-20261126-run3
       - research-perception/v14-kv-snapshot-consumer-20261126-run35
       - core/v14-native-receiver-kv-integration-20261126-run5
+      - core/v14-native-receiver-kv-integration-20261126-run50-core
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"
@@ -38,6 +42,8 @@ on:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native_receiver_utility.py"
       - "v13/code/v13/callosum.py"
+      - "v13/code/v13/native_tokenwise_candidate_store.py"
+      - "v13/code/tests/test_native_tokenwise_candidate_store.py"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
@@ -73,6 +79,8 @@ jobs:
             v13/code/v13/native_latent_receiver.py \
             v13/code/v13/native_receiver_utility.py \
             v13/code/v13/callosum.py \
+            v13/code/v13/native_tokenwise_candidate_store.py \
+            v13/code/tests/test_native_tokenwise_candidate_store.py \
             v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
@@ -90,6 +98,7 @@ jobs:
           v13/code/tests/test_native_receiver_matrix_runtime.py
           v13/code/tests/test_native_receiver_condition_matrix.py
           v13/code/tests/test_native_latent_receiver.py
+          v13/code/tests/test_native_tokenwise_candidate_store.py
       - name: Stage the exact integrated Termux candidate
         run: |
           python v13/code/scripts/stage_integrated_candidate.py \
