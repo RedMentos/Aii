@@ -785,3 +785,29 @@ def test_matrix_consume_rejects_persisted_approval_binding_tampering(
 
     after, _ = runtime.store.state(matrix_runtime.KEY, None)
     assert after["status"] == "PENDING"
+
+
+@pytest.mark.parametrize(
+    "expires_at",
+    [float("nan"), float("inf"), float("-inf"), None, True, "invalid", 0],
+)
+def test_matrix_arm_requires_explicit_revoke_of_any_pending_single_probe_approval(
+    monkeypatch, tmp_path, expires_at
+):
+    runtime, _matrix, *_rest = _stage(monkeypatch, tmp_path)
+    from v13 import native_probe_approval as approval
+
+    state, version = runtime.store.state(approval.KEY, None)
+    runtime.store.set_state(
+        approval.KEY,
+        {"schema": approval.SCHEMA, "status": "PENDING", "expires_at": expires_at},
+        expected=version,
+    )
+
+    with pytest.raises(PermissionError, match="separate native probe approval"):
+        matrix_runtime._arm(runtime)
+
+    existing, _ = runtime.store.state(approval.KEY, None)
+    assert existing["status"] == "PENDING"
+    matrix_approval, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert matrix_approval is None
