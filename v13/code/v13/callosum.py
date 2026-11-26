@@ -370,6 +370,9 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+    if args and args[0] in {"matrix-status", "matrix-arm", "matrix-run", "matrix-revoke", "matrix-clear"}:
+        from .native_receiver_matrix_runtime import operator_command as matrix_command
+        return matrix_command(r,args)
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
         from .native_input_embedding_capture import operator_command as input_tap_command
         return input_tap_command(r,args)
@@ -394,5 +397,5 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
     )
