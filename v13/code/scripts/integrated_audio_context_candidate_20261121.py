@@ -132,7 +132,7 @@ class Runtime:
     runtime = _replace(
         runtime,
         b"self.wake.set();self.notice('Eingabe gespeichert.');return e['event_id']",
-        b"self.wake.set();self.notice('Eingabe gespeichert.' if audio_window is None else 'Eingabe gespeichert; Audio wird flüchtig verarbeitet und nicht als PCM gespeichert.');return e['event_id']",
+        b"self.wake.set();self.notice('Eingabe gespeichert.' if audio_window is None else 'Audio is processed transiently; raw PCM is not persisted.');return e['event_id']",
         "volatile audio submission notice",
     )
     runtime = _replace(
@@ -184,7 +184,7 @@ class Runtime:
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
         b"                except Exception as exc:\n"
         b"                    self.store.log('audio_input_unavailable',eid,{'stage':'a5_a4_admission','error':type(exc).__name__})\n"
-        b"                    meta['audio_input']={'status':'REJECTED','reason':'A5_A4_ADMISSION_FAILED','capture_authority':'CALLER_SUPPLIED_PCM16','learning_authority':False,'action_authority':False}\n"
+        b"                    audio_rejection='A5_A4_ADMISSION_FAILED'\n"
         b"            elif audio_window is not None:\n"
         b"                meta['audio_input']={'status':'SKIPPED_EXACT_FASTPATH'}\n"
         b"            exec_state=self.executive.begin",

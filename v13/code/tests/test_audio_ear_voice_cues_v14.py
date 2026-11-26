@@ -1367,7 +1367,7 @@ def test_integrated_audio_candidate_applies_compiles_and_requires_two_phase_revo
     assert "audio_rejection=e.pop('_audio_rejection',None)" in runtime_source
     assert "MISSING_REVOCATION_SUBSCRIPTION" in runtime_source
     assert "meta['audio_input']={'status':'REJECTED'" in runtime_source
-    assert "Audio wird flüchtig verarbeitet und nicht als PCM gespeichert." in runtime_source
+    assert "Audio is processed transiently; raw PCM is not persisted." in runtime_source
 
     tree = ast.parse(runtime_source)
     wanted = {"_AUDIO_WINDOW_REQUIRED_FIELDS", "_AUDIO_WINDOW_OPTIONAL_FIELDS"}
