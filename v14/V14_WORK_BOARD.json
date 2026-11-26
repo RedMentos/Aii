@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T00:24:35.773Z",
+  "updated_at": "2026-11-26T00:26:38.954Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -467,24 +467,25 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A3 RAW EAR next-delta signed prediction error plus a separate timed VOICED/IMPULSIVE activity-class expectation; bounded consent-scoped process-local state; FINAL-only; A4 novelty cap 0.05 for the new event-timing signal; no C3/external_interrupt/authority/weight changes.",
       "acceptance": "Exact-head Python 3.13/3.14 consumer CI; held-out event-timing utility vs persistence/no-predictor/shuffled timing; continuous-event and irregular-timing negative controls; UNCERTAIN/PROVISIONAL/gap/consent-reset censorship; source pin closure; no source/voice retention loss; staged/integrated chain; Android AudioRecord only through explicit provider/receipt.",
-      "proof_environment": "LOCAL_LINUX_SCRATCH_CP313_11_OF_11_NOT_EXACT_REPO_BLOB + GITHUB_EXACT_HEAD_CI_PENDING; REDMI_UNVERIFIED",
-      "next_step": "Poll exact PR #2498 CI. Core/QA must rebind termux_runtime_recovery_candidate_20261121.py to Perception builder blob 18f9177be26720f0daa41dd21123238ffb249d47, then recompute stage_integrated_candidate.py BUILDER_SHA and runtime_deploy.py STAGER_SHA256 in order; rerun staged/integrated and two-checkout migration. Research then runs frozen/held-out controls against persistence, no event predictor, shuffled timing, silence/noise, uncertain windows and consent reset.",
+      "proof_environment": "LOCAL_LINUX_SCRATCH_CP313_11_OF_11_NOT_EXACT_REPO_BLOB + GITHUB_EXACT_HEAD_TARGETED_CI_PASS_STAGED_INTEGRATION_FAIL; REDMI_UNVERIFIED",
+      "next_step": "Core/QA must rebind termux_runtime_recovery_candidate_20261121.py to exact Perception builder blob 18f9177be26720f0daa41dd21123238ffb249d47, then recompute stage_integrated_candidate.py BUILDER_SHA and runtime_deploy.py STAGER_SHA256 in dependency order; rerun staged/integrated and two-checkout migration. After green composition, run frozen/held-out timing controls against persistence, no-event-predictor, shuffled timing, silence/noise, uncertain windows and consent reset.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26T00:24:35.773Z",
+      "last_checkpoint": "2026-11-26T00:26:38.954Z",
       "latest_candidate_pr": {
         "pr": 2498,
-        "head_sha": "c17f60e3e5b1a338138220bacfbf89719ae1d850",
+        "head_sha": "d7988f2e1031910a1013db44b24b81ce6ee784d0",
         "tested_code_sha": "d7988f2e1031910a1013db44b24b81ce6ee784d0",
         "base": "research-perception/latent-event-scope-20261125-run12",
         "base_sha": "ace68f1fa44989101849a2c78087aaa03010b5d8",
-        "state": "OPEN_DRAFT_EXACT_CI_PENDING_CORE_RECOVERY_PIN_BLOCKED",
+        "state": "OPEN_DRAFT_TARGETED_CI_GREEN_STAGED_FAIL_CORE_RECOVERY_PIN_BLOCKED",
         "code_scope": "R-162 signed feature-delta omission plus bounded timed acoustic activity expectation; A4 novelty only",
         "builder_blob_sha": "18f9177be26720f0daa41dd21123238ffb249d47",
         "source_pin_audit": "14_OF_14_EXACT_GITHUB_READBACK",
-        "ci": "EXACT_HEAD_D7988F2: staged/integrated and runtime integrity QUEUED; VAD comparison QUEUED; NumPy fastpath PENDING",
-        "device": "REDMI_UNVERIFIED"
+        "ci": "RAW EAR fastpath PASS Python 3.13/3.14 135 each; VAD/libfvad PASS 3.13/3.14 9 each; offline runtime integrity PASS 3.11/3.14 41 each; staged runtime FAIL 17 failed/236 passed/10 skipped/2 errors; integrated regression FAIL 1; migration PARTIAL; Core builder pin stale.",
+        "device": "REDMI_UNVERIFIED",
+        "documentation_tip_sha": "2768f39e5c78fee4ddf474022c1cadbc20e87da3"
       },
-      "proof": "PR #2498 code checkpoint d7988f2e1031910a1013db44b24b81ce6ee784d0 adds v13/code/v13/audio_event_expectation.py and wires it into audio_voice_cues.consume_pcm16_voice_window(). It predicts only heuristic VOICED/IMPULSIVE onset timing; valid FINAL non-target/SILENCE windows can produce one bounded omission; continuous activity fulfils an expected window. UNCERTAIN/PROVISIONAL/gap/chronology/consent rotation are censored or reset. New event novelty is capped at 0.05 and affects A4 novelty only. No PCM/transcript/embedding persistence, calibrated probability, semantic identity, C3/external_interrupt, learning/action authority or weight update. Source pin manifest now covers 14 direct files and GitHub readback audit is 14/14 exact matches. LOCAL_LINUX CPython 3.13.5 scratch prototype py_compile PASS and 11/11 tests PASS, but scratch blob differs from pushed module; exact repo local execution is NOT_CLAIMED. Exact-head CI runs #45728258860/#45728258868/#45728259057 queued and #45728258965 pending at last poll. Core recovery pin remains stale. No Android microphone/Termux/Redmi proof; REDMI_UNVERIFIED / NOT_RELEASED."
+      "proof": "PR #2498 code checkpoint d7988f2e1031910a1013db44b24b81ce6ee784d0 adds v13/code/v13/audio_event_expectation.py and wires it into audio_voice_cues.consume_pcm16_voice_window(). It predicts only heuristic VOICED/IMPULSIVE onset timing; valid FINAL non-target/SILENCE windows can produce one bounded omission; continuous activity fulfils an expected window. UNCERTAIN/PROVISIONAL/gap/chronology/consent rotation are censored or reset. New event novelty is capped at 0.05 and affects A4 novelty only. No PCM/transcript/embedding persistence, calibrated probability, semantic identity, C3/external_interrupt, learning/action authority or weight update. Source pin manifest covers 14 direct files and GitHub readback audit is 14/14 exact matches. Exact-head CI: RAW EAR fastpath PASS on Python 3.13/3.14 (135 tests each); VAD/libfvad PASS on Python 3.13/3.14 (9 tests each); offline runtime integrity PASS on Python 3.11/3.14 (41 tests each). Staged runtime FAIL: 17 failed, 236 passed, 10 skipped, 2 errors; integrated regression FAIL: 1 failed. Exact root is Core/QA recovery pin AUDIO_BUILDER_BLOB_SHA1 expecting 831080bceec90711bd42e0fa4eba47c669975c98 while Perception builder is 18f9177be26720f0daa41dd21123238ffb249d47; migration remains PARTIAL. LOCAL_LINUX CPython 3.13.5 scratch prototype py_compile PASS and 11/11 tests PASS, but scratch blob differs from pushed module; exact repo local execution is NOT_CLAIMED. No Android microphone/Termux/Redmi proof; REDMI_UNVERIFIED / NOT_RELEASED."
     }
   ],
   "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",
@@ -1236,9 +1237,9 @@
     {
       "id": "R-163",
       "topic": "Timed acoustic activity what/when expectations and omission windows",
-      "status": "ABSTRACT_ONLY_PRIMARY / CODE_SHADOW_WIRED / NO_ANDROID",
+      "status": "ABSTRACT_ONLY_PRIMARY / CODE_SHADOW_WIRED / TARGETED_CI_PASS / STAGED_BLOCKED / NO_ANDROID",
       "primary": "Yamada & Chao, arXiv:2510.14382 (2025-10-16); full text, code and license not verified",
-      "next": "Keep A4 novelty capped at 0.05; exact CI, Core recovery pin rebind and held-out timing controls before any integration/acceptance."
+      "next": "Core/QA recovery pin rebind and staged composition; then held-out timing controls. Keep A4 novelty capped at 0.05 until utility and retention gates pass."
     }
   ],
   "current_evidence_overlay": {
