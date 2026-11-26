@@ -1,0 +1,54 @@
+name: V14 Core native receiver matrix Runtime consumer
+on:
+  pull_request:
+    branches:
+      - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
+    paths:
+      - "v13/code/v13/native_receiver_matrix_runtime.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/v13/cognition.py"
+      - "v13/code/tests/test_native_receiver_matrix_runtime.py"
+      - "v13/code/tests/test_native_latent_receiver_runtime.py"
+      - "v13/code/tests/test_callosum.py"
+      - ".github/workflows/v14-native-receiver-matrix-runtime.yml"
+permissions:
+  contents: read
+jobs:
+  runtime-consumer:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install --upgrade pytest
+      - name: Report source hashes for dependent QA pins
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          for name in ("v13/code/v13/cognition.py", "v13/code/v13/callosum.py"):
+              print(name, hashlib.sha256(Path(name).read_bytes()).hexdigest())
+          PY
+      - name: Compile changed Python modules
+        run: |
+          python -m py_compile \
+            v13/code/v13/native_receiver_matrix_runtime.py \
+            v13/code/v13/callosum.py \
+            v13/code/v13/cognition.py \
+            v13/code/tests/test_native_receiver_matrix_runtime.py \
+            v13/code/tests/test_native_latent_receiver_runtime.py \
+            v13/code/tests/test_callosum.py
+      - name: Run one-shot Runtime consumer regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_native_receiver_matrix_runtime.py \
+            v13/code/tests/test_native_latent_receiver_runtime.py \
+            v13/code/tests/test_callosum.py

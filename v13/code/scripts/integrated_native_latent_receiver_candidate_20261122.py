@@ -8,7 +8,7 @@ from pathlib import Path
 
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
+    "v13/callosum.py": "ecdcc6ed8c39c4870059ea23f62efa6ec28b59775298331a1e7c8ae05af3e298",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
@@ -171,8 +171,8 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
                       'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
 """
 
-OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
-OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
+OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
+OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()

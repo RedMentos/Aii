@@ -6,8 +6,9 @@ B3_MESSAGE (§85.2)       every MessagePacket carries salience, confidence, sign
                          hypothesis or flags an open issue; < 0: the sender's exact evidence contradicts it (numbers
                          or quotes differ), so the receiver is asked to damp its own claim.
 Channel policy (B3-5)    per direction a learned utility for NO_MESSAGE / SOURCE_EXACT / CONTROL / SYMBOLIC. All
-                         probabilities stay > 0 (B3-H9). LATENT stays at p = 0 and level `unavailable` until native L1+
-                         exists (B3-H3, B3-H12). SHADOW (default) logs the proposal next to the configured channel;
+                         probabilities stay > 0 (B3-H9). LATENT stays at p = 0 and level `unavailable` until a trained,
+                         source-disjoint receiver passes held-out utility/retention gates (B3-H3, B3-H12). A native input-effect
+                         probe is diagnostic only. SHADOW (default) logs the proposal next to the configured channel;
                          ACTIVE (`:callosum active`, explicit human) uses it and passes signed_gain/urgency to the
                          receiver as CONTROL fields.
 Utility (B3-H9)          task_gain (receiver offer reached the focal coalition) + uncertainty_reduction (receiver no
@@ -181,8 +182,29 @@ class Callosum:
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
+        native_probe={'status':'NOT_RUN','native_input_consumed':False,'input_effect_detected':False,
+                      'production_route':False,'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0}
+        r=getattr(self,'r',None)
+        if r is not None:
+            row=self.s.one(
+                "SELECT p.payload FROM packets p JOIN events e ON e.id=p.event_id "
+                "WHERE p.kind=? AND e.session_id=? ORDER BY p.created DESC LIMIT 1",
+                ("LatentReceiverPacket",r.session),
+            )
+            if row:
+                try:
+                    saved=json.loads(row["payload"])
+                    native_probe={k:saved.get(k) for k in (
+                        'status','input_rows','input_dim','receiver_input_dim','runner_revision',
+                        'native_input_consumed','input_effect_detected','input_effect_rms',
+                        'production_route','semantic_use_proven','training_authority','native_receiver_authority',
+                    )}
+                except Exception:
+                    native_probe['status']='INVALID_RECEIPT'
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+                'native_receiver_probe':native_probe,
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (diagnostic native receiver only; no trained alignment/held-out utility)',
+                'claim_limit':'Native input-effect diagnostic only; no learned semantic utility or production latent exchange'}
 
 def controller(runtime):
     c=getattr(runtime,'callosum',None)
@@ -287,9 +309,12 @@ def _fit_tokenwise_candidate(runtime, args):
         "adapter": adapter,
         "record": heldout,
         "fit_manifest": manifest,
+        "cohort_records": list(cohort),
         "staged_at": time.time(),
     }
-    runtime._native_tokenwise_pair_records = [heldout]
+    # Keep the bounded held-out control records in memory until the matrix is
+    # built or the tokenwise lab is cleared; they are never persisted.
+    runtime._native_tokenwise_pair_records = list(cohort)
     return dumps({
         "schema": "v14.native-tokenwise-candidate-stage/1",
         "status": "ALIGNMENT_CANDIDATE_STAGED",
@@ -370,6 +395,12 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        from .native_probe_approval import operator_command as native_probe_command
+        return native_probe_command(r,args)
+    if args and type(args[0]) is str and args[0].startswith("matrix-"):
+        from .native_receiver_matrix_runtime import operator_command as matrix_command
+        return matrix_command(r,args)
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
         from .native_input_embedding_capture import operator_command as input_tap_command
         return input_tap_command(r,args)
@@ -394,5 +425,5 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-build <task-family> <ood-family> <entity-family> <ood-record-sha-prefix> <entity-record-sha-prefix> --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
     )
