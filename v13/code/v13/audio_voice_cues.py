@@ -907,7 +907,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             audio_event_omission_novelty = predictive_event_omission_novelty(
                 audio_event_expectation
             )
-        except AudioEventExpectationError as exc:
+        except (AudioEventExpectationError, ValueError) as exc:
+            # This optional shadow signal must never break the primary RAW EAR path.
             audio_event_expectation = unavailable_expectation("REJECTED")
             audio_event_expectation["error"] = type(exc).__name__
             audio_event_omission_novelty = 0.0
