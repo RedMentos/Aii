@@ -1,3 +1,39 @@
+# V14 USER NEXT ACTION — Core & Harness Run 3 (2026-11-26)
+
+**Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, exact head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8`. It is stacked on Core PR #2515; it is not merged or released.
+
+## What changed and what is proven
+
+- The native receiver C++ process now recomputes SHA-256 from the exact little-endian int32 target-token vector it consumes, checks it against the supplied digest before scoring, and emits the computed digest. The receipt no longer relies on merely echoing a Python-supplied hash.
+- Added native selftests for the NIST SHA-256 `abc` vector, token IDs `[0,1,2]`, digest mismatch and negative-ID rejection.
+- Refreshed and read back the complete builder → recovery → stage → RuntimeDeploy source-pin chain. The earlier compile defect (undeclared native model pointer) remains fixed.
+- Local Linux: isolated C++17 SHA-256 helper compile/selftest PASS with `-Wall -Wextra -Werror`. Full Aii checkout/native llama.cpp local build NOT_RUN because GitHub DNS resolution failed in this environment.
+- Exact-head GitHub CI: all seven workflows SUCCESS. Pinned llama.cpp Linux build and native selftest PASS; Android arm64 cross-compile PASS (artifact only, not device execution); Python 3.13 and 3.14 each 45/45 PASS; privacy scan CLEAN; RuntimeDeploy integrity, two-checkout migration, record-only controller, Lab Age/WebView and private owner-read bootstrap PASS. Staged/integrated regression: 424 passed, 3 skipped, 6 warnings, 58 subtests. Staged runtime: 255 passed, 10 skipped, 47 subtests.
+- Standard reference: NIST FIPS 180-4 SHA-256, https://doi.org/10.6028/NIST.FIPS.180-4. No external SHA implementation was copied and no new dependency was added.
+
+## What is not proven
+
+- No pinned real GGUF task-matrix scoring run has been executed.
+- No trained cross-organ latent coupling, semantic utility, production B3 route, weight update or training authority is established by target-token likelihood.
+- Android arm64 CI is a cross-compile only. No APK installation, connected device, Redmi native probe, or Redmi deployment has been verified.
+- Current release remains b20e9; latest private phone receipt #767 still predates the green release CI. Do not claim installation from GitHub push or CI.
+
+## Parallel Core/Perception work
+
+- PR #2519 (eight-condition matrix producer) and #2517 (utility sync) are still based on the older #2515 head and had stale-base failures. Perception should rebase them onto #2520 head `7ffe4e23` after this exact green checkpoint.
+- PR #2513 (consent-gated Android HTTPS ACTION_VIEW) is now at `736233e5af847706bd0270da2051fcdd973b4a8f`. Fixed overescaped Python ECDSA DER test literals, Java canonical-JSON escaping, and moved open-url discovery into the companion's own `:android` help (with an operator-level help test) so the global operator source pin remains unchanged. Exact-head CI is still in progress; independent Boss/QA review and all device proof remain open.
+
+## Next executable Core action
+
+1. After Perception rebases #2519/#2517, add a separate `NATIVE_RECEIVER_MATRIX` one-shot local-TTY approval bound to the exact `matrix_sha256`, task/source/session/generation, target-token digest and installed sender/receiver model manifests.
+2. Wire the matrix into a real `:callosum` Runtime command with source revalidation before/after native execution, resource preflight, bounded deadline, cancellation, atomic one-shot consumption, and zero production/training authority.
+3. Collect at least 20 held-out task groups across at least two sessions and two task families; run all eight conditions on a pinned real GGUF in LOCAL_LINUX and require the candidate to beat every control before any semantic/B3 claim.
+4. Only then ask separately for explicit Redmi test authorization. Do not send device commands or change models/weights without that authorization.
+
+**User action: none required now.** No model download/swap is recommended; this checkpoint is an evidence-integrity fix, not a model comparison. Keep B3 OFF, official Age 0, and the installed Termux updater path unchanged.
+ 
+---
+
 # Core & Harness — Run 2 checkpoint (2026-11-26)
 
 **No user action required.** No Termux command, UPDATE_REQUEST, restart, model/weight download or swap, permission change, or device-data mutation is required.
