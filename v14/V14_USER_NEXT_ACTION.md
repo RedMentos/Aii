@@ -19,6 +19,13 @@
 - **PR #2525** exact head `9fdf321c9c14ab3b27d0d5947eaca443d5796df3`: Core Runtime/Callosum K/V-aware native receiver matrix checks **14/14 SUCCESS**. This proves the CI consumer path only. Its Perception base #2524 still has Python/staged/integrated failures; no real GGUF pair, trained latent utility, production B3 or Redmi proof is established.
 - **PR #2512** tokenwise receiver consumer checks are green on its exact head, but its bounded lab cohort and native diagnostic are not production B3 or trained latent acceptance.
 
+## Relevant research notes from the current ledger
+
+- **R-090 — deadline-aware prefill:** SLOWeave/Sarathi-style chunked prefill is a scheduling design reference, not Android evidence. The next Core experiment should predict role cost from measured prompt tokens, warm/cold state and observed prefill rate, preserving a hard C3 reserve and both B1/B2 opportunities. Do not change installed cache flags or relax deadlines without a separate device trial and explicit approval.
+- **R-091 — cross-architecture activation transfer:** the current native input-embedding ingress can prove a numerical receiver reaction only; it does not prove semantic transfer or a useful latent channel. Acceptance needs same-model prefill parity, source-disjoint task success, NO_MESSAGE/SOURCE_EXACT/zero/shuffle/row-shuffle/bidirectional controls and only then a trained low-rank bridge with retention/restart/rollback. Keep production B3 OFF.
+- **R-107 — Future-Aware Recall:** potentially useful later for query-conditioned memory-cue utility trained from future outcomes, but the reviewed sony/far implementation is CC BY-NC 4.0 and its CUDA/H100 resource profile is unsuitable for this Android target. Conceptual reference only; no code, weights or dependencies reused.
+- **Model alternative:** none proposed this run. No comparable native Redmi latency/quality/RSS measurements or fresh device receipt justify a model download or swap.
+
 ## Next internal actions
 
 1. Verify the exact-head Android Gradle/Robolectric, emulator process-restart and offline-security jobs on #2528 commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9`; repair failures before QA review.
