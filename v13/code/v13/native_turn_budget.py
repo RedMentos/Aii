@@ -115,19 +115,17 @@ def recent_c3_success_durations(rows):
     return durations
 
 
-def recent_focal_success_durations(rows):
-    """Recent successful C4 focal-loop durations from content-free stage marks."""
+def recent_focal_durations(rows):
+    """Recent completed C4 focal-loop durations from content-free stage marks."""
     durations = []
     for row in list(rows)[:MAX_RECENT]:
-        if not isinstance(row, dict) or row.get("status") != "FINAL":
+        if not isinstance(row, dict):
             continue
         data = _metadata(row)
         native = data.get("runner") if isinstance(data, dict) else None
-        if (not isinstance(native, dict)
-                or native.get("role") != "C3_LANGUAGE"
-                or type(native.get("generated_tokens")) is not int
-                or native.get("generated_tokens") <= 0):
+        if not isinstance(native, dict) or native.get("role") != "C3_LANGUAGE":
             continue
+        # The C4 loop can be measured even when the later C3 decode times out.
         marks = data.get("stage_marks_s")
         if type(marks) is not dict:
             continue
@@ -176,7 +174,7 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     bounded = list(recent)[:MAX_RECENT]
     failures = sum(zero_token_prefill_failure(row) for row in bounded)
     durations = recent_c3_success_durations(bounded)
-    focal_durations = recent_focal_success_durations(bounded)
+    focal_durations = recent_focal_durations(bounded)
     if focal_durations:
         focal_estimate = max(
             RECOVERY_FOCAL_RESERVE_S,
@@ -266,7 +264,7 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         "focal_reserve_estimate_seconds": round(focal_estimate,3),
         "focal_reserve_source": focal_source,
         "focal_reserve_capped": focal_reserve_capped,
-        "recent_focal_successes": len(focal_durations),
+        "recent_focal_samples": len(focal_durations),
         "preanswer_seconds_available": round(remaining,3),
         "c3_reserved_seconds": round(reserve,3),
         "c3_reserve_estimate_seconds": round(reserve_estimate,3),
