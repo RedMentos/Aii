@@ -227,11 +227,15 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "target_token_ids_sha256": target_sha,
         "conditions": native_conditions,
         "hybrid_state_roundtrip": {
-            "schema": "v14.native-hybrid-state-roundtrip/1",
+            "schema": "v14.native-hybrid-state-roundtrip/2",
             "status": "READ_ONLY_ROUNDTRIP",
             "state_api": "LLAMA_STATE_SEQ_GET_SIZE_GET_DATA_SET_DATA",
             "state_scope": "FULL_HYBRID_SEQUENCE",
             "state_components": ["ATTENTION_KV", "RECURRENT_SHORTCONV"],
+            "prefill_condition": "LATENT_CANDIDATE",
+            "prefill_rows": 1,
+            "prefill_input_sha256": hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest(),
+            "prefill_decode_status": 0,
             "source_sequence_id": 0,
             "destination_sequence_id": 0,
             "state_bytes": 4096,
@@ -270,7 +274,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "kv_snapshot_supported": True,
         "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
         "hybrid_state_roundtrip_supported": True,
-        "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/1",
+        "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/2",
     }
     monkeypatch.setattr(
         native_receiver.subprocess, "run",
@@ -319,14 +323,50 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         assert "position_ids" not in snapshot
         if condition == "NO_MESSAGE":
             assert score["input_sha256"] == hashlib.sha256(b"").hexdigest()
+            assert "hybrid_state_roundtrip" not in score
+        elif condition == "LATENT_CANDIDATE":
             roundtrip = score["hybrid_state_roundtrip"]
+            candidate_input_sha = hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest()
             assert roundtrip["status"] == "READ_ONLY_ROUNDTRIP"
+            assert roundtrip["prefill_condition"] == "LATENT_CANDIDATE"
+            assert roundtrip["prefill_rows"] == 1
             assert roundtrip["state_components"] == ["ATTENTION_KV", "RECURRENT_SHORTCONV"]
             assert roundtrip["truncated_restore_rejected"] is True
-            assert roundtrip["source_input_sha256"] == hashlib.sha256(b"").hexdigest()
+            assert roundtrip["source_input_sha256"] == candidate_input_sha
             assert roundtrip["source_context_sha256"] == "c" * 64
             assert roundtrip["source_tokenizer_revision"] == "lfm2-tokenizer-r1"
             assert roundtrip["roundtrip_passed"] is True
+
+    expected_input_sha = hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest()
+    binary_sha = hashlib.sha256(binary.read_bytes()).hexdigest()
+    wrong_hash = dict(raw["hybrid_state_roundtrip"], prefill_input_sha256="f" * 64)
+    with pytest.raises(NativeReceiverError, match="prefill input binding"):
+        native_receiver._build_native_hybrid_state_roundtrip_receipt(
+            wrong_hash,
+            expected_model_sha256=model_sha,
+            receiver_model_revision="lfm2-r1",
+            receiver_tokenizer_revision="lfm2-tokenizer-r1",
+            context_sha256="c" * 64,
+            binary_sha256=binary_sha,
+            input_sha256=expected_input_sha,
+            prefill_rows=1,
+            target_sha256=target_sha,
+            target_count=len(target_ids),
+        )
+    wrong_rows = dict(raw["hybrid_state_roundtrip"], prefill_rows=2)
+    with pytest.raises(NativeReceiverError, match="prefill row count"):
+        native_receiver._build_native_hybrid_state_roundtrip_receipt(
+            wrong_rows,
+            expected_model_sha256=model_sha,
+            receiver_model_revision="lfm2-r1",
+            receiver_tokenizer_revision="lfm2-tokenizer-r1",
+            context_sha256="c" * 64,
+            binary_sha256=binary_sha,
+            input_sha256=expected_input_sha,
+            prefill_rows=1,
+            target_sha256=target_sha,
+            target_count=len(target_ids),
+        )
 
 
 def test_dimension_mismatch_is_explicit_and_never_consumed(tmp_path):
