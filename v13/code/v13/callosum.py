@@ -181,8 +181,29 @@ class Callosum:
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
+        native_probe={'status':'NOT_RUN','native_input_consumed':False,'input_effect_detected':False,
+                      'production_route':False,'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0}
+        r=getattr(self,'r',None)
+        if r is not None:
+            row=self.s.one(
+                "SELECT p.payload FROM packets p JOIN events e ON e.id=p.event_id "
+                "WHERE p.kind=? AND e.session_id=? ORDER BY p.created DESC LIMIT 1",
+                ("LatentReceiverPacket",r.session),
+            )
+            if row:
+                try:
+                    saved=json.loads(row["payload"])
+                    native_probe={k:saved.get(k) for k in (
+                        'status','input_rows','input_dim','receiver_input_dim','runner_revision',
+                        'native_input_consumed','input_effect_detected','input_effect_rms',
+                        'production_route','semantic_use_proven','training_authority','native_receiver_authority',
+                    )}
+                except Exception:
+                    native_probe['status']='INVALID_RECEIPT'
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+                'native_receiver_probe':native_probe,
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (diagnostic native receiver only; no trained alignment/held-out utility)',
+                'claim_limit':'Native input-effect diagnostic only; no learned semantic utility or production latent exchange'}
 
 def controller(runtime):
     c=getattr(runtime,'callosum',None)
@@ -373,6 +394,9 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        from .native_probe_approval import operator_command as native_probe_command
+        return native_probe_command(r,args)
     if args and type(args[0]) is str and args[0].startswith("matrix-"):
         from .native_receiver_matrix_runtime import operator_command as matrix_command
         return matrix_command(r,args)
