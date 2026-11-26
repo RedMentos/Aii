@@ -550,19 +550,24 @@ def _run(runtime):
     matrix, receipt, target_ids, _pair, sender, receiver = _staged(runtime)
     record, _version = _approval_record(runtime)
     now = time.time()
-    liveness = _approval_liveness(runtime, record, now=now)
-    if (liveness != "PENDING"
+    if (record.get("status") != "PENDING"
             or record.get("runtime_nonce") != approval._runtime_nonce(runtime)
+            or not _valid_approval_window(record, now=now)
+            or now >= record["expires_at"]
             or record.get("matrix_sha256") != receipt["matrix_sha256"]
             or record.get("approval_binding_sha256") != receipt["approval_binding_sha256"]
             or record.get("session_id") != receipt["session_id"]
             or record.get("task_event_id") != receipt["task_event_id"]
             or record.get("task_generation_id") != receipt["task_generation_id"]):
-        raise PermissionError(
-            "fresh matching :callosum matrix-arm --confirm approval is required"
-            + (": " + liveness if liveness != "PENDING" else "")
-        )
+        raise PermissionError("fresh matching :callosum matrix-arm --confirm approval is required")
     try:
+        liveness = _approval_liveness(runtime, record, now=now)
+        if liveness != "PENDING":
+            if liveness == "STALE_SOURCE":
+                raise PermissionError("source bytes changed or the approved source was revoked")
+            raise PermissionError(
+                "fresh matching :callosum matrix-arm --confirm approval is required: " + liveness
+            )
         _validate_matrix_sources(runtime, receipt, require_current=True)
     except BaseException as exc:
         state, version = runtime.store.state(KEY, None)
