@@ -1616,3 +1616,11 @@ Audited exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c
 **Canon / product status:** B3 remains OFF. This is `WIRED_SYNTHETIC_DIAGNOSTIC` only, not trained latent coupling, generated-answer correctness, weight learning or production routing. P0 basic chat and B1/B2 valid-offer delivery remain OPEN. No real GGUF cohort, Redmi/Termux test, release or deployment. Last phone receipt remains historical 2026-11-24; current device behavior `REDMI_UNVERIFIED`.
 
 **Next executable owner/action:** Core rebase/stack #2523 onto exact #2524 head, refresh integrated source pins bottom-up and rerun the exact stage suite. This remains a manual local-TTY diagnostic route; a normal-turn consumer and the P0 user-chat path are still missing. After that, with separate explicit local operator approval, run >=20 held-out groups across >=2 sessions and >=2 task families on pinned real GGUF, including all eight controls, generated-answer correctness, retention, restart/rollback and RSS/TTFT. Keep B3 OFF until those gates pass.
+
+
+## Core & Harness Run 30 — native matrix model-liveness checkpoint (2026-11-26)
+
+- PR #2530 / branch `core/v14-native-matrix-approval-recovery-20261126-run1` / head `2e3befdeb0202ac8391ca0e950f7dc70f186ae1d` (DRAFT, NOT_RELEASED).
+- Added a stat-only current-route check for persisted matrix approvals: exact model revision, selected canonical path, regular-file status and device/inode/size/mtime/ctime identity. Drift is reported as `STALE_MODEL`; status remains read-only; clear invalidates and closes. Full model-manifest hash verification remains in the actual native execution path, avoiding a multi-GB hash on every status poll.
+- LOCAL_LINUX isolated helper 4/4 PASS; exact Core CI 45799300401 PASS on Python 3.13/3.14; staged-runtime and integrated-regression 45799300380 PASS. Full local checkout NOT_RUN; no GGUF or Redmi evidence.
+- Next executable package: reconcile the K/V-aware Runtime matrix stack with the separate fair-budget and fastpath Runtime chain, then connect source-bound B1/B2 offers to C4/C3 on a single reviewed base. No B3 promotion or model swap.
