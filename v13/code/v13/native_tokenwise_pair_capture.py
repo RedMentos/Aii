@@ -13,6 +13,7 @@ or native receiver authority is granted.
 from __future__ import annotations
 
 import hashlib
+import math
 import time
 from pathlib import Path
 
@@ -36,6 +37,43 @@ RECEIVER_TAP_IDS = {
 
 class NativeTokenwisePairCaptureError(RuntimeError):
     pass
+
+
+MAX_IN_MEMORY_PAIR_RECORDS = 8
+MAX_IN_MEMORY_PAIR_VECTOR_BYTES = 64 * 1024 * 1024
+MAX_SINGLE_PAIR_VECTOR_BYTES = 8 * 1024 * 1024
+
+
+def _in_memory_pair_record_bytes(record):
+    if (not isinstance(record, dict)
+            or record.get("schema") != "v14.native-tokenwise-pairing/1"
+            or record.get("status") != "PAIRED_DIAGNOSTIC"
+            or record.get("persisted") is not False
+            or record.get("production_route") is not False
+            or record.get("semantic_use_proven") is not False
+            or record.get("training_authority") != 0
+            or record.get("native_receiver_authority") != 0):
+        raise NativeTokenwisePairCaptureError("only authority-zero in-memory pair records may be staged")
+    pairs = record.get("pairs")
+    if (not isinstance(pairs, list) or not 1 <= len(pairs) <= 64
+            or record.get("pair_count") != len(pairs)):
+        raise NativeTokenwisePairCaptureError("in-memory pair record must contain 1..64 aligned rows with an exact count")
+    vector_bytes = 0
+    for pair in pairs:
+        if not isinstance(pair, dict):
+            raise NativeTokenwisePairCaptureError("pair record contains a malformed row")
+        for key in ("sender_vector", "receiver_vector"):
+            vector = pair.get(key)
+            if not isinstance(vector, (list, tuple)) or not 1 <= len(vector) <= 8192:
+                raise NativeTokenwisePairCaptureError("pair vector geometry is outside the local memory bound")
+            for value in vector:
+                if type(value) not in (int, float) or not math.isfinite(float(value)):
+                    raise NativeTokenwisePairCaptureError("pair vector contains a non-finite value")
+            vector_bytes += len(vector) * 8
+    if vector_bytes > MAX_SINGLE_PAIR_VECTOR_BYTES:
+        raise NativeTokenwisePairCaptureError("single pair record exceeds the 8 MiB vector bound")
+    # Account for Python list/float overhead without serializing the vectors.
+    return vector_bytes * 2
 
 
 def _check_live(runtime, deadline, stage):
@@ -420,7 +458,42 @@ def operator_command(runtime, args, *, approval_module=None, capture_fn=None):
         return dumps(approval_module.revoke(runtime))
     if (len(args) == 5 and args[0] == "native-tokenwise-pair"
             and args[3:] == ["--last-source", "--confirm"]):
-        return dumps(capture_fn(runtime, args[1], args[2]))
+        records = getattr(runtime, "_native_tokenwise_pair_records", None)
+        if records is None:
+            records = []
+        if not isinstance(records, list):
+            raise NativeTokenwisePairCaptureError("Runtime tokenwise lab state is malformed")
+        if getattr(runtime, "_native_tokenwise_candidate", None) is not None:
+            raise NativeTokenwisePairCaptureError("clear or probe the staged tokenwise candidate before capturing again")
+        if len(records) >= MAX_IN_MEMORY_PAIR_RECORDS:
+            raise NativeTokenwisePairCaptureError("in-memory tokenwise record cap reached; clear the lab before another capture")
+        existing_bytes = sum(_in_memory_pair_record_bytes(item) for item in records)
+        if existing_bytes + MAX_SINGLE_PAIR_VECTOR_BYTES * 2 > MAX_IN_MEMORY_PAIR_VECTOR_BYTES:
+            raise NativeTokenwisePairCaptureError("in-memory tokenwise vector budget is full; clear the lab before another capture")
+        record = capture_fn(runtime, args[1], args[2], return_record=True)
+        estimated_bytes = _in_memory_pair_record_bytes(record)
+        record_sha = record.get("record_sha256")
+        if type(record_sha) is not str or len(record_sha) != 64:
+            raise NativeTokenwisePairCaptureError("captured pair record has no canonical digest")
+        if any(item.get("record_sha256") == record_sha for item in records):
+            raise NativeTokenwisePairCaptureError("duplicate tokenwise pair record refused")
+        if existing_bytes + estimated_bytes > MAX_IN_MEMORY_PAIR_VECTOR_BYTES:
+            raise NativeTokenwisePairCaptureError("captured pair record exceeds the remaining in-memory vector budget")
+        records.append(record)
+        runtime._native_tokenwise_pair_records = records
+        return dumps({
+            "schema": "v14.native-tokenwise-pair-lab/1",
+            "status": "PAIRED_DIAGNOSTIC_STAGED",
+            "record_sha256": record_sha,
+            "session_id": record["session_id"],
+            "event_id": record["event_id"],
+            "pair_count": record["pair_count"],
+            "in_memory_record_count": len(records),
+            "estimated_in_memory_bytes": existing_bytes + estimated_bytes,
+            "persisted": False,
+            "pair_vectors_persisted": False,
+            "notice": "Pair vectors remain in bounded Runtime memory only; use fit-tokenwise-cohort for an explicit session-disjoint candidate."
+        })
     raise ValueError(
         ":callosum [arm-tokenwise-pair <sender> <receiver> --last-source --confirm|"
         "native-tokenwise-pair <sender> <receiver> --last-source --confirm|"

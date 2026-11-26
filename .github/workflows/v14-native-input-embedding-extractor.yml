@@ -6,17 +6,20 @@ on:
       - core/v14-native-input-embedding-extractor-20261125-run2
       - core/v14-native-input-embedding-runtime-capture-20261125-run1
       - core/v14-native-tokenwise-runtime-capture-20261125-run1
+      - core/v14-tokenwise-native-receiver-consumer-20261125-run1
   pull_request:
     branches:
       - core/v14-actionselection-broadcast-lineage-20261125-run1
       - core/v14-native-input-embedding-extractor-20261125-run2
       - gpt6/v13-private-remote-bridge-20261111
       - research-perception/v14-native-tokenwise-session-fit-20261125-run21
+      - core/v14-native-tokenwise-runtime-capture-20261125-run1
     paths:
       - "v13/code/v13/native/input_embedding_extractor/**"
       - "v13/code/v13/native_input_embedding_extractor.py"
       - "v13/code/v13/native_input_embedding_capture.py"
       - "v13/code/v13/native_tokenwise_pair_capture.py"
+      - "v13/code/v13/native_tokenwise_receiver_probe.py"
       - "v13/code/v13/native_input_embedding_tap.py"
       - "v13/code/v13/native_tokenwise_pairing.py"
       - "v13/code/v13/latent_adapter.py"
@@ -27,6 +30,7 @@ on:
       - "v13/code/tests/test_native_input_embedding_capture.py"
       - "v13/code/tests/test_native_tokenwise_pairing.py"
       - "v13/code/tests/test_native_tokenwise_pair_capture.py"
+      - "v13/code/tests/test_native_tokenwise_receiver_probe.py"
       - "v13/code/docs/NATIVE_INPUT_EMBEDDING_EXTRACTOR.md"
       - "v13/code/docs/NATIVE_TOKENWISE_PAIR_CAPTURE.md"
       - ".github/workflows/v14-native-input-embedding-extractor.yml"
@@ -56,8 +60,8 @@ jobs:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
-          python -m py_compile v13/code/v13/native_input_embedding_extractor.py v13/code/v13/native_input_embedding_capture.py v13/code/v13/native_tokenwise_pair_capture.py v13/code/v13/native_input_embedding_tap.py v13/code/v13/native_tokenwise_pairing.py v13/code/v13/latent_adapter.py v13/code/v13/callosum.py v13/code/v13/native_probe_approval.py v13/code/tests/test_native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_tap.py v13/code/tests/test_native_input_embedding_capture.py v13/code/tests/test_native_tokenwise_pairing.py v13/code/tests/test_native_tokenwise_pair_capture.py
-          python -m pytest -q v13/code/tests/test_native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_tap.py v13/code/tests/test_native_input_embedding_capture.py v13/code/tests/test_native_tokenwise_pairing.py v13/code/tests/test_native_tokenwise_pair_capture.py
+          python -m py_compile v13/code/v13/native_input_embedding_extractor.py v13/code/v13/native_input_embedding_capture.py v13/code/v13/native_tokenwise_pair_capture.py v13/code/v13/native_input_embedding_tap.py v13/code/v13/native_tokenwise_pairing.py v13/code/v13/latent_adapter.py v13/code/v13/callosum.py v13/code/v13/native_probe_approval.py v13/code/v13/native_tokenwise_receiver_probe.py v13/code/tests/test_native_tokenwise_receiver_probe.py v13/code/tests/test_native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_tap.py v13/code/tests/test_native_input_embedding_capture.py v13/code/tests/test_native_tokenwise_pairing.py v13/code/tests/test_native_tokenwise_pair_capture.py
+          python -m pytest -q v13/code/tests/test_native_input_embedding_extractor.py v13/code/tests/test_native_input_embedding_tap.py v13/code/tests/test_native_input_embedding_capture.py v13/code/tests/test_native_tokenwise_pairing.py v13/code/tests/test_native_tokenwise_pair_capture.py v13/code/tests/test_native_tokenwise_receiver_probe.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
 

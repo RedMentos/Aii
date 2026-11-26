@@ -1,12 +1,21 @@
+import copy
 import hashlib
+import math
 import pytest
 
 from v13.native_tokenwise_pairing import (
+    _RECORD_MATERIAL_FIELDS,
+    _record_digest,
+    build_anchor_preserving_native_receiver_input,
     build_native_tokenwise_pair_record,
     fit_adapter_from_native_pair_records,
 )
-from v13.latent_adapter import align_token_rows_by_byte_pieces
-from v13.latent_adapter import LatentAdapterError
+from v13.latent_adapter import (
+    LatentAdapterError,
+    _activation_vector_sha256,
+    _token_pair_id,
+    align_token_rows_by_byte_pieces,
+)
 
 LLAMA_REV = "2851b3bcbf8d993a2243ae751c0a7dfa8e944a40"
 
@@ -340,3 +349,131 @@ def test_native_pair_record_fit_rejects_session_overlap_and_tampering():
             holdout_session_ids=["hold-session-0", "hold-session-1"],
             rank=2,
         )
+
+def _session_fit_cohort():
+    records = [
+        native_record(i, f"train-session-{i // 2}") for i in range(8)
+    ] + [
+        native_record(i, f"hold-session-{(i - 8) // 2}") for i in range(8, 12)
+    ]
+    result = fit_adapter_from_native_pair_records(
+        records,
+        train_session_ids=[
+            "train-session-0", "train-session-1",
+            "train-session-2", "train-session-3",
+        ],
+        holdout_session_ids=["hold-session-0", "hold-session-1"],
+        rank=2,
+        ridge=1e-5,
+        min_relative_improvement=0.0,
+    )
+    return records, result
+
+
+def test_native_pair_fit_rejects_receiver_rows_detached_from_extractor_manifest():
+    records, _result = _session_fit_cohort()
+    tampered = copy.deepcopy(records[8])
+    pair = tampered["pairs"][0]
+    pair["receiver_vector"][0] += 0.5
+    pair["receiver_vector_sha256"] = _activation_vector_sha256(pair["receiver_vector"])
+    pair["pair_id"] = _token_pair_id(
+        source_id=pair["source_id"],
+        source_sha256=pair["source_sha256"],
+        token_position=pair["token_position"],
+        source_span=pair["source_span"],
+        alignment_id=pair["alignment_id"],
+        alignment_coverage=pair["alignment_coverage"],
+        sender_vector_sha256=pair["sender_vector_sha256"],
+        receiver_vector_sha256=pair["receiver_vector_sha256"],
+    )
+    tampered["pair_ids"] = [item["pair_id"] for item in tampered["pairs"]]
+    material = {key: tampered[key] for key in _RECORD_MATERIAL_FIELDS}
+    tampered["record_sha256"] = _record_digest(material)
+    records[8] = tampered
+    with pytest.raises(LatentAdapterError, match="native manifest row"):
+        fit_adapter_from_native_pair_records(
+            records,
+            train_session_ids=[
+                "train-session-0", "train-session-1",
+                "train-session-2", "train-session-3",
+            ],
+            holdout_session_ids=["hold-session-0", "hold-session-1"],
+            rank=2,
+            ridge=1e-5,
+            min_relative_improvement=0.0,
+        )
+
+
+def test_anchor_preserving_native_receiver_input_keeps_exact_anchors_at_zero_gain():
+    from v13 import native_latent_receiver
+
+    records, fitted = _session_fit_cohort()
+    record = records[8]
+    packet = build_anchor_preserving_native_receiver_input(
+        fitted["adapter"], record, residual_gain=0.0,
+    )
+    expected = [
+        pair["receiver_vector"]
+        for pair in sorted(record["pairs"], key=lambda item: item["token_position"])
+    ]
+    assert packet["schema"] == "v14.native-tokenwise-anchor-residual-input/1"
+    assert packet["input_strategy"] == "ANCHOR_PLUS_CAPPED_RESIDUAL_V1"
+    assert packet["vectors"] == expected
+    assert packet["input_sha256"] == packet["anchor_sha256"]
+    assert packet["anchor_rows_preserved_as_base"] is True
+    assert packet["production_route"] is False
+    assert packet["semantic_use_proven"] is False
+    assert packet["training_authority"] == packet["native_receiver_authority"] == 0
+    assert packet["persisted"] is False
+    assert "token_ids" not in packet
+    rows, dimension, _payload, digest = native_latent_receiver._vector_payload(packet["vectors"])
+    positions = native_latent_receiver._validate_positions(
+        packet["position_ids"], rows, packet["position_mode"],
+    )
+    assert rows == packet["input_rows"] == 4
+    assert dimension == packet["input_dim"] == fitted["adapter"]["receiver_dim"]
+    assert digest == packet["input_sha256"]
+    assert positions == [0, 1, 2, 3]
+
+
+def test_anchor_preserving_native_receiver_input_bounds_residual_and_model_binding():
+    records, fitted = _session_fit_cohort()
+    packet = build_anchor_preserving_native_receiver_input(
+        fitted["adapter"], records[8],
+        residual_gain=0.5,
+        max_relative_residual=0.2,
+    )
+    assert packet["max_applied_relative_residual"] <= 0.1 + 1e-6
+    assert packet["mean_applied_relative_residual"] <= 0.1 + 1e-6
+    assert packet["input_sha256"] != "" and len(packet["input_sha256"]) == 64
+    with pytest.raises(LatentAdapterError, match="gain"):
+        build_anchor_preserving_native_receiver_input(
+            fitted["adapter"], records[8], residual_gain=0.5001,
+        )
+    with pytest.raises(LatentAdapterError, match="maximum relative residual"):
+        build_anchor_preserving_native_receiver_input(
+            fitted["adapter"], records[8], max_relative_residual=1.0001,
+        )
+
+    wrong_records = copy.deepcopy(records)
+    for item in wrong_records:
+        item["sender"]["model_sha256"] = "d" * 64
+        item["record_sha256"] = _record_digest({
+            key: item[key] for key in _RECORD_MATERIAL_FIELDS
+        })
+    wrong_fit = fit_adapter_from_native_pair_records(
+        wrong_records,
+        train_session_ids=[
+            "train-session-0", "train-session-1",
+            "train-session-2", "train-session-3",
+        ],
+        holdout_session_ids=["hold-session-0", "hold-session-1"],
+        rank=2,
+        ridge=1e-5,
+        min_relative_improvement=0.0,
+    )
+    with pytest.raises(LatentAdapterError, match="model/tap/tokenizer binding mismatch"):
+        build_anchor_preserving_native_receiver_input(
+            wrong_fit["adapter"], records[8],
+        )
+

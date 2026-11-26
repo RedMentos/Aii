@@ -1485,3 +1485,38 @@ Staged/integrated run 45678205707 completed PASS: staged-runtime 255 passed, 10 
 **Consumer and limitations:** NOT_RUNTIME_WIRED. Core must compose #2505 native selected-row extraction, Cognition.read_tap and #2507 pair assembly, then call this fitter only under explicit local consent. It does not prove semantic receiver utility or actual JEPA/gradient learning. The next gate is real GGUF receiver-task utility against exact-message, no-message, zero, shuffled, repeat and OOD controls, plus retention/restart/rollback.
 
 **Device:** private V13OBS #115 last updated 2026-11-24T09:28:11Z; no newer receipt. The newest recorded turn had C3 native output but B1/B2 were not attempted in that turn; earlier B1 attempts failed and native latent exchange was unproven. Read-only relay issues #925–927 had no response at last poll. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No device command, model/weight/permission/data change or deployment occurred.
+
+## Research & Perception Run 22 — receiver-anchor-preserving tokenwise latent input (2026-11-25)
+
+**Checkpoint:** draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), branch research-perception/v14-anchor-preserving-tokenwise-20261125-run22, stacked on Perception PR #2508 at parent SHA e333b5c3da2448ef6d188f2278672f7f692ac76e. Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae.
+
+**New executable Perception work:**
+- Native tokenwise pair validation now reconstructs the receiver input-embedding manifest digest, validates the native extractor receipt and exact byte-span partition, and binds every aligned receiver vector digest/span to the manifest's ordered row hashes. This closes a provenance gap between the pair fitter and the selected-row extractor.
+- Added an opt-in anchor-preserving receiver input builder. It uses the exact receiver input-embedding rows as the base, then adds a per-token projected-sender residual with a bounded norm/gain. The existing replacement-style input builder remains unchanged. The output uses the native receiver's zero-based contiguous prefill positions and carries source/model/adapter digests.
+- The helper is still a diagnostic payload builder; Core has not yet called it from the live native receiver/runtime. It performs no persistence, native inference, weight update or B3 authority promotion.
+
+**Research:** R-155 records XBridge (arXiv:2608.11676, accepted NeurIPS 2026; Apache-2.0 source, 264M bridge and 7B-class evaluation) and the counterexample study arXiv:2608.16347v2 (2026-11-09). The evidence supports exact receiver anchors plus a separately gated latent signal as an experiment, while requiring task-level causal utility rather than alignment/next-token change. No external code, data or weights were reused.
+
+**Tests and environment:**
+- LOCAL_LINUX CPython 3.13.5 isolated harness: python3 -m py_compile /tmp/anchor_residual_harness.py PASS; python3 /tmp/anchor_residual_harness.py PASS, 4/4 checks.
+- Full local Aii checkout: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS/clone unavailable). This is not a full repository test.
+- PR #2511 latest branch head is tracked directly on GitHub; code/test SHA remains 87c8c7ecdf18ac42ad2753568991a2c4e32078ae. On the current head, adapter-contract 3.13/3.14, staged-runtime, integrated-regression, offline 3.11/3.14, privacy and bridge-security checks are QUEUED. Earlier head c1e3e20 had offline 3.11/3.14, privacy and bridge-security PASS; its staged/integrated checks were still running when superseded. The v14-latent-token-alignment workflow filter was corrected in e8b8d95229f3c17db099468f4767ccfad18be612. Parent #2508 CI is not evidence for this child.
+- No real GGUF receiver decode, semantic task utility, gradient/parameter update, Android arm64/Termux or Redmi test. No staged/integrated runtime test.
+
+**Product effect and Canon:** strengthens the B3/Enlightened-Space tokenwise provenance path and supplies an anchor-preserving native receiver input candidate. It does not make B3 live, replace symbolic exchange, prove shared meaning or complete any other Canon family. Core PR #2510 is the next runtime consumer candidate; it should rebase/consume the helper after review and retain explicit probe approval.
+
+**Device/deployment:** owner-read DIAGNOSTICS returned NO_LIVE_RECEIPT. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER; this is historical only. No new release is ready. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No UPDATE_REQUEST, shell command, model/weight/permission/data change or deployment.
+
+**Next:** obtain exact PR #2511 CI, fix any failures, ask Core to integrate the helper into the native receiver utility path, then run held-out task tests with exact-message/no-message/zero/shuffle/repeat/OOD/entity-substitution controls plus retention/restart/rollback. No user action is required.
+
+
+---
+
+## Core & Harness — tokenwise native receiver consumer (2026-11-25)
+
+- Core PR [#2512](https://github.com/RedMentos/Aii/pull/2512), branch `core/v14-tokenwise-native-receiver-consumer-20261125-run1`, current head `6ff13917a9736a292716becdb2e50a1ac7f9b288`. It is stacked on Core #2510 and carries Perception #2511 as a second parent so the exact anchor-preserving helper is consumed without rewriting either owner branch.
+- New in-memory path: session-disjoint TOKENWISE adapter fit → held-out current-event validation → anchor-preserving receiver-input construction → separately approved native receiver probe. It consumes `NATIVE_RECEIVER`, not `TOKENWISE_PAIR_CAPTURE`, and verifies source bytes, event/generation/session, model revisions and file identities, Runtime lease, queue and known managed-model process census.
+- Pair records, adapter and activation vectors are not persisted. No model weight update, generated answer, production B3 route or semantic utility claim.
+- Exact-head CI on `6ff1391`: queued at this checkpoint. Earlier head `27c4788` compiled on Python 3.13/3.14 and ran 18/19 focused tests; the only failure was a test comparing `Path` to `str`. Corrected in `6ff1391`; exact rerun still required.
+- LOCAL_LINUX full Aii checkout is BLOCKED: no checkout and `git ls-remote` failed DNS. No local repository pytest or native GGUF run. REDMI_UNVERIFIED; no device receipt, install, model swap, weight change or deployment.
+- Next: read exact #2512 CI, fix any remaining failures, then arrange an explicitly consented local native-GGUF probe on a reachable authorized environment. Do not promote B3 until task-level held-out utility beats exact/no-message/zero/shuffle/repeat/OOD controls and passes retention/restart/rollback.
