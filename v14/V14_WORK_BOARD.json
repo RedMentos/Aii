@@ -1439,45 +1439,45 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
-    "timestamp": "2026-11-26T05:25:03+01:00",
+    "timestamp": "2026-11-26T11:32:06+01:00",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
     "pr": 2524,
     "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
     "base_pr": 2519,
     "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
-    "code_test_sha": "8f7c73065e8f92e5988fe12fa88038dc41ece530",
+    "code_test_sha": "5f17b865ab2647d9085a019904f2e581986758db",
     "implementation_commit": "68d90606a312bdda739253664d7a51632715c87c",
     "test_correction_commits": [
       "d353faf846a62329f5bac502ecd53ce6662648b6",
       "8f7c73065e8f92e5988fe12fa88038dc41ece530"
     ],
-    "status": "DRAFT_FOCUSED_TESTS_GREEN_SHARED_STAGE_BLOCKED_CORE_PIN",
+    "status": "DRAFT_FOCUSED_30_PASS_SHARED_STAGE_BLOCKED_CORE_SOURCE_PIN",
     "tests": {
-      "focused_python_313": "26/26 PASS",
-      "focused_python_314": "26/26 PASS",
+      "focused_python_313": "30/30 PASS",
+      "focused_python_314": "30/30 PASS",
+      "broader_python_313": "70 PASS / 1 FAIL; only Core source-pin mismatch",
+      "broader_python_314": "70 PASS / 1 FAIL; only Core source-pin mismatch",
       "native_linux_pinned_build_selftest": "PASS",
       "android_arm64_cross_compile": "PASS_COMPILE_ONLY",
       "runtime_deploy_offline_311_314": "PASS",
       "privacy_scan": "CLEAN",
-      "shared_staged_runtime": "FAIL: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; Core integrated candidate source pin mismatch for v13/native_latent_receiver.py",
-      "integrated_regression": "FAIL: 1 failed; same Core source pin",
-      "local_linux_scratch": "5/5 PASS; CPython 3.13.5",
+      "shared_staged_runtime": "FAIL: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; Core-owned v13/native_latent_receiver.py source-pin mismatch",
+      "integrated_regression": "FAIL: 1 failed; same Core source-pin mismatch",
+      "local_linux_scratch": "5/5 PASS; CPython 3.13.5; py_compile PASS",
       "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable"
     },
-    "consumer": "native_receiver_utility.evaluate_native_receiver_task_utility now consumes read-only K/V snapshot metadata, checks identical-input consistency and geometry, rejects partial coverage, and emits aggregate sampled-state differences; no raw K/V persistence and no change to likelihood utility gate. Core #2523 provides a manual local-TTY one-shot diagnostic producer/consumer, not a normal-turn hook; normal user chat remains unconnected.",
+    "consumer": "Cohort-wide read-only K/V geometry invariant added to native_receiver_utility; four regressions reject layer, attention-layer-count, K-shape and dtype drift across task groups. No raw K/V persistence, cache write, recurrent-state transfer, semantic utility or normal-turn hook.",
     "cross_lane_core_pr": {
-      "number": 2523,
-      "head_sha": "241743cfe7728586c3d4e07c88bfc3da1387e04f",
-      "ci": "7/7 workflows SUCCESS",
-      "base_pr": 2519,
-      "status": "MANUAL_DIAGNOSTIC_CI_GREEN_NOT_NORMAL_TURN_NOT_STACKED_ON_2524",
-      "mode": "MANUAL_LOCAL_TTY_DIAGNOSTIC_NOT_NORMAL_TURN"
+      "number": 2525,
+      "status": "DRAFT_REBASE_REQUIRED",
+      "dependency": "rebase onto current #2524 head and refresh exact nested source pins",
+      "normal_turn": "NOT_CONNECTED"
     },
-    "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; last available private snapshot is historical 2026-11-24; no device action.",
+    "device": "REDMI_UNVERIFIED; no fresh authenticated device receipt; no device action",
     "release": "NOT_RELEASED",
-    "research": "R-162 full-text review: When Latent Agents Lie HMAC transport integrity boundary; CacheBridge same-family dense-GQA/GPU limits and project license pending. No code/weights reused.",
-    "next_action": "Core stacks #2523 onto #2524, refresh Core-owned integrated source pins and reruns staged/integrated CI; then separately authorize a >=20-group real-GGUF held-out cohort. B3 remains OFF."
+    "research": "R-163 LatentPort full-text review: hybrid Qwen3.5 handoff required K/V plus GDN recurrent/conv package in one matched pair; no LFM2 proof or code/license found. ACCT is same-family only.",
+    "next_action": "Core rebases #2525/#2523 onto #2524, repairs source pins, then adds version-guarded read-only LFM2 recurrent/conv state inventory and same-model restoration test; real GGUF cohort remains separately consent-gated."
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T01:57:48Z",
