@@ -2211,3 +2211,20 @@ Final status correction: staged/integrated CI run 45678205707 completed PASS (st
 - The new R-164 finding supplies the next native test: same-model LFM2.5 QAD sequence-state roundtrip through public llama_state_seq_get_size/get_data/set_data, including both K/V and shortconv recurrent state. This is not cross-model latent transfer.
 
 **No user action required.** No device, model, permission, updater or user-data mutation. REDMI_UNVERIFIED; NOT_RELEASED; B3 OFF.
+
+
+## New verified Perception checkpoint — 2026-11-26, PR #2524
+
+The previous next step (“implement a same-model LFM2 sequence-state roundtrip”) is now present as opt-in native code on branch head 076a973eaad808b537c7f74337464d02cf41d633. The C++ receiver has a LFM2-only --hybrid-state-roundtrip mode; Python binds the result to model, tokenizer, llama.cpp, binary, context, input and target hashes and validates it through the task-score consumer. It captures and restores full hybrid sequence state (attention/KV plus recurrent shortconv), includes a truncated-state negative control, compares next-token logits after a fixed teacher-forced continuation, caps the ephemeral state buffer at 16 MiB and zeroizes it. It does not export raw state, persist raw state, touch the installed runtime, train, edit weights or enable B3.
+
+**Exact CI at head 076a973 (workflow 45813438280):**
+- Python 3.13 focused tests: PASS; receiver/deploy-chain compile: PASS; privacy scan: CLEAN.
+- Python 3.14 focused tests: PASS; receiver/deploy-chain compile: PASS; privacy scan: CLEAN.
+- Android arm64-v8a cross-compile step: PASS (compile-only; not a Redmi test).
+- Linux pinned llama.cpp build: IN_PROGRESS at last poll.
+- Shared source-tap identity gate: FAIL because Core's native_receiver_matrix_runtime.py producer hook is not yet present on this Perception branch. Core PR #2525 is still stale against the updated #2524 head and must rebase/wire the consumer.
+- Full LOCAL_LINUX checkout/pytest: NOT_RUN; no Aii checkout is mounted and GitHub DNS is unavailable in this runtime.
+
+**Next concrete action:** Core rebase #2525 onto latest #2524 and expose the Perception opt-in as a separate local-lab flag, default OFF. Then run the native roundtrip on an already-present, explicitly approved LFM2 GGUF with 32–64 continuation tokens and record actual state bytes, capture/restore duration, peak RSS, max/RMS logit delta and truncated-restore rejection. After that, extend the source prefill from BOS to a real LATENT_CANDIDATE and only then test different-weight sender/receiver transfer with zero, shuffled and wrong-donor controls.
+
+**Device/deployment:** REDMI_UNVERIFIED; no fresh authenticated receipt; no update request; NOT_RELEASED; no deployment. No user action required. No model, weight, permission or user-data mutation. B3 remains OFF; this is not cross-model latent coupling or whole-system acceptance.
