@@ -11,7 +11,7 @@
 - **Workflow trigger repair:** commit `4df2dcaa67f5a8a1ce652af8c4ad965f07ffbffd` adds the #2528 head branch to the Android companion push workflow and its #2513 base branch to the pull-request filter. The branch had previously run only `offline-bridge-security`, not the Android Gradle/Robolectric workflow.
 - **Exact CI evidence:** commit `63b05800ca08167b894f2a48e2a7e9ec73d0ee12` (including malformed-envelope/fragment test) has Android Gradle/Robolectric **SUCCESS** in run 45769108967; `offline-bridge-security` **SUCCESS** in run 45769108891. The emulator process-restart job from run 45769108967 was still **IN_PROGRESS** at last read. Follow-up commit `96e8c54f06c04aec4262a0751f2ee8f90184f6c9` has `android-companion`, `android-companion-process-restart` and `offline-bridge-security` checks **QUEUED** (runs 45769457984 / 45769457901); no PASS is claimed for that newest code yet.
 - **LOCAL_LINUX:** Java 21 present. `gradle --version` is BLOCKED because Gradle is not installed; `ANDROID_HOME` and `ANDROID_SDK_ROOT` are unset. Local Android Gradle/Robolectric is therefore BLOCKED. `git ls-remote` also failed because this environment cannot resolve `github.com`; no full local Aii checkout/pytest ran.
-- **TERMUX/REDMI:** REDMI_UNVERIFIED. No private owner-read receipt was requested and no phone action was attempted. This candidate is not deployed.
+- **TERMUX/REDMI:** REDMI_UNVERIFIED. Read-only private relay requests HEALTH #959 and PIPELINE_STATUS #960 were submitted; both remain open with zero `device_status` comments (**NO_LIVE_RECEIPT**). No phone action was attempted. Current installed SHA/updater state is therefore UNKNOWN; this candidate is not deployed.
 
 ## Other current Core integration risks
 
