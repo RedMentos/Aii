@@ -363,6 +363,16 @@ class CandidateStore:
             supplied = _sha(material.pop("manifest_sha256", None), "checkpoint manifest digest")
             if _canonical_sha(material) != supplied or material.get("adapter_sha256") != item.name:
                 raise CandidateStoreError("candidate listing found a corrupt manifest")
+            if (material.get("schema") != SCHEMA
+                    or material.get("record_persisted") is not False
+                    or material.get("pair_vectors_persisted") is not False
+                    or material.get("source_text_persisted") is not False
+                    or material.get("token_ids_persisted") is not False
+                    or material.get("production_route") is not False
+                    or material.get("semantic_use_proven") is not False
+                    or material.get("training_authority") != 0
+                    or material.get("native_receiver_authority") != 0):
+                raise CandidateStoreError("candidate listing found invalid privacy or authority flags")
             fit = _fit_manifest(material.get("fit_manifest"))
             created_at = material.get("created_at")
             if (type(created_at) not in (int, float) or not math.isfinite(float(created_at))
@@ -380,10 +390,11 @@ class CandidateStore:
                 checkpoint_present = False
             entries.append({
                 "candidate_id": item.name,
-                "created_at": material.get("created_at"),
+                "created_at": created_at,
                 "sender_role": material.get("sender_role"),
                 "receiver_role": material.get("receiver_role"),
                 "rank": material.get("rank"),
+                "adapter_file_sha256": material.get("adapter_file_sha256"),
                 "train_record_count": fit.get("train_record_count"),
                 "holdout_record_count": fit.get("holdout_record_count"),
                 "train_pair_count": fit.get("train_pair_count"),
