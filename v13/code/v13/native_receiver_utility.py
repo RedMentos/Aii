@@ -15,6 +15,12 @@ import random
 import statistics
 import struct
 
+from .native_hybrid_state import (
+    NativeHybridStateReceiptError,
+    summarize_native_hybrid_state_roundtrips,
+    validate_native_hybrid_state_roundtrip,
+)
+
 TASK_SCHEMA = "v14.native-receiver-task-score/1"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
 RESULT_SCHEMA = "v14.native-receiver-task-utility/1"
@@ -314,7 +320,8 @@ def validate_native_receiver_kv_snapshot(value, *, expected_rows=None,
     return result
 
 
-def _native_score(value, receiver_sha, input_sha, target_sha, target_count, condition):
+def _native_score(value, receiver_sha, input_sha, target_sha, target_count, condition,
+                  context_sha, model_revision, tokenizer_revision):
     if not isinstance(value, Mapping) or value.get("schema") != NATIVE_SCHEMA:
         raise NativeReceiverUtilityError("native target-score schema mismatch")
     kind, env = value.get("execution_kind"), value.get("environment")
@@ -350,6 +357,24 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
             value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
         native_data["device_runtime_build_id"] = _id(
             value.get("device_runtime_build_id"), "native.device_runtime_build_id")
+    if "hybrid_state_roundtrip" in value:
+        if condition != "NO_MESSAGE":
+            raise NativeReceiverUtilityError("hybrid-state roundtrip is only allowed on NO_MESSAGE")
+        try:
+            native_data["hybrid_state_roundtrip"] = validate_native_hybrid_state_roundtrip(
+                value.get("hybrid_state_roundtrip"),
+                expected_model_sha256=model_sha,
+                expected_model_revision=model_revision,
+                expected_tokenizer_revision=tokenizer_revision,
+                expected_llama_cpp_revision=native_data["llama_cpp_revision"],
+                expected_binary_sha256=native_data["binary_sha256"],
+                expected_context_sha256=context_sha,
+                expected_input_sha256=input_hash,
+                expected_target_token_ids_sha256=target_hash,
+                expected_target_token_count=target_count,
+            )
+        except NativeHybridStateReceiptError as exc:
+            raise NativeReceiverUtilityError(str(exc)) from exc
     if "kv_snapshot" in value:
         native_data["kv_snapshot"] = validate_native_receiver_kv_snapshot(
             value.get("kv_snapshot"),
@@ -401,7 +426,11 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
         elif message_source != source:
             raise NativeReceiverUtilityError("in-distribution latent control source mismatch")
         _sha(adapter_sha256, "adapter_sha256")
-    native = _native_score(native_receipt, receiver_data["model_sha256"], input_hash, target_sha, target_token_count, condition)
+    native = _native_score(
+        native_receipt, receiver_data["model_sha256"], input_hash, target_sha,
+        target_token_count, condition, context_sha, receiver_data["model_revision"],
+        receiver_data["tokenizer_revision"],
+    )
     material = {
         "schema": TASK_SCHEMA, "status": "SCORED", "condition": condition,
         "task_group_id": task_id, "task_family": task_family, "session_id": session,
@@ -495,10 +524,20 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     kv_snapshot_effects = []
     kv_snapshot_mode = None
     kv_cohort_geometry = None
+    hybrid_state_roundtrips = []
+    hybrid_state_roundtrip_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
         first = group["NO_MESSAGE"]
+        roundtrip = first["native"].get("hybrid_state_roundtrip")
+        has_roundtrip = roundtrip is not None
+        if hybrid_state_roundtrip_mode is None:
+            hybrid_state_roundtrip_mode = has_roundtrip
+        elif hybrid_state_roundtrip_mode != has_roundtrip:
+            raise NativeReceiverUtilityError("hybrid-state roundtrip coverage changed across task cohort")
+        if has_roundtrip:
+            hybrid_state_roundtrips.append(roundtrip)
         common = (first["session_id"], first["task_family"], first["source_ref"],
             first["target_token_ids_sha256"], first["target_token_count"], first["context_sha256"], first["receiver"])
         source_hash = first["source_ref"]["sha256"]
@@ -623,6 +662,10 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "native_receiver_authority": 0,
             "persisted": False,
         }
+    try:
+        hybrid_state_roundtrip_effect = summarize_native_hybrid_state_roundtrips(hybrid_state_roundtrips)
+    except NativeHybridStateReceiptError as exc:
+        raise NativeReceiverUtilityError(str(exc)) from exc
     kind, env = native_binding[:2]
     if kind == "SYNTHETIC_FIXTURE": status, evidence = "FIXTURE_ONLY", "SYNTHETIC"
     elif not enough: status, evidence = "INSUFFICIENT_HOLDOUT", env
@@ -649,6 +692,7 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
         "kv_snapshot_effect": kv_snapshot_effect,
+        "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,
         "training_authority": 0, "native_receiver_authority": 0, "persisted": False}
