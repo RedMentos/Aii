@@ -66,3 +66,13 @@ The full 12-page author-hosted PDF has now been read. The paper is an August 202
 ## Corrected metric-scope code checkpoint
 
 Current code/test head: \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`; source commit \`a7b39e36f7bf44ad30c04759dc8771cda5373b4d\`; source blob \`d8dc5a2e155fe6ac7322e994645f4f20425375f9\`; test blob \`3d34aa8ab552d03724dd829e7b8703f19a0df664\`. The output key is now \`conditional_feature_history_dependence_bits\`, and \`metric_scope\` explicitly states acoustic features → later action outcome, not AAD attention scores. Fresh exact CI is pending on this head. Previous 14/14 CI on c0d68 is historical, not a pass on ef61d. R-166 is now FULL_TEXT_REVIEWED; the current proxy is not paper rIMI or CSD.
+
+
+## Corrected-head exact CI result
+
+Code/test head \`ef61d48f93621cb3d7813628eb96203eea2be1ee\`:
+- Feature-set probe [45781255306](https://github.com/RedMentos/Aii/actions/runs/45781255306): 14/14 PASS on Python 3.13 and 3.14, including actual A4 extractor → A5 PerceptPacket and the metric-scope assertion.
+- RAW EAR comparison [45781255440](https://github.com/RedMentos/Aii/actions/runs/45781255440): 9/9 PASS on both versions.
+- RuntimeDeploy offline integrity [45781255519](https://github.com/RedMentos/Aii/actions/runs/45781255519): PASS on Python 3.11 and 3.14; not deployment.
+- Staged/integrated [45781255404](https://github.com/RedMentos/Aii/actions/runs/45781255404): FAIL; staged 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests, integrated 1 failed. Main cascade is the Core recovery pin mismatch (\`831080...\` expected vs Perception composer \`f9a0ed...\`); two migration assertions additionally report PARTIAL rather than UPDATED.
+- Core/Integrator owns pin and migration repair; Perception did not edit recovery/stage/deployer files.
