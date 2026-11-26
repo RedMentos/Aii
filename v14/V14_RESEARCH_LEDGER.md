@@ -1694,3 +1694,23 @@ Reviewed the maintained-looking upstream GCMI repository \`robince/gcmi\` (branc
 - The upstream README says its optimized MATLAB C++ MEX CI targets macOS and Linux \`x86_64\`; it makes no Android/aarch64 ABI claim. The Python package declares NumPy/SciPy but no Android wheel/Termux validation. Therefore ARM/Termux compatibility remains UNVERIFIED.
 
 The Aii working ref has no root \`LICENSE\` file. GPL-3.0 compatibility must not be assumed. **No GCMI code, package, dataset or weights were copied or added to V14.** For a future exact estimator, either implement the paper equations independently with an explicitly reviewed numerical dependency set, or obtain an explicit project-license decision before considering GPL code. Current Run 44 code uses Python standard library only.
+
+
+## R-167 — LFM2/LFM2.5 multi-sequence and checkpoint issue audit (2026-11-26)
+
+**Primary upstream records reviewed:** [llama.cpp issue #29002](https://github.com/ggml-org/llama.cpp/issues/29002), [issue #29726](https://github.com/ggml-org/llama.cpp/issues/29726), [merged PR #30666](https://github.com/ggml-org/llama.cpp/pull/30666), and pinned revision [b29c606e28a01b1bc8c1351026a0fa6e616bf6c4](https://github.com/ggml-org/llama.cpp/commit/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4) (2026-09-14; version bump to 0.4.1). The V14 pin predates PR #30666's 2026-10-19 merge.
+
+### What the issue evidence does and does not establish
+
+- Issue #29002 (opened 2026-09-16) originally reported LFM2/LFM2.5 multi-sequence batch output divergence and premature truncation on CPU. A later maintainer/community analysis found a bug in the posted `gate.cpp` harness: `batch_index` advanced only when a sampled token was not EOG, so the next active slot could sample the finished slot's logits row. Moving the increment immediately after sampling removed the short-output symptom. In the corrected harness, LFM2.5-350M F32 was byte-identical for 12/12 passages; Q4_K_M was identical for 8/12, differed for 4/12, and had zero short outputs. The remaining Q4 differences were attributed to quantization/numerical differences, not proven recurrent-cell corruption. The original issue was still listed open at this audit, but its initial root-cause claim is not substantiated by the later analysis.
+- A separate comment reports LFM2.5-8B-A1B single-sequence server corruption with context checkpoints enabled (13.6%, n=22) versus disabled (5.0%, n=180). This is a small/unequal sample without a minimal reproducer and is not the same as the original multi-sequence report.
+- PR #30666 fixes server SWA checkpoint invalidation when a slot switches to an unrelated prompt; its added A/B tests use TinyGemma3. It is relevant checkpoint hygiene, but does **not** prove an LFM2.5 recurrent-state fix or validate the V14 pinned build.
+- Issue #29726 separately reported a process abort during whole-context state save when two sequences share a recurrent cell but have divergent rollback indices (LFM2.5-230M Q4_0, Linux CPU). It is a distinct persistence path from the current V14 sequence-specific snapshot probe; do not generalize it to the one-sequence sequence-save path without a direct test.
+
+### V14 engineering consequence
+
+Keep LFM2/LFM2.5 execution serial (one active sequence per context) by default until the exact pinned revision, quantization and model are measured with a corrected single-vs-batched harness. Any future batch comparison must advance the active output-row index for every sampled slot, including EOG slots, and compare F32 and the exact Q4 artifact separately. Test server context-checkpoint invalidation, sequence-specific save/restore and whole-context save as separate behaviors; do not infer one from another. The current K/V receiver matrix uses a single sequence and does not establish batch safety, recurrent-state transfer or Android performance.
+
+**Rights / reuse:** no upstream code, tests, models or weights were copied. The issue/PR review is diagnostic only; no license-dependent reuse is proposed. No LFM2 model was downloaded or swapped and no native inference was run in this automation environment.
+
+**Classification:** RESEARCH_REVIEWED / NO_RUNTIME_CHANGE / NO_NATIVE_GGUF_PROOF / REDMI_UNVERIFIED.
