@@ -138,7 +138,7 @@ def _runtime_native_template_receipts(report, selected, events):
 
 
 def _native_prefill_token_count_match(report, template_roles, native_c3_output, incomplete):
-    """Compare the local tokenizer count with llama-server's reported prompt_n.
+    """Compare the local tokenizer total with llama-server's reported prompt_n plus cache_n.
 
     This is a runtime-reported count parity check, not an attestation of exact
     token identity, attention, semantic use or learned latent exchange.
@@ -411,7 +411,7 @@ def audit(conn, limit=10):
             if both_native_prefill_count_matched else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "A prefill count match means the local /tokenize count equals the llama-server reported prompt_n for the submitted prompt. It does not attest the exact token sequence, attention, semantic use, learned latent exchange or Redmi installation.",
+        "warning": "A prefill count match means the local /tokenize total equals llama-server prompt_n plus cache_n (freshly processed plus reused prompt tokens) for the submitted prompt. It does not attest the exact token sequence, attention, semantic use, learned latent exchange or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
