@@ -1677,3 +1677,13 @@ LOCAL_LINUX / CPython 3.13.5 scratch package:
 P0 correct/fast normal chat and B1/B2 valid-offer delivery remain OPEN. No normal-turn audio integration, real AudioRecord/microphone provider, native GGUF cohort, gradients/weight change, Android device control or Redmi execution is proven. B3 remains OFF. Last available private V13OBS #115 is historical (2026-11-24): auto-update was reported enabled/UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI was STOPPED_BY_USER; no fresh authenticated receipt. Current install/runtime behavior remains REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, restart, model/weight/permission/data change.
 
 **Next:** poll the exact feature-set and shared CI; Core refreshes its source-pin chain and normal-turn lease consumer. Then add history-aware relative/incremental MI and source/session-disjoint held-out outcome tests before any attention-policy proposal.
+
+
+### Run 43 exact-CI completion addendum (2026-11-26)
+- Tested code/test/workflow head: `fe7bb53674171fdececaf53c81a0c93f47256e48`; later branch commits are documentation-only.
+- The first feature-set workflow attempt failed before tests because the Python matrix expression was escaped. The workflow was corrected in `fe7bb536`; exact rerun [45773907611](https://github.com/RedMentos/Aii/actions/runs/45773907611) passes on Python 3.13 and 3.14, 10/10 tests each. The actual repository `extract_voice_cues` → A5 `PerceptPacket` test ran and passed on both.
+- RAW EAR comparison [45773907533](https://github.com/RedMentos/Aii/actions/runs/45773907533): PASS on Python 3.13 and 3.14.
+- RuntimeDeploy integrity offline checks [45773907582](https://github.com/RedMentos/Aii/actions/runs/45773907582): PASS on Python 3.11 and 3.14; this is not a phone deployment.
+- Shared staged/integrated [45773907687](https://github.com/RedMentos/Aii/actions/runs/45773907687): FAIL at Core-owned `AUDIO_BUILDER_BLOB_SHA1`. Expected `831080bceec90711bd42e0fa4eba47c669975c98`; current Perception builder blob `f9a0ed7d1a4312361c4c6c6c397744b0e13ef4f0`. Staged: 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests passed; failures cascade from this pin mismatch, including migration tests returning PARTIAL. Integrated regression fails at the same pin. Core PR #2525 owns the repair; no foreign files changed here.
+- Cross-lane: Core #2529's bounded exact-greeting reflex has CI success, but does not close nontrivial normal chat or B1/B2 → C4 → C3.
+- Result remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No mic, device, model, weights, permission or data changes.
