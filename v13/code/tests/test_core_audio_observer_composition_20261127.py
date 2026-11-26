@@ -1,4 +1,5 @@
 """Regression for composing consent-bound RAW EAR with Core fair-budget Cognition."""
+import hashlib
 import importlib.util
 from pathlib import Path
 
@@ -43,6 +44,7 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     source_before = source_path.read_bytes()
 
     composed = module.build_sources(CODE)
+    print("COMPOSED_RUNTIME_SHA256=" + hashlib.sha256(composed["v13/runtime.py"]).hexdigest())
     cognition = composed["v13/cognition.py"]
 
     assert b"def _audio_context_query(" in cognition
