@@ -1,3 +1,21 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 04:23 CET
+**User action: none required.** Do not issue a Termux command, trigger a device update, change installed models/weights, alter permissions or move the experimental policy into production.
+
+## Current Perception checkpoint
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, head `c73d18bc626abacdf9eb56fd09b2a65b905cdad1`, stacked on PR #2540.
+- A4 predictor blob `c2df22ce5906db3f3596d39719aa8e9d8e5647fa`; composer blob `a50f975161d359a6cde5b4ed88cb187672c3c8bc`.
+- New optional `MEMORIZED_ERROR` policy in the 182-parameter A4 temporal predictor; default `EVERY_FINAL` remains unchanged. Fingerprint memory is bounded/process-local and excluded from persistence.
+- Exact A4 ablation: 6 tests PASS on Python 3.13 and 3.14. RAW EAR fastpath: 161 tests PASS on both. Feature-set probe: 15 tests PASS on both. Model-lab: 73 PASS / 4 skipped (native libfvad/WebRTC wrappers not built), privacy scan CLEAN. VAD comparison: Python 3.13 172 PASS; Python 3.14 pending at last poll. Latent-cache-tiny and offline-bridge-security PASS.
+- Staged Runtime FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed. Integrated regression FAIL: 1 test because Core recovery still pins composer blob `831080bceec90711bd42e0fa4eba47c669975c98` instead of current `a50f975161d359a6cde5b4ed88cb187672c3c8bc`. Staged suite also shows Core-owned contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core PR #2547 was notified; Core must rebase/update its own recovery pins, QA owns migration assertions.
+- Synthetic update counts (60 observations): periodic speech 59 EVERY_FINAL vs 7 gated; non-speech 59 vs 41; mixed 59 vs 26. MAE worsens on periodic speech and mixed activity, slightly improves on non-speech. Lower old-task error drift is confounded by worse absolute error. Keep MEMORIZED_ERROR opt-in; no energy or latency claim.
+- LOCAL_LINUX scratch checks PASS, but no full Aii checkout because container GitHub DNS failed. GitHub CI is not a Redmi measurement.
+- Device: private read-only relay issues #1003 (PIPELINE_STATUS) and #1004 (HEALTH) have no device_status receipt. Historical V13OBS #115 (updated 2026-11-24) says STOPPED_BY_USER. Current updater/install state is not verified. REDMI_UNVERIFIED; RELEASE NOT_RELEASED.
+- Research: R-175 mistake-gating paper already reviewed; R-179 now covers Li & van Rossum's synaptic-caching paper. GPL-3.0 simulation code not reused; Aii has no root LICENSE.
+- Next: finish Python 3.14 comparator CI; Core rebase #2547 onto #2548 and refresh recovery pins; QA fixes migration assertions; Perception continues source/session-disjoint A4 omission false-positive tests, then A5 screen/UI event-to-PerceptPacket. Preserve audio as raw timed evidence, not transcript-only.
+
+---
+
+# HISTORICAL NEXT-ACTION NOTES (preserved)
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
