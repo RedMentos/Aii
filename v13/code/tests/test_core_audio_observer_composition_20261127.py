@@ -42,6 +42,30 @@ def test_preanswer_budget_contract_normalization_is_exact_and_reversible():
         module._normalize_preanswer_budget_contract(original + original)
 
 
+
+def test_context_os_audio_composition_preserves_core_source_recall_refs():
+    module = load_builder()
+    core_runtime = b"prefix" + module._CONTEXT_PROVENANCE_RECALL + b"suffix"
+    normalized, changed = module._normalize_context_provenance_contract(core_runtime)
+    assert changed is True
+    assert normalized == b"prefix" + module._CONTEXT_PROVENANCE_BASE + b"suffix"
+
+    audio_runtime = (
+        b"main:" + module._CONTEXT_PROVENANCE_AUDIO
+        + b"\\nrevoke:" + module._CONTEXT_PROVENANCE_BASE
+    )
+    restored = module._restore_context_provenance_contract(audio_runtime, changed)
+    assert restored == (
+        b"main:" + module._CONTEXT_PROVENANCE_RECALL_AUDIO
+        + b"\\nrevoke:" + module._CONTEXT_PROVENANCE_RECALL
+    )
+
+    with pytest.raises(ValueError, match="changed or is ambiguous"):
+        module._normalize_context_provenance_contract(core_runtime + core_runtime)
+    with pytest.raises(ValueError, match="normalized Core Context OS provenance anchors"):
+        module._restore_context_provenance_contract(audio_runtime + audio_runtime, changed)
+
+
 def test_full_audio_composition_preserves_core_budget_and_native_receiver_contracts():
     module = load_builder()
     source_path = CODE / "v13/cognition.py"
@@ -50,6 +74,8 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     composed = module.build_sources(CODE)
     cognition = composed["v13/cognition.py"]
     runtime = composed["v13/runtime.py"]
+    assert b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else [])" in runtime
+    assert b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[]),budget_scale=" in runtime
     assert b"from .greeting_fastpath import match as greeting_match" in runtime
     assert b"BUILTIN_GREETING_REFLEX" in runtime
 
