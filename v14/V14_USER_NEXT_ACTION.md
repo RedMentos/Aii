@@ -2471,3 +2471,12 @@ A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 fe
 The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
 
 No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**
+
+
+## Run 64 verification addendum — 2026-11-27
+
+- Final PR head at the last readback: `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` (docs-only commits after code/test SHA `642b981e9a91bfc618992cabb0c72ac8c801b51c`).
+- Exact final-head focused workflow **45975248573 PASS**: `py_compile`, 25/25 tests on Python 3.13, 25/25 on Python 3.14. Runtime deployment integrity **45975248638 PASS**.
+- Shared staged/integrated workflow **45975248465 FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression 1 failure on Core Recovery's stale audio-composer pin (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`). The staged failures also include Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed and no gate was weakened.
+- Local full Aii checkout/pytest remains BLOCKED / NOT_RUN; no Android/Redmi capture or normal-turn C3 proof. REDMI_UNVERIFIED / NOT_RELEASED.
+- Core coordination is recorded on #2408 and #2555: rebase/port the provider onto #2557, wire the normal Runtime/C3 callsite, and preserve the lease through C3 consumption. QA owns Android consent/onStop/restart/rollback.
