@@ -770,7 +770,13 @@ def test_runtime_audio_histories_restart_when_same_source_enters_new_store_sessi
     second_event = runtime.store.event(second_session, "same source, new session")
     generation = first_event["brain_generation_id"]
     assert second_event["brain_generation_id"] == generation
-    assert first_event["session_id"] != second_event["session_id"]
+    first_session_id = runtime.store.one(
+        "SELECT session_id FROM events WHERE id=?", (first_event["event_id"],)
+    )["session_id"]
+    second_session_id = runtime.store.one(
+        "SELECT session_id FROM events WHERE id=?", (second_event["event_id"],)
+    )["session_id"]
+    assert first_session_id != second_session_id
 
     class CapturingAttention:
         def modulate(self, event_id, sal):
