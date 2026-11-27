@@ -662,7 +662,7 @@ def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monke
 
 
 def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9,
-                          session_id="event-expectation-session")
+                          session_id="event-expectation-session"):
     if activity == "VOICED":
         cues = dict(VOICED)
     elif activity == "UNCERTAIN":
