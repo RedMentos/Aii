@@ -863,6 +863,12 @@ def test_open_url_is_consent_gated_source_bound_and_not_persisted_in_termux(tmp_
     persisted = json.loads(actual["payload"])
     assert persisted["actual"]["capability"] == "open_url"
     assert persisted["actual"]["android_os_permission_status"] == "NOT_REQUIRED_FOR_OPEN_URL"
+    assert persisted["actual"]["companion_user_approval"] is True
+    assert persisted["actual"]["device_execution_claimed"] is False
+    assert persisted["actual"]["production_route"] is False
+    assert persisted["actual"]["training_authority"] == 0
+    assert persisted["actual"]["native_receiver_authority"] == 0
+    assert persisted["actual"]["trusted_transition_eligible"] is False
     assert url not in json.dumps(persisted)
     history = json.loads(controller.history())
     assert history["actions"][0]["action_type"] == "open_url"
