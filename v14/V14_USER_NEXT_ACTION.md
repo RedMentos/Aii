@@ -1,5 +1,19 @@
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
+## Current next action — 2026-11-27 Research & Perception Run53
+
+**No user action is needed.** No model, weight, permission, data store or installed phone state was changed. No UPDATE_REQUEST or deployment was sent.
+
+- Added a source-bound A4 attention-switch sequence evaluation tool in v14/experiments. It consumes A4_AUDIO A4AttentionReceipt plus an independently sourced outcome; it distinguishes target cues, EEG-decoder estimates and observed attended state. It measures future-switch ranking, not speaker identity.
+- Local scratch tests: CPython 3.13.5 / pytest 9.0.2, 10/10 PASS; py_compile PASS. The 24-row fixture is deliberately synthetic; its AUC is not a real result.
+- The probe is not yet run on real EEG/A4 data. Full Aii local checkout was not possible because github.com DNS resolution failed. Exact GitHub CI is pending.
+- The probe is a research consumer of the A4 receipt contract, not a normal Runtime/C3 audio call site. Caller-supplied PCM16, AudioConsentLease-to-C3 integration, Android microphone provider and Redmi evidence remain open.
+- Research: Huet & Elhilali (Communications Biology, 2026-05-24) found goal-dependent formant-vs-pitch filtering; current RAW EAR lacks validated formant/harmonicity features, so no weights were copied. Carta et al. (PLoS Biology, 2026-07-16) found overlapping engagement/disengagement during switches; the probe therefore reports switch lead/false triggers without claiming an AAD posterior.
+- Branch: research-perception/v14-a4-switch-sequence-probe-20261127-run53; checkpoint code/test/doc head 2b31f2dbcbf23f9c962bca5fe7006554e9fb8fea; stacked on Core PR #2538. NOT_RELEASED; REDMI_UNVERIFIED.
+
+**Next engineering step:** run session-held-out evaluation with real source-bound A4 receipts and independently sourced EEG-decoder or observed-attended-state labels, after checking the dataset's exact file licence. Core still needs the normal C3 audio consumer and permissioned Android provider. Do not change installed models or run a phone update for this research-only branch.
+
+
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
 
 ## Verified code / CI checkpoint
