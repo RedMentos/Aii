@@ -1362,3 +1362,62 @@ def test_temporal_prediction_history_is_session_scoped_but_numeric_weights_are_s
         assert not any(abs(value) > 0 for row in reset_state["weights"] for value in row)
     finally:
         runtime.store.close()
+
+
+def test_persistent_numeric_weights_retry_interleaved_session_conflict(tmp_path):
+    runtime, event_a = make_runtime(tmp_path)
+    session_a = _event_session_id(runtime, event_a)
+    session_b = runtime.store.new_session("RAW EAR second concurrent session")
+    event_b = runtime.store.event(session_b, "second session acoustic fixture")
+    registry = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-shared-across-sessions"
+    generation_id = event_a["brain_generation_id"]
+    consent_scope_id = "a" * 64
+    key = registry._persistent_key(source_id, generation_id)[2]
+    key_a = (source_id, generation_id, session_a)
+    key_b = (source_id, generation_id, session_b)
+
+    def feed(session_id, index, cues):
+        return registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_id,
+            consent_scope_id=consent_scope_id,
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        )
+
+    try:
+        # Both sessions load the same checkpoint version before either one updates.
+        assert feed(session_a, 0, SILENCE)["status"] == "WARMUP_FEATURE_BASELINE"
+        assert feed(session_b, 0, SILENCE)["status"] == "WARMUP_FEATURE_BASELINE"
+        assert registry._states[key_a].store_version == registry._states[key_b].store_version
+
+        feed(session_a, 1, VOICED)
+        learned = feed(session_a, 2, SILENCE)
+        assert learned["weight_delta_l2"] > 0.0
+        persisted_before, version_before = runtime.store.state(key, None)
+        assert persisted_before["updates"] > 0
+        assert any(abs(value) > 0 for row in persisted_before["weights"] for value in row)
+
+        # Session B's old version must not overwrite A's newer numeric checkpoint.
+        recovered = feed(session_b, 1, VOICED)
+        assert recovered["persistence_conflict_recovered"] is True
+        assert recovered["persistence_retry_count"] == 1
+        assert recovered["status"] == "WARMUP_DELTA_BASELINE"
+        persisted_after, version_after = runtime.store.state(key, None)
+        assert version_after > version_before
+        assert persisted_after["weights"] == persisted_before["weights"]
+        assert registry._states[key_b].store_version == version_after
+
+        # B continues with its own fresh temporal history, now using A's shared weights.
+        next_update = feed(session_b, 2, SILENCE)
+        persisted_final, final_version = runtime.store.state(key, None)
+        assert next_update["weight_delta_l2"] > 0.0
+        assert persisted_final["updates"] > persisted_after["updates"]
+        assert persisted_final["weights"] != persisted_after["weights"]
+        assert final_version > version_after
+    finally:
+        runtime.store.close()
