@@ -334,7 +334,7 @@ class LlamaRunner:
                                     check(cancel, deadline)
                                     token_rows = self._json(
                                         'POST', '/tokenize',
-                                        {'content': p, 'add_special': False, 'with_pieces': True},
+                                        {'content': p, 'add_special': False, 'parse_special': True, 'with_pieces': True},
                                         deadline, timeout_cap=0.5)['tokens']
                                     check(cancel, deadline)
                                 except (OSError, RuntimeError, ValueError, KeyError, TypeError):
