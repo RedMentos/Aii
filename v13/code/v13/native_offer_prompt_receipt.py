@@ -92,7 +92,9 @@ def _array_object_spans(text, array_start, expected_count):
         return None
     if len(spans) != expected_count:
         return None
-    return spans if _skip_space(text, pos) == len(text) else None
+    # The same parser is used for nested verified_quotes arrays inside an object;
+    # the enclosing object may legitimately contain fields after the array.
+    return spans
 
 
 def _quote_object_spans(object_text, quote_values):
