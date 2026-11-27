@@ -1960,3 +1960,5 @@ The signed one-shot Android audio consumer in Perception PR #2312 is not end-to-
 - Existing caller-fed RAW EAR is further along: audio_voice_cues.consume_pcm16_voice_window builds timestamped source-bound audio PerceptPackets, carries PROVISIONAL/FINAL provenance, extracts prosody/activity/non-speech features, and reaches A4/C3 admission with action/learning authority false. This is not microphone capture.
 
 **Owners / next executable step:** Core owns Runtime.submit(audio_window=...) and same-turn event/generation/lease propagation; QA owns the visible AudioRecord provider and Android lifecycle/permission tests; Perception owns rebasing #2312, exact Runtime integration tests, and preserving the acoustic (not transcript-only) A-plane contract. No Android permission or capture was enabled. P0 #1904 remains open.
+
+**Readback after handoff/docs:** current PR branch head 6f3e87e6c9c946041a95d430b50ad0165bebac7e; code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Documentation-only head passed offline bridge/security workflow 46058233835. PR still mergeable=false; no release SHA.
