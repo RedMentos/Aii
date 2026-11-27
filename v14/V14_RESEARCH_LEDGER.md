@@ -2225,3 +2225,71 @@ PR #2312 head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2:
 - Integrated-regression job in 44992975599: PASS.
 - Staged-runtime job in 44992975599: FAIL, 2 failed / 238 passed / 10 skipped / 47 subtests passed. Both failures are two-checkout migration assertions expecting UPDATED while the observed state is PARTIAL with Runtime ERROR.
 The focused tests use a RuntimeStub that accepts audio_window; they do not demonstrate the real Runtime path.
+
+
+## R-192 — source-disjoint A3 OOD calibration: RMS-z vs shrinkage Mahalanobis vs conformal (2026-11-27)
+
+### Primary-source review and evidence depth
+
+**Janiak, Binkowski & Kajdanowicz — “A Geometry-Based View of Mahalanobis OOD Detection,” ICML 2026, PMLR 306:50747–50778.** Official proceedings page: https://proceedings.mlr.press/v306/janiak26a.html . The official metadata/abstract were checked; the PDF could not be retrieved in this run, so this remains **ABSTRACT_ONLY**, not a full-paper read. The abstract reports that Mahalanobis OOD performance is representation/pretraining/fine-tuning dependent and relates the variation to within-class spectral structure and local intrinsic dimensionality. It argues against replacing the current RMS-z descriptor with full covariance by assumption.
+
+**Li et al. — “SCOPE: Sequential Conformal Probing for Reliable OOD Rejection in LLM Services,” arXiv:2606.21255, first submitted 2026-06-19 (later version listed 2026-09-06).** Primary record: https://arxiv.org/abs/2606.21255 ; HTML: https://arxiv.org/html/2606.21255 . Method and experiment sections in the HTML were reviewed; this is an arXiv preprint and peer-review status was not verified. SCOPE chooses a readable hidden layer, fits an in-distribution conformal gate on a separate calibration split and uses a sequential e-process to accumulate persistent service-boundary evidence. It is an LLM service-boundary detector, not a drop-in image/projector detector. No official code repository or code/weight license was verified; no code was reused.
+
+**Marques & Berenson — “Local Conformal Calibration of Dynamics Uncertainty from Semantic Images,” arXiv:2605.13028 (2026-05-13), WAFR 2026 workshop project page.** Primary record: https://arxiv.org/abs/2605.13028 ; author project page: https://um-arm-lab.github.io/ocular/ . The author page's method/experiment description was reviewed, not a full proceedings PDF. OCULAR uses a learned visual representation plus velocity/action context, a regression-tree partition and a separate conformal holdout set to calibrate dynamics uncertainty across visually similar simulated environments. The experiments are Isaac Sim / planar double-integrator, not Android perception. Its useful transfer is the principle of conditioning calibration on observed source/context similarity; its dynamics-coverage guarantee must not be relabelled as image OOD-classification accuracy.
+
+No author implementation, model weights or dataset was reused. No new runtime dependency was introduced; the experiment uses the existing NumPy/Pillow research/test environment.
+
+### V14 implementation
+
+Draft PR #2566, branch `research-perception/v14-a3-ood-calibration-20261127-run72`, stacked on Perception #2565 at base head `b3896e3a3ba5a85de8ea67f45d123ef8e74da075`.
+
+New `v14/experiments/vision_ood_calibration.py` uses the existing V13 `vision.boxes` and 37-dimensional `vision.tile_features` functions and compares:
+1. the production RMS-z score and production leave-one-source-out q95-of-q95 heuristic;
+2. diagonal-shrinkage Mahalanobis (fixed shrinkage 0.25) with the same source-disjoint heuristic;
+3. source-level split-conformal thresholds for both fixed scores.
+
+The conformal exchangeability unit is the **maximum tile score per independent image source**. This gives a source-level marginal false-rejection calibration statement conditional on the fitted score and source-group exchangeability. It does not give per-tile conditional coverage, guarantee OOD detection, or survive arbitrary app/version distribution shift. Insufficient calibration-source count yields an infinite threshold rather than a fabricated finite-sample resolution.
+
+The experiment uses 24 fit sources, 20 separate calibration sources and 20 separate in-domain test sources per repeat, 16 tiles/source and 37 features. Five controlled synthetic shifts are evaluated: black, checkerboard, inversion, random noise and posterization. All fit/calibration/test source IDs are pairwise disjoint. No production threshold or Runtime behavior changes.
+
+### LOCAL_LINUX evidence
+
+Environment: Linux x86_64, CPython 3.13.5, NumPy 2.3.5, Pillow 12.3.0.
+- `py_compile`: PASS for experiment and tests.
+- Focused pytest: 12/12 PASS.
+- End-to-end synthetic ablation: 30 seeded repeats PASS.
+- Full local Aii checkout/pytest: NOT_RUN/BLOCKED; no repository checkout is mounted. The isolated harness used a local mirror of the exact production `boxes`, `tile_features` and `tile_descriptor_threshold` logic; this is not full-repository test evidence.
+- Exact PR #2566 hosted CI was not yet visible at the initial checkpoint. Do not attribute #2565's CI runs to #2566.
+
+### Results — mean rejection rates over 30 repeats
+
+Source-level rejection (primary gate metric):
+
+| Detector / threshold | In-domain false rejection | Black | Checker | Invert | Noise | Posterize |
+|---|---:|---:|---:|---:|---:|---:|
+| RMS-z + production heuristic | 7.33% | 100% | 100% | 100% | 100% | 85.5% |
+| RMS-z + source-max conformal, alpha 0.10 | 9.17% | 100% | 100% | 100% | 100% | 85.5% |
+| Shrinkage Mahalanobis + source-disjoint heuristic | 16.83% | 100% | 100% | 100% | 100% | 50.83% |
+| Shrinkage Mahalanobis + source-max conformal, alpha 0.10 | 10.5% | 100% | 100% | 100% | 92.33% | 36.17% |
+
+Tile-level in-domain false rejection: RMS heuristic 0.92%, RMS conformal 0.97%, shrinkage heuristic 1.66%, shrinkage conformal 1.01%. Posterize tile rejection: 22.46%, 23.13%, 8.57%, 5.97% respectively. The executable script emits source- and tile-level metrics.
+
+LOCAL_LINUX microbenchmark, 384 training rows → 16 query rows:
+- RMS-z scoring median 0.060 ms / p95 0.0749 ms.
+- Shrinkage Mahalanobis median 0.0961 ms / p95 0.1446 ms.
+- Production 37-D feature extraction for 16 tiles median 3.5031 ms / p95 4.8486 ms.
+- Raw float64 feature matrix: 113,664 bytes for 384×37; 4,736 bytes for one 16×37 source.
+
+These are x86_64 scratch measurements only, not ARM, Termux or Redmi measurements.
+
+### Interpretation / V14 decision
+
+RMS-z remains the better candidate on this synthetic UI distribution. Source-max conformal RMS-z gives an explicit nominal alpha interpretation for source-level false rejection, but did not improve OOD detection over the current heuristic here: both rejected 85.5% of posterized sources, while observed in-domain source rejection was 9.17% for conformal versus 7.33% for the heuristic. Shrinkage Mahalanobis is weaker on the near-shift posterization control and slower in this host microbenchmark.
+
+**Decision:** keep the current production RMS-z gate unchanged and optional/shadow-only. Do not promote the conformal threshold or covariance score from this synthetic experiment. Next require consented real UI frames with app/session/version-disjoint fit/calibration/test groups, then compare false abstention, missed OOD and retained in-domain coverage. A local app/source-conditioned calibration may be investigated only after that data exists.
+
+### Canon and integration boundary
+
+Relevant path: A3 Student Projector / A5 PerceptPacket / A4 attention-preserving abstention. PR #2565's provider→A5→optional A3 path remains WIRED_SYNTHETIC / focused CI evidence only. This experiment does not prove normal Runtime/C3 consumption, trained A3 weights, B3 latent coupling, real semantic correctness, Android MediaProjection lifecycle, microphone capture, P0 basic chat or whole-system acceptance.
+
+PR #2566 is DRAFT / NOT_RELEASED and stacked until #2565/#2563 and Core/QA shared integration gates are resolved. Android / Termux / Redmi remains REDMI_UNVERIFIED; installed SHA/updater state UNKNOWN; no device action was performed.
