@@ -252,7 +252,7 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertGreater(second_start, first_start)
         first_end = first_start + len(first_object)
         split_offsets = [index for index in range(1, len(data))
-                         if index not in {first_end, second_start}]
+                         if not first_end <= index <= second_start]
         rows = pieces_for_prompt(prompt, split_offsets, bos=False)
         content_ids = [row["id"] for row in rows]
         result = inspect(
@@ -327,7 +327,20 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
                          "TOKEN_PIECES_DO_NOT_RECONSTRUCT_PROMPT")
 
-        partial = pieces_for_prompt(prompt, split_offsets=(literal_start + 1,), bos=False)
+        object_offsets = []
+        cursor = 0
+        for selected_offer in selected:
+            encoded_offer = json.dumps(
+                selected_offer, ensure_ascii=False, sort_keys=True
+            ).encode("utf-8")
+            object_start = prompt_bytes.find(encoded_offer, cursor)
+            self.assertGreaterEqual(object_start, 0)
+            object_end = object_start + len(encoded_offer)
+            object_offsets.extend((object_start, object_end))
+            cursor = object_end
+        partial = pieces_for_prompt(
+            prompt, split_offsets=(*object_offsets, literal_start + 1), bos=False
+        )
         partial_ids = [row["id"] for row in partial]
         result = inspect(m, prompt, HEADER, token_pieces=partial,
                          native_token_ids=partial_ids)
@@ -574,7 +587,7 @@ class SQLiteNativeAudit(unittest.TestCase):
                             "first_token_byte_start": 0, "last_token_byte_end": 5,
                             "first_token_piece_bytes": 8, "last_token_piece_bytes": 5,
                             "token_boundary_aligned": True, "shared_boundary_token_count": 0,
-                            "unique_token_count": 4, "token_ids_sha256": "g" * 64},
+                            "unique_token_count": 4, "token_ids_sha256": "1" * 64},
                          "quote_spans": [{
                             "quote_index": 1, "source_sha256": "a" * 64,
                             "source_char_start": 0, "source_char_end": len(SECRET),
