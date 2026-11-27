@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-27T05:12:25.871Z",
+  "updated_at": "2026-11-27T05:13:03.720Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -1542,14 +1542,14 @@
   },
   "perception_latest_checkpoint": {
     "date": "2026-11-27",
-    "timestamp": "2026-11-27T05:12:25.871Z",
+    "timestamp": "2026-11-27T05:13:03.720Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-a5-visual-frame-bridge-20261127-run58",
     "pull_request": 2550,
     "base_branch": "core/v14-perception-rebased-runtime-20261127-run5",
     "base_sha": "ab757a410eb9d0372fdee3071eac8aa577d2fc25",
     "code_test_sha": "fca70db671c14a76c56920d63f4d05d6183a43b8",
-    "head_sha": "c30ac7467f8c7021507613f6c92471591fbcc355",
+    "head_sha": "fca70db671c14a76c56920d63f4d05d6183a43b8",
     "status": "DRAFT_A5_FOCUSED_AND_STAGED_INTEGRATED_CI_PASS_NORMAL_RUNTIME_CONSUMER_MISSING",
     "tests": {
       "local_linux": "PASS: isolated CPython 3.13.5 helper reproduction; patched helper compile, exact-index selection, A4 weight normalization and re-look checks. Full repository pytest NOT_RUN.",
@@ -1566,7 +1566,9 @@
       "R-179"
     ],
     "consumer": "A5VisualFrameAdapter synthetic Runtime consumer: authorized MediaProjection frame bytes -> RAW-EYE features -> PerceptPacket + A4 visual salience + bounded PerceptAdmission. Optional student caption rows may share the same source_ref; exact A4 segment index now disambiguates the base frame row.",
-    "next_action": "Core must add/extend the normal-turn Runtime consumer for A5VisualFrameAdapter under UIObservationLease; current #2549 does not include it. QA tests revoke-through-decode/context/A4 and MediaProjection onStop cleanup. Perception next audits R-180: add explicit Store session_id to A4 event-expectation state and prove same-source/same-receipt cross-session isolation; coordinate Core's integrated_audio_context_candidate source pin first. Boss reviews the #2548/#2549/#2550 stack. Provider and Redmi proof remain absent."
+    "next_action": "Core must add/extend the normal-turn Runtime consumer for A5VisualFrameAdapter under UIObservationLease; current #2549 does not include it. QA tests revoke-through-decode/context/A4 and MediaProjection onStop cleanup. Perception next audits R-180: add explicit Store session_id to A4 event-expectation state and prove same-source/same-receipt cross-session isolation; coordinate Core's integrated_audio_context_candidate source pin first. Boss reviews the #2548/#2549/#2550 stack. Provider and Redmi proof remain absent.",
+    "docs_head_sha": "138eb086aa56fa5bc35115a2cb76c78734ac1dab",
+    "deployment_status": "NOT_ATTEMPTED; private V13READ #1008-#1010 expired without authenticated receipt; updater state not reverified; NOT_RELEASED"
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T20:55:14+01:00",
@@ -2303,14 +2305,14 @@
     },
     {
       "date": "2026-11-27",
-      "timestamp": "2026-11-27T05:12:25.871Z",
+      "timestamp": "2026-11-27T05:13:03.720Z",
       "owner": "Research & Perception",
       "branch": "research-perception/v14-a5-visual-frame-bridge-20261127-run58",
       "pull_request": 2550,
       "base_branch": "core/v14-perception-rebased-runtime-20261127-run5",
       "base_sha": "ab757a410eb9d0372fdee3071eac8aa577d2fc25",
       "code_test_sha": "fca70db671c14a76c56920d63f4d05d6183a43b8",
-      "head_sha": "c30ac7467f8c7021507613f6c92471591fbcc355",
+      "head_sha": "fca70db671c14a76c56920d63f4d05d6183a43b8",
       "status": "DRAFT_A5_FOCUSED_AND_STAGED_INTEGRATED_CI_PASS_NORMAL_RUNTIME_CONSUMER_MISSING",
       "tests": {
         "local_linux": "PASS: isolated CPython 3.13.5 helper reproduction; patched helper compile, exact-index selection, A4 weight normalization and re-look checks. Full repository pytest NOT_RUN.",
@@ -2327,7 +2329,9 @@
         "R-179"
       ],
       "consumer": "A5VisualFrameAdapter synthetic Runtime consumer: authorized MediaProjection frame bytes -> RAW-EYE features -> PerceptPacket + A4 visual salience + bounded PerceptAdmission. Optional student caption rows may share the same source_ref; exact A4 segment index now disambiguates the base frame row.",
-      "next_action": "Core must add/extend the normal-turn Runtime consumer for A5VisualFrameAdapter under UIObservationLease; current #2549 does not include it. QA tests revoke-through-decode/context/A4 and MediaProjection onStop cleanup. Perception next audits R-180: add explicit Store session_id to A4 event-expectation state and prove same-source/same-receipt cross-session isolation; coordinate Core's integrated_audio_context_candidate source pin first. Boss reviews the #2548/#2549/#2550 stack. Provider and Redmi proof remain absent."
+      "next_action": "Core must add/extend the normal-turn Runtime consumer for A5VisualFrameAdapter under UIObservationLease; current #2549 does not include it. QA tests revoke-through-decode/context/A4 and MediaProjection onStop cleanup. Perception next audits R-180: add explicit Store session_id to A4 event-expectation state and prove same-source/same-receipt cross-session isolation; coordinate Core's integrated_audio_context_candidate source pin first. Boss reviews the #2548/#2549/#2550 stack. Provider and Redmi proof remain absent.",
+      "docs_head_sha": "138eb086aa56fa5bc35115a2cb76c78734ac1dab",
+      "deployment_status": "NOT_ATTEMPTED; private V13READ #1008-#1010 expired without authenticated receipt; updater state not reverified; NOT_RELEASED"
     }
   ]
 }
