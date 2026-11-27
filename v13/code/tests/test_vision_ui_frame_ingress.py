@@ -299,6 +299,7 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["a4"]["truth_authority"] == 0
         raw_eye = result["a4"]["raw_eye_signal"]
         assert raw_eye["authority"] == "ATTENTION_ONLY"
+        assert result["packet"]["feature_revision"] == "v14-a5-media-projection-raw-eye-v2"
         assert raw_eye["learned"] is False
         assert raw_eye["score"] == result["raw_eye_structure"]
         assert result["raw_eye_structure"] > 0.0
