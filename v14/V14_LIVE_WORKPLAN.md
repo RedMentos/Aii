@@ -1734,3 +1734,22 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 **Research:** R-176 records MixMoMo (arXiv:2611.33981v1, 2026-11-25 preprint). Its 35B–80B/16–24 GB Snapdragon 8 Elite regime and unpublished extension/license do not fit the Redmi target. Research-only; no model download or swap.
 
 **Next:** Core/QA rebase the shared Core stack onto #2540, refresh Recovery→Stage→RuntimeDeploy pins bottom-up, fix migration PARTIAL-vs-UPDATED expectations, rerun staged/integrated after Core/QA rebase. After that, continue source-disjoint A4 attention/salience outcome tests. Keep microphone OFF until the separately reviewed Android provider/consent path exists. User action: none.
+
+
+## Research & Perception Run 55 — 2026-11-27 02:40 CET
+
+**Branch:** `research-perception/v14-raw-ear-currentparent-20261126-run52`. A4 experiment commit: `2a6d4d8ede170d669e21e5093970dc143711a4c2`; file readback: experiment blob `a7f1e9401b24561ce11d0704b48b815d46b931b7`, test blob `ed79cb765fa8b2a178709aa2572de7c75add04df`, workflow blob `a98d5ededdd31549977540f7e22f7d05962dbbb0`. Existing draft PR: [#2540](https://github.com/RedMentos/Aii/pull/2540).
+
+**Implementation:** Added a deterministic A4 temporal ablation using the actual `AudioTemporalPredictionRegistry` API. It compares interleaved and isolated independent source streams, reports learned-vs-persistence MAE and numeric parameter deltas, and checks no-context, provisional and consent-reset negative controls. It is an experiment/acceptance aid, not a new production Runtime feature. The existing caller-supplied PCM16 → A5 → A4 → optional B1/B2/C3 context remains the only Perception ingress represented by #2540; no Android microphone provider was added.
+
+**Tests / exact boundary:**
+- `LOCAL_LINUX`: full repository checkout unavailable; `git ls-remote` fails DNS. No local full pytest or local execution of the new experiment.
+- `CI`: new Python 3.13/3.14 workflow pushed, but no exact run result was visible at this checkpoint. Mark **PENDING/UNVERIFIED** until queried.
+- `SYNTHETIC`: experiment uses only generated cue dictionaries. It explicitly reports `synthetic_benchmark=true` and `device_benchmark=false`.
+- `TERMUX/REDMI`: **REDMI_UNVERIFIED**; no live microphone, model inference, device test or update action.
+
+**Existing integration failures:** PR #2540's RAW EAR, A4/A5 feature-set, WebRTC/libfvad and RuntimeDeploy checks previously passed on exact code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`. Staged Runtime remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated regression FAILs at Core's stale recovery/audio-composer pin; stale Core contracts/cognition pins and QA migration `PARTIAL` vs `UPDATED` assertions also remain. No Perception source pin was relaxed. Core owns #2544 rebase; QA owns migration assertions.
+
+**Research:** R-177 LATER (arXiv:2611.25671v1, 2026-11-19) suggests a source-bound action-conditioned retrieval ablation for JEPA/Memory, but current evidence is simulation-only and no official code/license was found. R-178 (arXiv:2611.25960v1, 2026-11-19) suggests attention-head temporal priors for audio LLMs; only the abstract was checked and current RAW EAR exposes no model attention tensors. Neither is adopted or imported.
+
+**Next executable order:** (1) verify the new exact A4 workflow and repair measured failures; (2) wait for Core/QA to rebase their owned source pins/migration checks and rerun staged/integrated; (3) then measure error-gated vs every-FINAL A4 updates and retention/restart. Do not enable microphone capture, persistent predictor weights or model changes from this synthetic run.
