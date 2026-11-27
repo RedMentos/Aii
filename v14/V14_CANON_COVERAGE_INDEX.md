@@ -2536,3 +2536,16 @@ This overlay does not promote the visual path beyond WIRED_SYNTHETIC or the prod
 | Android microphone / Redmi | REDMI_UNVERIFIED | No live device receipt or microphone action | Permission, foreground lifecycle, capture, process death, revoke, restart and rollback unverified |
 
 The LOCAL_LINUX 4/4 harness is an isolated scope-algorithm reproduction, not full repository tests. Do not promote these paths to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED until exact CI, independent integration review and device evidence exist.
+
+
+## 2026-11-27 Run 71 — A5 consumer adopts optional A3 OOD abstention (additive)
+
+| Canon path | Evidence status | Exact evidence | Still not proven |
+|---|---|---|---|
+| A3 tile-projector OOD gate in explicit :image find | WIRED_SYNTHETIC / FOCUSED_CI_PASS | PR #2565 code/test head 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b; source-disjoint threshold from Run 70; OOD cells omitted from ranking | Calibrated probability, subtle-shift detection, user-image utility, Android performance |
+| A5 MediaProjection frame → A3 student estimate | WIRED_SYNTHETIC / FOCUSED_CI_PASS | Same PR/head; exact CI 46057142216 PASS on Python 3.13/3.14; partial/full OOD, legacy and malformed-metadata paths covered | Normal Runtime/C3 callsite, real signed Android provider receipt, MediaProjection lifecycle and Redmi proof |
+| A5 RAW-EYE → A4 visual structure | WIRED_SYNTHETIC / UNCHANGED | Full OOD still leaves the raw descriptor and A4 attention path active; action/learning authority remain false | Learned visual semantics, action-conditioned progress, real device frames |
+| B3 / Enlightened Space native latent exchange | SYMBOLIC_ONLY / UNCHANGED | No hidden-state/embedding exchange or cross-organ gradient evidence added | Trained cross-organ latent coupling and JEPA utility |
+| Runtime / Android / release | NOT_ACCEPTED / REDMI_UNVERIFIED / NOT_RELEASED | No normal C3 turn, Android grant/onStop, Termux/Redmi, updater or rollback test in this run | All native and release acceptance gates remain open |
+
+The local helper tests are isolated scratch evidence; GitHub Actions is hosted Linux CI. No status is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Historical V13 Canon bytes and the V14 master blueprint were not edited.
