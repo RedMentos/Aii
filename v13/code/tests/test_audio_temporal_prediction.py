@@ -854,6 +854,19 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
                 )
             except Exception as exc:
                 pytest.fail(f"A4 temporal context validation failed: {type(exc).__name__}: {exc}")
+            mismatched_result = dict(result)
+            mismatched_a4 = dict(result["a4"])
+            mismatched_cues = dict(packet_cues)
+            mismatched_cues["activity_score"] = (
+                0.0 if packet_cues["activity_score"] > 0.0 else 0.5
+            )
+            mismatched_a4["voice_cues"] = mismatched_cues
+            mismatched_result["a4"] = mismatched_a4
+            assert context_store.record(
+                runtime, event["event_id"], mismatched_result, window
+            ) is None
+            assert not getattr(runtime, "_audio_contexts", {})
+
             invalid_result = dict(result)
             invalid_packet = dict(packet_value)
             invalid_segment = dict(packet_value["segments"][0])
