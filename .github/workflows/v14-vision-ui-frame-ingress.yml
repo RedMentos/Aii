@@ -8,6 +8,8 @@ on:
       - "v13/code/v13/vision_ui_frame_ingress.py"
       - "v13/code/v13/a4_visual_salience.py"
       - "v13/code/tests/test_vision.py"
+      - "v13/code/v13/a4_visual_salience.py"
+      - "v13/code/tests/test_vision.py"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
       - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
