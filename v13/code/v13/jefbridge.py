@@ -153,6 +153,12 @@ class JEFBridge:
             "COMPANION_DISPATCH_FAILED",
             "COMPANION_OUTCOME_UNKNOWN",
         }
+        approval_evidence = {
+            "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED": "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION",
+            "COMPANION_USER_DENIED": "ANDROID_COMPANION_USER_DENIAL",
+            "COMPANION_DISPATCH_FAILED": "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION",
+            "COMPANION_OUTCOME_UNKNOWN": "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION",
+        }.get(payload.get("status"))
         if (
             payload.get("packet_id") != packet_id
             or payload.get("producer_component") != "C5_ANDROID_COMPANION"
@@ -167,8 +173,8 @@ class JEFBridge:
             or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
             or actual.get("capability") not in {"launch_app", "open_url"}
             or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
-            or actual.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
-            or actual.get("companion_user_approval") is not True
+            or actual.get("local_approval_evidence") != approval_evidence
+            or actual.get("companion_user_approval") is not (payload.get("status") != "COMPANION_USER_DENIED")
             or actual.get("device_execution_claimed") is not False
             or actual.get("observed") is not False
             or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
