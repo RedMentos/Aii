@@ -61,7 +61,7 @@ def _array_object_ranges(raw_json, expected_count):
     cursor = 1
     ranges = []
     for index in range(expected_count):
-        while cursor < len(raw_json) and raw_json[cursor] in " \\r\\n\\t":
+        while cursor < len(raw_json) and raw_json[cursor] in " \r\n\t":
             cursor += 1
         start = cursor
         try:
@@ -72,7 +72,7 @@ def _array_object_ranges(raw_json, expected_count):
             return None
         ranges.append((start, end))
         cursor = end
-        while cursor < len(raw_json) and raw_json[cursor] in " \\r\\n\\t":
+        while cursor < len(raw_json) and raw_json[cursor] in " \r\n\t":
             cursor += 1
         if index + 1 < expected_count:
             if cursor >= len(raw_json) or raw_json[cursor] != ",":
@@ -85,7 +85,7 @@ def _array_object_ranges(raw_json, expected_count):
 
 def _native_token_spans(rendered_prompt, fragment, json_offset, raw_json,
                         offer_records, quote_records, token_pieces, native_token_ids):
-    """Map exact prompt quote literals to add_special=false pieces and full prefill IDs.
+    """Map exact offer objects and quote literals to native pieces and full prefill IDs.
 
     The content pieces must reconstruct the exact rendered prompt bytes. Their
     IDs must occur exactly once as a contiguous subsequence in add_special=true
