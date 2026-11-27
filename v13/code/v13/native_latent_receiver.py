@@ -562,6 +562,64 @@ def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
         raise NativeReceiverError("native hybrid-state roundtrip receipt failed validation") from exc
 
 
+def _validate_prediction_distribution_audit(value, *, expected_model_sha256, prepared):
+    """Validate native full-vocabulary first-next-token PL/CIC JSD and source bindings."""
+    if not isinstance(value, Mapping) or value.get("schema") != "v14.native-receiver-prediction-distribution-audit/1":
+        raise NativeReceiverError("native prediction-distribution audit schema is invalid")
+    if (value.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
+            or value.get("divergence") != "JENSEN_SHANNON_NATS"
+            or value.get("normalization") != "DIVIDE_BY_LN2_TO_UNIT_INTERVAL"
+            or type(value.get("vocab_size")) is not int or not 1 <= value["vocab_size"] <= 1_000_000
+            or value.get("raw_logits_exported") is not False
+            or value.get("raw_logits_persisted") is not False):
+        raise NativeReceiverError("native prediction-distribution audit metadata is invalid")
+    if not isinstance(prepared, list) or len(prepared) != 13:
+        raise NativeReceiverError("prediction-distribution audit lacks the thirteen prepared conditions")
+    expected = {
+        "pl": ("LATENT_CANDIDATE_VS_NO_MESSAGE", prepared[2]["input_sha256"], prepared[0]["input_sha256"]),
+        "cic": ("LATENT_CANDIDATE_VS_DERANGED_MESSAGE", prepared[2]["input_sha256"], prepared[9]["input_sha256"]),
+    }
+    clean = {
+        "schema": value["schema"],
+        "method": value["method"],
+        "divergence": value["divergence"],
+        "normalization": value["normalization"],
+        "vocab_size": value["vocab_size"],
+    }
+    log2 = math.log(2.0)
+    for name, (comparison, current_sha, reference_sha) in expected.items():
+        item = value.get(name)
+        if not isinstance(item, Mapping) or item.get("comparison") != comparison:
+            raise NativeReceiverError("native " + name.upper() + " comparison identity is invalid")
+        if item.get("current_input_sha256") != current_sha or item.get("reference_input_sha256") != reference_sha:
+            raise NativeReceiverError("native " + name.upper() + " input binding differs from the approved matrix")
+        current_logits_sha = item.get("current_logits_sha256")
+        reference_logits_sha = item.get("reference_logits_sha256")
+        if (not _is_sha256(current_logits_sha) or not _is_sha256(reference_logits_sha)):
+            raise NativeReceiverError("native " + name.upper() + " logits digest is invalid")
+        nats = item.get("jsd_nats")
+        normalized = item.get("jsd_normalized")
+        if (type(nats) not in (int, float) or not math.isfinite(float(nats))
+                or not 0.0 <= float(nats) <= log2 + 1.0e-9
+                or type(normalized) not in (int, float) or not math.isfinite(float(normalized))
+                or not 0.0 <= float(normalized) <= 1.0 + 1.0e-9
+                or abs(float(normalized) - float(nats) / log2) > 1.0e-9):
+            raise NativeReceiverError("native " + name.upper() + " JSD value is outside its mathematical bounds")
+        clean[name] = {
+            "comparison": comparison,
+            "jsd_nats": float(nats),
+            "jsd_normalized": float(normalized),
+            "current_input_sha256": current_sha,
+            "reference_input_sha256": reference_sha,
+            "current_logits_sha256": current_logits_sha,
+            "reference_logits_sha256": reference_logits_sha,
+        }
+    clean["receiver_model_sha256"] = expected_model_sha256
+    clean["raw_logits_exported"] = False
+    clean["raw_logits_persisted"] = False
+    return clean
+
+
 def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
                  sender_tap_id, sender_model_revision, sender_model_sha256, tokenizer_revision,
                  receiver_model_revision, source_id, generation_id, condition_inputs,
@@ -793,6 +851,13 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             or raw.get("target_token_ids_sha256") != target_sha256
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
+    prediction_distribution_audit = None
+    if "prediction_distribution_audit" in raw:
+        prediction_distribution_audit = _validate_prediction_distribution_audit(
+            raw.get("prediction_distribution_audit"),
+            expected_model_sha256=expected_model_sha256,
+            prepared=prepared,
+        )
     hybrid_state_roundtrip = None
     if include_hybrid_state_roundtrip:
         hybrid_state_roundtrip = _build_native_hybrid_state_roundtrip_receipt(
@@ -899,7 +964,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverError("receiver model changed during task-matrix probe")
     if _sha256_file(binary) != binary_sha256_before:
         raise NativeReceiverError("native receiver binary changed during task-matrix probe")
-    return {
+    result = {
         "schema": "v14.native-receiver-task-matrix/3",
         "status": "SCORED",
         "sender_role": sender_role,
@@ -924,3 +989,6 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
+    if prediction_distribution_audit is not None:
+        result["prediction_distribution_audit"] = prediction_distribution_audit
+    return result
