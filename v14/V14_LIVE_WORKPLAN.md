@@ -1813,3 +1813,12 @@ The integration failure is not an A4 test failure. Core owns the Recovery→Stag
 - Still open: Core normal-turn callsite; Android MediaProjection provider/foreground service/consent UI; onStop/rotation/revoke integration; C3 use of the feature vector; real Redmi test. No release or Android completion claim.
 
 **Owner split:** Perception owns the frame-to-PerceptPacket adapter and RAW-EYE feature contract; Core owns normal-turn context invocation; QA/Android owns OS provider, API/lifecycle and device instrumentation. Keep the existing UI metadata-only contract unchanged.
+
+
+### Run 58 CI refresh — 2026-11-27 04:19 UTC
+
+- PR #2550 A5 focused gate: Python 3.13 **6/6 PASS**, Python 3.14 **6/6 PASS**.
+- Inherited staged-context/integrated-regression: **PASS**; offline-bridge security: **39/39 PASS**.
+- Core PR #2549 current head observed: `dbb68ca13ed78d099def6f8bb9779862f0670025`. Separate failures remain in phone-offer receipt, private owner-read bootstrap, C3 prompt binding and audio/observer composition; do not attribute these to the A5 adapter.
+- Private read-only requests #1005–#1007 have no device receipts at checkpoint. Updater/install remains unverified; historical receipts are not current proof.
+- A5 acceptance remains `WIRED_SYNTHETIC`: normal-turn Core callsite, Android provider and real Redmi frame are still missing.
