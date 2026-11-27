@@ -1,4 +1,5 @@
 import hashlib
+import math
 import json
 import os
 import struct
@@ -637,3 +638,78 @@ def test_target_score_rejects_invalid_token_ids_before_native_execution(tmp_path
                 vectors=[[1.0, 2.0]], position_ids=[0], position_mode=POSITION_MODE,
                 deadline=time.monotonic() + 5, binary_path=binary, target_token_ids=ids,
             )
+
+
+def _prediction_distribution_audit_fixture(prepared):
+    log2 = math.log(2.0)
+    return {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2,
+            "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": prepared[2]["input_sha256"],
+            "reference_input_sha256": prepared[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64,
+            "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1,
+            "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": prepared[2]["input_sha256"],
+            "reference_input_sha256": prepared[9]["input_sha256"],
+            "current_logits_sha256": "a" * 64,
+            "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False,
+        "raw_logits_persisted": False,
+    }
+
+
+def _prediction_distribution_prepared():
+    return [{"input_sha256": hashlib.sha256(("condition-" + str(i)).encode()).hexdigest()}
+            for i in range(13)]
+
+
+def test_prediction_distribution_audit_binds_full_vocab_pl_and_cic():
+    prepared = _prediction_distribution_prepared()
+    audit = _prediction_distribution_audit_fixture(prepared)
+    result = native_receiver._validate_prediction_distribution_audit(
+        audit, expected_model_sha256="d" * 64, prepared=prepared,
+    )
+    assert result["receiver_model_sha256"] == "d" * 64
+    assert result["pl"]["comparison"] == "LATENT_CANDIDATE_VS_NO_MESSAGE"
+    assert result["cic"]["comparison"] == "LATENT_CANDIDATE_VS_DERANGED_MESSAGE"
+    assert result["raw_logits_exported"] is False
+    assert result["raw_logits_persisted"] is False
+
+
+def test_prediction_distribution_audit_rejects_wrong_other_example_binding():
+    prepared = _prediction_distribution_prepared()
+    audit = _prediction_distribution_audit_fixture(prepared)
+    audit["cic"]["reference_input_sha256"] = "f" * 64
+    with pytest.raises(NativeReceiverError, match="input binding"):
+        native_receiver._validate_prediction_distribution_audit(
+            audit, expected_model_sha256="d" * 64, prepared=prepared,
+        )
+
+
+def test_prediction_distribution_audit_rejects_out_of_range_jsd_and_raw_logits():
+    prepared = _prediction_distribution_prepared()
+    audit = _prediction_distribution_audit_fixture(prepared)
+    audit["pl"]["jsd_nats"] = math.log(2.0) + 0.1
+    with pytest.raises(NativeReceiverError, match="mathematical bounds"):
+        native_receiver._validate_prediction_distribution_audit(
+            audit, expected_model_sha256="d" * 64, prepared=prepared,
+        )
+    audit = _prediction_distribution_audit_fixture(prepared)
+    audit["raw_logits_exported"] = True
+    with pytest.raises(NativeReceiverError, match="metadata"):
+        native_receiver._validate_prediction_distribution_audit(
+            audit, expected_model_sha256="d" * 64, prepared=prepared,
+        )
