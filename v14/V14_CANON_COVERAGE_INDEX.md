@@ -2497,3 +2497,8 @@ This overlay does not promote any feature to NATIVE_LINUX_PROOF, REAL_REDM I_PRO
 | Android MediaProjection / Redmi capture | REDMI_UNVERIFIED | No new device receipt; private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS issues #1014–#1016 returned no comments before expiry | Actual OS permission, foreground service, MediaProjection onStop, APK/device capture, Termux/Redmi verification |
 
 This overlay does not promote A5 to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. The tests are synthetic generated PNG/provider fixtures; no phone action was taken.
+
+
+### Run 64 final gate status (2026-11-27)
+
+The focused receiver is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted: final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` passes 25/25 on Python 3.13 and 25/25 on Python 3.14; runtime deployment integrity passes. Shared staged/integrated remains **FAIL** on Core-owned source pins and QA migration assertions. No local full-repo, native Android, real C3-turn or Redmi evidence. Do not promote the A5 screen/UI path beyond WIRED_SYNTHETIC. Core normal-turn Runtime/C3 and QA Android lifecycle remain OPEN.
