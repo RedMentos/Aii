@@ -388,6 +388,9 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        from .native_probe_approval import operator_command as probe_command
+        return probe_command(r, args)
     if args and args[0] in {"matrix-status", "matrix-arm", "matrix-run", "matrix-revoke", "matrix-clear"}:
         from .native_receiver_matrix_runtime import operator_command as matrix_command
         return matrix_command(r, args)
