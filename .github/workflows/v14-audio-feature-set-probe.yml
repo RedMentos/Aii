@@ -66,6 +66,8 @@ jobs:
             v13/code/v13/audio_percept_contract.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_temporal_prediction.py \
+            v13/code/v13/audio_temporal_evidence.py \
+            v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_event_expectation.py \
             v13/code/v13/audio_teacher_ear.py \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
@@ -78,7 +80,9 @@ jobs:
         env:
           V14_EXPECTED_AUDIO_EAR_BLOB: 86e93ae5b55e76ecd68864a7f51bd477e601e9b6
           V14_EXPECTED_AUDIO_PACKET_BLOB: f3ee37426fc3e3a8cf70f8a107e7074783118a66
-          V14_EXPECTED_RAW_EAR_V3_BLOB: 1e5982e438a1b9c36be2529e4fc702149e61df56
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 2cf44ed0b307d5970c2ba9b416bf73d8a0833aee
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: b31966bbf5652b4d1d71c1e2c65b157b4232f83a
+          V14_EXPECTED_SPEAKER_EVIDENCE_BLOB: a8ce3aab4ea24b85883d2a721d56dafaabdaae18
           V14_EXPECTED_TEACHER_EAR_BLOB: 255c51fd6ade37ada2fc3309fb0cf3e18afe954d
           V14_EXPECTED_CONTRACTS_BLOB: 6065a471f5f623abea57725d33d362d9eb806013
           PYTHONPATH: v14/experiments
@@ -86,6 +90,8 @@ jobs:
           test "$(git hash-object v13/code/v13/audio_ear.py)" = "$V14_EXPECTED_AUDIO_EAR_BLOB"
           test "$(git hash-object v13/code/v13/audio_percept_contract.py)" = "$V14_EXPECTED_AUDIO_PACKET_BLOB"
           test "$(git hash-object v13/code/v13/audio_voice_cues.py)" = "$V14_EXPECTED_RAW_EAR_V3_BLOB"
+          test "$(git hash-object v13/code/v13/audio_temporal_evidence.py)" = "$V14_EXPECTED_TEMPORAL_VOICE_BLOB"
+          test "$(git hash-object v13/code/v13/audio_speaker_evidence.py)" = "$V14_EXPECTED_SPEAKER_EVIDENCE_BLOB"
           test "$(git hash-object v13/code/v13/audio_teacher_ear.py)" = "$V14_EXPECTED_TEACHER_EAR_BLOB"
           test "$(git hash-object v13/code/v13/contracts.py)" = "$V14_EXPECTED_CONTRACTS_BLOB"
           python -m unittest discover -s v14/experiments -p "test_audio_feature_set_probe.py" -v
