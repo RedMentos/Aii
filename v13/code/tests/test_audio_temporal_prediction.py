@@ -925,6 +925,7 @@ def test_integrated_audio_candidate_pins_all_current_sources():
     assert "v13/audio_voice_cues.py" in pins
     assert "v13/audio_temporal_prediction.py" in pins
     assert "v13/audio_event_expectation.py" in pins
+    assert pins["v13/audio_event_expectation.py"] == "91cd482a80189af01c1ef9c2e0e51852b2bcdace"
     for relative, expected in pins.items():
         path = code_dir / relative
         assert path.is_file(), relative
