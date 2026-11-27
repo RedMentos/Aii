@@ -171,7 +171,16 @@ def _normalize_audio_context_refs(raw: bytes):
             or b"self.consolidation.source_refs(memories)" not in body
             or b"history_refs" not in body
             or b"meta.get('duplex_handoff_refs',[])" not in body):
-        raise ValueError("Core Runtime context refs no longer match the reviewed audio insertion contract")
+        missing = [name for name, marker in (
+            ("consolidation", b"self.consolidation.source_refs(memories)"),
+            ("history", b"history_refs"),
+            ("duplex", b"meta.get('duplex_handoff_refs',[])"),
+        ) if marker not in body]
+        raise ValueError(
+            "Core Runtime context refs no longer match the reviewed audio insertion contract; "
+            + "line=" + repr(body) + "; missing=" + repr(missing)
+            + "; closed=" + str(body.endswith(b"]"))
+        )
     lines[index] = prefix + _CONTEXT_REFS_BASE + ending
     return b"".join(lines), original
 
