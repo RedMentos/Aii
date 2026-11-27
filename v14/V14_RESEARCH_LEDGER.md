@@ -2201,3 +2201,18 @@ PR #2565 extends its optional A3 tile-projector descriptor gate from the explici
 ### Scope and next experiment
 
 The provider→A5→A3 path is WIRED_SYNTHETIC / FOCUSED_CI_PASS. It does not prove normal Runtime/C3 consumption, calibrated semantic correctness, real-world OOD error rates, learned latent coupling or Android lifecycle. Next compare diagonal RMS-z, shrinkage covariance and source-disjoint conformal-style calibration on session/app-disjoint UI frames, measuring false abstention, missed OOD and retained in-domain tile coverage. Keep the current threshold shadow-only until the comparison is robust; do not import the CUDA/PyTorch OpenOOD-VLM environment into the Android runtime.
+
+
+## R-191 — signed RAW EAR consumer / actual Runtime connection audit (2026-11-27)
+
+### Exact source audit
+
+- Release-development Runtime source: v13/code/v13/runtime.py blob 30360f40eb784be5ea975ee85e94a57f0b154164. Its public method is Runtime.submit(self, text); no audio_window parameter or same-turn audio receiver exists in this exact source.
+- Perception PR #2312: v13/code/v13/audio_input.py blob 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41 validates the PCM/consent fields, then calls runtime.submit(AUDIO_ONLY_SOURCE_TEXT, audio_window=audio_window). If Runtime rejects the keyword, it raises RuntimeError("Runtime lacks the staged RAW EAR audio_window submit path").
+- PR #2312 tests use RuntimeStub.submit(self, text, *, audio_window=None). Thus its positive test is a stub contract, not proof of actual Runtime integration.
+- QA companion CapabilityRegistry blob 2bbaab58a9b29e02f8f47ffc127f8c5300ce58cb explicitly reports audio_capture unavailable: "No one-shot visible AudioRecord provider; capture remains disabled". AudioCaptureDefaultOffTest blob 3cfaafac4bafdba608e709eb3de4c99215df8a19 asserts RECORD_AUDIO and FOREGROUND_SERVICE_MICROPHONE are absent. Do not change that without the separate user-approved device/provider workflow.
+- The existing caller-fed RAW EAR implementation is present in release-development source: audio_voice_cues.py blob b18e450162b062b09368a12b1ca18924ed8c5025. consume_pcm16_voice_window builds an audio PerceptPacket with event/generation/source hash/start/end/finality/consent receipt, attaches acoustic voice cues and optional similarity-only speaker evidence, passes A4 attention and C3 admission, and keeps action/learning authority false. The speaker evidence is uncalibrated and does not assign identity. This path is caller-fed PCM, not AudioRecord.
+
+### Status and next integration
+
+The A-plane acoustic contract and synthetic A5/A4/C3 path are WIRED_SYNTHETIC, but the signed Android capture consumer is ISOLATED_MOCK / BLOCKED at the real Runtime boundary and the companion provider is OFF. Core must implement same-turn Runtime audio_window handling using the accepted event ID and generation, and hold the linearizable consent lease through A4/C3. QA must implement the visible AudioRecord provider and permission/revocation/lifecycle tests. Perception then rebases PR #2312 and replaces the stub-only positive test with exact Runtime integration coverage, preserving PROVISIONAL/FINAL and non-speech/prosody signals. No microphone permission, provider, model, weight or device setting was changed. This is not a P0 #1904 repair.
