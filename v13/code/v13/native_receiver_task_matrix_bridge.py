@@ -80,7 +80,7 @@ def _validate_source(source_validator, receipt, phase):
 
 def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
     if not isinstance(inputs, list) or len(inputs) != len(CONDITIONS):
-        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all eight conditions")
+        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all nine conditions")
     if tuple(item.get("condition") for item in inputs if isinstance(item, Mapping)) != CONDITIONS:
         raise NativeReceiverTaskMatrixBridgeError("approved matrix condition order is invalid")
 
@@ -170,7 +170,7 @@ def score_and_record_native_receiver_condition_matrix(
     device_runtime_build_id=None,
     include_hybrid_state_roundtrip=False,
 ):
-    """Consume one approved matrix, score all conditions, and atomically record eight receipts.
+    """Consume one approved matrix, score all conditions, and atomically record nine receipts.
 
     approval_validator must bind a real one-shot Runtime approval to the matrix
     digest. source_validator(receipt, phase) must re-check the current source
@@ -324,7 +324,7 @@ def score_and_record_native_receiver_condition_matrix(
 
         condition_scores = native_result.get("condition_scores")
         if not isinstance(condition_scores, Mapping) or set(condition_scores) != set(CONDITIONS):
-            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all eight condition scores")
+            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all nine condition scores")
         expected_kind, expected_env = (
             ("SYNTHETIC_FIXTURE", "SYNTHETIC")
             if target_environment == "SYNTHETIC"
