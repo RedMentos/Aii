@@ -33,6 +33,18 @@ class A4TemporalAblationTests(unittest.TestCase):
             self.assertIsNotNone(metrics["mean_improvement_mae"])
             self.assertGreater(metrics["max_parameter_l2"], 0.0)
 
+    def test_learning_rate_sweep_reports_each_stream_and_registry_parity(self):
+        self.assertTrue(self.result["default_rate_direct_registry_parity"])
+        sweep = self.result["learning_rate_sweep"]
+        self.assertEqual(set(sweep), set(self.result["per_source"]))
+        for rates in sweep.values():
+            self.assertEqual(set(rates), {"0.02", "0.05", "0.1", "0.2"})
+            for metrics in rates.values():
+                self.assertGreater(metrics["measured_windows"], 0)
+                self.assertIsNotNone(metrics["mean_model_mae"])
+                self.assertIsNotNone(metrics["mean_persistence_baseline_mae"])
+                self.assertIsNotNone(metrics["mean_improvement_mae"])
+
     def test_no_context_negative_control_never_learns_or_emits_novelty(self):
         control = self.result["no_context_control"]
         self.assertEqual(control["measured_windows"], 0)
