@@ -103,7 +103,18 @@ class CaptureAttention:
     def modulate(self, event_id, *, sal):
         values = dict(sal)
         self.calls.append(values)
-        return {"event_id": event_id, "salience": values}
+        return {
+            "event_id": event_id,
+            "salience": max(values.values()),
+            "caution": 0.0,
+            "gains": {
+                "perceptual": 0.5, "callosum": 0.5, "workspace": 0.5,
+                "focal": 0.5, "action": 0.5,
+            },
+            "interrupt": values.get("external_interrupt", 0.0) >= 0.9,
+            "interrupt_reason": None,
+            "truth_authority": 0,
+        }
 
 
 def run_consumer_sequence(runtime, event, monkeypatch, sequence, capture,
