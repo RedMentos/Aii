@@ -697,10 +697,22 @@ def consume_projected_frame_from_provider(
         verifier = _issue_provider_frame_verifier(
             consent_lease, observation, verify_fn,
         )
-        return consume_projected_frame(
+        result = consume_projected_frame(
             runtime, observation, frame_buffer,
             consent_lease=consent_lease, frame_verifier=verifier, **kwargs,
         )
+        if not isinstance(result, dict):
+            raise TypeError("provider RAW EYE consumer must return a result mapping")
+        # This is a runtime outcome, not a device-evidence claim. Direct synthetic
+        # fixture calls keep WIRED_SYNTHETIC; the provider path identifies that its
+        # one-shot verifier callback actually passed.
+        result = dict(result)
+        result.update({
+            "status": "A5_RAW_EYE_CONSUMED",
+            "binding_kind": "PROVIDER_VERIFIER_CALLBACK",
+            "provider_verifier_passed": True,
+        })
+        return result
     finally:
         _overwrite_caller_buffer(frame_buffer)
 
