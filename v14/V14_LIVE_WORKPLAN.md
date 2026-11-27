@@ -1841,3 +1841,13 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 
 **Integration / next owner.** Core rebases #2408/#2555 onto #2557 and includes #2559 before wiring the normal same-turn Runtime/C3 consumer, keeping the outer UIObservationLease live through C3. QA independently verifies MediaProjection consent/denial, onStop, revoke, process death, restart and rollback. Capture and optional projector remain OFF. REDMI_UNVERIFIED / NOT_RELEASED. No user action required.
 
+
+
+### Run 67 shared-gate final addendum (2026-11-27)
+
+- Workflow `46016490897` completed **FAIL** after the focused A5/A4 workflow passed.
+- `integrated-regression`: 1 failure — pinned Core audio-composition input changed in `scripts/integrated_audio_context_candidate_20261121.py`.
+- `staged-runtime`: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed. Failures include the same Core audio-composer pin, existing arithmetic and observer source pins, and QA migration assertions expecting `UPDATED` where the safe result is `PARTIAL`.
+- The exact Perception focused tests remain 29/29 on Python 3.13 and 29/29 on Python 3.14. No Perception test failed. No Core/QA pin or migration assertion was changed by this lane.
+- Product integration is blocked; #2559 remains draft. No release/deployment and no Redmi proof. Core/QA must repair their owned gates and re-run the exact staged candidate before acceptance.
+
