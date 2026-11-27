@@ -14,7 +14,7 @@ from collections.abc import Mapping
 
 from .native_receiver_utility import CONDITIONS, TASK_FAMILIES
 
-SCHEMA = "v14.native-receiver-condition-matrix/1"
+SCHEMA = "v14.native-receiver-condition-matrix/2"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 REQUIRED_APPROVAL_KIND = "NATIVE_RECEIVER_MATRIX"
 MAX_ROWS, MAX_DIM, MAX_ELEMENTS, MAX_TARGET_TOKENS = 64, 8192, 262144, 512
@@ -247,7 +247,7 @@ def _entity_positions(main, alternate, proof):
     return positions
 
 
-def _build_rows(condition, baseline, exact, candidate, ood, entity, entity_positions, seed):
+def _build_rows(condition, baseline, exact, candidate, ood, entity, deranged, entity_positions, seed):
     if condition == "NO_MESSAGE":
         # No sender rows are injected; the native receiver decodes its own BOS.
         return [], "NO_MESSAGE_NO_INJECTED_ROWS_V1"
@@ -273,6 +273,8 @@ def _build_rows(condition, baseline, exact, candidate, ood, entity, entity_posit
         for i in entity_positions:
             message[i] = entity[i][:]
         recipe = "BOS_PLUS_ENTITY_SPAN_ONLY_SUBSTITUTION_V1"
+    elif condition == "DERANGED_MESSAGE":
+        message, recipe = deranged, "BOS_PLUS_SAME_FAMILY_DERANGED_CANDIDATE_V1"
     else:
         raise NativeReceiverConditionMatrixError("unknown receiver condition")
     return [list(row) for row in baseline] + [list(row) for row in message], recipe
@@ -321,8 +323,8 @@ class NativeReceiverConditionMatrix:
 
 
 def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet,
-        candidate_packet, ood_control, entity_control):
-    """Create the eight source-bound task-score inputs; no native execution occurs.
+        candidate_packet, ood_control, entity_control, deranged_control):
+    """Create the nine source-bound task-score inputs; no native execution occurs.
 
     Entity proof is built in memory from both source texts and declared byte
     spans; only source hashes and changed token positions escape.
@@ -372,6 +374,16 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         raise NativeReceiverConditionMatrixError("entity substitution must preserve task family")
     if entity_meta["source_ref"] == ood_meta["source_ref"] or entity_meta["task_group_id"] == ood_meta["task_group_id"]:
         raise NativeReceiverConditionMatrixError("OOD and entity controls must use different sources/task groups")
+    deranged_record, deranged_rows, deranged_meta = _control(
+        deranged_control, "DERANGED_MESSAGE", task, main, adapter_sha, main_sender, main_receiver,
+    )
+    if deranged_meta["task_family"] != family:
+        raise NativeReceiverConditionMatrixError("deranged control must preserve task family")
+    control_sources = [ood_meta, entity_meta, deranged_meta]
+    if (len({item["source_ref"]["source_id"] for item in control_sources}) != 3
+            or len({item["source_ref"]["sha256"] for item in control_sources}) != 3
+            or len({item["task_group_id"] for item in control_sources}) != 3):
+        raise NativeReceiverConditionMatrixError("OOD/entity/deranged controls must use distinct sources and task groups")
     proof = build_entity_substitution_proof(task["source_text"], entity_control.get("source_text"),
         main, entity_record, entity_control.get("entity_byte_spans"))
     changed = _entity_positions(main, entity_record, proof)
@@ -388,7 +400,9 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         raise NativeReceiverConditionMatrixError("task event/generation binding is missing")
 
     def build_one(condition):
-        vectors, recipe = _build_rows(condition, baseline_rows, exact, candidate, ood_rows, entity_rows, changed, seed)
+        vectors, recipe = _build_rows(
+            condition, baseline_rows, exact, candidate, ood_rows, entity_rows, deranged_rows, changed, seed,
+        )
         rows = len(vectors)
         # Empty NO_MESSAGE inputs still carry the receiver width as metadata.
         dim = len(vectors[0]) if rows else len(baseline_rows[0])
@@ -404,6 +418,10 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         elif condition == "ENTITY_SUBSTITUTION":
             message_ref, message_record, message_adapter = entity_meta["source_ref"], entity_meta["record_sha256"], adapter_sha
             message_event, message_generation = entity_meta["event_id"], entity_meta["brain_generation_id"]
+            native_source, native_generation = message_ref["source_id"], message_generation
+        elif condition == "DERANGED_MESSAGE":
+            message_ref, message_record, message_adapter = deranged_meta["source_ref"], deranged_meta["record_sha256"], adapter_sha
+            message_event, message_generation = deranged_meta["event_id"], deranged_meta["brain_generation_id"]
             native_source, native_generation = message_ref["source_id"], message_generation
         else:
             message_ref, message_record = source, main["record_sha256"]
@@ -430,8 +448,11 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             "message_source_ref", "message_record_sha256", "message_event_id", "message_generation_id",
             "native_source_id", "native_generation_id", "adapter_sha256", "control_recipe")})
         del item
-    bindings = sorted([source, ood_meta["source_ref"], entity_meta["source_ref"]], key=lambda x: (x["source_id"], x["sha256"]))
-    if len({x["source_id"] for x in bindings}) != 3 or len({x["sha256"] for x in bindings}) != 3:
+    bindings = sorted(
+        [source, ood_meta["source_ref"], entity_meta["source_ref"], deranged_meta["source_ref"]],
+        key=lambda x: (x["source_id"], x["sha256"]),
+    )
+    if len({x["source_id"] for x in bindings}) != 4 or len({x["sha256"] for x in bindings}) != 4:
         raise NativeReceiverConditionMatrixError("matrix source bindings are not disjoint")
     material = {"schema": SCHEMA, "status": "MATRIX_READY_NOT_SCORED", "task_group_id": task_id,
         "task_family": family, "session_id": session, "source_ref": source, "source_bindings": bindings,
