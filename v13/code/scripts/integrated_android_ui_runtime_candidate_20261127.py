@@ -233,6 +233,7 @@ def _patch_cognition(raw: bytes) -> bytes:
 
 
 def _patch_operator(raw: bytes) -> bytes:
+    newline = bytes((10,))
     has_route = b"if cmd=='android':" in raw
     has_help = b":android status|capabilities|" in raw
     if has_route and has_help:
@@ -241,7 +242,8 @@ def _patch_operator(raw: bytes) -> bytes:
         raise ValueError("Android operator route/help is only partially present")
 
     help_line = (
-        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)\\n"
+        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)"
+        + newline
     )
     help_matches = [
         line for line in raw.splitlines(keepends=True)
@@ -253,21 +255,24 @@ def _patch_operator(raw: bytes) -> bytes:
             + str(len(help_matches))
         )
     help_anchor = help_matches[0]
-    if not help_anchor.endswith(b"\\n"):
-        help_anchor += b"\\n"
+    if not help_anchor.endswith(newline):
+        help_anchor += newline
     raw = raw.replace(help_matches[0], help_anchor + help_line, 1)
 
+    callosum = (
+        b"        if cmd=='callosum':" + newline
+        + b"            from .callosum import operator_command" + newline
+        + b"            return operator_command(r,args)" + newline
+    )
+    android = (
+        b"        if cmd=='android':" + newline
+        + b"            from .android_companion_runtime import operator_command" + newline
+        + b"            return operator_command(r,args)" + newline
+    )
     raw = _replace_once(
         raw,
-        b"        if cmd=='callosum':\\n"
-        b"            from .callosum import operator_command\\n"
-        b"            return operator_command(r,args)\\n",
-        b"        if cmd=='callosum':\\n"
-        b"            from .callosum import operator_command\\n"
-        b"            return operator_command(r,args)\\n"
-        b"        if cmd=='android':\\n"
-        b"            from .android_companion_runtime import operator_command\\n"
-        b"            return operator_command(r,args)\\n",
+        callosum,
+        callosum + android,
         "dispatch local Android companion controls",
     )
     return raw
