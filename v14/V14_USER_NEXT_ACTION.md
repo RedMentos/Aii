@@ -1,3 +1,34 @@
+# Current next action — Core & Harness checkpoint (2026-11-27)
+
+**Status:** DRAFT / NOT_RELEASED. Core follow-up PR [#2543](https://github.com/RedMentos/Aii/pull/2543), branch `core/v14-fastpath-fixture-fallthrough-20261127-run1`. Exact code/test SHA `198e2c8673ebb8d8d8a17f28bd753db56533f281`; the subsequent documentation-only commit does not change code.
+
+## Verified change
+
+The staged greeting/ack reflex correctly short-circuits exact inputs such as `hello there`. A legacy FastForward regression fixture used that greeting while expecting the normal learning route. The fix keeps the original `test_fastforward_reflex.py` source bytes and SHA pin unchanged, and adapts only the staged copy inside the RECORD_ONLY guard. The Context OS regression now uses a neutral request. A matcher test asserts both normal-route prompts stay outside the exact reflex. No production Runtime behavior, model, weight, permission or user data changed.
+
+## Evidence
+
+- LOCAL_LINUX / CPython 3.13.5: isolated greeting/fallthrough checks **5/5 PASS**; guard compile and staged fixture rewrite **PASS**.
+- CI run [45915626691](https://github.com/RedMentos/Aii/actions/runs/45915626691): staged Runtime **268 passed, 10 skipped, 48 subtests**; integrated regression **424 passed, 3 skipped, 6 warnings, 58 subtests passed**.
+- CI run [45915626722](https://github.com/RedMentos/Aii/actions/runs/45915626722): Core audio/observer composition **3.13 PASS, 3.14 PASS**.
+- CI run [45915626675](https://github.com/RedMentos/Aii/actions/runs/45915626675): RuntimeDeploy integrity **3.11 PASS, 3.14 PASS**.
+- CI run [45915626794](https://github.com/RedMentos/Aii/actions/runs/45915626794): RECORD_ONLY controller guard **PASS**.
+- CI runs [45915626719](https://github.com/RedMentos/Aii/actions/runs/45915626719), [45915626802](https://github.com/RedMentos/Aii/actions/runs/45915626802), [45915626876](https://github.com/RedMentos/Aii/actions/runs/45915626876): Lab Age updater migration, Lab Age control-state/WebView truth and private owner-read bootstrap **PASS**.
+- Exact GitHub readback confirmed the nested source-pin chain and the unchanged FastForward source blob. The initial CI pin mismatch was corrected by updating the guard SHA-256, recovery-12 blob, recovery-21 SHA-256, stage-builder SHA-256 and RuntimeDeploy pin in order.
+
+## Product and device truth
+
+This checkpoint repairs regression coverage; it does **not** improve user-visible answer latency or quality. It does not prove B1/B2 useful offers, C4 consumption, native learned latent coupling, model-weight learning or Android operation. Redmi/Termux remains **REDMI_UNVERIFIED**. No phone was contacted, no update was deployed and no updater/device status was checked in this run. Installed updater state is therefore **UNKNOWN**; GitHub CI is not deployment.
+
+## Next executable Core task
+
+Add per-organ native prompt-token-span receipts to the source-bound B1/B2 → C4/JEF → C3 path. The pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` documents `POST /tokenize` with `with_pieces=true`, returning token IDs and UTF-8 pieces (or byte arrays). Map the exact rendered offer byte ranges to the token-piece stream, fail closed on ambiguous boundaries, and expose only role/packet IDs, token ranges/counts and hashes—never raw quotes or token text. This measures native prompt inclusion, **not** attention or semantic use. The existing whole-prompt hash and prefill-count evidence must remain intact. Add negative controls for BOS/special tokens, UTF-8 pieces, boundary overlap, mismatched pieces and absent offers; then run exact CI and a pinned-model test only when a model is already available and authorized. No model download or swap is requested.
+
+**Integration owner:** Boss should compose #2543 with #2542, then rebase the Core fair-budget/receiver chain onto current Perception #2540 and update the shared Work Board. Do not merge this draft or call it a release.
+
+**User action:** none required.
+
+
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
