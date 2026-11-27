@@ -152,11 +152,13 @@ class A5VisualFrameAdapter:
         if type(subscriptions) is not dict:
             raise PermissionError("visual observation subscriptions are unavailable")
         allowed = set()
+        with self._lock:
+            owned_sources = set(self._owned_sources)
         for grant in grants:
             if (
                 type(grant) is not UIObservationLease
                 or not grant.active_for(self.runtime, generation_id)
-                or grant.source_id not in self._owned_sources
+                or grant.source_id not in owned_sources
                 or grant.source_id not in subscriptions
             ):
                 raise PermissionError("visual frame lease is stale, revoked or not bound to this turn")
@@ -257,8 +259,9 @@ def consume_visual_frame(
         runtime, observation, generation_id
     ):
         raise PermissionError("a live source/generation/receipt-bound MediaProjection lease is required")
-    if observation["source_id"] not in adapter._owned_sources:
-        raise PermissionError("visual source is not owned by this adapter")
+    with adapter._lock:
+        if observation["source_id"] not in adapter._owned_sources:
+            raise PermissionError("visual source is not owned by this adapter")
     if type(goal) is not str or len(goal) > 512:
         raise ValueError("visual attention goal must be bounded text")
     if type(priority) is not int or not -100 <= priority <= 100:
@@ -288,6 +291,9 @@ def consume_visual_frame(
     image = vision.decode(frame_data)
     width, height = image.size
     feature_values = vision.features(image)
+    image.close()
+    del image
+    del frame_data
     np = vision._np()
     feature_values = np.asarray(feature_values, dtype=np.float32).reshape(-1)
     if (
@@ -383,6 +389,7 @@ def consume_visual_frame(
     if not consent_lease.active_for(runtime, generation_id):
         feature_values.fill(0.0)
         raise PermissionError("MediaProjection lease was revoked during frame processing")
+    stale_source = None
     with adapter._lock:
         if observation["source_id"] not in adapter._owned_sources:
             feature_values.fill(0.0)
@@ -394,9 +401,10 @@ def consume_visual_frame(
             "values": feature_values,
             "feature_sha256": feature_sha256,
         }
-        while len(adapter._packets) > 16:
+        if len(adapter._packets) > 16:
             stale_source = next(iter(adapter._packets))
-            adapter.revoke(stale_source)
+    if stale_source is not None:
+        adapter.revoke(stale_source)
 
     attention = attctl.controller(runtime)
     a4 = attention.perceive(event_id, segments, goal=goal, file_requests=False)
