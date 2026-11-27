@@ -1947,3 +1947,30 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - The integrated audio-context candidate manifest was refreshed to exact Git blob pins: `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`, `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; candidate-builder blob after pin refresh: `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
 - Exact branch readback at `007de4895cb9972f558b7fa3bd33c3b04d0946eb` confirms both pins and the new Runtime-config tests. A4 update-gate workflow `45935405225` was queued at last poll; no focused CI result is yet claimed for this code.
 - This is a developer-controlled opt-in gate, not a user-facing toggle or production activation. Default Runtime behavior remains unchanged.
+
+
+## R-181 — 2026-11-27 — A5 MediaProjection frame input + co-observation research note
+
+### Primary sources reviewed
+
+1. **Hess, Jha, van de Ven & Tuytelaars, “Forgetting, plasticity, and co-observation: a third facet of continual learning,” arXiv:2608.18803, first posted 2026-08-19; listed on the official CoLLAs 2026 accepted-papers page.** Full paper sections 3–8 reviewed. The paper separates data co-observation from forgetting and loss of plasticity. It uses a forgetting-free ensemble diagnostic and linear probes; the gap to incremental joint training persists across supervised ResNet-18 and self-supervised Barlow Twins/I-JEPA experiments on CIFAR-100/ImageNet-100 under four data chunks. Replay at ~15% of previous exemplars matched the ensemble baseline; ~30% exceeded it and closed about half the gap to incremental joint training. Distillation tracked the ensemble more closely and did not restore the same co-observation benefit. Limits: moderate-scale vision tasks, linear-probe/ensemble diagnostic, three seeds (six for I-JEPA); no direct Android, audio, or LLM-scale proof. The authors explicitly leave billion-parameter scale open. Sources: https://arxiv.org/abs/2608.18803 and https://lifelong-ml.cc/Conferences/2026/acceptedpapersandvideos/conf-2026-21
+2. **Official Android MediaProjection guide**, last updated 2026-11-19. MediaProjection starts at API 21; Android 14/API 34 adds user-selectable app-window sharing. Each session requires user consent, the token is single-use for one virtual-display creation, API 34+ targets require the mediaProjection foreground-service type, and `MediaProjection.Callback.onStop()` must release resources when the user stops, locks the screen, or another session begins. Sources: https://developer.android.com/media/grow/media-projection and https://developer.android.com/reference/android/media/projection/MediaProjection
+3. **Co-observation OSS audit:** `TimmHess/Co-ob` README and LICENSE inspected. Repository declares MIT, but vendors a patched Avalanche tree and uses a separate CaSSLE fork for SSL; requirements include a CUDA/PyTorch-heavy research stack. No code was copied. The V14 A4 predictor is too small and different for a direct port; only the replay/co-observation hypothesis is carried forward. Source: https://github.com/TimmHess/Co-ob
+
+### Concrete V14 interpretation
+
+- Treat replay as more than a forgetting shield: a small consent-scoped batch may let an online learner observe different recent cue transitions together, creating co-observation that strict one-sample SGD cannot.
+- Candidate A4 experiment (NOT implemented in this checkpoint): compare sequential update vs a bounded 8–16-entry buffer of numeric 13-D transition summaries within one source/session/consent lease; no raw PCM, transcript or cross-source mixing; evaluate source/session-disjoint holdout, old-pattern retention, gradient/parameter diff, restart/reset, false-positive gating and peak memory.
+- A local scratch simulation using the existing 13-D cue mapping and a simple LMS approximation showed a small mean-MAE reduction (~0.0076–0.0081) from replay across three synthetic streams, but non-speech still remained worse than the persistence baseline. This is hypothesis-generation only, not repository code, not a real audio result and not a reason to enable replay. The existing MEMORIZED_ERROR policy remains opt-in because its earlier three-stream ablation regressed on two streams.
+
+### Implementation evidence — PR #2550
+
+- Added `A5VisualFrameAdapter`: MediaProjection screen-frame bytes are accepted only under the existing source/session/receipt/generation-bound `UIObservationLease`; frame decode and RAW-EYE extraction happen in memory; optional existing hashed-BOW outputs remain `STUDENT_ESTIMATE / REFERENCE_NOT_FACT`; A4 attention and PerceptAdmission are invoked.
+- Raw pixels, feature vectors, transcripts and source blobs are not persisted. Feature/context reads require the live lease; revoke/exit clears adapter-held data. Provisional frames are ignored before decode. Action and learning authority remain false.
+- Exact head `7dd720a2669e46e4965c3766c6e3fcd2849bc89f`; hosted Linux Python 3.13 6/6 PASS; Python 3.14 6/6 PASS; inherited offline-bridge security 39/39 PASS. Local scratch image/descriptor/hash/cache-clear checks 4/4 PASS; full Aii checkout unavailable.
+- Evidence level: `WIRED_SYNTHETIC`. The adapter is not yet called from the normal Runtime turn; no Android provider, MediaProjection receipt, real Redmi screen, native latency/RSS, or C3 use is proven. `REDMI_UNVERIFIED / NOT_RELEASED`.
+- Licensing: no external implementation code copied; existing Pillow/NumPy dependencies are already part of the local vision lab. The Co-ob MIT license applies only to that upstream repository, not to Aii.
+
+### Next experiment / integration
+
+Core must invoke the adapter within the same lease and provide packet + feature vector to the actual context consumer; QA must implement and test the Android MediaProjection provider, single-use token, API 34 foreground service, onStop/rotation/lock/revoke behavior. After that, Perception should test bounded co-observation replay and source/session-disjoint visual holdouts without persistent raw capture.
