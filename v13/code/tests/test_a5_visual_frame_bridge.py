@@ -199,6 +199,50 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
             with self.assertRaises(PermissionError):
                 self.adapter.features(self.event["event_id"], grant)
 
+
+    def test_student_projector_candidates_are_hypotheses_not_facts(self):
+        import numpy as np
+        from unittest.mock import patch
+        from v13 import a5_visual_frame_bridge as bridge
+
+        projector_file = self.home / "data" / "vision" / "projector.npz"
+        projector_file.write_bytes(b"synthetic-projector-placeholder")
+
+        class FakeProjector:
+            W = np.zeros((4, 3), dtype=np.float32)
+
+            def __call__(self, values):
+                return np.asarray([[1.0, 0.0, 0.0]], dtype=np.float32)
+
+        state = {
+            "projector": {
+                "path": "data/vision/projector.npz",
+                "sha256": "a" * 64,
+                "encoder": "hashed_bow",
+                "captions": {"r00": "red square", "r01": "blue circle"},
+            }
+        }
+
+        def embed(caption, dimension):
+            return np.asarray(
+                [1.0, 0.0, 0.0] if caption == "red square" else [0.0, 1.0, 0.0],
+                dtype=np.float32,
+            )
+
+        with (
+            patch.object(bridge.vision, "load", return_value=state),
+            patch.object(bridge.vision.Projector, "load", return_value=FakeProjector()),
+            patch.object(bridge.vision, "hashed_embed", side_effect=embed),
+        ):
+            status, candidates = bridge._student_hypotheses(
+                self.runtime, np.asarray([0.2, 0.4, 0.6], dtype=np.float32)
+            )
+
+        self.assertEqual(status, "STUDENT_ESTIMATE")
+        self.assertEqual(candidates[0]["caption"], "red square")
+        self.assertEqual(candidates[0]["authority"], "STUDENT_ESTIMATE")
+        self.assertEqual(candidates[0]["reference_authority"], "REFERENCE_NOT_FACT")
+
     def test_wrong_or_expired_lease_cannot_read_visual_context(self):
         obs = observation()
         with self.lease(obs) as grant:
