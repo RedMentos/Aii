@@ -1,3 +1,18 @@
+# Current user-facing checkpoint — Run 75 (2026-11-27)
+
+**Keine Aktion nötig.** Kein Modell wurde heruntergeladen oder ausgetauscht, keine Berechtigung geändert, kein Gerät angesprochen und kein Deployment ausgelöst. Ein Push auf den Entwicklungsbranch ist kein Telefon-Update.
+
+- Arbeitsstand: PR #2566, Branch research-perception/v14-a3-ood-calibration-20261127-run72, Code-/Test-HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac. DRAFT, NOT_RELEASED.
+- Neue native Diagnose: Die Receiver-Matrix berechnet jetzt PL/CIC-Jensen–Shannon-Divergenz aus tatsächlichen nativen First-next-token-Logits: Kandidat vs. kein Senderinput (PL) und Kandidat vs. same-family other-example/DERANGED_MESSAGE (CIC). Das Ergebnis enthält Modell-/Input-/Logit-Hashes und nur skalare Werte; Rohlogits werden nicht exportiert oder gespeichert.
+- Weitere Korrekturen: Der Receiver-self-message-Test bindet die volle BOS-plus-Sender-Row-Geometrie; native Condition-Receipts liefern jetzt input_rows und context_rows.
+- Tests: Lokaler isolierter C++17-JSD-Helper mit -Wall -Wextra -Werror PASS; Python-Mathematik-Scratch PASS. Vollständiger lokaler Aii-Checkout und Repo-Tests BLOCKED (kein Checkout, GitHub-DNS-Fehler). Vorläufer-CI 46074686027: Linux pinned API build PASS, Android arm64 Cross-Compile PASS, fokussierte Matrix-/Score-Tests PASS; vollständige Python-Jobs scheiterten zusätzlich an der jetzt behobenen Row-Receipt-Ausgabe und an einem separaten Core-Audio-Pin. Exakte aktuelle Native-CI 46075616512 war für HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac noch QUEUED.
+- Gesamtsystem: Shared staged/integrated run 46075014940 bleibt FAIL wegen Core/QA-Pins (Audio-Composer, cognition.py, vision.py-Lifecycle) und Migration PARTIAL-vs-UPDATED. Das ist nicht durch diesen Perception-Patch behoben.
+- Grenzen: JSD misst Empfänger-Sensitivität, nicht Verständnis oder Aufgabennutzen. Noch kein aggregierter PL/CIC-Holdout, keine task-accuracy CAG/SSG, kein echter GGUF-Lauf, kein normaler Runtime-Consumer und kein trainierter Cross-Model-Latentpfad. B3 bleibt OFF.
+- Redmi/Updater: REDMI_UNVERIFIED; kein frischer Gerätebeleg. Der Branch wurde nicht auf den Release-Branch gebracht; kein Auto-Updater-/Deploymentpfad wurde genutzt. NOT_RELEASED.
+- Nächster Schritt: Exakte CI schließen; danach PL/CIC über mindestens 20 source-disjoint Gruppen aggregieren und task-accuracy CAG/SSG mit gepaarten Konfidenz-/Äquivalenztests ergänzen. Erst danach ein bereits autorisiertes reales GGUF testen. Keine Modell- oder Geräteaktion ohne getrennte Freigabe.
+
+---
+
 # Current user-facing checkpoint — Run 74 (2026-11-27)
 
 **Keine Nutzeraktion erforderlich.** Es wurde kein Modell heruntergeladen/ausgetauscht, keine Berechtigung geändert, kein Telefonbefehl gesendet und keine Gerätedaten verändert.

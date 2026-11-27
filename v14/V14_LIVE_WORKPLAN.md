@@ -2027,3 +2027,16 @@ Host microbenchmark (384 training rows → 16 query rows): RMS-z median 0.060 ms
 - LOCAL_LINUX full checkout/test/build BLOCKED: GitHub DNS failure; no local pytest or native build. Redmi remains REDMI_UNVERIFIED; no fresh owner receipt, GGUF pair, B3 activation or deployment. P0 #1904 remains open.
 - Next: finish exact-head CI, then implement PL/CIC distribution divergence (JSD on actual receiver logits) separately from CAG/SSG task accuracy; add paired confidence/equivalence controls and run ≥20 held-out groups on an already authorized real GGUF. Keep B3 OFF until real model and source-disjoint evidence exists.
 
+
+
+## Research & Perception Run 75 — 2026-11-27T22:19:14.474Z (additive checkpoint)
+
+- Branch/PR: research-perception/v14-a3-ood-calibration-20261127-run72, PR #2566. Code/test HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac; base SHA b3896e3a3ba5a85de8ea67f45d123ef8e74da075. PR remains DRAFT and is not a release.
+- Row-budget correction: SELF_GENERATED_MESSAGE now matches the complete LATENT_CANDIDATE row/position geometry (BOS baseline + sender rows). The previous hard-coded expectation of three rows was stale.
+- Native PL/CIC: C++ now snapshots the receiver's first next-token logits after prefill for NO_MESSAGE, LATENT_CANDIDATE and same-family DERANGED_MESSAGE. It computes full-vocabulary JSD in nats and ln(2)-normalized units. The native audit binds input and logits hashes; no raw logits leave the process.
+- Consumer path: the native binary advertises the audit capability; native_latent_receiver.py requires and validates it; native_receiver_task_matrix_bridge.py validates the model and condition bindings again and returns the per-task audit. Native condition receipts now retain input_rows and context_rows.
+- Local evidence: isolated C++17 JSD helper compile/selftest PASS under -Wall -Wextra -Werror; Python scratch mathematical invariants PASS. Full local repository checkout/pytest/native build BLOCKED by missing checkout and GitHub DNS failure.
+- CI: predecessor 46074686027 had pinned Linux API build PASS, Android arm64-v8a cross-compile PASS and focused matrix/score tests PASS; Python 3.13/3.14 full runtime jobs failed at the now-fixed row-geometry receipt omission plus a separate Core-owned audio-composer pin. Current exact-head native workflow 46075616512 for 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac was QUEUED at this checkpoint. Shared staged/integrated run 46075014940 failed on Core/QA-owned audio/cognition/vision pins and migration PARTIAL-vs-UPDATED assertions.
+- Evidence boundary: JSD is receiver sensitivity, not semantic understanding or task utility. The bridge remains a diagnostic; no real GGUF, no normal-turn consumer, no trained cross-model adapter, no B3 activation and no Redmi-native proof.
+- Research: follow-through on R-194 (Zhang & Emu, arXiv:2607.26773v1, preprint). No new paper is claimed as newly read. Exact adaptation and limitations are recorded as R-195.
+- Next: close exact-head CI; persist and aggregate PL/CIC over source-disjoint groups; add task-accuracy CAG/SSG with paired confidence/equivalence controls; then use an already-authorized pinned GGUF. Keep B3 OFF.
