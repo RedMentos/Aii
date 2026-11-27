@@ -146,6 +146,49 @@ def _restore_context_provenance_contract(raw: bytes, changed: bool) -> bytes:
         raise ValueError("audio composition made the revoke provenance anchor ambiguous")
     return restored.replace(_CONTEXT_PROVENANCE_BASE, _CONTEXT_PROVENANCE_RECALL, 1)
 
+_CONTEXT_REFS_BASE = (
+    b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]"
+)
+_CONTEXT_REFS_AUDIO = (
+    b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]"
+)
+
+
+def _normalize_audio_context_refs(raw: bytes):
+    """Let the pinned audio overlay add its ref while retaining Core's other refs."""
+    if not isinstance(raw, bytes):
+        raise ValueError("Core Runtime context refs are missing or not bytes")
+    lines = raw.splitlines(keepends=True)
+    matches = [i for i, line in enumerate(lines) if b"context_refs=[e['source_ref']," in line]
+    if len(matches) != 1:
+        raise ValueError("Core Runtime context refs changed or are ambiguous before audio composition")
+    index = matches[0]
+    original = lines[index]
+    body = original.rstrip(b"\\r\\n")
+    ending = original[len(body):]
+    prefix, marker, tail = body.partition(b"context_refs=[e['source_ref'],")
+    if (not marker or not body.endswith(b"]") or b"audio_source_refs" in body
+            or b"self.consolidation.source_refs(memories)" not in body
+            or b"history_refs" not in body
+            or b"meta.get('duplex_handoff_refs',[])" not in body):
+        raise ValueError("Core Runtime context refs no longer match the reviewed audio insertion contract")
+    lines[index] = prefix + _CONTEXT_REFS_BASE + ending
+    return b"".join(lines), original
+
+
+def _restore_audio_context_refs(raw: bytes, original: bytes) -> bytes:
+    """Reinsert audio SourceRefs into the original Core context-ref expression."""
+    if not isinstance(raw, bytes) or not isinstance(original, bytes):
+        raise ValueError("audio context-ref restoration input is invalid")
+    if raw.count(_CONTEXT_REFS_AUDIO) != 1:
+        raise ValueError("audio composition changed or duplicated the C3 context-ref anchor")
+    body = original.rstrip(b"\\r\\n")
+    prefix, marker, tail = body.partition(b"context_refs=[e['source_ref'],")
+    if not marker or not body.endswith(b"]") or b"audio_source_refs" in body:
+        raise ValueError("saved Core context-ref expression is not restorable")
+    restored_expr = b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[])," + tail
+    return raw.replace(_CONTEXT_REFS_AUDIO, restored_expr, 1)
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
@@ -176,15 +219,16 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     normalized_runtime, had_context_provenance = _normalize_context_provenance_contract(
         runtime_before_audio
     )
+    normalized_runtime, original_context_refs = _normalize_audio_context_refs(normalized_runtime)
     audio_input["v13/runtime.py"] = normalized_runtime
     try:
         composed = audio.apply_sources(code_dir, audio_input)
     except ValueError as exc:
-        if "Context OS audio provenance" not in str(exc):
+        if "audio candidate semantic anchor mismatch" not in str(exc):
             raise
         runtime_bytes = audio_input.get("v13/runtime.py", b"")
         anchors = [line.decode("utf-8", "replace") for line in runtime_bytes.splitlines()
-                   if b"ctxos.controller" in line or b"provenance=" in line]
+                   if b"ctxos.controller" in line or b"provenance=" in line or b"context_refs=" in line]
         raise ValueError(
             str(exc) + "; Core runtime sha256="
             + hashlib.sha256(runtime_bytes).hexdigest()
@@ -195,6 +239,9 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     )
     composed["v13/runtime.py"] = _restore_context_provenance_contract(
         composed.get("v13/runtime.py"), had_context_provenance
+    )
+    composed["v13/runtime.py"] = _restore_audio_context_refs(
+        composed.get("v13/runtime.py"), original_context_refs
     )
     # The audio overlay must preserve the fair B1/B2 observer path; fail closed
     # rather than reapplying Runtime or broadening a source pin.
