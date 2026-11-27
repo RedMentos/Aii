@@ -29,7 +29,7 @@ GitHub Actions on the exact code/test head `58af4c96e09543bed3428c77e89c10c51383
 
 - RAW EAR fastpath: **155 passed** on Python 3.13 and **155 passed** on Python 3.14; the workflow also ran `py_compile` for the audio modules/tests and the generated-signal benchmark. The benchmark explicitly reported `device_benchmark=false`, `synthetic_benchmark=true`.
 - A4/A5 feature-set probe: **15 tests passed** on Python 3.13 and **15 passed** on Python 3.14.
-- WebRTC/libfvad comparator: Python 3.13 **PASS** (9 comparator tests and 166 source-bound audio tests); Python 3.14 was still IN_PROGRESS at the last poll.
+- WebRTC/libfvad comparator: Python 3.13 **PASS** (9 comparator tests and 166 source-bound audio tests); Python 3.14 PASS (9 comparator tests + 166 source-bound audio tests).
 - RuntimeDeploy offline integrity: Python 3.11 and Python 3.14 **PASS**.
 - Public-content privacy scan: **PASS** on both RAW EAR fastpath jobs.
 - Staged runtime: **FAIL** — 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. The principal failure is the Core-owned recovery builder pin for `scripts/integrated_audio_context_candidate_20261121.py` (the base branch expects `831080bceec90711bd42e0fa4eba47c669975c98`; current Perception composer blob is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`). Other inherited Core/QA failures include stale `v13/contracts.py` arithmetic and `v13/cognition.py` observer-fairness pins, plus two migration assertions returning `PARTIAL` instead of `UPDATED`.
