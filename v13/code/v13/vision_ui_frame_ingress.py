@@ -35,7 +35,7 @@ from .a5_ui_admission_bridge import (
 from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
 
-REVISION = "v14-a5-media-projection-raw-eye-v1"
+REVISION = "v14-a5-media-projection-raw-eye-v2"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
 MAX_FRAME_PIXELS = 4_000_000
 GRID = 4
