@@ -156,6 +156,15 @@ def capability_snapshot(*, enabled=True, paired=True, screen_capture_ready=False
         "android_os_permission_required": False,
         "result_observed": False,
         "learning_authority": False,
+    }, {
+        "capability": "open_url",
+        "status": launch_status,
+        "reason": "HTTPS ACTION_VIEW after visible per-action approval; browser result is not observed",
+        "provider": "ANDROID_ACTION_VIEW_HTTPS",
+        "per_action_consent": True,
+        "android_os_permission_required": False,
+        "result_observed": False,
+        "learning_authority": False,
     }]
     for name in ("audio_capture", "observe_ui", "screen_capture", "tap", "swipe", "type_text", "back"):
         if name == "screen_capture" and screen_capture_ready:
@@ -217,11 +226,17 @@ class FakeTransport:
 
     def submit(self, request):
         self.submitted.append(request)
-        self.pending_items.append({
+        pending = {
             "action_id": request["action_id"],
-            "package": request["args"]["package"],
+            "capability": request["capability"],
             "expires_at_ms": int(request["expires_at"] * 1000),
-        })
+        }
+        if "package" in request["args"]:
+            pending["package"] = request["args"]["package"]
+        elif "url" in request["args"]:
+            from v13.android_url import https_host
+            pending["url_host"] = https_host(request["args"]["url"])
+        self.pending_items.append(pending)
         return {"status": "PENDING_USER_APPROVAL", "action_id": request["action_id"]}
 
     def outcome(self, action_id):
