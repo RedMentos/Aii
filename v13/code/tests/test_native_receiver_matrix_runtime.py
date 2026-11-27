@@ -398,6 +398,89 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
     assert matrix._closed is False
 
 
+
+def _native_effect_cohort(*, semantic_use_proven=False):
+    kv = {
+        "status": "READ_ONLY_SAMPLE_ONLY",
+        "task_group_count": 1,
+        "snapshot_count": 8,
+        "candidate_differs_from_no_message_count": 1,
+        "candidate_differs_from_exact_message_count": 1,
+        "distinct_from_no_message_task_groups_by_condition": {
+            condition: 1 for condition in CONDITIONS
+        },
+        "duplicate_input_groups_checked": 1,
+        "same_input_consistency_passed": True,
+        "scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+        "semantic_use_proven": semantic_use_proven,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+    information = {
+        "schema": "v14.native-receiver-information-use-audit/1",
+        "status": "INSUFFICIENT_HOLDOUT",
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+    return {
+        "status": "INSUFFICIENT_HOLDOUT",
+        "evidence_class": "LOCAL_LINUX",
+        "task_group_count": 1,
+        "kv_snapshot_effect": kv,
+        "information_use_audit": information,
+    }
+
+
+def test_core_consumer_surfaces_read_only_kv_and_information_use_effects(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort()
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+
+    effects = matrix_runtime._native_receiver_effects(object(), strict=True)
+    assert effects["evidence_class"] == "LOCAL_LINUX"
+    assert effects["kv_snapshot_effect"]["status"] == "READ_ONLY_SAMPLE_ONLY"
+    assert effects["kv_snapshot_effect"]["snapshot_count"] == 8
+    assert effects["kv_snapshot_effect"]["distinct_from_no_message_task_groups_by_condition"] == {
+        condition: 1 for condition in CONDITIONS
+    }
+    assert effects["information_use_audit"]["status"] == "INSUFFICIENT_HOLDOUT"
+    assert effects["semantic_use_proven"] is False
+    assert effects["generated_answer_correctness_proven"] is False
+    assert effects["production_route"] is False
+    assert effects["training_authority"] == effects["native_receiver_authority"] == 0
+    assert effects["persisted"] is False
+
+
+def test_core_consumer_rejects_kv_summary_that_claims_semantic_use(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort(semantic_use_proven=True)
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+
+    with pytest.raises(matrix_runtime.NativeReceiverMatrixRuntimeError, match="forbidden authority or proof"):
+        matrix_runtime._native_receiver_effects(object(), strict=True)
+
+
 def _load_perception_matrix_test_helpers():
     import importlib.util
     from pathlib import Path
@@ -513,6 +596,11 @@ def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_thro
     assert result["environment"] == "SYNTHETIC"
     assert result["generated_answer_correctness_proven"] is False
     assert result["training_authority"] == result["native_receiver_authority"] == 0
+    effects = result["native_receiver_effects"]
+    assert effects["evidence_class"] == "SYNTHETIC"
+    assert effects["kv_snapshot_effect"]["status"] == "UNAVAILABLE"
+    assert effects["information_use_audit"]["semantic_use_proven"] is False
+    assert effects["production_route"] is False
     assert len(calls) == 1
     assert [item["condition"] for item in calls[0]["condition_inputs"]] == list(CONDITIONS)
     assert calls[0]["condition_inputs"][0]["vectors"] == []
