@@ -1,3 +1,34 @@
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 65)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, restart, permission change, model download/swap or device-data mutation is needed for this draft Perception integration.
+
+## Signed MediaProjection → A5 RAW-EYE → downstream lifetime
+
+- PR #2557 — restore the signed MediaProjection RAW-EYE receiver: https://github.com/RedMentos/Aii/pull/2557. Branch: research-perception/v14-vision-ui-frame-ingress-20261127-run64, stacked on #2556 parent 0367e5db3a4bd0e44c5192bc785823fc6f1f35f0.
+- Current branch HEAD: 19ffeb54287627d02255845f9c9e660105e12a78. Code commit: ba79ec7b4fef9b0dc0929725310588f689b747c9; focused test commit: 19ffeb54287627d02255845f9c9e660105e12a78.
+- New API: vision_ui_frame_ingress.consume_projected_frame_from_provider_scope(). It calls the one-shot provider verifier, yields the source-bound PerceptPacket while the caller's outer UIObservationLease remains active, and revokes the frame's source/cache after the downstream scope exits (including exceptions). The provider path zeroizes the caller-owned mutable frame buffer before yielding; invalid metadata is also zeroized.
+- Exact focused Actions workflow 45988257517 PASS: py_compile + 28/28 tests on Python 3.13 and 28/28 on Python 3.14. The three new tests cover scope lifetime, downstream exception cleanup and invalid-observation zeroization. Runtime deployment integrity workflow 45988257367 PASS.
+- Shared staged-runtime workflow 45988257446 FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Current failures are existing Core audio-composer/arithmetic/observer source-pin mismatches and QA migration assertions expecting UPDATED while the honest runtime result is PARTIAL. The integrated-regression job was still in progress at the last poll; no success is claimed.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN (no local checkout mounted and GitHub DNS unavailable). CI is not a local test or Redmi proof.
+- Core #2408 still owns the normal Runtime → A5 → C3 same-turn consumer. This new scope API is a handoff contract, not evidence of a real C3 turn. No Android APK/device capture or Redmi result exists: REDMI_UNVERIFIED / NOT_RELEASED.
+
+## Next integration
+
+Core should rebase #2408 onto #2557 and wrap the normal C3 context read/generation inside consume_projected_frame_from_provider_scope(), keeping the same outer lease active until C3 finishes. QA owns the independent MediaProjection consent, onStop, process-death, revoke, restart and rollback tests. Keep screen capture OFF until those gates and a fresh consented Redmi receipt exist.
+
+## Research candidate — GoClick UI grounding (not selected or downloaded)
+
+- GoClick (arXiv:2604.23941, 2026-04-27; author repo MIT; GoClick-Base model card MIT) is a narrow screenshot+function-description → coordinate grounder, not a general A5 vision model or action authority.
+- A community ONNX export advertises INT8 component files totalling about 303 MB (91+80+132 MB), but it is not the author-maintained Android release and has no Redmi/732G benchmark or verified ARM64 operator profile.
+- Keep as an optional A5 action-grounding candidate only. No files or weights were downloaded. Any experiment requires explicit approval for the download and a separate decision before productive use; first compare CPU/NNAPI, PSS, TTFT, coordinate hit-rate and false-target negatives on a real consented device.
+
+## Device / updater boundary
+
+Latest available private V13OBS #115 remains historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS had no device comments before expiry. There is no fresh receipt proving the current installed SHA or live updater state; device/updater state remains UNVERIFIED. No update request or device command was sent.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 64)
 
 **User action: none required.** Do not run a Termux command, send UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for this draft Perception receiver.
