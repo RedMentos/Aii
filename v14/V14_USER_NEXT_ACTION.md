@@ -1,3 +1,25 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 62)
+
+**User action: none required.** Do not run a Termux command, send an UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for these draft PRs.
+
+## Current Perception stack
+
+- [#2553 — A4 shared-checkpoint reset fix](https://github.com/RedMentos/Aii/pull/2553), child of #2551.
+- [#2554 — lease-bound A5 visual frame → RAW-EYE → A4 PerceptPacket](https://github.com/RedMentos/Aii/pull/2554), child of #2553 and carries the Perception-owned A5 files from the parallel #2550 line onto one A4/A5 stack.
+- #2554 code-bearing head at PR creation: `f78dbdc369ba2e3cac5e9acff05dca033c05be2a`; post-code board checkpoint: `62414aea9aa4cc2b320943c46763736e0b2ed3b9` (docs/board only). Audio composer blob: `f1fd06c70f9d27148c22df869abe0ad66a4cf467`.
+- A4 predictor/retention: **47/47 PASS** Python 3.13 and 3.14; A4 temporal source isolation **9/9 PASS** both; A4/A5 feature-set **15/15 PASS** both.
+- RAW EAR optional NumPy/backend: **175/175 PASS** both; WebRTC/libfvad comparator: **186/186 PASS** both, native libfvad C tests **13/13 PASS**; RuntimeDeploy offline: **92 tests PASS** on Python 3.11 and 92 on 3.14; privacy scan **CLEAN**.
+- A5 visual-frame exact workflow: **11 tests + 3 subtests PASS** on Python 3.13 and 3.14. This is generated PNG + synthetic provider coverage; A5 remains **WIRED_SYNTHETIC**, not Android-verified.
+- LOCAL_LINUX CPython 3.13.5 isolated A4 reset semantics **3/3 PASS**. Full local Aii checkout/pytest **BLOCKED / NOT_RUN** (no checkout; GitHub DNS failure).
+- Shared staged/integrated gate still **FAILS**: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression one setup failure. Causes: Core Recovery's old audio-composer pin, Core arithmetic `v13/contracts.py` and observer `v13/cognition.py` pins, plus QA migration assertions expecting `UPDATED` while the safe result is `PARTIAL`. Same failure on #2553 and #2554; no pins/assertions weakened.
+- No Android MediaProjection provider, platform onStop cleanup, normal-turn Runtime callsite, microphone/frame receipt or Redmi evidence. **REDMI_UNVERIFIED / NOT_RELEASED**. P0 basic chat, B1/B2 delivery and native B3 latent coupling remain unresolved.
+
+## Next executable action
+
+Core rebase #2549 and child #2552 onto #2554 after review, then refresh Recovery → Stage → RuntimeDeploy composer/arithmetic/observer pins bottom-up. QA repairs the migration PARTIAL-vs-UPDATED assertions. Perception continues with independent-registry conflict stress tests and the missing normal-turn A5/signed-audio consumer contract. No user action is needed unless a future experiment requires explicit device consent.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 61)
 
 **User action: none required.** No Termux command, UPDATE_REQUEST, CHAT_SEND, model/weight swap, permission change, runtime restart or device-data mutation is justified.
