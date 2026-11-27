@@ -186,14 +186,16 @@ def wait_for_text(
                          + "; relevant logcat=" + failure_logcat()[:10000])
 
 
-def tap_button(label: str, timeout: float = 30.0) -> None:
+def tap_button(label: str, timeout: float = 60.0) -> None:
+    """Scroll toward the lower controls until the exact visible button is found."""
     deadline = time.monotonic() + timeout
-    width, height = screen_size()
     attempts = 0
+    last_labels = ""
     while time.monotonic() < deadline:
         try:
             root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
+            attempts += 1
             time.sleep(poll_delay(attempts))
             continue
         if handle_transient_overlay(root):
@@ -203,13 +205,27 @@ def tap_button(label: str, timeout: float = 30.0) -> None:
         if center is not None:
             adb("shell", "input", "tap", str(center[0]), str(center[1]))
             return
+        last_labels = "\\n".join(visible_labels(root))
         attempts += 1
-        if attempts % 3 == 0:
-            adb("shell", "input", "swipe", str(width // 2),
-                str(int(height * .86)), str(width // 2),
-                str(int(height * .24)), "450")
+        # MainActivity places a potentially long capability/status view before
+        # the controls. Scroll down after every miss instead of spending most of
+        # the timeout polling the same top-of-screen hierarchy.
+        try:
+            swipe_to_bottom()
+        except RuntimeError:
+            pass
         time.sleep(poll_delay(attempts))
-    raise AssertionError("could not locate visible companion button: " + label)
+    try:
+        final_xml = hierarchy_xml()[:10000]
+    except Exception as exc:
+        final_xml = "hierarchy unavailable: " + type(exc).__name__
+    raise AssertionError(
+        "could not locate visible companion button: " + label
+        + "; visible labels=" + last_labels[:1200]
+        + "; " + foreground_diagnostic()
+        + "; hierarchy=" + final_xml
+        + "; relevant logcat=" + failure_logcat()[:10000]
+    )
 
 
 def persisted_enabled() -> str:

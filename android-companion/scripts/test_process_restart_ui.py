@@ -73,11 +73,42 @@ class ProcessRestartUiTests(unittest.TestCase):
         with self.assertRaises(ET.ParseError):
             parse_hierarchy("<hierarchy><node text='unterminated></hierarchy>")
 
+    def test_button_content_description_is_an_accessible_lookup_fallback(self) -> None:
+        root = make_tree([
+            {"text": "", "content-desc": "Enable / Stop companion",
+             "class": "android.widget.Button", "bounds": "[10,20][210,70]"},
+        ])
+        self.assertEqual(button_center(root, "Enable / Stop companion"), (110, 45))
+
     def test_text_view_is_not_treated_as_a_button(self) -> None:
         root = make_tree([
             {"text": "Wait", "class": "android.widget.TextView", "bounds": "[0,0][100,50]"},
         ])
         self.assertIsNone(button_center(root, "Wait"))
+
+
+class ProcessRestartTapButtonTests(unittest.TestCase):
+    def test_tap_button_scrolls_until_the_exact_control_is_visible(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        status_only = make_tree([
+            {"text": harness.STOPPED_TEXT, "class": "android.widget.TextView"},
+        ])
+        toggle = make_tree([
+            {"text": "Enable / Stop companion", "class": "android.widget.Button",
+             "bounds": "[10,20][210,70]"},
+        ])
+        with (
+            patch.object(harness, "hierarchy", side_effect=[status_only, toggle]),
+            patch.object(harness, "swipe_to_bottom") as swipe,
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "monotonic", side_effect=[0.0, 0.0, 1.0]),
+            patch.object(harness.time, "sleep"),
+        ):
+            harness.tap_button("Enable / Stop companion", timeout=2.0)
+        swipe.assert_called_once_with()
+        adb_call.assert_called_once_with("shell", "input", "tap", "110", "45")
 
 
 class ProcessRestartWaitRecoveryTests(unittest.TestCase):

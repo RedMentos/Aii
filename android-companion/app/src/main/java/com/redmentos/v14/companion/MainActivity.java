@@ -50,6 +50,7 @@ public final class MainActivity extends Activity {
     private void addButton(String label, View.OnClickListener listener) {
         Button button = new Button(this);
         button.setText(label);
+        button.setContentDescription(label);
         button.setOnClickListener(listener);
         root.addView(button);
     }
