@@ -13,6 +13,8 @@ from statistics import fmean
 from v13.audio_temporal_prediction import (
     ATTENTION_GAIN,
     AudioTemporalPredictionRegistry,
+    AudioTemporalPredictor,
+    acoustic_feature_vector,
     predictive_attention_novelty,
     predictive_omission_novelty,
 )
@@ -151,6 +153,44 @@ def _summarize(results: list[dict]) -> dict:
     }
 
 
+
+
+def _feed_direct(sequence: tuple[dict, ...], *, learning_rate: float) -> list[dict]:
+    """Run the same registry delta transform with an explicit predictor rate."""
+    predictor = AudioTemporalPredictor(learning_rate=learning_rate)
+    previous_features = None
+    results = []
+    for cues in sequence:
+        features = acoustic_feature_vector(cues)
+        if previous_features is None:
+            previous_features = features
+            continue
+        delta = tuple(abs(features[index] - previous_features[index]) for index in range(len(features)))
+        results.append(predictor.update(delta))
+        previous_features = features
+    return results
+
+
+def _default_rate_direct_registry_parity() -> bool:
+    for source_id, sequence in PATTERNS.items():
+        registry_results = _feed(AudioTemporalPredictionRegistry(), source_id, sequence)
+        direct_results = _feed_direct(sequence, learning_rate=0.20)
+        if _project(registry_results[1:]) != _project(direct_results):
+            return False
+    return True
+
+
+def _learning_rate_sweep() -> dict:
+    rates = (0.02, 0.05, 0.10, 0.20)
+    return {
+        source_id: {
+            str(rate): _summarize(_feed_direct(sequence, learning_rate=rate))
+            for rate in rates
+        }
+        for source_id, sequence in PATTERNS.items()
+    }
+
+
 def _source_isolation_probe() -> tuple[bool, float]:
     isolated = {}
     for source_id, sequence in PATTERNS.items():
@@ -245,6 +285,8 @@ def run_experiment() -> dict:
         for source_id, sequence in PATTERNS.items()
     }
     source_isolation_equal, source_isolation_max_difference = _source_isolation_probe()
+    default_rate_parity = _default_rate_direct_registry_parity()
+    learning_rate_sweep = _learning_rate_sweep()
     no_context = _no_context_control(PATTERNS["speech-periodic"])
     provisional = _provisional_control()
     consent_reset = _consent_reset_control(PATTERNS["speech-periodic"])
@@ -258,6 +300,8 @@ def run_experiment() -> dict:
         "raw_audio_persisted": False,
         "training_examples_persisted": False,
         "per_source": per_source,
+        "default_rate_direct_registry_parity": default_rate_parity,
+        "learning_rate_sweep": learning_rate_sweep,
         "source_isolation": {
             "interleaved_equals_isolated": source_isolation_equal,
             "max_metric_difference": source_isolation_max_difference,
