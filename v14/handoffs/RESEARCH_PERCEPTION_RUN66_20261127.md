@@ -25,7 +25,7 @@ Primary source reviewed:
 - LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated reproduction: **PASS**. Valid headers are accepted; a <4-KiB archive declaring `W=(38,100,000,000)` is rejected before `np.load`; a truncated in-range tensor is rejected too. This is a standalone helper reproduction, not the full repository suite.
 - The repository regression parametrizes the huge-shape and truncated-payload cases and monkeypatches `np.load` to fail if it is reached.
 - Full local Aii checkout/pytest: **BLOCKED / NOT_RUN**; no checkout is mounted and `git ls-remote` cannot resolve github.com.
-- Exact PR #2558 GitHub Actions: **PENDING** at this handoff checkpoint. Parent #2557 exact focused CI is green (28/28 on Python 3.13 and 28/28 on Python 3.14; RuntimeDeploy integrity green), while its shared staged/integrated workflow remains failed on existing Core-owned composer/arithmetic/observer pins and QA migration assertions.
+- Exact code/test head 39b148c28007775139ff75f8d8fd4ff21cbe0a10: MediaProjection workflow 45992488704 **PASS** (py_compile + 30/30 Python 3.13 and 30/30 Python 3.14). Exact current docs-only head 89634e661afb223d7113a2eff3894bbbd8ad8501: workflow 45992743680 **PASS** (30/30 on both); RuntimeDeploy integrity 45992743691 **PASS** on Python 3.11 and 3.14. Shared staged/integrated workflow 45992743722 **FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. The failures are the existing Core audio-composer pin, Core arithmetic/observer source pins and QA PARTIAL-vs-UPDATED migration assertions. No Perception ingress test failed. Parent #2557 exact focused CI is green (28/28 on Python 3.13 and 28/28 on Python 3.14; RuntimeDeploy integrity green), while its shared staged/integrated workflow remains failed on existing Core-owned composer/arithmetic/observer pins and QA migration assertions.
 
 ## Product and Canon impact
 - Improves resource safety for the optional A3 local student-projector read in the A5 UI-frame path.
@@ -42,3 +42,11 @@ Primary source reviewed:
 1. Read back PR #2558 exact Python 3.13/3.14 workflow and shared staged/integrated results; repair only measured Perception regressions.
 2. Core continues the #2408/#2557 normal Runtime/C3 integration under the same live UIObservationLease; QA independently owns Android consent and lifecycle proof.
 3. Keep optional projector promotion and screen capture OFF until review, integration and explicit device acceptance. No user action is required for this code-only candidate.
+
+
+## Exact CI closeout addendum
+
+- Current PR #2558 head at readback: `89634e661afb223d7113a2eff3894bbbd8ad8501`; code/test head: `39b148c28007775139ff75f8d8fd4ff21cbe0a10`.
+- Focused MediaProjection workflow 45992488704 PASS (30/30 Python 3.13 and 30/30 Python 3.14); exact docs-only head workflow 45992743680 PASS (30/30 both). RuntimeDeploy integrity 45992743691 PASS on Python 3.11/3.14.
+- Shared staged/integrated workflow 45992743722 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. Root causes: Core Recovery pinned audio-composer blob mismatch (`831080bceec90711bd42e0fa4eba47c669975c98`), Core arithmetic/observer pins, and QA migration assertions expecting UPDATED while actual safe result is PARTIAL. No Perception ingress test failed.
+- PR remains DRAFT / NOT_RELEASED; no normal Runtime/C3 consumer or Redmi proof. P0 #1904 remains open.
