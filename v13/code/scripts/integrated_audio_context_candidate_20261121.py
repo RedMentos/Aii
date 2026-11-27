@@ -13,7 +13,9 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "deb8c274022e2a4419dd38adb11ca14481c4bd91",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "b79d5c941dbde22ca287067d8491cb169634badd",
+    "v13/audio_voice_cues.py": "02aac7567332723806d6b68791a841f02d06af16",
+    "v13/audio_temporal_prediction.py": "c1a308a946073fe681b856b3353ba712da860579",
+    "v13/audio_event_expectation.py": "4571b12aeb665f2865d53c54561cacd2562d6f95",
     "v13/audio_teacher_ear.py": "255c51fd6ade37ada2fc3309fb0cf3e18afe954d",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
     "v13/audio_temporal_evidence.py": "cacf649007a89cbfe74924536e413747d1392db3",
@@ -51,6 +53,8 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
             raise ValueError("audio source blob changed: " + relative)
 
     result = dict(sources)
+    for relative in ("v13/audio_temporal_prediction.py", "v13/audio_event_expectation.py"):
+        result[relative] = (code_dir / relative).read_bytes()
     runtime = result.get("v13/runtime.py")
     if not isinstance(runtime, bytes):
         raise ValueError("upstream integrated Runtime candidate missing")
@@ -334,7 +338,7 @@ class Runtime:
         b"        audio_context,audio_context_refs=self._audio_context_query(e,role)\n"
         b"        if audio_context:\n"
         b"            query['audio_context']=audio_context\n"
-        b"            instructions+=' audio_context is consent-bound acoustic features only, not a transcript or semantic truth; do not quote it as textual evidence, infer speaker identity, or treat it as learning/action authority.'\n",
+        b"            instructions+=' audio_context is consent-bound acoustic features only, not a transcript or semantic truth; a4_temporal is a bounded uncalibrated timing/prediction-error cue, not event identity or ground truth; do not quote it as textual evidence, infer speaker identity, or treat it as learning/action authority.'\n",
         "B1/B2 audio query",
     )
     cognition = _replace(
@@ -701,12 +705,131 @@ Runtime.close = _audio_lease_close
 
     result["v13/audio_context_store.py"] = b'''"""Process-local consent-bound acoustic context with revocation tombstones."""
 import json
+import math
 import threading
 from pathlib import Path
 
 from .common import dumps
 
 _MAX_REVOCATION_CONTEXTS = 64
+
+
+def _safe_float(value):
+    if value is None:
+        return None
+    if type(value) not in (int, float) or not math.isfinite(float(value)):
+        raise ValueError("A4 temporal value must be finite")
+    return round(float(value), 8)
+
+
+def _safe_int(value, *, optional=False):
+    if optional and value is None:
+        return None
+    if type(value) is not int or value < 0:
+        raise ValueError("A4 temporal timestamp/count is invalid")
+    return value
+
+
+def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id):
+    if (type(a4) is not dict or a4.get("packet_id") != packet_value.get("packet_id")
+            or a4.get("source_id") != source_id or a4.get("finality") != "FINAL"):
+        raise ValueError("A4 temporal evidence is not bound to the final audio packet")
+    receipt = a4.get("attention_receipt")
+    if (type(receipt) is not dict or receipt.get("source_ref") != source
+            or receipt.get("event_id") != event_id
+            or receipt.get("finality") != "FINAL"
+            or receipt.get("start_ms") != segment.get("start_ms")
+            or receipt.get("end_ms") != segment.get("end_ms")
+            or a4.get("attention_receipt_id") != receipt.get("packet_id")):
+        raise ValueError("A4 attention receipt does not match the audio source/window")
+    prediction = a4.get("audio_temporal_prediction")
+    expectation = a4.get("audio_event_expectation")
+    if type(prediction) is not dict or type(expectation) is not dict:
+        raise ValueError("A4 temporal prediction/expectation is missing")
+    pred_fields = (
+        "prediction_error_mae", "persistence_baseline_mae", "improvement_mae",
+        "excess_prediction_error", "signed_prediction_error",
+        "negative_prediction_error", "omission_prediction_error",
+        "commission_prediction_error", "omission_attention_novelty",
+        "attention_novelty", "gradient_l2", "gradient_clip_scale",
+        "weight_delta_l2", "parameter_l2", "learning_rate",
+    )
+    pred = {
+        "schema": str(prediction.get("schema", ""))[:96],
+        "method": str(prediction.get("method", ""))[:96],
+        "status": str(prediction.get("status", ""))[:48],
+        "updates": _safe_int(prediction.get("updates", 0)),
+        "parameter_count": _safe_int(prediction.get("parameter_count", 0)),
+    }
+    for name in pred_fields:
+        pred[name] = _safe_float(prediction.get(name))
+    pred.update({
+        "weight_scope": str(prediction.get("weight_scope", ""))[:64],
+        "weight_persistence": prediction.get("weight_persistence") is True,
+        "training_data_persisted": prediction.get("training_data_persisted") is True,
+        "learning_authority": False,
+        "action_authority": False,
+        "truth_authority": False,
+    })
+    if pred["training_data_persisted"] or prediction.get("learning_authority") is not False:
+        raise ValueError("A4 predictor authority/persistence contract changed")
+    expected = []
+    for item in expectation.get("expected_events", [])[:2]:
+        if type(item) is not dict or item.get("activity_class") not in {"VOICED", "IMPULSIVE"}:
+            raise ValueError("A4 expected event is invalid")
+        expected.append({
+            "activity_class": item["activity_class"],
+            "expected_at_ms": _safe_int(item.get("expected_at_ms")),
+            "tolerance_ms": _safe_int(item.get("tolerance_ms")),
+            "timing_confidence_proxy": _safe_float(item.get("timing_confidence_proxy")),
+        })
+    omissions = []
+    for item in expectation.get("omissions", [])[:2]:
+        if type(item) is not dict or item.get("activity_class") not in {"VOICED", "IMPULSIVE"}:
+            raise ValueError("A4 omission is invalid")
+        omissions.append({
+            "activity_class": item["activity_class"],
+            "expected_at_ms": _safe_int(item.get("expected_at_ms")),
+            "observed_at_ms": _safe_int(item.get("observed_at_ms"), optional=True),
+            "lateness_ms": _safe_int(item.get("lateness_ms")),
+            "timing_confidence_proxy": _safe_float(item.get("timing_confidence_proxy")),
+        })
+    score = a4.get("attention_score_vector")
+    if type(score) is not dict:
+        raise ValueError("A4 attention score vector is missing")
+    score_vector = {
+        "novelty": _safe_float(score.get("novelty")),
+        "external_interrupt": _safe_float(score.get("external_interrupt")),
+    }
+    return {
+        "schema": "v14.raw-ear-a4-temporal-context/1",
+        "attention_receipt_id": str(a4.get("attention_receipt_id", ""))[:128],
+        "attention_score_vector": score_vector,
+        "temporal_prediction": pred,
+        "event_expectation": {
+            "schema": str(expectation.get("schema", ""))[:96],
+            "method": str(expectation.get("method", ""))[:96],
+            "status": str(expectation.get("status", ""))[:48],
+            "observed_activity": expectation.get("observed_activity"),
+            "expected_events": expected,
+            "omissions": omissions,
+            "omission_detected": expectation.get("omission_detected") is True,
+            "timing_confidence_proxy": _safe_float(expectation.get("timing_confidence_proxy")),
+            "attention_novelty": _safe_float(expectation.get("attention_novelty")),
+            "interval_samples": _safe_int(expectation.get("interval_samples", 0)),
+            "state_scope": str(expectation.get("state_scope", ""))[:64],
+            "state_persistence": expectation.get("state_persistence") is True,
+            "calibrated_probability": expectation.get("calibrated_probability") is True,
+            "event_identity_authority": False,
+            "learning_authority": False,
+            "action_authority": False,
+            "truth_authority": False,
+        },
+        "authority": "A4_BOUNDED_TEMPORAL_PREDICTION_ONLY",
+        "learning_authority": False,
+        "action_authority": False,
+        "truth_authority": False,
+    }
 
 
 def _lock(runtime):
@@ -938,11 +1061,13 @@ def record(runtime, event_id, audio_result, audio_window):
         runtime.store.log("audio_input_unavailable", event_id,
                           {"stage": "voice_cue_validation", "reason": "MISSING_OR_INVALID"})
         return None
+    a4 = audio_result.get("a4")
     receipt = segment.get("consent_receipt_ref")
     source_id = source.get("source_id")
     if source_id != audio_window.get("source_id") or receipt != audio_window.get("consent_receipt"):
         return None
     try:
+        a4_temporal = _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
         lease = _lease(audio_window, runtime, source_id, receipt)
         observations = []
         for item in selected:
@@ -968,6 +1093,7 @@ def record(runtime, event_id, audio_result, audio_window):
             "audio_source_ref": source,
             "observations": observations,
             "voice_cues": voice_cues,
+            "a4_temporal": a4_temporal,
             "authority": "ACOUSTIC_FEATURES_ONLY",
             "transcript": None,
             "learning_authority": False,
