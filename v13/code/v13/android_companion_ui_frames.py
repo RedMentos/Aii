@@ -497,26 +497,31 @@ class UIFrameGrant:
 
 @contextmanager
 def _open_current_turn(provider, runtime):
-    bundle = provider.read_once()
-    observation = bundle["observation"]
+    # Reject an invalid/non-turn Runtime before consuming the companion's
+    # one-shot frame token. A frame is a scarce consented input, not a probe.
     event = getattr(runtime, "turn_event", None)
     if (type(event) is not dict or type(event.get("brain_generation_id")) is not str
             or getattr(runtime, "current", None) != "turn"):
-        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
         raise FrameReceiptDenied("screen frames can only be consumed inside an active Runtime turn")
+    cancel_event = getattr(runtime, "cancel_event", None)
+    if (not callable(getattr(cancel_event, "set", None))
+            or getattr(runtime, "store", None) is None):
+        raise FrameReceiptDenied("A5 UI lease consumer is unavailable for this Runtime")
     try:
         from .a5_ui_admission_bridge import A5UIRuntimeAdapter
+        adapter = A5UIRuntimeAdapter(runtime)
     except Exception as exc:
-        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
         raise FrameReceiptDenied("the V14 A5 UI lease consumer is not installed in this checkout") from exc
+    if not callable(getattr(adapter, "lease", None)):
+        raise FrameReceiptDenied("the V14 A5 UI lease adapter is not installed in this checkout")
 
+    # Only after the downstream lease consumer is known to be available may we
+    # consume the one-use receipt and read the frame bytes.
+    bundle = provider.read_once()
+    observation = bundle["observation"]
     state = _UIFrameGrantState(
         observation, provider.transport, provider.verifier, bundle["receipt_body"]
     )
-    adapter = A5UIRuntimeAdapter(runtime)
-    if not callable(getattr(adapter, "lease", None)):
-        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
-        raise FrameReceiptDenied("the V14 A5 UI lease adapter is not installed in this checkout")
     try:
         with adapter.lease(
             observation, state.consent_check, state.consent_guard, state.revocation_subscribe
@@ -529,4 +534,3 @@ def _open_current_turn(provider, runtime):
         frame = bundle.get("frame_buffer")
         if type(frame) is bytearray and frame:
             frame[:] = b"\x00" * len(frame)
-
