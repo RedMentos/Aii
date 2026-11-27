@@ -1974,3 +1974,8 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 ### Next experiment / integration
 
 Core must invoke the adapter within the same lease and provide packet + feature vector to the actual context consumer; QA must implement and test the Android MediaProjection provider, single-use token, API 34 foreground service, onStop/rotation/lock/revoke behavior. After that, Perception should test bounded co-observation replay and source/session-disjoint visual holdouts without persistent raw capture.
+
+
+### R-181 verification update — 2026-11-27 04:19 UTC
+
+PR #2550's exact A5 workflow is **6/6 PASS on Python 3.13 and 6/6 PASS on Python 3.14**; the staged-context/integrated-regression gate is **PASS**; offline-bridge security is **39/39 PASS**. These are hosted Linux CI results, not local full-checkout or Android evidence. The A5 adapter remains `WIRED_SYNTHETIC`; normal-turn Core invocation, Android provider and Redmi frame are not yet tested. Core PR #2549 still has four separate failing gates (phone offer receipt, private owner-read bootstrap, C3 prompt binding, audio/observer composition). Private owner-read #1005–#1007 have no device receipt at checkpoint.
