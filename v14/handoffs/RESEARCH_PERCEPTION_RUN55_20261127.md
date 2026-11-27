@@ -40,3 +40,14 @@ Files:
 - Core owns PR #2544's Recovery→Stage→RuntimeDeploy pin chain; QA owns migration PARTIAL-vs-UPDATED assertions. Perception did not edit those files.
 - Next: verify exact A4 workflow result; fix measured failures; after Core/QA rebase, add error-gated versus every-FINAL update and retention/restart ablations.
 - No user action required. Keep microphone capture, model swaps and persistent production weight changes OFF.
+
+
+## Final verification addendum — 2026-11-27
+
+- Latest code/test head: `e270369a04eb20470aa717dc0464b2b03a4320a5`. Documentation-only commits followed; branch head before this handoff addendum was `0a8560067117a28569861cc7c548d662367678c7`.
+- A4 workflow run 45924853167: compile PASS + 7/7 tests PASS on Python 3.13.18 and 3.14.10; PR merge candidate short SHA `3d56c9c`.
+- A4/A5 feature-set run 45924853182 PASS on both Python versions; RAW EAR fastpath run 45924853240 155/155 PASS on both; RuntimeDeploy offline run 45924853218 PASS on Python 3.11 and 3.14.
+- Staged run 45924853105 FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. The recovery builder pins composer `831080bceec90711bd42e0fa4eba47c669975c98`, but the current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; stale arithmetic/observer pins and migration PARTIAL-vs-UPDATED assertions also fail. Integrated regression in the same run FAIL: one setup test at the same composer pin.
+- Synthetic metrics: interleaved/isolated parity exact; speech-periodic model MAE 0.21739024 vs persistence 0.33642678; non-speech 0.22605715 vs 0.19615384; mixed 0.28642224 vs 0.26395818. Learning-rate sweep 0.02–0.20 does not remove non-speech/mixed regressions. No default change.
+- LOCAL_LINUX full suite NOT RUN; no local checkout/network. No Android/Termux/microphone/native model/Redmi proof. REDMI_UNVERIFIED; NOT_RELEASED.
+- The exact A4 workflow is green, but the PR is not integration-ready while staged/integrated fail. Core and QA retain ownership of their source pins/assertions.
