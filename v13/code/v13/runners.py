@@ -314,7 +314,7 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
+                    from .native_offer_prompt_receipt import inspect, attach_token_spans
                     from .prompts import text as v13_prompt_text
                     witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                     if type(witness) is dict:
@@ -323,6 +323,26 @@ class LlamaRunner:
                             'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
                             'native_prompt_tokens': count,
                         })
+                        if witness.get('status') == 'RENDERED_WITH_QUOTES':
+                            probe_started = time.monotonic()
+                            token_rows = None
+                            failure_reason = None
+                            if deadline - time.monotonic() < 0.75:
+                                failure_reason = 'SKIPPED_TIME_BUDGET'
+                            else:
+                                try:
+                                    check(cancel, deadline)
+                                    token_rows = self._json(
+                                        'POST', '/tokenize',
+                                        {'content': p, 'add_special': False, 'with_pieces': True},
+                                        deadline, timeout_cap=0.5)['tokens']
+                                    check(cancel, deadline)
+                                except (OSError, RuntimeError, ValueError, KeyError, TypeError):
+                                    failure_reason = 'TOKEN_PIECES_UNAVAILABLE'
+                            witness = attach_token_spans(
+                                witness, p, token_rows, tokens, failure_reason=failure_reason)
+                            witness['native_token_span_probe_ms'] = round(
+                                (time.monotonic() - probe_started) * 1000, 3)
                     self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             candidate=admission.reduce_once(
@@ -340,7 +360,7 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
+                    from .native_offer_prompt_receipt import inspect, attach_token_spans
                     from .prompts import text as v13_prompt_text
                     witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                     if type(witness) is dict:
@@ -349,6 +369,10 @@ class LlamaRunner:
                             'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
                             'native_prompt_tokens': count,
                         })
+                        if witness.get('status') == 'RENDERED_WITH_QUOTES':
+                            witness = attach_token_spans(
+                                witness, p, None, tokens, failure_reason='SKIPPED_TIME_BUDGET')
+                            witness['native_token_span_probe_ms'] = 0.0
                     self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
