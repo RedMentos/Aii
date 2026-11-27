@@ -193,6 +193,18 @@ def test_open_url_is_consent_gated_source_bound_and_not_persisted_in_termux(tmp_
     assert recorded["observed"] is False
     assert recorded["t8_authoritative"] is False
     assert recorded["world_learning_eligible"] is False
+    assert recorded["jef_space"]["status"] == "PUBLISHED"
+    assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert recorded["jef_space"]["t8_authoritative"] is False
+    assert recorded["jef_space"]["world_learning_eligible"] is False
+    followup = runtime.store.event(runtime.session, "Did the browser open?")
+    space = EnlightenedSpace(runtime.store, runtime.session)
+    for receiver in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        view = space.consume(followup, receiver, query="Did the browser open?")
+        action_messages = [item for item in view["messages"] if item["from"] == "C5_ACTION"]
+        assert len(action_messages) == 1
+        assert action_messages[0]["authority"] == "CONTROL_ONLY"
+        assert "open_url receipt" in action_messages[0]["semantic_cue_not_fact"]
     actual = runtime.store.one(
         "SELECT payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
         (pending["action_id"],),
