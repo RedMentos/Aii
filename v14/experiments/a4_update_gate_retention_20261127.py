@@ -153,7 +153,7 @@ def run_experiment() -> dict:
         "input": "deterministic acoustic cue dictionaries; no PCM, transcript, speaker identity or user data",
         "update_policy_default": "EVERY_FINAL",
         "experimental_policy": "MEMORIZED_ERROR",
-        "gate_definition": "update when model MAE exceeds persistence MAE, or when the same quantized target-delta fingerprint was previously mistaken in this process-local stream",
+        "gate_definition": "update when model MAE exceeds persistence MAE, or when the same quantized previous/target-delta transition fingerprint was previously mistaken in this process-local stream",
         "memory_scope": "bounded process-local fingerprints; reset on stream/consent reset and restart; not a privacy/anonymisation guarantee",
         "memory_capacity": MISTAKE_MEMORY_CAPACITY,
         "repeats": REPEATS,
