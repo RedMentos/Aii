@@ -56,6 +56,31 @@ def _append_offer_parameter(raw: bytes) -> bytes:
     return raw[:end] + b",ui_context=None" + raw[end:]
 
 
+def _ask_block_bounds(raw: bytes) -> tuple[int, int]:
+    marker = b"                def ask("
+    if raw.count(marker) != 1:
+        raise ValueError("Android UI overlay expected exactly one normal B1/B2 ask function")
+    start = raw.index(marker)
+    line_end = raw.find(b"\n", start)
+    if line_end < 0:
+        raise ValueError("Android UI overlay B1/B2 ask signature is unterminated")
+    signature = raw[start:line_end]
+    prefix = b"                def ask(role,focus=None,use_peer=True"
+    if not signature.startswith(prefix) or not signature.endswith(b"):"):
+        raise ValueError("Android UI overlay B1/B2 ask signature changed")
+    params = signature[len(b"                def ask("):-2].split(b",")
+    if params[:3] != [b"role", b"focus=None", b"use_peer=True"]:
+        raise ValueError("Android UI overlay B1/B2 ask parameters changed")
+    extras = params[3:]
+    allowed = {b"role_end=None", b"preanswer_budgeted=True"}
+    if any(item not in allowed for item in extras) or len(set(extras)) != len(extras):
+        raise ValueError("Android UI overlay B1/B2 ask has unsupported optional parameters")
+    end = raw.find(b"\n                sched=", line_end)
+    if end < 0:
+        raise ValueError("Android UI overlay cannot bound the B1/B2 ask function")
+    return start, end
+
+
 def _patch_runtime(raw: bytes) -> bytes:
     if b"ui_frame_stack" in raw or b"current_turn_context" in raw:
         raise ValueError("Android UI Runtime overlay is already present")
@@ -85,13 +110,7 @@ def _patch_runtime(raw: bytes) -> bytes:
         "open consent-bound A5 UI scope before body observers",
     )
 
-    marker = b"                def ask(role,focus=None,use_peer=True):\n"
-    start = raw.find(marker)
-    if start < 0:
-        raise ValueError("Android UI overlay cannot locate the normal B1/B2 ask function")
-    end = raw.find(b"\n                sched=", start)
-    if end < 0:
-        raise ValueError("Android UI overlay cannot bound the B1/B2 ask function")
+    start, end = _ask_block_bounds(raw)
     block = raw[start:end]
     if block.count(b"valid_until=deadline") != 1 or b"ui_context=ui_context" in block:
         raise ValueError("Android UI overlay B1/B2 call is changed or ambiguous")
