@@ -27,6 +27,28 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
             self.assertEqual(set(gated["state_dict_fields"]), {"updates", "weights"})
             self.assertLessEqual(gated["max_mistake_memory_entries"], self.result["memory_capacity"])
 
+    def test_transient_consolidation_has_real_persistent_and_effective_parameter_diffs(self):
+        results = [
+            self.result["per_source"][source]["TRANSIENT_CONSOLIDATE"]
+            for source in self.result["per_source"]
+        ]
+        self.assertGreater(max(item["consolidations"] for item in results), 0)
+        self.assertGreater(max(item["persistent_parameter_l2"] for item in results), 0.0)
+        for item in results:
+            self.assertGreaterEqual(item["transient_updates"], item["consolidations"])
+            self.assertLessEqual(item["transient_parameter_l2"], item["max_transient_norm"] + 1e-8)
+            self.assertEqual(set(item["state_dict_fields"]), {"updates", "weights"})
+
+    def test_no_consolidation_control_changes_only_ephemeral_parameters(self):
+        for source, policies in self.result["per_source"].items():
+            control = policies["TRANSIENT_NO_CONSOLIDATION"]
+            self.assertEqual(control["persistent_updates"], 0)
+            self.assertEqual(control["consolidations"], 0)
+            self.assertEqual(control["parameter_diff_l2_from_initial"], 0.0)
+            self.assertGreater(control["effective_parameter_diff_l2_from_initial"], 0.0)
+            self.assertGreater(control["transient_parameter_l2"], 0.0)
+            self.assertLessEqual(control["transient_parameter_l2"], control["max_transient_norm"] + 1e-8)
+
     def test_no_update_baseline_has_zero_weight_change(self):
         for source, policies in self.result["per_source"].items():
             baseline = policies["NO_UPDATE"]
@@ -47,7 +69,13 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
     def test_retention_evaluation_is_read_only_and_restart_exact(self):
         for policy, result in self.result["retention_restart"].items():
             self.assertTrue(result["numeric_weights_equal_after_restart"])
-            self.assertTrue(result["restart_prediction_error_equal"])
+            if policy in {"EVERY_FINAL", "MEMORIZED_ERROR", "NO_UPDATE"}:
+                self.assertTrue(result["restart_prediction_error_equal"])
+            self.assertEqual(
+                result["pending_transient_delta_dropped"],
+                result["transient_parameter_l2_before_restart"] > 0.0,
+            )
+            self.assertEqual(result["transient_parameter_l2_after_restart"], 0.0)
             self.assertTrue(result["old_pattern_after_restart"]["evaluation_only"])
             self.assertEqual(result["old_pattern_after_restart"]["update_count"], result["old_pattern_after_new_task"]["update_count"])
             self.assertEqual(result["gate_memory_entries_after_restart"], 0)
