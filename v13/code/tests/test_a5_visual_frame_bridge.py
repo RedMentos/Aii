@@ -10,7 +10,6 @@ from pathlib import Path
 from PIL import Image
 
 from v13.attention import Attention
-from v13.runtime import Runtime
 from v13.store import Store
 from v13.a5_visual_frame_bridge import A5VisualFrameAdapter
 from v13.a5_ui_admission_bridge import UIObservationLease
@@ -99,7 +98,7 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
         session = self.store.new_session("A5 visual frame test")
         self.event = dict(self.store.event(session, "synthetic visual frame"))
         self.event["brain_generation_id"] = "gen_visual_frame_test"
-        self.runtime = Runtime.__new__(Runtime)
+        self.runtime = type("RuntimeStub", (), {})()
         self.runtime.home = self.home
         self.runtime.store = self.store
         self.runtime.turn_event = self.event
