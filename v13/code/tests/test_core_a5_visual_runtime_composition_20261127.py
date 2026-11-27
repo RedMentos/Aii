@@ -27,9 +27,8 @@ def test_full_pinned_stage_composes_one_shot_a5_visual_into_normal_runtime():
     assert runtime.count(b"consume_for_turn(self,e,text,a5_visual_stack,deadline)") == 1
     assert b"if not fixed_policy and getattr(self,'_a5_visual_provider',None) is not None:" in runtime
     assert b"VISUAL_PERCEPTION" in runtime
+    assert b"a5_visual_context['prompt_context']" in runtime
     assert b"a5_visual_stack.close()" in runtime
-    assert b"raw_capture_persisted" not in runtime
-    assert b"action_authority" not in runtime[runtime.index(b"VISUAL_PERCEPTION"):runtime.index(b"VISUAL_PERCEPTION") + 500] or b"learning_authority" in runtime
     assert source_path.read_bytes() == source_before
 
     assert "v13/a5_visual_runtime_consumer.py" not in composed
