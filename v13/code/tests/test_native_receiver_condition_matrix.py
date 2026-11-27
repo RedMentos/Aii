@@ -190,6 +190,28 @@ def test_rejects_wrong_ood_family_and_cross_session_control(monkeypatch):
             candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged)
 
 
+
+def test_deranged_control_rejects_family_or_session_mismatch(monkeypatch):
+    import v13.native_tokenwise_pairing as pairing
+    monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
+    deranged["task_family"] = "RELATION"
+    with pytest.raises(NativeReceiverConditionMatrixError, match="preserve task family"):
+        build_native_receiver_condition_matrix(
+            task=task, pair_record=main, baseline_packet=baseline,
+            candidate_packet=candidate, ood_control=ood, entity_control=entity,
+            deranged_control=deranged,
+        )
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
+    deranged["session_id"] = "other-session"
+    with pytest.raises(NativeReceiverConditionMatrixError, match="same session"):
+        build_native_receiver_condition_matrix(
+            task=task, pair_record=main, baseline_packet=baseline,
+            candidate_packet=candidate, ood_control=ood, entity_control=entity,
+            deranged_control=deranged,
+        )
+
+
 def test_rejects_entity_text_changes_outside_declared_span_and_bad_bos_binding(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
@@ -365,7 +387,7 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["enough_holdout"] is False
     assert result["condition_count"] == 9
-    assert result["kv_snapshot_count"] == 8
+    assert result["kv_snapshot_count"] == 9
     assert result["kv_snapshot_layer_id"] == 0
     assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
     assert result["kv_snapshot_stable"] is True
@@ -384,9 +406,9 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert "token_logprobs" not in repr(result)
     assert "target_token_ids" not in result and "source_text" not in result
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 8
+    assert status["receipt_count"] == 9
     stored = runtime._native_receiver_task_score_receipts
-    assert len(stored) == 8
+    assert len(stored) == 9
     for receipt in stored:
         snapshot = receipt["native"]["kv_snapshot"]
         assert snapshot["condition"] == receipt["condition"]
