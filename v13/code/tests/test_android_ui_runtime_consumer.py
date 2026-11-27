@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from inspect import getsource
+import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -7,8 +7,6 @@ import pytest
 
 from v13 import android_ui_runtime
 from v13.android_companion_ui_frames import UIFrameGrant
-from v13.cognition import Cognition
-from v13.runtime import Runtime
 
 
 def _refs():
@@ -245,17 +243,43 @@ def test_ui_frame_grant_scope_keeps_perception_scope_open_and_zeroizes(monkeypat
 
 
 def test_normal_runtime_turn_uses_the_same_ui_context_for_bodies_and_c3_without_persisting_it():
-    runtime_source = getsource(Runtime._turn)
-    cognition_source = getsource(Cognition.offer)
-    analyst_source = getsource(Cognition.analyst_context)
+    code_dir = Path(__file__).resolve().parents[1]
+    overlay_path = code_dir / "scripts" / "integrated_android_ui_runtime_candidate_20261127.py"
+    spec = importlib.util.spec_from_file_location("v14_android_ui_runtime_overlay_test", overlay_path)
+    assert spec is not None and spec.loader is not None
+    overlay = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(overlay)
+    sources = {
+        relative: (code_dir / relative).read_bytes()
+        for relative in ("v13/runtime.py", "v13/cognition.py", "v13/operator.py")
+    }
+    composed = overlay.apply_sources(code_dir, sources)
+    runtime_source = composed["v13/runtime.py"].decode("utf-8")
+    cognition_source = composed["v13/cognition.py"].decode("utf-8")
+    operator_source = composed["v13/operator.py"].decode("utf-8")
     assert runtime_source.index("current_turn_context(self,text") < runtime_source.index("self.cognition.offer")
+    assert "valid_until=deadline,ui_context=ui_context" in runtime_source
     assert runtime_source.index("save_context(") < runtime_source.index("append_c3_ui_context")
     assert runtime_source.index("append_c3_ui_context") < runtime_source.index("runner.generate(messages")
     assert "ui_frame_stack.close()" in runtime_source
     assert "body_ui_query(ui_context,e['event_id'],e['brain_generation_id'])" in cognition_source
     assert "ephemeral_ui_binding" in cognition_source
-    assert "ephemeral_ui_binding" in analyst_source
-
+    assert "ui_observation_binding" in cognition_source
+    assert "if cmd=='android':" in operator_source
+    assert "from .android_companion_runtime import operator_command" in operator_source
+    from v13.runtime_deploy import REQUIRED
+    assert {
+        "v13/android_ui_runtime.py",
+        "v13/android_companion_runtime.py",
+        "v13/android_companion_ui_frames.py",
+        "v13/android_companion_transport.py",
+        "v13/android_companion_ecdsa.py",
+        "v13/android_capabilities.py",
+        "v13/android_control.py",
+        "v13/android_outcomes.py",
+        "v13/a5_ui_admission_bridge.py",
+        "v13/vision_ui_frame_ingress.py",
+    } <= set(REQUIRED)
 
 
 def test_controller_open_current_turn_checks_readiness_and_closes_provider(monkeypatch, tmp_path):
