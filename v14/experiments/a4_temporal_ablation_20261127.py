@@ -18,6 +18,11 @@ from v13.audio_temporal_prediction import (
     predictive_attention_novelty,
     predictive_omission_novelty,
 )
+from v13.audio_event_expectation import (
+    ATTENTION_GAIN as EVENT_ATTENTION_GAIN,
+    AudioEventExpectationRegistry,
+    predictive_event_omission_novelty,
+)
 
 SCHEMA = "v14.a4.temporal-ablation/1"
 METRIC_KEYS = (
@@ -72,6 +77,15 @@ UNVOICED_NOISE = _cue(
     "UNVOICED_NOISE", f0=None, f0_range=None, energy=34.0, voiced_energy=None,
     voiced_fraction=0.0, confidence=0.0, activity_score=0.72, prosody=0.68,
 )
+EVENT_SILENCE = _cue(
+    "SILENCE", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
+    voiced_fraction=0.0, confidence=0.0, activity_score=0.9, prosody=0.0,
+)
+EVENT_UNCERTAIN = _cue(
+    "UNCERTAIN", f0=None, f0_range=None, energy=0.0, voiced_energy=None,
+    voiced_fraction=0.0, confidence=0.0, activity_score=0.0, prosody=0.0,
+)
+
 IMPULSIVE = _cue(
     "IMPULSIVE", f0=None, f0_range=None, energy=70.0, voiced_energy=None,
     voiced_fraction=0.0, confidence=0.0, activity_score=1.0, prosody=1.0,
@@ -279,6 +293,187 @@ def _consent_reset_control(sequence: tuple[dict, ...]) -> dict:
     }
 
 
+
+
+def _event_sequence(*, missing: bool) -> tuple[dict, ...]:
+    sequence = [
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE, VOICED,
+        EVENT_SILENCE, VOICED, EVENT_SILENCE,
+    ]
+    sequence.append(EVENT_SILENCE if missing else VOICED)
+    return tuple(sequence)
+
+
+def _event_feed(registry: AudioEventExpectationRegistry, source_id: str,
+                sequence: tuple[dict, ...]) -> list[dict]:
+    scope = _scope("event:" + source_id)
+    generation_id = "synthetic-event-generation:" + source_id
+    results = []
+    for index, cues in enumerate(sequence):
+        results.append(registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            consent_scope_id=scope,
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        ))
+    return results
+
+
+def _event_projection(results: list[dict]) -> list[dict]:
+    keys = (
+        "status", "observed_activity", "expected_events", "omissions",
+        "omission_detected", "timing_confidence_proxy", "attention_novelty",
+        "interval_samples", "state_persistence", "training_data_persisted",
+        "calibrated_probability", "learning_authority", "action_authority",
+        "truth_authority",
+    )
+    return [{key: item.get(key) for key in keys} for item in results]
+
+
+def _event_source_isolation_probe() -> bool:
+    patterns = {
+        "expected": _event_sequence(missing=False),
+        "missing": _event_sequence(missing=True),
+    }
+    isolated = {
+        source: _event_projection(_event_feed(AudioEventExpectationRegistry(), source, seq))
+        for source, seq in patterns.items()
+    }
+    shared = AudioEventExpectationRegistry()
+    interleaved = {source: [] for source in patterns}
+    for index in range(max(len(seq) for seq in patterns.values())):
+        for source, seq in patterns.items():
+            if index >= len(seq):
+                continue
+            interleaved[source].append(shared.update(
+                source_id=source,
+                generation_id="synthetic-event-generation:" + source,
+                consent_scope_id=_scope("event:" + source),
+                start_ms=index * 1000,
+                end_ms=(index + 1) * 1000,
+                cues=seq[index],
+                finality="FINAL",
+            ))
+    return {
+        source: _event_projection(results)
+        for source, results in interleaved.items()
+    } == isolated
+
+
+def _event_expectation_ablation() -> dict:
+    expected = _event_feed(
+        AudioEventExpectationRegistry(), "expected", _event_sequence(missing=False),
+    )[-1]
+    missing = _event_feed(
+        AudioEventExpectationRegistry(), "missing", _event_sequence(missing=True),
+    )[-1]
+
+    uncertain_registry = AudioEventExpectationRegistry()
+    _event_feed(uncertain_registry, "uncertain", _event_sequence(missing=True)[:8])
+    uncertain = uncertain_registry.update(
+        source_id="uncertain",
+        generation_id="synthetic-event-generation:uncertain",
+        consent_scope_id=_scope("event:uncertain"),
+        start_ms=8000,
+        end_ms=9000,
+        cues=EVENT_UNCERTAIN,
+        finality="FINAL",
+    )
+
+    provisional_registry = AudioEventExpectationRegistry()
+    _event_feed(provisional_registry, "provisional", _event_sequence(missing=True)[:8])
+    provisional = provisional_registry.update(
+        source_id="provisional",
+        generation_id="synthetic-event-generation:provisional",
+        consent_scope_id=_scope("event:provisional"),
+        start_ms=8000,
+        end_ms=9000,
+        cues=EVENT_SILENCE,
+        finality="PROVISIONAL",
+    )
+    after_provisional = provisional_registry.update(
+        source_id="provisional",
+        generation_id="synthetic-event-generation:provisional",
+        consent_scope_id=_scope("event:provisional"),
+        start_ms=8000,
+        end_ms=9000,
+        cues=EVENT_SILENCE,
+        finality="FINAL",
+    )
+
+    consent_registry = AudioEventExpectationRegistry()
+    _event_feed(consent_registry, "consent", _event_sequence(missing=True)[:8])
+    consent_reset = consent_registry.update(
+        source_id="consent",
+        generation_id="synthetic-event-generation:consent",
+        consent_scope_id="f" * 64,
+        start_ms=8000,
+        end_ms=9000,
+        cues=EVENT_SILENCE,
+        finality="FINAL",
+    )
+
+    no_context_registry = AudioEventExpectationRegistry()
+    no_context_omissions = 0
+    no_context_novelty = 0.0
+    for index, cues in enumerate(_event_sequence(missing=True)):
+        result = no_context_registry.update(
+            source_id="no-context",
+            generation_id="synthetic-event-generation:no-context",
+            consent_scope_id=_scope("event:no-context"),
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        )
+        no_context_omissions += result.get("omission_detected") is True
+        no_context_novelty = max(no_context_novelty, predictive_event_omission_novelty(result))
+        no_context_registry.reset(source_id="no-context", generation_id="synthetic-event-generation:no-context")
+
+    return {
+        "source_isolation_equal": _event_source_isolation_probe(),
+        "expected_on_time": {
+            "status": expected["status"],
+            "omission_detected": expected["omission_detected"],
+            "attention_novelty": expected["attention_novelty"],
+        },
+        "missing_event": {
+            "status": missing["status"],
+            "omission_detected": missing["omission_detected"],
+            "attention_novelty": missing["attention_novelty"],
+            "omission_novelty": predictive_event_omission_novelty(missing),
+            "timing_confidence_proxy": missing["timing_confidence_proxy"],
+            "omissions": missing["omissions"],
+        },
+        "uncertain_control": {
+            "status": uncertain["status"],
+            "omission_detected": uncertain["omission_detected"],
+            "attention_novelty": uncertain["attention_novelty"],
+        },
+        "provisional_control": {
+            "status": provisional["status"],
+            "state_retained": len(provisional_registry) == 1,
+            "final_after_provisional_detected": after_provisional["omission_detected"],
+            "final_after_provisional_novelty": after_provisional["attention_novelty"],
+        },
+        "consent_reset_control": {
+            "status": consent_reset["status"],
+            "omission_detected": consent_reset["omission_detected"],
+            "attention_novelty": consent_reset["attention_novelty"],
+            "interval_samples": consent_reset["interval_samples"],
+        },
+        "no_context_control": {
+            "omissions": no_context_omissions,
+            "max_omission_novelty": round(no_context_novelty, 8),
+            "final_stream_count": len(no_context_registry),
+        },
+        "attention_gain_cap": EVENT_ATTENTION_GAIN,
+    }
+
+
 def run_experiment() -> dict:
     per_source = {
         source_id: _summarize(_feed(AudioTemporalPredictionRegistry(), source_id, sequence))
@@ -287,6 +482,7 @@ def run_experiment() -> dict:
     source_isolation_equal, source_isolation_max_difference = _source_isolation_probe()
     default_rate_parity = _default_rate_direct_registry_parity()
     learning_rate_sweep = _learning_rate_sweep()
+    event_expectation = _event_expectation_ablation()
     no_context = _no_context_control(PATTERNS["speech-periodic"])
     provisional = _provisional_control()
     consent_reset = _consent_reset_control(PATTERNS["speech-periodic"])
@@ -302,6 +498,7 @@ def run_experiment() -> dict:
         "per_source": per_source,
         "default_rate_direct_registry_parity": default_rate_parity,
         "learning_rate_sweep": learning_rate_sweep,
+        "event_expectation": event_expectation,
         "source_isolation": {
             "interleaved_equals_isolated": source_isolation_equal,
             "max_metric_difference": source_isolation_max_difference,
