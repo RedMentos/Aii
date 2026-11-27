@@ -1799,3 +1799,17 @@ The integration failure is not an A4 test failure. Core owns the Recovery→Stag
 - Local Linux scratch checks passed, but no full local checkout (GitHub DNS unavailable). No Termux/Redmi or native microphone proof; REDMI_UNVERIFIED; NOT_RELEASED.
 - Next: finish remaining Python 3.14 comparator CI; Core refreshes recovery pins and reruns staged/integrated; QA fixes migration assertions; Perception moves to source/session-disjoint A4 omission false positives and A5 UI/PerceptPacket.
 - Research: R-175 implementation follow-up; new R-179 full-text review of Li & van Rossum (2020) synaptic caching. GPL-3.0 simulation code not reused.
+
+
+## 2026-11-27 — A5 visual frame → RAW-EYE → A4 bridge (Perception PR #2550)
+
+**Scope:** a new, lease-bound input adapter, not a replacement for the existing A5 UI metadata bridge.
+
+- Entry point: `v13/code/v13/a5_visual_frame_bridge.py::A5VisualFrameAdapter`.
+- Input gate: `validate_ui_observation` + `UIObservationLease`; only `MEDIA_PROJECTION` and `SCREEN_FRAME_AVAILABLE` are accepted. The existing validator retains API 21+ full-display and API 34+ app-window constraints.
+- Perception path: in-memory frame decode → existing `vision.features()` RAW-EYE descriptor → optional already-installed hashed-BOW student projector → A4 attention (`file_requests=False`) → bounded PerceptAdmission → ephemeral PerceptPacket/context.
+- Privacy/authority: raw frame and derived feature vector are not persisted; feature cache is lease-scoped and cleared on revoke/exit; provisional frames are ignored before decode; action and learning authority are false; teacher captions are never promoted to facts.
+- Evidence: PR #2550 exact head `7dd720a2669e46e4965c3766c6e3fcd2849bc89f`; hosted Linux Python 3.13 6/6 and Python 3.14 6/6; inherited offline bridge security 39/39. Local scratch 4/4, but no full local checkout. Evidence classification: `WIRED_SYNTHETIC`.
+- Still open: Core normal-turn callsite; Android MediaProjection provider/foreground service/consent UI; onStop/rotation/revoke integration; C3 use of the feature vector; real Redmi test. No release or Android completion claim.
+
+**Owner split:** Perception owns the frame-to-PerceptPacket adapter and RAW-EYE feature contract; Core owns normal-turn context invocation; QA/Android owns OS provider, API/lifecycle and device instrumentation. Keep the existing UI metadata-only contract unchanged.
