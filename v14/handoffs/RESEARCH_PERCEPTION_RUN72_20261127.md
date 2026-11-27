@@ -86,12 +86,12 @@ No third-party implementation, model, weights or dataset was imported. The exper
 
 ## Next concrete work
 
-1. Verify exact PR #2566 Python 3.13/3.14 CI after the workflow path change; fix only Perception-owned failures.
-2. Keep #2566 stacked until #2565/#2563 and Core's lifecycle source pins/shared staged-integration gates are resolved. Boss/Integrator owns review and integration.
-3. Core wires the signed A5 frame provider into the normal same-turn Runtime/C3 consumer while the UIObservationLease is live; QA separately validates Android consent/onStop/revoke/process-death/restart/rollback.
-4. Once a visible, consented provider and real source-disjoint UI frames exist, repeat the calibration on separate app/session/version cohorts. Consider a local conditional threshold by app/source family only if the held-out false-rejection/missed-OOD trade-off improves.
-5. No user action is required now.
-
+1. Verify that the exact #2566 Python 3.13/3.14 workflow stays green after any code change; current code/test commit is unchanged since the passing CI run.
+2. Core PR #2564 is the active normal-turn UI-frame consumer attempt, but its CI is failing in Core-owned code: run 46061246343 has two operator `:help` dispatch failures; run 46061246219 has two Android UI overlay-anchor failures; staged/integrated run 46061246173 has 16 failures / 250 passes / 10 skips / 2 errors / 48 subtests, including the same overlay mismatch and PARTIAL-vs-UPDATED migration assertions.
+3. #2564 currently bases on #2562, while Perception's current A5/A3 provider/preflight chain is #2565/#2563. Core must explicitly reconcile those branches before claiming normal same-turn A5 consumption. The Runtime audio_window receiver remains a separate open gap.
+4. QA separately validates the visible MediaProjection/AudioRecord provider's permission grant/denial, onStop/revoke, process death, restart and rollback.
+5. Once the visible consented provider exists, Perception repeats calibration on real app/session/version-disjoint UI sources. Consider local conditional calibration only if held-out false-abstention/missed-OOD trade-off improves.
+6. P0 basic chat #1904 remains OPEN; this experiment does not repair it. No user action is required now.
 
 ## Hosted CI readback — 2026-11-27 20:20Z
 
