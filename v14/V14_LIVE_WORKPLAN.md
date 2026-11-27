@@ -1929,3 +1929,23 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 - Shared staged/integrated workflow **46051827046 FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. A new failure from this PR is `unsupported lifecycle source: vision.py` in `test_context_offer_budget_20261116.py` and `test_postcommit_observer_20261116.py`. Core owns `scripts/source_lifecycle_lock_integration_candidate.py`; `PINS['vision.py']` is already present but stale (expected `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5`, actual `dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b`). Request posted on #2562 to refresh this existing pin and dependent expected hashes; no allowlist addition is needed. Other failures: Core audio-composer pin `scripts/integrated_audio_context_candidate_20261121.py` (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`), Core observer fairness pin `v13/cognition.py`, Core arithmetic pins, and QA migration assertions expecting UPDATED rather than safe PARTIAL.
 - This new Perception PR is **NOT_MERGE_READY**; do not merge until Core resolves the stale `vision.py` source pin and #2563's shared gate is green. Focused tests passing does not establish whole-system acceptance.
 - No local full Aii suite, no Android/Termux/Redmi, no updater action; REDMI_UNVERIFIED / updater UNKNOWN / NOT_RELEASED.
+
+
+## Research & Perception — Run 71 (2026-11-27): A3 OOD gate reaches A5 frame ingress
+
+**Owner:** Research & Perception.  
+**Candidate:** PR #2565, branch research-perception/v14-a3-tile-ood-abstention-20261127-run70.  
+**Exact code/test SHA:** 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b.
+
+**Implementation.** The optional A3 tile projector used by :image find now applies the same versioned descriptor threshold inside consume_projected_frame:
+- Store gate version/threshold are type/range checked before the optional projector is loaded.
+- Version 1 attaches the threshold to the loaded projector and evaluates per-tile standardized RMS-z distance.
+- Only in-domain tile rows reach the text-projector head. OOD rows have no student margin and their region IDs are explicit.
+- PerceptPacket records gate version, threshold, evaluation status and OOD regions. The global A5 context summary includes a bounded student_gate status so downstream context does not silently hide abstention.
+- Full OOD abstention does not drop RAW-EYE features or A4 attention. Old records without gate metadata remain on the previous ungated path; malformed/unknown gate metadata disables only the optional student estimate.
+
+**Exact verification.** GitHub Actions run 46057142216 PASS on Python 3.13 and 3.14; each job ran py_compile on the exact RAW-EYE adapter/consumer tests and pytest -q -s tests/test_vision_ui_frame_ingress.py tests/test_vision_ui_frame_provider_entrypoint.py. Offline bridge security run 46057142248 PASS. LOCAL_LINUX scratch helper compile PASS; partial OOD 8/16, full OOD 0/16, legacy 16/16, invalid threshold controls 5/5 PASS. Full local Aii repository pytest NOT_RUN/BLOCKED (no checkout; GitHub DNS unavailable).
+
+**Integration / risk.** The focused provider→A5→A3 consumer is WIRED_SYNTHETIC / FOCUSED_CI_PASS, not native or accepted. Core's normal Runtime/C3 consumer remains a separate dependency. Shared staged/integrated is still blocked by the stale Core lifecycle vision.py pin (current SHA-256 dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b) and existing Core/QA failures; Core/QA-owned files were not changed. No Android/Termux/Redmi, model-native, weight-learning or deployment proof.
+
+**Next:** Core refreshes its source pin and rebases its normal-turn consumer; QA owns Android lifecycle verification. Perception runs a source-disjoint comparison of RMS-z vs shrinkage covariance vs conformal-style calibration; no default change until false-abstention and missed-OOD trade-offs are measured.
