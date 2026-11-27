@@ -87,6 +87,13 @@ def png_bytes(width=32, height=24):
     return output.getvalue()
 
 
+def flat_png(value=120):
+    image = Image.new("RGB", (32, 24), (value, value, value))
+    output = io.BytesIO()
+    image.save(output, format="PNG")
+    return output.getvalue()
+
+
 class A5VisualFrameBridgeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -158,6 +165,72 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
         self.assertEqual(self.adapter._packets, {})
         self.assertEqual(self.adapter._features, {})
         self.assertEqual(self.adapter._owned_sources, set())
+
+
+    def test_raw_eye_structure_reaches_a4_as_a_separate_bounded_signal(self):
+        obs = observation()
+        with self.lease(obs) as grant:
+            result = self.adapter.ingest(png_bytes(), obs, grant, goal="find the control")
+            packet_value = result["packet"]
+            segment = packet_value["segments"][0]
+            self.assertEqual(segment["producer_component"], "A5_VISUAL")
+            self.assertEqual(segment["modality"], "visual")
+            self.assertGreater(packet_value["raw_eye_structure"], 0.0)
+            self.assertEqual(segment["raw_eye_structure"], packet_value["raw_eye_structure"])
+            row = result["a4"]["segments"][0]
+            self.assertEqual(row["raw_eye_structure"], packet_value["raw_eye_structure"])
+            self.assertGreater(row["raw_eye_contribution"], 0.0)
+            without_signal = dict(segment)
+            without_signal.pop("raw_eye_structure")
+            without_signal.pop("raw_eye_components")
+            baseline = self.runtime.attention.perceive(
+                self.event["event_id"], [without_signal], goal="find the control"
+            )["segments"][0]["score"]
+            self.assertGreater(row["score"], baseline)
+            self.assertEqual(result["a4"]["truth_authority"], 0)
+            self.assertFalse(packet_value["action_authority"])
+            self.assertFalse(packet_value["learning_authority"])
+
+    def test_uniform_visual_frame_has_zero_raw_eye_structure_after_noise_floor(self):
+        obs = observation()
+        with self.lease(obs) as grant:
+            result = self.adapter.ingest(flat_png(), obs, grant)
+            self.assertEqual(result["packet"]["raw_eye_structure"], 0.0)
+            self.assertEqual(result["a4"]["segments"][0]["raw_eye_contribution"], 0.0)
+
+    def test_a4_rejects_raw_eye_signal_without_visual_media_projection_provenance(self):
+        segment = {
+            "text": "visual frame observed",
+            "source_ref": {
+                "source_id": "src_untrusted_visual_signal", "sha256": "a" * 64,
+                "char_start": 0, "char_end": 0, "modality": "text",
+            },
+            "modality": "text",
+            "capture_method": "MEDIA_PROJECTION",
+            "producer_component": "A5_VISUAL",
+            "raw_eye_structure": 0.8,
+        }
+        with self.assertRaises(ValueError):
+            self.runtime.attention.perceive(self.event["event_id"], [segment])
+
+    def test_a4_rejects_non_finite_or_out_of_range_raw_eye_signal(self):
+        from copy import deepcopy
+        valid = {
+            "text": "visual frame observed",
+            "source_ref": {
+                "source_id": "src_visual_signal_bounds", "sha256": "b" * 64,
+                "char_start": 0, "char_end": 0, "modality": "visual",
+            },
+            "modality": "visual",
+            "capture_method": "MEDIA_PROJECTION",
+            "producer_component": "A5_VISUAL",
+            "raw_eye_structure": 0.5,
+        }
+        for invalid in (1.01, float("nan"), True):
+            segment = deepcopy(valid)
+            segment["raw_eye_structure"] = invalid
+            with self.subTest(invalid=repr(invalid)), self.assertRaises(ValueError):
+                self.runtime.attention.perceive(self.event["event_id"], [segment])
 
     def test_provisional_frame_is_ignored_before_image_decode(self):
         obs = observation(finality="PROVISIONAL")

@@ -29,6 +29,41 @@ _MAX_STUDENT_CANDIDATES = 3
 _MAX_FEATURE_VALUES = 16384
 
 
+def _bounded_unit(value):
+    """Clamp a finite feature proxy; suppress measured float noise from uniform frames."""
+    value = float(value)
+    if not math.isfinite(value):
+        raise ValueError("RAW-EYE structure component is non-finite")
+    return 0.0 if value < 1e-4 else min(1.0, max(0.0, value))
+
+
+def raw_eye_structure(feature_values):
+    """Return a non-semantic [0,1] structure proxy from the existing 4x4 RAW-EYE descriptor.
+
+    Components are handcrafted BOOT signals, not object recognition, prediction,
+    confidence or learned salience. The max keeps a single strong structural cue
+    visible without pretending the component scales are calibrated probabilities.
+    """
+    np = vision._np()
+    values = np.asarray(feature_values, dtype=np.float32).reshape(-1)
+    grid = vision.DEFAULTS.get("grid")
+    if type(grid) is not int or grid < 1:
+        raise ValueError("RAW-EYE grid configuration is invalid")
+    expected = 37 + grid * grid * 5
+    if values.size != expected or not np.isfinite(values).all():
+        raise ValueError("RAW-EYE descriptor shape or values are invalid")
+    global_values = values[:37]
+    cells = values[37:].reshape(grid * grid, 5)
+    components = {
+        "global_contrast": _bounded_unit(float(np.mean(global_values[3:6])) * 2.0),
+        "global_edge_energy": _bounded_unit(float(global_values[16]) * 4.0),
+        "cell_edge_energy": _bounded_unit(float(np.mean(cells[:, 3])) * 4.0),
+        "spatial_color": _bounded_unit(float(np.mean(np.std(cells[:, :3], axis=0))) * 2.0),
+        "luminance_range": _bounded_unit(float(np.ptp(global_values[21:37]))),
+    }
+    return max(components.values()), components
+
+
 def _student_hypotheses(runtime, feature_vector):
     """Use only an already-installed hashed-BOW student; never load a teacher."""
     state = vision.load(runtime.store)
@@ -303,6 +338,7 @@ def consume_visual_frame(
     ):
         raise ValueError("RAW-EYE feature vector is empty, oversized or non-finite")
     feature_values = feature_values.copy()
+    raw_eye_score, raw_eye_components = raw_eye_structure(feature_values)
     feature_bytes = np.asarray(feature_values, dtype="<f4").tobytes(order="C")
     feature_sha256 = hashlib.sha256(feature_bytes).hexdigest()
     feature_shape = [int(feature_values.size)]
@@ -337,6 +373,10 @@ def consume_visual_frame(
         "raw_frame_sha256": raw_frame_sha256,
         "feature_sha256": feature_sha256,
         "feature_shape": feature_shape,
+        "modality": "visual",
+        "producer_component": "A5_VISUAL",
+        "raw_eye_structure": raw_eye_score,
+        "raw_eye_components": raw_eye_components,
         "student_authority": student_status,
         "action_authority": False,
         "learning_authority": False,
@@ -378,6 +418,8 @@ def consume_visual_frame(
         raw_frame_sha256=raw_frame_sha256,
         feature_sha256=feature_sha256,
         feature_shape=feature_shape,
+        raw_eye_structure=raw_eye_score,
+        raw_eye_components=raw_eye_components,
         student_authority=student_status,
         student_candidates=list(student_candidates),
         raw_capture_persisted=False,
@@ -430,6 +472,8 @@ def consume_visual_frame(
         "admission": admission,
         "feature_count": int(feature_values.size),
         "feature_sha256": feature_sha256,
+        "raw_eye_structure": raw_eye_score,
+        "raw_eye_components": raw_eye_components,
         "student_authority": student_status,
         "raw_capture_persisted": False,
         "action_authority": False,
