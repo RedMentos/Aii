@@ -51,6 +51,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :rules [add <Regel>|remove <Index> [weitere Indizes]] / :permissions / :age [freeze on|off|lower <n>|structural lock|unlock] / :stage cap 0..5
 :rules fixed "exakte Frage" "exakte Antwort" (Diff, dann :approve ID; kein semantischer Abgleich)
 :teacher on|off|compare / :teacher use B1_DETAIL|B2_GIST|C3_LANGUAGE
+:voice [status|on|off|speak|reset --confirm] / :speak (optional Termux system-TTS fallback; OFF by default; explicit local command only)
 :dream / :probe [jef-modes|step12|body-state|sustained]
 :sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler (Replay/Sleep A-B-C, WP-S7 Tagesdigest + Offline-Rechenzeit, Event-Scheduler)
 :growth [status|eval [run [de] c3|b1|b2|v13 | curve <Solver> <Achse> | compare en-de [Solver]]|teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]|trainer [auto|lora|sparse|none [Master-Ordner] | cfg k=v.. | cfg reset]|goals|goal <Titel>|consolidate|approve <Batch>|reject <Batch>|tools|enable <Werkzeug>|calc <Ausdruck>] (WP-AG1..AG12)
@@ -62,7 +63,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :homeostasis [status|run|shadow|active] (WP-U2 Homöostase: Drift-/Sättigungs-Gate + langsame Pfad-Gains; aktiv nur durch Nutzer)
 :attention [status|edge <Kante>|shadow|active] (WP-N5 Aufmerksamkeit, thalamische Gain, A4)
 :ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)
-:android [status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|stop] (separate Android companion; default OFF; per-action consent)\n:callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
+:callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :regeln (deine Regeln + was ich ohne Nachfrage tun würde) / :regel <Text> (Verbot oder „frag vorher“ speichern) / :regel aus|verbot|fragen|nein <Nr>
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
 :self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
@@ -95,6 +96,10 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd in {'voice','speak'}:
+            from .speech_output import operator_command
+            if cmd=='speak' and args:raise ValueError(':speak')
+            return operator_command(r,args if cmd=='voice' else ['speak'])
         if cmd=='jefsource':
             from .jef_f1f5_operator import operator_command
             return operator_command(r,args)
@@ -150,9 +155,6 @@ class Operator:
             return operator_command(r,args)
         if cmd=='callosum':
             from .callosum import operator_command
-            return operator_command(r,args)
-        if cmd=='android':
-            from .android_companion_runtime import operator_command
             return operator_command(r,args)
         if cmd=='gist':
             from .gist import operator_command

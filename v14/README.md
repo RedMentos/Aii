@@ -1,36 +1,34 @@
-**Team-Betrieb und proaktives Nutzer-Update:** [Fünf stündliche Fachagenten als ein Entwicklungsteam](V14_TEAM_OPERATING_SYSTEM.md) · [gemeinsames Prioritäten-/Testboard](V14_WORK_BOARD.json) · [nächste verifizierte Nutzeraktion und mögliche Modell-Vorschläge](V14_USER_NEXT_ACTION.md). Bevor neue Termux-Schritte verlangt werden, selbst auf GitHub pushen, in der Integrationskette testen und den vorhandenen Updatepfad prüfen; **GitHub-Push ist keine bestätigte Installation auf Android**. Modellwechsel werden erst nach echten Tests und separater Zustimmung vorgeschlagen.
+# V14 live project index
 
-# V14 / Inquisition-JEPA — LIVE, 20.11.2026
+This folder is the active V14 development record for the complete V13 / Inquisition-JEPA product. V14 reorganizes and extends the architecture; it does **not** remove historical V13 functions.
 
-**Ein einziger aktiv gepflegter Canon, plus unveränderliche Sicherungen.** Künftige Agenten bearbeiten den bestehenden V14-Master **direkt** nach überprüfter Sicherung und synchronisieren Lesefassung, laufenden Arbeitsplan und Forschungsjournal. Die ursprünglichen V13-Quellen in Teil III bleiben als wortgetreues Archiv erhalten.
+## Read before each development run
 
-- **[Aktiver V14-Master inklusive V13-Canon und aller Anhänge](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)** – Source of Truth für die ganze Architektur, Nutzerentscheidungen, laufende Forschungs-/Entwicklungsregeln.
-- **[Aktueller V14-Arbeitsplan](V14_LIVE_WORKPLAN.md)** – gemeinsam bearbeitete Implementierungsfronten, Integrationsbelege, Prioritäten, Definition of Done und Backupablauf.
-- **[V14-Forschungsjournal](V14_RESEARCH_LEDGER.md)** – laufende aktuelle Paper-/OSS-Recherche, prüfbare Erkenntnisse, konkrete Hypothesen, Tests, Entscheidungen und Wiederauffindbarkeit.
-- **[Canon-Coverage-Index](V14_CANON_COVERAGE_INDEX.md)** – 1.255 historische Überschriften inventarisiert; funktionale Detailpflichten noch semantisch zuzuordnen.
-- **[Lesbare V14-Architektur](V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md)** – synchronisierte Fassung ohne unveränderte Historienanhänge.
-- **[Unveränderte Sicherung vor den Live-Korrekturen](backups/V14_MASTER_PRE_LIVE_CORRECTIONS_20261120.md)** – vollständiger alter Master, verifiziert bytegleich.
+1. [Full V14 master and unchanged historical V13 Canon](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
+2. [Executable live workplan](V14_LIVE_WORKPLAN.md)
+3. [Team ownership and operating system](V14_TEAM_OPERATING_SYSTEM.md)
+4. [Machine-readable work board](V14_WORK_BOARD.json)
+5. [Next user action and verified device boundary](V14_USER_NEXT_ACTION.md)
+6. [Research and OSS/license ledger](V14_RESEARCH_LEDGER.md)
+7. [Whole-Canon coverage index](V14_CANON_COVERAGE_INDEX.md)
+8. Root [AGENTS.md](../AGENTS.md) and the active code-area AGENTS files.
 
-**Neueste Nutzerkorrektur:** verteilte Kognition/Integration (kein zentrales Bewusstseinsorgan, kein starres A→B→C), echte organübergreifende **Latent-Space-Kopplung** statt Nachrichtensimulation, vielschichtiges aktives fortlaufendes Lernen ohne dauerhaft unbewegliche neuronale Kernmodelle, und proaktive aktuelle Forschung mit begründeter Adaptionsmöglichkeit. **Keine funktionale V13-Anforderung wurde durch diese Aktualisierung gestrichen.**
+## Source-of-truth rules
 
-**Ehrlicher technischer Status:** V14 ist ein lebender **Architektur- und Implementierungsauftrag**, nicht der Beweis einer bereits fertigen Android-App, zwei echten nativen MoE-Bodies, systemweiter latenter Receiverkopplung oder numerisch verifizierter kontinuierlicher Gewichtsänderung. Reale Fortschritte nur über messbare End-to-End-Pfade; bekannte STEP2/B3/Redmi-FAILs bleiben offen bis zur Gegenprüfung. Alle Agenten lesen zuerst [AGENTS.md](../AGENTS.md).
+- The master contains the current architecture and the complete historical V13 Canon in Part III. Do not silently shorten, replace or reinterpret an obligation.
+- Workplan, research ledger, board and next-action file are live operational records; update them only with verified facts and preserve older evidence as dated history.
+- Before a material master change, create and read back an immutable backup under `backups/`. Do not rewrite the historical Part III source bytes.
+- Use the newest verified release-development HEAD and inspect open PRs, branch owners, CI and handoffs before editing. The old branch name is a continuity hint, not a permanent pin.
+- Keep agent ownership disjoint, use reviewable branches, never force-push, and do not call a draft PR integrated functionality.
 
----
+## Evidence vocabulary
 
-**Neue V14-Architektur & Forschungs-/Implementierungsplan:** [Lesefassung ohne historische Anhänge](V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md)
+`SPECIFIED`, `CODE_PRESENT`, `CONNECTED`, `WIRED_SYNTHETIC`, `LOCAL_LINUX`, `NATIVE_LINUX`, `ANDROID_ARM64_CROSS_COMPILE`, `REDMI_NATIVE`, `WEIGHTS_UPDATED`, `HELDOUT_UTILITY_PASS`, `RELEASED` are distinct. A Linux build or synthetic Runtime test is not a Redmi test. A native input-embedding probe is not a trained latent channel. A GitHub merge is not an installed-device update.
 
-**V14 Vollarchiv:** [Master mit komplettem V13-Canon, Roadmaps und Nutzerentscheidungen](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
+## Core product constraints
 
-**Zusätzliche Drive-Sichtung, alte Handovers und Age-0/JEPA-Review:** [V14 ergänzende Primärquellen und Lern-/Lizenzforschung](V14_ADDITIONAL_DRIVE_AND_LEARNING_RESEARCH_20261119.md).
-
-Historischer Stand: **V14 design baseline 2026-11-19**, nicht als bereits laufende/neue App missverstehen. Der laufende V13-Code bleibt unverändert, bis eine real geprüfte V14-Integration ihn kontrolliert ersetzt.
-
-Die Masterdatei hat drei Bereiche:
-
-1. **TEIL I:** vollständig neu geschriebene V14-Gesamtarchitektur (A/B/C, zwei sparse MoE-Hälften, Enlightened Space/Latent, World/Self/Memory, JEPA, Omission/Fehler, Distillation, Sleep, Tooling, Test-Age, Sicherheit und spätere echte Selbstprogrammierung).
-2. **TEIL II:** neue Recherche, OSS-/Lizenzmatrix, Integrations- und Agentenplan, Messkriterien.
-3. **TEIL III:** unverändert eingebetteter Canon v10.16.1, komplette akkumulierte GitHub-Roadmap, alle drei Drive-Roadmaps, neuere Nutzerentscheidungen, Selbstoptimierung, Agenten-Playbook und originale Komponentenverträge. Quellen-Bindungen und Blob-IDs stehen über jedem Anhang.
-
-Originales V13 bleibt in den bisherigen Pfaden erhalten. Die 418-MB-ZIP-Historie mit potentiell privaten Chats wird aus Privacy-Gründen **nicht** öffentlich kopiert; die projektbezogene Drive-Sichtung ist eine gesonderte Quelle. Widersprüche und unbestätigte alte Claims dürfen nicht als nachträglich bewiesene V14-Funktionen dargestellt werden.
-
-Nächste Implementierung soll nach dem gesamten V14-Plan, **reuse-first und build-first**, erfolgen. Schnelles funktionierendes End-to-End-Gerätesystem, echte Modellkommunikation und echtes Online-Gewichtslernen vor PR-Zahl-Optimierung. Keine Sicherheits-/Consent-/Lizenzgate-Umgehung.
+- Preserve the distributed A/B/C, latent, World/Self/Memory, JEPA, Sleep/Replay, voice, tool and Android-control end goals.
+- Keep fastpaths for obvious requests while allowing deeper organ collaboration for nontrivial requests.
+- Keep official Age separate from lab test rights and compute/resource limits.
+- External Android effects require OS-granted capabilities, explicit user consent, audit, cancel/stop and rollback where possible.
+- Never change installed models, weights, permissions or user data without the required explicit approval.

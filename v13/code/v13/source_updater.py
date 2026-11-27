@@ -212,31 +212,92 @@ def _ci_runs(commit):
     return runs
 
 
+def _ci_run_order(run):
+    """Return a strict order key for a GitHub Actions run, or None if incomplete.
+
+    GitHub run_number is monotonic within a workflow; run_attempt distinguishes
+    retries of the same run. workflow_id separates a deleted/recreated workflow
+    that happens to keep the same display name and path.
+    """
+    workflow_id = run.get("workflow_id")
+    run_number = run.get("run_number")
+    run_attempt = run.get("run_attempt")
+    run_id = run.get("id")
+    created_at = run.get("created_at")
+    updated_at = run.get("updated_at") or created_at
+    if (type(workflow_id) is not int or workflow_id < 1
+            or type(run_number) is not int or run_number < 1
+            or type(run_attempt) is not int or run_attempt < 1
+            or type(run_id) is not int or run_id < 1
+            or not isinstance(created_at, str) or not created_at
+            or not isinstance(updated_at, str) or not updated_at):
+        return None
+    return (run_number, run_attempt, updated_at, created_at, run_id)
+
+
 def ci_passed(commit, *, scope="runtime"):
-    """Separate gates: UI/bridge tests for dashboard; integrated tests for runtime."""
-    if scope not in REQUIRED_CI:
+    """Require the newest eligible exact-commit run for every scoped workflow.
+
+    An older success must never mask a newer failed, queued, action_required or
+    in-progress run. Pull-request runs remain excluded: the phone release gate
+    accepts only source-commit push/workflow_dispatch runs.
+    """
+    if scope not in REQUIRED_CI or not isinstance(commit, str) or not SHA.fullmatch(commit):
         return False
     try:
         runs = _ci_runs(commit)
-    except (OSError, ValueError, subprocess.TimeoutExpired):
+    except (OSError, ValueError, UpdateDenied, subprocess.TimeoutExpired):
         return False
-    successful = set()
+
+    # First choose the newest run within each concrete workflow identity.
+    # A workflow may be deleted/recreated with the same name/path but a new ID.
+    latest_generation = {}
+    invalid_order = set()
     for run in runs:
         if not isinstance(run, dict):
             continue
-        if (run.get("head_sha") != commit or run.get("status") != "completed"
-            or run.get("conclusion") != "success"
-            # PR checkouts normally test a synthetic merge, not the source
-            # commit the phone installs. Release push/dispatch runs test it.
-            or run.get("event") not in ("push", "workflow_dispatch")
-            or not isinstance(run.get("head_repository"), dict)
-            or run["head_repository"].get("full_name") != "RedMentos/Aii"):
+        if (run.get("head_sha") != commit
+                or run.get("event") not in ("push", "workflow_dispatch")
+                or not isinstance(run.get("head_repository"), dict)
+                or run["head_repository"].get("full_name") != "RedMentos/Aii"):
             continue
         name = run.get("name")
-        if (name not in CI_WORKFLOW_PATHS or
-                run.get("path", "").split("@",1)[0] != CI_WORKFLOW_PATHS[name]):
+        path = run.get("path", "").split("@", 1)[0]
+        if name not in CI_WORKFLOW_PATHS or path != CI_WORKFLOW_PATHS[name]:
             continue
-        successful.add(name)
+        identity = (name, path, run.get("workflow_id"))
+        order = _ci_run_order(run)
+        if order is None:
+            # We cannot prove whether a malformed matching run is older/newer.
+            # Fail closed for this logical workflow instead of trusting a
+            # previously observed success.
+            invalid_order.add((name, path))
+            continue
+        current = latest_generation.get(identity)
+        if current is None or order > current[0]:
+            latest_generation[identity] = (order, run)
+
+    # If multiple workflow IDs share a name/path, use the most recently
+    # created generation. Within that generation, run_number/attempt already
+    # selected its latest run.
+    latest_by_name = {}
+    for (name, path, _workflow_id), (_order, run) in latest_generation.items():
+        generation_order = (
+            run["created_at"], run["run_number"], run["run_attempt"],
+            run.get("updated_at") or run["created_at"], run["id"],
+        )
+        logical = (name, path)
+        current = latest_by_name.get(logical)
+        if current is None or generation_order > current[0]:
+            latest_by_name[logical] = (generation_order, run)
+
+    successful = set()
+    for logical, (_order, run) in latest_by_name.items():
+        name, path = logical
+        if logical in invalid_order:
+            continue
+        if run.get("status") == "completed" and run.get("conclusion") == "success":
+            successful.add(name)
     return set(REQUIRED_CI[scope]).issubset(successful)
 
 

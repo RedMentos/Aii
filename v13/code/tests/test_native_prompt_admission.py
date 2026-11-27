@@ -192,14 +192,71 @@ class NativePrefillAdmissionTests(unittest.TestCase):
         self.assertIsNone(admission.reduce_once(messages,"B1_DETAIL",cfg))
         self.assertIn("UNVERIFIED",messages[1]["content"])
 
-    def test_long_deadline_keeps_all_context_when_native_window_accepts_it(self):
+    def test_c3_long_deadline_keeps_context_when_under_prefill_ceiling(self):
         r=fake_runner()
         system=stable(r.cfg)+"\n"+prompt(r.cfg,"task_context")+json.dumps({"detail":"x"*350})
         messages=[{"role":"system","content":system},{"role":"user","content":"Hello."}]
         out,_,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
         self.assertIn("detail",out)
         self.assertFalse(removed)
-        self.assertIsNone(r._prompt_admission["target_tokens"])
+        self.assertEqual(r._prompt_admission["target_tokens"],520)
+
+    def test_c3_long_deadline_preserves_complete_history_when_only_history_exceeds_soft_cap(self):
+        r=fake_runner()
+        old_question="Earlier user question: "+"q"*1800
+        old_answer="Earlier assistant answer: "+"a"*1800
+        current="Continue from the earlier discussion."
+        messages=[
+            {"role":"system","content":stable(r.cfg)},
+            {"role":"user","content":old_question},
+            {"role":"assistant","content":old_answer},
+            {"role":"user","content":current},
+        ]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
+        self.assertIn(old_question,rendered)
+        self.assertIn(old_answer,rendered)
+        self.assertIn(current,rendered)
+        self.assertEqual(r._prompt_admission["target_tokens"],520)
+        self.assertEqual(r._prompt_admission["status"],"PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET")
+        self.assertEqual(r._prompt_admission["removed_layers"],[])
+        self.assertFalse(removed)
+
+    def test_c3_short_deadline_may_remove_only_a_complete_old_turn(self):
+        r=fake_runner()
+        old_question="Earlier user question: "+"q"*500
+        old_answer="Earlier assistant answer: "+"a"*500
+        current="What should happen next?"
+        messages=[
+            {"role":"system","content":stable(r.cfg)},
+            {"role":"user","content":old_question},
+            {"role":"assistant","content":old_answer},
+            {"role":"user","content":current},
+        ]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+30,48)
+        self.assertNotIn(old_question,rendered)
+        self.assertNotIn(old_answer,rendered)
+        self.assertIn(current,rendered)
+        self.assertIn("OLD_NATIVE_HISTORY",r._prompt_admission["removed_layers"])
+        self.assertLessEqual(n,r._prompt_admission["target_tokens"])
+        self.assertTrue(removed)
+
+    def test_c3_long_deadline_reduces_only_removable_layer_before_prefill(self):
+        r=fake_runner()
+        source="What is 120 minus 20?"
+        approved=[{"role":"B1_DETAIL","quote":"The exact budget is 120 euros.","source_bound":True}]
+        system=(stable(r.cfg)+"\n"+prompt(r.cfg,"hypotheses")+json.dumps(approved)+
+                "\n"+prompt(r.cfg,"task_context")+json.dumps({"debug_control_state":"x"*5000}))
+        messages=[{"role":"system","content":system},{"role":"user","content":source}]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
+        self.assertIn(source,rendered)
+        self.assertIn("The exact budget is 120 euros.",rendered)
+        self.assertIn(prompt(r.cfg,"conduct"),rendered)
+        self.assertNotIn("debug_control_state",rendered)
+        self.assertIn("C3_LAYER_TASK_CONTEXT",r._prompt_admission["removed_layers"])
+        self.assertLessEqual(n,520)
+        self.assertTrue(removed)
+        self.assertEqual(r._prompt_admission["status"],"ADMITTED")
+        self.assertFalse(r._prompt_admission["source_text_rewritten"])
 
     def test_c3_never_edits_user_lookalike_heading_or_unknown_system_rules(self):
         r=fake_runner()

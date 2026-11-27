@@ -17,7 +17,7 @@ PINS = {
     'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e'},
     'v13/attention.py': {'0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739'},
     'v13/deliberation.py': {'5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c'},
-    'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc'},
+    'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc', 'abcda6f0e287122e19cffd2264a1c1fcc8f2eea4b811e731ceb24195101e2325', '1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502'},
     'v13/workspace_learn.py': {'b6e3d2149fe7b7cc461c0edadd1a95b65b99b0d14e39da29206f7343fea74524'},
 }
 
@@ -62,7 +62,7 @@ def apply_sources(code_dir, sources):
         if raw is None:
             raw = path.read_bytes()
         if hashlib.sha256(raw).hexdigest() not in allowed:
-            raise ValueError('controller guard source changed: ' + name)
+            raise ValueError('controller guard source changed: ' + name + ' actual=' + hashlib.sha256(raw).hexdigest())
         checked[name] = raw
 
     runtime = checked['v13/runtime.py']
@@ -183,12 +183,13 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '9fbcb8085cc21ee40d478373ca8e1cff55d72a4f8dbe5837fac4a7d034b7beb1'
-    local_pin = '44a8882c1c63958b6848ec1497a52e47305286d3618d66a4c68adf88ddc4cfad'
+    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
+    local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
-        if hashlib.sha256(result[name]).hexdigest() != expected:
-            raise ValueError('semantic dependency changed: ' + name)
+        actual = hashlib.sha256(result[name]).hexdigest()
+        if actual != expected:
+            raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
     old_action_pin, = PINS['v13/actionlearn.py']

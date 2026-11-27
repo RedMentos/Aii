@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/lab_age.py'
+      - 'v13/code/v13/agi/goals.py'
+      - 'v13/code/v13/scheduler.py'
+      - 'v13/code/tests/test_goal_wake_atomicity_20261121.py'
       - 'v13/code/v13/runtime_deploy.py'
       - 'v13/code/scripts/stage_integrated_candidate.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
@@ -38,7 +41,7 @@ jobs:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
-          python -m py_compile v13/code/v13/lab_age.py v13/code/v13/operator.py v13/code/v13/ui.py v13/code/v13/mobile_dashboard.py v13/code/tests/test_lab_age.py v13/code/tests/test_lab_age_controls_20261118.py
+          python -m py_compile v13/code/v13/lab_age.py v13/code/v13/agi/goals.py v13/code/v13/scheduler.py v13/code/v13/operator.py v13/code/v13/ui.py v13/code/v13/mobile_dashboard.py v13/code/tests/test_lab_age.py v13/code/tests/test_lab_age_controls_20261118.py v13/code/tests/test_goal_wake_atomicity_20261121.py
           python -m unittest discover -s v13/code/tests -p 'test_lab_age.py' -v
           python -m unittest discover -s v13/code/tests -p 'test_lab_age_controls_20261118.py' -v
           python -m unittest discover -s v13/code/tests -p 'test_webview_auto_update_button.py' -v

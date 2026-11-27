@@ -11,7 +11,7 @@ from pathlib import Path
 # Git blob identifiers of reviewed inputs, verified independent of location.
 INPUT_BLOBS = {
     "v13/age.py": "964048c47ddb5a8f11ea6706d72a1f37ab41f5d4",
-    "v13/effort.py": "e40e74aa279e96fbf25f6a72aac29510d779be58",
+    "v13/effort.py": "6e85e378cf0493699d43a8c2790cd2a97d4589da",
     "v13/executive.py": "057dda1e705053047489516fc9ab10581018f5a4",
     "v13/lab_age_runtime.py": "ab72d5efcb6405323da975bd7fab707ddc3e8b7c",
     "v13/lab_age.py": "e94d081538bc47268b5b536ddcecf29b98877ee2",
@@ -63,6 +63,17 @@ def _replace(raw, old, new, name):
     return raw.replace(old, new, 1)
 
 
+def _replace_or_verify(raw, old, new, name):
+    """Patch the original anchor or verify an already-patched exact value."""
+    old_count = raw.count(old)
+    new_count = raw.count(new)
+    if old_count == 1 and new_count == 0:
+        return raw.replace(old, new, 1)
+    if old_count == 0 and new_count == 1:
+        return raw
+    raise ValueError("Lab Age staged source anchor missing/repeated: " + name)
+
+
 def _source(code_dir, relative):
     target=code_dir / relative
     if target.is_symlink() or not target.is_file():
@@ -86,8 +97,8 @@ def apply_sources(code_dir, sources):
     effort=out.get("v13/effort.py",original["v13/effort.py"])
     if effort!=original["v13/effort.py"]:
         raise ValueError("Lab Age requires reviewed original effort.py")
-    effort=_replace(effort,b"'stage':control.ceiling('system')",
-                    b"'stage':control.system_stage()", "official stage in effort")
+    effort=_replace_or_verify(effort,b"'stage':control.ceiling('system')",
+                              b"'stage':control.system_stage()", "official stage in effort")
     effort=_replace(effort,b"'LAB_COMPUTE_ONLY_NO_NEW_RIGHTS'",
                     b"'LAB_FEATURE_GATE_TEST_WITH_INDEPENDENT_LEARNING_GUARD'", "effort lab status")
     out["v13/effort.py"]=effort

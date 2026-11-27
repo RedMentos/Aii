@@ -1,0 +1,27 @@
+{
+  "schema": "v14.model-candidates/1",
+  "checked_at": "2026-11-21",
+  "candidates": [
+    {
+      "id": "lfm25-230m-c3",
+      "role": "C3_LANGUAGE",
+      "model_id": "LiquidAI/LFM2.5-230M-GGUF",
+      "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/blob/cdf97bd8205908758f44aec508d68ac1aef98f5c/LICENSE",
+      "license_evidence": "Official model page and LICENSE checked 2026-11-21; Section 5 conditions Commercial Use on not exceeding its defined threshold (annual revenue USD 10 million or more) and does not license Commercial Use by a Legal Entity that exceeds that threshold; it states a qualified non-profit exception for non-commercial/research purposes. Snapshot provenance is separately pinned by license_snapshot_source and license_snapshot_sha256; byte identity with the model-repository copy is not asserted.",
+      "quant_format": "QAD_Q4_0",
+      "file": {
+        "local_name": "LFM2.5-230M-QAD_Q4_0.gguf",
+        "size": 149081056,
+        "sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292"
+      },
+      "selection_status": "CANDIDATE_ONLY_NO_NEW_DOWNLOAD_OR_COMPARISON; HISTORICAL_REDMI_PHONE_RECEIPT_2026-11-13_REPORTED_WRONG_2_PLUS_2",
+      "known_caveat": "V13 issue #1904 records a historical Redmi run with C3 230M returning 2 for 2+2; not suitable as a trusted reasoning replacement without a new, broader quality gate.",
+      "license_snapshot_path": "v14/experiments/licenses/LFM-OPEN-LICENSE-v1.0.txt",
+      "license_snapshot_sha256": "61d7e939a05911c765b7e98ffaa1ab5ca6c0174a65350766c25cb10197d19fc8",
+      "license_snapshot_source": "https://github.com/fetchwiki/LiquidAI-LFM2-1.2B/blob/60dc8602e06e43aec0e5cd5bb54fe7a7fedcdc81/LICENSE",
+      "license_snapshot_note": "Preserved public LFM Open License v1.0 snapshot; text cross-checked against Liquid AI's official license page. Byte-for-byte identity with the candidate repository file is not asserted."
+    }
+  ]
+}

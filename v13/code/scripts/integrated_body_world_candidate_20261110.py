@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-WORLD_BUILDER_SHA = '44c40338081e912fa7d6cda34ba6ff44abd37b55800818ae62ed0647b2247093'
+WORLD_BUILDER_SHA = '22b33ce64ec90171f7b870ddd4fcf32afac6cb79f4a53d494825601d1f8483fd'
 BODY_BUILDER_SHA = '00a02f3ad8e7f87d3f3e892c71046190e63773e51a4830a519200d20ac5eff47'
 
 

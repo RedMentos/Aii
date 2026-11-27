@@ -304,7 +304,8 @@ class LlamaRunner:
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
-            target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
+            remaining=deadline-time.monotonic()
+            target=admission.soft_limit(self.role,self.cfg,remaining)
             if initial_tokens is None:initial_tokens=count
             fits_context=count+reserve+16<=self.cfg["context_tokens"]
             fits_clock=target is None or count<=target
@@ -318,7 +319,10 @@ class LlamaRunner:
                     self._prompt_admission['offer_template_witness'] = inspect(
                         work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                 return p,count,truncated
-            candidate=admission.reduce_once(work,self.role,self.cfg)
+            candidate=admission.reduce_once(
+                work,self.role,self.cfg,
+                allow_old_turn=(self.role!="C3_LANGUAGE" or remaining<55),
+            )
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
                 continue
@@ -490,14 +494,32 @@ class LlamaRunner:
                 from .focal import token_confidence
                 self.last_metrics['token_confidence']=token_confidence(lp_pairs,confidence_field)  # AG12 solver: field 'answer'
     def tap(self,text,cancel,deadline,max_tokens=64):
-        """Pinned LFM2 result_norm, after final RMSNorm, before output projection.
+        """Pinned role/model-specific final-state tap; read-only, never live KV injection.
 
-        A separate read-only prefill, not a tap of another runner's live KV.
-        Native token IDs and unnormalized vectors are returned without pooling.
+        RunnerPool binds the model-specific tap ID and dimension. Direct B2
+        fallback uses the canonical two-body Qwen tap; shared-body controls
+        must pass their explicit LFM2 binding from RunnerPool.
         """
         if self.purpose!='tap':raise Unavailable('Separaten Tap-Modus anfordern')
+        defaults={
+            'B1_DETAIL':('lfm2.result_norm.final.v1',2048),
+            'B2_GIST':('qwen35.result_norm.final.v1',1024),
+            'C3_LANGUAGE':('lfm2.result_norm.final.v1',1024),
+        }
+        allowed={
+            'B1_DETAIL':{('lfm2.result_norm.final.v1',2048)},
+            'B2_GIST':{('qwen35.result_norm.final.v1',1024),('lfm2.result_norm.final.v1',2048)},
+            'C3_LANGUAGE':{('lfm2.result_norm.final.v1',1024)},
+        }
+        if self.role not in defaults:raise Unavailable('Kein validierter Tap für Rolle '+str(self.role))
+        default_id,default_dim=defaults[self.role]
+        tap_id=getattr(self,'tap_id',None)
+        dimension=getattr(self,'tap_dim',None)
+        if tap_id is None:tap_id=default_id
+        if dimension is None:dimension=default_dim
+        if (tap_id,dimension) not in allowed[self.role]:
+            raise Unavailable('Tap-Modellidentität/Dimension stimmt nicht mit der Rollenbindung überein')
         ceiling=512 if self.role=='C3_LANGUAGE' else 64
-        dimension=getattr(self,'tap_dim',None) or (1024 if self.role=='C3_LANGUAGE' else 2048)
         if not 1<=max_tokens<=ceiling:raise ValueError('Tap-Budget 1..'+str(ceiling)+' native Tokens')
         started=time.monotonic();done=threading.Event()
         def watchdog():
@@ -517,9 +539,9 @@ class LlamaRunner:
             if any(sum(x*x for x in v)<=1e-20 for v in vectors):raise Unavailable('Native Tap lieferte Null-Vektor')
             self.last_metrics={'role':self.role,'operation':'PREFILL_TAP','duration_s':time.monotonic()-started,'prompt_tokens':len(tokens),'embedding_dim':dimension,
                                'memory':process_memory(self.proc.pid),'CAN_LATENT_TAP':True,'CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,
-                               'tap_id':'lfm2.result_norm.final.v1','pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
+                               'tap_id':tap_id,'pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
                                'physical_batch_tokens':512 if self.role=='C3_LANGUAGE' else 128,'whole_sequence_prefill':True}
-            return {'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
+            return {'tap_id':tap_id,'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
         except BaseException:
             self.unload();check(cancel,deadline);raise
         finally:done.set();monitor.join(.2)
@@ -603,6 +625,19 @@ class CausalStreamRunner:
                 ids=self.template._json('POST','/tokenize',{'content':prompt,'add_special':True},deadline)['tokens']
                 if not isinstance(ids,list) or not 1<=len(ids)<=512:
                     raise Limits('Same-causal prompt exceeds512 native tokens; shorten context or use server decode mode')
+                from .native_offer_prompt_receipt import inspect as inspect_native_offer_prompt
+                from .prompts import text as prompt_text
+                try:
+                    offer_witness=inspect_native_offer_prompt(
+                        messages,prompt,prompt_text(self.cfg,'hypotheses'))
+                except Exception as exc:
+                    offer_witness={'status':'RECEIPT_UNAVAILABLE','reason':type(exc).__name__,
+                        'offers':[],'native_semantic_use_proven':False}
+                self.last_metrics['native_offer_prompt_receipt']={
+                    **offer_witness,'native_completion_http_200':False,
+                    'native_template_submitted':False,'native_prompt_prefill_verified':False,
+                    'native_stream_completed':False,
+                    'native_attention_or_semantic_use_proven':False}
                 context={'messages':messages,'prompt':prompt,'token_ids':ids,'history_trimmed':False}
             finally:
                 self.last_metrics['template_release']=self.template.unload();self.template=None
@@ -616,6 +651,27 @@ class CausalStreamRunner:
             prefill_started=time.monotonic()
             with self.session as active:
                 observed=active.pause()
+                offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+                native_binding=observed.get('native_context_binding') if type(observed) is dict else None
+                prefill_verified=bool(
+                    type(offer_receipt) is dict
+                    and offer_receipt.get('status')=='RENDERED_WITH_QUOTES'
+                    and type(native_binding) is dict
+                    and native_binding.get('scope')=='EXACT_SAME_CAUSAL_PREFILL'
+                    and native_binding.get('live_generation_kv_tap') is True
+                    and native_binding.get('context_source_sha256')==getattr(active,'context_sha',None)
+                    and type(native_binding.get('pid')) is int and native_binding.get('pid')>0
+                    and type(native_binding.get('handle_id')) is str
+                    and len(native_binding.get('handle_id'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('handle_id'))
+                    and type(native_binding.get('features_sha256')) is str
+                    and len(native_binding.get('features_sha256'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('features_sha256'))
+                    and observed.get('native_prompt_token_ids')==ids
+                    and observed.get('prompt_sha256')==digest(prompt))
+                if type(offer_receipt) is dict:
+                    offer_receipt.update(native_prompt_prefill_verified=prefill_verified,
+                        native_template_submitted=prefill_verified)
                 atomic_write(out/'observed.json',dumps(observed))
                 self.last_metrics['observed_sha256']=digest(dumps(observed))
                 self.last_metrics.update(prompt_tokens=len(ids),history_trimmed=False,
@@ -638,6 +694,9 @@ class CausalStreamRunner:
                             yield event['text']
                     elif event['event']=='COMPLETE':complete=event
             if complete is None:raise Unavailable('Same-causal stream ended without verified completion')
+            offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+            if type(offer_receipt) is dict:
+                offer_receipt['native_stream_completed']=True
             raw=complete['raw_result']
             self.last_metrics.update(native_token_ids=complete['native_token_ids'],
                 stop_reason=raw['stop_reason'],resume_prefill_calls=raw['resume_prefill_calls'],

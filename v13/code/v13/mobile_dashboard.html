@@ -127,8 +127,12 @@ summary{cursor:pointer;font-weight:650}
    <div class="status-pills" id="live-native-roles" aria-live="polite">@@LIVE_ROLE_PILLS@@</div>
    <div class="actions" style="margin-top:15px">@@MODEL_BUTTONS@@</div>
    <div style="margin-top:16px">
-    <strong>Letzter tatsächlicher Gehirndurchlauf</strong>
+    <strong>Letzter abgeschlossener Durchlauf (alle Chats)</strong>
     <p class="muted" id="brain-evidence" aria-live="polite">@@BRAIN_EVIDENCE@@</p>
+    <div class="actions" style="margin-top:8px">
+     <button type="button" id="flow-audit-refresh">Organdurchlauf prüfen</button>
+    </div>
+    <pre class="muted" id="flow-audit-output" aria-live="polite" style="white-space:pre-wrap;max-height:240px;overflow:auto">Nur auf Anfrage: lokale Store-/Runner-Metadaten, keine Chat- oder Prompttexte.</pre>
     <p class="muted">Eine laufende Modell-Datei ist noch kein erfolgreich erzeugter B1/B2-Beitrag. „NATIVE_FAILED_NO_OFFER“ und 0 generierte C3-Tokens sind echte Funktionsfehler, kein grüner Modelltest.</p>
    </div>
   </div>
@@ -395,6 +399,89 @@ summary{cursor:pointer;font-weight:650}
     }catch(err){showNotice('Kopieren fehlgeschlagen: '+String(err.message||err)+'. „Verlauf als TXT“ verwenden.');}
     finally{button.disabled=false;button.textContent='Gesamten Chat kopieren';}
   });
+  let flowAuditButton=null, flowAuditOutput=null;
+  try{
+    flowAuditButton=document.getElementById('flow-audit-refresh');
+    flowAuditOutput=document.getElementById('flow-audit-output');
+  }catch(_){}
+  if(flowAuditButton&&flowAuditOutput){
+    flowAuditButton.addEventListener('click',async()=>{
+      flowAuditButton.disabled=true;
+      flowAuditButton.textContent='Prüfung läuft …';
+      flowAuditOutput.textContent='Lokale Metadaten werden read-only geprüft …';
+      try{
+        const response=await fetch(tokenBase+'/flow-audit',{
+          cache:'no-store',headers:{'Accept':'application/json'}
+        });
+        const raw=await response.text();
+        let data=null;
+        if(raw){try{data=JSON.parse(raw);}catch(_){}}
+        if(!response.ok||!data||typeof data!=='object')
+          throw new Error('Ungültige Antwort (HTTP '+response.status+').');
+        if(data.availability!=='AVAILABLE'){
+          flowAuditOutput.textContent=data.availability==='NO_TURNS'?
+            'Noch kein gespeicherter Assistenten-Durchlauf.':
+            'Audit nicht verfügbar ('+String(data.reason||data.availability||'UNKNOWN')+').';
+          return;
+        }
+        const num=function(v){return Number.isFinite(v)?String(v):'—';};
+        const list=function(v){return Array.isArray(v)&&v.length?v.join(', '):'—';};
+        const bool=function(v){return v===true?'YES':v===false?'NO':'UNKNOWN';};
+        const offers=Array.isArray(data.bodies&&data.bodies.offers)?data.bodies.offers:[];
+        const offerLines=offers.map(function(o){
+          return String(o.role||'?')+': '+String(o.status||'?')+
+            ' · Prompt '+num(o.prompt_tokens)+' / Output '+num(o.generated_tokens)+
+            ' · Query '+(o.query_role_match===true?'match':o.query_role_match===false?'mismatch':'unknown')+
+            ' · Modell '+String(o.actual_model||'UNKNOWN')+
+            ' · '+String(o.evidence_level||'UNKNOWN');
+        });
+        const c3=data.c3||{}, c4=data.c4||{}, latent=data.latent||{}, c5=data.c5||{};
+        const selection=data.selection_scope==='LATEST_COMPLETED_TURN_ALL_SESSIONS'?
+          'letzter abgeschlossener Durchlauf über alle Chats':'UNKNOWN';
+        const lines=[
+          'Auswahl: '+selection,
+          'Antwort: '+String(data.assistant_status||'UNKNOWN'),
+          'A5: '+list(data.perception&&data.perception.modalities)+
+            ' · PerceptPackets '+num(data.perception&&data.perception.packet_count),
+          'Queries: '+num(data.queries&&data.queries.count)+
+            ' · Zielrollen '+list(data.queries&&data.queries.target_roles),
+          'B1/B2 Query-Bindung: '+String(data.bodies&&data.bodies.query_binding_status||'UNKNOWN'),
+          ...offerLines,
+          'C4: '+String(c4.status||'UNKNOWN')+' · konsumiert '+list(c4.consumed_roles)+
+            ' ('+num(c4.consumed_offer_count)+')',
+          'C3: '+String(c3.status||'UNKNOWN')+' · Kontext '+String(c3.context_binding_status||'UNKNOWN')+
+            ' · semantische Nutzung '+String(c3.semantic_use_status||'UNKNOWN'),
+          'C3 Tokens: Prompt '+num(c3.prompt_tokens)+' / Output '+num(c3.generated_tokens)+
+            ' · TTFT '+num(c3.ttft_s)+'s · Dauer '+num(c3.duration_s)+'s'+
+            ' · Modell '+String(c3.actual_model||'UNKNOWN')+
+            ' · Quelle '+String(c3.prompt_token_source||'UNKNOWN'),
+          'C3 Native: HTTP200 '+bool(c3.native_completion_http_200)+
+            ' · Template '+bool(c3.native_template_submitted)+
+            ' · Attention/Use proof '+bool(c3.native_attention_or_semantic_use_proven),
+          'C3 rights: latent tap '+bool(c3.can_latent_tap)+
+            ' · latent injection '+bool(c3.can_latent_inject)+
+            ' · body training '+bool(c3.can_train_body),
+          'B3: '+String(latent.status||'UNKNOWN')+' · taps '+num(latent.tap_packet_count)+
+            ' · symbolisch '+num(latent.symbolic_message_count)+
+            ' · Receiver '+num(latent.receiver_packet_count)+' · native Injection: NEIN',
+          'C5: '+String(c5.selected_action_type||'NONE')+
+            ' · ActionOutcomes '+num(c5.action_outcome_packet_count)+
+            ' · Status '+list(c5.world_action_statuses),
+          'SourceRefs: '+num(data.source_integrity&&data.source_integrity.valid_refs)+
+            ' / '+num(data.source_integrity&&data.source_integrity.unique_refs_checked)+' gültig',
+          'Beleg: '+String(data.evidence_level||'UNKNOWN')+' · Gerät: REDMI_UNVERIFIED',
+          'Warnungen: '+list(data.warnings),
+          String(data.claim_boundary||'Source-bound context proves no semantic use or native latent injection.')
+        ];
+        flowAuditOutput.textContent=lines.join('\n');
+      }catch(err){
+        flowAuditOutput.textContent='Audit fehlgeschlagen: '+String(err.message||err);
+      }finally{
+        flowAuditButton.disabled=false;
+        flowAuditButton.textContent='Organdurchlauf prüfen';
+      }
+    });
+  }
   setInterval(refresh,1500);refresh();
 })();
 </script>

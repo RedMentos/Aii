@@ -413,8 +413,11 @@ class Store:
         self.log("rollback",None,{"update_id":update_id,"generation":gid,"rules_preserved":True});return gid
     def source(self,text,kind="USER"):
         b=text.encode();h=digest(b);sid=uid("src");p=self.home/"data/blobs"/h
-        if not p.exists():atomic_write(p,b)
-        with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
+        # Serialize blob publication with revocation's tombstone/refcount/unlink.
+        # tx() re-enters this RLock for the SQLite insert.
+        with self.mutex:
+            if not p.exists():atomic_write(p,b)
+            with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
         return {"source_id":sid,"sha256":h,"char_start":0,"char_end":len(text),"modality":"text"}
     def blob_bytes(self,h):
         """Blob content; a WP-U4 archived blob (<hash>.z, zlib) is decompressed in memory, the hash check stays with the caller."""

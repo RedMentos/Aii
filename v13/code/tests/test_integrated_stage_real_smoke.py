@@ -52,3 +52,16 @@ class RealIntegratedStageSmoke(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# Import the C4 regression functions into this already-executed CI target.
+# This makes the test exercise the ordinary pinned stager/deployer chain, not
+# a disposable secondary overlay builder.
+_c4_test_path = CODE_DIR / "tests" / "test_v14_focal_scale_diversity_20261121.py"
+_c4_spec = importlib.util.spec_from_file_location("v14_c4_normal_stage_tests", _c4_test_path)
+if _c4_spec is None or _c4_spec.loader is None:
+    raise RuntimeError("V14 C4 normal-stage regression module unavailable")
+_c4_module = importlib.util.module_from_spec(_c4_spec)
+_c4_spec.loader.exec_module(_c4_module)
+test_v14_c4_normal_stage = _c4_module.test_review_stage_applies_only_scale_aware_c4_overlay
+test_v14_c4_runtime_consumers = _c4_module.test_runtime_consumes_both_overlapping_body_offers_in_c3_context

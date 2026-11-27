@@ -15,7 +15,7 @@ from v13.resources import device
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--installed-home',required=True);p.add_argument('--out',required=True);a=p.parse_args();installed=Path(a.installed_home).resolve();out=Path(a.out)
-    report={'status':'RUNNING','device':device(),'tap_id':'lfm2.result_norm.final.v1','scope':'independent read-only dense-body prefill, not live private KV or MobileMoE','CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,'checks':{},'rows':[],
+    report={'status':'RUNNING','device':device(),'tap_ids_by_role':{},'scope':'independent read-only role-specific body prefill, not live private KV or MobileMoE','CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,'checks':{},'rows':[],
             'source_hashes':{str(f.relative_to(APP)):file_hash(f) for f in (APP/'v13').glob('*.py')}}
     def save():atomic_write(out,json.dumps(report,ensure_ascii=False,indent=2))
     with tempfile.TemporaryDirectory(prefix='v13-tap-proof-') as folder:
@@ -26,7 +26,7 @@ def main():
             generation=r.store.generation_id;vectors=[];packets=[]
             for role,text in [('B1_DETAIL','Projekt Aurora: Budget 120 Euro.'),('B1_DETAIL','Projekt Aurora: Budget 120 Euro.'),('B2_GIST','Projekt Borealis: Die Blume ist blau.')]:
                 e=r.store.event(r.session,text);packet=r.cognition.tap(role,e,e['source_ref'],time.monotonic()+60);data=r.cognition.read_tap(packet);v=data['vectors'][-1]
-                vectors.append(v);packets.append(packet);report['rows'].append({'packet':packet,'last_vector_sha256':digest(dumps(v)),'last_vector_first_eight':v[:8],'last_vector_norm':sum(x*x for x in v)**.5,'unload':r.pool.unload()});save()
+                vectors.append(v);packets.append(packet);report['tap_ids_by_role'][role]=packet['tap_id'];report['rows'].append({'role':role,'tap_id':packet['tap_id'],'packet':packet,'last_vector_sha256':digest(dumps(v)),'last_vector_first_eight':v[:8],'last_vector_norm':sum(x*x for x in v)**.5,'unload':r.pool.unload()});save()
             report['checks'].update(actual_native_states=all(x['packet']['shape'][1]==(1024 if x['packet']['tap_id'].startswith('qwen35') else 2048) for x in report['rows']),same_input_repeatable=vectors[0]==vectors[1],different_input_different=vectors[0]!=vectors[2],generation_unchanged=r.store.generation_id==generation)
             r.close();r=Runtime(h)
             report['checks']['restart_exact_feature_reload']=r.cognition.read_tap(packets[0])['vectors'][-1]==vectors[0]

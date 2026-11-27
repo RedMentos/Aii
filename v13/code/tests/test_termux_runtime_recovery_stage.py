@@ -19,10 +19,32 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     dest = tmp_path / 'review'
     manifest = stage.stage(CODE, dest)
     assert manifest['status'] == 'SHADOW_REVIEW_ONLY'
-    assert manifest['builder'].endswith('termux_runtime_recovery_candidate_20261112.py')
+    assert manifest['builder'].endswith('termux_runtime_recovery_candidate_20261121.py')
     assert b'onlineworld' in (dest / 'v13/agi/__init__.py').read_bytes()
     assert (dest / 'scripts/ask_verified_budget.py').is_file()
     assert (dest / 'scripts/native_prefill_stream_client.py').is_file()
+    semantic = (dest / 'v13/world_semantic_evidence_candidate.py').read_bytes()
+    local_error = (dest / 'v13/local_error_route_shadow_candidate.py').read_bytes()
+    store = (dest / 'v13/store.py').read_bytes()
+    assert b'safe source read primitives unavailable' in store
+    assert b'Source blob is not a regular file' in store
+    def source_pin(raw, name):
+        needle = b"'" + name.encode('ascii') + b"':"
+        assert raw.count(needle) == 1
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        value = raw[quote + 1:quote + 65]
+        assert len(value) == 64 and raw[quote + 65:quote + 66] == b"'"
+        return value.decode('ascii')
+    assert source_pin(semantic, 'store.py') == hashlib.sha256(store).hexdigest()
+    assert source_pin(local_error, 'world_semantic_evidence_candidate.py') == hashlib.sha256(semantic).hexdigest()
+    budget_source = (dest / 'v13/native_turn_budget.py').read_text(encoding='utf-8')
+    cognition_source = (dest / 'v13/cognition.py').read_text(encoding='utf-8')
+    assert 'observer_deadline=None' in budget_source
+    assert 'minimum_role_slice_s' in cognition_source
+    assert 'c4_offer_context_ready' in cognition_source
+    assert 'audio_context_refs' in cognition_source
+    assert 'def _audio_context_query' in cognition_source
     helper_spec = importlib.util.spec_from_file_location('activation_validate', CODE / 'scripts/activate_termux_recovery.py')
     helper = importlib.util.module_from_spec(helper_spec)
     helper_spec.loader.exec_module(helper)

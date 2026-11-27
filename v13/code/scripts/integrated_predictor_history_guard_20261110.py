@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-STREAM_BUILDER_SHA = '15d0059e11ad9bff25f84ff0d5ba32630b43dc3056905a0a7f9ef6d6e7b764cf'
+STREAM_BUILDER_SHA = '1413f5bf6d03ee74c0699d13be04ec10e02b6009d53df1575775fda54074ac69'
 HISTORY_GUARD_SHA = '84600fbde2458b3a5ce8908f54721b3caa57f3d3c31a411a95368a437c9405de'
 WORLD_CLASS_OLD = b'class OnlineWorld:\n'
 WORLD_CLASS_NEW = b'class OnlineWorld:\n    MAX_HISTORY_RECEIPTS=MAX_RECEIPTS\n'

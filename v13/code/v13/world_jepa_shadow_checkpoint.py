@@ -1,10 +1,13 @@
-"""Private inference-only checkpoint for fitted NumPy WorldJEPA SHADOW.
+"""Private fitted NumPy WorldJEPA SHADOW checkpoint.
 
-No optimizer/EMA training resume, runtime hook, age authority or gate promotion.
-No pickle/object deserialization. Never put trained checkpoints in public Git.
+Stores numeric model/EMA state and, when present, validated Adam/inverse/RNG resume
+state in the same atomic archive. No age authority or gate promotion. No pickle/object
+deserialization. Never put trained checkpoints in public Git.
 """
 from __future__ import annotations
 
+import ctypes
+import errno
 import hashlib
 import io
 import json
@@ -12,12 +15,14 @@ import math
 import os
 from pathlib import Path
 import re
+import stat
 import tempfile
 import zipfile
 
 import numpy as np
 
 from v13 import world_jepa as wj
+from v13 import world_jepa_training_state as training_state
 
 SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v2'
 LEGACY_SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v1'
@@ -83,10 +88,20 @@ def _extract(model, source_sha256):
             raise ValueError('Incomplete WorldJEPA predictor')
         for key in PRED_KEYS:
             arrays[f'pred{i}__{key}'] = np.asarray(pred[key])
+    if hasattr(model, '_training_state'):
+        meta['training_resume'], extra = training_state.pack(model)
+        arrays.update(extra)
     return meta, arrays
 
 
 def _validate(meta, arrays, source_sha256):
+    if type(meta) is dict and 'training_resume' in meta:
+        numeric_meta = {k:v for k,v in meta.items() if k != 'training_resume'}
+        numeric = {k:v for k,v in arrays.items() if not k.startswith(training_state.PREFIX)}
+        extra = {k:v for k,v in arrays.items() if k.startswith(training_state.PREFIX)}
+        _validate(numeric_meta, numeric, source_sha256)
+        training_state.validate_payload(meta['training_resume'], extra, numeric_meta, numeric)
+        return True
     # v1 had no optimizer-step evidence. Read it for numeric inference only;
     # its loaded confidence must remain SIMULATION_UNCERTAIN. New v2 archives
     # bind a positive integer step count and never silently upgrade v1.
@@ -153,11 +168,153 @@ def _sync_dir(parent):
         os.close(fd)
 
 
+
+
+CHECKPOINT_NAME = re.compile(r'jepa-[0-9a-f]{32}\.npz\Z')
+PENDING_PREFIX = '.world-jepa-shadow-'
+FALLBACK_LINK_ERRNOS = frozenset((errno.EPERM, errno.EACCES, errno.ENOSYS,
+                                  errno.EOPNOTSUPP, errno.ENOTSUP))
+
+
+def _private_dir_fd(parent):
+    if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
+        raise OSError(errno.ENOSYS, 'safe checkpoint directory open unavailable')
+    fd = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(fd)
+        if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) & 0o077):
+            raise ValueError('WorldJEPA checkpoint directory is not private')
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _hardlink_named_no_replace(dir_fd, source, dest):
+    """Atomically hard-link two verified names in one directory, never replacing."""
+    try:
+        linkat = ctypes.CDLL(None, use_errno=True).linkat
+    except (AttributeError, OSError) as exc:
+        raise OSError(errno.ENOSYS, 'linkat unavailable') from exc
+    linkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                       ctypes.c_char_p, ctypes.c_int]
+    linkat.restype = ctypes.c_int
+    if linkat(dir_fd, os.fsencode(source), dir_fd, os.fsencode(dest), 0) != 0:
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), dest)
+
+
+def _rename_named_no_replace(dir_fd, source, dest):
+    """Android-safe same-directory publication when ordinary hardlinks are denied."""
+    try:
+        renameat2 = ctypes.CDLL(None, use_errno=True).renameat2
+    except (AttributeError, OSError) as exc:
+        raise OSError(errno.ENOSYS, 'renameat2 unavailable') from exc
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p,
+                          ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    if renameat2(dir_fd, os.fsencode(source), dir_fd,
+                 os.fsencode(dest), 1) != 0:
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), dest)
+
+
+def _verify_published(dir_fd, name, identity, size, expected_sha256, link_counts):
+    info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+    if (not stat.S_ISREG(info.st_mode)
+            or (info.st_dev, info.st_ino) != identity
+            or info.st_uid != os.getuid()
+            or stat.S_IMODE(info.st_mode) != 0o600
+            or info.st_size != size or info.st_nlink not in link_counts):
+        raise ValueError('WorldJEPA checkpoint publication identity mismatch')
+    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=dir_fd)
+    try:
+        opened = os.fstat(fd)
+        if (not stat.S_ISREG(opened.st_mode)
+                or (opened.st_dev, opened.st_ino) != identity
+                or opened.st_uid != os.getuid()
+                or stat.S_IMODE(opened.st_mode) != 0o600
+                or opened.st_size != size or opened.st_nlink not in link_counts):
+            raise ValueError('WorldJEPA checkpoint opened inode changed')
+        digest = hashlib.sha256()
+        count = 0
+        while True:
+            block = os.read(fd, 1024 * 1024)
+            if not block:
+                break
+            digest.update(block)
+            count += len(block)
+        if count != size or digest.hexdigest() != expected_sha256:
+            raise ValueError('WorldJEPA checkpoint published bytes changed')
+    finally:
+        os.close(fd)
+    return info
+
+
+def _unlink_if_identity(dir_fd, name, identity):
+    try:
+        info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        return False
+    if (info.st_dev, info.st_ino) != identity:
+        return False
+    os.unlink(name, dir_fd=dir_fd)
+    return True
+
+
+def cleanup_pending(parent):
+    """Reap only our private crash-left staging names under the consumer lock.
+
+    A one-link pending inode was interrupted before publication. A two-link
+    inode is removed only when its other name is a matching jepa-*.npz target.
+    Unknown names, symlinks, foreign owners and ambiguous link counts fail closed.
+    """
+    parent = Path(parent)
+    if parent.is_symlink() or not parent.is_dir():
+        raise ValueError('unsafe WorldJEPA checkpoint directory')
+    dir_fd = _private_dir_fd(parent)
+    try:
+        names = os.listdir(dir_fd)
+        removed = 0
+        for name in names:
+            if not name.startswith(PENDING_PREFIX):
+                continue
+            if '/' in name or '\\' in name or name in ('.', '..'):
+                raise ValueError('unsafe pending WorldJEPA checkpoint name')
+            info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+            if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                    or stat.S_IMODE(info.st_mode) != 0o600):
+                raise ValueError('unsafe pending WorldJEPA checkpoint entry')
+            if info.st_nlink == 2:
+                linked_target = False
+                for candidate in names:
+                    if not CHECKPOINT_NAME.fullmatch(candidate):
+                        continue
+                    try:
+                        other = os.stat(candidate, dir_fd=dir_fd, follow_symlinks=False)
+                    except FileNotFoundError:
+                        continue
+                    if (stat.S_ISREG(other.st_mode)
+                            and (other.st_dev, other.st_ino) == (info.st_dev, info.st_ino)):
+                        linked_target = True
+                        break
+                if not linked_target:
+                    raise ValueError('pending checkpoint link has no verified target')
+            elif info.st_nlink != 1:
+                raise ValueError('ambiguous pending WorldJEPA checkpoint link count')
+            os.unlink(name, dir_fd=dir_fd)
+            removed += 1
+        if removed:
+            os.fsync(dir_fd)
+        return removed
+    finally:
+        os.close(dir_fd)
+
+
 def save(model, path, source_sha256):
-    """Exclusive, fsynced private NPZ export; returns hash to pin externally."""
+    """Exclusive, fsynced, no-clobber NPZ export with Android hardlink fallback."""
     meta, arrays = _extract(model, source_sha256)
-    # Never coerce source tensors: fractional support counts or low-precision
-    # weights would otherwise silently change inference/calibration evidence.
     arrays = {k: np.asarray(v) for k, v in arrays.items()}
     _validate(meta, arrays, source_sha256)
     raw_meta = _meta_json(meta)
@@ -171,23 +328,75 @@ def save(model, path, source_sha256):
         raise ValueError('WorldJEPA checkpoint outside size bounds')
     path = Path(path)
     if (not path.parent.is_dir() or path.parent.is_symlink()
-            or path.exists() or path.is_symlink()):
+            or path.exists() or path.is_symlink()
+            or not path.name or path.name in ('.', '..')):
         raise ValueError('Private checkpoint destination must be fresh')
-    fd, temp = tempfile.mkstemp(prefix='.world-jepa-shadow-', dir=path.parent)
+    dir_fd = _private_dir_fd(path.parent)
+    fd = None
+    temp_name = None
+    temp_identity = None
+    published = False
+    expected_sha256 = hashlib.sha256(data).hexdigest()
     try:
-        with os.fdopen(fd, 'wb') as out:
+        fd, temp = tempfile.mkstemp(prefix=PENDING_PREFIX, dir=path.parent)
+        temp_name = Path(temp).name
+        initial = os.fstat(fd)
+        if (not stat.S_ISREG(initial.st_mode) or initial.st_uid != os.getuid()
+                or stat.S_IMODE(initial.st_mode) != 0o600 or initial.st_nlink != 1):
+            raise ValueError('unsafe WorldJEPA temporary checkpoint')
+        temp_identity = (initial.st_dev, initial.st_ino)
+        out = os.fdopen(fd, 'wb')
+        fd = None
+        with out:
             out.write(data)
             out.flush()
             os.fsync(out.fileno())
-        os.link(temp, path)  # exclusive; never overwrite an existing target
-        _sync_dir(path.parent)
+        staged = os.stat(temp_name, dir_fd=dir_fd, follow_symlinks=False)
+        if ((staged.st_dev, staged.st_ino) != temp_identity
+                or not stat.S_ISREG(staged.st_mode)
+                or staged.st_uid != os.getuid()
+                or stat.S_IMODE(staged.st_mode) != 0o600
+                or staged.st_nlink != 1 or staged.st_size != len(data)):
+            raise ValueError('WorldJEPA temporary checkpoint changed before publish')
+        try:
+            _hardlink_named_no_replace(dir_fd, temp_name, path.name)
+        except OSError as exc:
+            if exc.errno not in FALLBACK_LINK_ERRNOS:
+                raise
+            _rename_named_no_replace(dir_fd, temp_name, path.name)
+        published = True
+        _verify_published(dir_fd, path.name, temp_identity, len(data),
+                          expected_sha256, (1, 2))
+        _unlink_if_identity(dir_fd, temp_name, temp_identity)
+        try:
+            os.stat(temp_name, dir_fd=dir_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise ValueError('WorldJEPA pending name changed during publish')
+        _verify_published(dir_fd, path.name, temp_identity, len(data),
+                          expected_sha256, (1,))
+        os.fsync(dir_fd)
+    except BaseException:
+        if temp_name is not None and temp_identity is not None:
+            _unlink_if_identity(dir_fd, temp_name, temp_identity)
+        if published and temp_identity is not None:
+            _unlink_if_identity(dir_fd, path.name, temp_identity)
+        try:
+            os.fsync(dir_fd)
+        except OSError:
+            pass
+        raise
     finally:
-        if os.path.exists(temp):
-            os.unlink(temp)
+        if fd is not None:
+            os.close(fd)
+        os.close(dir_fd)
     return {'schema': SCHEMA, 'source_sha256': source_sha256,
-            'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data),
-            'scope': 'PRIVATE_INFERENCE_ONLY_SHADOW', 'age_authority': 0,
-            'optimizer_state_persisted': False}
+            'sha256': expected_sha256, 'bytes': len(data),
+            'scope': ('PRIVATE_SHADOW_TRAINING_RESUME' if hasattr(model, '_training_state') else 'PRIVATE_INFERENCE_ONLY_SHADOW'),
+            'age_authority': 0,
+            'optimizer_state_persisted': hasattr(model, '_training_state'),
+            'optimizer_state_bootstrapped': (meta.get('training_resume', {}).get('origin') == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')}
 
 
 def load(path, source_sha256, expected_sha256):
@@ -198,17 +407,18 @@ def load(path, source_sha256, expected_sha256):
     if (path.is_symlink() or not path.is_file()
             or not 0 < path.stat().st_size <= MAX_BYTES):
         raise ValueError('Missing/unsafe WorldJEPA checkpoint file')
-    raw = path.read_bytes()
+    raw = training_state.read_checkpoint(path, MAX_BYTES)
     if hashlib.sha256(raw).hexdigest() != expected_sha256:
         raise ValueError('WorldJEPA checkpoint bytes changed')
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         info = archive.infolist()
-        if (not info or len(info) > 128 or
+        if (not info or len(info) > 512 or
                 len({x.filename for x in info}) != len(info) or
                 any('/' in x.filename or '\\' in x.filename or not x.filename.endswith('.npy')
                     or x.file_size > MAX_UNCOMPRESSED for x in info) or
                 sum(x.file_size for x in info) > MAX_UNCOMPRESSED):
             raise ValueError('Unsafe WorldJEPA NPZ archive members')
+    training_state.validate_archive(raw)
     with np.load(io.BytesIO(raw), allow_pickle=False) as archive:
         if 'meta' not in archive.files:
             raise ValueError('Missing WorldJEPA checkpoint metadata')
@@ -227,6 +437,13 @@ def load(path, source_sha256, expected_sha256):
     model.tgt = {k: arrays['tgt__' + k] for k in ENC_KEYS}
     model.preds = [{k: arrays[f'pred{i}__{k}'] for k in PRED_KEYS}
                    for i in range(meta['ensemble'])]
-    model.history = []  # training history/optimizer not present: inference-only
+    model.history = []  # per-fit diagnostics are transient; resume state is restored separately
     model._fit_steps = 0 if meta['schema'] == LEGACY_SCHEMA else meta['fit_steps']
+    if 'training_resume' in meta:
+        model._training_state = training_state.unpack(
+            meta['training_resume'],
+            {k:v for k,v in arrays.items() if k.startswith(training_state.PREFIX)},
+            {k:v for k,v in meta.items() if k != 'training_resume'},
+            {k:v for k,v in arrays.items() if not k.startswith(training_state.PREFIX)},
+        )
     return model

@@ -1,25 +1,330 @@
-## Core & Harness — Android capability registry — 2026-11-23T00:17:54.591Z
+# Perception Run 67 — verified checkpoint (2026-11-27)
 
-**User action: none.** No APK install, device pairing, capability enablement, OS permission change, shell, model/weight change, UPDATE_REQUEST or device mutation was performed.
-
-- Current release evidence remains the separate QA Run 10 receipt: release aed1d2b826290c95c70356b5d8b864b5ef382be4, 45/45 exact-SHA checks SUCCESS; private PIPELINE_STATUS #654 says installed/UP_TO_DATE and auto-update enabled. DIAGNOSTICS #656 still records a 57.739 s turn, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens, 2 generated tokens, B1/B2 TIME_BUDGET 53.2/54.2 s, C3 3.1 s. This does not establish correct chat or Android control.
-- Current-base Core successor branch: core/v14-android-capability-registry-current-qa-20261123, based on current QA companion head 43975b78659a02ce1ba9520ac5dfae10b2556d37. Code checkpoint: ef9ab161ac452c6af39a1d340077c7ea936e46a0. It adds v13/code/v13/android_capabilities.py, a strict typed parser for the companion's exact v14.android-capability-registry/1 inventory, and routes :android capabilities / :android launch through that parser.
-- Only launch_app may be READY, and only with paired+enabled state, explicit per-action consent, PackageManager provider, no OS permission claim, no observation claim and no learning authority. audio_capture, observe_ui, screen_capture, tap, swipe, type_text and back remain OFF. Network, shell and model authority must remain false. Missing/unknown/duplicate entries, invalid status, authority escalation and mismatched stop/pair state fail closed before ActionIntent creation or companion dispatch.
-- Existing ActionIntent/ActionOutcome semantics are unchanged: companion receipts remain COMPANION_RECEIPT_ONLY, observed=false, t8_authoritative=false, world_learning_eligible=false. This is registry validation and dispatch gating, not a new Android executor, device observation or T8 learning.
-- LOCAL_LINUX: isolated parser contract and negative-control reproduction PASS on CPython 3.13.5. Full Aii repository pytest/compile: BLOCKED / NOT_RUN because no local checkout is mounted and git ls-remote fails with GitHub DNS resolution. Exact branch CI is pending PR creation; no pass is claimed yet.
-- TERMUX/REDMI and Android emulator: REDMI_UNVERIFIED / NOT_RUN. The parent QA companion process-restart UI acceptance remains a separate blocker; the old #2376 branch is 6 commits behind the current QA base and its stale-base CI is not relied upon. The new branch is the current-base successor, still DRAFT / NOT_RELEASED.
-- Draft successor PR #2394 is open against current QA base 43975b78659a02ce1ba9520ac5dfae10b2556d37; code-bearing checkpoint ef9ab161ac452c6af39a1d340077c7ea936e46a0. Read the live PR head before any follow-up edit. Exact Python 3.13/3.14 companion workflow and integrated consumers are not yet observed; poll the exact PR head, fix real failures, then obtain independent Boss/QA review. Do not enable any other capability or request a device action until the parent lifecycle gate is green.
+- **New implementation:** PR [#2559](https://github.com/RedMentos/Aii/pull/2559), branch `research-perception/v14-a5-raw-eye-a4-structure-20261127-run67b`, exact code/test head `0411d6fc539a2442e7f49886da87cc7fbbb25c73` (base #2557 at `95c6dd27e15de798cb4b69ddc1d1f5abda746386`). Module blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`; test blob `6f654d8b90500d0b089ae3154851ba6d22a440f4`.
+- **Actual function:** the signed MediaProjection A5 frame ingress now reuses the existing RAW-EYE structure extractor and A4 visual-salience adapter. It assembles the 117-value descriptor from the already-computed global + 16 tile rows, applies a fixed-gain structural cue to the exact global-frame A4 row, refreshes A4 weights/suppression/relook, and includes an authority-zero A4 receipt in the ephemeral PerceptPacket. No second image pass or duplicate capture provider.
+- **Exact focused CI:** workflow `46016491056` **PASS**. Python 3.13: `py_compile` + **29/29** tests; Python 3.14: `py_compile` + **29/29** tests. Uniform-frame negative confirms zero structural contribution. Initial head `7ae077f...` had 28 pass / 1 test-only failure because the assertion allowed only 1e-6 while the existing A4 helper rounds 18 weights to six decimals; tolerance was corrected to 1e-5 and the exact new head passed. No code gate was weakened.
+- **Shared integration:** workflow `46016490897` **FAIL**. Integrated regression: 1 failure on the stale Core audio-composition source pin. Staged runtime: **20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed**; logs show Core audio-composer/arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe migration result is PARTIAL. No Perception ingress test failed. Core/QA own these files; no pin or gate was weakened. This is still a synthetic provider/lease fixture, not a normal C3 turn.
+- **Local environment:** isolated helper reproduction **3/3 PASS** (positive structure, uniform zero, invalid-provenance rejection). Full local Aii checkout/pytest **BLOCKED / NOT_RUN**: no checkout mounted and GitHub DNS unavailable. Hosted CI is not local evidence.
+- **Device / deployment:** no fresh authenticated Redmi receipt; MediaProjection permission, Android lifecycle, normal Runtime/C3 consumer, installed SHA and updater state remain **REDMI_UNVERIFIED / UNKNOWN**. No UPDATE_REQUEST, phone command, model/weight/permission/data change or deployment. **NOT_RELEASED**.
+- **Research:** R-186 reviewed WM-VS v2 in full. Its action-conditioned future-error alignment and 25/30 final-retention result support a later source-bound action→visual-outcome progress gate; this PR only adds handcrafted attention salience, not learned progress or a world model. GlanceWAM's asynchronous latent lookahead is conceptually relevant but its 1.3B video backbone / 21 GB bundle / A100 results are not a Redmi candidate.
+- **Next:** Core must rebase/port #2408/#2555 onto the #2557 provider and include #2559 before consuming its A4 signal in the normal Runtime/C3 path; keep the outer UIObservationLease alive through C3. QA separately verifies OS consent/denial, onStop, revoke, process death, restart and rollback. Keep screen capture/projector OFF until a consented Redmi receipt. **No user action is required.**
 
 ---
 
-# QA & Android — Run 10 current checkpoint (2026-11-23)
 
-- **Current installed release:** exact release `aed1d2b826290c95c70356b5d8b864b5ef382be4` has **45/45 exact-SHA check runs SUCCESS**. Fresh private owner-read #654 confirms this SHA is installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, and last_error NONE. This is installation proof only.
-- **Fresh device diagnostics:** private #656 reports service/model process RUNNING and 8 managed sessions, but the instantaneous native-process map is 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN_NO_GROUP_CHILDREN. This is not free-RAM or sustained-residency evidence. The last stored turn is FINAL at 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1_DETAIL and B2_GIST remain TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s; native probe SMOKE_PARTIAL. Official Age 0; lab request 10/effective implemented stage 5; physical feature execution unverified; learning commit authority requires separate SHADOW.
-- **QA code candidate:** [PR #2391](https://github.com/RedMentos/Aii/pull/2391), current exact head `d25f10eb2f5824e35ed7a325be983ac598a50534`, based on JEPA parent `d88bfe3fe0cce9f55fc5ff0775c80f3798c356d2`. It repairs the exact Memory forget anchor to current guarded Store semantics and rebinds lifecycle → memory/world → feedback → context → training resume → Termux12 → Termux21 → stage → runtime deploy. It adds a byte-exact SHA256/Git-blob-SHA1 chain regression. The first exact run exposed the old `src=…` anchor mismatch; the candidate was corrected. **11 exact-head checks were queued after the PR was marked ready; no green result is claimed yet.** Older PR #2390 is closed as superseded.
-- **Local/device boundary:** no local Aii checkout was mounted, so no local pytest result is claimed. #2391 is not merged or installed. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation was performed. Correct-answer and 20-turn acceptance remain OPEN.
-- **Next action:** finish #2391 exact-head CI, repair any remaining real failures without relaxing gates, then obtain Boss/JEPA review. Only after integration through the existing release path should a fresh owner-read installation receipt be requested. Do not send a duplicate Termux command. Keep low-latency correct chat, B1/B2→C4→C3 delivered offers, native latent coupling, persistent weight retention, voice, Android control, process-death/reboot/rollback and clause-level Canon coverage OPEN.
-- **User action:** none required.
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 65)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, restart, permission change, model download/swap or device-data mutation is needed for this draft Perception integration.
+
+## Signed MediaProjection → A5 RAW-EYE → downstream lifetime
+
+- PR #2557 — restore the signed MediaProjection RAW-EYE receiver: https://github.com/RedMentos/Aii/pull/2557. Branch: research-perception/v14-vision-ui-frame-ingress-20261127-run64, stacked on #2556 parent 0367e5db3a4bd0e44c5192bc785823fc6f1f35f0.
+- Current branch HEAD at exact-head CI closeout: a68dd8a28f9ed6d069ddc840c0308157f7b3f16e (documentation-only descendants follow). Code commit: ba79ec7b4fef9b0dc0929725310588f689b747c9; focused test commit: 19ffeb54287627d02255845f9c9e660105e12a78.
+- New API: vision_ui_frame_ingress.consume_projected_frame_from_provider_scope(). It calls the one-shot provider verifier, yields the source-bound PerceptPacket while the caller's outer UIObservationLease remains active, and revokes the frame's source/cache after the downstream scope exits (including exceptions). The provider path zeroizes the caller-owned mutable frame buffer before yielding; invalid metadata is also zeroized.
+- Exact-current-head MediaProjection workflow 45989072923 PASS: py_compile + 28/28 tests on Python 3.13 and 28/28 on Python 3.14. The three new tests cover scope lifetime, downstream exception cleanup and invalid-observation zeroization. Runtime deployment integrity workflow 45989073050 PASS. Earlier focused workflow 45988257517 also passed at the code/test commit.
+- Shared staged-runtime workflow 45988257446 FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Current failures are existing Core audio-composer/arithmetic/observer source-pin mismatches and QA migration assertions expecting UPDATED while the honest runtime result is PARTIAL. Exact current-head shared workflow 45989073323 completed FAIL: staged-runtime 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression 1 failure on the Core-owned pinned audio composition input. The staged failures also include existing Core arithmetic/observer pins and QA PARTIAL-vs-UPDATED migration assertions. No Perception ingress test failed.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN (no local checkout mounted and GitHub DNS unavailable). CI is not a local test or Redmi proof.
+- Core #2408 still owns the normal Runtime → A5 → C3 same-turn consumer. This new scope API is a handoff contract, not evidence of a real C3 turn. No Android APK/device capture or Redmi result exists: REDMI_UNVERIFIED / NOT_RELEASED.
+
+## Next integration
+
+Core should rebase #2408 onto #2557 and wrap the normal C3 context read/generation inside consume_projected_frame_from_provider_scope(), keeping the same outer lease active until C3 finishes. QA owns the independent MediaProjection consent, onStop, process-death, revoke, restart and rollback tests. Keep screen capture OFF until those gates and a fresh consented Redmi receipt exist.
+
+## Research candidate — GoClick UI grounding (not selected or downloaded)
+
+- GoClick (arXiv:2604.23941, 2026-04-27; author repo MIT; GoClick-Base model card MIT) is a narrow screenshot+function-description → coordinate grounder, not a general A5 vision model or action authority.
+- A community ONNX export advertises INT8 component files totalling about 303 MB (91+80+132 MB), but it is not the author-maintained Android release and has no Redmi/732G benchmark or verified ARM64 operator profile.
+- Keep as an optional A5 action-grounding candidate only. No files or weights were downloaded. Any experiment requires explicit approval for the download and a separate decision before productive use; first compare CPU/NNAPI, PSS, TTFT, coordinate hit-rate and false-target negatives on a real consented device.
+
+## Device / updater boundary
+
+Latest available private V13OBS #115 remains historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS had no device comments before expiry. New read-only owner-relay requests #1017 HEALTH, #1018 PIPELINE_STATUS and #1019 DIAGNOSTICS were created at 2026-11-27T11:23:36Z; immediate readback found zero authenticated device_status comments on all three (NO_LIVE_RECEIPT). There is no fresh receipt proving the current installed SHA or live updater state; device/updater state remains UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change or data action was performed.
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 64)
+
+**User action: none required.** Do not run a Termux command, send UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for this draft Perception receiver.
+
+## Signed MediaProjection → A5 RAW-EYE consumer
+
+- [#2557 — restore the signed MediaProjection RAW-EYE receiver](https://github.com/RedMentos/Aii/pull/2557), stacked on Perception #2556 exact parent head `0367e5db3a4bd0e44c5192bc785823fc6f1f35f0`.
+- Exact code/test head: `642b981e9a91bfc618992cabb0c72ac8c801b51c`; branch `research-perception/v14-vision-ui-frame-ingress-20261127-run64`.
+- Core provider PR [#2408](https://github.com/RedMentos/Aii/pull/2408) imports `vision_ui_frame_ingress.consume_projected_frame_from_provider`; that module was absent from its current tree. #2557 restores the receiver expected by `UIFrameGrant.consume()`.
+- The receiver validates the exact observation/lease/one-shot verifier, bounds the frame to 8 MiB / 4 MP, checks digest and byte count, zeroizes caller-owned frame buffers, computes RAW-EYE global + 4×4 tile features and A4 salience, and emits a source-bound PerceptPacket plus bounded A5 context envelope. Optional installed projector remains LAB_SHADOW_ONLY; no teacher/model download, training, persistence, action or learning authority.
+- Final code/test SHA remains `642b981e9a91bfc618992cabb0c72ac8c801b51c`; final-head focused workflow **45975248573 PASS**: py_compile and **25/25 tests on Python 3.13 + 25/25 on Python 3.14**. Runtime deployment integrity **45975248638 PASS**. Generated PNGs and synthetic provider/lease fixtures only.
+- Shared staged/integrated workflow **45975248465 FAIL**: staged **20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests** on existing Core audio-composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions; integrated regression **1 failure** on Core Recovery's stale audio-composer pin `831080bceec90711bd42e0fa4eba47c669975c98`. No Perception ingress test failed; no pin or assertion was weakened.
+- LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN** (no local checkout mounted; GitHub DNS failure). CI is Linux evidence, not a local or Android measurement.
+- No normal-turn Runtime/C3 callsite, Android MediaProjection consent/onStop proof, APK/device capture or Redmi result yet. **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+## Next executable integration
+
+Core should rebase #2408 onto #2557 and connect `UIFrameGrant.consume()` to the normal Runtime turn/C3 context while the observation lease remains live. QA owns independent OS-consent, MediaProjection onStop, cancel/revoke, process-restart and rollback acceptance. Keep capture OFF until those gates and a consented Redmi receipt exist.
+
+## Device/updater boundary
+
+Latest available private V13OBS #115 is still historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Fresh read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS returned no device comments before expiry. Current install/updater/runtime state is therefore unverified; no device action was sent or performed.
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 62)
+
+**User action: none required.** Do not run a Termux command, send an UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for these draft PRs.
+
+## Current Perception stack
+
+- [#2553 — A4 shared-checkpoint reset fix](https://github.com/RedMentos/Aii/pull/2553), child of #2551.
+- [#2554 — lease-bound A5 visual frame → RAW-EYE → A4 PerceptPacket](https://github.com/RedMentos/Aii/pull/2554), child of #2553 and carries the Perception-owned A5 files from the parallel #2550 line onto one A4/A5 stack.
+- #2554 code-bearing head at PR creation: `f78dbdc369ba2e3cac5e9acff05dca033c05be2a`; post-code board checkpoint: `62414aea9aa4cc2b320943c46763736e0b2ed3b9` (docs/board only). Audio composer blob: `f1fd06c70f9d27148c22df869abe0ad66a4cf467`.
+- A4 predictor/retention: **47/47 PASS** Python 3.13 and 3.14; A4 temporal source isolation **9/9 PASS** both; A4/A5 feature-set **15/15 PASS** both.
+- RAW EAR optional NumPy/backend: **175/175 PASS** both; WebRTC/libfvad comparator: **186/186 PASS** both, native libfvad C tests **13/13 PASS**; RuntimeDeploy offline: **92 tests PASS** on Python 3.11 and 92 on 3.14; privacy scan **CLEAN**.
+- A5 visual-frame exact workflow: **11 tests + 3 subtests PASS** on Python 3.13 and 3.14. This is generated PNG + synthetic provider coverage; A5 remains **WIRED_SYNTHETIC**, not Android-verified.
+- LOCAL_LINUX CPython 3.13.5 isolated A4 reset semantics **3/3 PASS**. Full local Aii checkout/pytest **BLOCKED / NOT_RUN** (no checkout; GitHub DNS failure).
+- Shared staged/integrated gate still **FAILS**: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression one setup failure. Causes: Core Recovery's old audio-composer pin, Core arithmetic `v13/contracts.py` and observer `v13/cognition.py` pins, plus QA migration assertions expecting `UPDATED` while the safe result is `PARTIAL`. Same failure on #2553 and #2554; no pins/assertions weakened.
+- No Android MediaProjection provider, platform onStop cleanup, normal-turn Runtime callsite, microphone/frame receipt or Redmi evidence. **REDMI_UNVERIFIED / NOT_RELEASED**. P0 basic chat, B1/B2 delivery and native B3 latent coupling remain unresolved.
+
+## Next executable action
+
+Core rebase #2549 and child #2552 onto #2554 after review, then refresh Recovery → Stage → RuntimeDeploy composer/arithmetic/observer pins bottom-up. QA repairs the migration PARTIAL-vs-UPDATED assertions. Perception continues with independent-registry conflict stress tests and the missing normal-turn A5/signed-audio consumer contract. No user action is needed unless a future experiment requires explicit device consent.
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 61)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST, CHAT_SEND, model/weight swap, permission change, runtime restart or device-data mutation is justified.
+
+## Research & Perception — A4 shared checkpoint correction
+
+- Draft PR [#2553](https://github.com/RedMentos/Aii/pull/2553), stacked on Perception #2551, preserves the source/generation/consent-scoped numeric A4 predictor checkpoint when an individual Store session resets its temporal history for chronology or a long gap.
+- Exact branch head at PR creation: `5e37965f3eb3bc7051a1ee1bdf1473d54ef0b16b`. Predictor blob: `2519e5cbbbfacc7bb252a4cd2c84148e4f641176`; regression-test blob: `abd5d2b53e6423ddebe73f52816e3431bea29b5d`; composer blob: `f1fd06c70f9d27148c22df869abe0ad66a4cf467`.
+- New repository tests cover both `RESET_CHRONOLOGY` and `RESET_GAP`: another session first creates non-zero numeric weights; the resetting session must retain exact weights/update count and checkpoint version while restarting its temporal baseline.
+- LOCAL_LINUX CPython 3.13.5 isolated semantics reproduction: **3/3 PASS**. This is not the full repository suite. Full local Aii checkout/pytest is **BLOCKED / NOT_RUN** because no checkout is mounted and GitHub DNS cannot resolve.
+- Exact-head PR #2553 CI is **PENDING** at this checkpoint. Parent #2551 focused A4/RAW EAR/feature-set CI passed; its staged/integrated workflow remains blocked by Core-owned source pins and QA migration assertions.
+- No Android/Termux/microphone/Redmi evidence. **REDMI_UNVERIFIED / NOT_RELEASED**. The A4 reset fix does not resolve P0 basic chat or B1/B2 delivery.
+- Next: review exact #2553 CI; Core refreshes its own Recovery → Stage → RuntimeDeploy composer pin, QA fixes migration assertions. Perception next adds independent-Store concurrency coverage and continues the A5 visual-frame / signed-audio normal Runtime consumer work.
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27
+**User action: none required.** No Termux command, update request, model/weight swap, permission change or production enablement is justified.
+
+## Research & Perception checkpoint
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, remains stacked on Perception #2540.
+- Opt-in `TRANSIENT_CONSOLIDATE` and `TRANSIENT_NO_CONSOLIDATION` are now reachable through the caller-PCM Runtime via explicit developer config keys `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`. Missing keys keep `EVERY_FINAL`; invalid values fail closed. No user-facing setting or production activation.
+- The transient buffer is process-local and norm-bounded; only the consolidating policy transfers it to persistent numeric predictor weights after threshold. `state_dict`/SQLite persist consolidated weights only; pending deltas are discarded on restart. Existing `EVERY_FINAL` and `MEMORIZED_ERROR` paths remain separate.
+- Current exact blobs: predictor `8bb0d3c8033c898edf824be6752450383c4cc5c0`; voice consumer `4bfcf31a7738bb390781babab8e11518896a3580`; composer builder `92fb6fc5db705f5dd69ce20bb283ac6af59cfe25`, pinning both.
+- LOCAL_LINUX scratch algorithm reproduction: **3/3 PASS** for threshold commit, no-consolidation and restart discard; not full repo pytest. GitHub Actions full predictor/consumer suite previously passed **41/41** on Python 3.13 and 3.14 at the pre-benchmark-extension code/test SHA. The expanded experiment then exposed a real norm-cap bug (1.06108105 > 1.0); fixed by scaling the entire proposed transient matrix and added a repeated-update cap assertion. Exact-head A4 rerun `45936510646` is queued.
+- Earlier A4/A5 feature-set pin-refresh run `45935761586` passed both Python versions. VAD pin-refresh run `45936115335` had Python 3.13 PASS; Python 3.14 was still running at last poll. New exact-head VAD rerun `45936510653` is queued.
+- Staged/integrated Core/QA blockers remain: Core-owned recovery/composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core #2547 must rebase onto current #2548 after focused A4/VAD checks; refresh only Core-owned pins. QA retains migration fixes.
+- R-180: Hess et al., *Forgetting, plasticity, and co-observation*, arXiv:2608.18803 (2026-08-19). Four-chunk supervised/self-supervised vision experiments separate co-observation from forgetting/plasticity; replay restored some co-observation, while distillation tracked the ensemble. A 3% replay buffer did not consistently match the ensemble; 15% did; 30% closed about half the remaining gap. Co-ob repo declares MIT but vendors patched Avalanche and uses CaSSLe; subcomponent licenses require review. Next A4 test: consent/source-scoped process-local replay of 1/4/8/16 prior feature-transition pairs at equal update budget; no raw PCM/transcripts.
+- Full local Aii checkout **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS unavailable). TERMUX/REDMI **REDMI_UNVERIFIED**; no live receipt, microphone/AudioRecord, native GGUF, updater install or phone test. **NOT_RELEASED**; B3 trained latent coupling and B1/B2/C3 master learning remain unproven.
+
+## Next actions
+1. Read exact-head A4 ablation + predictor/consumer suite and VAD comparator reruns.
+2. If focused checks pass, coordinate Core rebase #2547 onto #2548 and refresh Core-owned recovery/stage/RuntimeDeploy pins; QA closes migration assertions.
+3. Then evaluate the R-180 tiny replay ablation with source/consent isolation and equal update budget; continue A5 UI-event-to-PerceptPacket.
+
+---
+
+# HISTORICAL NEXT-ACTION NOTES (preserved)
+# CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
+
+## Verified code / CI checkpoint
+- Draft PR [#2519](https://github.com/RedMentos/Aii/pull/2519), branch `research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34`.
+- Current branch head before this docs-only batch: `95b8bcaae0d0163f9b00f289c1789de86ee3517f` (docs-only commits follow the tested code head). Workflow-only correction SHA: `8b25f4e2b2fabae19ba08e962ed2304194dd35df`. Matrix/bridge code SHA: `16d64120ba1cb0d690d249a7fed62ddfcb345663`.
+- Parent Core #2520 branch head: `2032888020a2f409ee976abe222cc99e0818159c`.
+- Exact native receiver workflow 45739394614 on branch head `95b8bc`: **SUCCESS**. Runtime deployment integrity workflow 45739394621: **SUCCESS**. Python 3.13 and 3.14 each: 19 focused matrix/task-score tests PASS + 59 broader taps/receiver/stage/tokenwise/matrix tests PASS; py_compile PASS; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a cross-compile PASS (not device execution); privacy scan CLEAN.
+- Shared staged/integrated workflow 45739394594 was still **IN_PROGRESS** at 2026-11-26T02:03:41Z. Poll exact result before claiming the full PR CI is green.
+- LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN**. Local CPython 3.13.5 is available, but no repository checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve.
+
+## Actual product effect / open gaps
+- The source-bound eight-condition producer and teacher-forced target-token likelihood bridge pass their exact focused/broader CI tests. `NO_MESSAGE` injects zero rows/positions; BOS remains receiver-internal. Synthetic evidence remains `FIXTURE_ONLY` and holdout sufficiency remains separately reported.
+- This is a diagnostic B3/Enlightened-Space path, **not** trained latent coupling, generated-answer correctness, semantic utility, production routing or active weight learning. B3 remains OFF.
+- Core PR #2522 is not yet integrated: its `build_and_stage_native_receiver_matrix()` has no live Runtime producer call site; current tests stage a fixture and monkeypatch the bridge. It is based on #2520 and does not contain #2519's builder/bridge. Core must stack/rebase #2522 on #2519 and test a real task/pair/packet producer → Perception builder → Runtime staging → one-shot approval → bridge.
+- The seven old `Cognition.native_receive` / legacy `:callosum native-probe` tests were excluded only from the Perception-specific workflow because they assert removed Core APIs. Their file remains present and syntax-compiled. This does **not** waive the Canon: Core must restore the capability or provide an explicitly equivalent tested replacement.
+- P0 basic-chat correctness and valid B1/B2 offer delivery remain OPEN. This PR does not fix them.
+
+## Device / deployment
+- Last available consented private V13OBS snapshot: issue #115, 2026-11-24 09:28 UTC. It reported installed/runtime target `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and dashboard/runtime UP_TO_DATE, but AI STOPPED_BY_USER and native model processes stopped. This is historical only; no fresh authenticated HEALTH/PIPELINE_STATUS/DIAGNOSTICS receipt arrived in this run.
+- Therefore current installation and runtime state remain **REDMI_UNVERIFIED**. GitHub push is not deployment. No UPDATE_REQUEST, restart, model/weight/permission/data change or device action occurred.
+
+## Research note / next executable step
+- R-158 records full-text LCF (arXiv:2605.22863, ICML 2026/PMLR 306) and the scoped negative Pythia transfer study (arXiv:2606.03280). LCF uses per-layer K/V residuals and span pooling, but the tested training used A100 80GB / RTX PRO 6000; 13 MB adapter size is not total runtime memory. The negative study shows cosine≈0.97 alignment can still yield no causal utility. Current llama.cpp selected-row API reads static token embeddings, not contextual K/V caches. R-159 audits pinned llama.cpp b29c606e: a read-only internal C++ K/V path appears feasible for LFM2 hybrid attention layers, but not through the stable public C API; write injection remains unimplemented and requires graph/cell/backend validation.
+- Next: finish workflow 45738564326; then Core rebases #2522 on #2519 and adds a real source-bound producer integration test. After that, run >=20 held-out groups across >=2 sessions and >=2 task families on a pinned real GGUF, requiring candidate wins over every control plus generated-answer correctness, retention, restart and rollback. No user action required.
+
+---
+
+# V14 USER NEXT ACTION — Core & Harness Run 3 (2026-11-26)
+
+**Current verified code checkpoint:** draft PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, code head `7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8` (the PR branch was subsequently advanced to `68c3de91ede75bd0d1381524690e46505451aeda` by handoff-only documentation commits; no code changed after the green CI). It is stacked on Core PR #2515; it is not merged or released.
+
+## What changed and what is proven
+
+- The native receiver C++ process now recomputes SHA-256 from the exact little-endian int32 target-token vector it consumes, checks it against the supplied digest before scoring, and emits the computed digest. The receipt no longer relies on merely echoing a Python-supplied hash.
+- Added native selftests for the NIST SHA-256 `abc` vector, token IDs `[0,1,2]`, digest mismatch and negative-ID rejection.
+- Refreshed and read back the complete builder → recovery → stage → RuntimeDeploy source-pin chain. The earlier compile defect (undeclared native model pointer) remains fixed.
+- Local Linux: isolated C++17 SHA-256 helper compile/selftest PASS with `-Wall -Wextra -Werror`. Full Aii checkout/native llama.cpp local build NOT_RUN because GitHub DNS resolution failed in this environment.
+- Exact-head GitHub CI: all seven workflows SUCCESS. Pinned llama.cpp Linux build and native selftest PASS; Android arm64 cross-compile PASS (artifact only, not device execution); Python 3.13 and 3.14 each 45/45 PASS; privacy scan CLEAN; RuntimeDeploy integrity, two-checkout migration, record-only controller, Lab Age/WebView and private owner-read bootstrap PASS. Staged/integrated regression: 424 passed, 3 skipped, 6 warnings, 58 subtests. Staged runtime: 255 passed, 10 skipped, 47 subtests.
+- Standard reference: NIST FIPS 180-4 SHA-256, https://doi.org/10.6028/NIST.FIPS.180-4. No external SHA implementation was copied and no new dependency was added.
+
+## What is not proven
+
+- No pinned real GGUF task-matrix scoring run has been executed.
+- No trained cross-organ latent coupling, semantic utility, production B3 route, weight update or training authority is established by target-token likelihood.
+- Android arm64 CI is a cross-compile only. No APK installation, connected device, Redmi native probe, or Redmi deployment has been verified.
+- Current release branch HEAD is the signed merge commit `8d93236c753f0194224c19edc7411d8d7082b1d6` (2026-11-23T16:24:48Z, PR #2444); the last available private V13OBS #115 snapshot (2026-11-24T09:28:11Z) reports that exact SHA installed, with updater/pipeline/dashboard/runtime UP_TO_DATE. That snapshot also reports AI runtime STOPPED_BY_USER, model process STOPPED and autostart false; last C3 turn was 7 tokens with TTFT 2.046 s and 358 prompt tokens, while historical B1/B2 native failures and zero valid offers remain. Fresh read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests issued 2026-11-26T00:56Z had NO_LIVE_RECEIPT at first poll, so the 2026-11-24 snapshot remains the last evidence. No device command or restart was sent. Do not claim PR #2520 is installed.
+
+## Parallel Core/Perception work
+
+- PR #2519 (eight-condition matrix producer) and #2517 (utility sync) are still based on the older #2515 head and had stale-base failures. Perception should rebase them onto #2520 head `7ffe4e23` after this exact green checkpoint.
+- PR #2513 (consent-gated Android HTTPS ACTION_VIEW) is now at `736233e5af847706bd0270da2051fcdd973b4a8f`. Fixed overescaped Python ECDSA DER test literals, Java canonical-JSON escaping, and moved open-url discovery into the companion's own `:android` help (with an operator-level help test) so the global operator source pin remains unchanged. Exact-head CI is still in progress; independent Boss/QA review and all device proof remain open.
+
+## Next executable Core action
+
+1. After Perception rebases #2519/#2517, add a separate `NATIVE_RECEIVER_MATRIX` one-shot local-TTY approval bound to the exact `matrix_sha256`, task/source/session/generation, target-token digest and installed sender/receiver model manifests.
+2. Wire the matrix into a real `:callosum` Runtime command with source revalidation before/after native execution, resource preflight, bounded deadline, cancellation, atomic one-shot consumption, and zero production/training authority.
+3. Collect at least 20 held-out task groups across at least two sessions and two task families; run all eight conditions on a pinned real GGUF in LOCAL_LINUX and require the candidate to beat every control before any semantic/B3 claim.
+4. Only then ask separately for explicit Redmi test authorization. Do not send device commands or change models/weights without that authorization.
+
+**User action: none required now.** No model download/swap is recommended; this checkpoint is an evidence-integrity fix, not a model comparison. Keep B3 OFF, official Age 0, and the installed Termux updater path unchanged.
+ 
+---
+
+# Core & Harness — Run 2 checkpoint (2026-11-26)
+
+**No user action required.** No Termux command, UPDATE_REQUEST, restart, model/weight download or swap, permission change, or device-data mutation is required.
+
+- Draft repair PR [#2520](https://github.com/RedMentos/Aii/pull/2520), branch `core/v14-native-target-score-repair-20261126-run1`, current handoff SHA `024c88a8e2c2bae77bb354d25038ef7ee4e5bfee`; code checkpoint before handoff `5476ae6148e455fb30e06cc2b87c7eef93f6737c`. Parent is Core PR #2515 at `13cfe43a7a94d4b35d4a3be0249bd725b6f06c23`. DRAFT / NOT_RELEASED.
+- Repaired the pinned C++ compile failure: `decode_embeddings` now receives the loaded `const llama_model *`, checks non-null context/model, and all six call sites pass `model.value`. Refreshed the full native-builder → recovery → stage-builder → RuntimeDeploy hash chain; no pin check was weakened.
+- Corrected CI scope: the Cognition/Callosum native-receiver test is already executed inside the staged-runtime subprocess, so the workflow no longer runs it directly against the unpatched source Runtime. The synthetic one-task evaluator test now expects the parent helper's current `FIXTURE_ONLY` result and still asserts insufficient holdout, no semantic proof, zero authority and no persistence.
+- Parent exact-head workflow run 45721544481 failed on the undeclared `model` symbol (Linux and Android arm64 cross-compile) plus 7 Python assertions caused by the staged/source test mismatch and the synthetic-status expectation. PR #2520 exact-head CI is pending/not yet observed.
+- LOCAL_LINUX full checkout/pytest: BLOCKED / NOT_RUN because `git ls-remote` cannot resolve `github.com`. No full local native llama.cpp build is claimed. The six call-site/source changes were inspected; this is not a compiler pass.
+- Redmi: **REDMI_UNVERIFIED**. No fresh private phone receipt, native GGUF score, install, restart, model/weight/permission change, or deployment. GitHub push/PR is not phone deployment. B3 remains OFF; target-token likelihood is only a proxy, not generated-answer correctness or trained latent utility.
+- Research boundary: arXiv:2608.16347v2 remains relevant—activation/likelihood alignment can fail to produce correct generated answers. Keep generated-answer correctness separate from receiver-input and target-logprob evidence.
+
+**Next executable action:** poll exact PR #2520 checks; fix any failures and re-test. If green, coordinate Perception's #2517/#2519 rebase onto the repaired Core head, then continue the full source/session-bound eight-condition real-GGUF matrix. Do not activate B3 or claim semantic utility from compile success.
+---
+
+# Current V14 handoff — Core & Harness Run 1 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+## New Core work
+
+- Draft PR [#2513](https://github.com/RedMentos/Aii/pull/2513), head `e2774a22c2f9d0a4acfee3c00d1024793b952f61`, adds a visible-consent HTTPS `Intent.ACTION_VIEW` Android capability. The local operator path is TTY-gated; the native companion shows a per-action approval screen and returns a signed `DISPATCHED_UNVERIFIED` receipt. It does not claim page load or foreground observation. Stacked on #2481; NOT_RELEASED.
+- Draft PR [#2515](https://github.com/RedMentos/Aii/pull/2515), branch head `555e1ba2294dcd994436dff4c8dae8fc8b79fb68` (code commit `1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7`; later commits are handoff/board/ledger/workplan only), adds teacher-forced target-token log-probability scoring to the pinned llama.cpp receiver, binds scores to target/input/model/binary hashes and native revision/version, and carries the exact Perception-owned utility evaluator from #2511. The bounded cohort collector is in-memory only (160 receipts max); no text, token IDs or vectors are persisted.
+- PR #2515 is stacked on Core #2512 (current base head `10c2f66f8c110516e02d165e2b60183199527116`), which consumes Perception #2511. All three remain draft dependencies, not a release.
+- The tokenwise probe currently produces only `LATENT_CANDIDATE` receipts. The other seven evaluator conditions and the full held-out matrix are NOT_IMPLEMENTED. No task utility or learned latent coupling is proven.
+
+## Exact evidence boundary
+
+- LOCAL_LINUX: isolated C++17 log-sum-exp/token-logprob helper compiled with `-Wall -Wextra -Werror` and passed equal-logit, invalid-index, NaN, +Inf and all-∞-negative checks.
+- Full Aii checkout and full pytest: NOT_RUN because the local runner has no checkout and GitHub DNS resolution failed.
+- Exact-head GitHub CI for #2513/#2515: not yet observed at checkpoint. Do not infer success from parent PRs.
+- No real GGUF was downloaded or loaded; no real native target score exists. The Python receipt/cohort tests are synthetic and cannot establish model quality.
+- No Redmi hardware was connected. `REDMI_UNVERIFIED`; no APK installed, no phone permission changed, no model/weight changed, no update request sent. Android API behavior is not device-verified.
+
+## Next executable step
+
+Core must build the eight-condition source/session-bound matrix (`NO_MESSAGE`, `EXACT_MESSAGE`, `LATENT_CANDIDATE`, `ZERO`, `SHUFFLE`, `REPEAT`, `OOD`, `ENTITY_SUBSTITUTION`), collect at least 20 held-out task groups across at least two sessions and two task families, run teacher-forced target scoring against a pinned real GGUF on LOCAL_LINUX, and require the latent candidate to beat every control. Even then, token likelihood is only a utility proxy—not semantic correctness or generated-answer correctness. Termux/Redmi evidence remains a separate authorized device test.
+
+---
+
+# Current V14 handoff — Research & Perception Run 19 (2026-11-25)
+
+**User action: keine Aktion nötig.** No Termux command, restart, UPDATE_REQUEST, model/weight download or swap, permission change, or device-data mutation is needed or authorized by this checkpoint.
+
+## Verified release and device boundary
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` read back at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Exact SHA has 22/22 observed GitHub Actions workflow runs SUCCESS, including staged/integrated regression, runtime deployment integrity and two-checkout migration. This is CI evidence, not a 20-turn correctness/performance acceptance.
+- Latest available private V13OBS #115 receipt (updated 2026-11-24 09:28:11 UTC) reports that same SHA installed, updater enabled and pipeline/dashboard UP_TO_DATE. The AI runtime is nevertheless `STOPPED_BY_USER`, autostart false and model process stopped. The last stored short C3 turn was 7 tokens with 2.046 s TTFT from 358 admitted tokens; correctness was not scored. B1/B2 still have zero valid offers and failed native attempts; native latent exchange and C3 semantic use are false.
+- Read-only relay requests #915–917 (PIPELINE_STATUS / DIAGNOSTICS / HEALTH) had no authenticated response at last poll. The #115 snapshot is historical, not a fresh current-state receipt. Keep REDMI_UNVERIFIED for current functional acceptance. Do not restart a user-stopped runtime.
+
+## Current Perception/latent integration candidate
+
+- Draft PR [#2506](https://github.com/RedMentos/Aii/pull/2506), branch `research-perception/v14-native-input-bridge-20261125-run19`, tested code/test SHA `c4b73ab2d792b4be6d4c673d23233f8fb07c9274`; subsequent commits are handoff/workplan/ledger/board-only; use the linked PR for its current live head, stacked on Research/Perception #2503 at base `664aff9553c64f3b96eb987bf3ffdefd207933a3`.
+- Adds `build_native_input_embedding_tap_manifest_from_extractor_output()` in `v13/code/v13/native_input_embedding_tap.py`. Core can pass its complete native extractor wrapper result as one object; the bridge rejects non-COMPLETE status, extra/missing fields, installed-model SHA drift and disagreement between wrapper hashes and the native receipt before building the existing source/token/event/generation/model-bound manifest.
+- Exact adapter workflow [45673125410](https://github.com/RedMentos/Aii/actions/runs/45673125410): compile PASS; 73 tests PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Staged/integrated regression [45673125502](https://github.com/RedMentos/Aii/actions/runs/45673125502) completed SUCCESS: integrated 424 passed / 3 skipped / 58 subtests; staged runtime 255 passed / 10 skipped / 47 subtests; two-checkout migration sub-suite 39 passed / 17 subtests. These are GitHub-hosted synthetic/Linux integration checks, not Redmi deployment or device acceptance.
+- LOCAL_LINUX isolated helper reproduction: 7/7 PASS with a stubbed manifest-builder dependency. Full local Aii checkout/pytest NOT_RUN: no checkout mounted and `git ls-remote` failed due unavailable GitHub DNS.
+- Core PR [#2505](https://github.com/RedMentos/Aii/pull/2505), exact head `298b96efba5bdbd07ac845b5e22e799ef742350d`, has CI [45665062470](https://github.com/RedMentos/Aii/actions/runs/45665062470) PASS: Python 3.13/3.14 wrapper tests, pinned llama.cpp Linux native compile, and Android arm64-v8a cross-compile. This is not a real GGUF row read and not a Redmi execution.
+- #2506 is a typed bridge only: it is not yet called by `Cognition.tap`, does not persist rows in the runtime, and does not prove native model-to-model utility. #2503, #2505 and #2506 are separate draft stacks that Core/Boss must compose explicitly. B3 remains OFF; NOT_RELEASED.
+
+## Next executable step
+
+Core must compose the #2505 extractor with the #2503/#2506 Perception contract, call `build_native_input_embedding_tap_manifest_from_extractor_output()` from the actual `LlamaRunner.tap`/`Cognition.tap` path, and persist the manifest with trusted SourceRef, event/generation, sender/receiver model and tokenizer/tap revisions, model/binary hashes and blob identity. Then run a real small GGUF row read, collect source-disjoint sender/receiver pairs, and compare receiver-task utility against exact-message, no-message, zero, shuffle, repeat and OOD controls. Keep final-RMSNorm sender activations, receiver input-embedding rows and event-pooled `LATENT_PREFIX_V1` distinct.
+
+## Existing failures and research note
+
+- Perception #2483 remains DRAFT: staged/integrated run 45633224199 reported 19 failures, 236 passed, 10 skipped, 2 errors and 47 subtests; dominant failures are stale `audio_voice_cues.py` and `runtime.py` source pins. Two-checkout migration run 45633224662 returned PARTIAL instead of UPDATED. Do not weaken source-hash gates; the cross-owner pin chain needs coordinated repair.
+- R-150 adds an abstract/artifact-README review of Marincat, arXiv:2609.11365 (2026-09-10 preprint): cross-initialization latent interfaces failed the reported frozen alignment ladder and one inherited interface caused negative transfer in a bounded 17-state experiment. Full paper was not reviewed. The public artifact repository is MIT; separate checkpoint/weight licensing was not verified and nothing was reused. V14 already binds adapters to exact sender/receiver model hashes, revisions, tap IDs and tokenizer revisions; preserve pair-specific fitting and held-out utility gates.
+
+Historical entries below remain intact. No master/Canon bytes were changed.
+
+---
+
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
+
+The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
+
+Overlapping windows are generated only when requested in bounded NumPy batches. Prefix counts make strict missing-window checks independent of input length; estimated batch allocation is capped at 256 MiB. Every model receives the same `InputBundle` (X, seasonal S, calendar). The test split remains locked until exact preregistration/config/split/data hashes match and the access log has been flushed and fsynced.
+
+**Evidence boundary:** exact Python 3.13/3.14 M1 CI is queued, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for CI and fix failures; then implement BASE adapters on the common InputBundle, followed by the two-stage JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state is separate from M1.
+
+---
+
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:43 UTC)
+
+The DATA path now has a bounded-memory route for the real UCI file:
+
+- `ArrayDataset.from_uci()` validates the file in two passes and fills a float32 matrix directly; it does not construct a Python object for every minute.
+- `iter_batches()` creates overlapping windows only when needed. Missing-window checks use prefix counts; batch allocation is capped at 256 MiB.
+- Every model receives the same `InputBundle`: X context, horizon-aligned seasonal S and calendar features. Disabling calendar creates a zero-width calendar tensor, not a different data route.
+- Test batches remain locked until exact preregistration/config/split/data hashes match and the audit event is flushed and fsynced.
+
+**Evidence boundary:** exact M1 GitHub Actions CI is queued/pending, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for exact Python 3.13/3.14 CI; fix failures; then build BASE adapters on the common InputBundle, followed by JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state remains separate from this M1 experiment.
+
+---
+
+# M1 experiment — latest implementation checkpoint (2026-11-23 12:34 UTC)
+
+The M1 DATA implementation is present on the release-development branch. It now rejects non-finite measurements, treats common missing markers case-insensitively, requires every seasonal lag to be at least the forecast horizon, validates rows/channels/timestamp continuity at both normal dataset construction and hash-gated test access, and tests exact seasonal alignment plus missing seasonal-source rejection.
+
+- Current branch HEAD: `8fb5a61361e34862f8510f7f2c14c43cc9cd2952` (32 commits ahead of integration baseline `b20e9b1f3dd53af472055adb43da628785494ec4`).
+- M1 GitHub Actions runs: push `45175650226` and pull_request `45175661600` are **QUEUED**, not passed.
+- No local full suite, real UCI data run, model training, weight update or Redmi validation. M1 remains [ENTWURF]; no test-year access.
+- Next: wait for exact CI result, fix failures, then implement common InputBundle and baseline adapters before JEPA/direct-MAE PROBE. Preserve the M1a/b/c gates and all equal-input/parity controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater status remains governed by the existing authenticated receipt below.
+
+---
+
+# Boss & Integration — current verified handoff (2026-11-23)
+
+**No user action is required. Do not run a manual Termux command or send a duplicate update request.** The existing authenticated auto-updater is enabled.
+
+- Current release branch gpt6/v13-private-remote-bridge-20261111 = b20e9b1f3dd53af472055adb43da628785494ec4. PR #2429 is merged; exact merge-SHA push CI is 37/37 SUCCESS, including staged-runtime and integrated-regression.
+- New code: source-bound ActionSelection SourceRef lineage, source-disjoint T8 cohorts, and Memory-forget checkpoint restore/invalidation with source-verified replay. This is Store/SQLite checkpoint rollback/replay, not native body-weight unlearning, trained B3 latent coupling or Redmi proof.
+- IH-H12 durable output-commit and C7 persisted-receipt gate is merged via #2434 at 69e77bc (39/39 exact push check-runs SUCCESS).
+- Latest PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from 10:55:05 UTC, before final b20e9 CI green. Auto-update is enabled; b20e9 installation is not confirmed. UPDATE_REQUEST #737 was already acknowledged QUEUED; do not duplicate.
+- Last stored diagnostics: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH: 1,209 MiB MemAvailable and 1,030 MiB disk; LEARNING_STATUS unavailable.
+- Local full Aii suite BLOCKED / NOT_RUN (no checkout and GitHub DNS unavailable). Isolated SQLite 3.46.1 JSON1 smoke passed, but it is not a project or Android test.
+- Highest next integration: recompose #2370 fair B1/B2→C4→C3 on b20e9; old branch 193 ahead / 34 behind and ~1.95 s/body synthetic slices do not solve 53.2/54.2 s native timeouts. Preserve both bodies and require useful source-bound offers consumed by C4/C3.
+- Production ActionSelection still records only the event source; all admitted Memory/observer/Enlightened context SourceRefs must be emitted by the real producer.
+- #2433 remains draft with 3 CI failures (path vs path_id assertion and stale attention.py pin). #2372 temporal JEPA and #2405 episodic recall remain stacked on non-release branches and must rebase.
+- Docs PR #2378 remains unmerged: 117 ahead / 34 behind and deletes 1,582 lines from Next Action. Research R-090–R-107 was ported append-only; historical Next Action and 1,255-heading Canon inventory are preserved.
+
+See [BOSS_INTEGRATION_RUN12_20261123.md](v14/handoffs/BOSS_INTEGRATION_RUN12_20261123.md) for exact evidence.
 
 ---
 
@@ -1715,3 +2020,507 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Boss & Integration — run 11, 2026-11-23
+
+**Current release development SHA:** 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e. PR #2425 is merged. Its source-preserving C3 prefill policy sets a normal-turn soft target (maximum 520 tokens), removes only explicitly redundant control layers, preserves complete history when that alone exceeds the soft target, and restricts whole-old-turn removal to the short-deadline recovery band. B1/B2 scheduling and learning permissions were not changed.
+
+**Exact evidence:** PR head ff2664e86c289748beec7387ea1da4dce10310f2 had 14 substantive PR workflows SUCCESS. The exact merged push SHA 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e has 21/21 observed Actions workflow runs SUCCESS, including staged-runtime and integrated-regression. Full LOCAL_LINUX Aii suite was NOT_RUN because no checkout is mounted and GitHub DNS is unavailable.
+
+**Redmi status:** Latest authenticated PIPELINE_STATUS #734 still reports aed1d2b826290c95c70356b5d8b864b5ef382be4 installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. After exact push CI, UPDATE_REQUEST #737 was acknowledged QUEUED. This is not installation proof. DIAGNOSTICS #735 reports the last stored turn FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens and 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. Correctness is UNKNOWN. Instant native residency sample showed 0 mapped processes; HEALTH #736 showed 1,178 MiB MemAvailable and 1,006 MiB free disk, with its runtime field unavailable. No new user turn or device mutation was performed.
+
+**Next internal work:**
+1. Wait for a separate PIPELINE_STATUS after #737. Do not issue a manual Termux command or duplicate UPDATE_REQUEST.
+2. Recompose the functional fair B1/B2→C4→C3 path from #2370 onto current release. Its head bea37b9 is 158 ahead / 12 behind and its latest 18-entry matrix had 16 queued, 1 skipped and 1 cancelled; do not merge it.
+3. JEPA/QA: #2426 temporal T8 (25 tests) and postcommit (17 tests) pass on Python 3.13/3.14, but optimizer-resume/staged fail on the QA-owned memory.py pin and migration is PARTIAL. Rebind the memory.py and downstream recovery/stage/deployer chain. Separately integrate the Store-RLock and transaction-time source-liveness checks from #2355; this generic promotion/forget race is not fixed.
+4. Preserve the complete 1,255-heading historical Canon inventory and continue clause→consumer→test→platform→negative-control→rollback mapping. B3 trained latent transfer, native voice/microphone, Android UI/background providers, permanent body-weight updates, sparse MoE and cross-organ self-edit remain open.
+
+**Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
+
+**User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception — run 11, 2026-11-25
+
+**Verified code checkpoint:** Draft PR #2489, branch research-perception/latent-alignment-audit-20261125-run11, implementation commit 8ebc18b322745dfb96b524e25933408597ae92eb. It adds a read-only audit of persisted LatentTapPacket records and updates R-007 from abstract-only to full-text review. The PR is OPEN / DRAFT / NOT_RELEASED; documentation checkpoint f0dddf93166bd9949a1be88748e66b720a889afd; code implementation remains at 8ebc18b322745dfb96b524e25933408597ae92eb. CI on implementation commit 8ebc18b: staged context/integrated regression, privacy scan and integration workflow SUCCESS; safe-additive workflow SKIPPED. On docs commit 8818a88: staged-runtime, privacy scan, runtime-integrity and Core same-turn checks SUCCESS; integrated-regression was IN_PROGRESS at the first poll, then completed SUCCESS in workflow run 45559754665. The final docs-only head f0dddf9 has no workflow run visible. This is PARTIAL CI evidence, not a fully green final head.
+
+**Exact local evidence:** LOCAL_LINUX / CPython 3.13.5: py_compile PASS; focused tests 9/9 PASS; CLI help PASS. Synthetic SQLite/blob fixture uses the actual V13 packets table columns. DB file hash was unchanged by the audit. This is not a real tap cohort, native model run, full Aii suite, or Redmi test.
+
+**User-visible effect:** no new production Runtime behaviour yet. The tool can later read paired B1/B2 LatentTapPacket artifacts without reading source text, loading a model, writing the DB, exporting vectors, or changing weights. It reports alignment only; it does not establish causal transfer or meaning. Its tap writer dependency is Core draft PR #2488. The whole-canon blocker #1984 and real-chat failure #1904 remain OPEN.
+
+**Device/deployment boundary:** The latest available V14 Perception handoff records a V13OBS #115 snapshot at 2026-11-24 09:28:11 UTC: installed Runtime/Dashboard were reported UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6 and auto-update enabled, but AI runtime was STOPPED_BY_USER, autostart false, and model process STOPPED; B1/B2 still reported TIME_BUDGET. This run received no fresh private receipt. Therefore current Redmi installation, updater and runtime state are not freshly verified; keep REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight swap, permission change or device mutation was performed. GitHub push is not deployment.
+
+**Next internal action:** Core should preserve the LatentTapPacket fields used by #2489 while integrating #2488. After that, only when the user has explicitly resumed the local runtime and native probe consent is active, collect at least 20 paired B1/B2 source groups from matching event/generation receipts and run the read-only audit. Any projector training or receiver injection requires a separate pair-specific experiment and review. Boss/Integrator should reconcile this append-only note with the newer #2463/#2486 documentation branches and add the audit evidence tool to the shared board/workplan after review.
+
+**User action required: NONE.** No device action or model/permission change is needed.
+
+
+## Research & Perception correction — R-007 v2 source verification, 2026-11-25
+
+The full v2 HTML is now confirmed as arXiv:2608.16347v2, revised 2026-11-09 (not the August v1). It explicitly links Zenodo DOI 10.5281/zenodo.24088479 and states: code MIT; data/documentation CC BY 4.0; archive includes concept-pair sets, extraction/projection/injection scripts, all 180 end-to-end trial texts, logs, pre-registration, and a result-recomputation script. The paper itself is CC BY 4.0. The Zenodo record was inaccessible from this run, so no archive files were inspected or reused; do not infer its dependencies or model-weight licences.
+
+This strengthens the research gate but does not change the code claim: PR #2489 implements a bounded read-only kNN-overlap proxy, not the paper's exact MNN or causal injection. The paper itself reports only one modest positive causal pair and warns that activation-level transfer removes the human-readable audit surface. Future V14 latent exchange must remain explicitly authorized, source/age/consent-bound and control-plane-auditable.
+
+
+
+CI follow-up (2026-11-25): workflow run 45559754665 later completed with both staged-runtime and integrated-regression SUCCESS. The final docs-only head had no new workflow run visible; the code itself is unchanged from tested implementation commit 8ebc18b.
+
+
+Shared queue follow-up: V14_WORK_BOARD.json ticket V14-006 was updated append-only on this branch. It now points to #2487 as the latest functional Perception candidate (focused 143/143 PASS; staged/integrated FAIL due the Core-owned stale recovery source pin; migration PARTIAL) and records #2489 as supporting read-only latent-audit evidence. V14-006 remains IN_PROGRESS_PARTIAL; the next step is Core pin rebinding and the signed RAW EAR/QA provider integration, not a claim of Android microphone proof.
+
+
+
+## Research & Perception — latent adapter bridge follow-up, 2026-11-25
+
+**Code:** PR #2489, branch `research-perception/latent-alignment-audit-20261125-run11`; latest code checkpoint `fdaee28e256b82e56059e475972ec62acd2b9d84` (adapter bridge), with subsequent exact-head CI still pending at this note. The PR now adds `latent_adapter.py` and a Store-backed `fit_from_tap_records()` path alongside the read-only alignment audit. It pairs exact source/event/generation receipts, uses one observation per source ID, requires at least 20 source groups, performs a deterministic source-disjoint split, fits a low-rank PCA+ridge adapter, and supports atomic hash-checked checkpoint save/load. Projection is standard-library; NumPy is lazy and offline-only.
+
+**Evidence boundary:** this is code and synthetic validation only. No real paired tap cohort exists in the current receipts, so no real adapter has been trained. No gradient-based learning, old-task retention, native receiver execution, task-level semantic utility, B1/B2/C3 body-weight change, or production B3 route is claimed. Model SHA values are caller-supplied and not verified against an installed manifest by this tool; model-weight licences remain unverified. Core's local-TTY/one-shot native-probe approval is not bypassed or invoked. The full Aii checkout is not mounted and container GitHub DNS fails, so exact repository pytest cannot run locally; only an isolated NumPy algorithm reproduction has been executed. Exact-head GitHub CI is pending.
+
+**User impact:** no production Runtime behaviour changes yet. The next useful step is to obtain >=20 real, source-disjoint B1/B2 tap pairs after Core's opt-in tap writer is integrated and the local Runtime is explicitly running. Then run audit + adapter fit, and only after held-out controls pass ask Core to wire projected rows through the existing local-TTY-approved native receiver. No model download/swap, permission change, updater request or device action is required. **User action: NONE.**
+
+
+## Research & Perception checkpoint — 2026-11-25 (Run 12)
+
+**No user action required.** The next bridge-contract decision belongs to Core/Harness; this checkpoint does not request a model download, native probe, permission change, runtime restart or deployment.
+
+- PR [#2496](https://github.com/RedMentos/Aii/pull/2496), branch `research-perception/latent-event-scope-20261125-run12`, code-bearing head at checkpoint `a1d8fe6c82ffd4573d81ab69769d12dce50827a6`; stacked on #2489 head `314e4e651da54f8168508c0d0f2e8bac2ca8ed2e`.
+- Adapter schema v2 distinguishes `PAIRED_VECTOR`, `EVENT_POOLED_NONZERO_MEAN` and `TOKENWISE`. The persisted B1/B2 final-RMSNorm fitter is event-pooled; it can no longer be silently broadcast over token rows. A native receiver-v3 input builder now requires a tokenwise adapter bound to the receiver's explicit input-embedding tap.
+- LOCAL_LINUX isolated helper/receiver-validator reproduction on CPython 3.13.5: `py_compile` PASS; 10/10 contract/position tests PASS. The local receiver validator is an isolated stub, not the exact repository module. This is not the exact repository test suite. Full local Aii tests NOT_RUN because no repository checkout is mounted. Exact staged/integrated CI remains IN_PROGRESS at last poll; runtime-deployment integrity CI is SUCCESS. No staged/integrated PASS claimed.
+- Research R-141 records Zhang, arXiv:2606.03280 (2026-06-02), **abstract-only**: reported cosine near 0.97 did not yield Pythia-160M→410M multi-hop utility. It reinforces that alignment/MSE is not semantic transfer.
+- Current Core receiver context: PR #2488 has reported 17/17 exact checks, pinned llama.cpp Linux build/selftest PASS and Android arm64 cross-compile PASS, but no GGUF model pair or Redmi test. The receiver still expects contiguous tokenizer-prefill rows; it has no `LATENT_PREFIX_V1` mode.
+- REDMI_UNVERIFIED / NOT_RELEASED. Latest available consented V13OBS #115 snapshot remains 2026-11-24 09:28 UTC: installed target `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled in that snapshot, runtime STOPPED_BY_USER, zero valid B1/B2 offers. No fresh authenticated receipt was obtained here; do not treat the snapshot as current.
+- Next: Core/Harness must choose between a real receiver input-embedding tap plus paired tokenwise cohort, or a separately typed `LATENT_PREFIX_V1` mode for pooled event vectors. Only then can a one-shot approved native receiver test be meaningful. Production B3 stays OFF until receiver-side task utility, negative controls, OOD and rollback pass.
+
+
+## Research & Perception checkpoint — 2026-11-25 (Run 14)
+
+**No user action required.** No model download/swap, new permission, device command, native probe, runtime restart or deployment was requested or performed.
+
+- Research branch: research-perception/v14-token-span-alignment-20261125-run14b, based on #2496 head ace68f1fa44989101849a2c78087aaa03010b5d8. Current rebased branch checkpoint: a4ea0704af84f9567f6c0b7a750848198e794f74.
+- Code: latent_adapter.py now has a tokenwise schema-v3 path that aligns sender activations to receiver token spans by character overlap, requires at least 0.80 span coverage, binds each sequence to a source SHA-256 and records both tokenizer revisions. The native-input builder rejects a receiver tokenizer revision mismatch. The existing event-pooled schema-v2 path is unchanged and remains the only path fed by current persisted tap records.
+- Research R-143: full review of Deng, Liu & Zhu, arXiv:2610.22026v1 (2026-10-15). Its positive activation result depends on oracle layer/position alignment and one Qwen family; cross-family GPT-Neo→Qwen transfer collapses to controls. This supports adding source-span/tokenizer evidence, but does not prove our adapter semantically transfers.
+- Evidence boundary: the new span helper is a geometric alignment prerequisite, not task utility. Current persisted tap records do not contain per-token character offsets, so fit_from_tap_records() still produces event-pooled v2 adapters; the new v3 tokenwise path is not yet fed by real tap cohorts. Production B3 remains OFF, semantic_use_proven=false, and training/native authority remains 0.
+- Tests: exact repository tests have not yet run in this automation environment; the new Python 3.13/3.14 CI workflow is pending. No LOCAL_LINUX full-repository PASS is claimed.
+- Device/deployment: REDMI_UNVERIFIED / NOT_RELEASED. No fresh authenticated phone receipt, model pair, native task-utility test or updater deployment was performed. A GitHub push is not a deployment.
+- Next executable step: after focused CI, extend the native tap producer to emit verified tokenizer byte/character spans (without storing source text), then build a real paired cohort and run receiver-side task utility with answer-disjoint, mis-source, no-op, zero, shuffled, parity and OOD controls. Do not promote the adapter based on MSE/logit changes alone.
+
+
+## Research & Perception update — 2026-11-25 (Run 14b)
+
+**No user action required.** No model download/swap, device command, new permission, native probe, runtime restart or deployment was requested or performed.
+
+- Research branch: research-perception/v14-token-span-alignment-20261125-run14b. Latest verified code/test checkpoint before documentation-only updates: 10b07cedd60db0b61dcbd7fdc493ceb6f6c48d84. The branch then appended R-144 and this handoff/user-action update; re-read current HEAD before any further work.
+- Tokenwise adapter schema v3 remains a geometric candidate only. Test fixtures now use the declared list-vector input contract, and the holdout source-hash leakage test now mutates a complete source group consistently so it reaches the intended train/holdout leakage guard.
+- The read-only latent alignment audit now measures sender/receiver nonzero-position residual-energy ratios after event mean pooling. It quantifies within-event activation variation not reconstructed by one mean; it is not semantic information loss, task utility, native transfer or learning proof.
+- Local isolated Python reproductions: PASS for token-span helper input normalization and event-pool residual-energy arithmetic. Full repository local pytest NOT_RUN because no checkout is mounted in this execution environment.
+- Exact CI on code/test SHA 10b07ced: V14 latent token-span alignment #12 PASS; V13 runtime deployment integrity #2517 PASS. Current docs-only branch head must be rechecked. V13 staged context/integrated regression #5060 was still IN_PROGRESS at last poll.
+- Research R-144: full review of Chen et al., arXiv:2606.13594v2 (v2 2026-10-05). The method is dense per-layer/per-KV-group KV-cache alignment with reconstruction then generation training, not a one-vector hidden-state adapter. It reports 33/36 context-unaware Qwen3 task/pair wins but uses 4B/8B/14B models, 30k+2k training steps and estimated 27.2–30.2 MB/example cache payload. No official code release or model/data license reuse was verified. See V14_RESEARCH_LEDGER R-144.
+- Core PR #2499: the exact failure on df19e207 was a missing arm-probe call in its runtime test, not a lost PENDING record. This correction is posted in comment #7164132935. Core commit 8502afe adds the explicit arm step and updates expected preflight unload ordering; dedicated V14 native latent receiver staged-runtime workflow #911 PASS. This is staged control-path evidence, not a real GGUF task-utility test.
+- B3 remains OFF. No native GGUF task-utility, gradient/parameter diff, retention/restart, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED. A GitHub push is not a deployment.
+
+**Next executable step:** after the exact integrated CI finishes, coordinate with Core on the real tap producer's tokenizer byte/character offsets, then form a source-disjoint paired cohort and compare one-vector vs span/tokenwise receiver utility under context-aware and context-unaware conditions with zero, shuffled, mis-source, position, parity and OOD controls.
+
+## Research & Perception — final Run 14b integration CI (2026-11-25 13:47 UTC)
+
+**User action required: NONE.** No device action, model download/swap, permission change, runtime restart or deployment is requested.
+
+- PR #2501 code/test SHA 64eb3cf693f97f3f44999912858d651a1b682a01: focused V14 latent token-span alignment #14 PASS; V13 runtime deployment integrity #2519 PASS; V13 staged context/integrated regression #5062 PASS. The branch then received documentation-only updates; current head dfb954331c6fc41987ca4a7cb306dff976f20b75 contains no further code/test change.
+- PR #2501 remains OPEN / DRAFT, stacked on #2496; NOT_RELEASED. The adapter's tokenwise schema-v3 path is still a geometric candidate only. Current persisted taps do not provide the token offsets required to feed it with a real paired cohort.
+- Research R-144 reviewed dense cross-model KV-cache alignment. Its context-unaware results use large Qwen3 models, dense per-layer/KV-group transformations and substantial training; it is not a drop-in Redmi solution. The read-only event-pool residual-energy audit reports within-event variance only, not semantic utility.
+- Core PR #2499 head 8502afe: dedicated native receiver staged-runtime #911 PASS after its test added the missing explicit arm-probe call. This is fake-runner/staged control-path evidence, not native GGUF task utility or Redmi proof.
+- RAW EAR PR #2498: VAD comparator #595, optional NumPy backend #714 and runtime integrity #2522 PASS; staged/integrated #5065 FAIL at the next exact pin in Core/QA's recovery→stager→deployer chain. Details and ownership are recorded in V14-022 and the Run 13b handoff.
+- Full repository local pytest NOT_RUN; isolated Python formula reproductions PASS. No native model, persistent weight diff/retention, Android microphone, Termux or Redmi test. REDMI_UNVERIFIED / NOT_RELEASED.
+
+**Next internal step:** Core/QA rebind the recovery builder's audio-composition pin, then recompute the stager and deployer hashes in order and rerun staged/integrated/migration. Research then works with Core on a producer-side token-span contract and source-disjoint receiver task-utility evaluation. No user action is needed.
+ 
+## Research & Perception — Run 15, 2026-11-25
+
+**No user action required.** No model download/swap, native probe, device command, runtime restart, permission change, user-data mutation or deployment was requested or performed.
+
+- PR [#2501](https://github.com/RedMentos/Aii/pull/2501), branch research-perception/v14-token-span-alignment-20261125-run14b, exact code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2.
+- Tokenwise latent fit now binds sender and receiver activation rows to canonical SHA-256 digests; pair IDs and the aggregate alignment digest include those hashes. Tests reject a vector changed after alignment and a stale pair ID after an activation digest is recomputed.
+- Exact GitHub Actions: 45630124154 — 37/37 adapter tests PASS on Python 3.13 and 3.14, compile PASS, privacy scan CLEAN; 45630124121 — runtime-deployment integrity PASS on Python 3.11 and 3.14. LOCAL_LINUX isolated helper reproduction 3/3 PASS. Full local Aii suite BLOCKED/NOT_RUN: no checkout is mounted and git ls-remote fails because github.com DNS cannot resolve.
+- This remains a draft research candidate: no trusted tokenwise tap producer, real paired activation cohort, native GGUF pair, gradient/retention proof, receiver task utility or B3 production route. B3 stays OFF.
+- Latest available device information remains historical, not refreshed in this run: the consented V13OBS #115 snapshot from 2026-11-24 reported installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, auto-update enabled, and AI runtime STOPPED_BY_USER with model process stopped. No fresh private receipt was obtained; Redmi and current updater state are therefore REDMI_UNVERIFIED. GitHub push/PR is not deployment.
+- Next: Core to finish/review the separately typed LATENT_PREFIX_V1 event-pooled receiver in #2499; Research + Core to add a trusted tokenwise tap producer with packet/blob/event/generation/model/tokenizer/source-span provenance before any native receiver utility experiment.
+
+**User action required: NONE.** Do not run a manual Termux command or change models/weights. A future native probe requires a separate explicit local approval and fresh device receipt.
+
+ 
+### Device receipt refresh — latest available private V13OBS #115
+
+The latest available consented snapshot is timestamped 2026-11-24 09:22:33 UTC; no newer receipt was available in this run. It reports auto-update enabled and dashboard/runtime UP_TO_DATE at release SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but the AI runtime is STOPPED_BY_USER, autostart is false and the model process is stopped. Across the recorded five-turn sample, B1 and B2 each had two failed native attempts and zero valid offers; native latent exchange and C3 semantic use remain unproven. This does not validate PR #2501 or any new device behavior.
+
+**Updater/deployment:** the installed release is reported up to date; PR #2501 is still a draft research PR and is not a release. No UPDATE_REQUEST, restart, CHAT_SEND, shell, model/weight swap, permission change or data mutation was performed. Do not send a manual Termux command or restart the user-stopped runtime. Redmi acceptance for this candidate remains REDMI_UNVERIFIED.
+
+ 
+### Research lead R-146 — S-JEPA (full main-paper review)
+
+Nikos Giakoumoglou et al., arXiv:2611.09302v1 (2026-11-06), introduces a stochastic per-image JEPA latent with a target-conditioned posterior during training and a context-conditioned prior at inference. It reports small representation gains over I-JEPA and useful uncertainty/diversity, but the uncertainty-error correlation is weak within images (mean Spearman about 0.16; positive in 76%), the latent is global per image rather than per target region, and uncertainty maps need repeated predictor passes. Training used ViT-B/L and four A100 GPUs; this is not a Redmi candidate. The paper's code URL was not retrievable and its license/weights are unverified, so nothing was reused. Potential V14 experiment only: a tiny gated stochastic residual z for ambiguous temporal outcomes after trusted B3 taps exist; deterministic fast path remains. Do not sample every turn or promote on uncertainty alone.
+
+
+## 2026-11-25 verified Research/Perception checkpoint — token-span provenance
+
+A follow-up to tokenwise adapter PR #2501 now adds exact UTF-8 byte-piece spans and validates the full sender/receiver span manifest plus recomputed overlap coverage. The code is on research-perception/v14-token-span-manifest-integrity-20261125-run16; local isolated Linux reproduction passed 6/6, while the exact repository workflow is pending. This is not a native latent-learning or Redmi result.
+
+The remaining integration is Core-owned: LlamaRunner.tap must request llama.cpp with_pieces=true, map content-token pieces to the exact activation rows while accounting for BOS/special tokens, and persist source/tokenizer/event/generation/blob provenance. Until that exists, there is no trusted tokenwise producer and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 receiver is a separate contract.
+
+**Redmi/deployment:** REDMI_UNVERIFIED; no newer device receipt was obtained in this run. No deployment, restart, model/weight swap, permission change or device-data change was performed. The previously available private receipt is historical only; do not infer that the app/runtime is currently running from the GitHub release head.
+
+**User action:** keine Aktion nötig. No Termux command, model download or approval is required for this research/code candidate.
+
+#### Run 16 CI/device follow-up (2026-11-25)
+
+PR #2502 is open as a draft, stacked on PR #2501: https://github.com/RedMentos/Aii/pull/2502. Current code/test SHA: 408c074d3d07339d3d8f4bab47139a5279a13d40. Exact adapter workflow RUN_45643108802: 42/42 PASS on Python 3.13 and 3.14; public privacy scan CLEAN. Runtime-deployment integrity RUN_45643108912: PASS on Python 3.11 and 3.14. The broader staged/integrated regression RUN_45643108732 was still IN_PROGRESS at the last check. The first attempt on 6955caf failed one shuffled-pairing negative fixture; the fixture was corrected and the new exact head passed.
+
+Latest available private V13OBS #115 snapshot updated 2026-11-24T09:28:11Z: updater enabled, pipeline/dashboard/runtime UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. One last C3 turn: 7 tokens, 2.046 s TTFT, 358 prompt tokens; not a sustained acceptance result. B1/B2 remain failed in the recorded sample; no native latent exchange or C3 semantic use. No newer receipt in this run; REDMI_UNVERIFIED. No device command or deployment was performed.
+
+Next integration owner: Core must wire the trusted token-piece tap producer and preserve the separate event-pooled LATENT_PREFIX_V1 contract. User action: keine Aktion nötig.
+
+
+## 2026-11-25 Run 16 final checkpoint — PR #2502
+
+PR: https://github.com/RedMentos/Aii/pull/2502
+Branch: research-perception/v14-token-span-manifest-integrity-20261125-run16
+Code/test SHA: fa2673340f2dce78dcf7952b802957bf8b2f9212
+
+The adapter now verifies exact UTF-8 byte pieces, llama.cpp token IDs, unique content-token-to-prefill-row mapping, the full alignment manifest and recomputed overlap coverage. Exact CI: 47/47 adapter tests on Python 3.13/3.14; privacy scan CLEAN; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (424 passed/3 skipped/58 subtests; staged runtime 255 passed/10 skipped/47 subtests). Local isolated helper reproduction 10/10 PASS. Full local Aii checkout remains BLOCKED/NOT_RUN.
+
+Core still needs to call build_tokenwise_tap_manifest() from LlamaRunner.tap and persist the result in Cognition.tap; until then the trusted tap producer is NOT_IMPLEMENTED and B3 remains OFF. The event-pooled LATENT_PREFIX_V1 route remains separate.
+
+Latest available private V13OBS snapshot: 2026-11-24T09:28:11Z, historical only. Three read-only private relay requests were created at 2026-11-25T15:25:01Z: PIPELINE_STATUS #915, DIAGNOSTICS #916, HEALTH #917; no receipt had arrived at the last poll. Do not treat the old receipt as live. No device command, update request, restart, model/weight/permission/data change was performed.
+
+**User action:** keine Aktion nötig. No Termux command, model download or swap is needed.
+
+
+## Research & Perception — Run 17 verified next action (2026-11-25)
+
+**User action required: NONE.** No device command, update request, runtime restart, model/weight download or swap, permission change, or data mutation was performed.
+
+- PR #2502 remains OPEN/DRAFT, stacked on #2501. Exact current code/test head: `2f74fa94d2ad4d0004ec61ea128bdec4d320e569`. New source-bound native input-embedding manifest contract is in `v13/code/v13/native_input_embedding_tap.py`; tests are in `v13/code/tests/test_native_input_embedding_tap.py`.
+- Exact CI: adapter workflow 45648811640 — 53/53 PASS on Python 3.13 and 3.14; privacy scan CLEAN. Runtime-deployment integrity 45648811730 — PASS on Python 3.11 and 3.14. Staged/integrated regression 45648811577 was still IN_PROGRESS at last poll. Full local Aii checkout/pytest NOT_RUN: no checkout mounted and local GitHub DNS unavailable.
+- The new module validates rows returned by a native receiver input-embedding extractor; it does not implement that extractor or wire `Cognition.tap`. Core PR #2499 currently pins llama.cpp `b29c606e...6c4`, which lacks the row-select API. R-148 identifies the MIT upstream row API at `a8fad21e...`, but it lives in a staging/WIP header and requires exact pin/build/ABI review.
+- The next executable step is Core's native row extractor + producer integration, then a source-disjoint paired cohort and receiver-task controls. Keep final-RMSNorm taps, input-embedding taps and event-pooled LATENT_PREFIX_V1 separate.
+- Latest available consented private V13OBS #115 metadata remains historical (2026-11-24 09:28 UTC): auto-update enabled and installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, autostart false and model process stopped. No newer authenticated device receipt was available in this run; REDMI_UNVERIFIED. The release branch HEAD is 8d93236; PR #2502 is not a release or deployment. No UPDATE_REQUEST or restart was sent.
+
+
+### Run 17 final CI and PR-ref correction — 2026-11-25
+
+The exact code/test head `2f74fa94d2ad4d0004ec61ea128bdec4d320e569` is fully CI-green: adapter 53/53 PASS on Python 3.13/3.14; runtime-deployment integrity PASS on Python 3.11/3.14; staged/integrated regression PASS (integrated 424 passed, 3 skipped, 58 subtests; staged 255 passed, 10 skipped, 47 subtests). These are CI/Linux checks only; no local full checkout, native GGUF, Android build or Redmi test was performed.
+
+The documentation-only commit `8f057c3d83d88bb5eadfc6a6629b3afce1b81e3d` is visible via the branch ref and the updated ledger/workplan/next-action/handoff files were read back. However, GitHub's PR #2502 API still returned head `2f74fa94...` rather than `8f057c3d...` at the last poll. Treat PR synchronization as UNVERIFIED; do not claim the docs commit is part of the PR until the PR head readback agrees. No user action is needed.
+
+
+## Research & Perception — Run 18 handoff (2026-11-25)
+
+**User action required: NONE.** No model/weight download or swap, permission change, updater action, device command, runtime restart or data mutation was performed.
+
+- Draft child PR [#2503](https://github.com/RedMentos/Aii/pull/2503), stacked on Research/Perception #2502. Current branch: `research-perception/v14-native-input-tap-receipt-20261125-run18`; current PR head is the linked GitHub PR head; exact module/test blobs `5b20b0b09ff5199a1e205f9ef59b18a2f829c94b` / `292aa3b997f427e0b1775835cf9b0a477e96565d`.
+- `native_input_embedding_tap.py` schema v2 binds the native selected-row extractor receipt: exact API symbol/header and staging status, llama.cpp revision, extractor binary SHA-256, installed model revision/SHA-256, source tensor type, F32 output, vocabulary/dimension, ordered requested token IDs and exact element count. The receipt is included in the manifest digest. It does not extract rows or wire a runtime consumer.
+- R-149 corrects R-148: upstream commit `a8fad21` is an unrelated MTP hidden-state change. `llama_model_get_tok_embd_rows` is present in upstream llama.cpp commit `2851b3bcbf8d993a2243ae751c0a7dfa8e944a40` (2026-10-16, MIT); the header is staging/WIP. Current receiver pin `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` predates the API.
+- LOCAL_LINUX isolated CPython 3.13.5 reproduction: py_compile PASS, 19 focused positive/negative tests PASS. Exact GitHub Actions run 45658242985 on code/test SHA `787758a885294d63c614c4171c4a528ecc303dc8`: Python 3.13 and 3.14 each compile PASS, 66 tests PASS, privacy scan CLEAN. Current module/test blobs were read back byte-identical to the tested commit; subsequent branch changes are documentation/handoff only. Full local Aii checkout remains NOT_RUN.
+- No native llama.cpp build, real GGUF selected-row read, Android arm64 build, Termux or Redmi proof. B3 remains OFF; no learned semantic utility or production latent communication is established.
+- **Core next action:** implement the native selected-row producer against an exact API-bearing llama.cpp revision; prevalidate all token IDs before the upstream call, verify actual model/extractor hashes, echo the requested IDs, tensor type and pinned revision, and emit a receipt only when the API returns exactly `n_tokens × n_embd`. Then test real GGUF sender/receiver pairs, source-disjoint receiver utility, zero/shuffle/OOD controls, gradients/parameter diff, retention, restart/rollback, and only then request consented Redmi validation. Keep final-RMSNorm sender activations distinct from receiver input embeddings and keep event-pooled `LATENT_PREFIX_V1` separate.
+- Latest consented private device evidence available to this run is not fresh enough to claim deployment or functional chat. No new HEALTH/PIPELINE_STATUS/DIAGNOSTICS receipt arrived during this run; keep `REDMI_UNVERIFIED`. Do not issue a manual Termux command or infer device installation from GitHub push.
+
+
+
+## Research & Perception Run 20 — verified next action (2026-11-25)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change or data mutation was performed. PR #2507 is a draft stacked Perception change, not a release or deployment.
+
+- Code/test SHA 29cda16ef3e3ce436e5f0d59eb418c030626f024; PR #2507.
+- LOCAL_LINUX CPython 3.13.5 isolated stub-bound tests 7/7 PASS; py_compile PASS. Full local Aii checkout NOT_RUN.
+- Exact PR CI 45678205802: 80/80 PASS on Python 3.13 and 3.14; exact push CI 45678196840: 80/80 PASS on both; privacy scan CLEAN. Completed PASS: staged-runtime 255 passed, 10 skipped, 47 subtests; integrated-regression 424 passed, 3 skipped, 58 subtests. Both jobs in run 45678205707 succeeded.
+- The helper pairs the stored sender final-RMSNorm prefill tap with the receiver's selected input-embedding rows using exact UTF-8 byte-piece overlap. It is in-memory diagnostic only; no training, persistence, inference or B3 enablement.
+- Core integration is still missing: native tokenizer piece streams and selected receiver rows must be wired into Cognition.tap, then consent-gated source/session-disjoint utility and negative controls must run.
+- No fresh authenticated device receipt was obtained during this run. Prior device evidence is historical and is not treated as current; REDMI_UNVERIFIED. No automatic deployment from this draft PR.
+- Keep LATENT_PREFIX_V1 event pooling separate from tokenwise input-row pairing. Do not install or swap models; the selected-row API remains staging/WIP and the native memory cost is unmeasured.
+
+
+Research note: Core may evaluate co-locating selected-row extraction and native receiver decode in one model process to avoid a second model load. This is not implemented or measured; no user/device action is needed.
+
+
+## Research & Perception Run 20 — cross-lane learning evidence
+
+No user action required. The staged/integrated CI run 45678205707 passed its selected regression jobs, but its WorldJEPA A→B→A cohort is synthetic. It showed numeric updates and exact rollback alongside B-task interference: B actual-action loss was worse than zero and shuffled controls in all 12 arms. Uniform replay reduced one forgetting metric but did not restore action utility. This is a research handoff to JEPA & Memory, not a request to change installed models or device settings.
+
+
+Final status correction: staged/integrated CI run 45678205707 completed PASS (staged-runtime 255 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests). This is CI evidence only; no real GGUF or Redmi test, no release and no user action.
+
+
+
+## Research & Perception Run 21 — session-disjoint native tokenwise fitter (2026-11-25)
+
+**User action: none required.** Draft PR [#2508](https://github.com/RedMentos/Aii/pull/2508), branch `research-perception/v14-native-tokenwise-session-fit-20261125-run21`, current exact head `c246a56a50f06ca6d8e1ee560e6caa6fcd426a99`; stacked on #2507 at creation. It adds:
+
+- TOKENWISE adapter schema v4; each pair carries a session ID and the alignment digest binds that session.
+- Fitting now requires at least two independent sessions on each side and rejects session overlap, in addition to existing source-ID/source-hash separation.
+- `fit_adapter_from_native_pair_records()` validates record/source/session/model/tap/tokenizer bindings and returns a low-rank PCA+ridge alignment candidate plus a digest-bound fit manifest.
+- The fitter is in-memory only. No persistence, native receiver inference, model-weight update, training authority or B3 enablement.
+
+**Verification:** LOCAL_LINUX CPython 3.13.5 isolated stub-bound wrapper harness 3/3 PASS (positive session-disjoint cohort, overlapping-session negative control, tampered-session negative control). This is not the exact repository test suite. Full local Aii checkout is absent; exact `py_compile` and repository pytest are NOT_RUN. No exact PR #2508 Actions run was visible at last poll. Parent #2507 CI is not evidence for this child PR.
+
+**Consumer and limitations:** NOT_RUNTIME_WIRED. Core must compose #2505 native selected-row extraction, Cognition.read_tap and #2507 pair assembly, then call this fitter only under explicit local consent. It does not prove semantic receiver utility or actual JEPA/gradient learning. The next gate is real GGUF receiver-task utility against exact-message, no-message, zero, shuffled, repeat and OOD controls, plus retention/restart/rollback.
+
+**Device:** private V13OBS #115 last updated 2026-11-24T09:28:11Z; no newer receipt. The newest recorded turn had C3 native output but B1/B2 were not attempted in that turn; earlier B1 attempts failed and native latent exchange was unproven. Read-only relay issues #925–927 had no response at last poll. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED. No device command, model/weight/permission/data change or deployment occurred.
+
+## Research & Perception Run 22 — verified next action (2026-11-25)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, data mutation or deployment was performed.
+
+- Draft PR [#2511](https://github.com/RedMentos/Aii/pull/2511), stacked on #2508, adds receiver-manifest row binding and an opt-in anchor-preserving residual input builder. Code/test SHA: 87c8c7ecdf18ac42ad2753568991a2c4e32078ae.
+- LOCAL_LINUX CPython 3.13.5 isolated harness: 4/4 PASS; full Aii checkout and exact repository tests NOT_RUN. Exact adapter-contract 3.13/3.14, staged/integrated, offline and privacy checks are QUEUED on the current PR head.
+- The new builder returns native receiver prefill geometry but is not yet called by Core's runtime capture/receiver lane. It does not prove semantic utility or trained latent exchange.
+- Core PR #2510 is the next integration owner. It should consume the Perception helper only after review and under the existing explicit native-probe approval.
+- Owner-read DIAGNOSTICS produced NO_LIVE_RECEIPT in this checkpoint. The last authenticated private snapshot (2026-11-24) reported auto-update enabled and runtime/dashboard UP_TO_DATE at 8d93236, but also AI STOPPED_BY_USER; this is historical, not proof of today's installed state. No release is ready to deploy. REDMI_UNVERIFIED; B3 OFF; NOT_RELEASED.
+- The native selected-row extractor and receiver still need real GGUF utility comparisons, exact/no-message/zero/shuffle/repeat/OOD/entity-substitution controls, retention, restart/rollback and resource measurements.
+
+
+---
+
+## Core & Harness — tokenwise native receiver consumer (2026-11-25)
+
+- Core PR [#2512](https://github.com/RedMentos/Aii/pull/2512), branch `core/v14-tokenwise-native-receiver-consumer-20261125-run1`, current head `6ff13917a9736a292716becdb2e50a1ac7f9b288`. It is stacked on Core #2510 and carries Perception #2511 as a second parent so the exact anchor-preserving helper is consumed without rewriting either owner branch.
+- New in-memory path: session-disjoint TOKENWISE adapter fit → held-out current-event validation → anchor-preserving receiver-input construction → separately approved native receiver probe. It consumes `NATIVE_RECEIVER`, not `TOKENWISE_PAIR_CAPTURE`, and verifies source bytes, event/generation/session, model revisions and file identities, Runtime lease, queue and known managed-model process census.
+- Pair records, adapter and activation vectors are not persisted. No model weight update, generated answer, production B3 route or semantic utility claim.
+- Exact-head CI on `6ff1391`: queued at this checkpoint. Earlier head `27c4788` compiled on Python 3.13/3.14 and ran 18/19 focused tests; the only failure was a test comparing `Path` to `str`. Corrected in `6ff1391`; exact rerun still required.
+- LOCAL_LINUX full Aii checkout is BLOCKED: no checkout and `git ls-remote` failed DNS. No local repository pytest or native GGUF run. REDMI_UNVERIFIED; no device receipt, install, model swap, weight change or deployment.
+- Next: read exact #2512 CI, fix any remaining failures, then arrange an explicitly consented local native-GGUF probe on a reachable authorized environment. Do not promote B3 until task-level held-out utility beats exact/no-message/zero/shuffle/repeat/OOD controls and passes retention/restart/rollback.
+
+
+## Research & Perception Run 40 — verified handoff (2026-11-26)
+
+**Nutzeraktion: keine Aktion nötig.** No Termux command, UPDATE_REQUEST, runtime restart, model download/swap, weight change, permission change, user-data mutation or deployment was performed.
+
+- Draft PR [#2524](https://github.com/RedMentos/Aii/pull/2524), current code/test head `8f7c73065e8f92e5988fe12fa88038dc41ece530`, adds a read-only sampled K/V state-effect consumer to the native task-utility evaluator. Same input digest must reproduce the same sampled K/V signature; partial coverage and geometry drift fail closed. Aggregate state differences are reported separately from the existing teacher-forced likelihood gate. No raw K/V is persisted; no MAC/authentication, semantic proof, training authority or B3 route is created.
+- Exact #2524 CI: focused tests **26/26 PASS** on Python 3.13/3.14; pinned Linux llama.cpp build/selftest PASS; Android arm64 cross-compile PASS only; offline RuntimeDeploy Python 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated FAIL because Core's integrated candidate still pins the previous `v13/native_latent_receiver.py` blob: staged runtime 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression 1 failed. This is Core-owned; Perception did not edit those pins.
+- Core PR [#2523](https://github.com/RedMentos/Aii/pull/2523) has 7/7 CI workflows SUCCESS at `241743cfe7728586c3d4e07c88bfc3da1387e04f`, but its exact source shows a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It is based on #2519 and does not yet consume #2524's K/V summary. Core has been asked to stack/rebase #2523 onto #2524 and refresh the stage pins; normal chat remains a separate open acceptance gap.
+- LOCAL_LINUX: CPython 3.13.5 scratch helper/aggregate reproduction 5/5 PASS; full Aii checkout/pytest NOT_RUN (no mounted checkout; GitHub DNS unavailable). No real GGUF task cohort, generated-answer correctness, native learned latent coupling, gradient/parameter diff/retention, Android/Termux or Redmi test. B3 OFF; REDMI_UNVERIFIED; NOT_RELEASED.
+- Research R-162: *When Latent Agents Lie* (arXiv:2606.28958) supports HMAC-bound transport manifests under an uncompromised key; CacheBridge (arXiv:2609.00891 v2) is same-family dense-GQA/GPU evidence, not LFM2 hybrid/mobile proof. CacheBridge's public project license remains pending; no code/weights reused.
+- Release/deployment: latest verified release-development branch HEAD remains `8d93236c753f0194224c19edc7411d8d7082b1d6`; no new release SHA and no device deployment. Last available private device receipt is historical (2026-11-24); no fresh authenticated Redmi receipt was obtained. Current behavior remains REDMI_UNVERIFIED.
+
+**Next:** Core stacks #2523 onto the exact #2524 branch and repairs the Core-owned source-pin chain. After exact integrated CI is green, obtain separate local operator authorization for the held-out real-GGUF cohort; do not enable B3 or change models based on this diagnostic alone.
+
+## Research & Perception Run 45 — verified next action (2026-11-26)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST, device action, model/weight download or swap, permission change, runtime restart, or user-data mutation was performed.
+
+- Draft PR [#2524](https://github.com/RedMentos/Aii/pull/2524), branch research-perception/v14-kv-snapshot-consumer-20261126-run35. Code/test checkpoint: 5f17b865ab2647d9085a019904f2e581986758db. It adds a cohort-wide K/V geometry invariant to native_receiver_utility.evaluate_native_receiver_task_utility: after per-task validation, every task group in one held-out cohort must use the same snapshot schema, memory kind/scope, sequence, sampled layer, attention-layer count, K/V shapes and tensor types. Any cross-task geometry drift fails closed before a utility summary is emitted. Four parameterized regressions cover layer, layer-count, K-shape and dtype drift. No raw K/V is persisted and the teacher-forced likelihood gate is unchanged.
+- Exact-head native workflow 45803185767: Python 3.13 and 3.14 focused matrix/task-score tests 30/30 PASS each; broader suite 70 PASS / 1 FAIL each, with the single failure the Core-owned staged composer pin for v13/native_latent_receiver.py; pinned llama.cpp Linux build/selftest PASS; Android arm64-v8a cross-compile PASS (compile only); privacy scan CLEAN.
+- Exact-head RuntimeDeploy workflow 45803185961: offline Python 3.11/3.14 PASS.
+- Exact-head shared workflow 45803185832: staged runtime 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression 1 failed. Both are blocked by the same Core-owned source-pin mismatch for v13/native_latent_receiver.py; Perception did not edit Core's composer/stage/deployer pins.
+- LOCAL_LINUX scratch reproducer: CPython 3.13.5 py_compile PASS and 5/5 cohort-geometry cases PASS. Full local Aii checkout/pytest NOT_RUN: no checkout is mounted and git ls-remote cannot resolve GitHub DNS.
+- Research R-163: full-text LatentPort (arXiv:2609.25053) shows that in one matched Qwen3.5 hybrid pair, K/V-only transfer omits useful persistent GDN recurrent/convolution state; direct reuse of that package improved teacher-forced NLL by 0.7473 nats/token across 64/64 PG19 documents. This is one pair, one direction, teacher-forced only; its 186 MB 4K state payload and RTX 5090 environment are not mobile evidence. ACCT (arXiv:2610.42116) is same-family cross-scale cache transfer, not LFM2 proof. No code/license was found or reused.
+- Product effect: the read-only K/V diagnostic now rejects inconsistent geometry across task groups. It still does not inject cache state, transfer recurrent state, demonstrate semantic utility, generated-answer correctness, weight learning or normal-turn Runtime integration. Core #2525/#2523 must rebase/consume the current #2524 head and repair its source pins. The next Perception research item is an exact pinned-LFM2 hybrid-state inventory; no K/V-only result may be labelled full latent coupling.
+- Device/deployment: no fresh authenticated Redmi receipt; REDMI_UNVERIFIED. No real GGUF cohort, no Redmi/Termux run, no release SHA and no deployment. B3 remains OFF. Existing auto-updater status is not revalidated by this run; a GitHub push is not a deployment.
+
+**Next owner/action:** Core rebase #2525/#2523 onto the current #2524 head, refresh the exact nested source pins and rerun the shared stage/integrated workflows. Then Core must add a version-guarded read-only LFM2 recurrent/conv state manifest and same-model restoration test before any write/injection experiment. After the integrated producer/consumer path is green, obtain separate explicit local operator authorization for a real-GGUF held-out cohort (>=20 task groups, >=2 sessions, >=2 task families); keep B3 OFF until task utility, generated-answer correctness, retention, restart/rollback and resource gates pass.
+
+## Research & Perception Run 45 — LFM2 state-path clarification (2026-11-26)
+
+**No user action required.** The next native experiment is a same-model diagnostic only; it must not touch the installed model or runtime.
+
+- Exact pinned llama.cpp source review at b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 (MIT) confirms LFM2 shortconv layers use recurrent r_l history in addition to attention K/V. llama_memory_hybrid composes llama_kv_cache and llama_memory_recurrent; its state_write/state_read serializes both. The public llama_state_seq_get_size/get_data/set_data API reaches this full sequence state. This is source-level evidence, not a native model run.
+- The official LFM2.5-1.2B config has 16 layers: 10 shortconv and 6 full-attention, hidden size 2048, conv_L_cache 3, 8 KV heads. A raw FP32 conv-history estimate is roughly 160–240 KiB per sequence before metadata/rollback; this is calculated, not measured. The actual serialized size must be measured with llama_state_seq_get_size on the real QAD GGUF.
+- The current #2524 receipt is only a one-layer/one-sequence K/V diagnostic and explicitly excludes recurrent state. It must not be described as full LFM2 latent transfer.
+- Exact next Core task: build a same-model native roundtrip with the public sequence-state API: prefill in context A, capture sequence 0, restore into fresh context B with identical model SHA, llama.cpp revision and context settings, then compare fixed continuation logits/logprobs. Add corrupt/truncated state, wrong model/revision, wrong sequence and mismatched-context negatives. Record state bytes, capture/restore latency and RSS. No raw state persistence and no installed-runtime write.
+- The LFM2.5 QAD GGUF model card lists LFM Open License v1.0, with a USD 10M entity revenue threshold for commercial use; QAD results apply to Q4_0 and not direct FP32/BF16 inference. No model was downloaded or changed.
+- Current code/test CI on 5f17b865ab2647d9085a019904f2e581986758db remains focused 30/30 PASS on Python 3.13/3.14; broad 70 PASS / 1 FAIL due the Core source pin. The final PR branch head at the prior checkpoint was 2b59ca64598be44076e6fd24f45a06b774da97ad; subsequent ledger/handoff updates are documentation-only and will trigger a fresh exact-head workflow.
+
+**Device/deployment:** REDMI_UNVERIFIED, no fresh authenticated receipt, no release or deployment, B3 OFF. No model, weight, permission or user-data mutation.
+
+## Cross-lane Perception integration queue (2026-11-26)
+
+- #2524 native K/V cohort diagnostic: code/test head 5f17b865ab2647d9085a019904f2e581986758db; current docs/board branch head before this update b3250b751249b27e9c9352ca79dc05fd0f16b8bd. Focused 30/30 PASS on Python 3.13/3.14; broader 70 PASS / 1 FAIL at Core native receiver source pin.
+- #2527 RAW EAR temporal chronology: current branch head 34299eb052e96cd7dc5cd9ca95aa9edee0aefbac; code/test head ef61d48f93621cb3d7813628eb96203eea2be1ee; base merge point b298719af8faf75811d03d486de7725395a590b0, 9 commits behind latest #2524. LOCAL_LINUX 14/14 plus 10,000 monotonic-window and 1,000 backward-start negatives; CI feature-set 14/14 on Python 3.13/3.14, RAW EAR comparison 9/9, offline RuntimeDeploy PASS. Shared stage still fails at Core audio-builder pin. Consumer is RAW EAR temporal evidence → A4; microphone capture remains OFF.
+- #2498 RAW EAR next-delta predictor: current branch head 4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6; code/test head 8167033a8f133c8feb89c341df3720a5db765504. CI fastpath 142/142 on Python 3.13/3.14, deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS. Shared stage/integrated remains blocked by Core audio builder/recovery source pins. Consumer is a 13-D acoustic cue vector → 182-parameter process-local LMS → capped A4 novelty 0.10; no raw PCM/transcript/embedding persistence.
+- #2525 native matrix Runtime PR is 11 commits ahead and 9 behind the latest #2524 head; #2527 is 74 ahead and 9 behind the same merge base. Both are still on merge base b298719. Rebase/merge in order rather than force-pushing: refresh #2524 parent, then #2527 RAW EAR child, then Core #2525 native matrix/runtime consumer. Keep #2498 as a separate A4 consumer until its audio source-pin chain is reviewed and re-bound.
+- The new R-164 finding supplies the next native test: same-model LFM2.5 QAD sequence-state roundtrip through public llama_state_seq_get_size/get_data/set_data, including both K/V and shortconv recurrent state. This is not cross-model latent transfer.
+
+**No user action required.** No device, model, permission, updater or user-data mutation. REDMI_UNVERIFIED; NOT_RELEASED; B3 OFF.
+
+
+## New verified Perception checkpoint — 2026-11-26, PR #2524
+
+The previous next step (“implement a same-model LFM2 sequence-state roundtrip”) is now present as opt-in native code on branch head 076a973eaad808b537c7f74337464d02cf41d633. The C++ receiver has a LFM2-only --hybrid-state-roundtrip mode; Python binds the result to model, tokenizer, llama.cpp, binary, context, input and target hashes and validates it through the task-score consumer. It captures and restores full hybrid sequence state (attention/KV plus recurrent shortconv), includes a truncated-state negative control, compares next-token logits after a fixed teacher-forced continuation, caps the ephemeral state buffer at 16 MiB and zeroizes it. It does not export raw state, persist raw state, touch the installed runtime, train, edit weights or enable B3.
+
+**Exact CI at head 076a973 (workflow 45813438280):**
+- Python 3.13 focused tests: PASS; receiver/deploy-chain compile: PASS; privacy scan: CLEAN.
+- Python 3.14 focused tests: PASS; receiver/deploy-chain compile: PASS; privacy scan: CLEAN.
+- Android arm64-v8a cross-compile step: PASS (compile-only; not a Redmi test).
+- Linux pinned llama.cpp build: IN_PROGRESS at last poll.
+- Shared source-tap identity gate: FAIL because Core's native_receiver_matrix_runtime.py producer hook is not yet present on this Perception branch. Core PR #2525 is still stale against the updated #2524 head and must rebase/wire the consumer.
+- Full LOCAL_LINUX checkout/pytest: NOT_RUN; no Aii checkout is mounted and GitHub DNS is unavailable in this runtime.
+
+**Next concrete action:** Core rebase #2525 onto latest #2524 and expose the Perception opt-in as a separate local-lab flag, default OFF. Then run the native roundtrip on an already-present, explicitly approved LFM2 GGUF with 32–64 continuation tokens and record actual state bytes, capture/restore duration, peak RSS, max/RMS logit delta and truncated-restore rejection. After that, extend the source prefill from BOS to a real LATENT_CANDIDATE and only then test different-weight sender/receiver transfer with zero, shuffled and wrong-donor controls.
+
+**Device/deployment:** REDMI_UNVERIFIED; no fresh authenticated receipt; no update request; NOT_RELEASED; no deployment. No user action required. No model, weight, permission or user-data mutation. B3 remains OFF; this is not cross-model latent coupling or whole-system acceptance.
+
+
+## Research & Perception — verified checkpoint 2026-11-26 (Run 47)
+
+The native receiver task-utility result now separates system gain against NO_MESSAGE from source-specificity gain against the existing ENTITY_SUBSTITUTION counterfactual. This prevents an overall target-logprob improvement from being treated as evidence that the paired latent content mattered. It is still a teacher-forced likelihood proxy; the entity counterfactual is not a full unrelated-question derangement, and semantic use remains unproven.
+
+- PR #2524, current branch head 7bd80e419c851471d95b44cc032efe205a23ab91.
+- LOCAL_LINUX isolated CPython 3.13.5 gate check: 3/3 PASS. Full local Aii suite: NOT_RUN. Exact GitHub native/staged workflows 45856881120 and 45856880943 were still in progress at checkpoint; offline RuntimeDeploy integrity 45856880964 PASS.
+- Draft-KV (arXiv:2609.34754; official code Apache-2.0) motivates matched-versus-deranged evaluation; the Aii implementation is a narrower entity-counterfactual diagnostic only. HST (arXiv:2611.08133) reinforces that full hybrid-state transfer requires continuation compatibility, not just state reconstruction.
+- Core PR #2525 needs to rebase onto #2524 head 7bd80e4 and refresh its exact source pins before the staged/integrated Runtime consumer can be accepted.
+- No real GGUF, Android/Termux, Redmi, updater or deployment test was performed. B3 remains OFF; REDMI_UNVERIFIED; NOT_RELEASED. No model, weight, permission, app or user data was changed.
+
+**No user action required.** The next step is internal CI/rebase work; any future native GGUF run must use an already-present model and separate explicit local approval.
+
+
+
+## Run 47 CI result — 2026-11-26
+
+Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91 completed:
+- Focused receiver tests on Python 3.13 and 3.14: 83 passed / 1 failed in each run. The three new information-use audit tests passed. The one failure is stage composition blocked by Core-owned observer fairness pin mismatch for v13/cognition.py.
+- Shared staged/integrated regression: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; same Core-owned source-pin mismatch, plus two migration assertions report PARTIAL instead of UPDATED.
+- Pinned native Linux API build PASS; Android arm64 cross-compile PASS only.
+- RuntimeDeploy offline integrity PASS; public privacy scan CLEAN.
+
+This is not a failure in the new audit tests and not evidence of a Redmi deployment. Core must repair its own source pin chain and rebase #2525. No user action is required now.
+
+
+
+## Private device observation and relay boundary — 2026-11-26
+
+Last available authenticated V13OBS issue #115 is historical, updated 2026-11-24 09:28:11Z. It reports auto-update enabled and dashboard/runtime UP_TO_DATE at release SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but the AI runtime state is STOPPED_BY_USER and the model process is STOPPED. Its last observed turn generated 7 C3 tokens in about 6.30 seconds (TTFT about 2.05 seconds); B1 and B2 each ended in TIME_BUDGET and had zero valid offers. Native probe status was SMOKE_PARTIAL. These values are historical observations, not current device measurements.
+
+Read-only owner-relay requests were created as private issues #978 (HEALTH) and #979 (PIPELINE_STATUS), with ten-minute expiry. At the last poll (2026-11-26 16:23:13Z), both were still open with no device comment: NO_LIVE_RECEIPT. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell command, restart or device action was sent. The current #2524 candidate is not merged/released, so no updater deployment was attempted. Current updater/device state remains UNVERIFIED; REDMI_UNVERIFIED.
+
+
+## Research & Perception Run 48 — verified current state (2026-11-26)
+
+- **PR:** #2524, draft / NOT_RELEASED, branch `research-perception/v14-kv-snapshot-consumer-20261126-run35`. Code/test head `91cae713b409e1b5e95bc06c446a5152e726cbd9`; utility blob `7d90a187f537a62d08ae3d0b0eefa23e3536b81c`; test blob `fb559b3214df987695d1b5a48e3174681fe16302`.
+- **Function:** `native_receiver_utility` now requires a session-local, cross-family, no-fixed-point OOD donor permutation before it reports `CONTENT_SPECIFIC_SIGNAL`. A positive candidate-versus-deranged-donor teacher-forced target-logprob delta is also required. External, duplicate, cross-session and same-family donors cannot satisfy the gate. The output contains aggregate counts only.
+- **Exact CI:** focused Perception tests 49/49 PASS on Python 3.13 and 3.14. The native workflow still has one unrelated stage-composition FAIL: Core-owned observer fairness pin for `v13/cognition.py` is stale. Pinned Linux native API build PASS; Android arm64 cross-compile PASS (compile only); privacy scan CLEAN. Shared staged/integrated regression remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) on the same Core pin plus two migration PARTIAL assertions. RuntimeDeploy offline integrity PASS on Python 3.11/3.14; no phone deployment.
+- **LOCAL_LINUX:** CPython 3.13.5 isolated derangement tests 6/6 PASS; py_compile 2/2 PASS. Full Aii checkout/pytest NOT_RUN because no checkout is mounted and GitHub DNS cannot resolve.
+- **Research:** R-168 fully reviews arXiv:2611.34278v1 (2026-11-25 preprint). Cross-model latent/KV handoffs can undermine safety alignment and prompt-injection defence, leak cache content and degrade capability over repeated hops. No official code/licence found; evidence is H200/3B–32B, not LFM2/Android. Aii source hashes are integrity evidence, not producer authentication.
+- **Core integration:** #2525 remains draft and mergeable=false, head `9fdf321c9c14ab3b27d0d5947eaca443d5796df3`, based on old #2524 base `b298719af8faf75811d03d486de7725395a590b0`. Core must rebase onto latest #2524 and refresh the observer/recovery/source-pin chain; Perception did not edit Core-owned files.
+- **Redmi / updater:** REDMI_UNVERIFIED. Last V13OBS #115 is historical (2026-11-24): auto-update enabled/runtime UP_TO_DATE at `8d93236`, but AI STOPPED_BY_USER and model process STOPPED. Owner-read #978/#979 had NO_LIVE_RECEIPT at last poll. No UPDATE_REQUEST or deployment was sent; current updater/device state is unverified.
+- **Next step:** Core refreshes #2525 on #2524, then run an already-present GGUF diagnostic only with separate explicit local approval. Before any B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention tests. B3 stays OFF.
+- **User action required:** none. No model, weights, app, permission or user data was changed.
+
+
+**Whole-system P0 status:** Issue #1904 remains OPEN. The last available device snapshot is historical and reports AI STOPPED_BY_USER with zero valid B1/B2 offers; no new authenticated device receipt was obtained. Run 48 is a complementary receiver-diagnostic improvement, not a basic-chat, offer-delivery, normal-turn or Redmi fix. Do not mark the P0 gate closed.
+
+
+## Research & Perception — latest verified next action (Run 49, 2026-11-26)
+
+- **Current code candidate:** PR #2524, branch research-perception/v14-kv-snapshot-consumer-20261126-run35, code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; initial handoff commit 82d79103af7aa80d1ec29b688ec2f3ecca78acc8; later docs/board commits follow on the same branch; draft / NOT_RELEASED.
+- **New function:** the optional LFM2 full-hybrid state roundtrip now pre-fills from the real LATENT_CANDIDATE input, not BOS. Schema v2 binds candidate condition, row count, float32 input SHA and decode status. The Python task-score and Runtime bridge attach/read the result on the candidate condition. It remains same-model, read-only diagnostic evidence; no cross-model latent coupling, trained weights, normal-turn chat, semantic use, generated-answer correctness or B3 production.
+- **Local tests:** CPython 3.13.5 isolated prefill-contract reproduction 6/6 PASS; standalone C++ float32-LE digest helper compiled and matched the Python digest. These are scratch tests, not the exact repository tests/native llama.cpp build. Full local Aii checkout/pytest/native build NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
+- **GitHub CI:** Exact GitHub Actions on code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8: native receiver 45888866164 completed FAILURE only at the Core-owned observer fairness pin (test_native_latent_receiver_stage.py::test_native_receiver_is_composed_and_runtime_contracts_pass; ValueError: observer fairness source changed: v13/cognition.py). The focused condition-matrix/task-score suite passed 52/52 on Python 3.13 and 52/52 on Python 3.14; the extended receiver suite passed 92 tests and failed only that same Core pin on each version. py_compile passed. The exact pinned llama.cpp Linux API build/selftest passed; Android arm64-v8a cross-compile passed (compile-only); public privacy scan CLEAN. Staged/integrated 45888866275 completed FAILURE: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, due to the same Core observer-fairness pin plus two migration assertions returning PARTIAL instead of UPDATED. RuntimeDeploy offline integrity 45888866345 completed SUCCESS on Python 3.11 and 3.14. These are CI results, not local full-repository tests, real GGUF execution or Redmi proof.
+- **Integration:** Core PR #2525 is draft and mergeable=false; its base still points at old #2524 SHA ee27e03c89f69cf049e60b622c5be068a4b0cf2d. Core must now rebase onto the current live PR #2524 branch ref (code/test SHA remains 1417250fb28c4e30c5c4e0d8150e673248ad10a8), refresh exact observer/recovery/source pins and rerun staged/integrated gates.
+- **Research R-169:** full-text preprint arXiv:2611.12062v1 (2026-11-09) shows that hybrid cache transfer requires separate token-wise K/V/MLA and recurrent-state mechanisms; same-geometry state copy/correction differs from target recurrence replay. 16–48B GPU results do not generalize to LFM2/Android; translator code/weights are internal, not public OSS.
+- **Device / updater:** REDMI_UNVERIFIED. No fresh authenticated device receipt, no deployment, no update request. The historical V13OBS #115 snapshot from 2026-11-24 reported auto-update enabled at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; it is not current updater/runtime proof. No model, weight, app, permission or user data changed.
+- **Next:** Core rebase #2525 onto the live #2524 branch ref, refresh the observer/recovery/source pins and fix the two migration PARTIAL-vs-UPDATED assertions, then rerun staged/integrated CI. Do not weaken source-pin checks. A real GGUF diagnostic requires separate explicit local approval and must use an already-present model (no download or productive swap). No user action is needed for this Core integration step. P0 #1904 remains OPEN; B3 stays OFF.
+
+
+## Research & Perception — latest verified next action (Run 51, 2026-11-26)
+
+- **Current candidate:** PR #2540, branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, code/test SHA `1adf5bc8cde81fcded17590bebae189a778d3f31`, based on current #2524 head `a47907c4a0603e602581c6462ecb845211eb0445`. Draft / NOT_RELEASED.
+- **Rebase:** #2527's old branch was stale against the current #2524 parent. A new branch was created from the live parent and carries the child Perception audio files, tests, workflows, experiments and handoffs without overwriting current parent native-receiver/cognition/workflow changes or the shared workplan/coverage/board. No force-push. #2527 remains a stale-base draft; Core #2538 still targets the old #2527 base and must rebase/re-pin after this PR is reviewed.
+- **New executable path:** the candidate overlay connects caller-supplied PCM16 through one `AudioConsentLease`, A5 timed audio packet, A4 voice/speaker/temporal evidence, source-bound B1/B2 context and C3 acoustic-only context in the normal Runtime turn. The lease surrounds the original turn/generator; revocation tombstones and source checks remain active. Provisional audio is not admitted to C3; raw PCM is not persisted. This is not a live microphone provider, speech decoder/vocoder, full-duplex path or Redmi proof.
+- **Source-pin check:** all 12 `SOURCE_BLOBS` entries in the audio candidate match the current branch file blobs, including Runtime, Cognition, audio cue/temporal modules, admission, attention and contracts.
+- **Regression fixed:** the stale #2527 head failed because four German notices remained inside an embedded Python bytes literal. They are now ASCII; a dedicated regression test checks the embedded bytes block. The previous stale head's RAW EAR tests failed at import with `SyntaxError: bytes can only contain ASCII literal characters`. The shared staged/integrated failures were separate Core-owned source-pin/migration failures; they were not weakened or modified here.
+- **LOCAL_LINUX:** isolated exact bytes-literal reproducer `python -m py_compile` PASS; ASCII guard PASS; AST confirms bytes payload PASS. Full local Aii checkout/pytest/native build NOT_RUN: no checkout is mounted and `git ls-remote` failed because GitHub DNS could not resolve.
+- **GitHub CI:** exact current-base PR #2540 workflows 45900587836 (RAW EAR/libfvad comparison), 45900587850 (optional NumPy), 45900587866 (A4/A5 feature-set), and 45900587881 (staged/integrated) were IN_PROGRESS at the last poll. Do not claim these as PASS until completed.
+- **Research R-170:** full-text preprint arXiv:2611.34278v1 (2026-11-25) shows cross-model mapped-cache handoffs can break target prompt-injection/refusal behavior. HandoffGuard helps on tested donors but does not stop guard-aware source fine-tuning; no official code/weights or mobile validation. B3 remains OFF pending source authentication, trust/consent, target-side safety and red-team/retention gates.
+- **Device / updater:** latest available consented V13OBS #115 snapshot is historical (2026-11-24): auto-update was enabled and the app/runtime reported UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI was STOPPED_BY_USER, model process stopped, and recorded B1/B2 native attempts yielded zero valid offers. A fresh read-only PIPELINE_STATUS request was sent; no device receipt had arrived at the last poll. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, model/weight/permission/data change or deployment was performed. REDMI_UNVERIFIED.
+- **Release / user effect:** NOT_RELEASED. The new path can pass consent-bound acoustic context into the normal software Runtime when a permitted provider supplies PCM16, but no Android microphone provider or installed-phone behavior was tested. P0 #1904 basic chat and B1/B2 valid-offer delivery remain OPEN.
+- **Next:** wait for exact-head PR #2540 CI. If Perception tests pass, Core rebases #2538 onto #2540 and refreshes the audio-builder/recovery/source pins, then reruns staged/integrated tests. After that, test only with a permitted provider and an already-present model; no model download/swap without separate explicit approval. No user action required.
+
+
+
+
+## Research & Perception Run 53 — RAW EAR Runtime provenance repair (2026-11-26)
+
+**Code/test checkpoint:** PR #2540, branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, exact code/test head `6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd`. The candidate now matches the actual Runtime newline anchors, adds optional audio SourceRefs to ContextOS provenance, and adds audio SourceRefs to C3 context refs while retaining existing event/consolidation/history/duplex refs. The test suite now checks those two downstream bindings and the source-bound negative control.
+
+**Exact GitHub Actions evidence at the code/test head:**
+- RAW EAR fastpath: 122/122 PASS on Python 3.13 and 122/122 PASS on Python 3.14; compile passed; deterministic benchmark ran.
+- RAW EAR prosody-to-attention: PASS on Python 3.11 and 3.13.
+- consent revocation: PASS.
+- source-bound A4/A5 feature-set probe: PASS on Python 3.13 and 3.14.
+- WebRTC/libfvad comparison: Python 3.13 PASS (9 comparison tests and 133 source-bound audio tests; pinned native libfvad shared-library smoke and WebRTC backend smoke passed); Python 3.14 was still running at this checkpoint.
+- privacy scan CLEAN; private-bridge tests PASS; offline Python 3.11 and 3.14 PASS.
+- staged-runtime FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. The shared stage reports stale Core-owned pins for `scripts/integrated_audio_context_candidate_20261121.py`, `v13/contracts.py` and `v13/cognition.py`, plus two migration assertions expecting UPDATED where the actual status is PARTIAL.
+- integrated-regression FAIL: one failure solely because Core's `termux_runtime_recovery_candidate_20261121.py` still pins the old audio candidate blob `831080bceec90711bd42e0fa4eba47c669975c98`.
+
+**Local/device boundary:** Full local Aii checkout and full local pytest NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. Isolated local Python anchor-reproduction checks PASS. GitHub-hosted CI is not Redmi. The 5-iteration benchmark is synthetic-only: on the hosted x86 runner, white-noise NumPy median was 16.57 ms vs Python 118.00 ms; other tested signal types were roughly 13.7 ms for both. Speaker-summary timing excludes model inference. `device_benchmark=false`. These numbers are not Redmi latency/RSS.
+
+**Runtime/user effect:** The draft candidate path is source-bound from caller-supplied PCM16 through A5 timed features, A4 prosody/speaker evidence and C3 context/ContextOS provenance. It is not a release and has not been installed. No AudioRecord microphone provider, full-duplex voice, ASR decoder/vocoder, B1/B2 normal-turn acceptance, real model inference, gradient/weight update or Android UI control was proven.
+
+**Coordination:** Core PR #2538 was notified to rebase onto #2540 and refresh only Core-owned recovery/stage/deployer pins; QA must reconcile the PARTIAL-vs-UPDATED migration expectations. No Core-owned files were modified here.
+
+**Device/deployment:** Latest available consented private V13OBS #115 snapshot is still 2026-11-24: auto-update enabled and runtime reported UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI runtime STOPPED_BY_USER and model process stopped. Newer read-only relay issue #991 expired without a device receipt. No update request was sent. REDMI_UNVERIFIED; NOT_RELEASED.
+
+**Next action:** finish Python 3.14 libfvad comparison; Core/QA refresh the stale pins and rerun staged/integrated CI. After that, independently review the Runtime consumer and obtain explicit permission before any microphone/provider or device experiment. No user action required.
+
+
+Coverage overlay added to v14/V14_CANON_COVERAGE_INDEX.md at the Run 53 checkpoint. It records the RAW EAR→A4→ContextOS/C3 candidate as WIRED_SYNTHETIC/DRAFT only; no Android or acceptance promotion.
+
+Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PASS (9 comparator tests + 133 source-bound audio tests). All Perception-focused checks at code/test SHA 6911d2f are green; staged/integrated remain blocked by Core/QA-owned pins and migration expectations.
+
+## Verified checkpoint — Research & Perception Run 54 (2026-11-27)
+
+- **Current code/test candidate:** [PR #2540](https://github.com/RedMentos/Aii/pull/2540), draft / NOT_RELEASED; branch `research-perception/v14-raw-ear-currentparent-20261126-run52`; code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`. Current release branch HEAD is still `8d93236c753f0194224c19edc7411d8d7082b1d6`; the candidate has not been merged or deployed.
+- **New behavior:** RAW EAR validates the full acoustic cue contract before A5 PerceptPacket creation/persistence. The source-bound audio context consumer rejects A4 cues that do not exactly match the A5 packet. Positive tests use the actual extractor; malformed-cue and A4/A5 mismatch negatives fail closed. Source manifest readback is 15/15 exact.
+- **Exact CI:** RAW EAR 155/155 PASS on Python 3.13 and 3.14; A4/A5 feature-set 15/15 PASS on both; WebRTC/libfvad Python 3.13 PASS (9 comparator tests + 166 source-bound audio tests), Python 3.14 PASS (9 comparator tests + 166 source-bound audio tests); RuntimeDeploy offline Python 3.11/3.14 PASS; public-content privacy scan PASS. Staged runtime remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated regression FAILs one setup test because Core-owned recovery/audio-builder pins are stale; staged also has stale arithmetic/observer pins and two migration `PARTIAL` vs `UPDATED` assertions.
+- **Local/device:** no local full Aii checkout (GitHub DNS failed), so full local pytest NOT_RUN. No native model inference, Android/Termux test, microphone/AudioRecord or Redmi measurement. REDMI_UNVERIFIED; NOT_RELEASED.
+- **Device receipt:** last private V13OBS #115 is historical (2026-11-24): auto-update was enabled and runtime/dashboard were UP_TO_DATE at `8d93236`, but AI was STOPPED_BY_USER, model process STOPPED and autostart false; B1/B2 still TIME_BUDGET with zero valid offers. Fresh read-only #998 HEALTH and #999 PIPELINE_STATUS expired without device comments: NO_LIVE_RECEIPT. Current updater/install state is therefore UNVERIFIED; no UPDATE_REQUEST or device action was sent.
+- **Research:** R-176 records MixMoMo (arXiv:2611.33981v1, 2026-11-25 preprint). Its 35B–80B models and 16/24-GB Snapdragon 8 Elite hardware are not a Redmi 6-GB-class recommendation; no public extension source/license was found. No model download or swap.
+- **Next concrete action:** Core/QA rebase the Core stack onto #2540, refresh the Recovery→Stage→RuntimeDeploy pins bottom-up, repair the migration status assertions and rerun staged/integrated CI. Then continue source-disjoint A4 attention/salience outcome tests. Keep microphone capture OFF until the Android provider and consent/revocation path are independently reviewed.
+
+**User action: none required.** No model, weight, permission, updater setting, device data or installed release was changed.
+
+
+## Research & Perception — Run 55 (2026-11-27)
+
+- **New code:** PR #2540 branch now contains the A4 temporal source-isolation experiment and Python 3.13/3.14 workflow. Experiment commit: `2a6d4d8ede170d669e21e5093970dc143711a4c2`. It exercises the existing A4 predictor registry with generated cue fixtures and checks interleaved/isolated stream parity, parameter deltas, persistence-baseline comparison, novelty caps, provisional censoring, no-context reset and consent rotation.
+- **Test status:** local full Aii suite BLOCKED / NOT RUN because there is no checkout and GitHub DNS fails. New CI workflow was pushed, but an exact run result was not visible yet; do not call it PASS. The earlier #2540 Perception-focused CI passed on code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`; staged/integrated checks still fail on Core-owned source pins and QA migration assertions.
+- **User-visible effect:** no installed-device effect. The draft #2540 code path remains caller-supplied PCM16 → timed A5 packet → A4 acoustic/prosody/temporal cues → optional source-bound B1/B2/C3 context. The new experiment validates stream isolation of the A4 registry only; it does not make the microphone, B1/B2 offer delivery or C3 answer path work on the phone.
+- **Redmi / updater:** last private V13OBS #115 is historical (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, autostart false; B1/B2 had zero valid offers and TIME_BUDGET. Read-only #998 HEALTH and #999 PIPELINE_STATUS expired with NO_LIVE_RECEIPT. Current updater/install state is UNKNOWN; no UPDATE_REQUEST, manual Termux command or device action was sent. REDMI_UNVERIFIED.
+- **Research:** R-177 LATER is a simulation-only action-conditioned temporal memory reference; no official OSS license was found. R-178 is abstract-only audio attention-head timing work; not usable without model-native attention access. No model or weights were downloaded or swapped.
+- **Next:** verify the exact A4 CI, then coordinate Core #2544 and QA migration rebase. No action is needed from the user.
+
+
+## Research & Perception — Run 55 final (2026-11-27)
+
+- **Code/PR:** A4 source-isolation and learning-rate sweep are in [PR #2540](https://github.com/RedMentos/Aii/pull/2540), branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, code/test head `e270369a04eb20470aa717dc0464b2b03a4320a5` (documentation-only commits followed; branch readback before final handoff closeout was `0a8560067117a28569861cc7c548d662367678c7`). PR remains DRAFT / NOT_RELEASED.
+- **Verified CI:** A4 workflow 45924853167 passed compile + 7/7 tests on Python 3.13.18 and 3.14.10. A4/A5 feature-set 45924853182 passed both versions; RAW EAR fastpath 45924853240 passed 155/155 on both; RuntimeDeploy offline 45924853218 passed Python 3.11/3.14.
+- **Important negative result:** the 182-parameter A4 predictor is not robust across all synthetic cue types. It beats the persistence baseline for periodic speech (+0.1190 MAE), but loses on non-speech (-0.0299) and mixed activity (-0.0225). A 0.02–0.20 learning-rate sweep did not remove those two regressions. Source interleaving parity was exact; no-context/provisional/consent-reset controls passed. No default change is justified.
+- **Integration still blocked:** staged run 45924853105 failed 20 tests / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression failed one setup test. The shared cause is Core's stale audio-composer source pin, with additional stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Core/QA own those files; Perception did not modify them.
+- **Local/device:** full local suite NOT_RUN (no checkout; DNS failure). All CI is hosted Linux; the A4 benchmark is synthetic and says `device_benchmark=false`. No Android/Termux, microphone, native model, B1/B2 normal-turn or Redmi test. Last private V13OBS #115 is historical; #998/#999 expired with NO_LIVE_RECEIPT. Current updater/install state is unknown. REDMI_UNVERIFIED.
+- **Next:** Core/QA rebase their owned pins/assertions, then rerun staged/integrated. Perception next tests source/session-disjoint omission false positives and update gating. **No user action needed.** No model, weight, permission, updater setting or device data was changed.
+
+
+## Run 55 extension — A4 event expectation (2026-11-27)
+
+- The existing A4 event-expectation registry now has a deterministic omission ablation in [PR #2540](https://github.com/RedMentos/Aii/pull/2540), code/test head `f45eb1b30befc406b5f65f4f0858d06785de4bd9`.
+- CI run 45925644718: compile PASS and 9/9 tests PASS on Python 3.13 and 3.14. Expected-on-time event produces no omission; a missing expected VOICED onset under valid FINAL silence produces one omission with confidence proxy 0.60 and novelty 0.03 under the 0.05 cap. UNCERTAIN/PROVISIONAL/consent-reset/no-context controls behave as intended; interleaved sources match isolated streams.
+- This is synthetic timing-rule evidence, not calibrated probability or real microphone evidence. No PCM or user audio.
+- A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparison 45925644686 and integrated job 45925644732 were still running at the checkpoint. Staged run 45925644732 already FAILs on the Core audio-composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; prior integrated run 45924853105 also failed at that composer pin.
+- Local full suite NOT RUN; REDMI_UNVERIFIED; current updater/install state unknown; NOT_RELEASED. No device/model/permission change. Next: Core/QA repair their owned gates; Perception continues source/session-disjoint omission false-positive/update-gating ablations. No user action needed.
+
+
+## Run 55 — latest CI status (2026-11-27)
+
+A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 PASS both; RuntimeDeploy offline 45925644734 PASS on 3.11/3.14. WebRTC/libfvad comparison 45925644686 has a successful 3.13 job, while 3.14 was still running at last readback.
+
+The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
+
+No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**
+
+
+## Run 64 verification addendum — 2026-11-27
+
+- Final PR head at the last readback: `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` (docs-only commits after code/test SHA `642b981e9a91bfc618992cabb0c72ac8c801b51c`).
+- Exact final-head focused workflow **45975248573 PASS**: `py_compile`, 25/25 tests on Python 3.13, 25/25 on Python 3.14. Runtime deployment integrity **45975248638 PASS**.
+- Shared staged/integrated workflow **45975248465 FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression 1 failure on Core Recovery's stale audio-composer pin (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`). The staged failures also include Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed and no gate was weakened.
+- Local full Aii checkout/pytest remains BLOCKED / NOT_RUN; no Android/Redmi capture or normal-turn C3 proof. REDMI_UNVERIFIED / NOT_RELEASED.
+- Core coordination is recorded on #2408 and #2555: rebase/port the provider onto #2557, wire the normal Runtime/C3 callsite, and preserve the lease through C3 consumption. QA owns Android consent/onStop/restart/rollback.

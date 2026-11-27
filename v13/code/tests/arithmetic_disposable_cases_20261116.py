@@ -112,7 +112,7 @@ def test_fixed_rule_and_explicit_copy_keep_their_own_authority(runtime):
 
 def test_broker_failure_keeps_computed_c6_type(runtime):
     with patch('v13.broker.Broker.finalize', side_effect=ValueError('test broker failure')):
-        row, _ = turn(runtime, '7-12')
+        row, _ = turn(runtime, 'calculate 7-12')
     assert row['text'] == '-5'
     checks = packets(runtime, row['event_id'], 'EgressCheck')
     assert checks and all(p['action_type'] == 'TEXT_REPORT' and p['ok'] for p in checks)
