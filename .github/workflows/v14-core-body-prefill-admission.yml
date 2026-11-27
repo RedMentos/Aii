@@ -1,0 +1,71 @@
+name: V14 Core B1/B2 native prefill admission
+
+on:
+  push:
+    branches:
+      - core/v14-body-prefill-admission-20261128-run1
+    paths:
+      - "v13/code/v13/native_prompt_admission.py"
+      - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
+      - "v13/code/tests/test_native_prompt_admission.py"
+      - "v13/code/tests/test_same_turn_body_delivery_qa.py"
+      - "v13/code/tests/test_native_turn_budget.py"
+      - ".github/workflows/v14-core-body-prefill-admission.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/native_prompt_admission.py"
+      - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
+      - "v13/code/tests/test_native_prompt_admission.py"
+      - "v13/code/tests/test_same_turn_body_delivery_qa.py"
+      - "v13/code/tests/test_native_turn_budget.py"
+      - ".github/workflows/v14-core-body-prefill-admission.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  body-prefill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependencies
+        run: python -m pip install --disable-pip-version-check pytest 'numpy>=2.2,<3'
+      - name: Compile exact Core admission sources
+        run: |
+          python -m py_compile \
+            v13/code/v13/native_prompt_admission.py \
+            v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_native_prompt_admission.py \
+            v13/code/tests/test_same_turn_body_delivery_qa.py \
+            v13/code/tests/test_native_turn_budget.py
+      - name: Run native admission and same-turn consumer regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_native_prompt_admission.py \
+            v13/code/tests/test_same_turn_body_delivery_qa.py \
+            v13/code/tests/test_native_turn_budget.py
+      - name: Stage the exact integrated Termux candidate
+        run: |
+          python v13/code/scripts/stage_integrated_candidate.py \
+            --output "$RUNNER_TEMP/v14-body-prefill-stage"
+      - name: Re-run admission and same-turn tests against staged Runtime
+        env:
+          PYTHONPATH: ${{ runner.temp }}/v14-body-prefill-stage
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_native_prompt_admission.py \
+            v13/code/tests/test_same_turn_body_delivery_qa.py
+      - name: Check patch whitespace
+        run: git diff --check
