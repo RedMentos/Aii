@@ -897,7 +897,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                       bool include_hybrid_state_roundtrip) {
     const std::vector<std::string> expected_conditions = {
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
+        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"
     };
     const std::string verified_target_hash = v14::target_token_ids_sha256(target_tokens);
     if (matrices.size() != expected_conditions.size() || target_tokens.empty() ||
@@ -1060,7 +1060,7 @@ int main(int argc, char ** argv) {
     if (matrix_count > 0) {
         const std::vector<std::string> expected_conditions = {
             "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-            "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
+            "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"
         };
         std::vector<std::string> conditions;
         std::stringstream condition_stream(conditions_text);
@@ -1071,7 +1071,7 @@ int main(int argc, char ** argv) {
             conditions != expected_conditions || target_count < 1 || target_count > 512 ||
             (include_hybrid_state_roundtrip && target_count > 64) ||
             !v14::valid_sha256_hex(target_hash)) {
-            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip]\n";
+            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 9 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip]\n";
             return 64;
         }
         std::vector<MatrixInput> matrices;
