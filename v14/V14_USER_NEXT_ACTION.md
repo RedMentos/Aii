@@ -12,9 +12,11 @@
 
 ## Remaining product integration
 
-- Core must reconcile the existing `vision.py` lifecycle source pin, rebase the normal A5 frame provider into the same-turn Runtime/C3 consumer, and add the actual Runtime audio_window receiver with event/generation/consent-lease propagation.
+- Core PR #2564 now attempts the normal same-turn UI-frame Runtime/C3 consumer, but the latest CI is not green: MediaProjection→Runtime/C3 run 46061246343 has two Python frame-provider failures in Core-owned operator dispatch (`operator.py` rejects `:help`); audio/observer run 46061246219 has two failures on the Android UI overlay anchor; staged/integrated run 46061246173 reports 16 failed / 250 passed / 10 skipped / 2 errors / 48 subtests, including the overlay mismatch and PARTIAL-vs-UPDATED migration assertions. These are Core-owned; Perception has not changed those files.
+- Core must explicitly reconcile the #2565/#2563 A5 provider/preflight chain into #2564; its current base is #2562, so do not assume the newest Perception provider is already included. The actual Runtime `audio_window` receiver with event/generation/consent-lease propagation is still missing.
 - QA owns the visible MediaProjection/AudioRecord provider, OS permission, revoke/onStop, process-death, restart and rollback acceptance.
 - Perception's next calibration step requires consented real UI frames with app/session/version-disjoint fit/calibration/test groups. No real device frames were collected in this run.
+- P0 basic chat issue #1904 remains OPEN; this OOD experiment does not repair it.
 
 ## Device / updater boundary
 
