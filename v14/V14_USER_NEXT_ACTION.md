@@ -2348,3 +2348,13 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 - **Next concrete action:** Core/QA rebase the Core stack onto #2540, refresh the Recovery→Stage→RuntimeDeploy pins bottom-up, repair the migration status assertions and rerun staged/integrated CI. Then continue source-disjoint A4 attention/salience outcome tests. Keep microphone capture OFF until the Android provider and consent/revocation path are independently reviewed.
 
 **User action: none required.** No model, weight, permission, updater setting, device data or installed release was changed.
+
+
+## Research & Perception — Run 55 (2026-11-27)
+
+- **New code:** PR #2540 branch now contains the A4 temporal source-isolation experiment and Python 3.13/3.14 workflow. Experiment commit: `2a6d4d8ede170d669e21e5093970dc143711a4c2`. It exercises the existing A4 predictor registry with generated cue fixtures and checks interleaved/isolated stream parity, parameter deltas, persistence-baseline comparison, novelty caps, provisional censoring, no-context reset and consent rotation.
+- **Test status:** local full Aii suite BLOCKED / NOT RUN because there is no checkout and GitHub DNS fails. New CI workflow was pushed, but an exact run result was not visible yet; do not call it PASS. The earlier #2540 Perception-focused CI passed on code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`; staged/integrated checks still fail on Core-owned source pins and QA migration assertions.
+- **User-visible effect:** no installed-device effect. The draft #2540 code path remains caller-supplied PCM16 → timed A5 packet → A4 acoustic/prosody/temporal cues → optional source-bound B1/B2/C3 context. The new experiment validates stream isolation of the A4 registry only; it does not make the microphone, B1/B2 offer delivery or C3 answer path work on the phone.
+- **Redmi / updater:** last private V13OBS #115 is historical (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, autostart false; B1/B2 had zero valid offers and TIME_BUDGET. Read-only #998 HEALTH and #999 PIPELINE_STATUS expired with NO_LIVE_RECEIPT. Current updater/install state is UNKNOWN; no UPDATE_REQUEST, manual Termux command or device action was sent. REDMI_UNVERIFIED.
+- **Research:** R-177 LATER is a simulation-only action-conditioned temporal memory reference; no official OSS license was found. R-178 is abstract-only audio attention-head timing work; not usable without model-native attention access. No model or weights were downloaded or swapped.
+- **Next:** verify the exact A4 CI, then coordinate Core #2544 and QA migration rebase. No action is needed from the user.
