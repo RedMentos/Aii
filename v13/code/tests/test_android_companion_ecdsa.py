@@ -129,7 +129,14 @@ def test_open_url_receipt_requires_matching_capability_and_os_status(tmp_path):
     attestation = value.verify(envelope, receipt, consume_nonce=False)
     assert attestation["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert attestation["android_os_permission_status"] == "NOT_REQUIRED_FOR_OPEN_URL"
+    assert attestation["companion_user_approval"] is True
+    assert attestation["device_execution_claimed"] is False
     assert attestation["t8_authoritative"] is False
+    assert attestation["world_learning_eligible"] is False
+    assert attestation["trusted_transition_eligible"] is False
+    assert attestation["production_route"] is False
+    assert attestation["training_authority"] == 0
+    assert attestation["native_receiver_authority"] == 0
 
     wrong_permission = {**body, "nonce": "7" * 32,
                         "os_permission_status": "NOT_REQUIRED_FOR_LAUNCH_APP"}
