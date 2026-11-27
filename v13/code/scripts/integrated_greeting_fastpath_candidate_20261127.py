@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-SOURCE_RUNTIME_SHA256 = "b6ad48830d62db307d4d4ac6e9a62a4fbd43fb52b5493a5839be7997c1be6c50"
+SOURCE_RUNTIME_SHA256 = "8df4c5b3f695b634c00f8899a1ea911b9e28510fa1495b02d9afcd1df9a93f46"
 GREETING_MODULE_GIT_BLOB_SHA1 = "a96e613e6852df241f047705e09a2c652e86c3fa"
 
 OLD = (
