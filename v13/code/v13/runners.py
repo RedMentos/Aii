@@ -299,8 +299,22 @@ class LlamaRunner:
         for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
-            tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            count=len(tokens)
+            with_pieces = self.role == 'C3_LANGUAGE'
+            tokens = self._json("POST", "/tokenize",
+                                {"content": p, "add_special": True,
+                                 "with_pieces": with_pieces}, deadline)["tokens"]
+            if type(tokens) is not list:
+                raise Unavailable("Native tokenization response invalid")
+            if with_pieces:
+                token_ids = [row.get("id") for row in tokens
+                             if type(row) is dict and type(row.get("id")) is int]
+                if len(token_ids) != len(tokens):
+                    raise Unavailable("Native token ID response invalid")
+            else:
+                token_ids = tokens
+                if any(type(token_id) is not int for token_id in token_ids):
+                    raise Unavailable("Native token ID response invalid")
+            count = len(token_ids)
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
@@ -316,13 +330,23 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'),
+                                      token_pieces=tokens)
                     if type(witness) is dict:
+                        ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
                         witness.update({
                             'native_prompt_sha256': digest(p),
-                            'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
+                            'native_token_ids_sha256': ids_sha,
                             'native_prompt_tokens': count,
                         })
+                        span_receipt = witness.get('native_prompt_token_span_receipt')
+                        if type(span_receipt) is dict:
+                            span_receipt['prompt_sha256'] = digest(p)
+                            if span_receipt.get('token_ids_sha256') != ids_sha:
+                                span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
+                                span_receipt['offers'] = []
+                            else:
+                                span_receipt['token_ids_sha256'] = ids_sha
                     self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             candidate=admission.reduce_once(
@@ -342,13 +366,23 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'),
+                                      token_pieces=tokens)
                     if type(witness) is dict:
+                        ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
                         witness.update({
                             'native_prompt_sha256': digest(p),
-                            'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
+                            'native_token_ids_sha256': ids_sha,
                             'native_prompt_tokens': count,
                         })
+                        span_receipt = witness.get('native_prompt_token_span_receipt')
+                        if type(span_receipt) is dict:
+                            span_receipt['prompt_sha256'] = digest(p)
+                            if span_receipt.get('token_ids_sha256') != ids_sha:
+                                span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
+                                span_receipt['offers'] = []
+                            else:
+                                span_receipt['token_ids_sha256'] = ids_sha
                     self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
