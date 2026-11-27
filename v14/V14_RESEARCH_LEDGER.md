@@ -1947,3 +1947,33 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - The integrated audio-context candidate manifest was refreshed to exact Git blob pins: `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`, `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; candidate-builder blob after pin refresh: `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
 - Exact branch readback at `007de4895cb9972f558b7fa3bd33c3b04d0946eb` confirms both pins and the new Runtime-config tests. A4 update-gate workflow `45935405225` was queued at last poll; no focused CI result is yet claimed for this code.
 - This is a developer-controlled opt-in gate, not a user-facing toggle or production activation. Default Runtime behavior remains unchanged.
+
+
+## R-179 — Llama-Mobile: 2.7-bit VLM deployment boundary (2026-11-27)
+
+**Evidence level:** ABSTRACT_VERIFIED only. Luka Ribar, Jeevan Bhoot and Douglas Orr, *Llama-Mobile: Efficient 2.7-Bit Quantization of VLMs*, arXiv:2608.21134, submitted 2026-08-21: https://arxiv.org/abs/2608.21134 . The full paper was not available in this review; no full-text review or independent reproduction is claimed.
+
+**Reported claim:** the abstract reports a Llama 3.2 Vision 11B derivative compressed to 3.7 GB with INT8 activations and an Arm-CPU-oriented execution path. This is a paper result, not a Redmi Note 10 Pro benchmark. The project README documents an Android demo and separate 1B text / 11B vision artifacts.
+
+**OSS / rights audit:** official repository graphcore-research/llama-mobile-vlm, main commit 1127af864b024a72e252d789c1a7e3943c11e597 (checked 2026-11-27). Source code LICENSE is MIT (LICENSE blob aabb195f548d89716afb935ddcd78a542327175f). The derivative model weights are separately licensed under the Llama 3.2 Community License and subject to Meta's Acceptable Use Policy; MIT source licensing does not grant those weight rights. The README explicitly says its training reference code depends on internal datasets/checkpoints/infrastructure and is not a supported external training pipeline. No source, dependency, dataset or weight was imported.
+
+**V14 consequence:** not a current Redmi 6-GB-class candidate. A 3.7-GB vision checkpoint alone leaves too little practical headroom for activations, KV/cache, the Android process and the other V14 organs; no PSS/RSS, TTFT, thermal or quality evidence on the target phone was found. Keep it as a high-memory Android research reference only. Do not download, install, change the active model or swap production weights. Any future test would require an isolated slot, measured memory/latency/quality and separate explicit approval.
+
+**Platform note — MediaProjection contract:** Android Developers' MediaProjectionManager API reference (last updated 2026-08-03; https://developer.android.com/reference/android/media/projection/MediaProjectionManager) documents the explicit user consent prompt, a foreground service declared with FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION for Q+ apps, and mandatory MediaProjection.Callback cleanup on onStop() (release VirtualDisplay/Surface). For apps targeting Android 14/API 34+, the user grant must precede starting the mediaProjection foreground service, which must be started before getMediaProjection(). The target Redmi is Android 13/API 33, so do not incorrectly apply the API-34 ordering rule to it; the consent and foreground-service requirements still apply. V14's current A5 lease is only a Runtime-side consumer contract, not an Android capture provider. The future provider must bind the platform onStop() callback to two-phase cancellation/revocation and cleanup.
+
+**Status:** PREPRINT_ABSTRACT_ONLY / OSS_MAIN_AND_SOURCE_LICENSE_VERIFIED / WEIGHT_LICENSE_SEPARATE / NOT_REPRODUCED / NOT_IMPORTED / REDMI_UNVERIFIED.
+
+
+## R-180 — A4 omission state needs explicit session isolation (code audit, 2026-11-27)
+
+**Evidence level:** CODE_AUDIT_ONLY / NOT_YET_REPRODUCED_AS_A_LIVE_FALSE_POSITIVE.
+
+The current AudioEventExpectationRegistry keeps process-local state under the key (source_id, generation_id) and resets it only when the SHA-256 consent_scope_id changes. The A5/A4 consumer call in audio_voice_cues.py passes source_id, generation_id and the receipt-derived scope, but no session_id. The Store already has events.session_id, and consume_pcm16_voice_window receives event_id, so the current event's session can be resolved without copying user content: Store.one("SELECT session_id FROM events WHERE id=?", (event_id,)). If the same source, generation and consent receipt are reused across two chat sessions in one Runtime process, the timing intervals / expected_next_ms can carry over and create a cross-session omission candidate. This is a conditional risk, not proof that the installed provider reuses receipts.
+
+**Exact inspected paths:** v13/code/v13/audio_event_expectation.py (registry key/update/reset); v13/code/v13/audio_voice_cues.py (event expectation consumer call); v13/code/v13/store.py (events table session_id and Store.one); v13/code/tests/test_audio_temporal_prediction.py (event expectation tests cover uncertain/low-confidence/late windows but not session-disjoint reuse).
+
+**Next experiment:** seed a valid periodic VOICED/SILENCE pattern in session A; start session B with identical source_id, generation_id and consent_scope_id; confirm B is WARMUP with no expected event/omission until it independently accumulates MIN_INTERVALS. Also verify resetting/revoking one source clears its states across sessions. Add an integrated consumer test that obtains session_id from the event row. Keep the event expectation process-local and non-learning; do not promote the omission to truth, speaker identity, action or persistent memory.
+
+**Integration constraint:** integrated_audio_context_candidate_20261121.py pins the current audio_event_expectation.py source blob. Any implementation change must be coordinated with Core to update the exact builder pin and rerun staged/integrated Runtime tests; do not silently change the Perception file and leave the consumer bundle stale.
+
+**Status:** OPEN / STATIC RISK ONLY / NO CODE CHANGE / NO REDMI EVIDENCE.
