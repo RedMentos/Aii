@@ -279,7 +279,7 @@ import threading
 
 
 class TemporalVoiceEvidenceRegistry:
-    """Bounded, runtime-local temporal filters keyed by source and generation."""
+    """Bounded temporal filters keyed by source, generation, Store session and consent scope."""
 
     def __init__(self, *, max_streams: int = 16, **state_options) -> None:
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
