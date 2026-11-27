@@ -77,11 +77,12 @@ No third-party implementation, model, weights or dataset was imported. The exper
 
 ## Device / release boundary
 
-- No private authenticated device receipt was available for this run.
+- No fresh authenticated receipt was available for this run. The latest private V13OBS #115 (updated 2026-11-24 09:28:11Z) last reported auto-update enabled and dashboard/runtime UP_TO_DATE at updated_commit `8d93236c753f0194224c19edc7411d8d7082b1d6`; AI runtime STOPPED_BY_USER, model process STOPPED, service/dashboard process RUNNING, autostart false.
+- Its last observed turn: 6.295 s total / 2.046 s TTFT / 358 prompt tokens / 7 C3 tokens. B1/B2 native probes ended TIME_BUDGET at 53.2/54.2 s with zero valid offers; native probe SMOKE_PARTIAL. These are historical, not current measurements.
+- Newer private V13READ requests were expired/open with no device_status comment: NO_LIVE_RECEIPT. No current installed SHA or updater state is confirmed.
+- The last reported 8d932 development-branch commit is 83 commits ahead of the latest integrated release head b20e9 (37/37 CI green); these are distinct references. PR #2566 is not part of either.
 - No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, microphone capture, MediaProjection capture or device data mutation was performed.
-- Android / Termux / Redmi: REDMI_UNVERIFIED.
-- Installed SHA and updater state: UNKNOWN. Last available private V13OBS #115 is historical (2026-11-24) and reported runtime/model process stopped; it is not a current device receipt.
-- Release: NOT_RELEASED.
+- Android / Termux / Redmi: REDMI_UNVERIFIED. Release: NOT_RELEASED.
 
 ## Next concrete work
 
