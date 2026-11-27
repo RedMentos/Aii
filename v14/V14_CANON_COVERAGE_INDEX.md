@@ -2415,3 +2415,12 @@ This is a stronger prefill baseline than the earlier BOS-only roundtrip, but rem
 ## Run50 exact A4 candidate pin guard — 2026-11-26
 
 The caller-supplied PCM16 A4/A5 helper path now includes a regression test that compares all 12 integrated audio candidate SOURCE_BLOBS against the actual repository checkout. The previously stale cognition pin was corrected to the current parent blob. Exact CI: 117 audio voice/speaker/input tests PASS on Python 3.13 and 3.14; RAW EAR/libfvad comparison PASS; A4/A5 feature-set PASS; offline RuntimeDeploy PASS. The helper is still not a normal Runtime/C3 call site or Android microphone provider. The staged/integrated path is blocked by Core-owned builder/arithmetic/observer pins and migration assertions on the #2527 branch; Core #2538 is green on #2524 but must be stacked on #2527 and its pins refreshed. Status remains WIRED_SYNTHETIC for the helper, NOT_IMPLEMENTED for Android microphone/normal-turn voice/full-duplex, REDMI_UNVERIFIED, NOT_RELEASED.
+
+
+## 2026-11-27 evidence overlay — A4 attention-switch sequence evaluation
+
+- Canon path: A4 attention/salience × A5 RAW EAR × separate attention outcome/World context.
+- Artifact: v14/experiments/a4_attention_switch_sequence_probe.py plus 10 focused tests and usage contract.
+- State: WIRED_SYNTHETIC for the evaluation tool; it consumes the existing A4_AUDIO A4AttentionReceipt schema and validates separate source/timebase/generation bindings. Its fixture is synthetic only.
+- Not established: real EEG/observer label performance, AAD speaker identity, normal Runtime/C3 call site, microphone/AudioRecord, learned attention weights, Android-native execution, Redmi proof or acceptance.
+- Do not promote this probe to a completed A4/A5 pipeline. Existing V13 voice/audio and all other Canon obligations remain OPEN where their original acceptance is unmet.
