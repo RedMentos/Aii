@@ -8,16 +8,16 @@ on:
       - "v13/code/v13/native_prompt_admission.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
-      - "v13/code/tests/test_same_turn_body_delivery_qa.py"
       - "v13/code/tests/test_native_turn_budget.py"
+      - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
       - ".github/workflows/v14-core-body-prefill-admission.yml"
   pull_request:
     paths:
       - "v13/code/v13/native_prompt_admission.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
-      - "v13/code/tests/test_same_turn_body_delivery_qa.py"
       - "v13/code/tests/test_native_turn_budget.py"
+      - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
       - ".github/workflows/v14-core-body-prefill-admission.yml"
 
 permissions:
@@ -44,28 +44,28 @@ jobs:
             v13/code/v13/native_prompt_admission.py \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
-            v13/code/tests/test_same_turn_body_delivery_qa.py \
-            v13/code/tests/test_native_turn_budget.py
-      - name: Run native admission and same-turn consumer regressions
+            v13/code/tests/test_native_turn_budget.py \
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py
+      - name: Run native admission, fair-budget and C3 token-span regressions
         env:
           PYTHONPATH: v13/code
         run: |
           python -m pytest -q \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
-            v13/code/tests/test_same_turn_body_delivery_qa.py \
-            v13/code/tests/test_native_turn_budget.py
+            v13/code/tests/test_native_turn_budget.py \
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py
       - name: Stage the exact integrated Termux candidate
         run: |
           python v13/code/scripts/stage_integrated_candidate.py \
             --output "$RUNNER_TEMP/v14-body-prefill-stage"
-      - name: Re-run admission and same-turn tests against staged Runtime
+      - name: Re-run admission and C3 token-span tests against staged Runtime
         env:
           PYTHONPATH: ${{ runner.temp }}/v14-body-prefill-stage
         run: |
           python -m pytest -q \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
-            v13/code/tests/test_same_turn_body_delivery_qa.py
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py
       - name: Check patch whitespace
         run: git diff --check
