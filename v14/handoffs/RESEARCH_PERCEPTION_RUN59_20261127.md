@@ -22,7 +22,7 @@ When an already-installed hashed_bow student projector had captions, A5 emitted 
 - LOCAL_LINUX, CPython 3.13.5: isolated exact-helper reproduction of the old ambiguity — FAIL as expected; patched helper compile + duplicate-source selection + normalized-weight + re-look checks — PASS.
 - Full local Aii checkout/pytest: BLOCKED / NOT_RUN. No repository checkout is mounted; git ls-remote fails because this environment cannot resolve github.com. The isolated helper check is not the full repository suite.
 - GitHub Actions before this patch: PR #2550 head cb52515ffba625abf048bd66a7e3789a13ca1415 A5 workflow and staged/integrated regression both SUCCESS. Those results do not transfer to the new head.
-- GitHub Actions after this patch: pending at handoff creation; exact head must pass the A5 Python 3.13/3.14 workflow and staged/integrated regression before review.
+- GitHub Actions after this patch: exact code/test head fca70db. A5 workflow 45943031921 PASS on Python 3.13 and 3.14: py_compile PASS and 11 passed / 3 subtests each. Shared staged/integrated workflow 45943031927 PASS: staged runtime 268 passed / 10 skipped / 48 subtests; integrated regression 424 passed / 3 skipped / 6 warnings / 58 subtests. These are hosted Linux CI results, not local hardware or Android proof.
 - TERMUX/REDMI: REDMI_UNVERIFIED. No live MediaProjection provider, screen frame, Android service, microphone, model, weight, permission, updater or user-data operation was used.
 
 ## Real user effect and limits
