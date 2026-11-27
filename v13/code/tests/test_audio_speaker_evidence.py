@@ -562,7 +562,7 @@ def test_registry_stores_compact_float32_vectors_in_memory():
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=batch,
     )
-    stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
+    stored = registry._states[(SOURCE, "gen-compact", None, None)].frames[0][1]
     assert isinstance(stored, array)
     assert stored.typecode == "f"
     assert stored.itemsize == 4
@@ -728,5 +728,96 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["c3_admission"].selected[0].source_id == SOURCE
         assert final["learning_authority"] is False
         assert final["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+def test_speaker_lookback_restarts_on_store_session_and_consent_rotation():
+    registry = SpeakerChangeEvidenceRegistry()
+    first_batch = speaker_batch(SOURCE, "gen-scope", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    first = registry.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=first_batch,
+        session_id="session-a", consent_scope_id="a" * 64,
+    )
+    assert first["status"] == "WARMUP"
+
+    second_batch = speaker_batch(SOURCE, "gen-scope", 100, 1100, lambda _: (0.0, 1.0, 0.0))
+    second = registry.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=second_batch,
+        session_id="session-b", consent_scope_id="a" * 64,
+    )
+    assert second["status"] == "WARMUP"
+    assert second["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert second["speaker_change_candidate"] is None
+    assert second["peak_speaker_change_candidate"] is None
+    assert len(registry) == 1
+
+    rotated = registry.update(
+        source_id=SOURCE, generation_id="gen-scope", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=second_batch,
+        session_id="session-b", consent_scope_id="b" * 64,
+    )
+    assert rotated["status"] == "WARMUP"
+    assert rotated["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert len(registry) == 1
+
+
+def test_runtime_audio_histories_restart_when_same_source_enters_new_store_session(tmp_path, monkeypatch):
+    runtime, first_event = make_runtime(tmp_path)
+    second_session = runtime.store.new_session("second RAW EAR session")
+    second_event = runtime.store.event(second_session, "same source, new session")
+    generation = first_event["brain_generation_id"]
+    assert second_event["brain_generation_id"] == generation
+    assert first_event["session_id"] != second_event["session_id"]
+
+    class CapturingAttention:
+        def modulate(self, event_id, sal):
+            return {
+                "sal": dict(sal),
+                "gains": {
+                    "perceptual": 1.0, "callosum": 1.0, "workspace": 1.0,
+                    "focal": 1.0, "action": 1.0,
+                },
+                "salience": max(sal.values(), default=0.0),
+                "caution": 0.0,
+                "interrupt": False,
+                "interrupt_reason": None,
+                "truth_authority": 0,
+            }
+
+    monkeypatch.setattr(
+        audio_voice_module.attctl,
+        "controller",
+        lambda current_runtime: CapturingAttention(),
+    )
+    try:
+        first_embeddings = speaker_batch(SOURCE, generation, 100, 1100, lambda _: (1.0, 0.0, 0.0))
+        first = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=first_event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=first_embeddings,
+        )
+        second_embeddings = speaker_batch(SOURCE, generation, 100, 1100, lambda _: (0.0, 1.0, 0.0))
+        second = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=second_event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=second_embeddings,
+        )
+
+        assert first["speaker_change_evidence"]["status"] == "WARMUP"
+        assert second["speaker_change_evidence"]["status"] == "WARMUP"
+        assert second["speaker_change_evidence"]["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+        assert second["a4"]["temporal_voice"]["state_reset"] is True
+        assert second["a4"]["temporal_voice"]["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+        assert second["a4"]["temporal_voice"]["voice_evidence"] == first["a4"]["temporal_voice"]["voice_evidence"]
+        assert second["a4"]["speaker_change_decision"] == "DEFER"
+        assert second["a4"]["learning_authority"] is False
+        assert second["a4"]["action_authority"] is False
     finally:
         runtime.store.close()
