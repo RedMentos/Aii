@@ -1949,3 +1949,14 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **Integration / risk.** The focused provider→A5→A3 consumer is WIRED_SYNTHETIC / FOCUSED_CI_PASS, not native or accepted. Core's normal Runtime/C3 consumer remains a separate dependency. Shared staged/integrated is still blocked by the stale Core lifecycle vision.py pin (current SHA-256 dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b) and existing Core/QA failures; Core/QA-owned files were not changed. No Android/Termux/Redmi, model-native, weight-learning or deployment proof.
 
 **Next:** Core refreshes its source pin and rebases its normal-turn consumer; QA owns Android lifecycle verification. Perception runs a source-disjoint comparison of RMS-z vs shrinkage covariance vs conformal-style calibration; no default change until false-abstention and missed-OOD trade-offs are measured.
+
+
+## Run 71 cross-lane audio finding — signed consumer has no Runtime receiver yet
+
+The signed one-shot Android audio consumer in Perception PR #2312 is not end-to-end:
+- Release-development Runtime blob 30360f40eb784be5ea975ee85e94a57f0b154164 exposes only Runtime.submit(self, text), with no audio_window parameter.
+- audio_input.submit_audio_only passes audio_window as a keyword and converts the resulting TypeError into RuntimeError. PR #2312's positive test uses a RuntimeStub that accepts the keyword; it does not execute the real Runtime.
+- QA's current CapabilityRegistry marks audio_capture unavailable because there is no visible one-shot AudioRecord provider. AudioCaptureDefaultOffTest confirms microphone permission and microphone foreground service remain absent. Keep this default.
+- Existing caller-fed RAW EAR is further along: audio_voice_cues.consume_pcm16_voice_window builds timestamped source-bound audio PerceptPackets, carries PROVISIONAL/FINAL provenance, extracts prosody/activity/non-speech features, and reaches A4/C3 admission with action/learning authority false. This is not microphone capture.
+
+**Owners / next executable step:** Core owns Runtime.submit(audio_window=...) and same-turn event/generation/lease propagation; QA owns the visible AudioRecord provider and Android lifecycle/permission tests; Perception owns rebasing #2312, exact Runtime integration tests, and preserving the acoustic (not transcript-only) A-plane contract. No Android permission or capture was enabled. P0 #1904 remains open.
