@@ -44,9 +44,11 @@ def apply_raw_eye_structure(a4_result, segment, score, components, *, segment_in
     if (
         segment.get("modality") != "visual"
         or not isinstance(source_ref, dict)
-        or source_ref.get("modality") != "visual"
+        # The provider-backed UI path keeps image provenance on SourceRef while
+        # its A4 segment is explicitly marked visual and MediaProjection-bound.
+        or source_ref.get("modality") not in {"visual", "image"}
         or segment.get("capture_method") != "MEDIA_PROJECTION"
-        or segment.get("producer_component") != "A5_VISUAL"
+        or segment.get("producer_component") not in {"A5_VISUAL", "A5_RAW_EYE_UI"}
     ):
         raise ValueError("RAW-EYE salience lacks A5 MediaProjection provenance")
     score = _unit(score, "RAW-EYE structure score")
