@@ -189,10 +189,15 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
             or outcome.details.get("key_storage_status") != "UNVERIFIED"
         )
     )
+    expected_android_permission = {
+        "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
+        "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
+    }.get(outcome.capability)
     android_keystore_invalid = (
         auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
         and (
-            outcome.details.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+            expected_android_permission is None
+            or outcome.details.get("android_os_permission_status") != expected_android_permission
             or outcome.details.get("key_storage_status") not in {
                 "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
             }
