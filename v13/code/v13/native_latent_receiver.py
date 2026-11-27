@@ -570,7 +570,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  device_execution_receipt_sha256=None, device_runtime_build_id=None,
                  include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
                  context_sha256=None):
-    """Score the fixed eight-condition task matrix with one native model load.
+    """Score the fixed nine-condition task matrix with one native model load.
 
     Only hashes, target-token log-probabilities, dimensions and optional sanitized
     same-model hybrid-state metrics are returned. No raw state, text, token IDs,
@@ -580,7 +580,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
 
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
+        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE",
     )
     if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
         raise NativeReceiverError("unsupported or identical sender/receiver roles")
@@ -599,7 +599,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if position_mode != POSITION_MODE:
         raise NativeReceiverError("task matrix position mode differs from the pinned receiver contract")
     if not isinstance(condition_inputs, (list, tuple)) or len(condition_inputs) != len(conditions):
-        raise NativeReceiverError("native task matrix must contain exactly eight ordered conditions")
+        raise NativeReceiverError("native task matrix must contain exactly nine ordered conditions")
     if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
