@@ -35,6 +35,7 @@ REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
             "v13/android_companion_ui_frames.py", "v13/android_companion_transport.py",
             "v13/android_companion_ecdsa.py", "v13/android_capabilities.py",
             "v13/android_control.py", "v13/android_outcomes.py",
+            "v13/android_url.py", "v13/jefbridge.py", "v13/enlightened_space.py",
             "v13/a5_ui_admission_bridge.py", "v13/vision_ui_frame_ingress.py",
             "scripts/needle_worker.cpp", "specs/models.json", CANON)
 COPY_SUBTREES = ("v13", "scripts", "specs", "docs/canon")
