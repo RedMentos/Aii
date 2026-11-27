@@ -400,7 +400,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
 
 
 
-def _native_effect_cohort(*, semantic_use_proven=False, duplicate_input_groups_checked=1):
+def _native_effect_cohort(*, semantic_use_proven=False, duplicate_input_groups_checked=1, evidence_class="LOCAL_LINUX"):
     kv = {
         "status": "READ_ONLY_SAMPLE_ONLY",
         "task_group_count": 1,
@@ -432,7 +432,7 @@ def _native_effect_cohort(*, semantic_use_proven=False, duplicate_input_groups_c
     }
     return {
         "status": "INSUFFICIENT_HOLDOUT",
-        "evidence_class": "LOCAL_LINUX",
+        "evidence_class": evidence_class,
         "task_group_count": 1,
         "kv_snapshot_effect": kv,
         "information_use_audit": information,
@@ -502,6 +502,28 @@ def test_core_consumer_rejects_negative_duplicate_input_count(monkeypatch):
 
     with pytest.raises(matrix_runtime.NativeReceiverMatrixRuntimeError, match="structural contract"):
         matrix_runtime._native_receiver_effects(object(), strict=True)
+
+
+def test_core_consumer_downgrades_synthetic_kv_snapshots_to_unavailable(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort(evidence_class="SYNTHETIC")
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+
+    effects = matrix_runtime._native_receiver_effects(object(), strict=True)
+    kv = effects["kv_snapshot_effect"]
+    assert effects["evidence_class"] == "SYNTHETIC"
+    assert kv["status"] == "UNAVAILABLE"
+    assert kv["reason"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert kv["source_status"] == "READ_ONLY_SAMPLE_ONLY"
+    assert kv["persisted"] is False
+    assert kv["native_receiver_authority"] == 0
 
 
 def test_core_consumer_rejects_kv_summary_that_claims_semantic_use(monkeypatch):
