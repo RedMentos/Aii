@@ -226,7 +226,14 @@ class ECDSAReceiptVerifier:
                 "key_storage_status": body["key_storage_status"],
                 "android_os_permission_status": body["os_permission_status"],
                 "local_approval_evidence": mapped[2],
+                "companion_user_approval": body["local_consent"],
+                "device_execution_claimed": False,
                 "t8_authoritative": False,
+                "world_learning_eligible": False,
+                "trusted_transition_eligible": False,
+                "production_route": False,
+                "training_authority": 0,
+                "native_receiver_authority": 0,
             }
 
     def close(self):
