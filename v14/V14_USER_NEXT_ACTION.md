@@ -2664,3 +2664,38 @@ The signed one-shot Android audio consumer in Perception PR #2312 is **not yet c
 **Run 71 readback:** a prior documentation-only readback was 6f3e87e6c9c946041a95d430b50ad0165bebac7e; later evidence-only addenda recorded the signed-audio Runtime audit and exact test evidence. The code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Use PR #2565 for the live docs branch head; no code/test changes followed focused workflow 46057142216 (39/39 on Python 3.13 and 39/39 on Python 3.14). PR remains mergeable=false / NOT_MERGE_READY.
 
 **Audio PR evidence:** #2312's focused workflow 44992975596 passes 20/20 on Python 3.13 and 20/20 on Python 3.14; privacy/offline workflow 44992972977 passes; integrated-regression job in 44992975599 passes. The staged-runtime job in 44992975599 fails 2 migration assertions (238 passed, 10 skipped, 47 subtests passed): the fixture expects UPDATED while the observed migration is PARTIAL because Runtime reports ERROR. The 20 passing focused tests still use RuntimeStub for the positive submit path; they do not overcome the missing Runtime audio_window receiver.
+
+
+## Research & Perception Run 76 — 2026-11-28
+
+**Branch / PR:** `research-perception/v14-a3-ood-calibration-20261127-run72`, draft PR #2566.  
+**Code/test SHA:** `6d3cf4a874462be3cbf250d1b566ff1c7cabde48` (read back after push).  
+**Release:** NOT_RELEASED. **Device:** REDMI_UNVERIFIED. **Start/end:** UNKNOWN / UNKNOWN.
+
+### Functional checkpoint
+
+- The existing #2566 diagnostic receiver matrix now includes the 13th `SELF_GENERATED_MESSAGE` arm, native first-next-token full-vocabulary PL/CIC JSD, and paired task-accuracy CAG/SSG summaries with 20-group source/session/family coverage checks. The 20-group test is a synthetic fixture only. The evaluator explicitly reports `persisted=false`; no durable cohort evidence or raw logits are stored, and no real native model cohort has run.
+- Fixed four exact-head Python test failures caused by the synthetic fixture referencing undefined `RECEIVER_SHA`; the fixture now binds to `RECEIVER["model_sha256"]`. This does not change model/runtime behavior or authority.
+
+### Tests and exact evidence
+
+- LOCAL_LINUX scratch, CPython 3.13.5: fixture-expression/hash/bounds check PASS. This is not the repository pytest suite.
+- Prior exact native workflow 46081870981 on parent code/test SHA `6a4df8c9ecabdaafab81f691248449c32da6ecbb`: Python 3.13 and 3.14 each failed four tests at the same undefined `RECEIVER_SHA` fixture reference; py_compile passed, pinned llama.cpp Linux build passed, Android arm64-v8a cross-compile passed. Fix committed at `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`; a new exact-head CI result has not yet been observed.
+- Shared staged/integrated workflow 46081871090 remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) on the Core-owned audio-composer source pin, lifecycle `vision.py` source support, cognition observer pin and QA migration PARTIAL-vs-UPDATED assertions. No Perception-owned source in that failure was edited.
+- Full local Aii checkout / pytest / native build: BLOCKED / NOT_RUN; no checkout was mounted and GitHub DNS was unavailable.
+
+### Cross-lane NPY preflight readback
+
+The new #2576 cross-lane failure is a stale source composition, not a current Perception regression. #2576 uses `vision_ui_frame_ingress.py` blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`, which lacks `_validate_projector_npy_headers`, while its test blob `6a1b7df21d2d2a4985725c6f2d9cb16538d6f7e3` contains the malformed-shape allocation-bomb test. Current Perception #2563 has code blob `6572cd4a3516824b1b5f7618c6fdf7a090f74807` with preflight and test blob `5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5`; its ingress workflow passed 31/31 on Python 3.13 and 31/31 on 3.14. #2565/#2570 use the OOD-aware provider blob `8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332` and paired test blob `31c6fab9124967e9cb49c98be79f975d2ad9df07`; #2565 ingress passed 39/39 on both versions. Exact blob comparison and the Core-owned rebase/port request were posted to #2576 and #2563. Do not remove the negative allocation-bomb test.
+
+### Research
+
+- Added R-196 after full review of arXiv:2610.28905 (2026-10-20). Its main V14 implication is dependency-aware handoff timing: early/recurrent exchange when the next computation depends on the message; late fusion when independent evidence can mature first. The diffusion-specific adapter is not a direct autoregressive LFM2/llama.cpp port. No code/weights reused.
+- Existing R-194/R-195 causal-audit implementation remains diagnostic; no native GGUF evidence or trained cross-model latent coupling.
+
+### Next executable work
+
+1. Obtain exact-head CI for `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`; repair any new failures before changing the cohort design.
+2. Keep the 20-group synthetic aggregator clearly synthetic and `persisted=false`; next acceptance requires a real already-authorized pinned GGUF, at least 20 source-disjoint groups across two sessions and two task families, paired task accuracy and restart/rollback evidence. Do not download or swap a model without separate approval.
+3. Core must port the current #2563/#2565 Perception source pair into #2576 and refresh its own source pins; QA retains Android consent/lifecycle acceptance.
+4. Keep B3 OFF, the normal-turn user path unclaimed, and all Redmi-native behavior UNVERIFIED.
