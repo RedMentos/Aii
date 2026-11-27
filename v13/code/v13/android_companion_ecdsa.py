@@ -180,7 +180,11 @@ class ECDSAReceiptVerifier:
             if (len(body["action_id"]) != 32 or any(c not in "0123456789abcdef" for c in body["action_id"])
                     or len(body["digest"]) != 64 or any(c not in "0123456789abcdef" for c in body["digest"])):
                 raise CompanionDenied("invalid action scope")
-            if body["capability"] != "launch_app" or body["os_permission_status"] != "NOT_REQUIRED_FOR_LAUNCH_APP":
+            expected_permission_status = {
+                "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
+                "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
+            }.get(body["capability"])
+            if expected_permission_status is None or body["os_permission_status"] != expected_permission_status:
                 raise CompanionDenied("unsupported capability receipt")
             if body["key_storage_status"] not in {"ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"}:
                 raise CompanionDenied("unknown key storage status")
