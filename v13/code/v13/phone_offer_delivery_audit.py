@@ -22,7 +22,7 @@ from urllib.parse import quote
 
 
 ROLES = ("B1_DETAIL", "B2_GIST")
-TOKEN_SPAN_REVISION = "v13.native-prompt-token-span-receipt/1"
+TOKEN_SPAN_REVISION = "v13.native-prompt-token-span-receipt/2"
 STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
