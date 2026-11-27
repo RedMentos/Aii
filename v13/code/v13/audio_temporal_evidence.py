@@ -45,6 +45,8 @@ class TemporalVoiceEvidence:
     def reset(self) -> None:
         self._source_id: str | None = None
         self._generation_id: str | None = None
+        self._session_id: str | None = None
+        self._consent_scope_id: str | None = None
         self._last_start_ms: int | None = None
         self._last_end_ms: int | None = None
         self._evidence = 0.0
@@ -68,6 +70,8 @@ class TemporalVoiceEvidence:
         )
         clone._source_id = self._source_id
         clone._generation_id = self._generation_id
+        clone._session_id = self._session_id
+        clone._consent_scope_id = self._consent_scope_id
         clone._last_start_ms = self._last_start_ms
         clone._last_end_ms = self._last_end_ms
         clone._evidence = self._evidence
@@ -82,6 +86,8 @@ class TemporalVoiceEvidence:
         start_ms: int,
         end_ms: int,
         cues: dict,
+        session_id: str | None = None,
+        consent_scope_id: str | None = None,
     ) -> dict:
         """Evaluate provisional cues without committing temporal evidence.
 
@@ -93,8 +99,8 @@ class TemporalVoiceEvidence:
         if type(cues) is not dict:
             raise ValueError("cues must be an object")
         signature = (
-            source_id, generation_id, start_ms, end_ms,
-            cues.get("activity_hint"), cues.get("activity_score"),
+            source_id, generation_id, session_id, consent_scope_id,
+            start_ms, end_ms, cues.get("activity_hint"), cues.get("activity_score"),
         )
         if self._preview_state is not None and signature == self._preview_signature:
             return dict(self._preview_result)
@@ -114,6 +120,8 @@ class TemporalVoiceEvidence:
             start_ms=start_ms,
             end_ms=end_ms,
             cues=cues,
+            session_id=session_id,
+            consent_scope_id=consent_scope_id,
         )
         result = dict(result)
         result["preview_only"] = True
@@ -134,6 +142,8 @@ class TemporalVoiceEvidence:
         start_ms: int,
         end_ms: int,
         cues: dict,
+        session_id: str | None = None,
+        consent_scope_id: str | None = None,
     ) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
@@ -145,6 +155,17 @@ class TemporalVoiceEvidence:
             raise ValueError("end_ms must be an integer after start_ms")
         if type(cues) is not dict:
             raise ValueError("cues must be an object")
+        if (session_id is None) != (consent_scope_id is None):
+            raise ValueError("session_id and consent_scope_id must be supplied together")
+        if session_id is not None and (
+            type(session_id) is not str or not session_id.strip() or len(session_id) > 128
+        ):
+            raise ValueError("session_id is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id must be a lowercase SHA-256 digest")
         hint = cues.get("activity_hint")
         score = cues.get("activity_score")
         if type(hint) is not str or hint not in {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}:
@@ -153,11 +174,15 @@ class TemporalVoiceEvidence:
             raise ValueError("activity_score must be finite and in [0, 1]")
 
         reset_reason = None
-        if self._source_id is not None and (
-            source_id != self._source_id or generation_id != self._generation_id
-        ):
-            self.reset()
-            reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+        if self._source_id is not None:
+            if source_id != self._source_id or generation_id != self._generation_id:
+                self.reset()
+                reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+            elif (session_id, consent_scope_id) != (self._session_id, self._consent_scope_id):
+                self.reset()
+                reset_reason = "SESSION_OR_CONSENT_SCOPE_CHANGED"
+        self._session_id = session_id
+        self._consent_scope_id = consent_scope_id
 
         previous_start_ms = self._last_start_ms
         if previous_start_ms is not None and start_ms < previous_start_ms:
@@ -254,7 +279,7 @@ import threading
 
 
 class TemporalVoiceEvidenceRegistry:
-    """Bounded, runtime-local temporal filters keyed by source and generation."""
+    """Bounded temporal filters keyed by source, generation, Store session and consent scope."""
 
     def __init__(self, *, max_streams: int = 16, **state_options) -> None:
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
@@ -265,23 +290,46 @@ class TemporalVoiceEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id: str, generation_id: str,
-               start_ms: int, end_ms: int, cues: dict) -> dict:
+               start_ms: int, end_ms: int, cues: dict,
+               session_id: str | None = None,
+               consent_scope_id: str | None = None) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
             raise ValueError("generation_id is invalid")
-        key = (source_id, generation_id)
+        if (session_id is None) != (consent_scope_id is None):
+            raise ValueError("session_id and consent_scope_id must be supplied together")
+        if session_id is not None and (
+            type(session_id) is not str or not session_id.strip() or len(session_id) > 128
+        ):
+            raise ValueError("session_id is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id must be a lowercase SHA-256 digest")
+        scope = (session_id, consent_scope_id)
+        key = (source_id, generation_id, session_id, consent_scope_id)
         with self._lock:
+            scope_changed = False
+            for old_key in list(self._states):
+                if old_key[0] == source_id and (
+                    old_key[1] != generation_id or old_key[2:] != scope
+                ):
+                    if old_key[1] == generation_id and old_key[2:] != scope:
+                        scope_changed = True
+                    del self._states[old_key]
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
             result = state.update(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
+                session_id=session_id, consent_scope_id=consent_scope_id,
             )
-            for old_key in list(self._states):
-                if old_key[0] == source_id and old_key[1] != generation_id:
-                    del self._states[old_key]
+            if scope_changed:
+                result["state_reset"] = True
+                result["reset_reason"] = "SESSION_OR_CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:
@@ -289,23 +337,46 @@ class TemporalVoiceEvidenceRegistry:
             return result
 
     def preview(self, *, source_id: str, generation_id: str,
-                start_ms: int, end_ms: int, cues: dict) -> dict:
+                start_ms: int, end_ms: int, cues: dict,
+                session_id: str | None = None,
+                consent_scope_id: str | None = None) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
             raise ValueError("generation_id is invalid")
-        key = (source_id, generation_id)
+        if (session_id is None) != (consent_scope_id is None):
+            raise ValueError("session_id and consent_scope_id must be supplied together")
+        if session_id is not None and (
+            type(session_id) is not str or not session_id.strip() or len(session_id) > 128
+        ):
+            raise ValueError("session_id is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise ValueError("consent_scope_id must be a lowercase SHA-256 digest")
+        scope = (session_id, consent_scope_id)
+        key = (source_id, generation_id, session_id, consent_scope_id)
         with self._lock:
+            scope_changed = False
+            for old_key in list(self._states):
+                if old_key[0] == source_id and (
+                    old_key[1] != generation_id or old_key[2:] != scope
+                ):
+                    if old_key[1] == generation_id and old_key[2:] != scope:
+                        scope_changed = True
+                    del self._states[old_key]
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
             result = state.preview(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
+                session_id=session_id, consent_scope_id=consent_scope_id,
             )
-            for old_key in list(self._states):
-                if old_key[0] == source_id and old_key[1] != generation_id:
-                    del self._states[old_key]
+            if scope_changed:
+                result["state_reset"] = True
+                result["reset_reason"] = "SESSION_OR_CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:
