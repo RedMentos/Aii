@@ -39,3 +39,8 @@ R-196 records a full review of Gazzaev et al., *Hidden Messages Between Diffusio
 ## Next step
 
 Close exact-head CI for `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`. Then run a source/session-disjoint native GGUF cohort only with an already-authorized pinned model; no download or production swap is authorized. Core owns the #2576 source rebase; QA owns Android consent/lifecycle proof. Keep B3 OFF until real receiver consumption and task utility are demonstrated.
+
+
+## Research supplement — R-197 (full ICML 2026 review)
+
+Zou et al., *Latent Collaboration in Multi-Agent Systems*, PMLR 306 (ICML 2026 Spotlight), full paper and appendices reviewed. The released code (Gen-Verse/LatentMAS main `9a9e4d331eb11430bd9e64754c6b252b06d73031`, Apache-2.0) creates one shared `ModelWrapper` and loops through role prompts; it transfers same-shape layer-wise KV caches. The paper explicitly leaves heterogeneous agents to a trainable adapter. Qwen3-4B weights are Apache-2.0 and listed at 8.06 GB; the experiments use 8×A100-80G. This is a same-model latent-working-memory reference, not proof of independent B1/B2 cross-model coupling and not an Android candidate. The current #2566 matrix injects precomputed rows into a receiver; it does not execute the sender model or train the cross-model adapter. Next: actual sender inference → trained source/receiver adapter → receiver inference, distinct model hashes, gradient/diff/retention/restart and source-disjoint task-accuracy/PL/CIC. B3 remains OFF.
