@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_BLOB_SHA1 = "ee1b710b3ae665b1d2aeca7b6240a2bf43b5565c"
+BASE_BUILDER_BLOB_SHA1 = "2e5361d6d64a64178549c19a07cc0c8e13bb62de"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "92fb6fc5db705f5dd69ce20bb283ac6af59cfe25"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
@@ -17,6 +17,8 @@ NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_2
 NATIVE_RECEIVER_BLOB_SHA1 = "e237cbdb41defd0fde2f05c6baff6ad0ff9e1ad0"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "3c71a71b4171f49c20b57fadee190b22576fa953"
+A5_VISUAL_RUNTIME_BUILDER = "scripts/integrated_a5_visual_runtime_candidate_20261127.py"
+A5_VISUAL_RUNTIME_BLOB_SHA1 = "2cc3b7d57bb062050bbf13666c848d8490ba7c5a"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -273,6 +275,8 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     composed = native_receiver.apply_sources(code_dir, composed)
     greeting_fastpath = _load(code_dir, GREETING_FASTPATH_BUILDER, GREETING_FASTPATH_BLOB_SHA1)
     composed = greeting_fastpath.apply_sources(code_dir, composed)
+    a5_visual_runtime = _load(code_dir, A5_VISUAL_RUNTIME_BUILDER, A5_VISUAL_RUNTIME_BLOB_SHA1)
+    composed = a5_visual_runtime.apply_sources(code_dir, composed)
     if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
         raise ValueError("native receiver Cognition path was not composed")
     if b"native-probe" not in composed.get("v13/callosum.py", b""):
@@ -287,6 +291,8 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("A5 audio composition removed the existing exact arithmetic path")
     if b"audio_consent_lease" not in composed.get("v13/runtime.py", b""):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
+    if b"set_a5_visual_provider" not in composed.get("v13/runtime.py", b""):
+        raise ValueError("one-shot A5 visual Runtime consumer was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
     return composed
