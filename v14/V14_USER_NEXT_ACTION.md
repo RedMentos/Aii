@@ -1,21 +1,21 @@
-# CURRENT VERIFIED NEXT ACTION — 2026-11-27 04:31 CET
-**User action: none required.** No Termux command, update request, model/weight swap, permission change or production enablement is justified by this draft experiment.
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27
+**User action: none required.** No Termux command, update request, model/weight swap, permission change or production enablement is justified.
 
 ## Research & Perception checkpoint
 - PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, remains stacked on Perception #2540.
 - Added opt-in `TRANSIENT_CONSOLIDATE` and `TRANSIENT_NO_CONSOLIDATION` to the A3/A4 RAW EAR predictor. Clipped deltas accumulate in a bounded process-local matrix; only the consolidating policy commits after an L2 threshold. `state_dict`/SQLite persist consolidated numeric weights only; restart drops pending deltas. Existing `EVERY_FINAL` default and `MEMORIZED_ERROR` remain unchanged.
-- Explicit developer config reaches the existing caller-PCM Runtime consumer: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`. Missing keys preserve `EVERY_FINAL`; invalid values fail closed. No user-facing setting or production activation was added.
-- Exact source blobs: predictor `24e2c867613a33c33a58a779529c629ecfde37ef`; voice consumer `4bfcf31a7738bb390781babab8e11518896a3580`; composer manifest `019992e2e200b0c5c52d7f18fb5f38ff4185e396`, pinning both. Both VAD and A4/A5 feature-set workflows were corrected to the new voice-consumer blob.
-- LOCAL_LINUX scratch reproduction: **3/3 PASS** (threshold commit, no-consolidation control, restart discard). This is not full repository pytest. The updated A4 workflow now also installs pytest and runs the exact `v13/code/tests/test_audio_temporal_prediction.py` consumer suite.
-- Earlier A4 ablation-only CI passed on Python 3.13/3.14, but exact full predictor/consumer pytest was still running. Earlier feature-set and VAD runs failed only on stale source-blob pins; those workflows are now fixed. Exact-head reruns queued: A4 `45935761585`, feature-set `45935761586`, VAD `45935761531`, staged/integrated `45935761490`, RuntimeDeploy `45935761505`.
-- Known cross-lane blockers remain: Core-owned recovery/composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core #2547 must rebase onto current #2548 after focused CI and refresh only Core-owned pins; QA retains migration fixes.
+- Explicit developer config reaches the caller-PCM Runtime consumer: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`. Missing config preserves `EVERY_FINAL`; invalid values fail closed. No user-facing setting or production activation was added.
+- Exact source blobs: predictor `24e2c867613a33c33a58a779529c629ecfde37ef`; voice consumer `4bfcf31a7738bb390781babab8e11518896a3580`; composer manifest `019992e2e200b0c5c52d7f18fb5f38ff4185e396`, pinning both. VAD and A4/A5 feature-set workflow source pins were corrected.
+- LOCAL_LINUX scratch reproduction: **3/3 PASS** (threshold commit, no-consolidation control, restart discard). This is not full repository pytest. The new exact A4 workflow installed pytest and ran the real predictor/consumer test file on Python 3.13/3.14: **40 PASS / 1 FAIL** each. The sole failure was a test fixture that immediately crossed the consolidation threshold again; the fixture has been corrected in commit `571ebb10e67525b8791abba423b8d4474b9608e2`. Exact rerun is pending.
+- Pre-fix feature-set run failed on stale voice-blob pins; the pin-refresh run `45935761586` passed on Python 3.13 and 3.14. VAD pin-refresh run `45935761531` was still running at last poll. New final-head reruns are pending.
+- Staged/integrated Core/QA blockers remain: Core-owned recovery/composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core #2547 must rebase onto current #2548 after focused tests and refresh only Core-owned pins; QA retains migration fixes.
+- New research R-180: Hess et al., arXiv:2608.18803 (2026-08-19), identifies co-observation as a third axis beyond forgetting and plasticity. Four-chunk supervised/self-supervised vision experiments show replay can restore co-observation; a 3% buffer did not consistently match the ensemble, 15% did, 30% closed about half the remaining gap; distillation tracked the ensemble. Co-ob repository declares MIT but vendors patched Avalanche and uses a CaSSLe fork; subcomponent licenses need separate review. Next A4 experiment: source/consent-scoped process-local replay of 1/4/8/16 prior feature-transition pairs at equal update budget, with old/new regime holdout and restart/consent controls. No code reused.
 - Full local Aii checkout: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS unavailable). TERMUX/REDMI: **REDMI_UNVERIFIED**; no fresh device receipt, AudioRecord/microphone, native GGUF, updater installation or phone test. Release **NOT_RELEASED**; B3 trained latent coupling and B1/B2/C3 master learning remain unproven.
-- R-179 source: Li & van Rossum, *Energy efficient synaptic plasticity*, eLife 2020, DOI 10.7554/eLife.50804. Their energy benefit is model/simulation evidence only; GPL-3.0 upstream code was not reused and Aii root license remains unresolved.
 
 ## Next actions
-1. Read the exact-head A4 pytest, A4/A5 feature-set, VAD, staged/integrated and RuntimeDeploy results.
-2. If focused checks pass, coordinate Core rebase #2547 onto #2548 and refresh Core-owned source pins; QA closes its migration assertions.
-3. Continue source/session-disjoint A4 omission false-positive work, then A5 UI-event-to-PerceptPacket. Keep raw timed audio/provenance first-class; no transcript-only substitution.
+1. Read exact-head A4 Python 3.13/3.14 predictor+consumer pytest rerun and VAD comparator.
+2. If focused checks pass, coordinate Core rebase #2547 onto #2548 and refresh Core-owned recovery/stage/RuntimeDeploy pins; QA closes migration assertions.
+3. Then implement the R-180 tiny replay ablation with no raw PCM/transcript storage, source/consent isolation and equal update budget; continue A5 UI-event-to-PerceptPacket.
 
 ---
 
