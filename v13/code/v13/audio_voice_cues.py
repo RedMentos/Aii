@@ -1012,8 +1012,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
-        # Both predictors are consent-scoped shadow signals. Only FINAL windows
-        # update state; provisional windows are explicitly censored by the registries.
+        # Predictors and ephemeral voice/speaker histories are session- and
+        # consent-scoped shadow signals. Only FINAL windows update state;
+        # provisional windows are explicitly censored by the registries.
         try:
             if type(consent_receipt) is not str or not consent_receipt:
                 raise AudioTemporalPredictionError("audio consent receipt is invalid")
