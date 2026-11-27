@@ -1421,3 +1421,79 @@ def test_persistent_numeric_weights_retry_interleaved_session_conflict(tmp_path)
         assert final_version > version_after
     finally:
         runtime.store.close()
+
+
+def _assert_temporal_reset_preserves_shared_numeric_checkpoint(tmp_path, reset_kind):
+    runtime, event = make_runtime(tmp_path)
+    registry = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-reset-preserves-weights"
+    generation_id = event["brain_generation_id"]
+    consent_scope_id = "a" * 64
+    key = registry._persistent_key(source_id, generation_id)[2]
+    session_b = runtime.store.new_session("RAW EAR temporal reset fixture")
+    try:
+        for index, cues in enumerate((SILENCE, VOICED, SILENCE, VOICED)):
+            registry.update(
+                source_id=source_id,
+                generation_id=generation_id,
+                session_id="session-a",
+                consent_scope_id=consent_scope_id,
+                start_ms=index * 1000,
+                end_ms=(index + 1) * 1000,
+                cues=cues,
+                finality="FINAL",
+            )
+
+        learned, version_before = runtime.store.state(key, None)
+        assert learned["updates"] > 0
+        assert any(abs(value) > 0 for row in learned["weights"] for value in row)
+
+        first_b = registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_b,
+            consent_scope_id=consent_scope_id,
+            start_ms=0,
+            end_ms=1000,
+            cues=SILENCE,
+            finality="FINAL",
+        )
+        assert first_b["status"] == "WARMUP_FEATURE_BASELINE"
+        state_b = registry._states[(source_id, generation_id, session_b)]
+        expected_state = {"weights": learned["weights"], "updates": learned["updates"]}
+        assert state_b.predictor.state_dict() == expected_state
+
+        if reset_kind == "chronology":
+            reset_start, reset_end, expected_status = 0, 1000, "RESET_CHRONOLOGY"
+        else:
+            reset_start, reset_end, expected_status = 4000, 5000, "RESET_GAP"
+        reset = registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_b,
+            consent_scope_id=consent_scope_id,
+            start_ms=reset_start,
+            end_ms=reset_end,
+            cues=VOICED,
+            finality="FINAL",
+        )
+        assert reset["status"] == expected_status
+
+        persisted, version_after = runtime.store.state(key, None)
+        assert version_after == version_before
+        assert persisted["weights"] == learned["weights"]
+        assert persisted["updates"] == learned["updates"]
+        reset_state = registry._states[(source_id, generation_id, session_b)]
+        assert reset_state.predictor.state_dict() == expected_state
+        assert reset_state.predictor._previous is None
+        assert reset_state.previous_features == acoustic_feature_vector(VOICED)
+    finally:
+        runtime.store.close()
+
+
+def test_chronology_reset_preserves_shared_numeric_checkpoint(tmp_path):
+    _assert_temporal_reset_preserves_shared_numeric_checkpoint(tmp_path, "chronology")
+
+
+def test_gap_reset_preserves_shared_numeric_checkpoint(tmp_path):
+    _assert_temporal_reset_preserves_shared_numeric_checkpoint(tmp_path, "gap")

@@ -1,3 +1,19 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 61)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST, CHAT_SEND, model/weight swap, permission change, runtime restart or device-data mutation is justified.
+
+## Research & Perception — A4 shared checkpoint correction
+
+- Draft PR [#2553](https://github.com/RedMentos/Aii/pull/2553), stacked on Perception #2551, preserves the source/generation/consent-scoped numeric A4 predictor checkpoint when an individual Store session resets its temporal history for chronology or a long gap.
+- Exact branch head at PR creation: `5e37965f3eb3bc7051a1ee1bdf1473d54ef0b16b`. Predictor blob: `2519e5cbbbfacc7bb252a4cd2c84148e4f641176`; regression-test blob: `abd5d2b53e6423ddebe73f52816e3431bea29b5d`; composer blob: `f1fd06c70f9d27148c22df869abe0ad66a4cf467`.
+- New repository tests cover both `RESET_CHRONOLOGY` and `RESET_GAP`: another session first creates non-zero numeric weights; the resetting session must retain exact weights/update count and checkpoint version while restarting its temporal baseline.
+- LOCAL_LINUX CPython 3.13.5 isolated semantics reproduction: **3/3 PASS**. This is not the full repository suite. Full local Aii checkout/pytest is **BLOCKED / NOT_RUN** because no checkout is mounted and GitHub DNS cannot resolve.
+- Exact-head PR #2553 CI is **PENDING** at this checkpoint. Parent #2551 focused A4/RAW EAR/feature-set CI passed; its staged/integrated workflow remains blocked by Core-owned source pins and QA migration assertions.
+- No Android/Termux/microphone/Redmi evidence. **REDMI_UNVERIFIED / NOT_RELEASED**. The A4 reset fix does not resolve P0 basic chat or B1/B2 delivery.
+- Next: review exact #2553 CI; Core refreshes its own Recovery → Stage → RuntimeDeploy composer pin, QA fixes migration assertions. Perception next adds independent-Store concurrency coverage and continues the A5 visual-frame / signed-audio normal Runtime consumer work.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27
 **User action: none required.** No Termux command, update request, model/weight swap, permission change or production enablement is justified.
 

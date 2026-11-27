@@ -705,9 +705,18 @@ class AudioTemporalPredictionRegistry:
         predictor = self._new_predictor()
         version = previous_version
         if self._store is not None:
-            version = self._save_persistent(
-                source_id, generation_id, consent_scope_id, predictor, previous_version,
+            # Chronology/gap resets are session-local. Reload the latest shared
+            # numeric checkpoint instead of replacing it with a zero predictor.
+            # Only missing, invalid or rotated-consent state is reinitialized.
+            saved, version, status = self._load_persistent(
+                source_id, generation_id, consent_scope_id,
             )
+            if status == "OK":
+                predictor.load_state_dict(saved)
+            else:
+                version = self._save_persistent(
+                    source_id, generation_id, consent_scope_id, predictor, version,
+                )
         return _StreamState(
             consent_scope_id, start_ms, end_ms, features,
             predictor=predictor, store_version=version,
