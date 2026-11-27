@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — laufendes Forschungsjournal
 
-**Stand:** 2026-11-22. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
+**Stand:** 2026-11-27. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
@@ -1911,3 +1911,71 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - WebRTC/libfvad comparison 45925644686: Python 3.13 job completed successfully through source/ABI checks and A4/A5 runtime tests; Python 3.14 job remained IN_PROGRESS at final readback, so the comparison is not fully green yet.
 - Staged + integrated run 45925644732: **FAIL**. Staged job repeats 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated job fails one setup test. Both stop at the same Core-owned recovery composer pin mismatch. Staged additionally fails stale arithmetic and observer source pins plus migration PARTIAL-vs-UPDATED assertions.
 - No Perception file or gate was changed to hide these failures. Core/QA ownership remains unchanged.
+
+
+## R-179 — Energy efficient synaptic plasticity (full-text review 2026-11-27)
+- **Primary source:** Li & van Rossum, “Energy efficient synaptic plasticity”, *eLife* 2020;9:e50804, published 2020-02-13, DOI [10.7554/eLife.50804](https://doi.org/10.7554/eLife.50804). Peer-reviewed full text: [eLife article](https://elifesciences.org/articles/50804).
+- **Mechanism:** each synapse has a transient/short-lived component and a persistent component. Updates accumulate in the transient component; when a consolidation threshold is crossed, the transient component is transferred to the persistent weight and reset. The model trades maintenance/decay cost against consolidation cost.
+- **Evidence / limits:** the paper's reported energy advantages come from an explicit modelled cost function and simulations (perceptron, multilayer and spiking-neuron examples), not measured Android CPU/GPU power. The result depends on assumed maintenance and consolidation costs and on the selected threshold; it is not evidence that a Python/Android implementation will save energy.
+- **OSS / licence:** [vanrossumlab/li_vanrossum_19](https://github.com/vanrossumlab/li_vanrossum_19) contains Octave/C++ perceptron and Python multilayer simulations. Its root LICENSE is GPL-3.0. The Aii repository has no root LICENSE, so no upstream code was copied or adapted; only the published mechanism was used as a research lead.
+- **V14 implication:** a bounded transient eligibility/update cache may complement the existing error-gate experiment: keep short-lived local deltas separate from persistent predictor weights, consolidate only after a tested threshold, then measure numeric retention, restart and rollback. This must be a distinct ablation from MEMORIZED_ERROR, with a no-consolidation control and actual before/after weight deltas. Do not claim device-energy savings without native power/RSS/latency measurements.
+
+## R-175 implementation follow-up — Run 56 (2026-11-27)
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), stacked on [#2540](https://github.com/RedMentos/Aii/pull/2540), adds opt-in `MEMORIZED_ERROR` to the existing A4 temporal predictor and registry. Default `EVERY_FINAL` is unchanged.
+- The continuous-regression adaptation compares model MAE with a persistence baseline and remembers bounded quantized previous→target cue-delta transition fingerprints within a process-local stream. Fingerprints are not anonymisation and are not persisted; reset/consent/gap/chronology/restart clears them.
+- Exact A4 experiment CI: 6/6 tests PASS on Python 3.13 and 3.14. The experiment includes EVERY_FINAL, MEMORIZED_ERROR and NO_UPDATE; it reports gradients, total weight deltas, parameter-diff L2, retention drift and restart equality.
+- Synthetic results (60 observations each): periodic speech 59 vs 7 updates (MAE 0.20170 vs 0.25575); non-speech impulses 59 vs 41 (0.20631 vs 0.20158); mixed activity 59 vs 26 (0.27233 vs 0.28714). Update sparsity is real in this tiny predictor, but quality worsens on two of three streams. Periodic-speech parameter-diff L2 is 1.06464 EVERY_FINAL vs 0.63463 gated; gradient-L2 sum 12.87747 vs 3.17314. NO_UPDATE remains an explicit negative control.
+- Retention drift after a new task is +0.06792 EVERY_FINAL and +0.04350 gated, but gated absolute MAE is worse before and after the new task (0.29879→0.34230 vs 0.16741→0.23533). This is not a retention win. Forward prediction still runs on every window, so no energy/latency saving is claimed.
+- Keep the policy opt-in and default OFF. Exact focused CI also passes RAW EAR fastpath 161/161 and feature-set probe 15/15 on Python 3.13/3.14; model-lab 73 passed with 4 native-wrapper skips and privacy scan CLEAN. Staged/integrated CI remains blocked by Core-owned composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. See `v14/handoffs/RESEARCH_PERCEPTION_RUN56_20261127.md`.
+
+
+## R-179 implementation follow-up — Run 57 (2026-11-27)
+
+- Extends the existing A3/A4 RAW EAR predictor with two separately opt-in policies: `TRANSIENT_CONSOLIDATE` and `TRANSIENT_NO_CONSOLIDATION`. The default `EVERY_FINAL` and the experimental `MEMORIZED_ERROR` policy retain their existing update path.
+- The transient policy applies clipped LMS deltas to a bounded process-local buffer used for subsequent predictions. `TRANSIENT_CONSOLIDATE` transfers the buffer into the persistent numeric predictor weights only after its L2 threshold is reached; `TRANSIENT_NO_CONSOLIDATION` is the explicit no-commit control.
+- `state_dict()` and the existing SQLite state envelope continue to contain only consolidated numeric weights and their commit count. Pending deltas, previous features, and per-stream history are not serialized; load/restart clears them. Source/generation/consent resets clear both persistent and transient state through the existing registry lifecycle.
+- New tests cover delayed threshold crossing, persistent-vs-transient parameter deltas, the no-consolidation control, restart preservation of committed weights while dropping pending deltas, registry parameter propagation, and invalid bounds.
+- LOCAL_LINUX scratch reproduction of the transient-buffer algebra: **3/3 PASS** (thresholded commit, no-consolidation control, and restart discard). This is not the full Aii test suite.
+- Exact repository Python 3.13/3.14 CI for the updated predictor/test is triggered by this commit and remains **PENDING** until exact-head results are read back. The full local Aii checkout remains unavailable in this environment.
+- Research boundary: this implements the two-timescale mechanism suggested by Li & van Rossum (eLife 2020, DOI 10.7554/eLife.50804), not a reproduction of their energy model or evidence of reduced Android power. Their upstream simulation repository is GPL-3.0 and no code was copied; the Aii root license remains unresolved.
+- No audio input, transcript, speaker identity, model GGUF, B1/B2/C3 weight, Android permission, updater, installed device or user data was changed. No Redmi/native microphone/Android proof; B3 remains OFF; **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+
+### Run 57 Runtime wiring closeout
+
+- The explicit experimental policy now reaches the real caller-PCM RAW EAR Runtime consumer through `runtime.cfg`: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, and `raw_ear_max_transient_norm`. Missing configuration still selects `EVERY_FINAL`; invalid policy values fail closed rather than silently falling back.
+- The integrated audio-context candidate manifest was refreshed to exact Git blob pins: `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`, `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; candidate-builder blob after pin refresh: `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
+- Exact branch readback at `007de4895cb9972f558b7fa3bd33c3b04d0946eb` confirms both pins and the new Runtime-config tests. A4 update-gate workflow `45935405225` was queued at last poll; no focused CI result is yet claimed for this code.
+- This is a developer-controlled opt-in gate, not a user-facing toggle or production activation. Default Runtime behavior remains unchanged.
+
+
+### Run 57 CI source-pin correction
+
+- The first exact CI after Runtime wiring exposed two expected-source-pin failures: the RAW EAR vs WebRTC/libfvad workflow and the source-bound A4/A5 feature-set workflow still expected the previous `audio_voice_cues.py` blob `d80b803...`.
+- Updated both Perception-owned workflows to expect the exact current consumer blob `4bfcf31a7738bb390781babab8e11518896a3580`. No test was weakened; only the stale source identity was rebound.
+- On the earlier code/test head, the A4 synthetic ablation passed on Python 3.13/3.14, but the new full predictor/consumer pytest step was still running. The feature-set and VAD failures are from pre-pin-refresh commits and must be superseded by the queued exact-head runs `45935761586` and `45935761531`.
+- New exact-head workflow runs at the latest pin-refresh commit: A4 ablation `45935761585`, feature-set `45935761586`, VAD comparator `45935761531`, staged/integrated `45935761490`, runtime-deploy `45935761505`; results pending at this ledger update.
+
+
+## R-180 — Co-observation is distinct from retention and plasticity (2026-11-27)
+
+- Primary source read: Timm Hess, Abhishek Jha, Gido M. van de Ven, Tinne Tuytelaars, *Forgetting, plasticity, and co-observation: a third facet of continual learning*, arXiv:2608.18803 (2026-08-19). The arXiv text is available; the associated repository README labels the work CoLLAs 2026, but the proceedings record was not independently verified in this run.
+- Empirical setup: four uniformly partitioned data chunks; supervised CIFAR-100/ImageNet-100 with ResNet-18, and self-supervised ImageNet-100 with Barlow Twins and I-JEPA/ViT-B/16; fixed optimization budget, linear-probe evaluation, three seeds (six for I-JEPA). Their ensemble baseline controls for forgetting, yet incremental-joint training still outperforms it, indicating a separate co-observation deficit.
+- Replay results: in their ImageNet-100 representation-level evaluation, a 3% exemplar buffer did not consistently match the ensemble; about 15% matched the ensemble, and 30% closed roughly half the remaining gap to incremental-joint training. Distillation tracked the ensemble but did not close the co-observation gap. These percentages are not transferable to the 13-feature A4 predictor; they are a reason to test, not a parameter recommendation.
+- OSS: [TimmHess/Co-ob](https://github.com/TimmHess/Co-ob) declares MIT. README says it vendors a patched Avalanche tree and uses a CaSSLe fork for SSL training; those nested components require separate license/dependency review. No code was copied.
+- V14 experiment proposal: compare current sequential A4 updates with a tiny source-/generation-/consent-scoped process-local replay of prior 13-feature transition pairs, sampled alongside the current pair at an equal gradient/update budget. Test buffer sizes 1/4/8/16 against no-replay and transient-only controls on session-disjoint acoustic regimes. Measure current/old-regime MAE, omission/commission error, gradient and parameter deltas, update count, bytes, restart/consent reset, and holdout retention. No PCM/transcript storage; no replay across consent scopes; never persist raw observations. Do not assume a tiny buffer will reproduce the paper's vision results.
+- Relevance: this adds a third diagnostic axis to A4 evaluation—co-observation—rather than treating lower update count or preserved weights as sufficient evidence of learning.
+
+
+### Run 57 exact-test correction
+
+- The new exact predictor/consumer pytest gate ran on Python 3.13 and 3.14 and found **40 passed / 1 failed** on each. The failing assertion was a fixture assumption: the post-consolidation error was large enough to cross the threshold again immediately, so no transient delta remained. Production code compiled; the other 40 tests and six synthetic ablation tests passed.
+- Corrected only the restart test sequence/threshold (0.8, max norm 2.0) so it first commits once, then creates a sub-threshold pending delta before loading the saved state. The exact-head rerun for this correction is pending; no PASS claim yet.
+
+
+### Run 57 transient ablation extension and norm-bound repair
+
+- Extended `v14/experiments/a4_update_gate_retention_20261127.py` to compare five policies: `EVERY_FINAL`, `MEMORIZED_ERROR`, `TRANSIENT_CONSOLIDATE`, `TRANSIENT_NO_CONSOLIDATION`, and `NO_UPDATE`. It now reports transient vs persistent parameter norms/deltas, update attempts vs persistent commits, consolidation count, and restart loss of pending deltas. Read-only evaluation clones the transient matrix for pre-restart metrics; reload intentionally restores only the persisted consolidated state.
+- The first run of this expanded benchmark exposed a real bound bug: interpolating between the old transient matrix and an oversized proposal did not guarantee the final matrix norm stayed under `max_transient_norm` (observed 1.06108105 against a 1.0 cap). Fixed by scaling the entire proposed transient matrix to the cap, and extended the Runtime predictor test to assert the bound across alternating updates.
+- Refreshed the integrated composer manifest to exact predictor blob `8bb0d3c8033c898edf824be6752450383c4cc5c0`; composer builder blob is now `92fb6fc5db705f5dd69ce20bb283ac6af59cfe25`. Voice consumer remains `4bfcf31a7738bb390781babab8e11518896a3580`.
+- Exact-head reruns after the bound repair: A4 ablation + predictor/consumer tests `45936510646` and RAW EAR VAD comparator `45936510653`; both queued at last poll. No PASS claim yet.

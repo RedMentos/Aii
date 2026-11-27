@@ -30,6 +30,8 @@ MAX_STREAMS = 16
 MAX_WINDOW_MS = 1000
 MAX_GAP_MS = 2000
 ATTENTION_GAIN = 0.10
+UPDATE_POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION")
+DEFAULT_MISTAKE_MEMORY_CAPACITY = 128
 
 
 class AudioTemporalPredictionError(ValueError):
@@ -93,6 +95,15 @@ def unavailable_prediction(status: str) -> dict:
         "feature_count": FEATURE_COUNT,
         "parameter_count": INPUT_COUNT * FEATURE_COUNT,
         "updates": 0,
+        "transient_updates": 0,
+        "consolidations": 0,
+        "persistent_parameter_l2": 0.0,
+        "transient_parameter_l2": 0.0,
+        "effective_parameter_l2": 0.0,
+        "persistent_weight_delta_l2": 0.0,
+        "transient_weight_delta_l2": 0.0,
+        "consolidated_weight_delta_l2": 0.0,
+        "consolidation_threshold": None,
         "prediction_error_mae": None,
         "persistence_baseline_mae": None,
         "improvement_mae": None,
@@ -116,27 +127,52 @@ class AudioTemporalPredictor:
     """Online LMS predictor of the next acoustic-cue delta from the prior delta."""
 
     def __init__(self, *, learning_rate: float = 0.20, warmup_updates: int = 4,
-                 max_gradient_norm: float = 1.0, max_abs_weight: float = 2.0):
+                 max_gradient_norm: float = 1.0, max_abs_weight: float = 2.0,
+                 update_policy: str = "EVERY_FINAL",
+                 mistake_memory_capacity: int = DEFAULT_MISTAKE_MEMORY_CAPACITY,
+                 consolidation_threshold: float = 0.10,
+                 max_transient_norm: float = 1.0):
         if not 0.0 < learning_rate <= 0.5:
             raise AudioTemporalPredictionError("learning_rate must be in (0, 0.5]")
         if type(warmup_updates) is not int or warmup_updates < 1:
             raise AudioTemporalPredictionError("warmup_updates must be a positive int")
         if not 0.0 < max_gradient_norm <= 10.0 or not 0.0 < max_abs_weight <= 10.0:
             raise AudioTemporalPredictionError("gradient and weight bounds are invalid")
+        if type(update_policy) is not str or update_policy not in UPDATE_POLICIES:
+            raise AudioTemporalPredictionError("update_policy is invalid")
+        consolidation_threshold = _finite_number(consolidation_threshold, "consolidation_threshold")
+        max_transient_norm = _finite_number(max_transient_norm, "max_transient_norm")
+        if not 0.0 < consolidation_threshold <= max_transient_norm <= 10.0:
+            raise AudioTemporalPredictionError("consolidation bounds must satisfy 0 < threshold <= max_transient_norm <= 10")
+        if (type(mistake_memory_capacity) is not int
+                or not 1 <= mistake_memory_capacity <= 4096):
+            raise AudioTemporalPredictionError("mistake_memory_capacity must be in [1, 4096]")
         self.learning_rate = float(learning_rate)
         self.warmup_updates = warmup_updates
         self.max_gradient_norm = float(max_gradient_norm)
         self.max_abs_weight = float(max_abs_weight)
+        self.update_policy = update_policy
+        self.mistake_memory_capacity = mistake_memory_capacity
+        self.consolidation_threshold = consolidation_threshold
+        self.max_transient_norm = max_transient_norm
+        self._mistake_keys: OrderedDict[str, None] = OrderedDict()
         self._weights = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
+        self._transient_weights = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
         self._previous: tuple[float, ...] | None = None
         self.updates = 0
+        self.transient_updates = 0
+        self.consolidations = 0
 
     def reset(self) -> None:
-        for row in self._weights:
-            for index in range(FEATURE_COUNT):
-                row[index] = 0.0
+        for matrix in (self._weights, self._transient_weights):
+            for row in matrix:
+                for index in range(FEATURE_COUNT):
+                    row[index] = 0.0
         self._previous = None
+        self._mistake_keys.clear()
         self.updates = 0
+        self.transient_updates = 0
+        self.consolidations = 0
 
     def state_dict(self) -> dict:
         """Return numeric weights only; temporal features are intentionally excluded."""
@@ -163,27 +199,77 @@ class AudioTemporalPredictor:
                 values.append(float(value))
             clean.append(values)
         self._weights = clean
+        self._transient_weights = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
         self._previous = None  # restart always performs a fresh temporal warm-up
+        self._mistake_keys.clear()  # sample fingerprints are deliberately never persisted
         self.updates = updates
+        self.transient_updates = 0
+        self.consolidations = 0
+
+    @staticmethod
+    def _matrix_l2(matrix) -> float:
+        return math.sqrt(sum(weight * weight for row in matrix for weight in row))
 
     def _parameter_l2(self) -> float:
-        return math.sqrt(sum(weight * weight for row in self._weights for weight in row))
+        return self._matrix_l2(self._weights)
 
-    def update(self, target_delta) -> dict:
+    def _transient_parameter_l2(self) -> float:
+        return self._matrix_l2(self._transient_weights)
+
+    def _effective_parameter_l2(self) -> float:
+        combined = [
+            [self._weights[row][col] + self._transient_weights[row][col]
+             for col in range(FEATURE_COUNT)]
+            for row in range(INPUT_COUNT)
+        ]
+        return self._matrix_l2(combined)
+
+    @staticmethod
+    def _sample_key(previous: tuple[float, ...], target: tuple[float, ...]) -> str:
+        # Fingerprint the full transition, not just the target; this is not anonymisation.
+        material = json.dumps(
+            [[round(value, 3) for value in previous], [round(value, 3) for value in target]],
+            separators=(",", ":"), allow_nan=False,
+        )
+        return hashlib.sha256(b"V14-A4-MISTAKE-KEY/1\\0" + material.encode("utf-8")).hexdigest()
+
+    def _remember_mistake(self, sample_key: str) -> None:
+        self._mistake_keys[sample_key] = None
+        self._mistake_keys.move_to_end(sample_key)
+        while len(self._mistake_keys) > self.mistake_memory_capacity:
+            self._mistake_keys.popitem(last=False)
+
+    def update(self, target_delta, *, allow_update: bool = True) -> dict:
+        if type(allow_update) is not bool:
+            raise AudioTemporalPredictionError("allow_update must be a bool")
         if not isinstance(target_delta, (tuple, list)) or len(target_delta) != FEATURE_COUNT:
             raise AudioTemporalPredictionError("target_delta must have 13 features")
         target = tuple(_unit(value, "target_delta") for value in target_delta)
         if self._previous is None:
             self._previous = target
             result = unavailable_prediction("WARMUP_DELTA_BASELINE")
-            result.update({"updates": self.updates, "parameter_l2": self._parameter_l2()})
+            result.update({
+                "updates": self.updates,
+                "parameter_l2": self._parameter_l2(),
+                "persistent_parameter_l2": self._parameter_l2(),
+                "transient_parameter_l2": self._transient_parameter_l2(),
+                "effective_parameter_l2": self._effective_parameter_l2(),
+                "transient_updates": self.transient_updates,
+                "consolidations": self.consolidations,
+                "consolidation_threshold": self.consolidation_threshold,
+                "update_policy": self.update_policy,
+                "update_applied": False,
+                "update_reason": "WARMUP_BASELINE",
+                "mistake_memory_entries": len(self._mistake_keys),
+            })
             return result
 
         previous = self._previous
         inputs = list(previous) + [1.0 if not any(previous) else 0.0]
         prediction = []
         for col in range(FEATURE_COUNT):
-            value = sum(inputs[row] * self._weights[row][col] for row in range(INPUT_COUNT))
+            value = sum(inputs[row] * (self._weights[row][col] + self._transient_weights[row][col])
+                        for row in range(INPUT_COUNT))
             prediction.append(min(1.0, max(0.0, value)))
 
         signed_errors = [target[i] - prediction[i] for i in range(FEATURE_COUNT)]
@@ -193,33 +279,109 @@ class AudioTemporalPredictor:
         model_error = sum(abs(error) for error in signed_errors) / FEATURE_COUNT
         baseline_error = sum(abs(target[i] - previous[i]) for i in range(FEATURE_COUNT)) / FEATURE_COUNT
 
-        gradients = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
-        gradient_sq = 0.0
-        for row in range(INPUT_COUNT):
-            if inputs[row] == 0.0:
-                continue
-            for col in range(FEATURE_COUNT):
-                gradient = 2.0 * inputs[row] * (prediction[col] - target[col]) / FEATURE_COUNT
-                gradients[row][col] = gradient
-                gradient_sq += gradient * gradient
-        gradient_l2 = math.sqrt(gradient_sq)
-        clip_scale = min(1.0, self.max_gradient_norm / max(gradient_l2, 1e-12))
+        sample_key = self._sample_key(previous, target)
+        remembered_mistake = sample_key in self._mistake_keys
+        current_mistake = model_error > baseline_error + 1e-12
+        transient_policy = self.update_policy in ("TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION")
+        if not allow_update:
+            should_update = False
+            update_reason = "EVALUATION_ONLY"
+        elif self.update_policy == "EVERY_FINAL":
+            should_update = True
+            update_reason = "EVERY_FINAL"
+        elif self.update_policy == "MEMORIZED_ERROR":
+            if current_mistake:
+                should_update = True
+                update_reason = "CURRENT_ERROR"
+                self._remember_mistake(sample_key)
+            elif remembered_mistake:
+                should_update = True
+                update_reason = "REMEMBERED_ERROR"
+            else:
+                should_update = False
+                update_reason = "NO_ERROR"
+        else:
+            should_update = True
+            update_reason = (
+                "TRANSIENT_ACCUMULATE" if self.update_policy == "TRANSIENT_CONSOLIDATE"
+                else "TRANSIENT_ONLY_CONTROL"
+            )
 
+        gradient_l2 = 0.0
+        clip_scale = 1.0
+        transient_clip_scale = 1.0
         delta_sq = 0.0
-        for row in range(INPUT_COUNT):
-            if inputs[row] == 0.0:
-                continue
-            for col in range(FEATURE_COUNT):
-                old = self._weights[row][col]
-                new = min(self.max_abs_weight, max(-self.max_abs_weight,
-                          old - self.learning_rate * gradients[row][col] * clip_scale))
-                self._weights[row][col] = new
-                delta_sq += (new - old) ** 2
+        persistent_delta_sq = 0.0
+        transient_delta_sq = 0.0
+        consolidated = False
+        if should_update:
+            gradients = [[0.0] * FEATURE_COUNT for _ in range(INPUT_COUNT)]
+            gradient_sq = 0.0
+            for row in range(INPUT_COUNT):
+                if inputs[row] == 0.0:
+                    continue
+                for col in range(FEATURE_COUNT):
+                    gradient = 2.0 * inputs[row] * (prediction[col] - target[col]) / FEATURE_COUNT
+                    gradients[row][col] = gradient
+                    gradient_sq += gradient * gradient
+            gradient_l2 = math.sqrt(gradient_sq)
+            clip_scale = min(1.0, self.max_gradient_norm / max(gradient_l2, 1e-12))
+            if transient_policy:
+                proposed = [list(row) for row in self._transient_weights]
+                for row in range(INPUT_COUNT):
+                    if inputs[row] == 0.0:
+                        continue
+                    for col in range(FEATURE_COUNT):
+                        proposed[row][col] -= self.learning_rate * gradients[row][col] * clip_scale
+                proposed_norm = self._matrix_l2(proposed)
+                transient_clip_scale = min(
+                    1.0, self.max_transient_norm / max(proposed_norm, 1e-12),
+                )
+                for row in range(INPUT_COUNT):
+                    for col in range(FEATURE_COUNT):
+                        old = self._transient_weights[row][col]
+                        candidate = proposed[row][col] * transient_clip_scale
+                        effective = self._weights[row][col] + candidate
+                        bounded = min(self.max_abs_weight, max(-self.max_abs_weight, effective))
+                        new = bounded - self._weights[row][col]
+                        self._transient_weights[row][col] = new
+                        transient_delta_sq += (new - old) ** 2
+                delta_sq = transient_delta_sq
+                self.transient_updates += 1
+                if (self.update_policy == "TRANSIENT_CONSOLIDATE"
+                        and self._transient_parameter_l2() >= self.consolidation_threshold):
+                    for row in range(INPUT_COUNT):
+                        for col in range(FEATURE_COUNT):
+                            old = self._weights[row][col]
+                            new = min(
+                                self.max_abs_weight,
+                                max(-self.max_abs_weight, old + self._transient_weights[row][col]),
+                            )
+                            persistent_delta_sq += (new - old) ** 2
+                            self._weights[row][col] = new
+                            self._transient_weights[row][col] = 0.0
+                    self.updates += 1
+                    self.consolidations += 1
+                    consolidated = True
+                    update_reason = "TRANSIENT_CONSOLIDATED"
+            else:
+                for row in range(INPUT_COUNT):
+                    if inputs[row] == 0.0:
+                        continue
+                    for col in range(FEATURE_COUNT):
+                        old = self._weights[row][col]
+                        new = min(self.max_abs_weight, max(-self.max_abs_weight,
+                                  old - self.learning_rate * gradients[row][col] * clip_scale))
+                        self._weights[row][col] = new
+                        persistent_delta_sq += (new - old) ** 2
+                delta_sq = persistent_delta_sq
 
         self._previous = target
-        self.updates += 1
+        if should_update and not transient_policy:
+            self.updates += 1
         surprise = max(0.0, model_error - baseline_error)
-        measured = self.updates >= self.warmup_updates
+        measurement_updates = self.transient_updates if transient_policy else self.updates
+        measured = measurement_updates >= self.warmup_updates
         result = {
             "schema": SCHEMA,
             "method": METHOD,
@@ -227,6 +389,16 @@ class AudioTemporalPredictor:
             "feature_count": FEATURE_COUNT,
             "parameter_count": INPUT_COUNT * FEATURE_COUNT,
             "updates": self.updates,
+            "transient_updates": self.transient_updates,
+            "consolidations": self.consolidations,
+            "persistent_parameter_l2": round(self._parameter_l2(), 8),
+            "transient_parameter_l2": round(self._transient_parameter_l2(), 8),
+            "effective_parameter_l2": round(self._effective_parameter_l2(), 8),
+            "persistent_weight_delta_l2": round(math.sqrt(persistent_delta_sq), 8),
+            "transient_weight_delta_l2": round(math.sqrt(transient_delta_sq), 8),
+            "consolidated_weight_delta_l2": round(math.sqrt(persistent_delta_sq), 8) if consolidated else 0.0,
+            "consolidation_threshold": self.consolidation_threshold,
+            "transient_clip_scale": round(transient_clip_scale, 8),
             "prediction_error_mae": round(model_error, 8),
             "persistence_baseline_mae": round(baseline_error, 8),
             "improvement_mae": round(baseline_error - model_error, 8),
@@ -240,6 +412,10 @@ class AudioTemporalPredictor:
             "gradient_l2": round(gradient_l2, 8),
             "gradient_clip_scale": round(clip_scale, 8),
             "weight_delta_l2": round(math.sqrt(delta_sq), 8),
+            "update_policy": self.update_policy,
+            "update_applied": should_update,
+            "update_reason": update_reason,
+            "mistake_memory_entries": len(self._mistake_keys),
             "parameter_l2": round(self._parameter_l2(), 8),
             "learning_rate": self.learning_rate,
             "weight_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
@@ -274,15 +450,29 @@ class AudioTemporalPredictionRegistry:
     PERSISTENCE_SCHEMA = "v14.raw-ear.temporal-prediction-state/1"
     PERSISTENCE_PREFIX = "raw_ear_prediction.v1."
 
-    def __init__(self, *, max_streams: int = MAX_STREAMS, max_gap_ms: int = MAX_GAP_MS, store=None):
+    def __init__(self, *, max_streams: int = MAX_STREAMS, max_gap_ms: int = MAX_GAP_MS, store=None,
+                 update_policy: str = "EVERY_FINAL",
+                 mistake_memory_capacity: int = DEFAULT_MISTAKE_MEMORY_CAPACITY,
+                 consolidation_threshold: float = 0.10,
+                 max_transient_norm: float = 1.0):
         if type(max_streams) is not int or not 1 <= max_streams <= 64:
             raise AudioTemporalPredictionError("max_streams must be in [1, 64]")
         if type(max_gap_ms) is not int or not 100 <= max_gap_ms <= 10000:
             raise AudioTemporalPredictionError("max_gap_ms must be in [100, 10000]")
         if store is not None and not all(callable(getattr(store, name, None)) for name in ("state", "tx")):
             raise AudioTemporalPredictionError("persistent Store lacks transactional state support")
+        probe = AudioTemporalPredictor(
+            update_policy=update_policy,
+            mistake_memory_capacity=mistake_memory_capacity,
+            consolidation_threshold=consolidation_threshold,
+            max_transient_norm=max_transient_norm,
+        )
         self.max_streams = max_streams
         self.max_gap_ms = max_gap_ms
+        self.update_policy = probe.update_policy
+        self.mistake_memory_capacity = probe.mistake_memory_capacity
+        self.consolidation_threshold = probe.consolidation_threshold
+        self.max_transient_norm = probe.max_transient_norm
         self._states = OrderedDict()
         self._lock = threading.RLock()
         self._store = store
@@ -292,6 +482,10 @@ class AudioTemporalPredictionRegistry:
         return self._store is not None
 
     def _decorate(self, result: dict) -> dict:
+        result.setdefault("update_policy", self.update_policy)
+        result.setdefault("update_applied", False)
+        result.setdefault("update_reason", result.get("status", "UNAVAILABLE"))
+        result.setdefault("mistake_memory_entries", 0)
         result["weight_persistence"] = self.persistent_weights_enabled
         result["weight_scope"] = (
             "LOCAL_STORE_NUMERIC_ONLY_CONSENT_SCOPED"
@@ -431,7 +625,12 @@ class AudioTemporalPredictionRegistry:
         return len(keys)
 
     def _new_state(self, source_id, generation_id, consent_scope_id, start_ms, end_ms, features):
-        predictor = AudioTemporalPredictor()
+        predictor = AudioTemporalPredictor(
+            update_policy=self.update_policy,
+            mistake_memory_capacity=self.mistake_memory_capacity,
+            consolidation_threshold=self.consolidation_threshold,
+            max_transient_norm=self.max_transient_norm,
+        )
         version = 0
         reset_reason = None
         if self._store is not None:
@@ -453,7 +652,12 @@ class AudioTemporalPredictionRegistry:
 
     def _reset_state(self, source_id, generation_id, consent_scope_id,
                      start_ms, end_ms, features, previous_version):
-        predictor = AudioTemporalPredictor()
+        predictor = AudioTemporalPredictor(
+            update_policy=self.update_policy,
+            mistake_memory_capacity=self.mistake_memory_capacity,
+            consolidation_threshold=self.consolidation_threshold,
+            max_transient_norm=self.max_transient_norm,
+        )
         version = previous_version
         if self._store is not None:
             version = self._save_persistent(

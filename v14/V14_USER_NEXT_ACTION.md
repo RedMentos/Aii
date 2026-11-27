@@ -1,3 +1,25 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27
+**User action: none required.** No Termux command, update request, model/weight swap, permission change or production enablement is justified.
+
+## Research & Perception checkpoint
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, remains stacked on Perception #2540.
+- Opt-in `TRANSIENT_CONSOLIDATE` and `TRANSIENT_NO_CONSOLIDATION` are now reachable through the caller-PCM Runtime via explicit developer config keys `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`. Missing keys keep `EVERY_FINAL`; invalid values fail closed. No user-facing setting or production activation.
+- The transient buffer is process-local and norm-bounded; only the consolidating policy transfers it to persistent numeric predictor weights after threshold. `state_dict`/SQLite persist consolidated weights only; pending deltas are discarded on restart. Existing `EVERY_FINAL` and `MEMORIZED_ERROR` paths remain separate.
+- Current exact blobs: predictor `8bb0d3c8033c898edf824be6752450383c4cc5c0`; voice consumer `4bfcf31a7738bb390781babab8e11518896a3580`; composer builder `92fb6fc5db705f5dd69ce20bb283ac6af59cfe25`, pinning both.
+- LOCAL_LINUX scratch algorithm reproduction: **3/3 PASS** for threshold commit, no-consolidation and restart discard; not full repo pytest. GitHub Actions full predictor/consumer suite previously passed **41/41** on Python 3.13 and 3.14 at the pre-benchmark-extension code/test SHA. The expanded experiment then exposed a real norm-cap bug (1.06108105 > 1.0); fixed by scaling the entire proposed transient matrix and added a repeated-update cap assertion. Exact-head A4 rerun `45936510646` is queued.
+- Earlier A4/A5 feature-set pin-refresh run `45935761586` passed both Python versions. VAD pin-refresh run `45936115335` had Python 3.13 PASS; Python 3.14 was still running at last poll. New exact-head VAD rerun `45936510653` is queued.
+- Staged/integrated Core/QA blockers remain: Core-owned recovery/composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core #2547 must rebase onto current #2548 after focused A4/VAD checks; refresh only Core-owned pins. QA retains migration fixes.
+- R-180: Hess et al., *Forgetting, plasticity, and co-observation*, arXiv:2608.18803 (2026-08-19). Four-chunk supervised/self-supervised vision experiments separate co-observation from forgetting/plasticity; replay restored some co-observation, while distillation tracked the ensemble. A 3% replay buffer did not consistently match the ensemble; 15% did; 30% closed about half the remaining gap. Co-ob repo declares MIT but vendors patched Avalanche and uses CaSSLe; subcomponent licenses require review. Next A4 test: consent/source-scoped process-local replay of 1/4/8/16 prior feature-transition pairs at equal update budget; no raw PCM/transcripts.
+- Full local Aii checkout **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS unavailable). TERMUX/REDMI **REDMI_UNVERIFIED**; no live receipt, microphone/AudioRecord, native GGUF, updater install or phone test. **NOT_RELEASED**; B3 trained latent coupling and B1/B2/C3 master learning remain unproven.
+
+## Next actions
+1. Read exact-head A4 ablation + predictor/consumer suite and VAD comparator reruns.
+2. If focused checks pass, coordinate Core rebase #2547 onto #2548 and refresh Core-owned recovery/stage/RuntimeDeploy pins; QA closes migration assertions.
+3. Then evaluate the R-180 tiny replay ablation with source/consent isolation and equal update budget; continue A5 UI-event-to-PerceptPacket.
+
+---
+
+# HISTORICAL NEXT-ACTION NOTES (preserved)
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.

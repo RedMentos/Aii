@@ -534,7 +534,20 @@ def _raw_ear_prediction_persistence_enabled(runtime):
     return isinstance(cfg, dict) and cfg.get("raw_ear_persist_prediction_weights") is True
 
 
+def _raw_ear_prediction_policy_config(runtime):
+    """Read an explicit experimental policy; absent config keeps EVERY_FINAL."""
+    cfg = getattr(runtime, "cfg", None)
+    if not isinstance(cfg, dict):
+        return {}
+    return {
+        "update_policy": cfg.get("raw_ear_temporal_update_policy", "EVERY_FINAL"),
+        "consolidation_threshold": cfg.get("raw_ear_consolidation_threshold", 0.10),
+        "max_transient_norm": cfg.get("raw_ear_max_transient_norm", 1.0),
+    }
+
+
 def _runtime_audio_temporal_prediction_registry(runtime):
+    policy_config = _raw_ear_prediction_policy_config(runtime)
     registry = getattr(runtime, "_raw_ear_prediction_registry", None)
     if registry is None:
         with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
@@ -544,9 +557,9 @@ def _runtime_audio_temporal_prediction_registry(runtime):
                     store = getattr(runtime, "store", None)
                     if store is None:
                         raise ValueError("persistent RAW EAR weights require the local Runtime Store")
-                    registry = AudioTemporalPredictionRegistry(store=store)
+                    registry = AudioTemporalPredictionRegistry(store=store, **policy_config)
                 else:
-                    registry = AudioTemporalPredictionRegistry()
+                    registry = AudioTemporalPredictionRegistry(**policy_config)
                 try:
                     setattr(runtime, "_raw_ear_prediction_registry", registry)
                 except Exception as exc:
