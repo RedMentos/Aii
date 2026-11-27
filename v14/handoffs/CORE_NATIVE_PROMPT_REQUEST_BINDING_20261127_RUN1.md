@@ -18,7 +18,7 @@ The existing source-bound B1/B2 receipt recorded that C3's typed offer template 
 
 ## Verification plan
 
-- Python 3.13 and 3.14 CI compiles the overlay and runs loopback HTTP, staged Runtime, SQLite audit, and negative mismatch controls.
+- Python 3.13 and 3.14 CI compiles the direct runtime source and runs loopback HTTP, staged Runtime, SQLite audit, and negative mismatch controls.
 - LOCAL_LINUX full Aii checkout: NOT_RUN; GitHub DNS resolution is unavailable in this environment.
 - TERMUX/REDMI: REDMI_UNVERIFIED; no phone receipt, APK update, model/weight change, permission change, or device action.
 - Exact-head CI is now PASS on implementation code SHA `cb6883f96050681b19c6a543c9b89c3d7523808a`; PR remains DRAFT / NOT_RELEASED pending independent Boss/QA review and integration.
