@@ -102,6 +102,50 @@ def _restore_preanswer_budget_contract(raw: bytes, changed: bool) -> bytes:
     return restored.replace(_PREANSWER_BODY, _PREANSWER_BUDGET_BODY, 1)
 
 
+
+_CONTEXT_PROVENANCE_BASE = (
+    b"provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))"
+)
+_CONTEXT_PROVENANCE_RECALL = (
+    b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[]),budget_scale=body['modulation'].get('context_budget_scale',1.))"
+)
+_CONTEXT_PROVENANCE_AUDIO = (
+    b"provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))"
+)
+_CONTEXT_PROVENANCE_RECALL_AUDIO = (
+    b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))"
+)
+
+
+def _normalize_context_provenance_contract(raw: bytes):
+    """Expose the Perception audio anchor without discarding Core recall lineage."""
+    if not isinstance(raw, bytes):
+        raise ValueError("Core Runtime Context OS provenance is missing or not bytes")
+    recall_count = raw.count(_CONTEXT_PROVENANCE_RECALL)
+    base_count = raw.count(_CONTEXT_PROVENANCE_BASE)
+    if recall_count == 1 and base_count == 0:
+        return raw.replace(_CONTEXT_PROVENANCE_RECALL, _CONTEXT_PROVENANCE_BASE, 1), True
+    if recall_count == 0 and base_count == 1:
+        return raw, False
+    raise ValueError("Core Context OS provenance contract changed or is ambiguous before audio composition")
+
+
+def _restore_context_provenance_contract(raw: bytes, changed: bool) -> bytes:
+    """Restore Core source-recall refs in normal and consent-revocation plans."""
+    if not changed:
+        return raw
+    if (not isinstance(raw, bytes)
+            or raw.count(_CONTEXT_PROVENANCE_AUDIO) != 1
+            or raw.count(_CONTEXT_PROVENANCE_BASE) != 1
+            or raw.count(_CONTEXT_PROVENANCE_RECALL) != 0):
+        raise ValueError("audio composition changed the normalized Core Context OS provenance anchors")
+    restored = raw.replace(
+        _CONTEXT_PROVENANCE_AUDIO, _CONTEXT_PROVENANCE_RECALL_AUDIO, 1
+    )
+    if restored.count(_CONTEXT_PROVENANCE_BASE) != 1:
+        raise ValueError("audio composition made the revoke provenance anchor ambiguous")
+    return restored.replace(_CONTEXT_PROVENANCE_BASE, _CONTEXT_PROVENANCE_RECALL, 1)
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
@@ -128,6 +172,11 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         cognition_before_audio
     )
     audio_input["v13/cognition.py"] = normalized_cognition
+    runtime_before_audio = audio_input.get("v13/runtime.py")
+    normalized_runtime, had_context_provenance = _normalize_context_provenance_contract(
+        runtime_before_audio
+    )
+    audio_input["v13/runtime.py"] = normalized_runtime
     try:
         composed = audio.apply_sources(code_dir, audio_input)
     except ValueError as exc:
@@ -143,6 +192,9 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         ) from exc
     composed["v13/cognition.py"] = _restore_preanswer_budget_contract(
         composed.get("v13/cognition.py"), had_preanswer_budget
+    )
+    composed["v13/runtime.py"] = _restore_context_provenance_contract(
+        composed.get("v13/runtime.py"), had_context_provenance
     )
     # The audio overlay must preserve the fair B1/B2 observer path; fail closed
     # rather than reapplying Runtime or broadening a source pin.
