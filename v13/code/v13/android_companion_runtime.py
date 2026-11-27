@@ -372,6 +372,18 @@ class AndroidCompanionController:
             raise ControlDenied("stored receipt recovery failed its receipt-only authority checks")
         return outcome
 
+    def _publish_jef_action_outcome(self, packet_id):
+        """Best-effort idempotent C5 -> JEF -> shared-space receipt bridge."""
+        try:
+            from . import jefbridge
+            return jefbridge.controller(self.runtime).publish_android_action_outcome(
+                packet_id, expected_session=self.runtime.session,
+            )
+        except Exception as exc:
+            # The signed ActionOutcome is already durable; a later :android poll
+            # can retry this symbolic publication without redispatching the action.
+            return {"status": "UNAVAILABLE", "error": type(exc).__name__}
+
     def poll(self, action_id):
         self.runtime.require_idle()
         if type(action_id) is not str or re.fullmatch(r"[0-9a-f]{32}", action_id) is None:
@@ -392,10 +404,20 @@ class AndroidCompanionController:
                     "t8_authoritative": actual["t8_authoritative"],
                     "world_learning_eligible": actual["world_learning_eligible"],
                     "receipt_status": actual["receipt_status"],
+                    "jef_space": self._publish_jef_action_outcome(stored["packet_id"]),
                     "recovered_from_store": True,
                 })
         if state in {"RECEIPT_VERIFIED", "RECEIPT_REJECTED", "CANCELLED", "EXPIRED", "DROPPED_ON_RESTART"}:
-            return dumps({"status": "ALREADY_FINAL", "action_id": action_id, "action_state": state})
+            result = {"status": "ALREADY_FINAL", "action_id": action_id, "action_state": state}
+            if state == "RECEIPT_VERIFIED":
+                row = self.runtime.store.one(
+                    "SELECT id FROM packets WHERE kind='ActionOutcome' "
+                    "AND json_extract(payload,'$.action_id')=? ORDER BY rowid DESC LIMIT 1",
+                    (action_id,),
+                )
+                if row is not None:
+                    result["jef_space"] = self._publish_jef_action_outcome(row["id"])
+            return dumps(result)
         trust, public_key, _ = self._pinned_key()
         self.broker.start()
         response = self.transport.outcome(action_id)
@@ -426,6 +448,7 @@ class AndroidCompanionController:
             "t8_authoritative": outcome.details.get("t8_authoritative", False),
             "world_learning_eligible": outcome.details.get("world_learning_eligible", False),
             "receipt_status": outcome.details.get("receipt_status"),
+            "jef_space": self._publish_jef_action_outcome(packet["packet_id"]),
         })
 
     def cancel(self, action_id):
