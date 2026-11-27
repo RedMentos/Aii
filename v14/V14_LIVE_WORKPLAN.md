@@ -1961,6 +1961,6 @@ The signed one-shot Android audio consumer in Perception PR #2312 is not end-to-
 
 **Owners / next executable step:** Core owns Runtime.submit(audio_window=...) and same-turn event/generation/lease propagation; QA owns the visible AudioRecord provider and Android lifecycle/permission tests; Perception owns rebasing #2312, exact Runtime integration tests, and preserving the acoustic (not transcript-only) A-plane contract. No Android permission or capture was enabled. P0 #1904 remains open.
 
-**Readback after handoff/docs:** current PR branch head 6f3e87e6c9c946041a95d430b50ad0165bebac7e; code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Documentation-only head passed offline bridge/security workflow 46058233835. PR still mergeable=false; no release SHA.
+**Readback after handoff/docs:** a prior documentation-only readback was 6f3e87e6c9c946041a95d430b50ad0165bebac7e, followed by evidence-only updates; code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Offline bridge/security workflow 46058233835 passed. Use PR #2565 for the live docs branch head; PR remains mergeable=false and no release SHA exists.
 
 **Existing PR #2312 evidence:** focused audio consumer workflow 44992975596 passes 20/20 on Python 3.13 and 20/20 on Python 3.14; privacy/offline 44992972977 passes; integrated-regression job passes. Staged-runtime job fails 2 migration assertions (238 passed, 10 skipped, 47 subtests passed; PARTIAL observed where fixture expects UPDATED). The focused positive test is RuntimeStub-only and must not be treated as Runtime E2E.
