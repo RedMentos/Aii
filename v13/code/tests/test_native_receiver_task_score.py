@@ -241,7 +241,7 @@ def _information_use_scores():
     }
 
 
-def _record_information_use_cohort(derangement_mode, score_overrides):
+def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mode="cycle"):
     runtime = type("Runtime", (), {"session": "session-A"})()
     families = ("ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER")
     result = None
@@ -266,8 +266,15 @@ def _record_information_use_cohort(derangement_mode, score_overrides):
             "source_id": f"source-{donor_index:02d}",
             "sha256": sha(f"source-{donor_index}"),
         }
-        pairing_donor_index = session_start + ((offset + 5) % 10)
-        pairing_donor_ref = {
+        if pairing_mode == "cycle":
+            pairing_donor_index = session_start + ((offset + 5) % 10)
+        elif pairing_mode == "cross_family":
+            pairing_donor_index = session_start + ((offset + 1) % 10)
+        elif pairing_mode == "external":
+            pairing_donor_index = None
+        else:
+            raise AssertionError(f"unknown pairing mode: {pairing_mode}")
+        pairing_donor_ref = None if pairing_donor_index is None else {
             "source_id": f"source-{pairing_donor_index:02d}",
             "sha256": sha(f"source-{pairing_donor_index}"),
         }
@@ -580,7 +587,7 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
     assert audit["semantic_use_proven"] is False
 
 
-def test_entity_specificity_without_full_derangement_is_not_promoted():
+def test_same_family_pairing_signal_is_not_overstated_without_cross_family_ood():
     audit = _record_information_use_cohort("external", _information_use_scores())
     assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
     assert audit["system_gain_pass"] is True
@@ -591,6 +598,21 @@ def test_entity_specificity_without_full_derangement_is_not_promoted():
     assert audit["pairing_gain_pass"] is True
     assert audit["unrelated_donor_derangement"]["external_donor_count"] == 20
     assert audit["semantic_use_proven"] is False
+
+
+
+def test_same_family_pairing_audit_rejects_cross_family_and_external_donors():
+    for mode, count_key in (("cross_family", "cross_family_count"),
+                            ("external", "external_donor_count")):
+        audit = _record_information_use_cohort(
+            "cycle", _information_use_scores(), pairing_mode=mode,
+        )
+        derangement = audit["same_family_pairing_derangement"]
+        assert derangement["status"] == "NOT_ESTABLISHED"
+        assert derangement[count_key] == 20
+        assert audit["same_family_pairing_derangement_tested"] is False
+        assert audit["pairing_gain_pass"] is False
+        assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_SAME_FAMILY_PAIRING"
 
 
 def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
