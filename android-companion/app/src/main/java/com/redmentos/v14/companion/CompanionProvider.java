@@ -274,9 +274,26 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    // The request digest covers only capability + args. Reject any unbound
+    // top-level fields before storing the request, otherwise a caller could
+    // smuggle a duplicate private URL into terminal records outside args.
+    static boolean hasExactActionRequestFields(JSONObject request) {
+        if (request == null || request.length() != 11) return false;
+        String[] fields = {
+                "schema", "action_id", "capability", "args", "digest", "expires_at",
+                "companion_local_consent_required", "android_os_permission_required",
+                "permission_bypass", "model_authority", "local_approval"
+        };
+        for (String field : fields) {
+            if (!request.has(field)) return false;
+        }
+        return true;
+    }
+
     private JSONObject submitLocked(Context context, String json) throws Exception {
         if (!isEnabledLocked(context)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
+        if (!hasExactActionRequestFields(request)) return error("INVALID_REQUEST_FIELDS");
         if (!"v14.android-action-request/1".equals(request.optString("schema"))
                 || !isImplementedCapability(request.optString("capability"))
                 || !isValidLaunchScope(
