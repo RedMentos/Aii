@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -61,24 +62,57 @@ public final class ConsentActivity extends Activity {
     }
 
     private void showConsent() throws Exception {
-        String packageName = action.packageName;
-        String label = packageName;
-        try {
-            label = getPackageManager().getApplicationLabel(
-                    getPackageManager().getApplicationInfo(packageName, 0)).toString();
-        } catch (PackageManager.NameNotFoundException ignored) {}
+        String capability = request.getString("capability");
+        final String title;
+        final String message;
+        final String positiveLabel;
+        if ("launch_app".equals(capability)) {
+            String packageName = action.targetValue;
+            String label = packageName;
+            try {
+                label = getPackageManager().getApplicationLabel(
+                        getPackageManager().getApplicationInfo(packageName, 0)).toString();
+            } catch (PackageManager.NameNotFoundException ignored) {}
+            title = "Launch " + label + "?";
+            message = "Package: " + packageName + "\n\n"
+                    + "Action ID: " + action.actionId + "\n"
+                    + "Digest: " + request.getString("digest") + "\n"
+                    + "Expires: " + action.expiresAt + "\n\n"
+                    + "This dispatches the app launch intent only. It does not verify that the app reached foreground, "
+                    + "does not observe its screen, and cannot authorize learning.";
+            positiveLabel = "Approve launch";
+        } else if ("open_url".equals(capability)) {
+            String url = request.getJSONObject("args").getString("url");
+            if (!url.equals(action.targetValue) || !Canonical.isSafeHttpsUrl(url)) {
+                throw new IllegalArgumentException("HTTPS URL target changed or is unsafe");
+            }
+            title = "Open website?";
+            message = "URL:\n" + url + "\n\n"
+                    + "Action ID: " + action.actionId + "\n"
+                    + "Digest: " + request.getString("digest") + "\n"
+                    + "Expires: " + action.expiresAt + "\n\n"
+                    + "This opens the HTTPS URL through Android ACTION_VIEW. It does not verify the destination app, "
+                    + "observe the page, submit forms, or authorize learning.";
+            positiveLabel = "Open URL";
+        } else {
+            throw new IllegalArgumentException("unsupported action capability");
+        }
         new AlertDialog.Builder(this)
-                .setTitle("Launch " + label + "?")
-                .setMessage("Package: " + packageName + "\n\n"
-                        + "Action ID: " + action.actionId + "\n"
-                        + "Digest: " + request.getString("digest") + "\n"
-                        + "Expires: " + action.expiresAt + "\n\n"
-                        + "This dispatches the app launch intent only. It does not verify that the app reached foreground, "
-                        + "does not observe its screen, and cannot authorize learning.")
+                .setTitle(title)
+                .setMessage(message)
                 .setNegativeButton("Deny", (dialog, which) -> deny())
-                .setPositiveButton("Approve launch", (dialog, which) -> launch())
+                .setPositiveButton(positiveLabel, (dialog, which) -> launch())
                 .setOnCancelListener(dialog -> deny())
                 .show();
+    }
+
+    static Intent buildOpenUrlIntent(String url, String expectedTarget) {
+        if (!Canonical.isSafeHttpsUrl(url) || !url.equals(expectedTarget)) {
+            throw new IllegalArgumentException("HTTPS URL target changed or is unsafe");
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        return intent;
     }
 
     private void deny() {
@@ -98,8 +132,15 @@ public final class ConsentActivity extends Activity {
     private void launch() {
         synchronized (CompanionProvider.ACTION_GATE_LOCK) {
             Intent launch = null;
-            try { launch = getPackageManager().getLaunchIntentForPackage(action.packageName); }
-            catch (RuntimeException ignored) {
+            try {
+                String capability = request.getString("capability");
+                if ("launch_app".equals(capability)) {
+                    launch = getPackageManager().getLaunchIntentForPackage(action.targetValue);
+                } else if ("open_url".equals(capability)) {
+                    String url = request.getJSONObject("args").getString("url");
+                    launch = buildOpenUrlIntent(url, action.targetValue);
+                }
+            } catch (Exception ignored) {
                 // The one-shot claim is preserved; no retry occurs after an uncertain dispatch.
             }
             final Intent launchIntent = launch;
