@@ -165,7 +165,7 @@ class JEFBridge:
             or payload.get("status") not in allowed_status
             or not isinstance(actual, dict)
             or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
-            or actual.get("capability") != "launch_app"
+            or actual.get("capability") not in {"launch_app", "open_url"}
             or actual.get("observed") is not False
             or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
             or actual.get("t8_authoritative") is not False
@@ -177,7 +177,7 @@ class JEFBridge:
         event = {"event_id": event_id, "brain_generation_id": generation}
         space = EnlightenedSpace(self.s, event_row["session_id"])
         summary = (
-            "Android companion launch_app receipt: " + payload["status"] +
+            "Android companion " + actual["capability"] + " receipt: " + payload["status"] +
             "; device outcome not independently observed; T8/world learning disabled."
         )
         published = space.publish(
