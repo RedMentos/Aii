@@ -1971,3 +1971,11 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 
 - The new exact predictor/consumer pytest gate ran on Python 3.13 and 3.14 and found **40 passed / 1 failed** on each. The failing assertion was a fixture assumption: the post-consolidation error was large enough to cross the threshold again immediately, so no transient delta remained. Production code compiled; the other 40 tests and six synthetic ablation tests passed.
 - Corrected only the restart test sequence/threshold (0.8, max norm 2.0) so it first commits once, then creates a sub-threshold pending delta before loading the saved state. The exact-head rerun for this correction is pending; no PASS claim yet.
+
+
+### Run 57 transient ablation extension and norm-bound repair
+
+- Extended `v14/experiments/a4_update_gate_retention_20261127.py` to compare five policies: `EVERY_FINAL`, `MEMORIZED_ERROR`, `TRANSIENT_CONSOLIDATE`, `TRANSIENT_NO_CONSOLIDATION`, and `NO_UPDATE`. It now reports transient vs persistent parameter norms/deltas, update attempts vs persistent commits, consolidation count, and restart loss of pending deltas. Read-only evaluation clones the transient matrix for pre-restart metrics; reload intentionally restores only the persisted consolidated state.
+- The first run of this expanded benchmark exposed a real bound bug: interpolating between the old transient matrix and an oversized proposal did not guarantee the final matrix norm stayed under `max_transient_norm` (observed 1.06108105 against a 1.0 cap). Fixed by scaling the entire proposed transient matrix to the cap, and extended the Runtime predictor test to assert the bound across alternating updates.
+- Refreshed the integrated composer manifest to exact predictor blob `8bb0d3c8033c898edf824be6752450383c4cc5c0`; composer builder blob is now `92fb6fc5db705f5dd69ce20bb283ac6af59cfe25`. Voice consumer remains `4bfcf31a7738bb390781babab8e11518896a3580`.
+- Exact-head reruns after the bound repair: A4 ablation + predictor/consumer tests `45936510646` and RAW EAR VAD comparator `45936510653`; both queued at last poll. No PASS claim yet.
