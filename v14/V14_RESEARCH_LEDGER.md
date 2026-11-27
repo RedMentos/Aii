@@ -1962,3 +1962,18 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 **Platform note — MediaProjection contract:** Android Developers' MediaProjectionManager API reference (last updated 2026-08-03; https://developer.android.com/reference/android/media/projection/MediaProjectionManager) documents the explicit user consent prompt, a foreground service declared with FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION for Q+ apps, and mandatory MediaProjection.Callback cleanup on onStop() (release VirtualDisplay/Surface). For apps targeting Android 14/API 34+, the user grant must precede starting the mediaProjection foreground service, which must be started before getMediaProjection(). The target Redmi is Android 13/API 33, so do not incorrectly apply the API-34 ordering rule to it; the consent and foreground-service requirements still apply. V14's current A5 lease is only a Runtime-side consumer contract, not an Android capture provider. The future provider must bind the platform onStop() callback to two-phase cancellation/revocation and cleanup.
 
 **Status:** PREPRINT_ABSTRACT_ONLY / OSS_MAIN_AND_SOURCE_LICENSE_VERIFIED / WEIGHT_LICENSE_SEPARATE / NOT_REPRODUCED / NOT_IMPORTED / REDMI_UNVERIFIED.
+
+
+## R-180 — A4 omission state needs explicit session isolation (code audit, 2026-11-27)
+
+**Evidence level:** CODE_AUDIT_ONLY / NOT_YET_REPRODUCED_AS_A_LIVE_FALSE_POSITIVE.
+
+The current AudioEventExpectationRegistry keeps process-local state under the key (source_id, generation_id) and resets it only when the SHA-256 consent_scope_id changes. The A5/A4 consumer call in audio_voice_cues.py passes source_id, generation_id and the receipt-derived scope, but no session_id. The Store already has events.session_id, and consume_pcm16_voice_window receives event_id, so the current event's session can be resolved without copying user content: Store.one("SELECT session_id FROM events WHERE id=?", (event_id,)). If the same source, generation and consent receipt are reused across two chat sessions in one Runtime process, the timing intervals / expected_next_ms can carry over and create a cross-session omission candidate. This is a conditional risk, not proof that the installed provider reuses receipts.
+
+**Exact inspected paths:** v13/code/v13/audio_event_expectation.py (registry key/update/reset); v13/code/v13/audio_voice_cues.py (event expectation consumer call); v13/code/v13/store.py (events table session_id and Store.one); v13/code/tests/test_audio_temporal_prediction.py (event expectation tests cover uncertain/low-confidence/late windows but not session-disjoint reuse).
+
+**Next experiment:** seed a valid periodic VOICED/SILENCE pattern in session A; start session B with identical source_id, generation_id and consent_scope_id; confirm B is WARMUP with no expected event/omission until it independently accumulates MIN_INTERVALS. Also verify resetting/revoking one source clears its states across sessions. Add an integrated consumer test that obtains session_id from the event row. Keep the event expectation process-local and non-learning; do not promote the omission to truth, speaker identity, action or persistent memory.
+
+**Integration constraint:** integrated_audio_context_candidate_20261121.py pins the current audio_event_expectation.py source blob. Any implementation change must be coordinated with Core to update the exact builder pin and rerun staged/integrated Runtime tests; do not silently change the Perception file and leave the consumer bundle stale.
+
+**Status:** OPEN / STATIC RISK ONLY / NO CODE CHANGE / NO REDMI EVIDENCE.
