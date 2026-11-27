@@ -66,6 +66,29 @@ def test_context_os_audio_composition_preserves_core_source_recall_refs():
         module._restore_context_provenance_contract(audio_runtime + audio_runtime, changed)
 
 
+def test_audio_context_refs_preserve_core_source_recall_and_duplex_refs():
+    module = load_builder()
+    original = (
+        b"    context_refs=[e['source_ref'],*meta.get('source_recall_refs',[]),"
+        b"*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]\\n"
+    )
+    normalized, saved = module._normalize_audio_context_refs(original)
+    assert saved == original
+    assert normalized == b"    " + module._CONTEXT_REFS_BASE + b"\\n"
+
+    audio_line = b"    " + module._CONTEXT_REFS_AUDIO + b"\\n"
+    restored = module._restore_audio_context_refs(audio_line, saved)
+    assert restored == (
+        b"    context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),"
+        b"*meta.get('source_recall_refs',[]),*self.consolidation.source_refs(memories),"
+        b"*history_refs,*meta.get('duplex_handoff_refs',[])]\\n"
+    )
+    with pytest.raises(ValueError, match="changed or are ambiguous"):
+        module._normalize_audio_context_refs(original + original)
+    with pytest.raises(ValueError, match="changed or duplicated"):
+        module._restore_audio_context_refs(audio_line + audio_line, saved)
+
+
 def test_full_audio_composition_preserves_core_budget_and_native_receiver_contracts():
     module = load_builder()
     source_path = CODE / "v13/cognition.py"
@@ -76,6 +99,8 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     runtime = composed["v13/runtime.py"]
     assert b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else [])" in runtime
     assert b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[]),budget_scale=" in runtime
+    assert b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[])," in runtime
+    assert b"*meta.get('source_recall_refs',[])" in runtime
     assert b"from .greeting_fastpath import match as greeting_match" in runtime
     assert b"BUILTIN_GREETING_REFLEX" in runtime
 
