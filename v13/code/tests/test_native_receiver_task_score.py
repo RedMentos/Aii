@@ -109,6 +109,7 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
         input_sha256=base["input_sha256"],
         native_receipt=native,
         adapter_sha256=base["adapter_sha256"],
+        control_proof_sha256=base.get("control_proof_sha256"),
     )
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
@@ -116,12 +117,23 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
                  score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
+    control_proof_sha256 = None
     if condition == "NO_MESSAGE":
         message_source_ref = None
         adapter_sha256 = None
     elif condition == "EXACT_MESSAGE":
         message_source_ref = source_ref
         adapter_sha256 = None
+    elif condition == "DIRECT_TEXT_REFERENCE":
+        message_source_ref = source_ref
+        adapter_sha256 = None
+    elif condition == "INTACT_NO_PRIVATE":
+        message_source_ref = {
+            "source_id": f"control-intact-no-private-{task_index:02d}",
+            "sha256": sha(f"intact-no-private-source-{task_index}"),
+        }
+        adapter_sha256 = ADAPTER_SHA256
+        control_proof_sha256 = sha(f"private-span-proof-{task_index}")
     elif condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
         if condition == "OOD" and ood_source_ref_override is not None:
             message_source_ref = dict(ood_source_ref_override)
@@ -198,6 +210,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         input_sha256=input_sha,
         native_receipt=native,
         adapter_sha256=adapter_sha256,
+        control_proof_sha256=control_proof_sha256,
     )
 
 
@@ -235,9 +248,12 @@ def _information_use_scores():
         "ZERO": [-2.0, -2.0],
         "SHUFFLE": [-2.0, -2.0],
         "REPEAT": [-2.0, -2.0],
+        "MOMENT_MATCHED_RANDOM": [-2.0, -2.0],
         "OOD": [-2.0, -2.0],
         "ENTITY_SUBSTITUTION": [-2.0, -2.0],
         "DERANGED_MESSAGE": [-2.0, -2.0],
+        "INTACT_NO_PRIVATE": [-2.0, -2.0],
+        "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
     }
 
 
@@ -245,19 +261,19 @@ def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mo
     runtime = type("Runtime", (), {"session": "session-A"})()
     families = ("ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER")
     result = None
-    for task_index in range(20):
-        session_start = (task_index // 10) * 10
+    for task_index in range(40):
+        session_start = (task_index // 20) * 10
         offset = task_index - session_start
         if derangement_mode == "cycle":
-            donor_index = session_start + ((offset + 1) % 10)
+            donor_index = session_start + ((offset + 1) % 20)
         elif derangement_mode == "fixed_point":
-            donor_index = task_index if task_index == 0 else session_start + ((offset + 1) % 10)
+            donor_index = task_index if task_index == 0 else session_start + ((offset + 1) % 20)
         elif derangement_mode == "duplicate":
-            donor_index = session_start + 3 if task_index in (0, 1) else session_start + ((offset + 1) % 10)
+            donor_index = session_start + 3 if task_index in (0, 1) else session_start + ((offset + 1) % 20)
         elif derangement_mode == "cross_session":
-            donor_index = 10 if task_index == 0 else session_start + ((offset + 1) % 10)
+            donor_index = 20 if task_index == 0 else session_start + ((offset + 1) % 20)
         elif derangement_mode == "same_family":
-            donor_index = session_start + ((offset + 5) % 10)
+            donor_index = session_start + ((offset + 5) % 20)
         elif derangement_mode == "external":
             donor_index = None
         else:
@@ -267,9 +283,9 @@ def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mo
             "sha256": sha(f"source-{donor_index}"),
         }
         if pairing_mode == "cycle":
-            pairing_donor_index = session_start + ((offset + 5) % 10)
+            pairing_donor_index = session_start + ((offset + 5) % 20)
         elif pairing_mode == "cross_family":
-            pairing_donor_index = session_start + ((offset + 1) % 10)
+            pairing_donor_index = session_start + ((offset + 1) % 20)
         elif pairing_mode == "external":
             pairing_donor_index = None
         else:
@@ -281,7 +297,7 @@ def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mo
         result = complete_group(
             runtime,
             task_index=task_index,
-            session_id=f"session-{task_index // 10}",
+            session_id=f"session-{task_index // 20}",
             task_family=families[offset % len(families)],
             score_overrides=score_overrides,
             ood_source_ref_override=donor_ref,
@@ -297,7 +313,7 @@ def test_single_complete_synthetic_task_group_is_not_enough_for_utility():
     assert result["task_group_count"] == 1
     assert result["enough_holdout"] is False
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
-    assert result["minimum_task_groups"] == 20
+    assert result["minimum_task_groups"] == 40
     assert result["semantic_use_proven"] is False
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert result["persisted"] is False
@@ -312,7 +328,7 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
 
     assert result["status"] == "FIXTURE_ONLY"
     assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
-    assert effect["snapshot_count"] == 9
+    assert effect["snapshot_count"] == 12
     assert effect["candidate_differs_from_no_message_count"] == 1
     assert effect["candidate_differs_from_exact_message_count"] == 1
     assert effect["distinct_from_no_message_task_groups_by_condition"]["NO_MESSAGE"] == 0
@@ -333,7 +349,7 @@ def test_identical_input_digest_requires_identical_kv_snapshot():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
     assert "identical receiver input digest" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 8
+    assert task_score_status(runtime)["receipt_count"] == 11
     assert task_score_status(runtime)["incomplete_task_group_count"] == 1
 
 
@@ -361,25 +377,25 @@ def test_partial_kv_snapshot_coverage_is_rejected():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
     assert "partial native K/V snapshot coverage" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 8
+    assert task_score_status(runtime)["receipt_count"] == 11
 
 
-def test_twenty_task_groups_across_two_sessions_are_fixture_only():
+def test_forty_task_groups_across_two_sessions_are_fixture_only():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         result = complete_group(runtime, task_index, session_id, family)
     assert result["status"] == "FIXTURE_ONLY"
     assert result["evidence_class"] == "SYNTHETIC"
-    assert result["task_group_count"] == 20
+    assert result["task_group_count"] == 40
     assert result["session_count"] == 2
     assert result["enough_holdout"] is True
     assert result["balanced_session_family_coverage"] is True
     assert result["tasks_per_session_family"] == {
-        "session-A": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
-        "session-B": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
+        "session-A": {"ARITHMETIC": 10, "ENTITY_RECALL": 10},
+        "session-B": {"ARITHMETIC": 10, "ENTITY_RECALL": 10},
     }
     assert result["candidate_beats_all_controls"] is False
     assert result["semantic_use_proven"] is False
@@ -411,12 +427,12 @@ def test_duplicate_condition_is_rejected():
 
 def test_receipt_cap_is_bounded_and_explicit_clear_discards_memory():
     runtime = type("Runtime", (), {"session": "session-A"})()
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         complete_group(runtime, task_index, session_id, family)
     assert task_score_status(runtime)["receipt_count"] == MAX_TASK_SCORE_RECEIPTS
-    extra = make_receipt(21, "session-C", "OTHER", "NO_MESSAGE")
+    extra = make_receipt(41, "session-C", "OTHER", "NO_MESSAGE")
     with pytest.raises(NativeReceiverTaskScoreError, match="full"):
         record_task_score_receipt(runtime, extra)
     cleared = clear_task_score_cohort(runtime)
@@ -430,8 +446,8 @@ def test_collector_rejects_duplicate_source_content_across_task_groups():
     runtime = type("Runtime", (), {"session": "session-A"})()
     shared_source = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")["source_ref"]
     with pytest.raises(NativeReceiverTaskScoreError, match="failed validation"):
-        for task_index in range(20):
-            session_id = "session-A" if task_index < 10 else "session-B"
+        for task_index in range(40):
+            session_id = "session-A" if task_index < 20 else "session-B"
             family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
             override = shared_source if task_index == 1 else None
             complete_group(
@@ -443,19 +459,19 @@ def test_collector_rejects_duplicate_source_content_across_task_groups():
 def test_collector_rejects_sparse_session_family_cross_even_when_totals_pass():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         if session_id == "session-A":
             family = "ENTITY_RECALL" if task_index == 1 else "ARITHMETIC"
         else:
-            family = "ARITHMETIC" if task_index == 10 else "ENTITY_RECALL"
+            family = "ARITHMETIC" if task_index == 20 else "ENTITY_RECALL"
         result = complete_group(runtime, task_index, session_id, family)
     assert result["status"] == "FIXTURE_ONLY"
-    assert result["tasks_per_session"] == {"session-A": 10, "session-B": 10}
-    assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
+    assert result["tasks_per_session"] == {"session-A": 20, "session-B": 20}
+    assert result["tasks_per_family"] == {"ARITHMETIC": 20, "ENTITY_RECALL": 20}
     assert result["tasks_per_session_family"] == {
-        "session-A": {"ARITHMETIC": 9, "ENTITY_RECALL": 1},
-        "session-B": {"ARITHMETIC": 1, "ENTITY_RECALL": 9},
+        "session-A": {"ARITHMETIC": 19, "ENTITY_RECALL": 1},
+        "session-B": {"ARITHMETIC": 1, "ENTITY_RECALL": 19},
     }
     assert result["balanced_session_family_coverage"] is False
     assert result["enough_holdout"] is False
@@ -488,7 +504,7 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 
     assert "native K/V snapshot geometry changed across task cohort" in str(error.value.__cause__)
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 17
+    assert status["receipt_count"] == 23
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 1
 
@@ -496,8 +512,8 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         params_sha = sha(f"native-context-params-{task_index}")
         result = complete_group(
@@ -513,15 +529,15 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert result["status"] == "FIXTURE_ONLY"
     assert result["candidate_beats_all_controls"] is False
     assert effect["status"] == "SAME_MODEL_ROUNDTRIP_PASS"
-    assert effect["task_group_count"] == 20
+    assert effect["task_group_count"] == 40
     assert effect["prefill_condition"] == "LATENT_CANDIDATE"
     assert effect["prefill_rows_min"] == 1
     assert effect["prefill_rows_median"] == 2.5
     assert effect["prefill_rows_max"] == 4
-    assert effect["context_params_variant_count"] == 20
+    assert effect["context_params_variant_count"] == 40
     assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
     assert effect["top1_match_rate"] == 1.0
-    assert effect["truncated_restore_rejected_count"] == 20
+    assert effect["truncated_restore_rejected_count"] == 40
     assert effect["same_model_only"] is True
     assert effect["cross_model_transfer_proven"] is False
     assert effect["trained_latent_coupling_proven"] is False
@@ -541,12 +557,16 @@ def test_information_use_audit_exposes_system_gain_without_content_specific_gain
         "ZERO": [-2.0, -2.0],
         "SHUFFLE": [-2.0, -2.0],
         "REPEAT": [-2.0, -2.0],
+        "MOMENT_MATCHED_RANDOM": [-2.0, -2.0],
         "OOD": [-2.0, -2.0],
         "ENTITY_SUBSTITUTION": [-1.0, -1.0],
+        "DERANGED_MESSAGE": [-2.0, -2.0],
+        "INTACT_NO_PRIVATE": [-2.0, -2.0],
+        "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
     }
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         result = complete_group(
             runtime, task_index=task_index, session_id=session_id,
@@ -578,9 +598,9 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
     assert audit["same_family_pairing_derangement"]["status"] == "PASS"
     assert audit["full_derangement_tested"] is True
     assert audit["unrelated_donor_derangement"]["status"] == "PASS"
-    assert audit["unrelated_donor_derangement"]["task_group_count"] == 20
-    assert audit["unrelated_donor_derangement"]["matched_donor_count"] == 20
-    assert audit["unrelated_donor_derangement"]["unique_donor_count"] == 20
+    assert audit["unrelated_donor_derangement"]["task_group_count"] == 40
+    assert audit["unrelated_donor_derangement"]["matched_donor_count"] == 40
+    assert audit["unrelated_donor_derangement"]["unique_donor_count"] == 40
     assert audit["unrelated_donor_derangement"]["fixed_point_count"] == 0
     assert audit["unrelated_donor_derangement"]["same_family_count"] == 0
     assert audit["unrelated_donor_gain_vs_deranged_control"]["pass"] is True
@@ -596,7 +616,7 @@ def test_same_family_pairing_signal_is_not_overstated_without_cross_family_ood()
     assert audit["full_derangement_tested"] is False
     assert audit["same_family_pairing_derangement_tested"] is True
     assert audit["pairing_gain_pass"] is True
-    assert audit["unrelated_donor_derangement"]["external_donor_count"] == 20
+    assert audit["unrelated_donor_derangement"]["external_donor_count"] == 40
     assert audit["semantic_use_proven"] is False
 
 
@@ -609,7 +629,7 @@ def test_same_family_pairing_audit_rejects_cross_family_and_external_donors():
         )
         derangement = audit["same_family_pairing_derangement"]
         assert derangement["status"] == "NOT_ESTABLISHED"
-        assert derangement[count_key] == 20
+        assert derangement[count_key] == 40
         assert audit["same_family_pairing_derangement_tested"] is False
         assert audit["pairing_gain_pass"] is False
         assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_SAME_FAMILY_PAIRING"
