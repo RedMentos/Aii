@@ -2704,3 +2704,10 @@ The new #2576 cross-lane failure is a stale source composition, not a current Pe
 ### Run 76 research supplement — R-197
 
 Full review of Zou et al., *Latent Collaboration in Multi-Agent Systems*, PMLR 306 (ICML 2026 Spotlight), plus source/license inspection of `Gen-Verse/LatentMAS` main commit `9a9e4d331eb11430bd9e64754c6b252b06d73031`. The implementation uses one shared `ModelWrapper` for all role prompts and concatenates same-shape per-layer KV caches; it is not an independently weighted multi-model team. The paper itself leaves heterogeneous agents to a trainable adapter. Code is Apache-2.0; Qwen3-4B weights are Apache-2.0; the 4B model listing is 8.06 GB; the paper used 8×A100-80G and does not validate Android/ARM/GGUF. V14 should reuse the design only as a same-model baseline, not as evidence that B1/B2 already share a learned latent space. The next cross-model task must run actual sender inference, a trainable source→receiver adapter and receiver consumption with distinct model hashes, gradients/diff/retention/restart and source-disjoint task-accuracy/PL/CIC evidence. No code or weights were reused.
+
+
+### Device / updater receipt check — 2026-11-28
+
+- Last authenticated private V13OBS snapshot (2026-11-24 09:28:11 UTC): auto-update enabled; dashboard and pipeline runtime reported UP_TO_DATE at commit `8d93236c753f0194224c19edc7411d8d7082b1d6`. The AI runtime was `STOPPED_BY_USER`, model process `STOPPED`, autostart false, and native model residency unavailable. This is historical state, not proof that the current PR is installed.
+- New read-only owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS were created at 2026-11-27 23:40:06 UTC with 10-minute expiry. Last poll at 23:40:19 UTC found all three still open with no device comment: `NO_LIVE_RECEIPT_PENDING`.
+- No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell command, model download/swap, permission change or deployment was issued. The normal updater path is not verified for this PR. Current installation remains REDMI_UNVERIFIED; no manual Termux command is required.
