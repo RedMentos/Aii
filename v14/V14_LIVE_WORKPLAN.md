@@ -1764,3 +1764,13 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 - **A4 measured finding:** stream interleaving parity exact (0 difference). Numeric 182-parameter deltas exist; novelty remains under 0.10 cap. Model beats persistence only on periodic-speech synthetic cues (+0.1190 MAE), but is worse on non-speech (-0.0299) and mixed (-0.0225). Rates 0.02–0.20 do not remove those two regressions. Do not change the default or call it a robust acoustic predictor.
 - **Environment:** LOCAL_LINUX full suite NOT_RUN (no checkout; DNS failure); CI Linux only; SYNTHETIC cue fixtures only; REDMI_UNVERIFIED. No Android microphone, model inference, release, install or user-data mutation.
 - **Next owner handoff:** Core rebinds Recovery→Stage→RuntimeDeploy source pins; QA repairs migration assertions; then rerun staged/integrated. Perception follows with source/session-disjoint omission false-positive and update-gating ablations.
+
+
+## Run 55 extension — A4 event-expectation evidence (2026-11-27)
+
+- Added an event-expectation ablation to the existing A4 experiment/test files; no production module was changed. It calls `AudioEventExpectationRegistry` with deterministic timed cue fixtures.
+- Exact CI: run 45925644718, Python 3.13 and 3.14, compile PASS and 9/9 tests PASS on each; output identical.
+- Expected on-time event: no omission. Missing expected event under valid FINAL silence: one VOICED omission, timing-confidence proxy 0.60, novelty 0.03 under cap 0.05. UNCERTAIN censors; PROVISIONAL is ignored; consent rotation resets; no-context reset emits no omission; interleaved source streams match isolated execution.
+- A4/A5 feature-set 45925644769 PASS both versions; RAW EAR fastpath 45925644699 155/155 PASS both; RuntimeDeploy offline 45925644734 PASS on 3.11/3.14. WebRTC/libfvad comparison 45925644686 was not yet final at this checkpoint. Staged run 45925644732 FAILs at Core composer pin plus stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED; integrated job was still running. Earlier integrated run 45924853105 failed one setup test at the same pin.
+- All A4/event evidence remains SYNTHETIC. No local full suite, native model, microphone, Android/Termux or Redmi evidence. PR #2540 remains DRAFT / NOT_RELEASED.
+- Next: Core/QA repair their owned pin/migration gates; rerun staged/integrated; Perception then evaluates source/session-disjoint omission false positives and update gating with more varied timing distributions. No default model/rate change.
