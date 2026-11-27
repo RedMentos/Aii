@@ -1,3 +1,33 @@
+# Core Run 57 — 2026-11-28 (normal-turn P0)
+
+**Current development branch:** `core/v14-core-p0-normal-turn-20261128-run1` (final PR/head readback will be recorded after the checkpoint commit).  
+**Release:** `NOT_RELEASED`. GitHub push and staged CI are not deployment.
+
+## Verified code changes in this run
+
+- `native_prompt_admission.soft_limit()` no longer bypasses B1/B2's existing metadata-only reducer when more than 55 seconds remain. B1_DETAIL and B2_GIST now have a 520-token soft target on generous deadlines and the existing clock-derived tighter target on short deadlines. Protected source text, peer content, quotes, JEF questions and B3 messages are never truncated; protected-only overflow remains an explicit admission failure.
+- A pinned staging overlay now binds the current user SourceRef and active coalition-item SourceRefs into the staged C5 ActionSelection packet. It validates every unique reference through Store.read_source and records per-item organ identity, source count, bounded context-list flags and validation status. The source Focal file stays byte-pinned; the overlay is applied only to the staged Runtime.
+- The integrated stage builder and RuntimeDeploy stager hash were refreshed together. Existing staged exact-arithmetic fastpath is retained, not duplicated, and its 2+2 regression is included in the exact test plan.
+
+## Evidence and limits
+
+- LOCAL_LINUX: isolated CPython 3.13.5 soft-limit boundary reproduction, 10/10 PASS. This is a function-level reproduction, not a full Aii checkout.
+- Full local Aii checkout/pytest: BLOCKED / NOT_RUN because GitHub DNS resolution prevents cloning and no repository checkout is mounted.
+- Exact repository CI on the final staged candidate: pending; do not claim green until the exact PR head finishes the Python 3.13/3.14, stage-builder and RuntimeDeploy workflows.
+- Latest available consented private V13OBS #115 is historical (2026-11-24): installed code 8d93236, updater/dashboard reported up-to-date, but AI runtime STOPPED_BY_USER, autostart false and model process stopped. The five-turn sample had B1/B2 native prefill timeouts at 53.2s/54.2s and zero valid offers. No newer authenticated receipt exists.
+- TERMUX/REDMI: `REDMI_UNVERIFIED`. No phone command, restart, update request, model/weight/permission/data change or device test was performed.
+- The separate Android companion ActionOutcome work in #2573/#2576 remains unmerged and is not included in this Core candidate.
+
+## Next executable action
+
+1. Finish exact-head CI and repair any staged-builder/RuntimeDeploy pin or integration failure.
+2. After independent review and release integration, wait for an explicitly authorized, already-running Redmi session. Measure B1/B2 exact prefill tokens, removed-layer receipts, TTFT, generated tokens, valid source-bound offers, C5 context-input organs, C4/JEF/C3 consumption and answer correctness under the same configuration.
+3. Keep B3 OFF. Do not change installed models, weights, Age, permissions or data.
+
+**User action:** keine Aktion nötig. Do not start the currently user-stopped phone runtime just to obtain a test receipt.
+
+---
+
 
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 66)
 
