@@ -400,7 +400,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
 
 
 
-def _native_effect_cohort(*, semantic_use_proven=False):
+def _native_effect_cohort(*, semantic_use_proven=False, duplicate_input_groups_checked=1):
     kv = {
         "status": "READ_ONLY_SAMPLE_ONLY",
         "task_group_count": 1,
@@ -410,7 +410,7 @@ def _native_effect_cohort(*, semantic_use_proven=False):
         "distinct_from_no_message_task_groups_by_condition": {
             condition: 1 for condition in CONDITIONS
         },
-        "duplicate_input_groups_checked": 1,
+        "duplicate_input_groups_checked": duplicate_input_groups_checked,
         "same_input_consistency_passed": True,
         "scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
         "semantic_use_proven": semantic_use_proven,
@@ -455,6 +455,8 @@ def test_core_consumer_surfaces_read_only_kv_and_information_use_effects(monkeyp
     assert effects["evidence_class"] == "LOCAL_LINUX"
     assert effects["kv_snapshot_effect"]["status"] == "READ_ONLY_SAMPLE_ONLY"
     assert effects["kv_snapshot_effect"]["snapshot_count"] == 8
+    assert effects["kv_snapshot_effect"]["same_input_consistency_observed"] is True
+    assert effects["kv_snapshot_effect"]["same_input_consistency_status"] == "CHECKED_PASS"
     assert effects["kv_snapshot_effect"]["distinct_from_no_message_task_groups_by_condition"] == {
         condition: 1 for condition in CONDITIONS
     }
@@ -464,6 +466,42 @@ def test_core_consumer_surfaces_read_only_kv_and_information_use_effects(monkeyp
     assert effects["production_route"] is False
     assert effects["training_authority"] == effects["native_receiver_authority"] == 0
     assert effects["persisted"] is False
+
+
+def test_core_consumer_does_not_claim_duplicate_consistency_when_no_inputs_repeat(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort(duplicate_input_groups_checked=0)
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+
+    effects = matrix_runtime._native_receiver_effects(object(), strict=True)
+    kv = effects["kv_snapshot_effect"]
+    assert kv["duplicate_input_groups_checked"] == 0
+    assert kv["same_input_consistency_passed"] is None
+    assert kv["same_input_consistency_observed"] is False
+    assert kv["same_input_consistency_status"] == "NOT_TESTED_NO_DUPLICATE_INPUTS"
+
+
+def test_core_consumer_rejects_negative_duplicate_input_count(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort(duplicate_input_groups_checked=-1)
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+
+    with pytest.raises(matrix_runtime.NativeReceiverMatrixRuntimeError, match="structural contract"):
+        matrix_runtime._native_receiver_effects(object(), strict=True)
 
 
 def test_core_consumer_rejects_kv_summary_that_claims_semantic_use(monkeypatch):
