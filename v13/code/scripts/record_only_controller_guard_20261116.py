@@ -11,13 +11,15 @@ PINS = {
     'v13/runtime.py': {
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        # Exact composite Runtime after current observer/C4/audio/arithmetic overlays (CI-reported SHA-256).
+        'bbf8a860afd1e5294c77d4037ab266d7be01d29e8095ba861274fb1197eef280',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
     'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e'},
     'v13/attention.py': {'0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739'},
     'v13/deliberation.py': {'5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c'},
-    'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc', 'abcda6f0e287122e19cffd2264a1c1fcc8f2eea4b811e731ceb24195101e2325', '1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502'},
+    'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc', 'abcda6f0e287122e19cffd2264a1c1fcc8f2eea4b811e731ceb24195101e2325', '1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502', 'ecdcc6ed8c39c4870059ea23f62efa6ec28b59775298331a1e7c8ae05af3e298', 'f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748', '40f5e0f623ffcbcffba901bc4bfba9fe289b1e9410b764db9f1a2193e3b0c348'},
     'v13/workspace_learn.py': {'b6e3d2149fe7b7cc461c0edadd1a95b65b99b0d14e39da29206f7343fea74524'},
 }
 
@@ -220,6 +222,11 @@ def apply_sources(code_dir, sources):
         b"        for _ in range(4):self.assertEqual(self.run_turn()['status'],'FINAL')\n"
         b"        rep=F.controller(self.r).report();self.assertEqual(rep['trained_on'],0);self.assertEqual(rep['procedures'],{})\n"
         b"    def test_turn_feeds_fast_forward_and_procedures(self):\n", 'FastForward record-only turn test')
+    test_raw = _replace(test_raw,
+        b"        self.r.submit('hello there');until=time.monotonic()+10\n",
+        b"        # The staged candidate has an exact greeting reflex; keep this learning test on the full Runtime path.\n"
+        b"        self.r.submit('Please explain the current task.');until=time.monotonic()+10\n",
+        'FastForward full-runtime fixture')
     compile(test_raw, 'tests/test_fastforward_reflex.py', 'exec')
     result['tests/test_fastforward_reflex.py'] = test_raw
 

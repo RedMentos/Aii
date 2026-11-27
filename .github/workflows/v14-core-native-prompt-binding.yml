@@ -1,0 +1,65 @@
+name: V14 Core native C3 prompt request binding
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/phone_offer_delivery_audit.py'
+      - 'v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
+      - 'v13/code/scripts/stage_integrated_candidate.py'
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_native_offer_prompt_receipt_20261118.py'
+      - 'v13/code/tests/test_native_receiver_source_pin.py'
+      - '.github/workflows/v14-core-native-prompt-binding.yml'
+  push:
+    branches:
+      - 'core/v14-native-prompt-binding-current-20261127-run1'
+permissions:
+  contents: read
+jobs:
+  prompt-binding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Print exact source-pin hashes
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          for name in (
+              "v13/code/v13/runners.py",
+              "v13/code/v13/phone_offer_delivery_audit.py",
+              "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
+              "v13/code/scripts/stage_integrated_candidate.py",
+          ):
+              print(name, hashlib.sha256(Path(name).read_bytes()).hexdigest())
+          PY
+      - name: Compile source and staged runtime
+        run: |
+          python -m py_compile \
+            v13/code/v13/runners.py \
+            v13/code/v13/phone_offer_delivery_audit.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/tests/test_native_receiver_source_pin.py
+      - name: Test actual request hash and fail-closed audit
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py \
+            v13/code/tests/test_phone_offer_delivery_audit.py \
+            v13/code/tests/test_native_receiver_source_pin.py
