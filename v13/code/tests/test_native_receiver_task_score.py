@@ -262,7 +262,7 @@ def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mo
     families = ("ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER")
     result = None
     for task_index in range(40):
-        session_start = (task_index // 20) * 10
+        session_start = (task_index // 20) * 20
         offset = task_index - session_start
         if derangement_mode == "cycle":
             donor_index = session_start + ((offset + 1) % 20)
@@ -645,8 +645,8 @@ def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
     [
         ("duplicate", "duplicate_donor_count", 2),
         ("cross_session", "cross_session_donor_count", 1),
-        ("same_family", "same_family_count", 20),
-        ("external", "external_donor_count", 20),
+        ("same_family", "same_family_count", 40),
+        ("external", "external_donor_count", 40),
     ],
 )
 def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key, expected_count):
