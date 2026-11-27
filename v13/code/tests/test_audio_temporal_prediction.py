@@ -482,7 +482,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         )
         assert rotated["status"] == "RESET_CONSENT_SCOPE"
         reset_state = restarted._raw_ear_prediction_registry._states[
-            (SOURCE, event2["brain_generation_id"])
+            (SOURCE, event2["brain_generation_id"], _event_session_id(restarted, event2))
         ].predictor.state_dict()
         assert reset_state["updates"] == 0
         assert not any(abs(value) > 0 for row in reset_state["weights"] for value in row)
@@ -749,7 +749,7 @@ def test_event_expectation_registry_reset_can_target_one_session():
     _event_registry_window(
         registry, "VOICED", 100, 300, session_id="another-session",
     )
-    assert len(registry) == 2
+    assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 2
     assert registry.reset(session_id="event-expectation-session") == 1
     assert len(registry) == 1
 
