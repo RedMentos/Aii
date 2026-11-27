@@ -2075,3 +2075,8 @@ The new #2576 cross-lane failure is a stale source composition, not a current Pe
 2. Keep the 20-group synthetic aggregator clearly synthetic and `persisted=false`; next acceptance requires a real already-authorized pinned GGUF, at least 20 source-disjoint groups across two sessions and two task families, paired task accuracy and restart/rollback evidence. Do not download or swap a model without separate approval.
 3. Core must port the current #2563/#2565 Perception source pair into #2576 and refresh its own source pins; QA retains Android consent/lifecycle acceptance.
 4. Keep B3 OFF, the normal-turn user path unclaimed, and all Redmi-native behavior UNVERIFIED.
+
+
+### Run 76 research supplement — R-197
+
+Full review of Zou et al., *Latent Collaboration in Multi-Agent Systems*, PMLR 306 (ICML 2026 Spotlight), plus source/license inspection of `Gen-Verse/LatentMAS` main commit `9a9e4d331eb11430bd9e64754c6b252b06d73031`. The implementation uses one shared `ModelWrapper` for all role prompts and concatenates same-shape per-layer KV caches; it is not an independently weighted multi-model team. The paper itself leaves heterogeneous agents to a trainable adapter. Code is Apache-2.0; Qwen3-4B weights are Apache-2.0; the 4B model listing is 8.06 GB; the paper used 8×A100-80G and does not validate Android/ARM/GGUF. V14 should reuse the design only as a same-model baseline, not as evidence that B1/B2 already share a learned latent space. The next cross-model task must run actual sender inference, a trainable source→receiver adapter and receiver consumption with distinct model hashes, gradients/diff/retention/restart and source-disjoint task-accuracy/PL/CIC evidence. No code or weights were reused.
