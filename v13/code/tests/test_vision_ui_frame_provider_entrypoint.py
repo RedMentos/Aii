@@ -99,3 +99,96 @@ def test_frame_scope_is_a_context_manager_and_revokes_after_consumer(monkeypatch
         assert result is expected
         assert calls == []
     assert calls == [(runtime, obs["source_id"])]
+
+
+def test_provider_scope_keeps_verified_packet_until_downstream_finishes(monkeypatch):
+    runtime = object()
+    obs = observation()
+    frame = bytearray(b"compressed-frame")
+    lease = object()
+    verifier = object()
+    revoked = []
+    consumed = []
+
+    monkeypatch.setattr(
+        ingress, "_issue_provider_frame_verifier",
+        lambda actual_lease, actual_obs, verify_fn: verifier,
+    )
+
+    def consume(actual_runtime, actual_obs, actual_frame, **kwargs):
+        consumed.append((actual_runtime, actual_obs, actual_frame, kwargs))
+        return {"status": "WIRED_SYNTHETIC", "truth_authority": 0}
+
+    monkeypatch.setattr(ingress, "consume_projected_frame", consume)
+    monkeypatch.setattr(
+        ingress, "revoke_ui_observation",
+        lambda actual_runtime, source_id: revoked.append((actual_runtime, source_id)),
+    )
+
+    with ingress.consume_projected_frame_from_provider_scope(
+        runtime, obs, frame, consent_lease=lease,
+        verify_fn=lambda *_args: True, current_source="What is on this screen?",
+    ) as result:
+        assert result["status"] == "A5_RAW_EYE_CONSUMED"
+        assert result["provider_verifier_passed"] is True
+        assert result["truth_authority"] == 0
+        assert frame == bytearray(len(frame))
+        assert revoked == []
+
+    assert consumed[0][0] is runtime
+    assert consumed[0][1] == obs
+    assert consumed[0][2] is frame
+    assert consumed[0][3]["consent_lease"] is lease
+    assert consumed[0][3]["frame_verifier"] is verifier
+    assert revoked == [(runtime, obs["source_id"])]
+
+
+def test_provider_scope_revokes_after_downstream_exception(monkeypatch):
+    runtime = object()
+    obs = observation()
+    frame = bytearray(b"compressed-frame")
+    revoked = []
+
+    monkeypatch.setattr(
+        ingress, "_issue_provider_frame_verifier",
+        lambda *_args: object(),
+    )
+    monkeypatch.setattr(
+        ingress, "consume_projected_frame",
+        lambda *_args, **_kwargs: {"status": "WIRED_SYNTHETIC"},
+    )
+    monkeypatch.setattr(
+        ingress, "revoke_ui_observation",
+        lambda actual_runtime, source_id: revoked.append((actual_runtime, source_id)),
+    )
+
+    with pytest.raises(RuntimeError, match="C3 consumer failed"):
+        with ingress.consume_projected_frame_from_provider_scope(
+            runtime, obs, frame, consent_lease=object(),
+            verify_fn=lambda *_args: True, current_source="screen question",
+        ):
+            raise RuntimeError("C3 consumer failed")
+
+    assert frame == bytearray(len(frame))
+    assert revoked == [(runtime, obs["source_id"])]
+
+
+def test_provider_scope_zeroizes_even_when_observation_validation_fails(monkeypatch):
+    runtime = object()
+    obs = dict(observation(), unexpected_raw_text="must not survive")
+    frame = bytearray(b"untrusted-frame")
+    revoked = []
+    monkeypatch.setattr(
+        ingress, "revoke_ui_observation",
+        lambda actual_runtime, source_id: revoked.append((actual_runtime, source_id)),
+    )
+
+    with pytest.raises(ValueError, match="raw/untrusted content"):
+        with ingress.consume_projected_frame_from_provider_scope(
+            runtime, obs, frame, consent_lease=object(),
+            verify_fn=lambda *_args: True, current_source="screen question",
+        ):
+            pass
+
+    assert frame == bytearray(len(frame))
+    assert revoked == []
