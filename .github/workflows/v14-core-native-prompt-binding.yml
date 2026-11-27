@@ -2,7 +2,9 @@ name: V14 Core native C3 prompt request binding
 on:
   pull_request:
     paths:
-      - 'v13/code/scripts/integrated_native_prompt_request_binding_candidate_20261127.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/phone_offer_delivery_audit.py'
+      - 'v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
       - 'v13/code/scripts/stage_integrated_candidate.py'
       - 'v13/code/v13/runtime_deploy.py'
