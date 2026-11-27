@@ -99,8 +99,8 @@ class RuntimeStub:
     def __init__(self, home, store, event):
         self.home = home
         self.store = store
-        self.turn_event = event
-        self.current = "turn"
+        self.turn_event = None
+        self.current = None
         self.cancel_event = threading.Event()
         self.attention = Attention(store)
         self.lock = threading.RLock()
@@ -133,11 +133,17 @@ def attach(runtime, provider):
     assert set_provider(runtime, provider) == "ATTACHED_UNVERIFIED"
 
 
+def activate(runtime, event):
+    runtime.turn_event = event
+    runtime.current = "turn"
+
+
 def test_one_shot_frame_reaches_a4_and_normal_c3_context_without_disk_capture(runtime_fixture):
     runtime, event, home = runtime_fixture
     frame = png_bytes()
     provider = Provider(frame=frame, observation=observation())
     attach(runtime, provider)
+    activate(runtime, event)
 
     with contextlib.ExitStack() as stack:
         result = consume_for_turn(
@@ -176,6 +182,7 @@ def test_no_pending_user_approved_frame_is_a_noop(runtime_fixture):
     provider = Provider(frame=png_bytes(), observation=observation())
     provider.approved = False
     attach(runtime, provider)
+    activate(runtime, event)
     with contextlib.ExitStack() as stack:
         assert consume_for_turn(
             runtime, event, "hello", stack, time.monotonic() + 5.0
@@ -186,6 +193,7 @@ def test_no_pending_user_approved_frame_is_a_noop(runtime_fixture):
 def test_provider_cannot_change_during_active_turn(runtime_fixture):
     runtime, _event, _home = runtime_fixture
     provider = Provider(frame=png_bytes(), observation=observation())
+    activate(runtime, _event)
     with pytest.raises(RuntimeError, match="during an active"):
         set_provider(runtime, provider)
 
@@ -195,6 +203,7 @@ def test_invalid_or_unapproved_receipt_fails_closed(runtime_fixture):
     provider = Provider(frame=png_bytes(), observation=observation())
     provider.active = False
     attach(runtime, provider)
+    activate(runtime, event)
     with contextlib.ExitStack() as stack:
         with pytest.raises(PermissionError, match="current OS observe_ui grant"):
             consume_for_turn(
@@ -208,6 +217,7 @@ def test_revocation_cancels_the_same_turn_and_clears_visual_buffers(runtime_fixt
     runtime, event, _home = runtime_fixture
     provider = Provider(frame=png_bytes(), observation=observation())
     attach(runtime, provider)
+    activate(runtime, event)
     with contextlib.ExitStack() as stack:
         result = consume_for_turn(
             runtime, event, "what is on my screen?", stack, time.monotonic() + 5.0
@@ -233,6 +243,7 @@ def test_provider_payload_must_be_exact_and_bounded(runtime_fixture):
 
     provider = InvalidProvider()
     attach(runtime, provider)
+    activate(runtime, event)
     with contextlib.ExitStack() as stack:
         with pytest.raises(ValueError, match="exactly observation and frame_bytes"):
             consume_for_turn(
