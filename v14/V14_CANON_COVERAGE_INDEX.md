@@ -2525,3 +2525,14 @@ This overlay does not promote the visual path beyond WIRED_SYNTHETIC or the prod
 - These failures are outside Perception ownership and were not weakened. Keep the A5/A4 path WIRED_SYNTHETIC / NOT_ACCEPTED; product remains NOT_RELEASED.
 - No local full-repository test, native Android test, Redmi receipt, normal-turn C3 proof or deployment. REDMI_UNVERIFIED.
 
+### Run 68 — RAW EAR temporal voice and speaker history session/consent isolation (2026-11-27)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A5 RAW EAR → A4 temporal voice state | WIRED_SYNTHETIC / CI_PENDING | Draft PR #2561 scopes committed/provisional temporal voice history by source, generation, Store session and hashed consent scope; direct session/consent rotation tests added | Exact PR CI pending; native microphone, Android lifecycle and Redmi not tested |
+| A5 RAW EAR → A4 speaker lookback | WIRED_SYNTHETIC / CI_PENDING | Draft PR #2561 scopes RAM-only speaker vectors by source, generation, Store session and hashed consent scope; new Store-backed two-session regression added | Exact PR CI pending; calibrated speaker identity/change remains UNVERIFIED and DEFER |
+| Audio composer / B1-B2-C3 consumer | DRAFT / INTEGRATION_BLOCKED | Perception composer source pins refreshed in #2561 | Core Recovery → Stage → RuntimeDeploy pin still needs bottom-up refresh; normal Runtime/C3 turn not proven |
+| Persistent audio weights / cross-session learning | UNCHANGED / NOT_ACCEPTED | No weights, training policy or shared learned parameters changed | No real gradient/weight-retention proof from this run |
+| Android microphone / Redmi | REDMI_UNVERIFIED | No live device receipt or microphone action | Permission, foreground lifecycle, capture, process death, revoke, restart and rollback unverified |
+
+The LOCAL_LINUX 4/4 harness is an isolated scope-algorithm reproduction, not full repository tests. Do not promote these paths to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED until exact CI, independent integration review and device evidence exist.
