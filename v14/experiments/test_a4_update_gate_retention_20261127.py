@@ -27,6 +27,15 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
             self.assertEqual(set(gated["state_dict_fields"]), {"updates", "weights"})
             self.assertLessEqual(gated["max_mistake_memory_entries"], self.result["memory_capacity"])
 
+    def test_no_update_baseline_has_zero_weight_change(self):
+        for source, policies in self.result["per_source"].items():
+            baseline = policies["NO_UPDATE"]
+            self.assertEqual(baseline["updates"], 0)
+            self.assertEqual(baseline["gradient_updates"], 0)
+            self.assertEqual(baseline["gradient_l2_sum"], 0.0)
+            self.assertEqual(baseline["total_weight_delta_l2"], 0.0)
+            self.assertEqual(baseline["parameter_diff_l2_from_initial"], 0.0)
+
     def test_gate_reduces_updates_on_at_least_one_stream(self):
         reductions = [
             self.result["per_source"][source]["EVERY_FINAL"]["updates"]
