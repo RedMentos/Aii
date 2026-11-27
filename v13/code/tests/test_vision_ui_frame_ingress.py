@@ -104,6 +104,14 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
+def uniform_image_buffer():
+    image = Image.new("RGB", (64, 64), (8, 8, 8))
+    output = BytesIO()
+    image.save(output, format="PNG")
+    image.close()
+    return bytearray(output.getvalue())
+
+
 def provider_verify_fn(obs, frame, *, result=True, failure=None):
     expected_sha = hashlib.sha256(frame).hexdigest()
     expected_size = len(frame)
@@ -289,10 +297,61 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["packet"]["learning_authority"] is False
         assert result["packet"]["action_authority"] is False
         assert result["a4"]["truth_authority"] == 0
+        raw_eye = result["a4"]["raw_eye_signal"]
+        assert raw_eye["authority"] == "ATTENTION_ONLY"
+        assert raw_eye["learned"] is False
+        assert raw_eye["score"] == result["raw_eye_structure"]
+        assert result["raw_eye_structure"] > 0.0
+        global_segment = result["packet"]["segments"][1]
+        global_row = next(row for row in result["a4"]["segments"] if row["index"] == 1)
+        assert global_row["source_ref"] == global_segment["source_ref"]
+        assert global_row["raw_eye_structure"] == result["raw_eye_structure"]
+        assert global_row["score"] > global_row["base_score"]
+        assert abs(sum(row["weight"] for row in result["a4"]["segments"]) - 1.0) < 1e-5
         assert result["context_envelope"].current_source == prompt
         assert result["context_packet_count"] == 1
         assert result["caller_buffer_overwritten"] is True
         assert not any(frame)
+
+
+def test_uniform_frame_has_no_raw_eye_attention_contribution(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = uniform_image_buffer()
+
+    with lease_for(runtime, obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.", goal="red panel", token_budget=512,
+        )
+
+    global_row = result["a4"]["segments"][1]
+    assert result["raw_eye_structure"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["score"] == 0.0
+    assert global_row["raw_eye_contribution"] == 0.0
+    assert global_row["score"] == global_row["base_score"]
+    assert result["caller_buffer_overwritten"] is True
+    assert not any(frame)
+
+
+def test_raw_eye_a4_adapter_rejects_untrusted_visual_provenance():
+    from v13.a4_visual_salience import apply_raw_eye_structure
+
+    source_ref = {
+        "source_id": "frame:g", "sha256": "a" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    segment = {
+        "modality": "visual", "source_ref": source_ref,
+        "capture_method": "MEDIA_PROJECTION", "producer_component": "UNTRUSTED",
+    }
+    a4 = {"segments": [{"index": 0, "score": 0.25, "source_ref": source_ref}], "highres": []}
+    components = {
+        "global_contrast": 0.0, "global_edge_energy": 0.0,
+        "cell_edge_energy": 0.0, "spatial_color": 0.0, "luminance_range": 0.0,
+    }
+    with pytest.raises(ValueError, match="provenance"):
+        apply_raw_eye_structure(a4, segment, 0.0, components, segment_index=0)
 
 
 def test_bounded_frame_config_cannot_expand_capture_limits():
