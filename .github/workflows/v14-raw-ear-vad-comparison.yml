@@ -5,10 +5,13 @@ on:
     branches:
       - "research-perception/**"
     paths:
-      - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
-      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"\n      - "v13/code/tests/test_audio_temporal_prediction.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
@@ -26,10 +29,13 @@ on:
       - "boss/v14-recall-store-pin-rebind-20261122"
       - "boss/v14-audio-antialias-integration-20261122"
     paths:
-      - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
-      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"\n      - "v13/code/tests/test_audio_temporal_prediction.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
@@ -89,7 +95,6 @@ jobs:
             v13/code/tests/test_audio_temporal_prediction.py \
             v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_temporal_evidence.py \
-            v13/code/scripts/integrated_audio_context_candidate_20261121.py \
             v13/code/tests/test_audio_ear_voice_cues_v14.py \
             v13/code/tests/test_audio_speaker_evidence.py \
             v13/code/tests/test_audio_temporal_evidence.py \
