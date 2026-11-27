@@ -5,10 +5,10 @@
 ## Optional A3 projector header safety
 
 - Draft [#2563 — preflight local A3 projector NPY headers before allocation](https://github.com/RedMentos/Aii/pull/2563), branch research-perception/v14-npy-preflight-on-audio-session-20261127-run69, stacked on #2561 base SHA c43bd2a84f3329704b80a237bb23e61e6d614c78.
-- Current candidate head at checkpoint: 09e8cee23fab4fe9144253f93bab0a62c3119882. Code blob 6572cd4a3516824b1b5f7618c6fdf7a090f74807; regression test blob 5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5.
+- Code/test head: 09e8cee23fab4fe9144253f93bab0a62c3119882. Code blob 6572cd4a3516824b1b5f7618c6fdf7a090f74807; regression test blob 5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5. Docs and handoff are also on the same PR branch.
 - The loader now inspects the four exact NPY headers before np.load, bounding dtype, fixed dimensions, output dimension and exact payload bytes. The malformed optional projector fails closed while the handcrafted RAW-EYE path remains available.
 - LOCAL_LINUX isolated CPython 3.13.5 / NumPy 2.3.5: py_compile PASS, 4/4 helper checks PASS. Full local Aii checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails.
-- Exact candidate CI runs 46038314334 (MediaProjection ingress) and 46038314335 (shared staged/integrated) were IN_PROGRESS at last poll. Read exact final results before claiming success.
+- Exact CI at the docs-only branch head f46e38841913667055a16fa7826a5f41923cb0c9: MediaProjection ingress 46038637335 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46038637336 PASS on Python 3.11/3.14. Shared staged/integrated 46038637341 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core's Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions remain open; no Perception ingress failure.
 - No Android/Termux/Redmi execution or device receipt. REDMI_UNVERIFIED / NOT_RELEASED. This is not P0 chat, normal Runtime/C3 or learned perception acceptance.
 
 ## Next executable integration
