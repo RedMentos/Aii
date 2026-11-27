@@ -16,6 +16,7 @@ from v13.native_receiver_utility import (
 from v13.native_latent_receiver import PINNED_LLAMA_REVISION
 from v13.native_receiver_task_matrix_bridge import (
     NativeReceiverTaskMatrixBridgeError,
+    _validate_prediction_distribution_audit,
     score_and_record_native_receiver_condition_matrix,
 )
 from v13.native_receiver_task_score import task_score_status
@@ -620,3 +621,71 @@ def test_matrix_bridge_rejects_session_mismatch_before_native_probe(monkeypatch)
             home="/tmp/v14-home", model_path="/tmp/v14-home/models/receiver.gguf",
             deadline=1.0e12, target_environment="SYNTHETIC")
     assert calls == []
+
+
+def test_native_prediction_distribution_audit_is_bound_to_candidate_no_message_and_deranged_rows():
+    inputs = [{"input_sha256": sha("matrix-condition-" + str(i))} for i in range(13)]
+    receiver = {"model_sha256": "d" * 64}
+    log2 = __import__("math").log(2.0)
+    audit = {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "receiver_model_sha256": receiver["model_sha256"],
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2, "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1, "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[9]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False, "raw_logits_persisted": False,
+    }
+    clean = _validate_prediction_distribution_audit(
+        audit, receiver=receiver, condition_inputs=inputs,
+    )
+    assert clean["pl"]["jsd_nats"] == 0.2
+    assert clean["cic"]["jsd_nats"] == 0.1
+    assert clean["raw_logits_exported"] is False
+
+
+def test_native_prediction_distribution_audit_rejects_cross_matrix_other_example():
+    inputs = [{"input_sha256": sha("matrix-condition-" + str(i))} for i in range(13)]
+    receiver = {"model_sha256": "d" * 64}
+    log2 = __import__("math").log(2.0)
+    audit = {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "receiver_model_sha256": receiver["model_sha256"],
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2, "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1, "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": "f" * 64,
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False, "raw_logits_persisted": False,
+    }
+    with pytest.raises(NativeReceiverTaskMatrixBridgeError, match="not bound"):
+        _validate_prediction_distribution_audit(
+            audit, receiver=receiver, condition_inputs=inputs,
+        )
