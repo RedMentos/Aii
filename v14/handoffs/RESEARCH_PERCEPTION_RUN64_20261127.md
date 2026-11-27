@@ -55,3 +55,8 @@ Core rebase #2408 onto #2557 and implement the normal-turn Runtime/C3 consumer. 
 - Core #2408 and current #2555 have been notified to rebase/port the provider onto #2557 and wire the normal Runtime/C3 consumer. QA retains OS consent/onStop/cancel/restart/rollback.
 - Static Android source review of #2408 matches official MediaProjection one-shot requirements (one consent token / one VirtualDisplay, registered onStop cleanup, mediaProjection foreground-service type); this is not an Android build or device test. Android 13 notification permission may be denied; companion has a visible notification-enable control, and QA should test the denial path.
 - Fresh private read-only relay requests #1014–#1016 produced no comments before expiry. Latest V13OBS #115 remains historical 2026-11-24; runtime STOPPED_BY_USER, model STOPPED, autostart false. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Verification wording correction
+
+The initial checkpoint above records the state at the first poll. The final exact-head outcomes are in the final verification addendum below: focused ingress and runtime-deployment integrity PASS; shared staged and integrated regression FAIL on the pre-existing Core/QA pin chain.
