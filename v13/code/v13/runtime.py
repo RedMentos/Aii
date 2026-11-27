@@ -366,6 +366,7 @@ class Runtime:
     def _turn(self,e):
         eid=e['event_id'];g=e['brain_generation_id'];text=self.store.read_source(e['source_ref']);start=time.monotonic();deadline=start+self.cfg['deadline_seconds'];mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};status='FINAL';output='';aid=None;offers=[];version=0;direct=False;runner=None;wake_decision=None;effort_plan=None;ff_x=ff_key=ff_surprise=None
         self.turn_event=e;self.bodies.begin_turn(eid)
+        ui_frame_stack=contextlib.ExitStack();ui_context=None
         governor=self.executive.snapshot(e,self.session)
         meta['output_snapshot_id']=governor['packet_id'];meta['context_source_refs']=[e['source_ref']]
         meta['stage_marks_s']={}
@@ -442,6 +443,15 @@ class Runtime:
                     if meta['skill'].get('automatic'):route,meta['route']=self._route(text,e,deadline)  # WP-T6 fallback: full C_fast path
                     else:route=meta['skill']['prior_route']
             mark('preanswer_observers')
+            if not direct:
+                try:
+                    from .android_ui_runtime import current_turn_context
+                    ui_context=ui_frame_stack.enter_context(current_turn_context(self,text,goal=text))
+                    if ui_context:meta['ui_observation']=dict(ui_context['audit'])
+                except Cancelled:raise
+                except Exception as exc:
+                    if self.cancel_event.is_set():raise Cancelled('Android UI observation revoked') from exc
+                    self.store.log('android_ui_context_unavailable',eid,{'error':type(exc).__name__})
             # WP-D reasoning effort (G5B): one bounded plan decides wake/re-entry/focal budgets.
             observer_end=start+self.cfg['deadline_seconds']*.45;effort_mode=effort.get_mode(self.store)
             age_lim=effort.age_limits(agectl.controller(self),rmode)
@@ -473,7 +483,10 @@ class Runtime:
                 except Exception as exc:self.store.log('jef_observer_unavailable',eid,{'error':type(exc).__name__})
                 _,channel_head=fastpol.head(self,'channel',e,self.cfg['channel'])  # WP-T1 channel head (applies only when approved)
                 def ask(role,focus=None,use_peer=True):
-                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
+                    offer_kwargs={};offer_parameters=inspect.signature(self.cognition.offer).parameters
+                    if focus and 'focus' in offer_parameters:offer_kwargs['focus']=focus
+                    if ui_context is not None and 'ui_context' in offer_parameters:offer_kwargs['ui_context']=ui_context
+                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**offer_kwargs)  # transient UI context
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
                 sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
                 meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
@@ -599,6 +612,10 @@ class Runtime:
                         decision=self.learner.output_delta(e,messages,min(deadline,time.monotonic()+self.cfg['output_adapter_seconds']),context_refs)
                         if decision and decision['in_support']:output_kwargs['first_token_bias']=decision['first_token_bias']
                         runner=self.pool.get('C3_LANGUAGE')
+                if runner.role=='C3_LANGUAGE' and ui_context is not None and ui_context.get('text'):
+                    from .android_ui_runtime import append_c3_ui_context
+                    messages=append_c3_ui_context(messages,ui_context,eid,g)
+                    if isinstance(meta.get('ui_observation'),dict):meta['ui_observation']['c3_context_attached']=True
                 mark('native_answer')
                 leading_output=''
                 lead=toolctl.ToolStep(self).lead(tool_result) if tool_result and tool_result.get('result') is not None else None
@@ -664,6 +681,8 @@ class Runtime:
                     selfctl.controller(self).message('error','Repeated failures: '+type(exc).__name__+' ('+str(n)+' of the last 16 actions)',.5+.1*n)
                 except Exception as e2:self.store.log('self_unavailable',eid,{'stage':'message','error':type(e2).__name__})
         finally:
+            try:ui_frame_stack.close()
+            except Exception as close_exc:self.store.log('android_ui_context_close_failed',eid,{'error':type(close_exc).__name__})
             meta['native_pressure']=monitor.stop()
             try:duplex.settle(self,e,meta,status)  # WP-N14: a cut answer stays provisional, never learned
             except Exception as exc:self.store.log('duplex_unavailable',eid,{'stage':'settle','error':type(exc).__name__})
@@ -823,4 +842,8 @@ class Runtime:
             # PENDING user turns remain durably accepted for the next process;
             # cache removal is not rejection or completion of their work.
             self.jobs.task_done()
+        controller=getattr(self,'_android_companion_controller',None)
+        if controller is not None:
+            try:controller.close()
+            except Exception as exc:self.store.log('android_companion_close_failed',None,{'error':type(exc).__name__})
         self.pool.unload();self.needle.unload();self.memory.semantic_keys.encoder.unload();self.store.close();self.closed=True

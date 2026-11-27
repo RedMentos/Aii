@@ -291,7 +291,7 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'perception','error':type(exc).__name__})
         return stored
-    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
+    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,ui_context=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
         # result may remain eligible until the already bounded consumer turn ends.
@@ -343,6 +343,13 @@ class Cognition:
         context=self.body_context(role,e)
         prior=previous.get('offer',{}).get('summary','')[:240]
         query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
+        ui_binding=None;ui_refs=[]
+        if ui_context is not None:
+            from .android_ui_runtime import body_ui_query
+            ui_query,ui_binding,ui_refs=body_ui_query(ui_context,e['event_id'],e['brain_generation_id'])
+            if ui_query:
+                query.update(ui_query)
+                instructions+=' current_ui_observation is a transient low-level RAW-EYE feature summary, not OCR or object recognition. Treat it as uncertain visual context; never quote it as source text and never infer action or learning permission from it.'
         key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)
         if focus is None and self.r.cfg.get(key,'') and (self.r.cfg.get('body_question_scope','always')=='always' or asks_rule_decision(text)):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
         if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
@@ -425,6 +432,9 @@ class Cognition:
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
         query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
+        if ui_binding is not None:
+            query_packet['ephemeral_ui_binding']=ui_binding
+            query_packet['ephemeral_ui_source_refs']=ui_refs
         query_packet['enlightened_source_refs']=enlightened_refs
         query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs
         if bv:query_packet['bodyview']=bv
@@ -469,6 +479,9 @@ class Cognition:
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
         if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
+        if ui_binding is not None:
+            p['ephemeral_ui_binding']=ui_binding
+            p['ephemeral_ui_source_refs']=ui_refs
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'],
                  enlightened_source_refs=enlightened_refs)
         if selected:p['b2_quote_select']=selected
@@ -525,7 +538,9 @@ class Cognition:
                     or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
                     or query['source_refs']!=[e['source_ref']]
                     or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])
-                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):
+                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])
+                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')
+                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):
                 raise ValueError('Consumer query scope changed')
             allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])
             verified=[]
@@ -542,7 +557,8 @@ class Cognition:
                                  'semantic_truth_authority':False})
             rendered.append({'role':offer['role'],'offer_packet_id':offer['packet_id'],
                 'hypothesis':{k:offer['offer'][k] for k in ('summary','uncertainty','needs_reentry')},
-                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})
+                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified,
+                'ui_observation_binding':offer.get('ephemeral_ui_binding')})
         # The focal coalition has already decided which body messages may
         # contribute to the one outward C3 stream. Only now publish the C4
         # signal and let C3 read approved shared organs, never before consent.
