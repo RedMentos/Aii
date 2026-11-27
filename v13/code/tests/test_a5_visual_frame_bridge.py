@@ -283,6 +283,44 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
                 self.adapter.features(self.event["event_id"], grant)
 
 
+    def test_a4_targets_base_visual_row_when_student_hypotheses_share_source_ref(self):
+        from unittest.mock import patch
+        from v13 import a5_visual_frame_bridge as bridge
+
+        obs = observation()
+        candidate = {
+            "region_id": "r00",
+            "caption": "red square",
+            "cosine": 0.9,
+            "authority": "STUDENT_ESTIMATE",
+            "reference_authority": "REFERENCE_NOT_FACT",
+        }
+        with patch.object(
+            bridge,
+            "_student_hypotheses",
+            return_value=("STUDENT_ESTIMATE", (candidate,)),
+        ):
+            with self.lease(obs) as grant:
+                result = self.adapter.ingest(png_bytes(), obs, grant)
+
+        rows = result["a4"]["segments"]
+        self.assertEqual(len(result["packet"]["segments"]), 2)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["source_ref"], rows[1]["source_ref"])
+        self.assertIn("raw_eye_structure", rows[0])
+        self.assertNotIn("raw_eye_structure", rows[1])
+        self.assertGreater(rows[0]["score"], rows[0]["base_score"])
+        self.assertAlmostEqual(sum(row["weight"] for row in rows), 1.0, places=5)
+        self.assertTrue(all(0.0 <= row["suppression"] <= 0.70 for row in rows))
+        expected_highres = [
+            row["index"]
+            for row in sorted(
+                (row for row in rows if row["score"] >= 0.35),
+                key=lambda row: (-row["score"], row["index"]),
+            )[:3]
+        ]
+        self.assertEqual(result["a4"]["highres"], expected_highres)
+
     def test_student_projector_candidates_are_hypotheses_not_facts(self):
         import numpy as np
         from unittest.mock import patch
