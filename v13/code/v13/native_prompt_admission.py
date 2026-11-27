@@ -28,16 +28,16 @@ def soft_limit(role, cfg, remaining):
     if (type(remaining) not in (int, float) or not math.isfinite(remaining)
             or remaining <= 0):
         return None
-    # C3 always has a bounded first-prefill envelope, even when the overall
-    # turn deadline is generous. This is a BOOT latency policy, not a claim
-    # about measured Redmi token rate. B1/B2 keep their existing short-window
-    # policy until real device timings justify changing their admission.
-    if role == "C3_LANGUAGE":
-        reserved = 10
-    else:
-        if remaining >= 55:
-            return None
-        reserved = 9
+    # All three native roles have a bounded first-prefill envelope. The last
+    # available Redmi evidence shows B1/B2 prefill timeouts with 634-779 input
+    # tokens and no valid offers. Give both bodies a 520-token soft target even
+    # on generous turn deadlines; below 49 seconds the target tightens with the
+    # remaining clock. This is a BOOT policy, not a measured token-rate claim.
+    # It only activates the existing metadata-only reducer: current source
+    # text, peer content, selected quotes and JEF questions remain protected.
+    # If those protected fields alone exceed the target, report that honestly;
+    # never truncate them or pretend an offer was admitted.
+    reserved = 10 if role == "C3_LANGUAGE" else 9
     n = int(max(0, remaining-reserved) * 13)
     return max(96, min(520, n))
 
