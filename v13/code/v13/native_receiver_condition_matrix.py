@@ -455,7 +455,7 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
     except AuditControlError as exc:
         raise NativeReceiverConditionMatrixError("moment-matched random control could not be constructed") from exc
     direct_text_tokens = main.get("receiver", {}).get("token_ids")
-    if (not isinstance(direct_text_tokens, (list, tuple)) or not 1 <= len(direct_text_tokens) <= MAX_TARGET_TOKENS
+    if (not isinstance(direct_text_tokens, (list, tuple)) or not 1 <= len(direct_text_tokens) <= 64
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in direct_text_tokens)):
         raise NativeReceiverConditionMatrixError("direct-text reference requires receiver-tokenizer source IDs")
     direct_text_tokens = list(direct_text_tokens)
