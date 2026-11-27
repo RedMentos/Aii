@@ -61,3 +61,12 @@ Files:
 - UNCERTAIN censors; PROVISIONAL is ignored without advancing the window, and the later FINAL window is evaluated; consent rotation resets; no-context reset produces no omission; interleaved sources equal isolated execution.
 - A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparison 45925644686 and integrated job 45925644732 were still running at this checkpoint; staged job 45925644732 FAILs at Core's old composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions.
 - No local full suite, real microphone, Android/Termux, native model or Redmi evidence. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Latest shared CI status — 2026-11-27
+
+- A4 temporal/event ablation 45925644718: 9/9 PASS on Python 3.13/3.14.
+- A4/A5 feature-set 45925644769: PASS both; RAW EAR fastpath 45925644699: 155/155 both (synthetic); RuntimeDeploy offline 45925644734: PASS 3.11/3.14.
+- WebRTC/libfvad comparison 45925644686: Python 3.13 completed successfully; Python 3.14 still in progress at readback.
+- Staged/integrated 45925644732: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated FAIL one setup test. Stale Core recovery composer pin plus arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED remain. Core/QA own these files.
+- This is still not a release. Local full suite NOT RUN; no Android/Termux/microphone/native model/Redmi proof.
