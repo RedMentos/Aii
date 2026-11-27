@@ -340,7 +340,7 @@ class AudioTemporalPredictor:
                 for row in range(INPUT_COUNT):
                     for col in range(FEATURE_COUNT):
                         old = self._transient_weights[row][col]
-                        candidate = old + (proposed[row][col] - old) * transient_clip_scale
+                        candidate = proposed[row][col] * transient_clip_scale
                         effective = self._weights[row][col] + candidate
                         bounded = min(self.max_abs_weight, max(-self.max_abs_weight, effective))
                         new = bounded - self._weights[row][col]
