@@ -284,7 +284,7 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
                          "UNEXPECTED_SPECIAL_TOKEN_PREFIX_SUFFIX")
 
-        fragment = "\\n" + HEADER + json.dumps(selected, ensure_ascii=False, sort_keys=True)
+        fragment = "\n" + HEADER + json.dumps(selected, ensure_ascii=False, sort_keys=True)
         duplicate_prompt = prompt + fragment
         duplicate_rows = pieces_for_prompt(duplicate_prompt, bos=False)
         result = inspect(m, duplicate_prompt, HEADER, token_pieces=duplicate_rows,
