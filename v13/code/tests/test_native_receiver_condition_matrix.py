@@ -223,7 +223,8 @@ def test_deranged_control_rejects_family_or_session_mismatch(monkeypatch):
         build_native_receiver_condition_matrix(
             task=task, pair_record=main, baseline_packet=baseline,
             candidate_packet=candidate, ood_control=ood, entity_control=entity,
-            deranged_control=deranged,
+            deranged_control=deranged, intact_no_private_control=no_private,
+            private_byte_spans=private_spans,
         )
     task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     deranged["session_id"] = "other-session"
@@ -231,7 +232,8 @@ def test_deranged_control_rejects_family_or_session_mismatch(monkeypatch):
         build_native_receiver_condition_matrix(
             task=task, pair_record=main, baseline_packet=baseline,
             candidate_packet=candidate, ood_control=ood, entity_control=entity,
-            deranged_control=deranged,
+            deranged_control=deranged, intact_no_private_control=no_private,
+            private_byte_spans=private_spans,
         )
 
 
