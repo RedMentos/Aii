@@ -2595,3 +2595,11 @@ No claim is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEA
 **Additional research limit:** Zhang & Emu, arXiv:2607.26773v1 (2026-07-29), adds receiver self-generated messages and PS/PL/CIC/CAG/SSG. The current WIRED_SYNTHETIC path only has the other-example/deranged control and teacher-forced logprob proxy; no receiver-distribution, self-substitution or generated-answer proof exists.
 
 **Release state:** NOT_RELEASED. PR #2566 is DRAFT and stacked on #2565. Latest integrated release head remains unchanged. No Redmi-native evidence, model download, weight update, permission change or user-data mutation.
+
+
+## Live evidence overlay — Research & Perception Run 74 (2026-11-27; additive, not historical Canon inventory)
+
+- **B3 / Enlightened Space latent-communication audit:** `WIRED_SYNTHETIC` diagnostic path only. PR #2566, head `df7cf374c421fc68fd9d9ae014b7b36320020bfc`, adds a 13th `SELF_GENERATED_MESSAGE` native receiver condition. The receiver greedily generates hidden-state rows from the same source prompt, with row count matched to the sender candidate, re-injects them, and records hash-bound score/KV evidence. The utility layer exposes a paired target-token-logprob SSG proxy.
+- **Not accepted:** no real GGUF receiver pair, no task-accuracy CAG/SSG, no PL/CIC JSD, no trained cross-model latent adapter, no ordinary-turn Runtime consumer, no B3 activation. A likelihood proxy is not semantic correctness.
+- **Evidence at checkpoint:** native receiver CI 46072764805 and shared staged/integrated 46072764819 IN_PROGRESS; RuntimeDeploy 46072764695, A5 46072764654, MediaProjection 46072764637, private bridge 46072759570 PASS. Full LOCAL_LINUX checkout/build/tests blocked by GitHub DNS. Redmi REDMI_UNVERIFIED; NOT_RELEASED.
+- **Research:** R-194, Zhang & Emu, arXiv:2607.26773v1 (submitted 2026-07-29; full preprint reviewed). Next: add JSD PL/CIC and paired task-accuracy CAG/SSG with confidence/equivalence controls, then >=20 source-disjoint real-GGUF groups. Historical Canon inventory above remains unchanged.

@@ -1,15 +1,18 @@
-# Current user-facing checkpoint — Run 73 (2026-11-27)
+# Current user-facing checkpoint — Run 74 (2026-11-27)
 
-**No action is required from the user.** No model download/swap, permission change, phone action or data mutation was performed.
+**Keine Nutzeraktion erforderlich.** Es wurde kein Modell heruntergeladen/ausgetauscht, keine Berechtigung geändert, kein Telefonbefehl gesendet und keine Gerätedaten verändert.
 
-- Perception added the same-family, same-session DERANGED_MESSAGE control to the native receiver diagnostic matrix. Draft PR #2566: https://github.com/RedMentos/Aii/pull/2566. Exact code/test head: 2c0ab7421c079f5c64ac15ac0345b712944548db. This improves the audit of future latent transfer; it does not make the normal chat path or trained cross-model latent coupling work.
-- Focused receiver tests: 55 PASS on Python 3.13 and 55 PASS on 3.14. Linux pinned-API build and Android arm64 cross-compile PASS. Related A5/MediaProjection and runtime-deployment-integrity CI PASS.
-- The enclosing staged/runtime gate is still blocked by Core/QA-owned source pins and migration assertions: stale audio-composer blob, stale cognition observer pin, vision.py not accepted by the lifecycle-source registry, and two migrations returning PARTIAL instead of UPDATED. Core was notified on #2562; evidence is linked from whole-Canon #1984.
-- Redmi state remains REDMI_UNVERIFIED. No fresh private owner receipt was obtained; the historical 2026-11-24 receipt is not proof of the current installed build or updater state. No Android test or deployment is claimed.
-- P0 basic-chat issue #1904 remains open. This run does not fix the 0-token/slow-chat failure.
-- Next work: add moment-matched random, intact-no-private and direct-text validity arms; add a receiver self-generated message under matched compute; expose PL/CIC prediction-distribution divergence and CAG/SSG task-accuracy contrasts with paired confidence/equivalence tests; then run a real native model-pair test when authorized model/runtime artifacts exist. Core/QA must repair the staged source pins before the shared release gate can pass.
+- **Neue ausführbare Diagnose:** PR [#2566](https://github.com/RedMentos/Aii/pull/2566), Branch `research-perception/v14-a3-ood-calibration-20261127-run72`, aktueller Code-/Test-HEAD `df7cf374c421fc68fd9d9ae014b7b36320020bfc`. Die native Receiver-Matrix hat jetzt 13 Bedingungen: zusätzlich zu den vorhandenen Kontrollen erzeugt derselbe Receiver eine eigene greedy Hidden-State-Nachricht über dieselbe Schnittstelle und mit derselben Token-/Row-Anzahl wie die Sender-Nachricht. Der Native-Runner re-injiziert diese Zustände, berechnet den echten Float32-Input-Hash und bindet Prompt-/Generations-Hashes und KV-Snapshot an den Score-Receipt.
+- **Auswertung:** Der neue `SELF_SUBSTITUTION_GAP` vergleicht den Sender-Kandidaten mit dieser Receiver-eigenen Nachricht. Der derzeitige Wert ist ein gepaarter Target-Token-Logprob-Proxy, **keine Task-Accuracy und kein Beweis eigenständigen Agentenwerts**. Ein positiver Wert wird nur als Signal ausgewiesen, wenn der Kandidat den Self-Control auf dem Holdout schlägt. Keine Rohtexte oder Token-IDs werden in Receipts persistiert.
+- **Research:** Huixiang Zhang & Mahzabeen Emu, *Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM*, arXiv:2607.26773v1, eingereicht 29.07.2026, Preprint ohne bestätigtes Peer Review. Der vollständige Text wurde geprüft. Die Studie trennt Message-Presence, Message-Identity, Content-Attributable Gain und Self-Substitution; sie zeigt, dass hohe Prediction-Divergence nicht automatisch höhere Task-Accuracy bedeutet. R-194 hält Evidenz und Grenzen fest.
+- **Exact-head CI bei Checkpoint:** Native Receiver workflow [46072764805](https://github.com/RedMentos/Aii/actions/runs/46072764805) war IN_PROGRESS: Python 3.13/3.14 Checkout, Setup und Compile-Step PASS; fokussierte Matrix-/Bridge-Tests liefen noch. Linux pinned-API build lief; Android NDK-Setup lief. Shared staged/integrated [46072764819](https://github.com/RedMentos/Aii/actions/runs/46072764819) war ebenfalls IN_PROGRESS. RuntimeDeploy [46072764695], A5 [46072764654], MediaProjection [46072764637] und private-bridge tests [46072759570] waren auf diesem HEAD PASS. Keine noch laufende Prüfung wird als bestanden gewertet.
+- **LOCAL_LINUX:** vollständiger Aii-Checkout und lokale Tests BLOCKED; `git ls-remote` scheiterte an GitHub-DNS. Daher kein lokales pytest, kein lokaler C++-Build und kein lokaler GGUF-Lauf.
+- **Gerät/Release:** kein autorisiertes verbundenes Redmi, kein frischer privater Owner-Receipt, kein echter GGUF-Modellpaar-Test. `REDMI_UNVERIFIED`, `B3_OFF`, `NOT_RELEASED`. PR/Push ist kein Deployment. P0-Basic-Chat #1904 bleibt offen.
 
-Checkpoint recorded: 2026-11-27T20:51:30.194Z.
+**Nächster ausführbarer Schritt:** Exact-head CI abschließen; danach PL/CIC mit Jensen–Shannon-Divergenz auf tatsächlichen Receiver-Logitverteilungen ergänzen und CAG/SSG mit gepaarter Task-Accuracy, Konfidenzintervallen und Negativ-/Äquivalenzkontrollen messen. Anschließend mindestens 20 gepaarte Holdout-Gruppen auf einem bereits autorisierten, gepinnten echten GGUF ausführen. Bis dahin bleibt die Funktion eine synthetisch verdrahtete Diagnose, keine akzeptierte native Latent-Kopplung.
+
+Checkpoint: 2026-11-27T21:30:39Z. **Keine Aktion nötig.**
+
 
 ---
 
