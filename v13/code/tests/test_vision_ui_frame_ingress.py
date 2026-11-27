@@ -277,7 +277,7 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         )
         packets = A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
         assert packets == (result["packet"],)
-        assert result["status"] == "WIRED_SYNTHETIC"
+        assert result["status"] == "A5_RAW_EYE_CONSUMED"
         assert result["packet"]["modality"] == "ui"
         assert result["packet"]["frame_sha256"] == expected_hash
         assert len(result["packet"]["segments"]) == 18  # UI event + global + 16 tiles
@@ -370,7 +370,7 @@ def test_scoped_frame_consumer_revokes_source_after_success_and_failure(monkeypa
             frame_verifier=verifier, current_source="Describe this screen.",
             goal="red panel", token_budget=512,
         ) as result:
-            assert result["status"] == "WIRED_SYNTHETIC"
+            assert result["status"] == "A5_RAW_EYE_CONSUMED"
             assert obs["source_id"] in runtime._a5_ui_context_cache
             assert lease.active_for(runtime, runtime.turn_event["brain_generation_id"])
         assert revoked == [obs["source_id"]]
@@ -613,7 +613,7 @@ def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye
         assert result["student_projector_used"] is False
         assert result["student_projector_status"] == "PROJECTOR_HASH_MISMATCH"
         assert result["packet"]["student_projector_used"] is False
-        assert result["status"] == "WIRED_SYNTHETIC"
+        assert result["status"] == "A5_RAW_EYE_CONSUMED"
         assert len(result["packet"]["segments"]) == 18
         assert result["caller_buffer_overwritten"] is True
 
