@@ -105,7 +105,7 @@ jobs:
           PYTHONPATH: v14/experiments
           V14_EXPECTED_RAW_EAR_V3_BLOB: c7404ae0246dab5c69dcaeadc8c815cb1723115d
           V14_EXPECTED_TEACHER_EAR_BLOB: 255c51fd6ade37ada2fc3309fb0cf3e18afe954d
-          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 1b71d9e64914144fba58b8035e79e283a79fed70
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 2c5c74e36c2aff091fe085f1e3e35404956a0357
         run: |
           test "$(git hash-object v13/code/v13/audio_voice_cues.py)" = "$V14_EXPECTED_RAW_EAR_V3_BLOB"
           test "$(git hash-object v13/code/v13/audio_teacher_ear.py)" = "$V14_EXPECTED_TEACHER_EAR_BLOB"
