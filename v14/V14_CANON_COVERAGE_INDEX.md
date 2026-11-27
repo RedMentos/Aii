@@ -2450,3 +2450,17 @@ This overlay records only the Perception evidence from PR #2540. It does **not**
 **Open integration gates:** staged run 45924853105 FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated regression FAIL (one setup test). Core-owned recovery still pins composer `831080bceec90711bd42e0fa4eba47c669975c98` while current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions also remain. Core/QA own those files; Perception did not relax guards.
 
 **Platform:** full local Aii suite NOT RUN (no checkout mounted; DNS failure). No Android/Termux, microphone, native model or Redmi test. REDMI_UNVERIFIED; NOT_RELEASED. This overlay must not be read as whole-system completion or as evidence for any other Canon family.
+
+
+### Run 55 extension — A4 event expectation (2026-11-27)
+
+| Canon path | Evidence level | Additive evidence |
+|---|---|---|
+| A4 temporal event expectation | WIRED_SYNTHETIC | Existing `AudioEventExpectationRegistry` tested with timed VOICED/SILENCE cue sequences. On-time event does not trigger omission; a valid FINAL silence window crossing expected onset+tolerance triggers one bounded omission. |
+| A4 omission confidence | SYNTHETIC_PROXY_ONLY | Confidence proxy 0.60, novelty 0.03 under 0.05 cap for the deterministic fixture; not calibrated probability and not a real-world false-positive rate. |
+| A4 censoring/consent/source isolation | WIRED_SYNTHETIC | UNCERTAIN censors, PROVISIONAL ignored, consent rotation resets, no-context reset emits no omission, interleaved streams match isolated streams. |
+| A0 microphone / real acoustic ingress | NOT_IMPLEMENTED / OFF | No AudioRecord or microphone provider tested. |
+
+**Exact CI:** A4 temporal + event workflow 45925644718, 9/9 PASS on Python 3.13 and 3.14. A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparator 45925644686 and integrated regression 45925644732 were still running at this checkpoint; staged job in 45925644732 already failed at the shared Core composer pin plus stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED.
+
+All evidence is synthetic/hosted CI. No local full suite, Android/Termux, microphone, native model or Redmi proof. No release. Other Canon families remain unchanged.
