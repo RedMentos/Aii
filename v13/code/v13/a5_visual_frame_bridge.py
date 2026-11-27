@@ -339,6 +339,7 @@ def consume_visual_frame(
         raise ValueError("RAW-EYE feature vector is empty, oversized or non-finite")
     feature_values = feature_values.copy()
     raw_eye_score, raw_eye_components = raw_eye_structure(feature_values)
+    raw_eye_score = round(raw_eye_score, 6)
     feature_bytes = np.asarray(feature_values, dtype="<f4").tobytes(order="C")
     feature_sha256 = hashlib.sha256(feature_bytes).hexdigest()
     feature_shape = [int(feature_values.size)]
