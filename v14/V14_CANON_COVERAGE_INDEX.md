@@ -2485,3 +2485,15 @@ Staged/integrated run 45925644732 failed: staged 20 failed / 233 passed / 10 ski
 | B1/B2/C3 master weights, sleep/replay, cross-organ self-edit | UNCHANGED / NOT_ACCEPTED | No code or evidence added for these Canon families in this run | All original Canon acceptance remains open |
 
 This overlay does not promote any feature to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. CI is Linux evidence only. Historical V13 source and master blueprint were not modified.
+
+
+## 2026-11-27 Run 64 — MediaProjection A5 provider receiver (additive; no Canon acceptance changed)
+
+| Canon path | Evidence level | Evidence | Still not proven |
+|---|---|---|---|
+| Android screen/UI A5 frame → RAW-EYE | WIRED_SYNTHETIC / FOCUSED_CI_PASS | PR #2557 exact head 642b981e9a91bfc618992cabb0c72ac8c801b51c; provider receiver verifies one-shot receipt + live UIObservationLease, bounded decode, digest/size, global + 4×4 features, A4 attention, A5 context envelope and zeroization; 25/25 CI tests on Python 3.13 and 25/25 on Python 3.14 | Core normal-turn Runtime/C3 callsite, Android MediaProjection grant/onStop, real frame, Redmi receipt |
+| MediaProjection provider → Perception consumer | CONTRACT_RESTORED / CORE_REBASE_REQUIRED | Core #2408 expects `consume_projected_frame_from_provider`; #2557 restores it and focused tests pass | Provider PR #2408 is not yet rebased/accepted; no runtime callsite or device proof |
+| A5 → A4 → C3 context | WIRED_SYNTHETIC / NOT_ACCEPTED | Bounded A5 context envelope returns a source-bound PerceptPacket and omits provisional frames | Real C3 turn consumption, source/consent retention across process restart, Android lifecycle |
+| Android MediaProjection / Redmi capture | REDMI_UNVERIFIED | No new device receipt; private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS issues #1014–#1016 returned no comments before expiry | Actual OS permission, foreground service, MediaProjection onStop, APK/device capture, Termux/Redmi verification |
+
+This overlay does not promote A5 to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. The tests are synthetic generated PNG/provider fixtures; no phone action was taken.
