@@ -45,3 +45,13 @@ R-181 records XBridge (arXiv:2608.11676 v2, accepted NeurIPS 2026): discrete rec
 ## Next
 
 Core rebase #2408 onto #2557 and implement the normal-turn Runtime/C3 consumer. QA validates Android consent and lifecycle. Keep the provider OFF until explicit device permission and a real Redmi receipt.
+
+
+## Final verification addendum (2026-11-27)
+
+- Final PR head at last readback: `cf8a0ea75712171d28b6ed9c10d3b189bb41393f`; code/test SHA remains `642b981e9a91bfc618992cabb0c72ac8c801b51c`.
+- Focused workflow **45975248573 PASS**: py_compile and 25/25 tests on Python 3.13; py_compile and 25/25 on Python 3.14. Runtime deployment integrity **45975248638 PASS**.
+- Shared staged workflow **45975248465 FAIL**: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression **45975248465 FAIL**: one failure on Core Recovery's stale audio-composer pin (expected `831080bceec90711bd42e0fa4eba47c669975c98`). Staged failures also show Core arithmetic/observer pins and QA PARTIAL-vs-UPDATED migration assertions. No Perception ingress test failed; no pin or assertion was weakened.
+- Core #2408 and current #2555 have been notified to rebase/port the provider onto #2557 and wire the normal Runtime/C3 consumer. QA retains OS consent/onStop/cancel/restart/rollback.
+- Static Android source review of #2408 matches official MediaProjection one-shot requirements (one consent token / one VirtualDisplay, registered onStop cleanup, mediaProjection foreground-service type); this is not an Android build or device test. Android 13 notification permission may be denied; companion has a visible notification-enable control, and QA should test the denial path.
+- Fresh private read-only relay requests #1014–#1016 produced no comments before expiry. Latest V13OBS #115 remains historical 2026-11-24; runtime STOPPED_BY_USER, model STOPPED, autostart false. REDMI_UNVERIFIED / NOT_RELEASED.
