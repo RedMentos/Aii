@@ -103,6 +103,14 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
+def uniform_image_buffer(color=(96, 96, 96)):
+    image = Image.new("RGB", (64, 64), color)
+    output = BytesIO()
+    image.save(output, format="PNG")
+    image.close()
+    return bytearray(output.getvalue())
+
+
 def provider_verify_fn(obs, frame, *, result=True, failure=None):
     expected_sha = hashlib.sha256(frame).hexdigest()
     expected_size = len(frame)
@@ -285,6 +293,20 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["packet"]["derived_packet_persisted"] is False
         assert result["packet"]["teacher_used"] is False
         assert result["packet"]["student_projector_used"] is False
+        assert result["packet"]["raw_eye_structure"] > 0.0
+        assert set(result["packet"]["raw_eye_components"]) == {
+            "global_contrast", "global_edge_energy", "cell_edge_energy",
+            "spatial_color", "luminance_range",
+        }
+        assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
+        assert result["packet"]["a4_raw_eye_signal"]["learned"] is False
+        global_segment = result["packet"]["segments"][1]
+        assert global_segment["modality"] == "visual"
+        assert global_segment["producer_component"] == "A5_VISUAL"
+        assert global_segment["source_ref"]["modality"] == "visual"
+        assert global_segment["source_ref"]["sha256"] == expected_hash
+        assert result["a4"]["raw_eye_signal"]["score"] == result["packet"]["raw_eye_structure"]
+        assert sum(row["weight"] for row in result["a4"]["segments"]) == pytest.approx(1.0, abs=1e-5)
         assert result["packet"]["learning_authority"] is False
         assert result["packet"]["action_authority"] is False
         assert result["a4"]["truth_authority"] == 0
@@ -292,6 +314,32 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["context_packet_count"] == 1
         assert result["caller_buffer_overwritten"] is True
         assert not any(frame)
+
+
+def test_uniform_frame_has_zero_raw_eye_structure_contribution(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = uniform_image_buffer()
+
+    with lease_for(runtime, obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.", goal="neutral screen",
+            token_budget=512,
+        )
+
+    assert result["raw_eye_structure"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["score"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["contribution"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["learned"] is False
+    global_row = next(row for row in result["a4"]["segments"] if row["index"] == 1)
+    assert global_row["raw_eye_structure"] == 0.0
+    assert global_row["raw_eye_contribution"] == 0.0
+    assert global_row["score"] == global_row["base_score"]
+    assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
+    assert result["packet"]["action_authority"] is False
+    assert result["packet"]["learning_authority"] is False
+    assert not any(frame)
 
 
 def test_bounded_frame_config_cannot_expand_capture_limits():
