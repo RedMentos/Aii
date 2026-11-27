@@ -771,8 +771,19 @@ def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
         "action_authority": False,
         "truth_authority": False,
     })
-    if pred["training_data_persisted"] or prediction.get("learning_authority") is not False:
+    if (pred["training_data_persisted"] or prediction.get("learning_authority") is not False
+            or prediction.get("action_authority") is not False
+            or prediction.get("truth_authority") is not False):
         raise ValueError("A4 predictor authority/persistence contract changed")
+    observed_activity = expectation.get("observed_activity")
+    if observed_activity not in {"SILENCE", "VOICED", "IMPULSIVE", "UNCERTAIN"}:
+        raise ValueError("A4 observed activity is invalid")
+    if (expectation.get("state_persistence") is not False
+            or expectation.get("calibrated_probability") is not False
+            or expectation.get("learning_authority") is not False
+            or expectation.get("action_authority") is not False
+            or expectation.get("truth_authority") is not False):
+        raise ValueError("A4 event expectation authority/persistence contract changed")
     expected = []
     for item in expectation.get("expected_events", [])[:2]:
         if type(item) is not dict or item.get("activity_class") not in {"VOICED", "IMPULSIVE"}:
@@ -810,7 +821,7 @@ def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
             "schema": str(expectation.get("schema", ""))[:96],
             "method": str(expectation.get("method", ""))[:96],
             "status": str(expectation.get("status", ""))[:48],
-            "observed_activity": expectation.get("observed_activity"),
+            "observed_activity": observed_activity,
             "expected_events": expected,
             "omissions": omissions,
             "omission_detected": expectation.get("omission_detected") is True,
