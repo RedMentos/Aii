@@ -164,7 +164,7 @@ def _normalize_audio_context_refs(raw: bytes):
         raise ValueError("Core Runtime context refs changed or are ambiguous before audio composition")
     index = matches[0]
     original = lines[index]
-    body = original.rstrip(b"\\r\\n")
+    body = original.rstrip(b"\r\n")
     ending = original[len(body):]
     prefix, marker, tail = body.partition(b"context_refs=[e['source_ref'],")
     if (not marker or not body.endswith(b"]") or b"audio_source_refs" in body
@@ -191,7 +191,7 @@ def _restore_audio_context_refs(raw: bytes, original: bytes) -> bytes:
         raise ValueError("audio context-ref restoration input is invalid")
     if raw.count(_CONTEXT_REFS_AUDIO) != 1:
         raise ValueError("audio composition changed or duplicated the C3 context-ref anchor")
-    body = original.rstrip(b"\\r\\n")
+    body = original.rstrip(b"\r\n")
     prefix, marker, tail = body.partition(b"context_refs=[e['source_ref'],")
     if not marker or not body.endswith(b"]") or b"audio_source_refs" in body:
         raise ValueError("saved Core context-ref expression is not restorable")
