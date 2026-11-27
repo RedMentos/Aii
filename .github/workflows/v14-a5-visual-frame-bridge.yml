@@ -7,6 +7,7 @@ on:
       - "v13/code/v13/a5_visual_frame_bridge.py"
       - "v13/code/v13/a4_visual_salience.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
+      - "v13/code/tests/test_vision.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/vision.py"
       - ".github/workflows/v14-a5-visual-frame-bridge.yml"
@@ -15,6 +16,7 @@ on:
       - "v13/code/v13/a5_visual_frame_bridge.py"
       - "v13/code/v13/a4_visual_salience.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
+      - "v13/code/tests/test_vision.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/vision.py"
       - ".github/workflows/v14-a5-visual-frame-bridge.yml"
@@ -40,8 +42,8 @@ jobs:
       - name: Compile A5 visual bridge
         env:
           PYTHONPATH: v13/code
-        run: python -m py_compile v13/code/v13/a5_visual_frame_bridge.py v13/code/v13/a4_visual_salience.py
+        run: python -m py_compile v13/code/v13/vision.py v13/code/v13/a5_visual_frame_bridge.py v13/code/v13/a4_visual_salience.py
       - name: Run exact A5 visual Runtime tests
         env:
           PYTHONPATH: v13/code
-        run: python -m pytest -q v13/code/tests/test_a5_visual_frame_bridge.py
+        run: python -m pytest -q v13/code/tests/test_vision.py v13/code/tests/test_a5_visual_frame_bridge.py
