@@ -2592,4 +2592,6 @@ No claim is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEA
 
 **Shared gate failures (not Perception-owned):** 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests in staged/integrated run 46066036095. Recovery audio-composer Git blob pin is stale; observer pin for v13/cognition.py is stale; vision.py is not accepted by the lifecycle-source registry; two migration assertions return PARTIAL rather than UPDATED. Core was notified on #2562 and #1984.
 
+**Additional research limit:** Zhang & Emu, arXiv:2607.26773v1 (2026-07-29), adds receiver self-generated messages and PS/PL/CIC/CAG/SSG. The current WIRED_SYNTHETIC path only has the other-example/deranged control and teacher-forced logprob proxy; no receiver-distribution, self-substitution or generated-answer proof exists.
+
 **Release state:** NOT_RELEASED. PR #2566 is DRAFT and stacked on #2565. Latest integrated release head remains unchanged. No Redmi-native evidence, model download, weight update, permission change or user-data mutation.
