@@ -2471,3 +2471,17 @@ All evidence is synthetic/hosted CI. No local full suite, Android/Termux, microp
 A4 temporal/event ablation 45925644718 passed 9/9 on Python 3.13/3.14; A4/A5 feature-set 45925644769 passed both; RAW EAR fastpath 45925644699 passed 155/155 on both (synthetic benchmark only); RuntimeDeploy offline 45925644734 passed on Python 3.11/3.14. WebRTC/libfvad comparison 45925644686 had a successful 3.13 job while 3.14 remained in progress.
 
 Staged/integrated run 45925644732 failed: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated one setup failure. Shared blockers are Core's stale recovery composer pin, arithmetic/observer source pins, and QA migration PARTIAL-vs-UPDATED assertions. No Perception gate was relaxed. PR #2540 remains DRAFT / NOT_RELEASED. Local full suite NOT RUN; REDMI_UNVERIFIED.
+
+
+## 2026-11-27 Run 56 evidence overlay (additive; no Canon acceptance changed)
+| Canon path | Current evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A4 temporal audio predictor | WIRED_SYNTHETIC | Existing source-bound cue-delta predictor; new opt-in `MEMORIZED_ERROR` policy in PR #2548; 6/6 A4 ablation tests on Python 3.13/3.14 | Not enabled by default; no live audio or device measurement |
+| A4 update/retention gate | WIRED_SYNTHETIC | EVERY_FINAL vs MEMORIZED_ERROR vs NO_UPDATE; numeric gradient/parameter-diff and restart checks; update sparsity measured on three deterministic fixtures | Quality worsens on two of three fixtures; no master-model weight learning or energy claim |
+| A5/RAW EAR input | WIRED_SYNTHETIC | RAW EAR fastpath 161/161 and feature-set probe 15/15 on Python 3.13/3.14 | No microphone capture, native VAD wrapper (4 tests skipped), or Android input proof |
+| A4 → audio context composer → B1/B2/C3 | DRAFT / INTEGRATION_BLOCKED | Perception PR #2540 plus #2548; Core #2547 notified to refresh downstream recovery pin | Not staged/accepted; current staged/integrated checks fail on stale Core-owned composer/contracts/cognition pins and QA migration assertions |
+| Android microphone / local device audio | REDMI_UNVERIFIED | No current private relay receipt; last available V13OBS #115 is a historical STOPPED_BY_USER snapshot from 2026-11-24 | No Redmi/Termux proof, no microphone permission receipt |
+| B3 / JEPA native latent coupling | SYMBOLIC_ONLY / UNCHANGED | No new native embedding/hidden-state evidence in this run | No trained cross-organ latent coupling |
+| B1/B2/C3 master weights, sleep/replay, cross-organ self-edit | UNCHANGED / NOT_ACCEPTED | No code or evidence added for these Canon families in this run | All original Canon acceptance remains open |
+
+This overlay does not promote any feature to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. CI is Linux evidence only. Historical V13 source and master blueprint were not modified.
