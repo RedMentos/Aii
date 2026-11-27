@@ -129,6 +129,7 @@ def test_open_url_receipt_only_binding_survives_restart_after_receipt_verificati
     recovered = resumed.receipt_proposal(proposal.action_id)
     assert recovered.capability == "open_url"
     assert recovered.args == {}
+    assert recovered.recovery_only is True
     assert recovered.digest == proposal.digest
     assert recovered.source_ref == source_ref
     assert resumed.action_state(proposal.action_id) == "RECEIPT_VERIFIED"

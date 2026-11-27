@@ -247,7 +247,7 @@ class AndroidCompanionController:
 
     def launch(self, package, confirm):
         if (type(package) is not str or len(package) > 180
-                or not re.fullmatch(r"[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+", package)):
+                or not re.fullmatch(r"[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+", package)):
             raise ControlDenied("invalid Android package name")
         return self._submit_action(
             "launch_app", {"package": package}, package, confirm,

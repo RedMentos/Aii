@@ -13,7 +13,7 @@ from pathlib import Path
 
 SOURCE_BLOBS = {
     "v13/android_ui_runtime.py": "9df5e5b55bd94e67b12d5467db8ea511a55011d8",
-    "v13/android_companion_runtime.py": "a4df8e974ffd46b3a8e56ffce359ac45c6a719a2",
+    "v13/android_companion_runtime.py": "b8e55b176f293abc67b6ed047b85bf029d42fd8b",
     "v13/android_companion_ui_frames.py": "4d0ec9a7cce593b64f56415a7f48ebe92a68672f",
 }
 REQUIRED_FILES = (
