@@ -179,6 +179,24 @@ class Callosum:
                     o=b3order.status(r.home,dname,out[dname]['body_revisions']);out[dname]['training_order']={k:o[k] for k in ('done','next','status','violations','locked_by_canon')}
                 except Exception as exc:out[dname]['training_order']={'error':type(exc).__name__}
         return out
+    def stage_native_receiver_matrix(self, *, task, pair_record, baseline_packet,
+                                     candidate_packet, ood_control, entity_control):
+        """Stage a Perception-built eight-condition matrix through the live Runtime.
+
+        This is an in-process diagnostic producer API, not a normal-turn hook.
+        The builder revalidates all three SourceRefs and the current FINAL task;
+        a separate local-TTY one-shot approval is still required before native use.
+        """
+        runtime = getattr(self, "r", None)
+        if runtime is None:
+            raise RuntimeError("Callosum matrix staging requires its owning Runtime")
+        from .native_receiver_matrix_runtime import build_and_stage_native_receiver_matrix
+        return build_and_stage_native_receiver_matrix(
+            runtime, task=task, pair_record=pair_record,
+            baseline_packet=baseline_packet, candidate_packet=candidate_packet,
+            ood_control=ood_control, entity_control=entity_control,
+        )
+
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
@@ -370,6 +388,9 @@ def _clear_tokenwise_lab(runtime, args):
 
 def operator_command(r,args):
     """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""
+    if args and args[0] in {"matrix-status", "matrix-arm", "matrix-run", "matrix-revoke", "matrix-clear"}:
+        from .native_receiver_matrix_runtime import operator_command as matrix_command
+        return matrix_command(r, args)
     if args and args[0] in {"arm-input-tap", "native-input-tap", "revoke-input-tap"}:
         from .native_input_embedding_capture import operator_command as input_tap_command
         return input_tap_command(r,args)
@@ -394,5 +415,5 @@ def operator_command(r,args):
         'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'
         'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'
         'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'
-        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'
+        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'
     )
