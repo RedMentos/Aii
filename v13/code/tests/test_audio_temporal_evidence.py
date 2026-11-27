@@ -314,7 +314,7 @@ def test_registry_preview_is_shadow_only_until_final_update():
         source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
         cues=cue("VOICED"),
     )
-    state = registry._states[("mic-a", "g1")]
+    state = registry._states[("mic-a", "g1", None, None)]
     assert provisional["preview_only"] is True
     assert state._last_end_ms is None
 
@@ -324,3 +324,81 @@ def test_registry_preview_is_shadow_only_until_final_update():
     )
     assert final["preview_only"] is False
     assert state._last_end_ms == 140
+
+
+def test_registry_restarts_ephemeral_history_on_session_and_consent_scope_change():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=2)
+    first = registry.update(
+        source_id="mic-a", generation_id="g1", session_id="session-a",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert first["state_reset"] is False
+
+    new_session = registry.update(
+        source_id="mic-a", generation_id="g1", session_id="session-b",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert new_session["state_reset"] is True
+    assert new_session["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert new_session["voice_evidence"] == first["voice_evidence"]
+    assert len(registry) == 1
+
+    new_consent = registry.update(
+        source_id="mic-a", generation_id="g1", session_id="session-b",
+        consent_scope_id="b" * 64, start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    assert new_consent["state_reset"] is True
+    assert new_consent["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert new_consent["voice_evidence"] == first["voice_evidence"]
+    assert len(registry) == 1
+
+
+def test_temporal_voice_preview_and_explicit_state_are_scope_bound():
+    state = TemporalVoiceEvidence()
+    first = state.update(
+        source_id="mic-a", generation_id="g1", session_id="session-a",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    changed = state.update(
+        source_id="mic-a", generation_id="g1", session_id="session-b",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("SILENCE"),
+    )
+    assert changed["state_reset"] is True
+    assert changed["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert changed["voice_evidence"] == 0.0
+
+    registry = TemporalVoiceEvidenceRegistry()
+    registry.update(
+        source_id="mic-a", generation_id="g1", session_id="session-a",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("VOICED"),
+    )
+    preview = registry.preview(
+        source_id="mic-a", generation_id="g1", session_id="session-b",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=40,
+        cues=cue("SILENCE"),
+    )
+    assert preview["preview_only"] is True
+    assert preview["state_reset"] is True
+    assert preview["reset_reason"] == "SESSION_OR_CONSENT_SCOPE_CHANGED"
+    assert preview["voice_evidence"] == 0.0
+
+
+def test_temporal_voice_scope_requires_a_paired_session_and_sha256_consent_id():
+    state = TemporalVoiceEvidence()
+    with pytest.raises(ValueError, match="supplied together"):
+        state.update(
+            source_id="mic-a", generation_id="g1", session_id="session-a",
+            start_ms=0, end_ms=40, cues=cue("VOICED"),
+        )
+    with pytest.raises(ValueError, match="lowercase SHA-256"):
+        state.update(
+            source_id="mic-a", generation_id="g1", session_id="session-a",
+            consent_scope_id="not-a-hash", start_ms=0, end_ms=40,
+            cues=cue("VOICED"),
+        )

@@ -898,27 +898,58 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 )
                 teacher_ear = None
                 teacher_ear_status = "REJECTED"
+        expected_source_id, expected_receipt = source_id, consent_receipt
+        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
+            runtime, event_id, audio_packet
+        )
+        if source_id != expected_source_id or receipt != expected_receipt:
+            _reset_audio_temporal_state(
+                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
+            )
+            raise PermissionError("audio packet binding does not match active consent lease")
+
+        # Resolve the Store session before touching any ephemeral temporal or
+        # speaker history. A source/generation pair can legitimately recur in a
+        # later chat or after consent rotation; it is not a sufficient state key.
+        try:
+            event_session_id = _runtime_event_session_id(runtime, event_id)
+        except Exception:
+            event_session_id = None
+        consent_scope_id = (
+            hashlib.sha256(consent_receipt.encode("utf-8")).hexdigest()
+            if type(consent_receipt) is str and consent_receipt else None
+        )
+
         speaker_evidence = None
-        # Speaker lookback is stateful too; defer it until FINAL so a provisional
-        # window and its later promotion cannot count the same embedding twice.
         if speaker_embeddings is not None and finality == "FINAL":
-            try:
-                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
-                    source_id=source_id, generation_id=generation_id,
-                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
-                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
-                )
-            except SpeakerEvidenceError as exc:
-                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+            if event_session_id is None or consent_scope_id is None:
                 speaker_evidence = {
-                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
-                    "status": "REJECTED",
-                    "error": type(exc).__name__,
+                    "status": "SESSION_UNAVAILABLE",
+                    "reset_reason": "SESSION_UNAVAILABLE",
                     "speaker_label": None,
                     "identity_authority": False,
                     "learning_authority": False,
                     "action_authority": False,
                 }
+            else:
+                try:
+                    speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                        source_id=source_id, generation_id=generation_id,
+                        session_id=event_session_id, consent_scope_id=consent_scope_id,
+                        start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                        activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                    )
+                except SpeakerEvidenceError as exc:
+                    runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                    speaker_evidence = {
+                        "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                        "status": "REJECTED",
+                        "error": type(exc).__name__,
+                        "speaker_label": None,
+                        "identity_authority": False,
+                        "learning_authority": False,
+                        "action_authority": False,
+                    }
         speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
         if speaker_evidence is not None:
             speaker_evidence["decision"] = speaker_change_decision
@@ -939,41 +970,51 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
             audio_segment["unmeasured"].append("prosody")
 
-        expected_source_id, expected_receipt = source_id, consent_receipt
-        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
-            runtime, event_id, audio_packet
-        )
-        if source_id != expected_source_id or receipt != expected_receipt:
-            _reset_audio_temporal_state(
-                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
-            )
-            raise PermissionError("audio packet binding does not match active consent lease")
-
         _persist_audio_packet_under_consent_lease(
             runtime, audio_packet, lease_active=lease_active,
         )
-        try:
-            event_session_id = _runtime_event_session_id(runtime, event_id)
-        except Exception:
-            event_session_id = None
 
         provisional = finality == "PROVISIONAL"
-        if temporal_state is None:
-            temporal_registry = _runtime_temporal_voice_registry(runtime)
-            temporal_update = temporal_registry.preview if provisional else temporal_registry.update
+        if temporal_state is not None and not isinstance(temporal_state, TemporalVoiceEvidence):
+            raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
+        if event_session_id is None or consent_scope_id is None:
+            if isinstance(temporal_state, TemporalVoiceEvidence):
+                temporal_state.reset()
+            temporal_voice = {
+                "method": TemporalVoiceEvidence.METHOD,
+                "status": "SESSION_UNAVAILABLE",
+                "voice_evidence": 0.0,
+                "voice_active": False,
+                "voice_onset": False,
+                "voice_offset": False,
+                "gap_offset": False,
+                "gap_ms": 0,
+                "gap_decay_ms": 0,
+                "observed_ms": 0,
+                "elapsed_ms": 0,
+                "state_reset": True,
+                "reset_reason": "SESSION_UNAVAILABLE",
+                "preview_only": provisional,
+                "preview_revision": 0,
+            }
         else:
-            if not isinstance(temporal_state, TemporalVoiceEvidence):
-                raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-            temporal_update = temporal_state.preview if provisional else temporal_state.update
-        temporal_voice = temporal_update(
-            source_id=source_id,
-            generation_id=generation_id,
-            start_ms=audio_segment["start_ms"],
-            end_ms=audio_segment["end_ms"],
-            cues=cues,
-        )
-        # Both predictors are consent-scoped shadow signals. Only FINAL windows
-        # update state; provisional windows are explicitly censored by the registries.
+            if temporal_state is None:
+                temporal_registry = _runtime_temporal_voice_registry(runtime)
+                temporal_update = temporal_registry.preview if provisional else temporal_registry.update
+            else:
+                temporal_update = temporal_state.preview if provisional else temporal_state.update
+            temporal_voice = temporal_update(
+                source_id=source_id,
+                generation_id=generation_id,
+                session_id=event_session_id,
+                consent_scope_id=consent_scope_id,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                cues=cues,
+            )
+        # Predictors and ephemeral voice/speaker histories are session- and
+        # consent-scoped shadow signals. Only FINAL windows update state;
+        # provisional windows are explicitly censored by the registries.
         try:
             if type(consent_receipt) is not str or not consent_receipt:
                 raise AudioTemporalPredictionError("audio consent receipt is invalid")

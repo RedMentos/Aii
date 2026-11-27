@@ -1851,3 +1851,25 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 - The exact Perception focused tests remain 29/29 on Python 3.13 and 29/29 on Python 3.14. No Perception test failed. No Core/QA pin or migration assertion was changed by this lane.
 - Product integration is blocked; #2559 remains draft. No release/deployment and no Redmi proof. Core/QA must repair their owned gates and re-run the exact staged candidate before acceptance.
 
+## Research & Perception Run 68 — RAW EAR temporal and speaker history is now session/consent scoped (2026-11-27)
+
+**Concrete defect.** After the A4 event-expectation and temporal-prediction registries were scoped by Store session and consent, two earlier RAW EAR histories were still keyed only by `(source_id, generation_id)`: `TemporalVoiceEvidenceRegistry` and `SpeakerChangeEvidenceRegistry`. A reused audio source/generation in a new Store session could therefore inherit old acoustic history. If the new session restarts timestamps at zero, temporal voice could reject its first window as non-monotonic; speaker lookback could compare the new session with old-session vectors.
+
+**Implementation / PR.** Draft [#2561](https://github.com/RedMentos/Aii/pull/2561), branch `research-perception/v14-audio-session-scope-20261127-run68`, stacked on #2559. Code/test head at PR creation: `b4b9323496f16ec1572a3c6205bbfc99faa5eea0`; final PR head must be read back after documentation updates. Changes:
+- `audio_temporal_evidence.py`: direct state, committed registry and provisional preview now bind to Store session plus SHA-256 consent scope; session/consent rotation resets the filter and surfaces `SESSION_OR_CONSENT_SCOPE_CHANGED`.
+- `audio_speaker_evidence.py`: RAM-only speaker lookback key now includes session and consent scope; old same-source histories are evicted on scope rotation.
+- `audio_voice_cues.py`: resolves the Store session before any speaker/temporal history access and passes the hashed receipt scope to both consumers. If Store session lookup fails, temporal evidence is marked unavailable and speaker decision stays DEFER; no prior history is reused.
+- Persistent model weights, shared learned parameters and cross-session learning are unchanged. Only ephemeral per-session/per-consent voice/speaker history is isolated.
+- Composer source pins and RAW EAR CI compile/test paths were refreshed. Core's downstream Recovery → Stage → RuntimeDeploy audio-composer pin must be refreshed bottom-up by Core.
+
+**Tests / environment.**
+- LOCAL_LINUX isolated state-scope harness: `py_compile` PASS; 4/4 deterministic checks PASS (session reset, consent rotation, speaker lookback reset, temporal chronology reset). This is a scratch reproduction, not the repository test suite.
+- Full local Aii checkout / exact pytest: BLOCKED / NOT_RUN (no mounted checkout; GitHub DNS/network unavailable).
+- Exact PR CI: pending at this checkpoint; record only after the final head's workflow results are read.
+- Android/Termux/microphone/Redmi: REDMI_UNVERIFIED. No device request or action. Release: NOT_RELEASED.
+
+**Research R-187.** Full ICLR 2026 PACE paper reviewed; see research ledger. It reports substantial audio representation shifts across sequential sessions and motivates careful session-aware adaptation, but does not validate this privacy fix or imply mobile suitability. No model, weights, data or dependencies reused.
+
+**User effect.** Reusing a permitted audio source in a new Store session no longer inherits temporal/speaker history or fails solely because the new session restarts its clock. No microphone or Android end-to-end path is thereby proven.
+
+**Next executable step.** Read exact #2561 CI; repair only Perception-owned failures. Coordinate Core's composer pin refresh and the already-known arithmetic/observer pins; leave QA's PARTIAL-vs-UPDATED migration assertions to QA. After focused tests pass, request Boss integration review. Normal Runtime/C3 audio consumer and Android microphone lifecycle remain open.
