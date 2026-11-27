@@ -21,11 +21,27 @@ The existing source-bound B1/B2 receipt recorded that C3's typed offer template 
 - Python 3.13 and 3.14 CI compiles the overlay and runs loopback HTTP, staged Runtime, SQLite audit, and negative mismatch controls.
 - LOCAL_LINUX full Aii checkout: NOT_RUN; GitHub DNS resolution is unavailable in this environment.
 - TERMUX/REDMI: REDMI_UNVERIFIED; no phone receipt, APK update, model/weight change, permission change, or device action.
-- PR is draft / NOT_RELEASED until exact-head CI and independent Boss/QA review pass.
+- Exact-head CI is now PASS on implementation code SHA `cb6883f96050681b19c6a543c9b89c3d7523808a`; PR remains DRAFT / NOT_RELEASED pending independent Boss/QA review and integration.
+
+## Exact-head CI
+
+All checks passed on implementation code SHA `cb6883f96050681b19c6a543c9b89c3d7523808a`:
+- Prompt binding Python 3.13/3.14: run 45918725547
+- RuntimeDeploy integrity: 45918725591
+- Phone offer receipt: 45918725546
+- Core audio/observer composition: 45918725525
+- Lab Age/WebView truth: 45918725692
+- Two-checkout updater migration: 45918725558
+- Coordinated source contracts: 45918725535
+- Private owner-read bootstrap CI: 45918725542 (not a live phone receipt)
+- Core native stream integrity: 45918725628
+- Staged context + integrated regression: 45918725570
+
+LOCAL_LINUX full checkout remains NOT_RUN; TERMUX/REDMI remains REDMI_UNVERIFIED and private relay returned NO_LIVE_RECEIPT.
 
 ## Next
 
-1. Resolve exact-head CI failures, if any.
-2. Boss/QA review the overlay, source-pin chain, and audit's deliberately narrow proof semantics.
-3. Integrate this leaf with #2543 and then rebase the Core consumer chain onto the current Perception parent only after that branch is green.
-4. Obtain a separate authorized Redmi receipt before claiming any native device behavior.
+1. Independent Boss/QA review of exact request hashing, token-count parity, fail-closed audit semantics and the refreshed source-pin chain.
+2. Implement per-organ native prompt-token-span receipts with pinned llama.cpp `POST /tokenize` `with_pieces=true`; test UTF-8, BOS/special-token, partial-boundary and mismatch negative controls.
+3. Reconcile the Android action journal stack with the separate capability/MediaProjection stack before release integration.
+4. Obtain a separate authorized Redmi receipt before claiming native device behavior.
