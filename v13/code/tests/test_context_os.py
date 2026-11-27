@@ -313,7 +313,9 @@ class RuntimeHookTests(Base):
         while not self.r.idle() and time.monotonic()<until:time.sleep(.005)
         return self.r.last_answer()
     def test_turn_writes_context_plan_and_shadow_keeps_legacy_view(self):
-        self.install();self.r.submit('hello there');row=self.wait();self.assertEqual(row['status'],'FINAL')
+        self.install()
+        # ContextPlan coverage must exercise the normal Runtime path, not the greeting reflex.
+        self.r.submit('Please summarize the active context.');row=self.wait();self.assertEqual(row['status'],'FINAL')
         meta=json.loads(row['metadata']);self.assertFalse(meta['context_plan']['applied'])
         p=json.loads(self.r.store.one("SELECT payload FROM packets WHERE kind='ContextPlan' ORDER BY created DESC LIMIT 1")['payload'])
         self.assertEqual(p['packet_id'],meta['context_plan']['packet_id']);self.assertEqual(self.native[-1][0]['role'],'system')

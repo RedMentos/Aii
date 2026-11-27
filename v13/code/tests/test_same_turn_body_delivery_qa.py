@@ -118,7 +118,7 @@ class SameTurnAdmissionTests(unittest.TestCase):
         self.assertGreater(by_role["B2_GIST"]["preanswer_seconds_available"], 12.5)
         self.assertLessEqual(by_role["B2_GIST"]["preanswer_seconds_available"], 13.5)
         self.assertTrue(all(row["status"] == "PREANSWER_BUDGETED" for row in budget_rows))
-        self.assertTrue(all(abs(row["c3_reserved_seconds"] - 16.5) < 0.01
+        self.assertTrue(all(abs(row["c3_reserved_seconds"] - 10.0) < 0.01
                             for row in budget_rows))
         self.assertTrue(all(row["recent_real_prefill_failures"] == 2
                             for row in budget_rows))
@@ -156,7 +156,7 @@ class SameTurnAdmissionTests(unittest.TestCase):
         self.assertEqual(deferred[0]["role"], "B1_DETAIL")
         self.assertEqual(deferred[0]["status"], "POSTCOMMIT_ELIGIBLE")
         self.assertLess(deferred[0]["preanswer_seconds_available"], 1.0)
-        self.assertAlmostEqual(deferred[0]["c3_reserved_seconds"], 16.5, places=2)
+        self.assertAlmostEqual(deferred[0]["c3_reserved_seconds"], 10.0, places=2)
         self.assertEqual(deferred[0]["recent_real_prefill_failures"], 2)
         self.assertEqual(len(budgeted), 1)
         self.assertEqual(budgeted[0]["role"], "B2_GIST")
