@@ -158,7 +158,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     binary.chmod(0o755)
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
+        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE",
     )
     condition_inputs = []
     native_conditions = []
