@@ -890,3 +890,34 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
         assert context_store.view(runtime, event["event_id"], "C3") is None
     finally:
         runtime.store.close()
+
+def test_raw_ear_rejects_malformed_voice_cues_before_packet_or_attention_persistence(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    monkeypatch.setattr(
+        audio_voice_module, "extract_voice_cues",
+        lambda _pcm, _rate, backend="python": dict(VOICED),
+    )
+    monkeypatch.setattr(audio_voice_module.attctl, "controller", lambda _runtime: capture)
+
+    with pytest.raises(ValueError, match="voice cue fields or method are invalid"):
+        consume_pcm16_voice_window(
+            runtime,
+            bytes(32000),
+            sample_rate=16000,
+            start_ms=100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE,
+            consent_receipt=RECEIPT,
+            consent_check=consent_check,
+            consent_guard=consent_guard(consent_check),
+            finality="FINAL",
+        )
+
+    assert capture.calls == []
+    packet_count = runtime.store.one(
+        "SELECT COUNT(*) AS n FROM packets WHERE event_id=?",
+        (event["event_id"],),
+    )
+    assert packet_count["n"] == 0
