@@ -631,12 +631,12 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  cancel_event=None, target_environment=None,
                  device_execution_receipt_sha256=None, device_runtime_build_id=None,
                  include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
-                 context_sha256=None):
+                 context_sha256=None, include_task_accuracy=False):
     """Score the fixed twelve-condition task matrix with one native model load.
 
-    Only hashes, target-token log-probabilities, dimensions and optional sanitized
-    same-model hybrid-state metrics are returned. No raw state, text, token IDs,
-    vectors, learning, routing or persistence are added.
+    Only hashes, target-token log-probabilities, optional exact-match correctness
+    booleans and sanitized same-model state metrics are returned. No raw state,
+    text, token IDs, vectors, learning, routing or persistence are added.
     """
     from .native_receiver_utility import validate_native_receiver_kv_snapshot
 
@@ -668,6 +668,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
     if type(include_hybrid_state_roundtrip) is not bool:
         raise NativeReceiverError("hybrid-state roundtrip opt-in must be boolean")
+    if type(include_task_accuracy) is not bool:
+        raise NativeReceiverError("task-accuracy opt-in must be boolean")
     if include_hybrid_state_roundtrip and (len(target_token_ids) > 64
             or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
         raise NativeReceiverError("hybrid-state roundtrip requires 1..64 target IDs and receiver tokenizer revision")
@@ -828,6 +830,9 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if include_hybrid_state_roundtrip and (version_data.get("hybrid_state_roundtrip_supported") is not True
             or version_data.get("hybrid_state_roundtrip_schema") != HYBRID_STATE_SCHEMA):
         raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned full-hybrid state roundtrip")
+    if include_task_accuracy and (version_data.get("task_accuracy_supported") is not True
+            or version_data.get("task_accuracy_schema") != "v14.native-receiver-task-answer/1"):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned task-accuracy generator")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
@@ -840,6 +845,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     ]
     if include_hybrid_state_roundtrip:
         command.append("--hybrid-state-roundtrip")
+    if include_task_accuracy:
+        command.append("--task-accuracy")
     started = time.monotonic()
     returncode, stdout, stderr = _run_cancelable(command, bytes(matrix_payload), deadline, cancel_event)
     duration_s = time.monotonic() - started
@@ -855,6 +862,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
             or raw.get("target_token_count") != len(target_ids)
             or raw.get("target_token_ids_sha256") != target_sha256
+            or raw.get("task_accuracy_enabled") is not include_task_accuracy
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
     if "prediction_distribution_audit" not in raw:
@@ -885,6 +893,10 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if not isinstance(native_conditions, list) or len(native_conditions) != len(conditions):
         raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
     condition_scores = {}
+    task_accuracy_conditions = frozenset({
+        "NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE",
+    })
+    generation_budget = min(64, max(16, len(target_ids) + 8))
     for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
         expected_context_rows = prepared_item["context_rows"]
         if (not isinstance(native_item, dict) or native_item.get("condition") != expected
@@ -958,6 +970,44 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             "native_input_consumed": True,
             "llama_version": str(raw.get("llama_version", ""))[:120],
         }
+        task_answer = native_item.get("task_answer")
+        if include_task_accuracy and expected in task_accuracy_conditions:
+            if (not isinstance(task_answer, dict)
+                    or task_answer.get("schema") != "v14.native-receiver-task-answer/1"
+                    or task_answer.get("method") != "GREEDY_EXACT_TOKEN_MATCH_V1"
+                    or task_answer.get("condition") != expected
+                    or task_answer.get("input_sha256") != actual_input_sha
+                    or task_answer.get("target_token_ids_sha256") != target_sha256
+                    or type(task_answer.get("generated_token_count")) is not int
+                    or not 1 <= task_answer["generated_token_count"] <= generation_budget
+                    or task_answer.get("generation_token_budget") != generation_budget
+                    or type(task_answer.get("eos_terminated")) is not bool
+                    or type(task_answer.get("exact_match")) is not bool
+                    or (task_answer["exact_match"] and not task_answer["eos_terminated"])
+                    or type(task_answer.get("decode_status")) is not int
+                    or task_answer.get("decode_status") != 0
+                    or task_answer.get("native_input_consumed") is not True):
+                raise NativeReceiverError("native task-answer receipt is missing or misbound: " + expected)
+            answer_hash = task_answer.get("generated_token_ids_sha256")
+            if (type(answer_hash) is not str or len(answer_hash) != 64
+                    or any(ch not in "0123456789abcdef" for ch in answer_hash)):
+                raise NativeReceiverError("native task-answer token digest is invalid: " + expected)
+            receipt["task_answer"] = {
+                "schema": "v14.native-receiver-task-answer/1",
+                "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+                "condition": expected,
+                "input_sha256": actual_input_sha,
+                "target_token_ids_sha256": target_sha256,
+                "generated_token_count": task_answer["generated_token_count"],
+                "generated_token_ids_sha256": answer_hash,
+                "generation_token_budget": generation_budget,
+                "eos_terminated": task_answer["eos_terminated"],
+                "exact_match": task_answer["exact_match"],
+                "decode_status": 0,
+                "native_input_consumed": True,
+            }
+        elif task_answer is not None:
+            raise NativeReceiverError("unexpected native task-answer receipt: " + expected)
         if target_env in {"TERMUX_ANDROID", "REDMI"}:
             receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
             receipt["device_runtime_build_id"] = device_runtime_build_id
@@ -991,6 +1041,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         "target_token_ids_sha256": target_sha256,
         "duration_s": float(duration_s),
         "condition_scores": condition_scores,
+        "task_accuracy_enabled": include_task_accuracy,
+        "task_accuracy_conditions": sorted(task_accuracy_conditions) if include_task_accuracy else [],
         "native_input_consumed": len(condition_scores) == len(conditions),
         "production_route": False,
         "semantic_use_proven": False,

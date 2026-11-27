@@ -25,6 +25,7 @@ RECEIVER = {
     "tokenizer_revision": "c3-tokenizer-r1",
 }
 ADAPTER_SHA256 = "a" * 64
+TASK_ACCURACY_CONDITIONS = {"NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE"}
 
 
 def sha(value):
@@ -114,7 +115,8 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
-                 score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None):
+                 score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None,
+                 include_task_accuracy=False, task_accuracy_overrides=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     control_proof_sha256 = None
@@ -166,6 +168,31 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
     }
+    if include_task_accuracy and condition in TASK_ACCURACY_CONDITIONS:
+        overrides = task_accuracy_overrides or {}
+        if condition in overrides:
+            exact_match = overrides[condition]
+        else:
+            exact_match = {
+                "NO_MESSAGE": task_index % 3 == 0,
+                "LATENT_CANDIDATE": task_index % 2 == 0,
+                "DERANGED_MESSAGE": task_index % 4 == 0,
+                "SELF_GENERATED_MESSAGE": task_index % 5 == 0,
+            }[condition]
+        native["task_answer"] = {
+            "schema": "v14.native-receiver-task-answer/1",
+            "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+            "condition": condition,
+            "input_sha256": input_sha,
+            "target_token_ids_sha256": target_sha,
+            "generated_token_count": 3,
+            "generated_token_ids_sha256": sha(f"generated-answer-{task_index}-{condition}"),
+            "generation_token_budget": 16,
+            "eos_terminated": True,
+            "exact_match": exact_match,
+            "decode_status": 0,
+            "native_input_consumed": True,
+        }
     if condition == "SELF_GENERATED_MESSAGE":
         native["self_generation"] = {
             "schema": "v14.native-receiver-self-generation/1",
@@ -229,7 +256,8 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
                    hybrid_state_roundtrip_override=None, score_overrides=None,
-                   ood_source_ref_override=None, deranged_source_ref_override=None):
+                   ood_source_ref_override=None, deranged_source_ref_override=None,
+                   include_task_accuracy=False, task_accuracy_overrides=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -244,6 +272,8 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             score_override=score_overrides.get(condition),
             ood_source_ref_override=ood_source_ref_override,
             deranged_source_ref_override=deranged_source_ref_override,
+            include_task_accuracy=include_task_accuracy,
+            task_accuracy_overrides=task_accuracy_overrides,
         )
         if include_hybrid_state_roundtrip and condition == "LATENT_CANDIDATE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
@@ -758,3 +788,82 @@ def test_hybrid_state_roundtrip_absence_is_explicitly_unavailable():
     assert result["hybrid_state_roundtrip_effect"]["status"] == "UNAVAILABLE"
     assert result["hybrid_state_roundtrip_effect"]["cross_model_transfer_proven"] is False
     assert result["hybrid_state_roundtrip_effect"]["influence_on_utility_gate"] is False
+
+
+def test_native_task_accuracy_cag_ssg_uses_paired_exact_match_with_confidence_and_equivalence():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        result = complete_group(
+            runtime, task_index, session_id, family, include_task_accuracy=True,
+        )
+
+    accuracy = result["task_accuracy"]
+    assert result["status"] == "FIXTURE_ONLY"
+    assert accuracy["status"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert accuracy["evidence_class"] == "SYNTHETIC"
+    assert accuracy["task_group_count"] == 20
+    assert accuracy["holdout_sufficient"] is True
+    assert accuracy["cag"]["mean_accuracy_delta"] == 0.25
+    assert accuracy["ssg"]["mean_accuracy_delta"] == 0.3
+    assert 0.0 <= accuracy["cag"]["bootstrap_95pct_low"] <= accuracy["cag"]["bootstrap_95pct_high"] <= 1.0
+    assert -1.0 <= accuracy["ssg"]["bootstrap_90pct_low"] <= accuracy["ssg"]["bootstrap_90pct_high"] <= 1.0
+    assert accuracy["acceptance_gate_passed"] is False
+    assert accuracy["generated_answer_correctness_proven"] is False
+    assert result["generated_answer_correctness_proven"] is False
+    assert result["semantic_use_proven"] is False
+    assert result["production_route"] is False
+    assert result["training_authority"] == result["native_receiver_authority"] == 0
+    assert result["persisted"] is False
+
+
+def test_task_accuracy_is_not_reported_when_native_generation_was_not_requested():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = complete_group(runtime)
+    assert result["task_accuracy"]["status"] == "NOT_COLLECTED"
+    assert result["task_accuracy"]["task_group_count"] == 0
+    assert result["task_accuracy"]["acceptance_gate_passed"] is False
+
+
+def test_task_accuracy_partial_arm_coverage_fails_closed():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    for condition in CONDITIONS:
+        receipt = make_receipt(
+            0, "session-A", "ARITHMETIC", condition,
+            include_task_accuracy=condition in {"LATENT_CANDIDATE", "DERANGED_MESSAGE"},
+        )
+        if condition == CONDITIONS[-1]:
+            with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+                record_task_score_receipt(runtime, receipt)
+        else:
+            record_task_score_receipt(runtime, receipt)
+    assert task_score_status(runtime)["complete_task_group_count"] == 0
+
+
+def test_task_answer_exact_match_requires_eos_termination():
+    receipt = make_receipt(
+        0, "session-A", "ARITHMETIC", "LATENT_CANDIDATE", include_task_accuracy=True,
+    )
+    native = dict(receipt["native"])
+    answer = dict(native["task_answer"])
+    answer["eos_terminated"] = False
+    native["task_answer"] = answer
+    with pytest.raises(NativeReceiverUtilityError, match="native task-answer receipt is invalid"):
+        build_native_receiver_task_score_receipt(
+            condition=receipt["condition"],
+            task_group_id=receipt["task_group_id"],
+            task_family=receipt["task_family"],
+            session_id=receipt["session_id"],
+            source_ref=receipt["source_ref"],
+            message_source_ref=receipt["message_source_ref"],
+            receiver=receipt["receiver"],
+            target_token_ids_sha256=receipt["target_token_ids_sha256"],
+            target_token_count=receipt["target_token_count"],
+            context_sha256=receipt["context_sha256"],
+            input_sha256=receipt["input_sha256"],
+            native_receipt=native,
+            adapter_sha256=receipt["adapter_sha256"],
+            control_proof_sha256=receipt.get("control_proof_sha256"),
+        )

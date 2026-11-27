@@ -256,6 +256,21 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
                 "message_input_sha256": native_input_sha,
                 "decode_status": 0,
             }
+        if condition in {"NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE"}:
+            native_item["task_answer"] = {
+                "schema": "v14.native-receiver-task-answer/1",
+                "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+                "condition": condition,
+                "input_sha256": native_input_sha,
+                "target_token_ids_sha256": target_sha,
+                "generated_token_count": 3,
+                "generated_token_ids_sha256": hashlib.sha256(("answer-" + condition).encode()).hexdigest(),
+                "generation_token_budget": 16,
+                "eos_terminated": True,
+                "exact_match": condition == "LATENT_CANDIDATE",
+                "decode_status": 0,
+                "native_input_consumed": True,
+            }
         native_conditions.append(native_item)
     log2 = math.log(2.0)
     distribution_audit = {
@@ -290,6 +305,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "output_dim": 2,
         "target_token_count": len(target_ids),
         "target_token_ids_sha256": target_sha,
+        "task_accuracy_enabled": True,
         "conditions": native_conditions,
         "prediction_distribution_audit": distribution_audit,
         "hybrid_state_roundtrip": {
@@ -343,6 +359,8 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/2",
         "prediction_distribution_audit_supported": True,
         "prediction_distribution_audit_schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "task_accuracy_supported": True,
+        "task_accuracy_schema": "v14.native-receiver-task-answer/1",
     }
     monkeypatch.setattr(
         native_receiver.subprocess, "run",
@@ -376,10 +394,16 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         binary_path=binary,
         target_environment="SYNTHETIC",
         include_hybrid_state_roundtrip=True,
+        include_task_accuracy=True,
         receiver_tokenizer_revision="lfm2-tokenizer-r1",
         context_sha256="c" * 64,
     )
     assert "--hybrid-state-roundtrip" in commands[0]
+    assert "--task-accuracy" in commands[0]
+    assert result["task_accuracy_enabled"] is True
+    assert result["task_accuracy_conditions"] == [
+        "DERANGED_MESSAGE", "LATENT_CANDIDATE", "NO_MESSAGE", "SELF_GENERATED_MESSAGE",
+    ]
     assert result["status"] == "SCORED"
     assert result["prediction_distribution_audit"]["pl"]["jsd_nats"] == 0.2
     assert result["prediction_distribution_audit"]["cic"]["jsd_nats"] == 0.1
@@ -392,6 +416,13 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         assert snapshot["receiver_model_sha256"] == model_sha
         assert snapshot["position_count"] == (3 if condition == "DIRECT_TEXT_REFERENCE" else 1)
         assert "position_ids" not in snapshot
+        if condition in {"NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE"}:
+            assert score["task_answer"]["condition"] == condition
+            assert score["task_answer"]["target_token_ids_sha256"] == target_sha
+            assert score["task_answer"]["generation_token_budget"] == 16
+            assert score["task_answer"]["eos_terminated"] is True
+        else:
+            assert "task_answer" not in score
         if condition == "NO_MESSAGE":
             assert score["input_sha256"] == hashlib.sha256(b"").hexdigest()
             assert "hybrid_state_roundtrip" not in score

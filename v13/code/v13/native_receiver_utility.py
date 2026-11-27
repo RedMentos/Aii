@@ -26,6 +26,7 @@ NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
 RESULT_SCHEMA = "v14.native-receiver-task-utility/3"
 SCORE_METHOD = "TEACHER_FORCED_TARGET_LOGPROB_V1"
 CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE")
+TASK_ACCURACY_CONDITIONS = ("NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE")
 LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE"})
 TASK_FAMILIES = frozenset({"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"})
 ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
@@ -55,6 +56,7 @@ def _validate_duplicate_input_digests(group):
         reference = items[0]["native"].get("token_logprobs")
         if not isinstance(reference, list):
             raise NativeReceiverUtilityError("identical input receipt lacks tokenwise scores")
+        reference_answer = items[0]["native"].get("task_answer")
         for item in items[1:]:
             scores = item["native"].get("token_logprobs")
             if (not isinstance(scores, list) or len(scores) != len(reference)
@@ -63,6 +65,20 @@ def _validate_duplicate_input_digests(group):
                            for a, b in zip(reference, scores))):
                 raise NativeReceiverUtilityError(
                     "identical input digest produced different target scores"
+                )
+            answer = item["native"].get("task_answer")
+            if (reference_answer is None) != (answer is None):
+                raise NativeReceiverUtilityError(
+                    "identical input digest has partial task-answer coverage"
+                )
+            if reference_answer is not None and any(
+                reference_answer[key] != answer[key] for key in (
+                    "generated_token_ids_sha256", "generated_token_count",
+                    "generation_token_budget", "eos_terminated", "exact_match",
+                )
+            ):
+                raise NativeReceiverUtilityError(
+                    "identical input digest produced different generated answers"
                 )
 
 
@@ -544,6 +560,40 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
         "decode_status": 0, "native_input_consumed": True,
         "llama_version": _id(value.get("llama_version"), "native.llama_version")[:120],
     }
+    if "task_answer" in value:
+        answer = value.get("task_answer")
+        if (condition not in TASK_ACCURACY_CONDITIONS
+                or not isinstance(answer, Mapping)
+                or answer.get("schema") != "v14.native-receiver-task-answer/1"
+                or answer.get("method") != "GREEDY_EXACT_TOKEN_MATCH_V1"
+                or answer.get("condition") != condition
+                or answer.get("input_sha256") != input_hash
+                or answer.get("target_token_ids_sha256") != target_hash
+                or type(answer.get("generated_token_count")) is not int
+                or not 1 <= answer["generated_token_count"] <= min(64, max(16, target_count + 8))
+                or answer.get("generation_token_budget") != min(64, max(16, target_count + 8))
+                or type(answer.get("eos_terminated")) is not bool
+                or type(answer.get("exact_match")) is not bool
+                or (answer["exact_match"] and not answer["eos_terminated"])
+                or type(answer.get("decode_status")) is not int
+                or answer.get("decode_status") != 0
+                or answer.get("native_input_consumed") is not True):
+            raise NativeReceiverUtilityError("native task-answer receipt is invalid")
+        native_data["task_answer"] = {
+            "schema": "v14.native-receiver-task-answer/1",
+            "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+            "condition": condition,
+            "input_sha256": input_hash,
+            "target_token_ids_sha256": target_hash,
+            "generated_token_count": answer["generated_token_count"],
+            "generated_token_ids_sha256": _sha(
+                answer.get("generated_token_ids_sha256"), "task_answer.generated_token_ids_sha256"),
+            "generation_token_budget": answer["generation_token_budget"],
+            "eos_terminated": answer["eos_terminated"],
+            "exact_match": answer["exact_match"],
+            "decode_status": 0,
+            "native_input_consumed": True,
+        }
     if condition == "SELF_GENERATED_MESSAGE":
         generated = value.get("self_generation")
         if (not isinstance(generated, Mapping)
@@ -694,11 +744,133 @@ def _check_receipt(receipt):
     return rebuilt
 
 
-def _bootstrap_ci(values, samples, seed):
+def _bootstrap_ci(values, samples, seed, confidence=0.95):
+    if type(confidence) not in (int, float) or not 0.0 < float(confidence) < 1.0:
+        raise NativeReceiverUtilityError("bootstrap confidence must be in (0, 1)")
     rng = random.Random(seed)
     n = len(values)
     draws = sorted(sum(values[rng.randrange(n)] for _ in range(n)) / n for _ in range(samples))
-    return draws[int(.025 * (samples - 1))], draws[int(.975 * (samples - 1))]
+    tail = (1.0 - float(confidence)) / 2.0
+    return draws[int(tail * (samples - 1))], draws[int((1.0 - tail) * (samples - 1))]
+
+
+def _paired_accuracy_delta_report(values, *, bootstrap_samples, seed, equivalence_margin=0.05):
+    if not values:
+        raise NativeReceiverUtilityError("paired task-accuracy deltas are empty")
+    mean = sum(values) / len(values)
+    wins = sum(value > 0 for value in values)
+    ties = sum(value == 0 for value in values)
+    losses = sum(value < 0 for value in values)
+    low95, high95 = _bootstrap_ci(values, bootstrap_samples, seed, confidence=0.95)
+    low90, high90 = _bootstrap_ci(values, bootstrap_samples, seed + 1, confidence=0.90)
+    return {
+        "paired_task_group_count": len(values),
+        "mean_accuracy_delta": mean,
+        "median_accuracy_delta": statistics.median(values),
+        "win_rate": wins / len(values),
+        "tie_rate": ties / len(values),
+        "loss_rate": losses / len(values),
+        "bootstrap_95pct_low": low95,
+        "bootstrap_95pct_high": high95,
+        "bootstrap_90pct_low": low90,
+        "bootstrap_90pct_high": high90,
+        "positive_effect_supported": low95 > 0.0,
+        "equivalent_within_margin": low90 >= -equivalence_margin and high90 <= equivalence_margin,
+        "equivalence_margin": equivalence_margin,
+    }
+
+
+def _summarize_task_accuracy(task_accuracy_groups, *, sessions, families,
+        tasks_per_session, tasks_per_family, tasks_per_session_family,
+        native_binding, bootstrap_samples, seed):
+    if not task_accuracy_groups:
+        return {
+            "schema": "v14.native-receiver-task-accuracy/1",
+            "status": "NOT_COLLECTED",
+            "evidence_class": None,
+            "task_group_count": 0,
+            "minimum_task_groups": 20,
+            "holdout_sufficient": False,
+            "acceptance_gate_passed": False,
+            "generated_answer_correctness_proven": False,
+            "semantic_use_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    group_count = len(task_accuracy_groups)
+    balanced = all(
+        tasks_per_session_family[(session, family)] >= 2
+        for session in sessions for family in families
+    )
+    enough = (
+        group_count >= 20 and len(sessions) >= 2 and len(families) >= 2
+        and min(tasks_per_session.values()) >= 10
+        and min(tasks_per_family.values()) >= 4 and balanced
+    )
+    cag_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["DERANGED_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    ssg_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["SELF_GENERATED_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    ope_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["NO_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    cag = _paired_accuracy_delta_report(cag_values, bootstrap_samples=bootstrap_samples, seed=seed)
+    ssg = _paired_accuracy_delta_report(ssg_values, bootstrap_samples=bootstrap_samples, seed=seed + 11)
+    ope = _paired_accuracy_delta_report(ope_values, bootstrap_samples=bootstrap_samples, seed=seed + 23)
+    kind, environment = native_binding[:2]
+    evidence = "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else environment
+    status = "SYNTHETIC_FIXTURE_ONLY" if kind == "SYNTHETIC_FIXTURE" else (
+        "MEASURED_NOT_ACCEPTED" if enough else "INSUFFICIENT_HOLDOUT"
+    )
+    rates = {
+        condition: sum(bool(group[condition]) for group in task_accuracy_groups) / group_count
+        for condition in TASK_ACCURACY_CONDITIONS
+    }
+    return {
+        "schema": "v14.native-receiver-task-accuracy/1",
+        "status": status,
+        "evidence_class": evidence,
+        "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+        "answer_normalization": "STRIP_ONE_TERMINAL_EOS_FROM_BOTH_SEQUENCES",
+        "task_group_count": group_count,
+        "minimum_task_groups": 20,
+        "session_count": len(sessions),
+        "task_family_count": len(families),
+        "holdout_sufficient": bool(enough),
+        "tasks_per_session": dict(sorted(tasks_per_session.items())),
+        "tasks_per_family": dict(sorted(tasks_per_family.items())),
+        "balanced_session_family_coverage": balanced,
+        "exact_match_rate_by_condition": rates,
+        "cag": cag,
+        "ssg": ssg,
+        "ope": ope,
+        "cag_positive": bool(enough and cag["positive_effect_supported"]),
+        "ssg_positive": bool(enough and ssg["positive_effect_supported"]),
+        "cag_equivalent": bool(enough and cag["equivalent_within_margin"]),
+        "ssg_equivalent": bool(enough and ssg["equivalent_within_margin"]),
+        "equivalence_confidence": 0.90,
+        "positive_effect_confidence": 0.95,
+        "equivalence_margin": 0.05,
+        "acceptance_gate_passed": False,
+        "generated_answer_correctness_proven": False,
+        "semantic_use_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+        "interpretation_limit": (
+            "Exact receiver-token sequence match on the held-out task target, with one terminal EOS "
+            "removed. This is benchmark-level exact-match evidence, not semantic equivalence or "
+            "general language understanding; confidence/equivalence results remain diagnostic."
+        ),
+    }
 
 
 def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_sessions=2,
@@ -752,11 +924,29 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
     kv_cohort_geometry = None
     hybrid_state_roundtrips = []
     hybrid_state_roundtrip_mode = None
+    task_accuracy_groups = []
+    task_accuracy_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
         first = group["NO_MESSAGE"]
         candidate = group["LATENT_CANDIDATE"]
+        answer_presence = [
+            isinstance(group[name]["native"].get("task_answer"), Mapping)
+            for name in TASK_ACCURACY_CONDITIONS
+        ]
+        if any(answer_presence) and not all(answer_presence):
+            raise NativeReceiverUtilityError("task-accuracy cohort has partial arm coverage")
+        has_task_accuracy = all(answer_presence)
+        if task_accuracy_mode is None:
+            task_accuracy_mode = has_task_accuracy
+        elif task_accuracy_mode != has_task_accuracy:
+            raise NativeReceiverUtilityError("task-accuracy coverage changed across task groups")
+        if has_task_accuracy:
+            task_accuracy_groups.append({
+                name: group[name]["native"]["task_answer"]["exact_match"]
+                for name in TASK_ACCURACY_CONDITIONS
+            })
         roundtrip = candidate["native"].get("hybrid_state_roundtrip")
         has_roundtrip = roundtrip is not None
         if hybrid_state_roundtrip_mode is None:
@@ -995,6 +1185,17 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
             "native_receiver_authority": 0,
             "persisted": False,
         }
+    task_accuracy = _summarize_task_accuracy(
+        task_accuracy_groups,
+        sessions=sessions,
+        families=families,
+        tasks_per_session=tasks_per_session,
+        tasks_per_family=tasks_per_family,
+        tasks_per_session_family=tasks_per_session_family,
+        native_binding=native_binding,
+        bootstrap_samples=bootstrap_samples,
+        seed=seed + 97,
+    )
     try:
         hybrid_state_roundtrip_effect = summarize_native_hybrid_state_roundtrips(hybrid_state_roundtrips)
     except NativeHybridStateReceiptError as exc:
@@ -1027,6 +1228,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
         "direct_text_reference_validated": direct_text_validity_pass,
         "kv_snapshot_effect": kv_snapshot_effect,
         "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
+        "task_accuracy": task_accuracy,
+        "task_accuracy_measured": bool(task_accuracy_groups),
         "information_use_audit": information_use_audit,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,

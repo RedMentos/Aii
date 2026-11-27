@@ -280,6 +280,7 @@ def score_and_record_native_receiver_condition_matrix(
     device_execution_receipt_sha256=None,
     device_runtime_build_id=None,
     include_hybrid_state_roundtrip=False,
+    include_task_accuracy=False,
 ):
     """Consume one approved matrix, score all conditions, and atomically record thirteen receipts.
 
@@ -299,6 +300,8 @@ def score_and_record_native_receiver_condition_matrix(
             raise NativeReceiverTaskMatrixBridgeError("an explicit native execution environment is required")
         if type(include_hybrid_state_roundtrip) is not bool:
             raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip opt-in must be boolean")
+        if type(include_task_accuracy) is not bool:
+            raise NativeReceiverTaskMatrixBridgeError("task-accuracy opt-in must be boolean")
         if include_hybrid_state_roundtrip and len(target_token_ids) > 64:
             raise NativeReceiverTaskMatrixBridgeError("hybrid-state roundtrip is limited to 64 continuation tokens")
         if type(threads) is not int or not 1 <= threads <= 2:
@@ -401,6 +404,7 @@ def score_and_record_native_receiver_condition_matrix(
             include_hybrid_state_roundtrip=include_hybrid_state_roundtrip,
             receiver_tokenizer_revision=receiver["tokenizer_revision"],
             context_sha256=receipt["context_sha256"],
+            include_task_accuracy=include_task_accuracy,
         )
 
         _validate_source(source_validator, receipt, "after")
@@ -423,6 +427,7 @@ def score_and_record_native_receiver_condition_matrix(
                 or native_result.get("output_dim") < 1
                 or native_result.get("target_token_count") != len(token_ids)
                 or native_result.get("target_token_ids_sha256") != target_sha
+                or native_result.get("task_accuracy_enabled") is not include_task_accuracy
                 or native_result.get("native_input_consumed") is not True
                 or native_result.get("production_route") is not False
                 or native_result.get("semantic_use_proven") is not False
@@ -473,6 +478,18 @@ def score_and_record_native_receiver_condition_matrix(
                 )
             else:
                 input_binding_ok = native_input_sha == item["input_sha256"]
+            task_answer = native_score.get("task_answer") if isinstance(native_score, Mapping) else None
+            if include_task_accuracy and condition in {
+                "NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE",
+            }:
+                if not isinstance(task_answer, Mapping) or task_answer.get("condition") != condition:
+                    raise NativeReceiverTaskMatrixBridgeError(
+                        "native task-answer receipt is missing for " + condition
+                    )
+            elif task_answer is not None:
+                raise NativeReceiverTaskMatrixBridgeError(
+                    "unexpected native task-answer receipt for " + condition
+                )
             if (not isinstance(native_score, Mapping)
                     or native_score.get("execution_kind") != expected_kind
                     or native_score.get("environment") != expected_env
@@ -548,6 +565,8 @@ def score_and_record_native_receiver_condition_matrix(
             "evidence_class": cohort.get("evidence_class"),
             "hybrid_state_roundtrip": condition_scores["LATENT_CANDIDATE"].get("hybrid_state_roundtrip"),
             "prediction_distribution_audit": distribution_audit,
+            "task_accuracy_enabled": include_task_accuracy,
+            "task_accuracy": cohort.get("task_accuracy"),
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),
