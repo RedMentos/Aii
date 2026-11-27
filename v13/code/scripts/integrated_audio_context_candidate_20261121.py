@@ -776,7 +776,7 @@ def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
             or prediction.get("truth_authority") is not False):
         raise ValueError("A4 predictor authority/persistence contract changed")
     observed_activity = expectation.get("observed_activity")
-    if observed_activity not in {"SILENCE", "VOICED", "IMPULSIVE", "UNCERTAIN"}:
+    if observed_activity not in {"SILENCE", "VOICED", "IMPULSIVE", "UNVOICED_NOISE", "UNCERTAIN"}:
         raise ValueError("A4 observed activity is invalid")
     if (expectation.get("state_persistence") is not False
             or expectation.get("calibrated_probability") is not False
