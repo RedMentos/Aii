@@ -5,10 +5,26 @@ on:
       - core/v14-native-receiver-matrix-runtime-consumer-20261126-run1
       - core/v14-native-receiver-matrix-runtime-integration-20261126-run2
       - core/v14-native-receiver-matrix-integrated-20261126-run3
+      - core/v14-native-receiver-kv-consumer-20261127-run1
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"
       - "v13/code/v13/native_receiver_task_matrix_bridge.py"
+      - "v13/code/v13/native_receiver_task_score.py"
+      - "v13/code/v13/native_receiver_utility.py"
+      - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/native_hybrid_state.py"
+      - "v13/code/v13/native_tap_contract.py"
+      - "v13/code/v13/native_tokenwise_pair_capture.py"
+      - "v13/code/v13/native_tokenwise_pairing.py"
+      - "v13/code/v13/native_tokenwise_receiver_probe.py"
+      - "v13/code/v13/native_probe_approval.py"
+      - "v13/code/v13/native/latent_receiver/*.cpp"
+      - "v13/code/v13/native/latent_receiver/*.hpp"
+      - "v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py"
+      - "v13/code/tests/test_native_receiver_task_score.py"
+      - "v13/code/tests/test_native_receiver_task_matrix_bridge.py"
       - "v13/code/v13/callosum.py"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
@@ -23,6 +39,7 @@ on:
     branches:
       - core/v14-native-target-score-repair-20261126-run1
       - research-perception/v14-native-receiver-task-matrix-bridge-20261126-run34
+      - research-perception/v14-kv-snapshot-consumer-20261126-run35
     paths:
       - "v13/code/v13/native_receiver_matrix_runtime.py"
       - "v13/code/v13/native_receiver_condition_matrix.py"
