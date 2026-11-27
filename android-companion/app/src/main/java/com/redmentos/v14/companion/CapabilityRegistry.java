@@ -17,9 +17,9 @@ import java.util.List;
  * Typed inventory of native Android capabilities.
  *
  * A capability is advertised as ready only when its provider exists and the
- * companion's own stop/pairing state permits it. The only implemented
- * capability is an explicitly approved PackageManager launch intent. It does
- * not observe foreground state and never grants model or learning authority.
+ * companion's own stop/pairing state permits it. Implemented capabilities are
+ * explicit PackageManager app launch and HTTPS ACTION_VIEW navigation. Neither
+ * observes the destination nor grants model or learning authority.
  */
 final class CapabilityRegistry {
     interface CertificateDigestReader {
@@ -75,6 +75,15 @@ final class CapabilityRegistry {
                         launchStatus(paired, enabled),
                         "Explicit foreground approval; dispatch is not foreground observation",
                         "PACKAGE_MANAGER_LAUNCH_INTENT",
+                        true,
+                        false,
+                        false,
+                        false),
+                new Capability(
+                        "open_url",
+                        launchStatus(paired, enabled),
+                        "HTTPS ACTION_VIEW after visible per-action approval; browser result is not observed",
+                        "ANDROID_ACTION_VIEW_HTTPS",
                         true,
                         false,
                         false,
