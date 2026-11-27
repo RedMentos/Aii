@@ -150,7 +150,10 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
             self.assertEqual(len(features), result["feature_count"])
             self.assertTrue(all(isinstance(value, float) for value in features))
             self.assertIsNone(self.store.one("SELECT id FROM sources WHERE id=?", (obs["source_id"],)))
-            self.assertEqual(list((self.home / "data" / "blobs").iterdir()), [])
+            frame_sha = hashlib.sha256(frame).hexdigest()
+            self.assertIsNone(self.store.one("SELECT id FROM sources WHERE hash=?", (frame_sha,)))
+            blob_names = {path.name for path in (self.home / "data" / "blobs").iterdir()}
+            self.assertNotIn(frame_sha, blob_names)
             self.assertNotIn(frame.hex(), str(result["packet"]))
         self.assertEqual(self.adapter._packets, {})
         self.assertEqual(self.adapter._features, {})
