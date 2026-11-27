@@ -27,7 +27,7 @@ PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
 SCHEMA = "v13.phone-offer-delivery-audit/2"
 PROMPT_RECEIPT_REVISIONS = frozenset(("v13.native-offer-prompt-receipt/1", "v13.native-offer-prompt-receipt/2"))
-TOKENIZER_API = "llama.cpp-server /tokenize with_pieces=true, add_special=false"
+TOKENIZER_API = "llama.cpp-server /tokenize with_pieces=true, add_special=false, parse_special=true"
 TOKENIZER_API_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 MAX_JSON_BYTES = 262144
 MAX_ROWS_PER_TURN = 2000
