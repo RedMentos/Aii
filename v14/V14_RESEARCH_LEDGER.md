@@ -1900,3 +1900,14 @@ This is a deterministic timing-rule fixture, not calibrated event probability, s
 At this checkpoint, A4/A5 feature-set run **45925644769** passed on Python 3.13/3.14; RAW EAR fastpath **45925644699** passed 155/155 on each; RuntimeDeploy offline **45925644734** passed on Python 3.11/3.14. WebRTC/libfvad comparison **45925644686** was still in progress (3.13 benchmark step completed; 3.14 not final). Staged runtime **45925644732** failed at the same Core composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; integrated regression in that run was still running at this checkpoint. Previous integrated run **45924853105** failed one setup test at the same Core composer pin.
 
 LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVERIFIED; PR #2540 remains DRAFT / NOT_RELEASED.
+
+
+## Run 55 — latest CI completion update (2026-11-27)
+
+- A4 temporal + event omission workflow 45925644718: **9/9 PASS on Python 3.13 and 3.14**.
+- A4/A5 source-bound feature-set 45925644769: **PASS on both Python versions**.
+- RAW EAR fastpath 45925644699: **155/155 PASS on both Python versions**; synthetic benchmark flag true, device benchmark false.
+- RuntimeDeploy offline integrity 45925644734: **PASS on Python 3.11 and 3.14**.
+- WebRTC/libfvad comparison 45925644686: Python 3.13 job completed successfully through source/ABI checks and A4/A5 runtime tests; Python 3.14 job remained IN_PROGRESS at final readback, so the comparison is not fully green yet.
+- Staged + integrated run 45925644732: **FAIL**. Staged job repeats 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated job fails one setup test. Both stop at the same Core-owned recovery composer pin mismatch. Staged additionally fails stale arithmetic and observer source pins plus migration PARTIAL-vs-UPDATED assertions.
+- No Perception file or gate was changed to hide these failures. Core/QA ownership remains unchanged.
