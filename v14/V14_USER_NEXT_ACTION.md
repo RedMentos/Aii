@@ -2557,3 +2557,13 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 - **Device / deployment:** no microphone, Android, Termux or Redmi test. REDMI_UNVERIFIED; updater/install state UNKNOWN; NOT_RELEASED. No model, permission, weight, data or device action was performed.
 - **Research:** R-187 is a full read of PACE (ICLR 2026); it motivates careful multi-session audio adaptation but is not an Android/mobile model candidate. No code or weights reused.
 - **Next:** exact-head CI readback, then Core refreshes the audio composer Recovery pin and Boss reviews #2561 for safe integration. The normal Runtime/C3 audio consumer and Android microphone lifecycle remain unverified. **No user action needed.**
+
+
+## Research & Perception — Run 70 (2026-11-27)
+
+- **Current PR:** [#2565](https://github.com/RedMentos/Aii/pull/2565), branch `research-perception/v14-a3-tile-ood-abstention-20261127-run70`, latest checkpoint `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`. It adds optional descriptor-based OOD abstention to the A3 tile projector used by `:image find`; no model or weight change.
+- **Local:** CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0 scratch reproduction PASS: six synthetic source images, 16/16 held-out in-domain tiles retained, black/checkerboard shifts 0/16 retained. Full repository pytest is NOT_RUN locally because there is no mounted checkout and GitHub DNS fails.
+- **CI:** exact-head workflows are pending/readback required: visual bridge run 46051827002, MediaProjection ingress run 46051826940, shared staged/integrated run 46051827046. Do not call CI green until the final exact-head results are read.
+- **Integration:** stacked on #2563; the #2563 shared staged/integrated failure on Core/QA-owned source pins/assertions remains a merge blocker. Core owns #2562's active `vision_ui_frame_ingress.py` edits; this PR deliberately avoids that file.
+- **Device / deployment:** REDMI_UNVERIFIED; no Android/Termux or updater action; updater/install state UNKNOWN; NOT_RELEASED.
+- **Next:** read final exact-head CI, request Boss review if focused jobs pass, and wait for Core/QA to repair the parent/shared gate before merge. A5 frame-ingress adoption is a separate coordinated step. **No user action required.**

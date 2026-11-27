@@ -1894,3 +1894,28 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **User effect / Canon path.** Malformed or stale local A3 projector files can no longer reach NumPy array allocation through this A5 RAW-EYE consumer; they are rejected while handcrafted visual features continue. This hardens an optional A3/A5 input path only. It does not establish trained perception, normal-turn C3 consumption, Android capture, B1/B2 usefulness or P0 basic chat correctness.
 
 **Integration / next owner.** After focused exact-head CI passes, Core should rebase #2562 onto #2563 and refresh its Recovery → Stage → RuntimeDeploy source pins before rerunning shared integration. Existing Core audio/arithmetic/observer pins and QA PARTIAL-vs-UPDATED migration assertions remain in their respective lanes; Perception did not modify them. Boss/Integrator owns the shared Work Board; this lane supplies the handoff and requests that Boss sync V14-023 rather than editing the shared board. No user action is required.
+
+
+## Research & Perception Run 70 — A3 tile-projector descriptor abstention (2026-11-27)
+
+**Gap / hypothesis.** The optional A3 tile projector in the explicit `:image find` operator always scored and ranked every tile, even when the input feature distribution was far outside the images used to fit that projector. That could turn a large shift into a plausible-looking student score. A conservative descriptor gate should abstain on obvious shifts without replacing RAW-EYE features or changing projector authority.
+
+**Implementation.** Draft [PR #2565](https://github.com/RedMentos/Aii/pull/2565), branch `research-perception/v14-a3-tile-ood-abstention-20261127-run70`, code head `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5` plus CI-path follow-up `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`.
+- `vision.Projector.standardized_distance()` computes per-row RMS z-distance from the fitted feature distribution and validates geometry/finite values.
+- `tile_descriptor_threshold()` estimates a conservative boundary from leave-one-source/image-out folds, requiring at least two distinct source groups. One-source data does not enable a gate.
+- `train_tiles()` stores the threshold/version in the existing Store projector record; no NPZ schema change, weight change or new dependency.
+- `tile_scores()` supports optional abstention; `find()` enables it, leaves OOD heat-map cells null, excludes them from ranking, and returns USED / PARTIAL_OOD / OUT_OF_DISTRIBUTION with region IDs.
+- `Projector.load()` now disables pickle loading and validates local projector metadata/tensor geometry. Existing legacy records without gate metadata keep the old scoring behavior.
+- The visual CI workflow now compiles `vision.py` and runs `test_vision.py` alongside the A5 visual bridge tests. The change avoids Core-owned `vision_ui_frame_ingress.py` while #2562 is active; A5 frame-ingress adoption is not claimed.
+
+**Research.** R-189 records the full PMA paper review and license check. PMA's descriptor-triggered projector expansion is a useful research direction, but its 7B / 4×80GB A100 evidence is not mobile evidence. No upstream code or weights were reused.
+
+**Local evidence.** LOCAL_LINUX scratch (CPython 3.13.5, NumPy 2.3.5, Pillow 12.3.0): `py_compile` PASS for scratch reproductions; source-disjoint threshold and feature-distance checks PASS; six-source synthetic UI reproduction retained 16/16 in-domain tiles and rejected 16/16 black/checkerboard shifted tiles. Full repository pytest remains NOT_RUN locally because no Aii checkout is mounted and GitHub DNS resolution fails.
+
+**CI / integration.** Exact focused CI was triggered for the updated head `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`: V14 A5 visual frame bridge, V14 MediaProjection RAW EYE frame ingress, and shared staged/integrated workflow are tracked in run IDs `46051827002`, `46051826940`, and `46051827046`. Final conclusions are added after readback; no pass is inferred while a run is in progress. PR #2565 is stacked on #2563; #2563's shared staged/integrated failures remain Core/QA-owned and block merge/release until repaired.
+
+**User effect / Canon.** The explicit `:image find` command can now decline to rank obviously shifted tiles instead of returning unsupported student scores. This is one A3/vision operator improvement, not acceptance of A5 MediaProjection, normal Runtime/C3, B1/B2, B3 native latent coupling, learning/weights, Android control, voice or the whole Canon. A5 frame ingress remains WIRED_SYNTHETIC; B3 remains SYMBOLIC_ONLY for native coupling.
+
+**Device / deployment.** No phone, Termux, microphone, MediaProjection or updater action was performed. REDMI_UNVERIFIED; updater/install state UNKNOWN; NOT_RELEASED. No model, weights, permissions or user data changed.
+
+**Next executable step.** Read the exact updated-head CI, then request Boss review. Resolve the #2563 parent/shared gate before merge. After Core finishes its #2562 receiver changes, coordinate a separate low-risk A5 ingress adoption of the same threshold metadata; keep the normal Runtime/C3 callsite and Android lifecycle acceptance with Core/QA. No user action required.

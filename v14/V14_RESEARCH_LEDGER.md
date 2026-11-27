@@ -2143,3 +2143,26 @@ PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salien
 **Evidence.** LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated helper: py_compile PASS and 4/4 PASS. Exact PR code/test head 09e8cee23fab4fe9144253f93bab0a62c3119882; final docs-only head at CI readback f46e38841913667055a16fa7826a5f41923cb0c9. MediaProjection workflow 46038637335 PASS with 31/31 on Python 3.13 and 31/31 on Python 3.14; RuntimeDeploy integrity 46038637336 PASS on Python 3.11/3.14. Shared staged/integrated 46038637341 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 Core Recovery audio-composer pin failure. Full Aii checkout and Redmi are not tested. This is a file-format/resource-safety fix, not evidence of learned visual semantics or on-device performance.
 
 **No new empirical paper was reviewed in this run.** The immediate priority was a reproduced allocation-safety defect in the active A5/A3 consumer. No model, weights, data, OSS implementation or new dependency was downloaded or reused.
+
+
+## R-189 — Progressive Multimodal Alignment and descriptor-gated projector reuse (2026-11-27)
+
+**Primary source / review depth.** Duzhen Zhang et al., *Progressive Multimodal Alignment for Continual Instruction Tuning*, arXiv:2607.26947, submitted 2026-07-29; the authors' publication page lists it as accepted at ACM Multimedia 2026. The full paper was read, including method, ablations, benchmarks and implementation details. Primary source: https://arxiv.org/abs/2607.26947 ; author publication page: https://duzhen.github.io/ .
+
+**Mechanism.** PMA treats projector drift as distinct from backbone forgetting. It learns representation descriptors over fused image/instruction features, uses reconstruction-error z-scores to decide whether an existing projector expert remains in-distribution, preserves a stable anchor, and adds a new projector expert with a soft router when prior descriptors fall below the paper's coverage rule. This is not merely a generic "add more adapters" proposal: the trigger is measured descriptor shift.
+
+**Reported evidence and limits.** The paper evaluates continual instruction tuning on UCIT and MLLM-DCL with LLaVA-1.5-7B and InternVL-Chat-7B. It reports improvements in multi-task forgetting/retention metrics relative to the compared baselines. Its implementation/evaluation uses 4×80GB A100 GPUs and 7B-scale multimodal stacks; this is not a mobile/ARM or Redmi feasibility result. The descriptor autoencoder, expert expansion and router are not reproduced here.
+
+**OSS / license check.** The linked public repository is https://github.com/BladeDancer957/PMA . Its root contains README, LLaVA and configs but no root LICENSE file was found; no explicit PMA code or weight license was verified. The README's dependency/model stack is CUDA/PyTorch and LLaVA/CLIP-oriented. No code, model weights, dataset or dependency was copied, downloaded or reused.
+
+**V14 translation / implementation.** Draft PR #2565 adds only a small, conservative descriptor-abstention gate to the existing optional A3 tile projector used by the explicit `:image find` operator:
+- Build a per-tile RMS z-distance descriptor from the fitted feature mean/std.
+- Estimate a threshold with leave-one-source/image-out folds (up to eight deterministic folds), requiring at least two source groups; a single-source training set leaves the gate unavailable rather than inventing a threshold.
+- If a tile exceeds the stored threshold, leave its heat-map cell null and exclude it from ranking. Partial and full abstention are explicit in the result status.
+- Keep old projector records compatible; no NPZ schema change, model/weight edit, new dependency or authority escalation.
+- The threshold is a heuristic descriptor boundary, **not** a calibrated probability and not a guarantee against subtle OOD inputs. This is not PMA's learned descriptor autoencoder, anchor, expert expansion or router, and it does not establish trained cross-organ latent coupling.
+- The PR intentionally avoids the Core-owned `vision_ui_frame_ingress.py` file currently being changed in #2562. A5 MediaProjection-frame adoption is a separate coordinated follow-up; current consumer is the explicit `:image find` path only.
+
+**Evidence.** LOCAL_LINUX scratch reproduction on CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0: py_compile PASS for the isolated reproduction; six synthetic source images produced 96 tile rows and a leave-one-source-out threshold of 1.546. A held-out in-domain two-object UI image retained 16/16 tiles; black and checkerboard shift controls retained 0/16. This is synthetic feature-distribution evidence, not repository pytest, user-image quality or Android proof. Exact PR CI was triggered on the updated head and is recorded in the Run 70 workplan/handoff after final readback.
+
+**Next research question.** Compare this low-cost RMS descriptor against a robust covariance/Mahalanobis or reconstruction-error descriptor on source-disjoint UI/audio-perception splits, measuring false abstention and missed OOD, before considering progressive expert expansion. Keep the gate optional and shadow-only until real held-out source data and a consumer-level utility gain exist.
