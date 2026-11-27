@@ -37,58 +37,58 @@ def apply_sources(code_dir, sources):
         raise ValueError("native prompt binding requires composed runners.py")
     runner = _replace(
         runner,
-        b"        self._native_completion_http_200=False\\n",
-        b"        self._native_completion_http_200=False\\n"
-        b"        self._native_request_prompt_sha256=None\\n"
-        b"        self._native_request_prompt_submitted=False\\n"
-        b"        self._native_request_prompt_matches_admission=False\\n",
+        b"        self._native_completion_http_200=False\n",
+        b"        self._native_completion_http_200=False\n"
+        b"        self._native_request_prompt_sha256=None\n"
+        b"        self._native_request_prompt_submitted=False\n"
+        b"        self._native_request_prompt_matches_admission=False\n",
         "request receipt state",
     )
     runner = _replace(
         runner,
-        b"                        **witnessed,\\n"
-        b"                        'native_completion_http_200':self._native_completion_http_200,\\n",
-        b"                        **witnessed,\\n"
-        b"                        'native_request_prompt_sha256':self._native_request_prompt_sha256,\\n"
-        b"                        'native_request_prompt_submitted':self._native_request_prompt_submitted,\\n"
-        b"                        'native_request_prompt_matches_admission':self._native_request_prompt_matches_admission,\\n"
-        b"                        'native_completion_http_200':self._native_completion_http_200,\\n",
+        b"                        **witnessed,\n"
+        b"                        'native_completion_http_200':self._native_completion_http_200,\n",
+        b"                        **witnessed,\n"
+        b"                        'native_request_prompt_sha256':self._native_request_prompt_sha256,\n"
+        b"                        'native_request_prompt_submitted':self._native_request_prompt_submitted,\n"
+        b"                        'native_request_prompt_matches_admission':self._native_request_prompt_matches_admission,\n"
+        b"                        'native_completion_http_200':self._native_completion_http_200,\n",
         "request receipt fields",
     )
     helper = (
-        b"    def _record_native_prompt_request(self,prompt,*,submitted):\\n"
-        b"        if not isinstance(prompt,str):return\\n"
-        b"        prompt_sha=digest(prompt)\\n"
-        b"        admission=getattr(self,'_prompt_admission',None)\\n"
-        b"        witness=admission.get('offer_template_witness') if isinstance(admission,dict) else None\\n"
-        b"        expected=witness.get('native_prompt_sha256') if isinstance(witness,dict) else None\\n"
-        b"        self._native_request_prompt_sha256=prompt_sha\\n"
-        b"        self._native_request_prompt_matches_admission=(type(expected) is str and prompt_sha==expected)\\n"
-        b"        if submitted:self._native_request_prompt_submitted=True\\n"
+        b"    def _record_native_prompt_request(self,prompt,*,submitted):\n"
+        b"        if not isinstance(prompt,str):return\n"
+        b"        prompt_sha=digest(prompt)\n"
+        b"        admission=getattr(self,'_prompt_admission',None)\n"
+        b"        witness=admission.get('offer_template_witness') if isinstance(admission,dict) else None\n"
+        b"        expected=witness.get('native_prompt_sha256') if isinstance(witness,dict) else None\n"
+        b"        self._native_request_prompt_sha256=prompt_sha\n"
+        b"        self._native_request_prompt_matches_admission=(type(expected) is str and prompt_sha==expected)\n"
+        b"        if submitted:self._native_request_prompt_submitted=True\n"
     )
     runner = _replace(
         runner,
-        b"    def completion_one(self,payload,cancel,deadline):\\n",
-        helper + b"    def completion_one(self,payload,cancel,deadline):\\n",
+        b"    def completion_one(self,payload,cancel,deadline):\n",
+        helper + b"    def completion_one(self,payload,cancel,deadline):\n",
         "request hash helper",
     )
     runner = _replace(
         runner,
-        b"            conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})\\n",
-        b"            request_prompt=payload.get('prompt')\\n"
-        b"            self._record_native_prompt_request(request_prompt,submitted=False)\\n"
-        b"            conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})\\n"
-        b"            self._record_native_prompt_request(request_prompt,submitted=True)\\n",
+        b"            conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})\n",
+        b"            request_prompt=payload.get('prompt')\n"
+        b"            self._record_native_prompt_request(request_prompt,submitted=False)\n"
+        b"            conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})\n"
+        b"            self._record_native_prompt_request(request_prompt,submitted=True)\n",
         "first-step completion request",
     )
     runner = _replace(
         runner,
-        b"            conn.request(\"POST\",\"/completion\",wire_json(payload).encode(),{\"Content-Type\":\"application/json\",\"Authorization\":\"Bearer \"+self.key});response=conn.getresponse()\\n",
-        b"            request_prompt=payload.get(\"prompt\")\\n"
-        b"            self._record_native_prompt_request(request_prompt,submitted=False)\\n"
-        b"            conn.request(\"POST\",\"/completion\",wire_json(payload).encode(),{\"Content-Type\":\"application/json\",\"Authorization\":\"Bearer \"+self.key})\\n"
-        b"            self._record_native_prompt_request(request_prompt,submitted=True)\\n"
-        b"            response=conn.getresponse()\\n",
+        b"            conn.request(\"POST\",\"/completion\",wire_json(payload).encode(),{\"Content-Type\":\"application/json\",\"Authorization\":\"Bearer \"+self.key});response=conn.getresponse()\n",
+        b"            request_prompt=payload.get(\"prompt\")\n"
+        b"            self._record_native_prompt_request(request_prompt,submitted=False)\n"
+        b"            conn.request(\"POST\",\"/completion\",wire_json(payload).encode(),{\"Content-Type\":\"application/json\",\"Authorization\":\"Bearer \"+self.key})\n"
+        b"            self._record_native_prompt_request(request_prompt,submitted=True)\n"
+        b"            response=conn.getresponse()\n",
         "stream completion request",
     )
     compile(runner, "v13/runners.py", "exec")
@@ -134,82 +134,82 @@ def _native_prompt_inclusion_mode(report, template_roles, native_c3_output,
         return None
     return "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT"
 '''
-    audit = _replace(audit, b"\\n\\ndef _audit_one(conn, index, event_id, status, metadata):\\n",
-                     b"\\n\\n" + helpers + b"\\n\\ndef _audit_one(conn, index, event_id, status, metadata):\\n",
+    audit = _replace(audit, b"\n\ndef _audit_one(conn, index, event_id, status, metadata):\n",
+                     b"\n\n" + helpers + b"\n\ndef _audit_one(conn, index, event_id, status, metadata):\n",
                      "prompt inclusion helpers")
     audit = _replace(
         audit,
-        b"    native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)\\n"
-        b"                             if native_c3_output and not incomplete else set())\\n"
-        b"    for role in ROLES:\\n"
-        b"        roles[role][\"native_template_http200_submitted\"] = role in native_template_roles\\n"
-        b"    c3phases = _safe_phases(report)\\n",
-        b"    native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)\\n"
-        b"                             if native_c3_output and not incomplete else set())\\n"
-        b"    for role in ROLES:\\n"
-        b"        roles[role][\"native_template_http200_submitted\"] = role in native_template_roles\\n"
-        b"    native_prefill_token_count_matched = _native_prefill_token_count_match(report)\\n"
-        b"    native_prompt_inclusion_mode = _native_prompt_inclusion_mode(\\n"
-        b"        report, native_template_roles, native_c3_output, incomplete,\\n"
-        b"        native_prefill_token_count_matched)\\n"
-        b"    native_prompt_inclusion_verified = native_prompt_inclusion_mode is not None\\n"
-        b"    for role in ROLES:\\n"
-        b"        roles[role][\"native_prompt_offer_inclusion_verified\"] = bool(\\n"
-        b"            native_prompt_inclusion_verified and role in native_template_roles)\\n"
-        b"    c3phases = _safe_phases(report)\\n",
+        b"    native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)\n"
+        b"                             if native_c3_output and not incomplete else set())\n"
+        b"    for role in ROLES:\n"
+        b"        roles[role][\"native_template_http200_submitted\"] = role in native_template_roles\n"
+        b"    c3phases = _safe_phases(report)\n",
+        b"    native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)\n"
+        b"                             if native_c3_output and not incomplete else set())\n"
+        b"    for role in ROLES:\n"
+        b"        roles[role][\"native_template_http200_submitted\"] = role in native_template_roles\n"
+        b"    native_prefill_token_count_matched = _native_prefill_token_count_match(report)\n"
+        b"    native_prompt_inclusion_mode = _native_prompt_inclusion_mode(\n"
+        b"        report, native_template_roles, native_c3_output, incomplete,\n"
+        b"        native_prefill_token_count_matched)\n"
+        b"    native_prompt_inclusion_verified = native_prompt_inclusion_mode is not None\n"
+        b"    for role in ROLES:\n"
+        b"        roles[role][\"native_prompt_offer_inclusion_verified\"] = bool(\n"
+        b"            native_prompt_inclusion_verified and role in native_template_roles)\n"
+        b"    c3phases = _safe_phases(report)\n",
         "prompt inclusion audit binding",
     )
     audit = _replace(
         audit,
-        b"        \"c3_prompt_inclusion_proven\": False,\\n",
-        b"        \"native_prefill_token_count_matched\": native_prefill_token_count_matched,\\n"
-        b"        \"native_prompt_offer_inclusion_verified\": native_prompt_inclusion_verified,\\n"
-        b"        \"native_prompt_inclusion_mode\": native_prompt_inclusion_mode,\\n"
-        b"        \"c3_prompt_inclusion_proven\": native_prompt_inclusion_verified,\\n",
+        b"        \"c3_prompt_inclusion_proven\": False,\n",
+        b"        \"native_prefill_token_count_matched\": native_prefill_token_count_matched,\n"
+        b"        \"native_prompt_offer_inclusion_verified\": native_prompt_inclusion_verified,\n"
+        b"        \"native_prompt_inclusion_mode\": native_prompt_inclusion_mode,\n"
+        b"        \"c3_prompt_inclusion_proven\": native_prompt_inclusion_verified,\n",
         "prompt inclusion result",
     )
     audit = _replace(
         audit,
-        b"    zero_token_c3_deadlines = sum(\\n",
-        b"    both_native_prompt_inclusion = sum(\\n"
-        b"        t[\"native_prompt_offer_inclusion_verified\"] for t in turns)\\n"
-        b"    zero_token_c3_deadlines = sum(\\n",
+        b"    zero_token_c3_deadlines = sum(\n",
+        b"    both_native_prompt_inclusion = sum(\n"
+        b"        t[\"native_prompt_offer_inclusion_verified\"] for t in turns)\n"
+        b"    zero_token_c3_deadlines = sum(\n",
         "prompt inclusion summary",
     )
     audit = _replace(
         audit,
-        b"                    else \"BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED\" if both_native\\n",
-        b"                    else \"BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED\" if both_native_prompt_inclusion\\n"
-        b"                    else \"BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED\" if both_native\\n",
+        b"                    else \"BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED\" if both_native\n",
+        b"                    else \"BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED\" if both_native_prompt_inclusion\n"
+        b"                    else \"BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED\" if both_native\n",
         "prompt inclusion status",
     )
     audit = _replace(
         audit,
-        b"            \"both_body_native_template_http200_reported_turns\": both_native,\\n"
-        b"            \"c3_deadline_zero_token_turns\": zero_token_c3_deadlines,\\n"
-        b"            \"incomplete_metadata_turns\": incomplete_turns,\\n"
-        b"            \"native_prompt_offer_inclusion_verified\": False,\\n",
-        b"            \"both_body_native_template_http200_reported_turns\": both_native,\\n"
-        b"            \"both_body_native_prompt_inclusion_verified_turns\": both_native_prompt_inclusion,\\n"
-        b"            \"c3_deadline_zero_token_turns\": zero_token_c3_deadlines,\\n"
-        b"            \"incomplete_metadata_turns\": incomplete_turns,\\n"
-        b"            \"native_prompt_offer_inclusion_verified\": both_native_prompt_inclusion > 0,\\n"
-        b"            \"native_request_prompt_hash_match_observed\": both_native_prompt_inclusion > 0,\\n"
-        b"            \"native_prefill_token_count_match_observed\": both_native_prompt_inclusion > 0,\\n",
+        b"            \"both_body_native_template_http200_reported_turns\": both_native,\n"
+        b"            \"c3_deadline_zero_token_turns\": zero_token_c3_deadlines,\n"
+        b"            \"incomplete_metadata_turns\": incomplete_turns,\n"
+        b"            \"native_prompt_offer_inclusion_verified\": False,\n",
+        b"            \"both_body_native_template_http200_reported_turns\": both_native,\n"
+        b"            \"both_body_native_prompt_inclusion_verified_turns\": both_native_prompt_inclusion,\n"
+        b"            \"c3_deadline_zero_token_turns\": zero_token_c3_deadlines,\n"
+        b"            \"incomplete_metadata_turns\": incomplete_turns,\n"
+        b"            \"native_prompt_offer_inclusion_verified\": both_native_prompt_inclusion > 0,\n"
+        b"            \"native_request_prompt_hash_match_observed\": both_native_prompt_inclusion > 0,\n"
+        b"            \"native_prefill_token_count_match_observed\": both_native_prompt_inclusion > 0,\n",
         "prompt inclusion gate fields",
     )
     audit = _replace(
         audit,
-        b"        \"evidence_boundary\": (\\n"
-        b"            \"LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS\"\\n"
-        b"            if both_native else \"METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY\"),\\n"
-        b"        \"warning\": \"Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.\",\\n",
-        b"        \"evidence_boundary\": (\\n"
-        b"            \"LOCAL_SQLITE_METADATA_PLUS_EXACT_NATIVE_PROMPT_BINDING\"\\n"
-        b"            if both_native_prompt_inclusion else\\n"
-        b"            \"LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS\"\\n"
-        b"            if both_native else \"METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY\"),\\n"
-        b"        \"warning\": \"Exact prompt inclusion requires the request prompt hash to match the post-admission template witness and native prompt_n+cache_n to match the admitted token count. This does not prove attention, semantic use, learned latent exchange or Redmi installation.\",\\n",
+        b"        \"evidence_boundary\": (\n"
+        b"            \"LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS\"\n"
+        b"            if both_native else \"METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY\"),\n"
+        b"        \"warning\": \"Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.\",\n",
+        b"        \"evidence_boundary\": (\n"
+        b"            \"LOCAL_SQLITE_METADATA_PLUS_EXACT_NATIVE_PROMPT_BINDING\"\n"
+        b"            if both_native_prompt_inclusion else\n"
+        b"            \"LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS\"\n"
+        b"            if both_native else \"METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY\"),\n"
+        b"        \"warning\": \"Exact prompt inclusion requires the request prompt hash to match the post-admission template witness and native prompt_n+cache_n to match the admitted token count. This does not prove attention, semantic use, learned latent exchange or Redmi installation.\",\n",
         "prompt inclusion warning",
     )
     compile(audit, "v13/phone_offer_delivery_audit.py", "exec")
