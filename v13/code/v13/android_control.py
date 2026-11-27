@@ -19,7 +19,9 @@ import stat
 import threading
 import time
 
-CAPABILITIES = frozenset({"launch_app", "observe_ui", "tap", "swipe", "type_text", "back"})
+from .android_url import UnsafeAndroidUrl, validate_https_url
+
+CAPABILITIES = frozenset({"launch_app", "open_url", "observe_ui", "tap", "swipe", "type_text", "back"})
 MAX_TEXT = 256
 MAX_PACKAGE = 180
 
@@ -37,6 +39,7 @@ class Proposal:
     digest: str
     event_id: str | None = None
     source_ref: Mapping[str, object] | None = None
+    recovery_only: bool = False
 
     def __post_init__(self):
         # Frozen dataclasses do not freeze nested mappings. Both action args and
@@ -48,6 +51,8 @@ class Proposal:
 
 def _verify_proposal_digest(proposal):
     """Bind the immutable approved arguments to the digest shown at proposal."""
+    if proposal.recovery_only:
+        raise ControlDenied("receipt-only recovery proposal cannot be dispatched")
     payload = _canonical(proposal.capability, dict(proposal.args))
     actual = hashlib.sha256(payload.encode()).hexdigest()
     if not hmac.compare_digest(actual, proposal.digest):
@@ -58,7 +63,7 @@ def _canonical(capability, args):
     if capability not in CAPABILITIES or type(args) is not dict:
         raise ControlDenied("unsupported action")
     keys = {
-        "launch_app": {"package"}, "observe_ui": set(),
+        "launch_app": {"package"}, "open_url": {"url"}, "observe_ui": set(),
         "tap": {"x", "y"}, "swipe": {"x1", "y1", "x2", "y2", "duration_ms"},
         "type_text": {"text"}, "back": set()
     }[capability]
@@ -70,6 +75,11 @@ def _canonical(capability, args):
             c.isascii() and (c.isalnum() or c in "._") for c in pkg
         ) or "." not in pkg:
             raise ControlDenied("invalid package")
+    if capability == "open_url":
+        try:
+            validate_https_url(args["url"])
+        except UnsafeAndroidUrl as exc:
+            raise ControlDenied(str(exc)) from exc
     if capability == "type_text":
         t = args["text"]
         if not isinstance(t, str) or not 1 <= len(t) <= MAX_TEXT or any(ord(c) < 32 for c in t):
@@ -322,15 +332,30 @@ class AndroidControlBroker:
                 self.db.execute("UPDATE control_actions SET state='EXPIRED' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "expired_on_restore", digest)
                 continue
+            recovery_only = False
             if args_json is None:
-                self.db.execute("UPDATE control_actions SET state='DROPPED_ON_RESTART' WHERE action_id=?", (action_id,))
-                self._audit(action_id, "sensitive_args_dropped_on_restart", digest)
-                continue
+                if capability == "open_url" and state in ("DISPATCHED", "SUBMIT_UNCERTAIN", "RECEIPT_CONSUMED"):
+                    args = {}
+                    recovery_only = True
+                else:
+                    self.db.execute("UPDATE control_actions SET state='DROPPED_ON_RESTART' WHERE action_id=?", (action_id,))
+                    self._audit(action_id, "sensitive_args_dropped_on_restart", digest)
+                    continue
             try:
-                args = json.loads(args_json)
+                if args_json is not None:
+                    args = json.loads(args_json)
                 source_ref = json.loads(source_json) if source_json else None
-                proposal = Proposal(action_id, capability, args, float(expires_at), digest, event_id, source_ref)
-                _verify_proposal_digest(proposal)
+                proposal = Proposal(
+                    action_id, capability, args, float(expires_at), digest,
+                    event_id, source_ref, recovery_only=recovery_only,
+                )
+                if not recovery_only:
+                    _verify_proposal_digest(proposal)
+                elif (capability != "open_url" or args
+                        or type(digest) is not str or len(digest) != 64
+                        or any(ch not in "0123456789abcdef" for ch in digest)
+                        or not isinstance(source_ref, dict) or not event_id):
+                    raise ValueError("invalid receipt-only recovery binding")
             except Exception:
                 self.db.execute("UPDATE control_actions SET state='INVALID_ON_RESTORE' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "invalid_state_on_restore", digest)
@@ -415,9 +440,9 @@ class AndroidControlBroker:
                          event_id, dict(source_ref) if source_ref is not None else None)
             _verify_proposal_digest(p)
             self.pending[action_id] = p
-            # Never persist raw typed text. The native companion currently accepts
-            # launch_app only; other non-sensitive action types remain restart-safe.
-            args_json = None if capability == "type_text" else json.dumps(
+            # Never persist raw typed text or full URLs (which may contain tokens).
+            # A dispatched open_url can recover only its signed receipt after restart.
+            args_json = None if capability in {"type_text", "open_url"} else json.dumps(
                 args, sort_keys=True, separators=(",", ":"), ensure_ascii=True
             )
             source_json = json.dumps(source_ref, sort_keys=True, separators=(",", ":")) if source_ref is not None else None
@@ -457,6 +482,8 @@ class AndroidControlBroker:
                 self._audit(action_id, "dispatch_denied")
                 raise ControlDenied("approved action unavailable")
             _verify_proposal_digest(p)
+            if p.recovery_only:
+                raise ControlDenied("receipt-only recovery proposal cannot be dispatched")
             if action_id in self.dispatched:
                 self._audit(action_id, "dispatch_replay_denied", p.digest)
                 raise ControlDenied("action already dispatched")
@@ -499,7 +526,8 @@ class AndroidControlBroker:
             if p is None or self.stopped or self.clock() > p.expires_at:
                 self._audit(action_id, "companion_receipt_denied")
                 raise ControlDenied("dispatched action unavailable")
-            _verify_proposal_digest(p)
+            if not p.recovery_only:
+                _verify_proposal_digest(p)
             if action_id in self.dispatched:
                 row = self.db.execute(
                     "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
@@ -520,7 +548,8 @@ class AndroidControlBroker:
             p = self.consumed.get(action_id)
             if p is None or p.digest != digest:
                 raise ControlDenied("receipt is not bound to a consumed dispatch")
-            _verify_proposal_digest(p)
+            if not p.recovery_only:
+                _verify_proposal_digest(p)
             self.consumed.pop(action_id, None)
             self._set_state(action_id, "RECEIPT_VERIFIED" if verified else "RECEIPT_REJECTED",
                             expected="RECEIPT_CONSUMED")
