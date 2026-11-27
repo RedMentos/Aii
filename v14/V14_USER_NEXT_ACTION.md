@@ -2404,3 +2404,18 @@ A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 fe
 The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
 
 No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**
+ 
+
+## Perception checkpoint — 2026-11-27 04:15 UTC (Run 58)
+
+**New code candidate:** [PR #2550](https://github.com/RedMentos/Aii/pull/2550), branch `research-perception/v14-a5-visual-frame-bridge-20261127-run58`, exact test head `7dd720a2669e46e4965c3766c6e3fcd2849bc89f`, stacked on Core PR #2549.
+
+- Added `A5VisualFrameAdapter`: an already OS-authorized `MEDIA_PROJECTION / SCREEN_FRAME_AVAILABLE` frame is decoded in memory, converted by the existing RAW-EYE `vision.features()` extractor, then sent to the existing A4 attention consumer and bounded PerceptAdmission.
+- The adapter reuses the source/session/receipt/generation-bound `UIObservationLease`. Its feature vector and PerceptPacket are available only while that lease is active. Revocation and lease exit clear the adapter cache; adapter-held numeric features are best-effort zeroed.
+- Optional existing `hashed_bow` projector outputs are labelled `STUDENT_ESTIMATE / REFERENCE_NOT_FACT`. No teacher is loaded. Action and learning authority stay false. No screenshot, raw frame, feature vector or source blob is written to disk. Provisional frames are ignored before decode.
+- **Exact hosted Linux CI:** A5 tests 6/6 PASS on Python 3.13 and 6/6 PASS on Python 3.14; inherited offline-bridge security gate 39/39 PASS. An initial test incorrectly assumed the Store had no unrelated blobs; the assertion was corrected to check the exact frame hash against source rows and blob names, then the current head passed.
+- **Local:** 4/4 scratch image/descriptor/hash/cache-clear checks PASS in the available Python environment. The full Aii checkout is not mounted and network clone is unavailable, so the exact repository pytest suite was not run locally.
+- **Integration boundary:** the adapter calls A4 and PerceptAdmission, but the normal-turn Core callsite is not wired yet. Core must call `context(event_id, grants)` and `features(event_id, grants)` while the same lease remains active. No Android MediaProjection provider, OS receipt, AccessibilityService, real Redmi frame or native performance measurement was tested.
+- **Device/release:** `REDMI_UNVERIFIED`, `NOT_RELEASED`. The current private HEALTH / PIPELINE_STATUS / DIAGNOSTICS read requests are pending; until a device receipt arrives, updater/install status remains unverified in this run. No model, weight, permission, updater setting or device data was changed.
+
+**Next concrete action:** Core integrates the adapter into the normal turn under the same lease and proves revocation cancels C3 before lease release; QA verifies the Android provider's API 21+/34+ lifecycle and MediaProjection onStop behavior; Perception adds source/session-disjoint visual holdouts and A4 omission false-positive tests. No user action is required.
