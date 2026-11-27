@@ -130,8 +130,14 @@ def accept_companion_receipt(
                 "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
             ),
             "key_storage_status": attestation["key_storage_status"],
-            "t8_authoritative": False,
-            "world_learning_eligible": False,
+            "companion_user_approval": attestation.get("companion_user_approval", False),
+            "device_execution_claimed": attestation.get("device_execution_claimed", True),
+            "t8_authoritative": attestation.get("t8_authoritative", True),
+            "world_learning_eligible": attestation.get("world_learning_eligible", True),
+            "trusted_transition_eligible": attestation.get("trusted_transition_eligible", True),
+            "production_route": attestation.get("production_route", True),
+            "training_authority": attestation.get("training_authority", -1),
+            "native_receiver_authority": attestation.get("native_receiver_authority", -1),
             "event_id": proposal.event_id,
             "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
         },
@@ -162,7 +168,13 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
             or outcome.evidence_level != "COMPANION_RECEIPT_ONLY"
             or not isinstance(outcome.details, Mapping)
             or outcome.details.get("t8_authoritative") is not False
-            or outcome.details.get("world_learning_eligible") is not False):
+            or outcome.details.get("world_learning_eligible") is not False
+            or outcome.details.get("trusted_transition_eligible") is not False
+            or outcome.details.get("device_execution_claimed") is not False
+            or outcome.details.get("production_route") is not False
+            or outcome.details.get("training_authority") != 0
+            or outcome.details.get("native_receiver_authority") != 0
+            or outcome.details.get("companion_user_approval") is not (outcome.status != "COMPANION_USER_DENIED")):
         raise InvalidOutcome("only non-authoritative companion receipts may be persisted here")
     event_id = outcome.details.get("event_id")
     source_ref = outcome.details.get("source_ref")
