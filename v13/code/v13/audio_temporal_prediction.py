@@ -184,9 +184,12 @@ class AudioTemporalPredictor:
         return math.sqrt(sum(weight * weight for row in self._weights for weight in row))
 
     @staticmethod
-    def _sample_key(target: tuple[float, ...]) -> str:
-        # The bounded fingerprint is process-local and is not a privacy/anonymisation guarantee.
-        material = json.dumps([round(value, 3) for value in target], separators=(",", ":"), allow_nan=False)
+    def _sample_key(previous: tuple[float, ...], target: tuple[float, ...]) -> str:
+        # Fingerprint the full transition, not just the target; this is not anonymisation.
+        material = json.dumps(
+            [[round(value, 3) for value in previous], [round(value, 3) for value in target]],
+            separators=(",", ":"), allow_nan=False,
+        )
         return hashlib.sha256(b"V14-A4-MISTAKE-KEY/1\\0" + material.encode("utf-8")).hexdigest()
 
     def _remember_mistake(self, sample_key: str) -> None:
@@ -228,7 +231,7 @@ class AudioTemporalPredictor:
         model_error = sum(abs(error) for error in signed_errors) / FEATURE_COUNT
         baseline_error = sum(abs(target[i] - previous[i]) for i in range(FEATURE_COUNT)) / FEATURE_COUNT
 
-        sample_key = self._sample_key(target)
+        sample_key = self._sample_key(previous, target)
         remembered_mistake = sample_key in self._mistake_keys
         current_mistake = model_error > baseline_error + 1e-12
         if not allow_update:
