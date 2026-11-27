@@ -35,7 +35,8 @@ final class ReceiptFactory {
         if (!action.actionId.equals(request.optString("action_id"))) {
             throw new IllegalArgumentException("action request ID mismatch");
         }
-        if (!"launch_app".equals(request.optString("capability"))) {
+        String capability = request.optString("capability");
+        if (!CompanionProvider.isImplementedCapability(capability)) {
             throw new IllegalArgumentException("action request capability mismatch");
         }
         if (!request.optBoolean("companion_local_consent_required", false)) {
@@ -56,13 +57,25 @@ final class ReceiptFactory {
 
         JSONObject args = request.getJSONObject("args");
         if (args.length() != 1) throw new IllegalArgumentException("action request args are not exact");
-        String packageName = args.getString("package");
+        final String target;
+        if ("launch_app".equals(capability)) {
+            target = args.getString("package");
+            if (!target.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+") || target.length() > 180) {
+                throw new IllegalArgumentException("action request package is invalid");
+            }
+        } else if ("open_url".equals(capability)) {
+            target = args.getString("url");
+            if (!Canonical.isSafeHttpsUrl(target)) {
+                throw new IllegalArgumentException("action request HTTPS URL is invalid");
+            }
+        } else {
+            throw new IllegalArgumentException("unsupported action request capability");
+        }
         String digest = request.getString("digest");
-        if (!packageName.equals(action.packageName)
-                || !packageName.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+")
+        if (!target.equals(action.targetValue)
                 || !digest.matches("[0-9a-f]{64}")
-                || !digest.equals(Canonical.requestDigest("launch_app", packageName))) {
-            throw new IllegalArgumentException("action request digest or package mismatch");
+                || !digest.equals(Canonical.requestDigest(capability, target))) {
+            throw new IllegalArgumentException("action request digest or target mismatch");
         }
 
         JSONObject key = signer.publicKeyInfo();
@@ -71,14 +84,14 @@ final class ReceiptFactory {
         body.put("schema", "v14.android-companion-receipt/1");
         body.put("nonce", randomHex(16));
         body.put("action_id", action.actionId);
-        body.put("capability", "launch_app");
+        body.put("capability", capability);
         body.put("digest", digest);
         body.put("issued_at", nowSeconds);
         body.put("expires_at", receiptExpiresAt(nowSeconds));
         body.put("status", status);
         body.put("local_consent", localConsent);
         body.put("observed", false);
-        body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
+        body.put("os_permission_status", Canonical.osPermissionStatus(capability));
         body.put("key_storage_status", key.getString("key_storage_status"));
         body.put("key_id", key.getString("key_id"));
         return signer.sign(body);
