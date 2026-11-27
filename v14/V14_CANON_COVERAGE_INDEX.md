@@ -2549,3 +2549,12 @@ The LOCAL_LINUX 4/4 harness is an isolated scope-algorithm reproduction, not ful
 | Runtime / Android / release | NOT_ACCEPTED / REDMI_UNVERIFIED / NOT_RELEASED | No normal C3 turn, Android grant/onStop, Termux/Redmi, updater or rollback test in this run | All native and release acceptance gates remain open |
 
 The local helper tests are isolated scratch evidence; GitHub Actions is hosted Linux CI. No status is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Historical V13 Canon bytes and the V14 master blueprint were not edited.
+
+
+## 2026-11-27 Run 71 — RAW EAR runtime boundary audit (additive)
+
+| Canon path | Evidence status | Exact evidence | Still not proven |
+|---|---|---|---|
+| Caller-fed RAW EAR PCM16 → timestamped audio PerceptPacket → A4/C3 admission | WIRED_SYNTHETIC | release-development audio_voice_cues.py blob b18e450162b062b09368a12b1ca18924ed8c5025; consume_pcm16_voice_window carries source hash, start/end, PROVISIONAL/FINAL, prosody/activity/non-speech and consent provenance | Android AudioRecord provider, real mic capture, calibrated speaker identity/change, Redmi lifecycle |
+| Signed one-shot Android audio consumer → actual Runtime | ISOLATED_MOCK / BLOCKED | PR #2312 tests use RuntimeStub; real Runtime.submit(self, text) has no audio_window keyword; audio_input.submit_audio_only raises RuntimeError on this Runtime | Same-turn real Runtime event/generation/lease propagation and C3 consumption |
+| Android companion AudioRecord provider | OFF / NOT_IMPLEMENTED | QA CapabilityRegistry explicitly says no visible one-shot AudioRecord provider; AudioCaptureDefaultOffTest confirms RECORD_AUDIO and microphone foreground service are absent | Visible consent flow, AudioRecord start/stop, route/silence handling, revocation, process-death/restart, real device |
