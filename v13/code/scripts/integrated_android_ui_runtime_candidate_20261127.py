@@ -233,26 +233,41 @@ def _patch_cognition(raw: bytes) -> bytes:
 
 
 def _patch_operator(raw: bytes) -> bytes:
-    if b"if cmd=='android':" in raw:
-        raise ValueError("Android operator route is already present")
-    raw = _replace_once(
-        raw,
-        b":ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)\n",
-        b":ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)\n"
-        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)\n",
-        "document local consent-gated Android companion commands",
+    has_route = b"if cmd=='android':" in raw
+    has_help = b":android status|capabilities|" in raw
+    if has_route and has_help:
+        return raw
+    if has_route or has_help:
+        raise ValueError("Android operator route/help is only partially present")
+
+    help_line = (
+        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)\\n"
     )
+    help_matches = [
+        line for line in raw.splitlines(keepends=True)
+        if line.lstrip().startswith(b":ctxos ")
+    ]
+    if len(help_matches) != 1:
+        raise ValueError(
+            "Android UI overlay anchor mismatch: Context OS help line count="
+            + str(len(help_matches))
+        )
+    help_anchor = help_matches[0]
+    if not help_anchor.endswith(b"\\n"):
+        help_anchor += b"\\n"
+    raw = raw.replace(help_matches[0], help_anchor + help_line, 1)
+
     raw = _replace_once(
         raw,
-        b"        if cmd=='callosum':\n"
-        b"            from .callosum import operator_command\n"
-        b"            return operator_command(r,args)\n",
-        b"        if cmd=='callosum':\n"
-        b"            from .callosum import operator_command\n"
-        b"            return operator_command(r,args)\n"
-        b"        if cmd=='android':\n"
-        b"            from .android_companion_runtime import operator_command\n"
-        b"            return operator_command(r,args)\n",
+        b"        if cmd=='callosum':\\n"
+        b"            from .callosum import operator_command\\n"
+        b"            return operator_command(r,args)\\n",
+        b"        if cmd=='callosum':\\n"
+        b"            from .callosum import operator_command\\n"
+        b"            return operator_command(r,args)\\n"
+        b"        if cmd=='android':\\n"
+        b"            from .android_companion_runtime import operator_command\\n"
+        b"            return operator_command(r,args)\\n",
         "dispatch local Android companion controls",
     )
     return raw
