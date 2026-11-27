@@ -2502,3 +2502,17 @@ This overlay does not promote A5 to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEP
 ### Run 64 final gate status (2026-11-27)
 
 The focused receiver is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted: final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` passes 25/25 on Python 3.13 and 25/25 on Python 3.14; runtime deployment integrity passes. Shared staged/integrated remains **FAIL** on Core-owned source pins and QA migration assertions. No local full-repo, native Android, real C3-turn or Redmi evidence. Do not promote the A5 screen/UI path beyond WIRED_SYNTHETIC. Core normal-turn Runtime/C3 and QA Android lifecycle remain OPEN.
+
+
+### Run 67 — A5 global RAW-EYE structural cue reaches A4 (2026-11-27)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| MediaProjection A5 global RAW-EYE → A4 visual salience | **WIRED_SYNTHETIC / FOCUSED_CI_PASS** | PR #2559 exact head `0411d6fc539a2442e7f49886da87cc7fbbb25c73`; shared extractor + A4 adapter; positive provider-frame path and uniform-frame zero-contribution negative; focused workflow 46016491056: 29/29 Python 3.13 and 29/29 Python 3.14, py_compile PASS | Normal Runtime/C3 callsite, real Android frame, OS permission/onStop/revoke lifecycle, Redmi proof, learned visual semantics/progress |
+| A5 PerceptPacket → A4 structural receipt | **WIRED_SYNTHETIC** | Packet carries five bounded structure components and source-bound A4 receipt with ATTENTION_ONLY / learned=false / action=false / learning=false | No C3 consumption in a normal user turn; no learned attention weights |
+| Shared staged/integrated product gate | **PENDING_AT_RUN67_POLL** | Workflow 46016490897 was IN_PROGRESS at last poll | Do not infer success; existing Core/QA source-pin and migration failures may remain |
+| Android MediaProjection / Redmi | **REDMI_UNVERIFIED** | No new private authenticated receipt; no device action performed | Permission grant, foreground lifecycle, onStop, process death, revoke, restart, rollback and real capture |
+| Action-conditioned visual progress / world model | **RESEARCH_ONLY** | R-186 WM-VS full-paper review; future action→visual outcome test design recorded | No action-conditioned visual predictor, no held-out task utility, no retention or weight update |
+
+This overlay does not promote the visual path beyond WIRED_SYNTHETIC or the product beyond NOT_RELEASED. Synthetic PNG/provider fixtures and hosted Linux CI are not native Android evidence.
+
