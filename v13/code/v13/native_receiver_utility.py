@@ -25,8 +25,8 @@ TASK_SCHEMA = "v14.native-receiver-task-score/1"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
 RESULT_SCHEMA = "v14.native-receiver-task-utility/1"
 SCORE_METHOD = "TEACHER_FORCED_TARGET_LOGPROB_V1"
-CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION")
-LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"})
+CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE")
+LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"})
 TASK_FAMILIES = frozenset({"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"})
 ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 KV_SNAPSHOT_SCHEMA = "v14.native-receiver-kv-snapshot/1"
@@ -158,6 +158,102 @@ def _audit_ood_donor_derangement(groups):
         "session_count": len(by_session),
         **totals,
         "sessions": session_reports,
+        "source_identity": "SOURCE_ID_AND_SHA256",
+    }
+
+
+
+def _audit_same_family_pairing_derangement(groups):
+    """Require a session-local, same-family, no-fixed-point donor permutation.
+
+    DERANGED_MESSAGE must carry a different task's candidate from the same
+    session and task family. This isolates example pairing without changing
+    the task surface/family. Source IDs and hashes remain aggregate-only.
+    """
+    by_session_family = defaultdict(list)
+    source_owner = {}
+    for task_group_id, group in groups.items():
+        anchor = group["NO_MESSAGE"]
+        source_ref = anchor["source_ref"]
+        source_key = (source_ref["source_id"], source_ref["sha256"])
+        if source_key in source_owner:
+            raise NativeReceiverUtilityError("duplicate task source in pairing derangement cohort")
+        owner = {
+            "task_group_id": task_group_id,
+            "session_id": anchor["session_id"],
+            "task_family": anchor["task_family"],
+        }
+        source_owner[source_key] = owner
+        by_session_family[(owner["session_id"], owner["task_family"])].append(owner)
+
+    totals = {
+        "task_group_count": len(groups),
+        "matched_donor_count": 0,
+        "unique_donor_count": 0,
+        "fixed_point_count": 0,
+        "cross_family_count": 0,
+        "external_donor_count": 0,
+        "cross_session_donor_count": 0,
+        "duplicate_donor_count": 0,
+    }
+    reports = []
+    all_pass = bool(by_session_family)
+    for (session_id, task_family), owners in sorted(by_session_family.items()):
+        task_ids = {owner["task_group_id"] for owner in owners}
+        donors = []
+        fixed_points = cross_family = external = cross_session = 0
+        for owner in owners:
+            message_ref = groups[owner["task_group_id"]]["DERANGED_MESSAGE"]["message_source_ref"]
+            donor_key = (message_ref["source_id"], message_ref["sha256"])
+            donor = source_owner.get(donor_key)
+            if donor is None:
+                external += 1
+            elif donor["session_id"] != session_id:
+                cross_session += 1
+            elif donor["task_family"] != task_family:
+                cross_family += 1
+            elif donor["task_group_id"] == owner["task_group_id"]:
+                fixed_points += 1
+            else:
+                donors.append(donor["task_group_id"])
+
+        unique = len(set(donors))
+        duplicates = len(donors) - unique
+        passed = (
+            len(owners) >= 2
+            and len(donors) == len(owners)
+            and unique == len(owners)
+            and set(donors) == task_ids
+            and not (fixed_points or cross_family or external or cross_session or duplicates)
+        )
+        reports.append({
+            "task_group_count": len(owners),
+            "matched_donor_count": len(donors),
+            "unique_donor_count": unique,
+            "fixed_point_count": fixed_points,
+            "cross_family_count": cross_family,
+            "external_donor_count": external,
+            "cross_session_donor_count": cross_session,
+            "duplicate_donor_count": duplicates,
+            "pass": passed,
+        })
+        for key, value in (
+            ("matched_donor_count", len(donors)),
+            ("unique_donor_count", unique),
+            ("fixed_point_count", fixed_points),
+            ("cross_family_count", cross_family),
+            ("external_donor_count", external),
+            ("cross_session_donor_count", cross_session),
+            ("duplicate_donor_count", duplicates),
+        ):
+            totals[key] += value
+        all_pass &= passed
+
+    return {
+        "status": "PASS" if all_pass else "NOT_ESTABLISHED",
+        "session_family_count": len(by_session_family),
+        **totals,
+        "session_families": reports,
         "source_identity": "SOURCE_ID_AND_SHA256",
     }
 
@@ -516,9 +612,9 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
     else:
         if message_source is None:
             raise NativeReceiverUtilityError("latent/control condition missing message source")
-        if condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+        if condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
             if message_source["sha256"] == source["sha256"]:
-                raise NativeReceiverUtilityError("OOD/entity-substitution source must differ")
+                raise NativeReceiverUtilityError("OOD/entity-substitution/deranged source must differ")
         elif message_source != source:
             raise NativeReceiverUtilityError("in-distribution latent control source mismatch")
         _sha(adapter_sha256, "adapter_sha256")
@@ -659,9 +755,9 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             elif native_binding != key: raise NativeReceiverUtilityError("native runner/model changed across cohort")
             if condition == "NO_MESSAGE":
                 if item["message_source_ref"] is not None: raise NativeReceiverUtilityError("NO_MESSAGE contains sender data")
-            elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+            elif condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
                 if item["message_source_ref"]["sha256"] == item["source_ref"]["sha256"]:
-                    raise NativeReceiverUtilityError("OOD/entity-substitution did not change sender source")
+                    raise NativeReceiverUtilityError("OOD/entity-substitution/deranged did not change sender source")
             elif item["message_source_ref"] != item["source_ref"]:
                 raise NativeReceiverUtilityError("in-distribution message source mismatch")
             scores[condition].append(item["mean_target_logprob"])
@@ -719,44 +815,59 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     system_gain = delta_report["NO_MESSAGE"]
     entity_specificity_gain = delta_report["ENTITY_SUBSTITUTION"]
     unrelated_donor_gain = delta_report["OOD"]
+    pairing_gain = delta_report["DERANGED_MESSAGE"]
     donor_derangement = _audit_ood_donor_derangement(groups)
+    pairing_derangement = _audit_same_family_pairing_derangement(groups)
     full_derangement_tested = donor_derangement["status"] == "PASS"
+    pairing_derangement_tested = pairing_derangement["status"] == "PASS"
     system_gain_pass = bool(enough and system_gain["pass"])
     entity_specificity_pass = bool(enough and entity_specificity_gain["pass"])
+    pairing_gain_pass = bool(enough and pairing_derangement_tested and pairing_gain["pass"])
     unrelated_donor_gain_pass = bool(
         enough and full_derangement_tested and unrelated_donor_gain["pass"]
     )
     if not enough:
         information_use_status = "INSUFFICIENT_HOLDOUT"
-    elif system_gain_pass and entity_specificity_pass and unrelated_donor_gain_pass:
-        information_use_status = "CONTENT_SPECIFIC_SIGNAL"
+    elif system_gain_pass and entity_specificity_pass and pairing_gain_pass:
+        information_use_status = (
+            "CONTENT_SPECIFIC_SIGNAL" if unrelated_donor_gain_pass
+            else "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
+        )
+    elif system_gain_pass and pairing_gain_pass:
+        information_use_status = "PAIRING_SIGNAL_WITHOUT_ENTITY_COUNTERFACTUAL"
     elif system_gain_pass and entity_specificity_pass:
-        information_use_status = "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+        information_use_status = "ENTITY_SPECIFIC_GAIN_WITHOUT_SAME_FAMILY_PAIRING"
     elif system_gain_pass:
-        information_use_status = "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+        information_use_status = "SYSTEM_GAIN_WITHOUT_CONTENT_SPECIFIC_SIGNAL"
     else:
         information_use_status = "NO_SYSTEM_GAIN_ESTABLISHED"
     information_use_audit = {
-        "schema": "v14.native-receiver-information-use-audit/1",
+        "schema": "v14.native-receiver-information-use-audit/2",
         "status": information_use_status,
         "system_gain_vs_no_message": dict(system_gain),
         "entity_specificity_gain_vs_counterfactual": dict(entity_specificity_gain),
+        "pairing_gain_vs_same_family_deranged_control": dict(pairing_gain),
+        "same_family_pairing_derangement": pairing_derangement,
+        "cross_family_unrelated_donor_gain": dict(unrelated_donor_gain),
         "unrelated_donor_gain_vs_deranged_control": dict(unrelated_donor_gain),
         "unrelated_donor_derangement": donor_derangement,
         "system_gain_pass": system_gain_pass,
         "entity_specificity_pass": entity_specificity_pass,
+        "pairing_gain_pass": pairing_gain_pass,
+        "same_family_pairing_derangement_tested": pairing_derangement_tested,
         "unrelated_donor_gain_pass": unrelated_donor_gain_pass,
         "holdout_sufficient": bool(enough),
         "counterfactual_kind": (
-            "SESSION_LOCAL_NO_FIXED_POINT_CROSS_FAMILY_DONOR_PERMUTATION"
-            if full_derangement_tested
-            else "ENTITY_ONLY_SOURCE_PAIR; OOD_DERANGEMENT_NOT_ESTABLISHED"
+            "SAME_FAMILY_SESSION_LOCAL_NO_FIXED_POINT_PERMUTATION"
+            if pairing_derangement_tested
+            else "SAME_FAMILY_PAIRING_DERANGEMENT_NOT_ESTABLISHED"
         ),
         "full_derangement_tested": full_derangement_tested,
+        "cross_family_ood_derangement_tested": full_derangement_tested,
         "interpretation_limit": (
-            "Teacher-forced target-logprob proxy only; a complete matched-versus-"
-            "deranged donor effect is necessary but does not prove generated-answer "
-            "correctness or semantic use."
+            "Teacher-forced target-logprob proxy only; matched-versus-same-family-"
+            "deranged pairing is necessary evidence but does not prove generated-"
+            "answer correctness or semantic use."
         ),
         "semantic_use_proven": False,
         "generated_answer_correctness_proven": False,
