@@ -634,7 +634,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             })
             continue
         if expected_condition == "DIRECT_TEXT_REFERENCE":
-            if vectors not in ([], ()) or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 512:
+            if vectors not in ([], ()) or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 64:
                 raise NativeReceiverError("DIRECT_TEXT_REFERENCE requires 1..512 receiver-tokenizer IDs and no vectors")
             if any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids):
                 raise NativeReceiverError("DIRECT_TEXT_REFERENCE token IDs must be non-negative int32 values")
