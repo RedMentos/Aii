@@ -508,6 +508,8 @@ def _run(runtime):
             state = dict(state)
             state.update({"status": "COMPLETED", "completed_at": time.time()})
             runtime.store.set_state(KEY, state, expected=version)
+        result = dict(result)
+        result["native_receiver_effects"] = _native_receiver_effects(runtime, strict=True)
         return result
     except BaseException as exc:
         state, version = runtime.store.state(KEY, None)
@@ -529,6 +531,118 @@ def _run(runtime):
             runtime._native_receiver_matrix_target_token_ids = None
             runtime._native_receiver_matrix_pair_record = None
             runtime._native_receiver_matrix_staged_at = None
+
+
+
+def _native_receiver_effects(runtime, *, strict):
+    """Expose the Perception cohort's read-only K/V and target-logprob evidence.
+
+    K/V differences are structural receiver-state evidence only. The
+    information-use audit is a teacher-forced target-logprob proxy; neither
+    proves semantic use or generated-answer correctness.
+    """
+    from .native_receiver_task_score import evaluate_task_score_cohort, task_score_status
+
+    safe_base = {
+        "persisted": False,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    try:
+        status = task_score_status(runtime)
+        if not isinstance(status, Mapping):
+            raise NativeReceiverMatrixRuntimeError("Perception task-score status is malformed")
+        base = {
+            "status": status.get("status"),
+            "task_group_count": status.get("task_group_count", 0),
+            "complete_task_group_count": status.get("complete_task_group_count", 0),
+            "incomplete_task_group_count": status.get("incomplete_task_group_count", 0),
+            **safe_base,
+        }
+        if status.get("complete_task_group_count", 0) == 0 or status.get("incomplete_task_group_count", 0):
+            return base
+
+        cohort = evaluate_task_score_cohort(runtime)
+        if not isinstance(cohort, Mapping):
+            raise NativeReceiverMatrixRuntimeError("Perception task-score cohort is malformed")
+        kv = cohort.get("kv_snapshot_effect")
+        information = cohort.get("information_use_audit")
+        if not isinstance(kv, Mapping) or not isinstance(information, Mapping):
+            raise NativeReceiverMatrixRuntimeError("Perception K/V or information-use summary is missing")
+
+        for name, summary in (("K/V", kv), ("information-use", information)):
+            for field in ("semantic_use_proven", "generated_answer_correctness_proven", "production_route", "persisted"):
+                if summary.get(field) is not False:
+                    raise NativeReceiverMatrixRuntimeError(name + " summary carries forbidden authority or proof")
+            for field in ("training_authority", "native_receiver_authority"):
+                if summary.get(field) != 0:
+                    raise NativeReceiverMatrixRuntimeError(name + " summary carries forbidden authority")
+
+        evidence_class = cohort.get("evidence_class")
+        if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
+            counts = kv.get("distinct_from_no_message_task_groups_by_condition")
+            if (kv.get("scope") != "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
+                    or type(kv.get("snapshot_count")) is not int
+                    or kv.get("snapshot_count", 0) < len(CONDITIONS)
+                    or type(kv.get("task_group_count")) is not int
+                    or kv.get("task_group_count", 0) < 1
+                    or type(kv.get("duplicate_input_groups_checked")) is not int
+                    or kv.get("duplicate_input_groups_checked", 0) < 1
+                    or kv.get("same_input_consistency_passed") is not True
+                    or not isinstance(counts, Mapping)
+                    or set(counts) != set(CONDITIONS)
+                    or any(type(value) is not int or value < 0 for value in counts.values())):
+                raise NativeReceiverMatrixRuntimeError("Perception K/V effect summary failed its structural contract")
+        elif not (kv.get("status") == "UNAVAILABLE" and evidence_class == "SYNTHETIC"):
+            raise NativeReceiverMatrixRuntimeError("native receiver K/V effect is unavailable for non-synthetic evidence")
+
+        if information.get("schema") != "v14.native-receiver-information-use-audit/1":
+            raise NativeReceiverMatrixRuntimeError("Perception information-use audit schema is invalid")
+
+        kv_fields = (
+            "status", "task_group_count", "snapshot_count",
+            "candidate_differs_from_no_message_count", "candidate_differs_from_exact_message_count",
+            "distinct_from_no_message_task_groups_by_condition", "duplicate_input_groups_checked",
+            "same_input_consistency_passed", "scope", "semantic_use_proven",
+            "generated_answer_correctness_proven", "production_route", "training_authority",
+            "native_receiver_authority", "persisted",
+        )
+        information_fields = (
+            "schema", "status", "system_gain_vs_no_message",
+            "entity_specificity_gain_vs_counterfactual", "unrelated_donor_gain_vs_deranged_control",
+            "unrelated_donor_derangement", "system_gain_pass", "entity_specificity_pass",
+            "unrelated_donor_gain_pass", "holdout_sufficient", "counterfactual_kind",
+            "full_derangement_tested", "interpretation_limit", "semantic_use_proven",
+            "generated_answer_correctness_proven", "production_route", "training_authority",
+            "native_receiver_authority", "persisted",
+        )
+        return {
+            "status": cohort.get("status"),
+            "evidence_class": evidence_class,
+            "task_group_count": status.get("task_group_count", 0),
+            "complete_task_group_count": status.get("complete_task_group_count", 0),
+            "incomplete_task_group_count": status.get("incomplete_task_group_count", 0),
+            "kv_snapshot_effect": {key: kv[key] for key in kv_fields if key in kv},
+            "information_use_audit": {key: information[key] for key in information_fields if key in information},
+            "interpretation_limit": (
+                "Read-only K/V state differences and teacher-forced target-logprob proxy; "
+                "not semantic use or generated-answer correctness."
+            ),
+            **safe_base,
+        }
+    except Exception as exc:
+        if strict:
+            if isinstance(exc, NativeReceiverMatrixRuntimeError):
+                raise
+            raise NativeReceiverMatrixRuntimeError("Perception native receiver effect summary failed closed") from exc
+        return {
+            "status": "INVALID_EFFECT_SUMMARY",
+            "failure_kind": type(exc).__name__,
+            **safe_base,
+        }
 
 
 def _status(runtime):
@@ -561,6 +675,7 @@ def _status(runtime):
         if isinstance(approval_record, dict) and approval_record.get("schema") == SCHEMA
         else None
     )
+    native_receiver_effects = _native_receiver_effects(runtime, strict=False)
     return {
         "schema": SCHEMA,
         "status": "READY" if staged else "NO_MATRIX_STAGED",
@@ -569,6 +684,7 @@ def _status(runtime):
         "approval_expires_at": expires_at,
         "android_status": "REDMI_UNVERIFIED",
         "native_execution_environment": "LOCAL_LINUX_ONLY_UNTIL_DEVICE_RECEIPT_INTEGRATION",
+        "native_receiver_effects": native_receiver_effects,
         "persisted_vectors": False,
         "production_route": False,
         "semantic_use_proven": False,
