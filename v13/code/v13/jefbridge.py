@@ -170,6 +170,9 @@ class JEFBridge:
             or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
             or actual.get("t8_authoritative") is not False
             or actual.get("world_learning_eligible") is not False
+            or actual.get("production_route") is not False
+            or actual.get("training_authority") != 0
+            or actual.get("native_receiver_authority") != 0
             or actual.get("android_os_permission_status") != {
                 "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
                 "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
