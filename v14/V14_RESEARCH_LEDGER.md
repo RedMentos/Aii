@@ -1883,3 +1883,20 @@ The explicit learning-rate sweep (0.02, 0.05, 0.10, 0.20) kept the same pattern:
 **Local/device boundary:** full LOCAL_LINUX Aii checkout/pytest remains BLOCKED / NOT RUN (no checkout mounted; GitHub DNS failure). No Android/Termux, microphone/AudioRecord, native model, B1/B2 normal-turn or Redmi test. Last private V13OBS #115 is historical (2026-11-24); #998/#999 expired without receipt. REDMI_UNVERIFIED; current updater/install state unknown. No device action, model/weight swap, permission change or raw audio persistence.
 
 **Next:** Core owns the stale Recovery→Stage→RuntimeDeploy pin chain; QA owns migration assertions. After their rebase, rerun the exact staged/integrated gates. Perception's next experiment is source/session-disjoint omission false-positive and update-gating evaluation; do not promote the A4 learner or change its default based on these synthetic fixtures.
+
+
+## Run 55 extension — A4 event-expectation omission ablation (2026-11-27)
+
+The same A4 experiment now also exercises the existing `AudioEventExpectationRegistry` directly. Code commit `a44c39b1e1e5c9b38942cdc0dd55aa410105e4cc`; test/code branch head `f45eb1b30befc406b5f65f4f0858d06785de4bd9`; workflow run **45925644718** completed with **9/9 tests PASS on Python 3.13 and 3.14** and identical deterministic output.
+
+Synthetic controlled result:
+- Four VOICED onsets establish three 2-second intervals. An on-time fifth event produces no omission and 0 novelty.
+- A final valid SILENCE window spanning the expected 8,000 ms event plus tolerance produces one omitted-VOICED event, timing-confidence proxy 0.60 and bounded omission novelty 0.03 (cap 0.05).
+- UNCERTAIN censors the expected event; PROVISIONAL is ignored but leaves the prior state unchanged, so a later FINAL silence window is evaluated; consent rotation resets the interval model; a no-context reset never accumulates enough intervals to emit an omission.
+- Interleaved expected/missing streams match isolated execution exactly.
+
+This is a deterministic timing-rule fixture, not calibrated event probability, semantic audio understanding, or a false-positive estimate on real audio. No PCM, microphone, speaker identity or user data was used or stored.
+
+At this checkpoint, A4/A5 feature-set run **45925644769** passed on Python 3.13/3.14; RAW EAR fastpath **45925644699** passed 155/155 on each; RuntimeDeploy offline **45925644734** passed on Python 3.11/3.14. WebRTC/libfvad comparison **45925644686** was still in progress (3.13 benchmark step completed; 3.14 not final). Staged runtime **45925644732** failed at the same Core composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; integrated regression in that run was still running at this checkpoint. Previous integrated run **45924853105** failed one setup test at the same Core composer pin.
+
+LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVERIFIED; PR #2540 remains DRAFT / NOT_RELEASED.
