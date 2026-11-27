@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
 from v13.vision_ui_frame_ingress import (
     ProviderFrameVerifier, _feature_summary, _issue_provider_frame_verifier,
-    _load_local_tile_projector, _summary, consume_projected_frame,
+    _load_local_tile_projector, _score_student_tiles, _summary, consume_projected_frame,
     consume_projected_frame_from_provider, consume_projected_frame_scope,
 )
 
@@ -98,6 +98,14 @@ def image_buffer():
     draw = ImageDraw.Draw(image)
     draw.rectangle((38, 14, 59, 52), fill=(230, 20, 18))
     draw.rectangle((8, 8, 19, 24), fill=(12, 180, 220))
+    output = BytesIO()
+    image.save(output, format="PNG")
+    image.close()
+    return bytearray(output.getvalue())
+
+
+def uniform_image_buffer(color=(96, 96, 96)):
+    image = Image.new("RGB", (64, 64), color)
     output = BytesIO()
     image.save(output, format="PNG")
     image.close()
@@ -286,6 +294,20 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["packet"]["derived_packet_persisted"] is False
         assert result["packet"]["teacher_used"] is False
         assert result["packet"]["student_projector_used"] is False
+        assert result["packet"]["raw_eye_structure"] > 0.0
+        assert set(result["packet"]["raw_eye_components"]) == {
+            "global_contrast", "global_edge_energy", "cell_edge_energy",
+            "spatial_color", "luminance_range",
+        }
+        assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
+        assert result["packet"]["a4_raw_eye_signal"]["learned"] is False
+        global_segment = result["packet"]["segments"][1]
+        assert global_segment["modality"] == "visual"
+        assert global_segment["producer_component"] == "A5_VISUAL"
+        assert global_segment["source_ref"]["modality"] == "visual"
+        assert global_segment["source_ref"]["sha256"] == expected_hash
+        assert result["a4"]["raw_eye_signal"]["score"] == result["packet"]["raw_eye_structure"]
+        assert sum(row["weight"] for row in result["a4"]["segments"]) == pytest.approx(1.0, abs=1e-5)
         assert result["packet"]["learning_authority"] is False
         assert result["packet"]["action_authority"] is False
         assert result["a4"]["truth_authority"] == 0
@@ -293,6 +315,32 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["context_packet_count"] == 1
         assert result["caller_buffer_overwritten"] is True
         assert not any(frame)
+
+
+def test_uniform_frame_has_zero_raw_eye_structure_contribution(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = uniform_image_buffer()
+
+    with lease_for(runtime, obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.", goal="neutral screen",
+            token_budget=512,
+        )
+
+    assert result["raw_eye_structure"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["score"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["contribution"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["learned"] is False
+    global_row = next(row for row in result["a4"]["segments"] if row["index"] == 1)
+    assert global_row["raw_eye_structure"] == 0.0
+    assert global_row["raw_eye_contribution"] == 0.0
+    assert global_row["score"] == global_row["base_score"]
+    assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
+    assert result["packet"]["action_authority"] is False
+    assert result["packet"]["learning_authority"] is False
+    assert not any(frame)
 
 
 def test_bounded_frame_config_cannot_expand_capture_limits():
@@ -597,6 +645,223 @@ def test_local_a3_student_projector_scores_heldout_ui_tiles_and_reaches_a5(monke
         assert result["caller_buffer_overwritten"] is True
 
 
+def test_a5_student_projector_gate_abstains_only_out_of_distribution_rows():
+    class FakeProjector:
+        def standardized_distance(self, features):
+            assert features.shape == (16, 37)
+            return np.asarray([0.2] * 8 + [2.0] * 8, dtype=np.float64)
+        def __call__(self, features):
+            return np.tile(np.asarray([[1.0, 0.0]], dtype=np.float64), (len(features), 1))
+
+    region_ids = [f"r{index // 4}{index % 4}" for index in range(16)]
+    student = {
+        "projector": FakeProjector(),
+        "query": np.asarray([1.0, 0.0]),
+        "background": np.asarray([0.0, 1.0]),
+        "ood_gate_version": 1,
+        "ood_threshold": 1.0,
+    }
+    scores, status, ood_regions, threshold = _score_student_tiles(
+        student, np.zeros((16, 37), dtype=np.float32), region_ids,
+    )
+    assert status == "PARTIAL_OOD"
+    assert threshold == 1.0
+    assert len(scores) == 8
+    assert len(ood_regions) == 8
+    assert set(scores).isdisjoint(ood_regions)
+    assert set(scores) | set(ood_regions) == set(region_ids)
+    assert all(value == pytest.approx(1.0) for value in scores.values())
+
+
+def test_a5_student_projector_gate_full_shift_abstains_without_scores():
+    class FakeProjector:
+        def standardized_distance(self, features):
+            return np.full(len(features), 2.0, dtype=np.float64)
+        def __call__(self, features):
+            raise AssertionError("fully OOD rows must not reach the projector head")
+
+    region_ids = [f"r{index // 4}{index % 4}" for index in range(16)]
+    student = {
+        "projector": FakeProjector(),
+        "query": np.asarray([1.0, 0.0]),
+        "background": np.asarray([0.0, 1.0]),
+        "ood_gate_version": 1,
+        "ood_threshold": 1.0,
+    }
+    scores, status, ood_regions, threshold = _score_student_tiles(
+        student, np.zeros((16, 37), dtype=np.float32), region_ids,
+    )
+    assert status == "OUT_OF_DISTRIBUTION"
+    assert scores == {}
+    assert ood_regions == region_ids
+    assert threshold == 1.0
+
+
+def test_a5_student_projector_gate_keeps_legacy_records_ungated():
+    class FakeProjector:
+        def __call__(self, features):
+            return np.tile(np.asarray([[1.0, 0.0]], dtype=np.float64), (len(features), 1))
+
+    region_ids = [f"r{index // 4}{index % 4}" for index in range(16)]
+    student = {
+        "projector": FakeProjector(),
+        "query": np.asarray([1.0, 0.0]),
+        "background": np.asarray([0.0, 1.0]),
+        "ood_gate_version": 0,
+        "ood_threshold": None,
+    }
+    scores, status, ood_regions, threshold = _score_student_tiles(
+        student, np.zeros((16, 37), dtype=np.float32), region_ids,
+    )
+    assert status == "USED"
+    assert len(scores) == 16
+    assert ood_regions == []
+    assert threshold is None
+
+
+def test_a5_student_projector_gate_rejects_invalid_metadata():
+    class FakeProjector:
+        def standardized_distance(self, features):
+            return np.zeros(len(features), dtype=np.float64)
+    student = {
+        "projector": FakeProjector(),
+        "query": np.asarray([1.0, 0.0]),
+        "background": np.asarray([0.0, 1.0]),
+        "ood_gate_version": 1,
+        "ood_threshold": float("nan"),
+    }
+    with pytest.raises(ValueError, match="threshold"):
+        _score_student_tiles(
+            student, np.zeros((16, 37), dtype=np.float32),
+            [f"r{index // 4}{index % 4}" for index in range(16)],
+        )
+
+
+def test_local_a3_loader_binds_valid_ood_gate_metadata_and_skips_invalid(monkeypatch, tmp_path):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    record = runtime.store._state[vision.KEY]["tile_projector"]
+    record.update({"ood_gate_version": 1, "ood_threshold": 1.25})
+
+    loaded = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
+    assert loaded["status"] == "READY"
+    assert loaded["ood_gate_version"] == 1
+    assert loaded["ood_threshold"] == pytest.approx(1.25)
+    assert loaded["projector"].ood_threshold == pytest.approx(1.25)
+
+    record["ood_threshold"] = float("nan")
+    invalid = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
+    assert invalid["status"] == "INVALID_OOD_GATE_METADATA"
+
+
+def test_a5_provider_consumer_applies_partial_ood_abstention_to_c3_context(monkeypatch, tmp_path):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    runtime.store._state[vision.KEY]["tile_projector"].update({
+        "ood_gate_version": 1, "ood_threshold": 1.0,
+    })
+    monkeypatch.setattr(
+        vision.Projector,
+        "standardized_distance",
+        lambda _self, features: np.asarray([0.2] * 8 + [2.0] * 8, dtype=np.float64),
+    )
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="What is on this screen?",
+            goal="red panel", token_budget=8192, context_budget_chars=4096,
+        )
+
+    assert result["status"] == "A5_RAW_EYE_CONSUMED"
+    assert result["student_projector_status"] == "PARTIAL_OOD"
+    assert result["student_projector_evaluated"] is True
+    assert result["student_projector_used"] is True
+    assert len(result["student_goal_margins"]) == 8
+    assert len(result["student_ood_regions"]) == 8
+    estimate = result["packet"]["student_estimate"]
+    assert estimate["ood_gate_version"] == 1
+    assert estimate["ood_threshold"] == pytest.approx(1.0)
+    assert len(estimate["ood_regions"]) == 8
+    assert estimate["evaluated"] is True
+    assert "student_gate=PARTIAL_OOD" in result["context_envelope"].optional_context
+    assert result["packet"]["learning_authority"] is False
+    assert result["packet"]["action_authority"] is False
+    assert result["caller_buffer_overwritten"] is True
+
+
+def test_a5_provider_consumer_full_ood_keeps_raw_eye_but_emits_no_student_margin(monkeypatch, tmp_path):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    runtime.store._state[vision.KEY]["tile_projector"].update({
+        "ood_gate_version": 1, "ood_threshold": 1.0,
+    })
+    monkeypatch.setattr(
+        vision.Projector,
+        "standardized_distance",
+        lambda _self, features: np.full(len(features), 2.0, dtype=np.float64),
+    )
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="What is on this screen?",
+            goal="red panel", token_budget=8192, context_budget_chars=4096,
+        )
+
+    assert result["status"] == "A5_RAW_EYE_CONSUMED"
+    assert result["student_projector_status"] == "OUT_OF_DISTRIBUTION"
+    assert result["student_projector_evaluated"] is True
+    assert result["student_projector_used"] is False
+    assert result["student_goal_margins"] == {}
+    assert len(result["student_ood_regions"]) == 16
+    estimate = result["packet"]["student_estimate"]
+    assert estimate["authority"] == "NONE"
+    assert estimate["ood_regions"] == result["student_ood_regions"]
+    assert "student_gate=OUT_OF_DISTRIBUTION" in result["context_envelope"].optional_context
+    assert "student_goal_margin=" not in result["context_envelope"].optional_context
+    assert result["packet"]["learning_authority"] is False
+    assert result["packet"]["action_authority"] is False
+    assert result["caller_buffer_overwritten"] is True
+
+
+def test_a5_invalid_ood_metadata_skips_only_optional_student(monkeypatch, tmp_path):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    runtime.store._state[vision.KEY]["tile_projector"].update({
+        "ood_gate_version": 1, "ood_threshold": float("nan"),
+    })
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.",
+            goal="red panel",
+        )
+
+    assert result["status"] == "A5_RAW_EYE_CONSUMED"
+    assert result["student_projector_status"] == "INVALID_OOD_GATE_METADATA"
+    assert result["student_projector_used"] is False
+    assert result["packet"]["student_estimate"]["authority"] == "NONE"
+    assert result["packet"]["student_estimate"]["evaluated"] is False
+    assert len(result["packet"]["segments"]) == 18
+    assert result["caller_buffer_overwritten"] is True
+
+
 def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye(monkeypatch, tmp_path):
     from v13 import vision
 
@@ -617,6 +882,7 @@ def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye
         assert result["status"] == "A5_RAW_EYE_CONSUMED"
         assert len(result["packet"]["segments"]) == 18
         assert result["caller_buffer_overwritten"] is True
+
 
 
 @pytest.mark.parametrize("weight_shape", [(38, 256), (38, 100_000_000)])
