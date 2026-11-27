@@ -1585,3 +1585,57 @@ def test_persistent_numeric_weights_retry_repeated_cross_registry_conflicts(tmp_
         assert registry_c._states[(source_id, generation_id, "session-c")].store_version == 5
     finally:
         runtime.store.close()
+
+
+def test_persistent_numeric_weights_fail_closed_after_retry_limit(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    registry_a = AudioTemporalPredictionRegistry(store=runtime.store)
+    registry_b = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-cross-registry-retry-exhaustion"
+    generation_id = event["brain_generation_id"]
+    consent_scope_id = "d" * 64
+    persistent_key = registry_a._persistent_key(source_id, generation_id)[2]
+
+    def feed(registry, session_id, index, cues):
+        return registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_id,
+            consent_scope_id=consent_scope_id,
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        )
+
+    try:
+        feed(registry_a, "session-a", 0, SILENCE)
+        feed(registry_b, "session-b", 0, UNCERTAIN)
+        feed(registry_a, "session-a", 1, VOICED)
+        assert runtime.store.state(persistent_key, None)[1] == 2
+
+        original_save = registry_b._save_persistent
+        save_calls = 0
+
+        def continuously_interleaved_save(source, generation, consent, predictor, expected_version):
+            nonlocal save_calls
+            save_calls += 1
+            if save_calls in (2, 3, 4):
+                # Advance the shared checkpoint after each reload but before B's
+                # corresponding CAS. The bounded retry budget must eventually stop.
+                cue = SILENCE if save_calls % 2 == 0 else VOICED
+                feed(registry_a, "session-a", save_calls, cue)
+            return original_save(source, generation, consent, predictor, expected_version)
+
+        registry_b._save_persistent = continuously_interleaved_save
+        result = feed(registry_b, "session-b", 1, VOICED)
+
+        assert save_calls == 4  # initial stale save + exactly three retry attempts
+        assert result["status"] == "PERSISTENCE_CONFLICT"
+        assert len(registry_b) == 0  # stale session history is discarded
+        persisted, final_version = runtime.store.state(persistent_key, None)
+        assert final_version == 5
+        assert persisted["updates"] == 3  # only A's three committed updates survive
+        assert registry_a._states[(source_id, generation_id, "session-a")].store_version == final_version
+    finally:
+        runtime.store.close()
