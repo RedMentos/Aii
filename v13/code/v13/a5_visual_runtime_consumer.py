@@ -104,7 +104,6 @@ def consume_for_turn(runtime, event, goal, lease_stack, deadline):
         raise ValueError("A5 provider returned an empty or invalid frame")
 
     from .a5_visual_frame_bridge import A5VisualFrameAdapter
-    from .a4_visual_salience import apply_raw_eye_structure
 
     adapter = getattr(runtime, "_a5_visual_adapter", None)
     if adapter is None:
@@ -146,12 +145,15 @@ def consume_for_turn(runtime, event, goal, lease_stack, deadline):
     if not isinstance(source_ref, dict) or source_ref != segment.get("source_ref"):
         raise ValueError("A5 visual packet source binding is inconsistent")
 
-    a4 = apply_raw_eye_structure(
-        result["a4"],
-        segment,
-        packet_value["raw_eye_structure"],
-        packet_value["raw_eye_components"],
-    )
+    a4 = result.get("a4")
+    raw_eye_signal = a4.get("raw_eye_signal") if isinstance(a4, dict) else None
+    if (
+        not isinstance(raw_eye_signal, dict)
+        or raw_eye_signal.get("source_ref") != source_ref
+        or raw_eye_signal.get("authority") != "ATTENTION_ONLY"
+        or raw_eye_signal.get("learned") is not False
+    ):
+        raise ValueError("A5 adapter did not deliver its source-bound RAW-EYE signal to A4")
     a4_rows = a4.get("segments")
     if not isinstance(a4_rows, list) or len(a4_rows) != 1:
         raise ValueError("A5 visual frame must map to exactly one A4 salience row")
@@ -190,6 +192,8 @@ def consume_for_turn(runtime, event, goal, lease_stack, deadline):
         "raw_eye_structure": round(float(packet_value["raw_eye_structure"]), 6),
         "a4_base_salience": round(float(a4_row["base_score"]), 6),
         "a4_visual_salience": round(float(a4_row["score"]), 6),
+        "a4_salience_authority": raw_eye_signal["authority"],
+        "a4_salience_learned": raw_eye_signal["learned"],
         "a4_raw_eye_contribution": round(float(a4_row["raw_eye_contribution"]), 6),
         "student_hypotheses": hypotheses,
         "interpretation_limit": (
