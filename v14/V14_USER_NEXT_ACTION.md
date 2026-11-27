@@ -2377,3 +2377,12 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 - This is synthetic timing-rule evidence, not calibrated probability or real microphone evidence. No PCM or user audio.
 - A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparison 45925644686 and integrated job 45925644732 were still running at the checkpoint. Staged run 45925644732 already FAILs on the Core audio-composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; prior integrated run 45924853105 also failed at that composer pin.
 - Local full suite NOT RUN; REDMI_UNVERIFIED; current updater/install state unknown; NOT_RELEASED. No device/model/permission change. Next: Core/QA repair their owned gates; Perception continues source/session-disjoint omission false-positive/update-gating ablations. No user action needed.
+
+
+## Run 55 — latest CI status (2026-11-27)
+
+A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 PASS both; RuntimeDeploy offline 45925644734 PASS on 3.11/3.14. WebRTC/libfvad comparison 45925644686 has a successful 3.13 job, while 3.14 was still running at last readback.
+
+The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
+
+No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**
