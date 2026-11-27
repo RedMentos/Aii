@@ -554,8 +554,47 @@ class ActionGate:
         if tool:add('EXTERNAL_TOOL',tool['utility'],.1,'local_tool' if tool['risk']=='READ_LOCAL' else 'external_tool',1. if tool['risk']=='READ_LOCAL' else 0.,'TOOL_CALL')  # WP-K: concrete proposal
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
+    MAX_CONTEXT_SOURCE_REFS=64
+    MAX_CONTEXT_ITEMS=16
+    def _context_source_receipt(self,e,coalition):
+        """Bind C5's actual coalition inputs to validated source bytes."""
+        refs=[];seen=set();contexts=[];organs=['A_SOURCE']
+        total=0;refs_truncated=False;items_truncated=False
+        def add(ref):
+            nonlocal total,refs_truncated
+            if type(ref) is not dict:raise ValueError('ActionSelection source ref must be an object')
+            key=json.dumps(ref,ensure_ascii=False,sort_keys=True,separators=(',',':'))
+            if key in seen:return key
+            # Validate every unique reference against the actual source store;
+            # a stale/deleted/hash-mismatched context must not become provenance.
+            self.s.read_source(ref)
+            seen.add(key);total+=1
+            if len(refs)<self.MAX_CONTEXT_SOURCE_REFS:refs.append(dict(ref))
+            else:refs_truncated=True
+            return key
+        add(e['source_ref'])
+        for index,item in enumerate(coalition):
+            if type(item) is not dict:raise ValueError('ActionSelection coalition item must be an object')
+            item_id=item.get('item_id');kind=item.get('source_kind')
+            if not isinstance(item_id,str) or not isinstance(kind,str):
+                raise ValueError('ActionSelection coalition item identity missing')
+            if kind not in organs:organs.append(kind)
+            item_refs=item.get('source_refs',[])
+            if item_refs is None:item_refs=[]
+            if not isinstance(item_refs,list):raise ValueError('ActionSelection item source_refs must be a list')
+            local=[];local_seen=set()
+            for ref in item_refs:
+                key=add(ref)
+                if key not in local_seen:
+                    local.append(dict(ref));local_seen.add(key)
+            if index<self.MAX_CONTEXT_ITEMS:
+                contexts.append({'item_id':item_id,'source_kind':kind,'source_refs':local,'source_bound':bool(local)})
+            else:items_truncated=True
+        return {'source_refs':refs,'source_ref_count':total,'source_refs_truncated':refs_truncated,
+                'context_sources':contexts,'context_sources_truncated':items_truncated,
+                'context_input_organs':organs,'context_source_validation':'STORE_READ_SOURCE_ALL_UNIQUE_REFS'}
     def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
-        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
+        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);source_context=self._context_source_receipt(e,coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
             if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
@@ -574,12 +613,16 @@ class ActionGate:
             learning,_=learned_c5(self.s,cands,route,effort)  # WP-N4: learned promote/suppress pathways (scores shift only in ACTIVE)
         live=sorted((c for c in cands if 'suppressed' not in c),key=lambda c:(-c['score'],c['action_id']))
         chosen=live[0];alternates=[c['action_id'] for c in live[1:]]
-        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],[e['source_ref']],selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
+        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],source_context['source_refs'],selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
                  candidates=[{k:c[k] for k in ('action_id','action_type','score','expected_utility','expected_cost','focal_support','permission_class')} for c in cands],
                  suppressed=[{'action_id':c['action_id'],'reason':c['suppressed']} for c in suppressed],permission_class=chosen['permission_class'],
-                 alternates=alternates,route_prior=self.PRIOR.get(route),stage='PREDICTION' if predicted else 'COMMIT',parameter_status='BOOT_REPRODUCES_ROUTE_TABLE',learning=learning,route_hint=route,action_gain=round(g_act,6),clarify=clarify)
+                 alternates=alternates,route_prior=self.PRIOR.get(route),stage='PREDICTION' if predicted else 'COMMIT',parameter_status='BOOT_REPRODUCES_ROUTE_TABLE',learning=learning,route_hint=route,action_gain=round(g_act,6),clarify=clarify,
+                 source_refs=source_context['source_refs'],source_ref_count=source_context['source_ref_count'],source_refs_truncated=source_context['source_refs_truncated'],
+                 context_sources=source_context['context_sources'],context_sources_truncated=source_context['context_sources_truncated'],
+                 context_input_organs=source_context['context_input_organs'],context_source_validation=source_context['context_source_validation'])
         self.s.add_packet('ActionSelection',p)
-        return {'role':chosen['action_id'],'packet_id':p['packet_id'],'alternates':alternates,'suppressed':p['suppressed']}
+        return {'role':chosen['action_id'],'packet_id':p['packet_id'],'alternates':alternates,'suppressed':p['suppressed'],
+                'source_refs':source_context['source_refs'],'context_input_organs':source_context['context_input_organs']}
 
 
 def summary(store,session,limit=50):
