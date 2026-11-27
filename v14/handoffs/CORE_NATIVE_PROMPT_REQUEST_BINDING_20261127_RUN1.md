@@ -10,7 +10,7 @@ The existing source-bound B1/B2 receipt recorded that C3's typed offer template 
 
 ## Implementation
 
-- Adds a pinned staged overlay that hashes the exact prompt string at both native completion call sites.
+- Adds direct Core instrumentation that hashes the exact prompt string at both native completion call sites.
 - Compares the request hash with the exact post-admission `native_prompt_sha256` witness.
 - Extends the no-text local audit to require both B1 and B2 source-bound packet receipts, a matching request hash, nonzero C3 output, and native `prompt_n + cache_n == prompt_tokens`.
 - Keeps semantic attention/use, learned latent transfer, and Redmi installation explicitly unproven.
