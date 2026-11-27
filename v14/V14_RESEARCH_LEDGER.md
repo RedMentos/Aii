@@ -2115,3 +2115,19 @@ For the future normal-turn A5/A4 → B1/B2/C3 consumer, measure **answer quality
 
 PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salience adapter to connect the provider-facing MediaProjection path. This is a fixed-gain handcrafted attention cue, not a learned visual world model, not action-conditioned progress, not semantic grounding and not weight learning. The WM-VS findings justify keeping the signal labelled ATTENTION_ONLY and making future task-progress claims depend on observed post-action outcomes and retention.
 
+## R-187 — PACE: Pretrained Audio Continual Learning (2026-11-27)
+
+**Primary source read in full.** Chang Li, Kanglei Zhou, Liyuan Wang, “PACE: Pretrained Audio Continual Learning,” published at **ICLR 2026**. Official 24-page conference PDF: https://proceedings.iclr.cc/paper_files/paper/2026/file/26cce1e512793f2072fd27c391e04652-Paper-Conference.pdf ; official proceedings abstract: https://proceedings.iclr.cc/paper_files/paper/2026/hash/26cce1e512793f2072fd27c391e04652-Abstract-Conference.html ; arXiv: https://arxiv.org/abs/2602.03355 . This is a peer-reviewed ICLR 2026 paper, not a preprint-only result.
+
+**Method and evidence.**
+- Evaluates pretrained-audio continual learning on six benchmarks: ESC-50, UrbanSound8K, Speech Commands V2, TIMIT-2, TIMIT-3 and VocalSet. Main experiments use EAT pretrained on AudioSet-2M (~5,000 hours), with a 12-block Transformer backbone; additional cross-backbone results use SSLAM.
+- PACE combines first-session adaptation (selective deeper-layer LoRA while preserving shallow layers), an analytic classifier, and multi-session adaptation with subspace-orthogonal PEFT / gradient projection plus boundary-aware spectrogram perturbations.
+- Reported PACE accuracies: ESC-50 95.75, US8K 97.49, SC2 91.87, TIMIT-2 90.95, TIMIT-3 94.05, VocalSet 69.08. The paper reports gaps to joint training of 0.8, 0.6, 3.5, 4.3, 1.2 and 7.6 percentage points respectively. Removing gradient projection lowers VocalSet from 69.08 to 58.55; the paper's session analysis shows strong forgetting without projection.
+- The results support that sequential audio sessions can create substantial representation shifts and that naïve vision-style PEFT transfer is not automatically stable. They do **not** show that one should freeze all audio weights; PACE explicitly studies selective, bounded adaptation.
+
+**Limits / licensing / mobile relevance.**
+- Evaluation is benchmark-based, using a large pretrained EAT backbone and GPU training. It is not a Redmi/ARM/Termux inference or training benchmark and does not report the memory/latency envelope required by V14.
+- The paper states code will be released after acceptance, but no maintained official OSS repository or explicit code/weight license was verified in this run. No code, model weights, dataset or dependency was reused.
+- The method is not a direct fix for V14's transient state bug and should not be conflated with consent isolation. Persistent learned parameters may still support cross-session learning under explicit policy; ephemeral acoustic windows and speaker lookback must not silently cross a Store session or consent boundary.
+
+**V14 translation.** The current Perception change in draft PR #2561 scopes only ephemeral `TemporalVoiceEvidence` and `SpeakerChangeEvidenceRegistry` state by source + generation + Store session + hashed consent receipt. It does not change model weights, training policy, memory retention or cross-session learned knowledge. Follow-up research: if V14 later adapts audio weights, test selective adapter updates and retention on held-out sessions, with explicit consent/data provenance and a no-update negative control; do not import PACE's GPU-scale EAT configuration into the Android build without measured feasibility.
