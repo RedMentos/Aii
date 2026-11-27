@@ -52,7 +52,12 @@ def test_provider_entrypoint_returns_consumer_dict_and_zeroizes(monkeypatch):
         verify_fn=lambda *_: True, current_source="current query",
     )
 
-    assert result is expected
+    assert result is not expected
+    assert result["status"] == "A5_RAW_EYE_CONSUMED"
+    assert result["binding_kind"] == "PROVIDER_VERIFIER_CALLBACK"
+    assert result["provider_verifier_passed"] is True
+    assert result["truth_authority"] == 0
+    assert expected["status"] == "WIRED_SYNTHETIC"  # direct fixture status is not overwritten
     assert issued[0][0] is lease and issued[0][1] is obs
     assert callable(issued[0][2])
     assert consumed[0][0] is runtime and consumed[0][1] is obs
