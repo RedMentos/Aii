@@ -92,6 +92,53 @@ def _self_message_request_sha(receiver_model_sha256, prompt_sha256, prompt_count
     ).hexdigest()
 
 
+def _validate_prediction_distribution_audit(value, *, receiver, condition_inputs):
+    if not isinstance(value, Mapping) or value.get("schema") != "v14.native-receiver-prediction-distribution-audit/1":
+        raise NativeReceiverTaskMatrixBridgeError("native prediction-distribution audit schema is invalid")
+    if (value.get("receiver_model_sha256") != receiver.get("model_sha256")
+            or value.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
+            or value.get("divergence") != "JENSEN_SHANNON_NATS"
+            or value.get("normalization") != "DIVIDE_BY_LN2_TO_UNIT_INTERVAL"
+            or type(value.get("vocab_size")) is not int or value["vocab_size"] < 1
+            or value.get("raw_logits_exported") is not False
+            or value.get("raw_logits_persisted") is not False):
+        raise NativeReceiverTaskMatrixBridgeError("native prediction-distribution audit metadata is invalid")
+    expected = {
+        "pl": ("LATENT_CANDIDATE_VS_NO_MESSAGE", condition_inputs[2]["input_sha256"], condition_inputs[0]["input_sha256"]),
+        "cic": ("LATENT_CANDIDATE_VS_DERANGED_MESSAGE", condition_inputs[2]["input_sha256"], condition_inputs[9]["input_sha256"]),
+    }
+    log2 = math.log(2.0)
+    clean = {
+        "schema": value["schema"], "method": value["method"],
+        "divergence": value["divergence"], "normalization": value["normalization"],
+        "vocab_size": value["vocab_size"], "receiver_model_sha256": receiver["model_sha256"],
+    }
+    for name, (comparison, current_sha, reference_sha) in expected.items():
+        item = value.get(name)
+        if (not isinstance(item, Mapping) or item.get("comparison") != comparison
+                or item.get("current_input_sha256") != current_sha
+                or item.get("reference_input_sha256") != reference_sha
+                or not _is_sha256(item.get("current_logits_sha256"))
+                or not _is_sha256(item.get("reference_logits_sha256"))):
+            raise NativeReceiverTaskMatrixBridgeError(name.upper() + " distribution audit is not bound to the approved matrix")
+        nats, normalized = item.get("jsd_nats"), item.get("jsd_normalized")
+        if (type(nats) not in (int, float) or not math.isfinite(float(nats))
+                or not 0.0 <= float(nats) <= log2 + 1.0e-9
+                or type(normalized) not in (int, float) or not math.isfinite(float(normalized))
+                or not 0.0 <= float(normalized) <= 1.0 + 1.0e-9
+                or abs(float(normalized) - float(nats) / log2) > 1.0e-9):
+            raise NativeReceiverTaskMatrixBridgeError(name.upper() + " JSD is outside its mathematical bounds")
+        clean[name] = {
+            "comparison": comparison, "jsd_nats": float(nats), "jsd_normalized": float(normalized),
+            "current_input_sha256": current_sha, "reference_input_sha256": reference_sha,
+            "current_logits_sha256": item["current_logits_sha256"],
+            "reference_logits_sha256": item["reference_logits_sha256"],
+        }
+    clean["raw_logits_exported"] = False
+    clean["raw_logits_persisted"] = False
+    return clean
+
+
 def _validate_source(source_validator, receipt, phase):
     try:
         valid = source_validator(receipt, phase)
@@ -385,6 +432,13 @@ def score_and_record_native_receiver_condition_matrix(
         duration = native_result.get("duration_s")
         if type(duration) not in (int, float) or not math.isfinite(float(duration)) or duration < 0:
             raise NativeReceiverTaskMatrixBridgeError("native task-matrix duration is invalid")
+        distribution_audit = None
+        if "prediction_distribution_audit" in native_result:
+            distribution_audit = _validate_prediction_distribution_audit(
+                native_result.get("prediction_distribution_audit"),
+                receiver=receiver,
+                condition_inputs=condition_inputs,
+            )
 
         condition_scores = native_result.get("condition_scores")
         if not isinstance(condition_scores, Mapping) or set(condition_scores) != set(CONDITIONS):
@@ -467,6 +521,8 @@ def score_and_record_native_receiver_condition_matrix(
                 )
             native_receipt = dict(native_score)
             native_receipt["kv_snapshot"] = kv_snapshot
+            if condition == "LATENT_CANDIDATE" and distribution_audit is not None:
+                native_receipt["prediction_distribution_audit"] = distribution_audit
             score_receipts.append(build_native_receiver_task_score_receipt(
                 condition=condition,
                 task_group_id=receipt["task_group_id"],
@@ -491,6 +547,7 @@ def score_and_record_native_receiver_condition_matrix(
             "cohort_status": cohort.get("status"),
             "evidence_class": cohort.get("evidence_class"),
             "hybrid_state_roundtrip": condition_scores["LATENT_CANDIDATE"].get("hybrid_state_roundtrip"),
+            "prediction_distribution_audit": distribution_audit,
             "task_group_id": receipt["task_group_id"],
             "task_group_count": cohort.get("task_group_count", 0),
             "complete_task_group_count": cohort.get("complete_task_group_count", 0),
