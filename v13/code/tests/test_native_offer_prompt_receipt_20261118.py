@@ -172,7 +172,7 @@ class PurePromptReceipt(unittest.TestCase):
                                  "x", HEADER)["status"], "INVALID_ENVELOPE")
 
 
-    def test_native_token_spans_bind_utf8_partial_pieces_bos_and_special_tokens(self):
+    def test_native_token_spans_bind_utf8_pieces_bos_and_special_tokens(self):
         selected = [
             offer("B1_DETAIL", "b1", text="source café 🤗 exact"),
             offer("B2_GIST", "b2", text="second naïve quote"),
@@ -182,30 +182,40 @@ class PurePromptReceipt(unittest.TestCase):
         prompt_bytes = prompt.encode("utf-8")
         first_literal = json.dumps(selected[0]["verified_quotes"][0]["text"],
                                     ensure_ascii=False).encode("utf-8")
-        literal_start = prompt_bytes.find(first_literal)
-        self.assertGreaterEqual(literal_start, 0)
-        cafe = prompt_bytes.find("é".encode("utf-8"), literal_start)
+        second_literal = json.dumps(selected[1]["verified_quotes"][0]["text"],
+                                     ensure_ascii=False).encode("utf-8")
+        first_start = prompt_bytes.find(first_literal)
+        second_start = prompt_bytes.find(second_literal, first_start + len(first_literal))
+        self.assertGreaterEqual(first_start, 0)
+        self.assertGreaterEqual(second_start, 0)
+        cafe = prompt_bytes.find("é".encode("utf-8"), first_start)
         self.assertGreaterEqual(cafe, 0)
         rows = pieces_for_prompt(
             prompt,
-            split_offsets=(literal_start + 1, cafe + 1,
-                           literal_start + len(first_literal) // 2),
-            bos=True,
+            split_offsets=(first_start, cafe + 1, first_start + len(first_literal),
+                           second_start, second_start + len(second_literal)),
+            bos=False,
             special_markers=("<|im_start|>", "<|im_end|>"),
         )
-        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        native_ids = [1] + [row["id"] for row in rows]
+        result = inspect(m, prompt, HEADER, token_pieces=rows,
+                         native_token_ids=native_ids)
         span = result["native_prompt_token_span_receipt"]
         self.assertEqual(result["status"], "RENDERED_WITH_QUOTES")
         self.assertEqual(span["revision"], TOKEN_SPAN_REVISION)
         self.assertEqual(span["status"], "VERIFIED")
         self.assertEqual(span["leading_added_special_token_count"], 1)
-        self.assertEqual(span["token_count"], len(rows))
+        self.assertEqual(span["trailing_added_special_token_count"], 0)
+        self.assertEqual(span["token_count"], len(native_ids))
         self.assertEqual({x["role"] for x in span["offers"]},
                          {"B1_DETAIL", "B2_GIST"})
         first = next(x for x in span["offers"] if x["role"] == "B1_DETAIL")
         first_quote = first["quote_spans"][0]
         self.assertGreaterEqual(first_quote["token_start"], 1)
         self.assertGreaterEqual(first_quote["token_count"], 2)
+        self.assertEqual(first_quote["first_token_byte_start"], 0)
+        self.assertEqual(first_quote["last_token_byte_end"],
+                         first_quote["last_token_piece_bytes"])
         self.assertGreater(first_quote["token_end_exclusive"], first_quote["token_start"])
         self.assertNotIn("source café", json.dumps(span))
         self.assertNotIn("second naïve", json.dumps(span))
@@ -219,28 +229,67 @@ class PurePromptReceipt(unittest.TestCase):
         m = messages_ascii(selected)
         prompt = render(m)
         rows = pieces_for_prompt(prompt, bos=False)
-        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        native_ids = [row["id"] for row in rows]
+        result = inspect(m, prompt, HEADER, token_pieces=rows,
+                         native_token_ids=native_ids)
         span = result["native_prompt_token_span_receipt"]
         self.assertEqual(span["status"], "VERIFIED")
         self.assertEqual(span["leading_added_special_token_count"], 0)
+        self.assertEqual(span["trailing_added_special_token_count"], 0)
         self.assertEqual(len(span["offers"]), 2)
 
 
-    def test_native_token_span_mismatch_and_ambiguous_bos_fail_closed(self):
+    def test_native_token_span_mismatch_partial_and_special_controls_fail_closed(self):
         selected = [offer("B1_DETAIL", "b1"), offer("B2_GIST", "b2")]
         m = messages(selected)
         prompt = render(m)
-        rows = pieces_for_prompt(prompt)
+        prompt_bytes = prompt.encode("utf-8")
+        first_literal = json.dumps(SECRET, ensure_ascii=False).encode("utf-8")
+        literal_start = prompt_bytes.find(first_literal)
+        self.assertGreaterEqual(literal_start, 0)
+
+        rows = pieces_for_prompt(prompt, bos=False)
         rows[1]["piece"] = "mismatched"
-        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        native_ids = [row["id"] for row in rows]
+        result = inspect(m, prompt, HEADER, token_pieces=rows,
+                         native_token_ids=native_ids)
         self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
                          "TOKEN_PIECES_DO_NOT_RECONSTRUCT_PROMPT")
-        ambiguous = [{"id": 1, "piece": ""}] + pieces_for_prompt(prompt, bos=False)
-        result = inspect(m, prompt, HEADER, token_pieces=ambiguous)
+
+        partial = pieces_for_prompt(prompt, split_offsets=(literal_start + 1,), bos=False)
+        partial_ids = [row["id"] for row in partial]
+        result = inspect(m, prompt, HEADER, token_pieces=partial,
+                         native_token_ids=partial_ids)
         self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
-                         "AMBIGUOUS_ADDED_SPECIAL_PREFIX")
+                         "PARTIAL_TOKEN_BOUNDARY")
+
+        clean = pieces_for_prompt(prompt, bos=False)
+        content_ids = [row["id"] for row in clean]
+        result = inspect(m, prompt, HEADER, token_pieces=[{"id": 7, "piece": prompt}],
+                         native_token_ids=[7, 7])
+        self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
+                         "AMBIGUOUS_OR_MISSING_CONTENT_TOKEN_SUBSEQUENCE")
+        result = inspect(m, prompt, HEADER, token_pieces=clean,
+                         native_token_ids=[1, 2, 3] + content_ids)
+        self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
+                         "UNEXPECTED_SPECIAL_TOKEN_PREFIX_SUFFIX")
+
+        fragment = "\\n" + HEADER + json.dumps(selected, ensure_ascii=False, sort_keys=True)
+        duplicate_prompt = prompt + fragment
+        duplicate_rows = pieces_for_prompt(duplicate_prompt, bos=False)
+        result = inspect(m, duplicate_prompt, HEADER, token_pieces=duplicate_rows,
+                         native_token_ids=[row["id"] for row in duplicate_rows])
+        self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
+                         "AMBIGUOUS_RENDERED_FRAGMENT")
+
+        absent_prompt = prompt.replace(first_literal.decode("utf-8"), '"not-present"')
+        absent = inspect(m, absent_prompt, HEADER,
+                         token_pieces=pieces_for_prompt(absent_prompt, bos=False),
+                         native_token_ids=[row["id"] for row in pieces_for_prompt(absent_prompt, bos=False)])
+        self.assertEqual(absent["status"], "TEMPLATE_FRAGMENT_NOT_RENDERED")
 
 
+class FakeCompletionHandler(BaseHTTPRequestHandler):
 class FakeCompletionHandler(BaseHTTPRequestHandler):
     answer_status = 200
     def do_POST(self):
@@ -295,9 +344,8 @@ class NativeHTTPBound(unittest.TestCase):
                 return {"prompt": render(payload["messages"])}
             if endpoint == "/tokenize":
                 if payload.get("with_pieces"):
-                    return {"tokens": [{"id": 1, "piece": "<s>"},
-                                       {"id": 2, "piece": payload["content"]}]}
-                return {"tokens": [1] * 24}
+                    return {"tokens": [{"id": 2, "piece": payload["content"]}]}
+                return {"tokens": [1, 2]}
             raise AssertionError(endpoint)
         r._json = post
         return r
