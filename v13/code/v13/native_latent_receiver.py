@@ -13,6 +13,7 @@ import os
 import struct
 import subprocess
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 from .native_hybrid_state import HYBRID_STATE_SCHEMA, validate_native_hybrid_state_roundtrip
@@ -564,6 +565,9 @@ def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
 
 def _validate_prediction_distribution_audit(value, *, expected_model_sha256, prepared):
     """Validate native full-vocabulary first-next-token PL/CIC JSD and source bindings."""
+    def valid_sha256(item):
+        return (type(item) is str and len(item) == 64
+                and all(char in "0123456789abcdef" for char in item))
     if not isinstance(value, Mapping) or value.get("schema") != "v14.native-receiver-prediction-distribution-audit/1":
         raise NativeReceiverError("native prediction-distribution audit schema is invalid")
     if (value.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
@@ -595,7 +599,7 @@ def _validate_prediction_distribution_audit(value, *, expected_model_sha256, pre
             raise NativeReceiverError("native " + name.upper() + " input binding differs from the approved matrix")
         current_logits_sha = item.get("current_logits_sha256")
         reference_logits_sha = item.get("reference_logits_sha256")
-        if (not _is_sha256(current_logits_sha) or not _is_sha256(reference_logits_sha)):
+        if (not valid_sha256(current_logits_sha) or not valid_sha256(reference_logits_sha)):
             raise NativeReceiverError("native " + name.upper() + " logits digest is invalid")
         nats = item.get("jsd_nats")
         normalized = item.get("jsd_normalized")
