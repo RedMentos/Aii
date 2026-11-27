@@ -805,6 +805,78 @@ def test_event_expectation_state_does_not_leak_between_store_sessions(tmp_path, 
     finally:
         runtime.store.close()
 
+def test_event_expectation_consent_rotation_between_store_sessions_evicts_old_history(tmp_path, monkeypatch):
+    runtime, first_event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    sequence = [
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+    ]
+    try:
+        with monkeypatch.context() as patch:
+            first_results = run_consumer_sequence(
+                runtime, first_event, patch, sequence, capture,
+            )
+        first_expectation = first_results[-1]["a4"]["audio_event_expectation"]
+        assert first_expectation["status"] == "SHADOW_MEASURED"
+
+        event_registry = audio_voice_module._runtime_audio_event_expectation_registry(runtime)
+        old_session_id = _event_session_id(runtime, first_event)
+        old_key = (SOURCE, first_event["brain_generation_id"], old_session_id)
+        assert old_key in event_registry._states
+
+        # An unrelated capture source must survive the rotation.
+        unrelated_key = ("other-audio-source", first_event["brain_generation_id"], "unrelated-session")
+        event_registry.update(
+            source_id=unrelated_key[0],
+            generation_id=unrelated_key[1],
+            session_id=unrelated_key[2],
+            consent_scope_id="b" * 64,
+            start_ms=0,
+            end_ms=200,
+            cues=dict(VOICED),
+            finality="FINAL",
+        )
+        assert unrelated_key in event_registry._states
+
+        second_session = runtime.store.new_session("new consent-scoped RAW EAR session")
+        second_event = runtime.store.event(
+            second_session, "separate fixture after consent rotation",
+        )
+        new_session_id = _event_session_id(runtime, second_event)
+        assert new_session_id != old_session_id
+        monkeypatch.setattr(
+            audio_voice_module, "extract_voice_cues",
+            lambda _pcm, _sample_rate, backend="python": dict(EVENT_SILENCE),
+        )
+        monkeypatch.setattr(
+            audio_voice_module.attctl, "controller",
+            lambda _runtime: capture,
+        )
+        second_result = consume_pcm16_voice_window(
+            runtime, bytes(32000), sample_rate=16000, start_ms=8100,
+            event_id=second_event["event_id"],
+            generation_id=second_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=NEW_RECEIPT,
+            consent_check=consent_check,
+            consent_guard=consent_guard(consent_check),
+            finality="FINAL",
+        )
+        expectation = second_result["a4"]["audio_event_expectation"]
+        new_key = (SOURCE, second_event["brain_generation_id"], new_session_id)
+        assert expectation["status"] == "RESET_CONSENT_SCOPE"
+        assert expectation["expected_events"] == []
+        assert expectation["omissions"] == []
+        assert expectation["omission_detected"] is False
+        assert expectation["attention_novelty"] == 0.0
+        assert old_key not in event_registry._states
+        assert new_key in event_registry._states
+        assert unrelated_key in event_registry._states
+        assert len(event_registry) == 2
+    finally:
+        runtime.store.close()
+
+
 
 def test_optional_event_registry_failure_does_not_break_raw_ear(tmp_path, monkeypatch):
     runtime, event = make_runtime(tmp_path)
