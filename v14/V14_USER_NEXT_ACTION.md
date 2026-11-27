@@ -13,7 +13,7 @@
 
 ## Next executable integration
 
-After focused CI passes, Core rebases #2562 onto #2563 and refreshes its Recovery → Stage → RuntimeDeploy source pins; rerun staged/integrated. Core retains ownership of its audio/arithmetic/observer pins, QA retains the migration PARTIAL-vs-UPDATED assertions, and Boss/Integrator syncs V14-023 in the shared board. The earlier sibling #2558 carries the same preflight on the older #2557 stack; this #2563 port is the current #2561-compatible candidate.
+After focused CI passes, Core rebases #2562 onto #2563 and refreshes its Recovery → Stage → RuntimeDeploy source pins; rerun staged/integrated. Core retains ownership of its audio/arithmetic/observer pins, QA retains the migration PARTIAL-vs-UPDATED assertions, and Boss/Integrator syncs V14-023 in the shared board. The earlier sibling #2558 was closed as superseded; #2563 is the current #2561-compatible candidate carrying that preflight.
 
 ## Device / updater boundary
 
