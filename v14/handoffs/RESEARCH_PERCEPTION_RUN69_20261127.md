@@ -25,16 +25,16 @@ Core #2562 imported the current A5/A4 Perception receiver and failed two NPY-hea
 
 - LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated helper harness: py_compile PASS, 4/4 PASS (valid archive, huge declared shape, truncated payload, wrong fixed shape). The malformed cases prove np.load is not reached.
 - Full local Aii checkout/pytest: BLOCKED / NOT_RUN; no checkout mounted and GitHub DNS unavailable.
-- Exact PR code/test head 09e8cee: MediaProjection ingress workflow 46038314334 PASS, py_compile plus 31/31 on Python 3.13 and 31/31 on Python 3.14.
-- Shared staged workflow 46038314335: FAIL, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Failures are existing Core audio-composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Integrated-regression job was still running at last poll.
+- Exact code/test head 09e8cee23fab4fe9144253f93bab0a62c3119882, final docs-only CI head f46e38841913667055a16fa7826a5f41923cb0c9: MediaProjection ingress 46038637335 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46038637336 PASS on Python 3.11 and 3.14.
+- Shared staged/integrated 46038637341 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Other staged failures are Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed.
 - Redmi/Android/Termux: REDMI_UNVERIFIED. No device access or update. Release NOT_RELEASED.
 
 ## Integration owners
 
-- Core: after focused CI passes, rebase #2562 onto #2563, refresh exact Recovery → Stage → RuntimeDeploy pins, and rerun shared staged/integrated.
+- Core: rebase #2562 onto #2563, refresh exact Recovery → Stage → RuntimeDeploy pins, and rerun shared staged/integrated.
 - QA: repair and verify the separate PARTIAL-vs-UPDATED migration assertions; no Perception-owned change made.
 - Boss/Integrator: sync V14-023 in V14_WORK_BOARD.json. Board was not edited by this lane because it is Boss-owned.
-- Perception: read final shared-gate result, repair only Perception-owned failures, and keep projector LAB_SHADOW_ONLY.
+- Perception: exact ingress and RuntimeDeploy CI are green; repair only any new Perception-owned failure, and keep projector LAB_SHADOW_ONLY. Earlier sibling #2558 was closed as superseded by #2563.
 
 ## User and Canon boundary
 
