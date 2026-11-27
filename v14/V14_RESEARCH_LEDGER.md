@@ -2259,7 +2259,7 @@ Environment: Linux x86_64, CPython 3.13.5, NumPy 2.3.5, Pillow 12.3.0.
 - Focused pytest: 12/12 PASS.
 - End-to-end synthetic ablation: 30 seeded repeats PASS.
 - Full local Aii checkout/pytest: NOT_RUN/BLOCKED; no repository checkout is mounted. The isolated harness used a local mirror of the exact production `boxes`, `tile_features` and `tile_descriptor_threshold` logic; this is not full-repository test evidence.
-- Exact PR #2566 hosted CI was not yet visible at the initial checkpoint. Do not attribute #2565's CI runs to #2566.
+- Updated hosted CI readback: exact PR #2566 workflow run 46062787585 PASS on Python 3.13.18 and 3.14.10; each job reports 36 passed and 3 subtests passed, plus the one-repeat experiment smoke. Related MediaProjection ingress run 46062787525 PASS 39/39 on both versions; offline RuntimeDeploy integrity run 46062787616 PASS on Python 3.11.18/3.14.10. These are CI only, not Android/device or release proof.
 
 ### Results — mean rejection rates over 30 repeats
 
