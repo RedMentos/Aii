@@ -1,3 +1,18 @@
+# Current user-facing checkpoint — Run 73 (2026-11-27)
+
+**No action is required from the user.** No model download/swap, permission change, phone action or data mutation was performed.
+
+- Perception added the same-family, same-session DERANGED_MESSAGE control to the native receiver diagnostic matrix. Draft PR #2566: https://github.com/RedMentos/Aii/pull/2566. Exact code/test head: 2c0ab7421c079f5c64ac15ac0345b712944548db. This improves the audit of future latent transfer; it does not make the normal chat path or trained cross-model latent coupling work.
+- Focused receiver tests: 55 PASS on Python 3.13 and 55 PASS on 3.14. Linux pinned-API build and Android arm64 cross-compile PASS. Related A5/MediaProjection and runtime-deployment-integrity CI PASS.
+- The enclosing staged/runtime gate is still blocked by Core/QA-owned source pins and migration assertions: stale audio-composer blob, stale cognition observer pin, vision.py not accepted by the lifecycle-source registry, and two migrations returning PARTIAL instead of UPDATED. Core was notified on #2562; evidence is linked from whole-Canon #1984.
+- Redmi state remains REDMI_UNVERIFIED. No fresh private owner receipt was obtained; the historical 2026-11-24 receipt is not proof of the current installed build or updater state. No Android test or deployment is claimed.
+- P0 basic-chat issue #1904 remains open. This run does not fix the 0-token/slow-chat failure.
+- Next work: complete the causal audit controls (moment-matched random, intact-no-private, direct-text reference), then run a real native model-pair test when authorized model/runtime artifacts exist; Core/QA must repair the staged source pins before the shared release gate can pass.
+
+Checkpoint recorded: 2026-11-27T20:51:30.194Z.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — Research & Perception Run 72 (2026-11-27)
 
 **User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this research-only draft.
