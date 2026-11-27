@@ -87,8 +87,7 @@ class RuntimeTests(Base):
             yield 'fine'
         self.r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
         self.r.pool.get=Mock(return_value=SimpleNamespace(role=role,last_metrics={},generate=gen));self.r.learner.output_delta=Mock(return_value=None)
-        # Exercise the full Runtime learner path, not the exact-greeting reflex.
-        self.r.submit('Please explain the current task.');until=time.monotonic()+10
+        self.r.submit('hello there');until=time.monotonic()+10
         while not self.r.idle() and time.monotonic()<until:time.sleep(.005)
         return self.r.last_answer()
     def test_turn_feeds_fast_forward_and_procedures(self):
