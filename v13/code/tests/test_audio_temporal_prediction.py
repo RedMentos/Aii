@@ -749,7 +749,7 @@ def test_event_expectation_registry_reset_can_target_one_session():
     _event_registry_window(
         registry, "VOICED", 100, 300, session_id="another-session",
     )
-    assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 2
+    assert len(registry) == 2
     assert registry.reset(session_id="event-expectation-session") == 1
     assert len(registry) == 1
 
