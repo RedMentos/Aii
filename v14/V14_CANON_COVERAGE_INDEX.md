@@ -2425,3 +2425,28 @@ The current Perception composer blob is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e
 **Platform boundary:** full local Aii checkout/pytest NOT_RUN because GitHub DNS failed; no native model, Android/Termux, microphone or Redmi execution. Private read-only requests #998/#999 expired with NO_LIVE_RECEIPT; the last V13OBS #115 remains historical. REDMI_UNVERIFIED; updater state unverified; NOT_RELEASED.
 
 This overlay does not promote P0 chat, B1/B2 native offer quality, B3 trained latent coupling, persistent body-weight learning, Android device control, microphone capture, full voice I/O, self-edit or any other Canon family.
+
+
+## Research & Perception Run 55 — additive capability evidence overlay (2026-11-27)
+
+This overlay records only the Perception evidence from PR #2540. It does **not** change the historical V13 inventory, any other organ's acceptance status, the master blueprint, or the release gate.
+
+| Canon path | Evidence level at this checkpoint | Evidence / exact boundary |
+|---|---|---|
+| A0 raw sensor / Android microphone | NOT_IMPLEMENTED / OFF | No AudioRecord provider or live microphone permission path was added or tested. |
+| A5 timed audio PerceptPacket | WIRED_SYNTHETIC | PR #2540's caller-supplied PCM16 path validates source/generation/consent chronology and produces the timed packet; synthetic CI only. No native capture. |
+| A4 acoustic / temporal attention | WIRED_SYNTHETIC | Existing A4 temporal predictor and event expectation feed a source-bound `a4_temporal` context object. New A4 run 45924853167 passed 7/7 tests on Python 3.13.18 and 3.14.10. |
+| A4 numeric predictor state | SYNTHETIC_WEIGHT_DELTA_ONLY | 182-parameter predictor has nonzero ephemeral numeric deltas in synthetic CI. Consent rotation resets it; no persistent production weight update, no master B1/B2/C3 weight change. |
+| B1/B2/C3 audio-context receipt | WIRED_SYNTHETIC | The candidate composer attaches sanitized source-bound A4 context for B1_DETAIL/B2_GIST/C3. Semantic consumption, valid native offers and useful answer quality remain unproven. |
+| B1/B2 native offer quality | FAIL / UNVERIFIED | Last available private receipt is historical; zero valid offers and TIME_BUDGET remain the last known phone evidence. No new device receipt. |
+| Trained cross-organ latent coupling / JEPA | NOT_PROVEN | This A4 cue path is symbolic/source-bound metadata, not learned hidden-state exchange, JEPA training or cross-organ gradients. |
+| Voice full duplex / trainable decoder | NOT_IMPLEMENTED | No microphone, speaker effector, barge-in or voice-learning path was changed. |
+| Android device control / updater | REDMI_UNVERIFIED | No Android/Termux/Redmi test or update request; current updater/install state unknown. |
+
+**Exact candidate and CI:** PR #2540, code/test head `e270369a04eb20470aa717dc0464b2b03a4320a5`; final docs/handoff branch head before this overlay `028b2c90d572845cee6903b9d7ae680cc9ce2243`. A4 workflow 45924853167: 7/7 PASS on Python 3.13.18 and 3.14.10. A4/A5 feature-set 45924853182 PASS on both; RAW EAR fastpath 45924853240 155/155 PASS on both; RuntimeDeploy offline 45924853218 PASS on Python 3.11/3.14. These are hosted Linux CI with synthetic cues, not LOCAL_LINUX hardware or Android evidence.
+
+**A4 synthetic outcome:** interleaved and isolated source streams match exactly (max metric difference 0). The model beats persistence only on periodic-speech cues (+0.11903654 MAE improvement), but loses on non-speech (-0.02990331) and mixed activity (-0.02246406); rates 0.02–0.20 do not remove those two regressions. Maximum attention novelty 0.04111883 under the 0.10 cap. No default-rate change or generalized prediction claim is justified.
+
+**Open integration gates:** staged run 45924853105 FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated regression FAIL (one setup test). Core-owned recovery still pins composer `831080bceec90711bd42e0fa4eba47c669975c98` while current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions also remain. Core/QA own those files; Perception did not relax guards.
+
+**Platform:** full local Aii suite NOT RUN (no checkout mounted; DNS failure). No Android/Termux, microphone, native model or Redmi test. REDMI_UNVERIFIED; NOT_RELEASED. This overlay must not be read as whole-system completion or as evidence for any other Canon family.
