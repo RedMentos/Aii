@@ -501,7 +501,6 @@ class AudioTemporalPredictionRegistry:
         result["training_data_persisted"] = False
         return result
 
-    @staticmethod
     def _new_predictor(self):
         return AudioTemporalPredictor(
             update_policy=self.update_policy,
