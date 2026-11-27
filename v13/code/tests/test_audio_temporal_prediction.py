@@ -969,17 +969,17 @@ def test_memorized_error_gate_replays_old_mistakes_but_skips_unseen_correct_samp
     # Recreate a context where the same previously-mistaken target is now
     # predicted better than persistence. The remembered mistake must still
     # receive an update, while a new correct target is skipped.
-    predictor._previous = (0.70,) * FEATURE_COUNT
+    predictor._previous = (0.5,) * FEATURE_COUNT
     for row in range(FEATURE_COUNT):
         for col in range(FEATURE_COUNT):
-            predictor._weights[row][col] = 0.72 / (FEATURE_COUNT * 0.70)
+            predictor._weights[row][col] = 0.72 / (FEATURE_COUNT * 0.5)
     remembered = predictor.update([0.75] * FEATURE_COUNT)
     assert remembered["prediction_error_mae"] < remembered["persistence_baseline_mae"]
     assert remembered["update_reason"] == "REMEMBERED_ERROR"
     assert remembered["update_applied"] is True
     assert remembered["weight_delta_l2"] > 0.0
 
-    predictor._previous = (0.70,) * FEATURE_COUNT
+    predictor._previous = (0.5,) * FEATURE_COUNT
     skipped = predictor.update([0.76] * FEATURE_COUNT)
     assert skipped["prediction_error_mae"] < skipped["persistence_baseline_mae"]
     assert skipped["update_reason"] == "NO_ERROR"
