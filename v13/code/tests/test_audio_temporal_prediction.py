@@ -795,7 +795,7 @@ def test_event_expectation_state_does_not_leak_between_store_sessions(tmp_path, 
         second_prediction = second_result["a4"]["audio_temporal_prediction"]
         assert second_prediction["status"] == "WARMUP_FEATURE_BASELINE"
         assert second_prediction["updates"] == 0
-        assert len(registry) == 2
+        assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 2
         assert second_expectation["status"] == "WARMUP"
         assert second_expectation["expected_events"] == []
         assert second_expectation["omissions"] == []
