@@ -427,7 +427,7 @@ def score_and_record_native_receiver_condition_matrix(
                 or native_result.get("output_dim") < 1
                 or native_result.get("target_token_count") != len(token_ids)
                 or native_result.get("target_token_ids_sha256") != target_sha
-                or native_result.get("task_accuracy_enabled") is not include_task_accuracy
+                or native_result.get("task_accuracy_enabled", False) is not include_task_accuracy
                 or native_result.get("native_input_consumed") is not True
                 or native_result.get("production_route") is not False
                 or native_result.get("semantic_use_proven") is not False
