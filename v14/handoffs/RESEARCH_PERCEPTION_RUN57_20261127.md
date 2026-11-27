@@ -10,6 +10,12 @@
 - The transient matrix is bounded by `max_transient_norm`; only when its L2 norm crosses `consolidation_threshold` does the consolidating policy transfer it into the persistent numeric weights. The no-consolidation policy is the negative control.
 - Existing `state_dict`/SQLite schema persists only consolidated weights and the committed-update count. Pending transient deltas and temporal state are discarded on load/restart. The existing source/generation/consent reset path clears both matrices.
 
+## Runtime wiring and exact source pins
+
+- Runtime config keys: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`; absent keys preserve `EVERY_FINAL`, invalid values fail closed.
+- Exact Git blob readback: `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`; candidate builder `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
+- The composer source manifest pins both exact blobs. This means the new policy is reachable through the existing caller-PCM Runtime consumer when explicitly configured; it is not active by default.
+
 ## Verification
 
 - LOCAL_LINUX scratch algorithm reproduction: **3/3 PASS** for thresholded consolidation, no-consolidation, and restart discard. This is a standalone reproduction, not repository pytest.
