@@ -1,7 +1,19 @@
 
-# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 65)
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 66)
 
 **User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, restart, permission change, model download/swap or device-data mutation is needed for this draft Perception integration.
+
+
+## Research & Perception Run 66 — optional A3 projector allocation guard
+
+- PR [#2558 — preflight local projector NPY headers before allocation](https://github.com/RedMentos/Aii/pull/2558), draft child of #2557; branch `research-perception/v14-a5-projector-npy-header-preflight-20261127-run66`; exact head `39b148c28007775139ff75f8d8fd4ff21cbe0a10`.
+- The optional LAB_SHADOW_ONLY projector loader now checks each NPY header's version, dtype, exact shape and declared payload length before `np.load` can allocate. Invalid/oversized headers leave the handcrafted RAW-EYE path intact.
+- New regression covers a sub-4-KiB archive declaring a `38 × 100,000,000` float64 tensor and a truncated in-range tensor; both must be rejected before `np.load`.
+- LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated helper reproduction: **PASS**. Exact repository checkout/full pytest remains **BLOCKED / NOT_RUN** (no checkout and GitHub DNS failure). Exact-head CI for #2558 was pending at the checkpoint; do not claim it passed until read back.
+- Parent #2557 remains focused-CI green but **WIRED_SYNTHETIC**; shared staged/integrated still fails on Core-owned pins and QA migration assertions. No normal Runtime/C3 consumer or real Android capture is proven.
+- Device state: no fresh private relay receipt. Latest V13OBS #115 is historical (2026-11-24), reporting auto-update enabled/UP_TO_DATE at 8d93236 but runtime STOPPED_BY_USER, model process stopped, autostart false and B1/B2 TIME_BUDGET failures. Do not infer current installation or updater health.
+- Next: read back exact #2558 CI, then Core/QA continue their separately owned Runtime/C3 and Android lifecycle integration. Keep screen capture and optional projector promotion OFF until their independent gates pass. No user action required.
+
 
 ## Signed MediaProjection → A5 RAW-EYE → downstream lifetime
 
