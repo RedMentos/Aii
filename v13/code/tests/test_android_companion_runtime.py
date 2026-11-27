@@ -9,11 +9,16 @@ import types
 
 import pytest
 
-from v13 import android_control, android_outcomes
+from v13 import android_control, android_outcomes, android_companion_runtime
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.android_capabilities import CapabilityRegistry, CapabilityRegistryError
 from v13.store import Store
+
+
+@pytest.fixture(autouse=True)
+def _interactive_local_tty(monkeypatch):
+    monkeypatch.setattr(android_companion_runtime, "_is_interactive_local_tty", lambda: True)
 
 
 
@@ -377,6 +382,28 @@ def test_unpaired_registry_never_dispatches_launch_app(tmp_path):
     controller.broker.close()
     runtime.store.close()
 
+
+
+def test_trust_and_launch_require_an_actual_interactive_local_tty(tmp_path, monkeypatch):
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1001)
+
+    monkeypatch.setattr(android_companion_runtime, "_is_interactive_local_tty", lambda: False)
+    with pytest.raises(android_control.ControlDenied, match="interactive local Termux TTY"):
+        controller.trust(KEY_ID, True)
+    assert not controller.trust_path.exists()
+
+    monkeypatch.setattr(android_companion_runtime, "_is_interactive_local_tty", lambda: True)
+    controller.trust(KEY_ID, True)
+    monkeypatch.setattr(android_companion_runtime, "_is_interactive_local_tty", lambda: False)
+    with pytest.raises(android_control.ControlDenied, match="interactive local Termux TTY"):
+        controller.launch("com.example.app", True)
+    assert transport.submitted == []
+    assert runtime.store.rows("SELECT payload FROM packets WHERE kind='ActionIntent'", ()) == []
+
+    controller.broker.close()
+    runtime.store.close()
 
 def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative(tmp_path, monkeypatch):
     monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))

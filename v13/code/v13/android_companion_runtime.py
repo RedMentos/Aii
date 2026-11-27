@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import re
 import time
 from contextlib import contextmanager
@@ -22,6 +23,20 @@ from .android_companion_ecdsa import ECDSAReceiptVerifier
 from .android_outcomes import accept_and_persist_companion_receipt
 from .contracts import packet
 from .common import atomic_write, dumps
+
+
+def _is_interactive_local_tty():
+    try:
+        return os.isatty(0) is True and os.isatty(1) is True
+    except (OSError, ValueError):
+        return False
+
+
+def _require_local_tty():
+    if not _is_interactive_local_tty():
+        raise ControlDenied(
+            "Android companion trust and launch require an interactive local Termux TTY"
+        )
 
 
 _HELP = (
@@ -159,6 +174,7 @@ class AndroidCompanionController:
         })
 
     def trust(self, fingerprint, confirm):
+        _require_local_tty()
         if confirm is not True:
             raise ControlDenied("explicit :android trust <key-id> --confirm required")
         if type(fingerprint) is not str or not re.fullmatch(r"[0-9a-f]{64}", fingerprint):
@@ -178,6 +194,7 @@ class AndroidCompanionController:
         return dumps({"status": "PINNED", "key_id": info["key_id"], "automatic_trust": False})
 
     def launch(self, package, confirm):
+        _require_local_tty()
         self.runtime.require_idle()
         if confirm is not True:
             raise ControlDenied("explicit :android launch <package> --confirm required")
