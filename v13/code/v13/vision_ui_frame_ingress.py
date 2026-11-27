@@ -316,6 +316,23 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
     if type(encoder_name) is not str:
         return {"status": "INVALID_PROJECTOR_ENCODER"}
 
+    # The A3 gate is optional and versioned in Store metadata. Old records keep
+    # their previous behavior; malformed or unknown gates disable only A3.
+    gate_version = record.get("ood_gate_version", 0)
+    if type(gate_version) is not int or gate_version not in (0, 1):
+        return {"status": "UNSUPPORTED_OOD_GATE_VERSION"}
+    gate_threshold = None
+    if gate_version == 1:
+        candidate_threshold = record.get("ood_threshold")
+        if (
+            isinstance(candidate_threshold, bool)
+            or not isinstance(candidate_threshold, (int, float))
+            or not math.isfinite(float(candidate_threshold))
+            or not 0.0 < float(candidate_threshold) <= 1000.0
+        ):
+            return {"status": "INVALID_OOD_GATE_METADATA"}
+        gate_threshold = float(candidate_threshold)
+
     required_flags = ("O_NOFOLLOW", "O_DIRECTORY")
     if not all(hasattr(os, flag) for flag in required_flags) or os.open not in getattr(os, "supports_dir_fd", set()):
         return {"status": "NO_SECURE_DIRFD_SUPPORT"}
@@ -406,6 +423,8 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
         projector = vision.Projector(float(meta[0]))
         projector.mu, projector.sd, projector.W = mu, sd, weights
         projector.n = int(meta[1])
+        if gate_version == 1:
+            projector.ood_threshold = gate_threshold
 
         query_text = query_text.strip()[:512]
         if encoder_name == "hashed_bow":
@@ -441,9 +460,98 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
             "background": vectors[1],
             "encoder": encoder_name,
             "sha256": expected_sha,
+            "ood_gate_version": gate_version,
+            "ood_threshold": gate_threshold,
         }
     except Exception:
         return {"status": "PROJECTOR_LOAD_FAILED"}
+
+
+def _score_student_tiles(student, tile_feature_rows, tile_region_ids):
+    """Score only in-distribution A3 rows; RAW-EYE/A4 remain available for every valid frame."""
+    np = vision._np()
+    region_ids = list(tile_region_ids)
+    features = np.asarray(tile_feature_rows, dtype=np.float64)
+    if (
+        features.ndim != 2
+        or features.shape[0] != len(region_ids)
+        or not len(region_ids)
+        or not np.isfinite(features).all()
+    ):
+        raise ValueError("A3 tile feature matrix is invalid")
+
+    query = np.asarray(student.get("query"), dtype=np.float64)
+    background = np.asarray(student.get("background"), dtype=np.float64)
+    if (
+        query.ndim != 1
+        or background.shape != query.shape
+        or not np.isfinite(query).all()
+        or not np.isfinite(background).all()
+    ):
+        raise ValueError("A3 text vectors are invalid")
+
+    projector = student["projector"]
+    gate_version = student.get("ood_gate_version", 0)
+    if type(gate_version) is not int or gate_version not in (0, 1):
+        raise ValueError("A3 OOD gate version is unsupported")
+
+    if gate_version == 1:
+        threshold = student.get("ood_threshold")
+        if (
+            isinstance(threshold, bool)
+            or not isinstance(threshold, (int, float))
+            or not math.isfinite(float(threshold))
+            or not 0.0 < float(threshold) <= 1000.0
+        ):
+            raise ValueError("A3 OOD gate threshold is invalid")
+        distances = np.asarray(projector.standardized_distance(features), dtype=np.float64)
+        if distances.shape != (len(region_ids),) or not np.isfinite(distances).all():
+            raise ValueError("A3 OOD descriptor distances are invalid")
+        in_domain = distances <= float(threshold)
+        ood_regions = [
+            region_id for region_id, accepted in zip(region_ids, in_domain)
+            if not bool(accepted)
+        ]
+        scores = {}
+        if in_domain.any():
+            projected = np.asarray(projector(features[in_domain]), dtype=np.float64)
+            if (
+                projected.ndim != 2
+                or projected.shape != (int(in_domain.sum()), query.shape[0])
+                or not np.isfinite(projected).all()
+            ):
+                raise ValueError("A3 projected tile matrix is invalid")
+            margins = projected @ query - projected @ background
+            if not np.isfinite(margins).all():
+                raise ValueError("A3 student margins are invalid")
+            accepted_indices = np.flatnonzero(in_domain)
+            scores = {
+                region_ids[int(index)]: float(margin)
+                for index, margin in zip(accepted_indices, margins)
+            }
+        status = (
+            "USED" if not ood_regions
+            else "PARTIAL_OOD" if scores
+            else "OUT_OF_DISTRIBUTION"
+        )
+        return scores, status, ood_regions, float(threshold)
+
+    projected = np.asarray(projector(features), dtype=np.float64)
+    if (
+        projected.ndim != 2
+        or projected.shape != (len(region_ids), query.shape[0])
+        or not np.isfinite(projected).all()
+    ):
+        raise ValueError("A3 projected tile matrix is invalid")
+    margins = projected @ query - projected @ background
+    if not np.isfinite(margins).all():
+        raise ValueError("A3 student margins are invalid")
+    return (
+        {region_id: float(margin) for region_id, margin in zip(region_ids, margins)},
+        "USED",
+        [],
+        None,
+    )
 
 
 def consume_projected_frame(
@@ -576,6 +684,9 @@ def consume_projected_frame(
         student_query = goal.strip() or current_source[:512].strip()
         student = _load_local_tile_projector(runtime, cfg, student_query)
         student_status = student["status"]
+        student_ood_regions = []
+        student_ood_threshold = student.get("ood_threshold")
+        student_projector_evaluated = False
         tile_feature_rows = []
         tile_region_ids = []
         region_records = []
@@ -603,16 +714,13 @@ def consume_projected_frame(
             student_scores = {}
             if student_status == "READY" and tile_feature_rows:
                 try:
-                    np = vision._np()
-                    projected = student["projector"](np.stack(tile_feature_rows))
-                    margins = projected @ student["query"] - projected @ student["background"]
-                    if not np.isfinite(margins).all():
-                        raise ValueError("student projector returned a non-finite margin")
-                    student_scores = {
-                        region_id: float(margin)
-                        for region_id, margin in zip(tile_region_ids, margins)
-                    }
-                    student_status = "USED"
+                    (
+                        student_scores,
+                        student_status,
+                        student_ood_regions,
+                        student_ood_threshold,
+                    ) = _score_student_tiles(student, tile_feature_rows, tile_region_ids)
+                    student_projector_evaluated = True
                 except Exception:
                     student_status = "INFERENCE_FAILED"
 
@@ -644,6 +752,16 @@ def consume_projected_frame(
                 region_id = region["region_id"]
                 margin = student_scores.get(region_id)
                 summary = _feature_summary(region_id, box, features, salience)
+                if (
+                    region_id == "g"
+                    and student_projector_evaluated
+                    and student.get("ood_gate_version") == 1
+                ):
+                    suffix = (
+                        f" student_gate={student_status} "
+                        f"ood_tiles={len(student_ood_regions)}/{GRID * GRID}"
+                    )
+                    summary = summary[:MAX_SUMMARY_CHARS - len(suffix)].rstrip() + suffix
                 if margin is not None:
                     summary = (
                         summary + f" student_goal_margin={margin:.4f} authority=STUDENT_ESTIMATE"
@@ -665,6 +783,12 @@ def consume_projected_frame(
                     "action_authority": False,
                 }
                 if region_id == "g":
+                    if student_projector_evaluated and student.get("ood_gate_version") == 1:
+                        segment.update({
+                            "student_estimate_status": student_status,
+                            "student_ood_regions": list(student_ood_regions),
+                            "student_ood_threshold": student_ood_threshold,
+                        })
                     # The global frame row is the A5 visual-structure carrier.
                     # Keep its SourceRef tied to the same frame digest while
                     # making the visual modality explicit for the A4 adapter.
@@ -730,12 +854,17 @@ def consume_projected_frame(
             frame_binding_status="PROVIDER_CALLBACK_ACCEPTED",
             raw_capture_persisted=False, derived_packet_persisted=False,
             teacher_used=False, student_projector_used=bool(student_scores),
+            student_projector_evaluated=student_projector_evaluated,
             student_estimate={
                 "status": student_status,
                 "authority": "STUDENT_ESTIMATE" if student_scores else "NONE",
                 "encoder": student.get("encoder") if student_scores else None,
                 "projector_sha256": student.get("sha256") if student_scores else None,
                 "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
+                "ood_gate_version": student.get("ood_gate_version", 0) if student_projector_evaluated else None,
+                "ood_threshold": student_ood_threshold if student_projector_evaluated else None,
+                "ood_regions": list(student_ood_regions),
+                "evaluated": student_projector_evaluated,
             },
             raw_eye_structure=raw_eye_score,
             raw_eye_components=raw_eye_components,
@@ -774,7 +903,10 @@ def consume_projected_frame(
             "frame_binding_status": "PROVIDER_CALLBACK_ACCEPTED",
             "teacher_used": False,
             "student_projector_used": bool(student_scores),
+            "student_projector_evaluated": student_projector_evaluated,
             "student_projector_status": student_status,
+            "student_ood_regions": list(student_ood_regions),
+            "student_ood_threshold": student_ood_threshold if student_projector_evaluated else None,
             "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
             "raw_eye_structure": raw_eye_score,
             "raw_eye_components": raw_eye_components,
