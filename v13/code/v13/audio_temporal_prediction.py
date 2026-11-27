@@ -29,6 +29,7 @@ INPUT_COUNT = FEATURE_COUNT + 1  # last row is active only for a zero-delta cont
 MAX_STREAMS = 16
 MAX_WINDOW_MS = 1000
 MAX_GAP_MS = 2000
+MAX_PERSISTENCE_RETRIES = 3
 ATTENTION_GAIN = 0.10
 UPDATE_POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION")
 DEFAULT_MISTAKE_MEMORY_CAPACITY = 128
@@ -530,22 +531,29 @@ class AudioTemporalPredictionRegistry:
         predictor.consolidations = consolidations
 
     def _retry_conflicted_update(self, source_id, generation_id, consent_scope_id, delta, snapshot):
-        """Reload the newest shared weights and replay one session update exactly once."""
-        saved, version, status = self._load_persistent(
-            source_id, generation_id, consent_scope_id,
-        )
-        if status != "OK":
-            raise AudioTemporalPredictionConflict("shared predictor checkpoint is no longer current")
-        predictor = self._new_predictor()
-        predictor.load_state_dict(saved)
-        self._restore_session_state(predictor, snapshot)
-        result = predictor.update(delta)
-        version = self._save_persistent(
-            source_id, generation_id, consent_scope_id, predictor, version,
-        )
-        result["persistence_conflict_recovered"] = True
-        result["persistence_retry_count"] = 1
-        return predictor, version, result
+        """Reload and replay one session update across bounded shared-checkpoint conflicts."""
+        for retry_count in range(1, MAX_PERSISTENCE_RETRIES + 1):
+            saved, version, status = self._load_persistent(
+                source_id, generation_id, consent_scope_id,
+            )
+            if status != "OK":
+                raise AudioTemporalPredictionConflict("shared predictor checkpoint is no longer current")
+            predictor = self._new_predictor()
+            predictor.load_state_dict(saved)
+            self._restore_session_state(predictor, snapshot)
+            result = predictor.update(delta)
+            try:
+                version = self._save_persistent(
+                    source_id, generation_id, consent_scope_id, predictor, version,
+                )
+            except AudioTemporalPredictionConflict:
+                if retry_count < MAX_PERSISTENCE_RETRIES:
+                    continue
+                raise
+            result["persistence_conflict_recovered"] = True
+            result["persistence_retry_count"] = retry_count
+            return predictor, version, result
+        raise AudioTemporalPredictionConflict("shared predictor checkpoint remained contended")
 
     @staticmethod
     def _validate_scope(value: str) -> None:
