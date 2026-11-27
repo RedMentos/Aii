@@ -1,17 +1,21 @@
-# CURRENT VERIFIED NEXT ACTION — 2026-11-27 04:23 CET
-**User action: none required.** Do not issue a Termux command, trigger a device update, change installed models/weights, alter permissions or move the experimental policy into production.
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 04:30 CET
+**User action: none required.** Do not issue a Termux command, trigger a device update, change installed models/weights, alter permissions or enable the experimental plasticity policy in production.
 
-## Current Perception checkpoint
-- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, head `c73d18bc626abacdf9eb56fd09b2a65b905cdad1`, stacked on PR #2540.
-- A4 predictor blob `c2df22ce5906db3f3596d39719aa8e9d8e5647fa`; composer blob `a50f975161d359a6cde5b4ed88cb187672c3c8bc`.
-- New optional `MEMORIZED_ERROR` policy in the 182-parameter A4 temporal predictor; default `EVERY_FINAL` remains unchanged. Fingerprint memory is bounded/process-local and excluded from persistence.
-- Exact A4 ablation: 6 tests PASS on Python 3.13 and 3.14. RAW EAR fastpath: 161 tests PASS on both. Feature-set probe: 15 tests PASS on both. Model-lab: 73 PASS / 4 skipped (native libfvad/WebRTC wrappers not built), privacy scan CLEAN. VAD comparison: Python 3.13 172 PASS; Python 3.14 pending at last poll. Latent-cache-tiny and offline-bridge-security PASS.
-- Staged Runtime FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed. Integrated regression FAIL: 1 test because Core recovery still pins composer blob `831080bceec90711bd42e0fa4eba47c669975c98` instead of current `a50f975161d359a6cde5b4ed88cb187672c3c8bc`. Staged suite also shows Core-owned contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core PR #2547 was notified; Core must rebase/update its own recovery pins, QA owns migration assertions.
-- Synthetic update counts (60 observations): periodic speech 59 EVERY_FINAL vs 7 gated; non-speech 59 vs 41; mixed 59 vs 26. MAE worsens on periodic speech and mixed activity, slightly improves on non-speech. Lower old-task error drift is confounded by worse absolute error. Keep MEMORIZED_ERROR opt-in; no energy or latency claim.
-- LOCAL_LINUX scratch checks PASS, but no full Aii checkout because container GitHub DNS failed. GitHub CI is not a Redmi measurement.
-- Device: private read-only relay issues #1003 (PIPELINE_STATUS) and #1004 (HEALTH) have no device_status receipt. Historical V13OBS #115 (updated 2026-11-24) says STOPPED_BY_USER. Current updater/install state is not verified. REDMI_UNVERIFIED; RELEASE NOT_RELEASED.
-- Research: R-175 mistake-gating paper already reviewed; R-179 now covers Li & van Rossum's synaptic-caching paper. GPL-3.0 simulation code not reused; Aii has no root LICENSE.
-- Next: finish Python 3.14 comparator CI; Core rebase #2547 onto #2548 and refresh recovery pins; QA fixes migration assertions; Perception continues source/session-disjoint A4 omission false-positive tests, then A5 screen/UI event-to-PerceptPacket. Preserve audio as raw timed evidence, not transcript-only.
+## Current Research & Perception checkpoint
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, branch `research-perception/v14-a4-error-gated-plasticity-20261127-run56`, extends the prior A4 error-gating work and remains stacked on Perception #2540.
+- New opt-in A4 policies: `TRANSIENT_CONSOLIDATE` and `TRANSIENT_NO_CONSOLIDATION`. They use a bounded process-local delta buffer; only the consolidating policy commits numeric deltas to persistent predictor weights after an L2 threshold. `state_dict` / SQLite still persist consolidated numeric weights only; pending deltas are dropped on restart. Existing `EVERY_FINAL` default and `MEMORIZED_ERROR` remain unchanged.
+- The policy is now reachable through the existing caller-PCM Runtime consumer via explicit `runtime.cfg` keys: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, `raw_ear_max_transient_norm`. Missing config preserves `EVERY_FINAL`; invalid policy fails closed. This is a developer-controlled experiment gate, not a user-facing setting.
+- Exact source readback: predictor blob `24e2c867613a33c33a58a779529c629ecfde37ef`; voice consumer blob `4bfcf31a7738bb390781babab8e11518896a3580`; composer manifest pins both and has blob `019992e2e200b0c5c52d7f18fb5f38ff4185e396`. Tests cover threshold commit, no-consolidation, restart, registry config, default behavior and invalid config.
+- LOCAL_LINUX scratch reproduction: **3/3 PASS** for thresholded commit, no-consolidation and restart discard. This is not full repository pytest. Exact A4 workflow `45935439292` and related exact-head CI were **QUEUED/PENDING** at last poll; do not claim repository CI pass yet.
+- Previous #2548 evidence remains: MEMORIZED_ERROR cuts update count but worsens MAE on periodic speech and mixed activity; keep it opt-in and do not claim quality or energy improvement. New transient mechanism is a separate ablation; no measured Android power benefit.
+- Previous staged/integrated failures remain cross-lane: Core-owned stale composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. Core #2547 must rebase onto the new Perception composer/predictor blobs and refresh only Core-owned pins; QA retains migration fixes.
+- Full local Aii checkout: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS unavailable). TERMUX/REDMI: **REDMI_UNVERIFIED**; no live owner-read receipt, AudioRecord/microphone, native GGUF, updater installation or phone test. Release: **NOT_RELEASED**. B3 trained latent coupling and B1/B2/C3 master learning remain unproven.
+- Research basis: R-179, Li & van Rossum, *Energy efficient synaptic plasticity*, eLife 2020, DOI 10.7554/eLife.50804. The paper's energy benefit is model/simulation evidence only; GPL-3.0 upstream code was not reused and Aii root license remains unresolved.
+
+## Next concrete actions
+1. Read exact-head A4 Python 3.13/3.14 CI and all staged/integrated results for PR #2548.
+2. If focused tests pass, coordinate Core rebase of #2547 onto #2548 and refresh exact recovery/composer/stage pins; QA closes its migration assertions.
+3. Continue source/session-disjoint A4 omission false-positive ablations, then the A5 UI-event-to-PerceptPacket path. Keep audio raw/timed/provenance-bound rather than transcript-only.
 
 ---
 
