@@ -1,4 +1,4 @@
-"""Source-bound, serial eight-condition inputs for native receiver task scoring.
+"""Source-bound, serial nine-condition inputs for native receiver task scoring.
 
 This is an input producer only: it never loads a model, scores tokens, persists
 vectors, changes weights, grants approval, or enables production B3 routing.
