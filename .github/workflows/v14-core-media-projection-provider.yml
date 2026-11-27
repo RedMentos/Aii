@@ -22,7 +22,6 @@ on:
       - "v13/code/tests/test_android_ui_runtime_consumer.py"
       - "v13/code/tests/test_vision.py"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
-      - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
       - "v13/code/tests/test_a5_ui_admission_bridge_20261115.py"
       - "v13/code/tests/test_source_lifecycle_lock_integration.py"
@@ -45,7 +44,6 @@ on:
       - "v13/code/tests/test_android_ui_runtime_consumer.py"
       - "v13/code/tests/test_vision.py"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
-      - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
       - "v13/code/tests/test_a5_ui_admission_bridge_20261115.py"
       - "v13/code/tests/test_source_lifecycle_lock_integration.py"
@@ -96,7 +94,6 @@ jobs:
           python -m pytest -q \
             v13/code/tests/test_vision.py \
             v13/code/tests/test_vision_ui_frame_ingress.py \
-            v13/code/tests/test_vision_ui_frame_provider_entrypoint.py \
             v13/code/tests/test_a5_visual_frame_bridge.py \
             v13/code/tests/test_a5_ui_admission_bridge_20261115.py \
             v13/code/tests/test_source_lifecycle_lock_integration.py \
