@@ -1,4 +1,4 @@
-name: V14 Core B1/B2 native prefill admission
+name: V14 Core B1/B2 prefill and C5 source context
 
 on:
   push:
@@ -16,7 +16,9 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/native_prompt_admission.py"
+      - "v13/code/v13/focal.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
+      - "v13/code/tests/test_action_selection_context_sources_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
       - "v13/code/tests/test_native_turn_budget.py"
       - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
@@ -26,7 +28,7 @@ permissions:
   contents: read
 
 jobs:
-  body-prefill:
+  core-native-inputs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -40,7 +42,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install focused test dependencies
         run: python -m pip install --disable-pip-version-check pytest 'numpy>=2.2,<3'
-      - name: Compile exact Core admission sources
+      - name: Compile exact Core sources
         run: |
           python -m py_compile \
             v13/code/v13/native_prompt_admission.py \
@@ -50,25 +52,27 @@ jobs:
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py
-      - name: Run native admission, fair-budget and C3 token-span regressions
+      - name: Run source-preserving body admission, C5 source and C3 token-span regressions
         env:
           PYTHONPATH: v13/code
         run: |
           python -m pytest -q \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py
       - name: Stage the exact integrated Termux candidate
         run: |
           python v13/code/scripts/stage_integrated_candidate.py \
-            --output "$RUNNER_TEMP/v14-body-prefill-stage"
-      - name: Re-run admission and C3 token-span tests against staged Runtime
+            --output "$RUNNER_TEMP/v14-core-native-inputs-stage"
+      - name: Re-run production admission, C5 source and C3 token-span tests against staged Runtime
         env:
-          PYTHONPATH: ${{ runner.temp }}/v14-body-prefill-stage
+          PYTHONPATH: ${{ runner.temp }}/v14-core-native-inputs-stage
         run: |
           python -m pytest -q \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py
       - name: Check patch whitespace
