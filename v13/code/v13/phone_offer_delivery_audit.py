@@ -22,6 +22,7 @@ from urllib.parse import quote
 
 
 ROLES = ("B1_DETAIL", "B2_GIST")
+TOKEN_SPAN_REVISION = "v13.native-prompt-token-span-receipt/1"
 STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
@@ -133,6 +134,162 @@ def _runtime_native_template_receipts(report, selected, events):
                 or not (type(events[role]["offers"].get(ident)) is int
                         and events[role]["offers"][ident] > 0)):
             return set()
+        matched.add(role)
+    return matched
+
+
+
+def _valid_sha256(value):
+    return (type(value) is str and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
+def _native_prefill_token_count_match(report):
+    prompt_tokens = _count(report.get("prompt_tokens"))
+    timings = report.get("timings")
+    if type(timings) is not dict or prompt_tokens is None:
+        return False
+    prompt_n, cache_n = timings.get("prompt_n"), timings.get("cache_n")
+    return (type(prompt_n) is int and prompt_n >= 0
+            and type(cache_n) is int and cache_n >= 0
+            and prompt_n + cache_n == prompt_tokens)
+
+
+def _native_prompt_inclusion_mode(report, template_roles, native_c3_output,
+                                  incomplete, prefill_count_matched):
+    if (not native_c3_output or incomplete or set(template_roles) != set(ROLES)
+            or not prefill_count_matched):
+        return None
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return None
+    request_sha = witness.get("native_request_prompt_sha256")
+    prompt_sha = witness.get("native_prompt_sha256")
+    if (witness.get("native_completion_http_200") is not True
+            or witness.get("native_template_submitted") is not True
+            or witness.get("native_request_prompt_submitted") is not True
+            or witness.get("native_request_prompt_matches_admission") is not True
+            or not _valid_sha256(prompt_sha)
+            or not _valid_sha256(request_sha)
+            or request_sha != prompt_sha):
+        return None
+    return "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT"
+
+
+
+def _native_prompt_token_span_roles(report, template_roles, selected, events):
+    """Validate the bounded runtime token-span receipt against this turn's offers.
+
+    This is a consistency audit of local runtime metadata, not an independent
+    llama-server signature and not evidence of model attention or semantic use.
+    """
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return set()
+    spans = witness.get("native_prompt_token_span_receipt")
+    if type(spans) is not dict:
+        return set()
+    prompt_sha = witness.get("native_prompt_sha256")
+    token_ids_sha = witness.get("native_token_ids_sha256")
+    token_count = _count(witness.get("native_prompt_tokens"))
+    if (spans.get("revision") != TOKEN_SPAN_REVISION
+            or spans.get("status") != "VERIFIED"
+            or not _valid_sha256(prompt_sha)
+            or spans.get("prompt_sha256") != prompt_sha
+            or not _valid_sha256(token_ids_sha)
+            or spans.get("token_ids_sha256") != token_ids_sha
+            or token_count is None
+            or type(spans.get("token_count")) is not int
+            or spans.get("token_count") != token_count
+            or token_count != _count(report.get("prompt_tokens"))
+            or not _native_prefill_token_count_match(report)):
+        return set()
+    prefix = spans.get("leading_added_special_token_count")
+    suffix = spans.get("trailing_added_special_token_count")
+    if (type(prefix) is not int or type(suffix) is not int
+            or not 0 <= prefix <= 2 or not 0 <= suffix <= 2
+            or prefix + suffix > 2
+            or not _valid_sha256(spans.get("content_token_ids_sha256"))):
+        return set()
+    raw_base = witness.get("offers")
+    raw_spans = spans.get("offers")
+    if (type(raw_base) is not list or type(raw_spans) is not list
+            or len(raw_base) != len(raw_spans) or not 1 <= len(raw_spans) <= len(ROLES)):
+        return set()
+    base_by_role = {}
+    for row in raw_base:
+        if type(row) is not dict:
+            return set()
+        role = row.get("role")
+        if (type(role) is not str or role not in ROLES or role in base_by_role
+                or type(row.get("packet_id")) is not str
+                or type(row.get("rendered_quote_count")) is not int
+                or not 1 <= row["rendered_quote_count"] <= 8):
+            return set()
+        base_by_role[role] = row
+
+    matched = set()
+    seen_roles = set()
+    seen_quote_indices = set()
+    seen_prompt_ranges = []
+    seen_token_ranges = []
+    for row in raw_spans:
+        if type(row) is not dict:
+            return set()
+        role, ident, quote_spans = (row.get("role"), row.get("packet_id"),
+                                    row.get("quote_spans"))
+        if type(role) is not str or role not in ROLES:
+            return set()
+        base = base_by_role.get(role)
+        if (role not in template_roles or role in seen_roles
+                or base is None or ident != base.get("packet_id")
+                or type(quote_spans) is not list
+                or len(quote_spans) != base.get("rendered_quote_count")
+                or ident not in selected or ident not in events[role]["delivered_ids"]
+                or not (type(events[role]["offers"].get(ident)) is int
+                        and events[role]["offers"][ident] > 0)):
+            return set()
+        seen_roles.add(role)
+        quote_indices = set()
+        for span in quote_spans:
+            if type(span) is not dict:
+                return set()
+            qi = span.get("quote_index")
+            source_start, source_end = span.get("source_char_start"), span.get("source_char_end")
+            byte_start, byte_end = span.get("prompt_byte_start"), span.get("prompt_byte_end")
+            token_start, token_end = span.get("token_start"), span.get("token_end_exclusive")
+            span_count = span.get("token_count")
+            first_byte, last_byte = span.get("first_token_byte_start"), span.get("last_token_byte_end")
+            first_piece_bytes = span.get("first_token_piece_bytes")
+            last_piece_bytes = span.get("last_token_piece_bytes")
+            if (type(qi) is not int or not 0 <= qi < 16 or qi in quote_indices
+                    or qi in seen_quote_indices
+                    or not _valid_sha256(span.get("source_sha256"))
+                    or type(source_start) is not int or source_start < 0
+                    or type(source_end) is not int or source_end <= source_start
+                    or type(byte_start) is not int or byte_start < 0
+                    or type(byte_end) is not int or byte_end <= byte_start
+                    or byte_end > 2_000_000
+                    or type(token_start) is not int or token_start < prefix
+                    or type(token_end) is not int or token_end <= token_start
+                    or token_end > token_count - suffix
+                    or type(span_count) is not int or span_count != token_end - token_start
+                    or type(first_byte) is not int or first_byte != 0
+                    or type(last_byte) is not int or last_byte < 1
+                    or type(first_piece_bytes) is not int or first_piece_bytes < 1
+                    or type(last_piece_bytes) is not int or last_piece_bytes < 1
+                    or last_byte != last_piece_bytes
+                    or not _valid_sha256(span.get("token_ids_sha256"))):
+                return set()
+            if (any(byte_start < old_end and byte_end > old_start
+                    for old_start, old_end in seen_prompt_ranges)
+                    or any(token_start < old_end and token_end > old_start
+                           for old_start, old_end in seen_token_ranges)):
+                return set()
+            quote_indices.add(qi)
+            seen_quote_indices.add(qi)
+            seen_prompt_ranges.append((byte_start, byte_end))
+            seen_token_ranges.append((token_start, token_end))
         matched.add(role)
     return matched
 
@@ -255,6 +412,20 @@ def _audit_one(conn, index, event_id, status, metadata):
                              if native_c3_output and not incomplete else set())
     for role in ROLES:
         roles[role]["native_template_http200_submitted"] = role in native_template_roles
+    native_prefill_token_count_matched = _native_prefill_token_count_match(report)
+    native_prompt_inclusion_mode = _native_prompt_inclusion_mode(
+        report, native_template_roles, native_c3_output, incomplete,
+        native_prefill_token_count_matched)
+    native_prompt_inclusion_verified = native_prompt_inclusion_mode is not None
+    native_prompt_token_span_roles = (
+        _native_prompt_token_span_roles(report, native_template_roles, selected_ids, events)
+        if native_prompt_inclusion_verified else set())
+    native_prompt_token_span_verified = set(native_prompt_token_span_roles) == set(ROLES)
+    for role in ROLES:
+        roles[role]["native_prompt_offer_inclusion_verified"] = bool(
+            native_prompt_inclusion_verified and role in native_template_roles)
+        roles[role]["native_prompt_token_span_receipt_verified"] = (
+            role in native_prompt_token_span_roles)
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -266,7 +437,12 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_native_output_observed": native_c3_output,
         "native_template_http200_submitted_roles": sorted(native_template_roles),
         "audit_incomplete": incomplete,
-        "c3_prompt_inclusion_proven": False,
+        "native_prefill_token_count_matched": native_prefill_token_count_matched,
+        "native_prompt_offer_inclusion_verified": native_prompt_inclusion_verified,
+        "native_prompt_inclusion_mode": native_prompt_inclusion_mode,
+        "native_prompt_token_span_receipt_roles": sorted(native_prompt_token_span_roles),
+        "native_prompt_token_span_receipt_verified": native_prompt_token_span_verified,
+        "c3_prompt_inclusion_proven": native_prompt_inclusion_verified,
         "c3_semantic_use_proven": False,
         "native_latent_exchange_proven": False,
         "c3_prompt_admission": _prompt_admission(report),
@@ -316,6 +492,10 @@ def audit(conn, limit=10):
         t["c3_native_output_observed"] and not t["audit_incomplete"]
         and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
         for t in turns)
+    both_native_prompt_inclusion = sum(
+        t["native_prompt_offer_inclusion_verified"] for t in turns)
+    both_native_prompt_token_spans = sum(
+        t["native_prompt_token_span_receipt_verified"] for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
         and t["c3_reporter"] and t["c3_generated_tokens"] == 0
@@ -323,6 +503,7 @@ def audit(conn, limit=10):
     incomplete_turns = sum(t["audit_incomplete"] for t in turns)
     proof_status = ("NO_ASSISTANT_TURNS" if not turns
                     else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED" if both_native_prompt_inclusion
                     else "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED" if both_native
                     else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
                     else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
@@ -333,19 +514,29 @@ def audit(conn, limit=10):
             "status": proof_status,
             "both_body_selected_delivered_and_c3_generated_turns": both,
             "both_body_native_template_http200_reported_turns": both_native,
+            "both_body_native_prompt_inclusion_verified_turns": both_native_prompt_inclusion,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
-            "native_prompt_offer_inclusion_verified": False,
+            "native_prompt_offer_inclusion_verified": both_native_prompt_inclusion > 0,
+            "both_body_native_prompt_token_span_receipts_verified_turns": both_native_prompt_token_spans,
+            "native_prompt_token_span_receipt_verified": both_native_prompt_token_spans > 0,
+            "native_request_prompt_hash_match_observed": both_native_prompt_inclusion > 0,
+            "native_prefill_token_count_match_observed": both_native_prompt_inclusion > 0,
             "native_template_submission_reported_by_runtime": both_native > 0,
             "source_span_revalidated_by_audit": False,
+            "native_prompt_token_span_receipt_mode": (
+                "PINNED_LLAMA_CPP_TOKEN_PIECES_RUNTIME_RECEIPT"
+                if both_native_prompt_token_spans else "NOT_OBSERVED"),
             "learned_latent_exchange_verified": False,
             "device_functional_acceptance": "NOT_VERIFIED",
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_EXACT_NATIVE_PROMPT_BINDING"
+            if both_native_prompt_inclusion else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.",
+        "warning": "Prompt inclusion binds the submitted prompt hash and native prompt_n+cache_n. Token spans are a bounded runtime-reported pinned llama.cpp token-piece receipt checked for internal consistency; they are not an independent server signature and do not prove attention, semantic use, learned latent exchange or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,

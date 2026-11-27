@@ -1,16 +1,12 @@
 """Measured-failure recovery for the *whole-turn* native compute envelope.
 
-Why this exists: on a real 30 s Redmi turn, observers held the pipeline until
-~15 s; then C3 alone needed 10.8 s for native load and still got 0 generated
-tokens before the deadline. Reducing C3's prompt to 161 tokens did not help.
-A pre-answer B1/B2 pass that repeatedly yields zero usable offers must not
-consume the last time reserved for the only external C3 output.
-
-This is *not* permanently removing either hemisphere. It temporarily moves
-their work to the already existing, bounded post-commit observer path when
-the owner uses background observers, the deadline is short, and at least two
-recent real C3 turns failed before generating any token. Long/deep turns
-retain the original 45% pre-answer observation window. Age remains unchanged.
+A short turn with repeated real C3 zero-token prefill failures reserves
+measured windows for the outward C3 path and the C4 focal loop. The remaining
+pre-answer window is shared fairly by sequential B1/B2 passes; one body cannot
+consume the peer's entire opportunity. A body is deferred to the existing
+post-commit path only when its own remaining slice is below the minimum.
+Long/deep turns keep the ordinary 45% observer window. Age and learning rights
+are unchanged.
 """
 
 from __future__ import annotations
@@ -22,27 +18,139 @@ import math
 SCHEMA = "v13.native-turn-budget/1"
 MAX_RECENT = 6
 RECOVERY_MAX_DEADLINE_S = 50
-NATIVE_FIRST_RESERVE_FRACTION = .87
+RECOVERY_DEADLINE_EPSILON_S = 1e-6
 DEFAULT_PREANSWER_FRACTION = .45
+C3_RESERVE_DEFAULT_S = 10.0
+C3_RESERVE_MIN_S = 6.0
+C3_RESERVE_MAX_S = 22.0
+C3_RESERVE_MAX_FRACTION = .70
+C3_RESERVE_MARGIN = 1.35
+C3_RESERVE_PADDING_S = 1.0
+MIN_ROLE_SLICE_S = 2.0
+RECOVERY_FOCAL_RESERVE_S = 1.0
+FOCAL_RESERVE_MAX_S = 6.0
+FOCAL_RESERVE_MAX_FRACTION = .25
+FOCAL_RESERVE_MARGIN = 1.25
+FOCAL_RESERVE_PADDING_S = .5
+
+
+def register_store_telemetry():
+    """Extend the mutable Store telemetry allowlist without editing shared Store code."""
+    from . import store
+
+    store.TELEMETRY_FIELDS.update({
+        "preanswer_seconds_available",
+        "focal_reserved_seconds",
+        "c3_reserved_seconds",
+        "recent_real_prefill_failures",
+        "minimum_role_slice_s",
+        "c3_reserve_estimate_seconds",
+        "c3_reserve_source",
+        "c3_reserve_capped",
+        "focal_reserve_estimate_seconds",
+        "focal_reserve_source",
+        "focal_reserve_capped",
+        "recent_focal_samples",
+    })
+    store.TELEMETRY_ENUMS.update({
+        "PREANSWER_BUDGETED",
+        "POSTCOMMIT_ELIGIBLE",
+        "native_turn_budget_plan",
+        "native_turn_budget_unavailable",
+        "native_body_budgeted_for_c3",
+        "native_body_deferred_for_c3",
+        "RECENT_SUCCESS_MAX",
+        "RECENT_FOCAL_MAX",
+        "FALLBACK_DEFAULT",
+    })
+
+
+# Runtime imports this module before emitting budget telemetry. Keeping the
+# registration here avoids changing Store's shared source/pin contract.
+register_store_telemetry()
+
+
+def _metadata(row):
+    if not isinstance(row, dict):
+        return None
+    data = row.get("metadata")
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except (ValueError, TypeError):
+            return None
+    return data if isinstance(data, dict) else None
 
 
 def zero_token_prefill_failure(row):
     """Source-blind, strict evidence from a completed real assistant turn."""
     if not isinstance(row, dict) or row.get("status") != "DEADLINE":
         return False
-    data = row.get("metadata")
-    if isinstance(data, str):
-        try:
-            data = json.loads(data)
-        except (ValueError, TypeError):
-            return False
+    data = _metadata(row)
     if not isinstance(data, dict):
         return False
     native = data.get("runner")
     return (isinstance(native, dict)
             and native.get("role") == "C3_LANGUAGE"
+            and type(native.get("generated_tokens")) is int
             and native.get("generated_tokens") == 0
             and native.get("last_phase") in {"load", "template", "prefill"})
+
+
+def recent_c3_success_durations(rows):
+    """Recent completed C3 wall times; never reads or exports prompt/output text."""
+    durations = []
+    for row in list(rows)[:MAX_RECENT]:
+        if not isinstance(row, dict) or row.get("status") != "FINAL":
+            continue
+        data = _metadata(row)
+        native = data.get("runner") if isinstance(data, dict) else None
+        if (not isinstance(native, dict)
+                or native.get("role") != "C3_LANGUAGE"
+                or type(native.get("generated_tokens")) is not int
+                or native.get("generated_tokens") <= 0):
+            continue
+        duration = native.get("duration_s")
+        if type(duration) not in (int, float) or duration <= 0 or duration > 120:
+            continue
+        if type(duration) is float and not math.isfinite(duration):
+            continue
+        durations.append(float(duration))
+        if len(durations) == 3:
+            break
+    return durations
+
+
+def recent_focal_durations(rows):
+    """Recent completed C4 focal-loop durations from content-free stage marks."""
+    durations = []
+    for row in list(rows)[:MAX_RECENT]:
+        if not isinstance(row, dict):
+            continue
+        data = _metadata(row)
+        native = data.get("runner") if isinstance(data, dict) else None
+        if not isinstance(native, dict) or native.get("role") != "C3_LANGUAGE":
+            continue
+        # The C4 loop can be measured even when the later C3 decode times out.
+        marks = data.get("stage_marks_s")
+        if type(marks) is not dict:
+            continue
+        start = marks.get("focal_loop")
+        end = marks.get("output_prepare")
+        if type(start) not in (int, float) or type(end) not in (int, float):
+            continue
+        try:
+            if not math.isfinite(start) or not math.isfinite(end):
+                continue
+            duration = float(end - start)
+        except (OverflowError, ValueError):
+            continue
+        if not math.isfinite(duration) or duration <= 0 or duration > FOCAL_RESERVE_MAX_S * 4:
+            continue
+        durations.append(duration)
+        if len(durations) == 3:
+            break
+    return durations
 
 
 def recent_proof(store):
@@ -58,54 +166,120 @@ def recent_proof(store):
         return []
 
 
-def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):
+def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):
     for number in (start,deadline,now):
         if type(number) not in (int, float) or not math.isfinite(number):
             raise ValueError("invalid monotonic budget")
+    if observer_deadline is not None and (
+            type(observer_deadline) not in (int, float) or not math.isfinite(observer_deadline)):
+        raise ValueError("invalid observer deadline")
     if deadline < start or now < start-1:
         raise ValueError("time plan clocks invalid")
     total = deadline-start
     ordinary_end = start+DEFAULT_PREANSWER_FRACTION*total
     bounded = list(recent)[:MAX_RECENT]
     failures = sum(zero_token_prefill_failure(row) for row in bounded)
+    durations = recent_c3_success_durations(bounded)
+    focal_durations = recent_focal_durations(bounded)
+    if focal_durations:
+        focal_estimate = max(
+            RECOVERY_FOCAL_RESERVE_S,
+            max(focal_durations) * FOCAL_RESERVE_MARGIN + FOCAL_RESERVE_PADDING_S)
+        focal_source = "RECENT_FOCAL_MAX"
+    else:
+        focal_estimate = RECOVERY_FOCAL_RESERVE_S
+        focal_source = "FALLBACK_DEFAULT"
+    if durations:
+        reserve_estimate = max(C3_RESERVE_MIN_S,
+                               max(durations) * C3_RESERVE_MARGIN + C3_RESERVE_PADDING_S)
+        reserve_source = "RECENT_SUCCESS_MAX"
+    else:
+        reserve_estimate = C3_RESERVE_DEFAULT_S
+        reserve_source = "FALLBACK_DEFAULT"
     recent_good = 0
     for row in bounded:
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        if status == "FINAL":
+        data=_metadata(row)
+        native=data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
             recent_good += 1
         else:
             break
         if recent_good == 2:
             break
+    minimum_recovery_window = (
+        C3_RESERVE_MIN_S + 2 * MIN_ROLE_SLICE_S + RECOVERY_FOCAL_RESERVE_S
+    )
     recover = (
         not direct and background_enabled is True
-        and total <= RECOVERY_MAX_DEADLINE_S and total >= 5
+        and total <= RECOVERY_MAX_DEADLINE_S + RECOVERY_DEADLINE_EPSILON_S and total >= minimum_recovery_window
         and failures >= 2 and recent_good < 2
     )
+    reserve_capped = False
+    focal_reserve = 0.0
+    focal_reserve_capped = False
     if recover:
-        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,
-                      max(26.0,total*.80))
-        allotted = min(ordinary_end,deadline-reserve)
+        # Reserve a measured C4 focal-loop window while preserving both body slices
+        # and the minimum C3 output window.
+        maximum_focal_reserve = min(
+            FOCAL_RESERVE_MAX_S,
+            total * FOCAL_RESERVE_MAX_FRACTION,
+            max(0.0, total - (C3_RESERVE_MIN_S + 2 * MIN_ROLE_SLICE_S)),
+        )
+        focal_reserve = min(maximum_focal_reserve, focal_estimate)
+        focal_reserve_capped = focal_reserve + 1e-9 < focal_estimate
+        # Use recent measured C3 completion time, not a fixed 26-second reserve.
+        # Preserve a minimum attempt for each body plus the focal-selection slice.
+        maximum_reserve = min(
+            C3_RESERVE_MAX_S,
+            total * C3_RESERVE_MAX_FRACTION,
+            max(0.0, total - (2 * MIN_ROLE_SLICE_S + focal_reserve)),
+        )
+        requested_reserve = max(C3_RESERVE_MIN_S, reserve_estimate)
+        reserve = min(maximum_reserve, requested_reserve)
+        reserve_capped = reserve + 1e-9 < requested_reserve
+        allotted = deadline - reserve
         reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"
     else:
         reserve=deadline-ordinary_end
         allotted=ordinary_end
         reason="NORMAL_COGNITIVE_PREANSWER"
-    # Expired observer windows are honest (zero). The existing observer
-    # scheduler and focal loop must not block C3 to make up missed time.
-    remaining = max(0,allotted-now)
+    # The total pre-answer envelope includes both initial body work and C4.
+    # During C3 recovery, reserve the measured C4 focal window after the body
+    # passes; B1/B2 receive only the earlier body window. Normal turns keep the
+    # old shared observer/focal envelope unchanged.
+    preanswer_end=max(start,allotted)
+    focal_reserve=(min(focal_reserve,max(0.,preanswer_end-start)) if recover else 0.)
+    body_end=max(start,preanswer_end-focal_reserve)
+    # Per-role callers may further cap the body window. Do not subtract the
+    # focal reserve twice when Cognition checks an already allocated role slice.
+    effective_body_end=body_end if observer_deadline is None else min(body_end,observer_deadline)
+    remaining=max(0.,effective_body_end-now)
     return {
         "schema": SCHEMA,
         "recovery": recover,
         "reason": reason,
-        "preanswer_end_monotonic": max(start, allotted),
+        "preanswer_end_monotonic": preanswer_end,
+        "body_preanswer_end_monotonic": body_end,
+        "focal_reserved_seconds": round(focal_reserve,3),
+        "focal_reserve_estimate_seconds": round(focal_estimate,3),
+        "focal_reserve_source": focal_source,
+        "focal_reserve_capped": focal_reserve_capped,
+        "recent_focal_samples": len(focal_durations),
         "preanswer_seconds_available": round(remaining,3),
         "c3_reserved_seconds": round(reserve,3),
+        "c3_reserve_estimate_seconds": round(reserve_estimate,3),
+        "c3_reserve_source": reserve_source,
+        "c3_reserve_capped": reserve_capped,
         "recent_real_prefill_failures": failures,
         "recent_success_streak": recent_good,
-        "postcommit_body_eligible": recover,
+        "postcommit_body_eligible": recover and remaining < MIN_ROLE_SLICE_S,
+        "minimum_role_slice_s": MIN_ROLE_SLICE_S,
         "age_changed": False,
         "memory_or_native_weights_changed": False,
     }
