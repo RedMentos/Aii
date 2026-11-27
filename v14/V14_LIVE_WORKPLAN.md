@@ -1786,3 +1786,16 @@ Latest exact-head runs after the event-expectation extension:
 - WebRTC/libfvad comparison 45925644686: 3.13 job completed successfully; 3.14 still IN_PROGRESS at readback.
 - Staged/integrated run 45925644732: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated FAIL (one setup test) at the same stale Core composer pin. Staged also fails stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED.
 The integration failure is not an A4 test failure. Core owns the Recovery→Stage→RuntimeDeploy pins; QA owns migration assertions. Perception did not edit those files. No local full suite or Redmi proof.
+
+
+## 2026-11-27 — Research & Perception Run 56: A4 update gating and retention
+**Owner:** Research & Perception; **PR:** [#2548](https://github.com/RedMentos/Aii/pull/2548), DRAFT, stacked on #2540; **head at code/test checkpoint:** `c73d18bc626abacdf9eb56fd09b2a65b905cdad1`.
+
+- Added opt-in `MEMORIZED_ERROR` to `AudioTemporalPredictor` and `AudioTemporalPredictionRegistry`; default remains `EVERY_FINAL`. The gate is a regression adaptation (model MAE > persistence MAE or remembered previous→target transition), not a paper-exact classifier gate.
+- Bounded transition fingerprints remain process-local, source/consent scoped, non-persistent, and reset on consent/gap/chronology/restart. `allow_update=False` is a read-only evaluation path. Composer manifest refreshed to the exact A4 predictor blob.
+- A4 gate CI 6/6 on Python 3.13/3.14; RAW EAR fastpath 161/161 on both; feature-set probe 15/15 on both; model-lab 73 passed/4 skipped and privacy CLEAN; VAD comparison Python 3.13 172 passed, Python 3.14 pending at this checkpoint. Latent-cache-tiny and offline-bridge-security PASS.
+- Staged Runtime FAIL (20 failed/233 passed/10 skipped/2 errors/41 subtests) and integrated regression FAIL (one selected test): downstream recovery still pins the old audio composer blob; staged suite also shows Core-owned contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. These remain Core/QA-owned. Core PR #2547 was notified to rebase onto #2548 after focused Perception checks pass.
+- Synthetic ablation: update count reduced 30–88%, but MAE worsened on periodic speech and mixed activity. The gated model's lower old-task drift is confounded by much worse starting/ending absolute error. No default change, no energy/latency claim.
+- Local Linux scratch checks passed, but no full local checkout (GitHub DNS unavailable). No Termux/Redmi or native microphone proof; REDMI_UNVERIFIED; NOT_RELEASED.
+- Next: finish remaining Python 3.14 comparator CI; Core refreshes recovery pins and reruns staged/integrated; QA fixes migration assertions; Perception moves to source/session-disjoint A4 omission false positives and A5 UI/PerceptPacket.
+- Research: R-175 implementation follow-up; new R-179 full-text review of Li & van Rossum (2020) synaptic caching. GPL-3.0 simulation code not reused.
