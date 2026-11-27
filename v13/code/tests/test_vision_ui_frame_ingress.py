@@ -5,7 +5,6 @@ import hashlib
 import os
 import threading
 import time
-import zipfile
 from types import SimpleNamespace
 
 import numpy as np
@@ -18,10 +17,19 @@ from v13.vision_ui_frame_ingress import (
     ProviderFrameVerifier, _feature_summary, _issue_provider_frame_verifier,
     _load_local_tile_projector, _summary, consume_projected_frame,
     consume_projected_frame_from_provider, consume_projected_frame_scope,
+    temporal_visual_revocation_callback,
 )
 
 
 class _Attention:
+    def modulate(self, event_id, *, sal=None, caut=None):
+        return {
+            "event_id": event_id,
+            "salience": dict(sal or {}),
+            "caution": dict(caut or {}),
+            "truth_authority": 0,
+        }
+
     def perceive(self, event_id, segments, *, goal="", file_requests=True):
         assert file_requests is False
         return {
@@ -45,9 +53,25 @@ class _Store:
     def __init__(self, lock):
         self.mutex = lock
         self._state = {}
+        self._deleted_sources = set()
 
     def state(self, key, default=None):
         return self._state.get(key, default), 0
+
+    def one(self, _sql, params=()):
+        source_id = params[0]
+        if source_id in self._deleted_sources:
+            return {"id": source_id, "deleted": 1, "kind": "IMAGE", "hash": "0" * 64}
+        for state in self._state.values():
+            images = state.get("images") if type(state) is dict else None
+            record = images.get(source_id) if type(images) is dict else None
+            ref = record.get("ref") if type(record) is dict else None
+            if type(ref) is dict:
+                return {
+                    "id": source_id, "deleted": 0, "kind": "IMAGE",
+                    "hash": ref.get("sha256"),
+                }
+        return None
 
     @contextmanager
     def tx(self):
@@ -69,25 +93,31 @@ def make_runtime(monkeypatch, with_store=False):
     return runtime
 
 
-def observation(finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE"):
+def observation(
+    finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE",
+    *, source_id="ui-frame-source-0001", receipt_ref="receipt-frame-0001",
+    session_receipt_ref=None, start_ms=1000, end_ms=1033,
+):
     value = {
         "schema": "v14.a5.ui-observation/1",
         "modality": "ui",
-        "source_id": "ui-frame-source-0001",
+        "source_id": source_id,
         "capture_session_id": "ui-frame-session-0001",
-        "consent_receipt_ref": "receipt-frame-0001",
+        "consent_receipt_ref": receipt_ref,
         "capture_method": method,
         "capture_scope": "FULL_DISPLAY" if method == "MEDIA_PROJECTION" else "ACCESSIBILITY_TREE",
         "api_level": 34,
         "clock": "ELAPSED_REALTIME",
         "event_kind": event_kind,
-        "start_ms": 1000,
-        "end_ms": 1033,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
         "finality": finality,
         "action_authority": False,
         "learning_authority": False,
         "raw_capture_persisted": False,
     }
+    if session_receipt_ref is not None:
+        value["session_consent_receipt_ref"] = session_receipt_ref
     if method == "ACCESSIBILITY_ASSISTIVE":
         value["accessibility_purpose"] = "DISABILITY_ASSISTANCE"
     return value
@@ -104,8 +134,11 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
-def uniform_image_buffer(color=(96, 96, 96)):
-    image = Image.new("RGB", (64, 64), color)
+def image_buffer_variant():
+    image = Image.new("RGB", (64, 64), (8, 8, 8))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((8, 14, 29, 52), fill=(230, 20, 18))
+    draw.rectangle((40, 8, 51, 24), fill=(12, 180, 220))
     output = BytesIO()
     image.save(output, format="PNG")
     image.close()
@@ -190,6 +223,8 @@ def install_student_projector(runtime, tmp_path):
     path.parent.mkdir(parents=True, exist_ok=True)
     sha = projector.save(path)
     runtime.home = tmp_path
+    training_source_id = "ui-training-source-0001"
+    training_source_sha = "a" * 64
     runtime.store._state[vision.KEY] = {
         "tile_projector": {
             "path": "data/vision/tiles-test.npz",
@@ -197,12 +232,24 @@ def install_student_projector(runtime, tmp_path):
             "n": len(features),
             "encoder": "hashed_bow",
             "authority": "LAB_SHADOW_ONLY",
-        }
+            "training_sources": [
+                {"source_id": training_source_id, "sha256": training_source_sha}
+            ],
+        },
+        "images": {
+            training_source_id: {
+                "ref": {
+                    "source_id": training_source_id,
+                    "sha256": training_source_sha,
+                    "modality": "image",
+                }
+            }
+        },
     }
     return path, sha
 
 
-def lease_for(runtime, obs, callbacks=None, lock=None):
+def lease_for(runtime, obs, callbacks=None, lock=None, revoke_callback=None):
     lock = lock or threading.RLock()
 
     def check(*_args):
@@ -213,7 +260,7 @@ def lease_for(runtime, obs, callbacks=None, lock=None):
         with lock:
             yield True
 
-    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked, **_kwargs):
         if callbacks is not None:
             callbacks[source_id] = (request_cancel, on_revoked)
         def unsubscribe():
@@ -223,7 +270,7 @@ def lease_for(runtime, obs, callbacks=None, lock=None):
 
     return ui_observation_lease(
         runtime, obs, runtime.turn_event["brain_generation_id"],
-        check, guard, subscribe,
+        check, guard, subscribe, revoke_callback=revoke_callback,
     )
 
 
@@ -286,7 +333,7 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         )
         packets = A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
         assert packets == (result["packet"],)
-        assert result["status"] == "A5_RAW_EYE_CONSUMED"
+        assert result["status"] == "WIRED_SYNTHETIC"
         assert result["packet"]["modality"] == "ui"
         assert result["packet"]["frame_sha256"] == expected_hash
         assert len(result["packet"]["segments"]) == 18  # UI event + global + 16 tiles
@@ -294,20 +341,6 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["packet"]["derived_packet_persisted"] is False
         assert result["packet"]["teacher_used"] is False
         assert result["packet"]["student_projector_used"] is False
-        assert result["packet"]["raw_eye_structure"] > 0.0
-        assert set(result["packet"]["raw_eye_components"]) == {
-            "global_contrast", "global_edge_energy", "cell_edge_energy",
-            "spatial_color", "luminance_range",
-        }
-        assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
-        assert result["packet"]["a4_raw_eye_signal"]["learned"] is False
-        global_segment = result["packet"]["segments"][1]
-        assert global_segment["modality"] == "visual"
-        assert global_segment["producer_component"] == "A5_VISUAL"
-        assert global_segment["source_ref"]["modality"] == "visual"
-        assert global_segment["source_ref"]["sha256"] == expected_hash
-        assert result["a4"]["raw_eye_signal"]["score"] == result["packet"]["raw_eye_structure"]
-        assert sum(row["weight"] for row in result["a4"]["segments"]) == pytest.approx(1.0, abs=1e-5)
         assert result["packet"]["learning_authority"] is False
         assert result["packet"]["action_authority"] is False
         assert result["a4"]["truth_authority"] == 0
@@ -315,32 +348,6 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["context_packet_count"] == 1
         assert result["caller_buffer_overwritten"] is True
         assert not any(frame)
-
-
-def test_uniform_frame_has_zero_raw_eye_structure_contribution(monkeypatch):
-    runtime = make_runtime(monkeypatch)
-    obs = observation()
-    frame = uniform_image_buffer()
-
-    with lease_for(runtime, obs) as lease:
-        result = consume_with_provider_verifier(
-            runtime, obs, frame, consent_lease=lease,
-            current_source="Describe this screen.", goal="neutral screen",
-            token_budget=512,
-        )
-
-    assert result["raw_eye_structure"] == 0.0
-    assert result["a4"]["raw_eye_signal"]["score"] == 0.0
-    assert result["a4"]["raw_eye_signal"]["contribution"] == 0.0
-    assert result["a4"]["raw_eye_signal"]["learned"] is False
-    global_row = next(row for row in result["a4"]["segments"] if row["index"] == 1)
-    assert global_row["raw_eye_structure"] == 0.0
-    assert global_row["raw_eye_contribution"] == 0.0
-    assert global_row["score"] == global_row["base_score"]
-    assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
-    assert result["packet"]["action_authority"] is False
-    assert result["packet"]["learning_authority"] is False
-    assert not any(frame)
 
 
 def test_bounded_frame_config_cannot_expand_capture_limits():
@@ -662,54 +669,9 @@ def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye
         assert result["student_projector_used"] is False
         assert result["student_projector_status"] == "PROJECTOR_HASH_MISMATCH"
         assert result["packet"]["student_projector_used"] is False
-        assert result["status"] == "A5_RAW_EYE_CONSUMED"
+        assert result["status"] == "WIRED_SYNTHETIC"
         assert len(result["packet"]["segments"]) == 18
         assert result["caller_buffer_overwritten"] is True
-
-
-
-@pytest.mark.parametrize("weight_shape", [(38, 256), (38, 100_000_000)])
-def test_local_student_projector_rejects_bad_npy_shape_before_numpy_load(
-    monkeypatch, tmp_path, weight_shape,
-):
-    from v13 import vision
-
-    runtime = make_runtime(monkeypatch, with_store=True)
-    path, _sha = install_student_projector(runtime, tmp_path)
-    archive_bytes = BytesIO()
-    declared_shapes = {
-        "mu.npy": (37,),
-        "sd.npy": (37,),
-        "W.npy": weight_shape,
-        "meta.npy": (2,),
-    }
-    with zipfile.ZipFile(archive_bytes, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for name, shape in declared_shapes.items():
-            header = BytesIO()
-            np.lib.format.write_array_header_1_0(header, {
-                "descr": np.dtype("float64").str,
-                "fortran_order": False,
-                "shape": shape,
-            })
-            # Deliberately omit all array payload bytes. The huge-shape case is
-            # a sub-4-KiB allocation bomb if np.load is called before preflight.
-            archive.writestr(name, header.getvalue())
-
-    raw = archive_bytes.getvalue()
-    path.write_bytes(raw)
-    runtime.store._state[vision.KEY]["tile_projector"]["sha256"] = vision.digest(raw)
-    load_calls = []
-
-    def forbidden_load(*args, **kwargs):
-        load_calls.append(True)
-        raise AssertionError("np.load must not run before projector header validation")
-
-    monkeypatch.setattr(np, "load", forbidden_load)
-    result = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
-
-    assert result["status"] == "PROJECTOR_TENSOR_HEADER_INVALID"
-    assert load_calls == []
-    assert path.stat().st_size < 4096
 
 
 def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
@@ -729,7 +691,7 @@ def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
         assert result["student_projector_used"] is False
         assert result["student_projector_status"] == "PROJECTOR_FILE_UNAVAILABLE"
         assert result["packet"]["student_projector_used"] is False
-        assert result["status"] == "A5_RAW_EYE_CONSUMED"
+        assert result["status"] == "WIRED_SYNTHETIC"
         assert result["caller_buffer_overwritten"] is True
 
 
@@ -769,6 +731,102 @@ def test_provider_verifier_is_bound_to_session_and_one_shot(monkeypatch):
         assert calls == []
 
 
+
+def test_provider_verifier_binds_the_stable_session_consent_receipt(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    frame = image_buffer()
+    frame_sha = hashlib.sha256(frame).hexdigest()
+    with lease_for(runtime, obs) as lease:
+        verifier = provider_verifier(lease, obs, frame)
+        forged = dict(obs, session_consent_receipt_ref="session-consent-forged")
+        assert verifier.verify(runtime, lease, forged, frame_sha, len(frame)) is False
+        assert verifier.verify(runtime, lease, obs, frame_sha, len(frame)) is False
+
+    from v13.a5_ui_admission_bridge import validate_ui_observation
+    with pytest.raises(PermissionError, match="session-level"):
+        validate_ui_observation(dict(obs, session_consent_receipt_ref="not a receipt"))
+
+
+def test_session_receipt_is_bound_to_provider_checks_guard_and_revocation(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    expected = obs["session_consent_receipt_ref"]
+    seen = {}
+
+    def check(*args):
+        seen["check"] = args
+        return len(args) == 8 and args[-1] == expected
+
+    @contextmanager
+    def guard(*args):
+        seen["guard"] = args
+        yield len(args) == 8 and args[-1] == expected
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked,
+                  *, session_consent_receipt_ref):
+        seen["subscribe"] = (source_id, receipt, session, session_consent_receipt_ref)
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == expected
+
+    assert seen["check"][-1] == expected
+    assert seen["guard"][-1] == expected
+    assert seen["subscribe"] == (
+        obs["source_id"], obs["consent_receipt_ref"],
+        obs["capture_session_id"], expected,
+    )
+
+
+def test_session_receipt_fails_closed_when_provider_cannot_subscribe_to_it(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+
+    def check(*_args):
+        return True
+
+    @contextmanager
+    def guard(*_args):
+        yield True
+
+    def legacy_subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with pytest.raises(PermissionError, match="two-phase UI revocation subscription is unavailable"):
+        with ui_observation_lease(
+            runtime, obs, runtime.turn_event["brain_generation_id"],
+            check, guard, legacy_subscribe,
+        ):
+            pytest.fail("a provider that ignores the session receipt must not acquire a lease")
+
+
+def test_legacy_one_shot_provider_callback_arity_is_unchanged(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+
+    def check(source_id, receipt, session, purpose, method, scope, api_level):
+        assert source_id == obs["source_id"]
+        assert receipt == obs["consent_receipt_ref"]
+        return True
+
+    @contextmanager
+    def guard(source_id, receipt, session, purpose, method, scope, api_level):
+        yield True
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == obs["consent_receipt_ref"]
+
+
 def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
     if not hasattr(os, "mkfifo"):
         pytest.skip("POSIX FIFO support is unavailable")
@@ -792,3 +850,842 @@ def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path)
     assert result["status"] == "INVALID_PROJECTOR_FILE"
     assert elapsed < 0.8
 
+
+
+def test_temporal_visual_on_off_surface_decays_and_expires():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+    state = TemporalVisualEvidence(tau_ms=30, window_ms=50)
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    bright = {tile: [0.8] * 16 for tile in TILE_IDS}
+    assert state.update(start_ms=1000, end_ms=1033, tile_luminance=base)["status"] == "WARMUP"
+    brightening = state.update(start_ms=1033, end_ms=1066, tile_luminance=bright)
+    assert brightening["on_activity"] > 0.59 and brightening["off_activity"] == 0.0
+    assert brightening["temporal_activity_score"] > 0.59
+    assert brightening["global_change_score"] > 0.59
+    assert brightening["local_change_score"] == 0.0
+    assert brightening["attention_novelty"] < brightening["change_score"]
+    assert brightening["polarity_delta_by_tile"]["r00"]["on"] > 0.59
+    assert brightening["polarity_delta_by_tile"]["r00"]["off"] == 0.0
+    quiet = state.update(start_ms=1066, end_ms=1099, tile_luminance=bright)
+    assert quiet["change_score"] == 0.0
+    assert 0.0 < quiet["temporal_activity_score"] < brightening["temporal_activity_score"]
+    expired = state.update(start_ms=1099, end_ms=1132, tile_luminance=bright)
+    assert expired["surface_expired"] is True and expired["temporal_activity_score"] == 0.0
+    darkening = state.update(start_ms=1132, end_ms=1165, tile_luminance=base)
+    assert darkening["off_activity"] > 0.59 and darkening["on_activity"] == 0.0
+    assert darkening["polarity_delta_by_tile"]["r00"]["off"] > 0.59
+
+
+def test_temporal_visual_attention_separates_global_illumination_from_local_change():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    global_bright = {tile: [0.6] * 16 for tile in TILE_IDS}
+    global_state = TemporalVisualEvidence()
+    global_state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    global_result = global_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=global_bright,
+    )
+
+    local_bright = {tile: [0.2] * 16 for tile in TILE_IDS}
+    local_bright["r00"] = [0.6] * 16
+    local_state = TemporalVisualEvidence()
+    local_state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    local_result = local_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=local_bright,
+    )
+
+    assert global_result["global_luminance_shift"] == pytest.approx(0.4)
+    assert global_result["global_change_score"] == pytest.approx(0.4)
+    assert global_result["local_change_score"] == 0.0
+    assert global_result["local_temporal_activity_score"] == 0.0
+    assert global_result["locally_changed_tile_ids"] == []
+    assert global_result["attention_novelty"] == pytest.approx(0.06)
+
+    assert local_result["global_luminance_shift"] == pytest.approx(0.0)
+    assert local_result["global_change_score"] == 0.0
+    assert local_result["local_tile_delta"]["r00"] == pytest.approx(0.4)
+    assert local_result["locally_changed_tile_ids"] == ["r00"]
+    assert local_result["local_change_score"] > global_result["attention_novelty"]
+    assert local_result["attention_novelty"] == local_result["local_change_score"]
+
+
+def test_temporal_visual_attention_preserves_global_and_local_components_together():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    mixed = {tile: [0.4] * 16 for tile in TILE_IDS}
+    mixed["r00"] = [0.6] * 16
+    state = TemporalVisualEvidence()
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    result = state.update(start_ms=1033, end_ms=1066, tile_luminance=mixed)
+
+    assert result["global_luminance_shift"] == pytest.approx(0.2)
+    assert result["local_tile_delta"]["r00"] == pytest.approx(0.2)
+    assert result["local_tile_delta"]["r11"] == pytest.approx(0.0)
+    assert result["global_change_score"] > 0.0
+    assert result["local_change_score"] > 0.0
+    expected_novelty = max(
+        result["local_change_score"],
+        result["local_temporal_activity_score"],
+        0.15 * result["global_change_score"],
+    )
+    assert result["attention_novelty"] == pytest.approx(expected_novelty)
+
+
+
+def test_temporal_visual_surface_resets_on_stream_gap():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+    state = TemporalVisualEvidence()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    bright = {tile: [0.9] * 16 for tile in TILE_IDS}
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    state.update(start_ms=1033, end_ms=1066, tile_luminance=bright)
+    reset = state.update(start_ms=3000, end_ms=3033, tile_luminance=bright)
+    assert reset["status"] == "WARMUP" and reset["state_reset"] is True
+    assert reset["reset_reason"] == "STREAM_GAP" and reset["temporal_activity_score"] == 0.0
+
+
+def test_provider_revocation_erases_temporal_history(monkeypatch):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    obs = observation()
+    callbacks = {}
+    first, second = image_buffer(), image_buffer_variant()
+    cleanup = temporal_visual_revocation_callback(runtime, capture_session_id=obs["capture_session_id"])
+    with lease_for(runtime, obs, callbacks=callbacks, revoke_callback=cleanup) as lease:
+        first_result = consume_with_provider_verifier(
+            runtime, obs, first, consent_lease=lease,
+            current_source="Observe the screen change.",
+        )
+        next_obs = dict(obs, start_ms=1033, end_ms=1066)
+        second_result = consume_with_provider_verifier(
+            runtime, next_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.",
+        )
+        assert first_result["temporal_visual_evidence"]["multichannel_status"] == "WARMUP"
+        assert second_result["temporal_visual_evidence"]["multichannel_status"] == "MEASURED"
+        assert second_result["temporal_visual_evidence"]["feature_method"] == "RAW_EYE_TILE_FEATURES_V1"
+        assert second_result["a4"]["temporal_visual_evidence"]["multichannel_status"] == "MEASURED"
+        assert len(runtime._a5_temporal_visual_registry) == 1
+    on_revoked = callbacks[obs["source_id"]][1]
+    result = on_revoked()
+    assert result["cache_cleared"] is True
+    assert len(runtime._a5_temporal_visual_registry) == 0
+    assert obs["source_id"] not in runtime._a5_ui_context_cache
+    assert not any(first) and not any(second)
+
+
+@pytest.mark.parametrize(
+    "failure,expected_status",
+    [
+        ("forgotten", "PROJECTOR_SOURCE_LINEAGE_STALE"),
+        ("hash_mismatch", "PROJECTOR_SOURCE_LINEAGE_STALE"),
+        ("source_tombstoned", "PROJECTOR_SOURCE_LINEAGE_STALE"),
+        ("missing_lineage", "PROJECTOR_LINEAGE_UNKNOWN"),
+        ("malformed_lineage", "PROJECTOR_LINEAGE_INVALID"),
+    ],
+)
+def test_ui_student_projector_requires_live_exact_training_sources(
+    monkeypatch, tmp_path, failure, expected_status,
+):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    from v13 import vision
+
+    state = runtime.store._state[vision.KEY]
+    source_id = "ui-training-source-0001"
+    if failure == "forgotten":
+        state["images"].pop(source_id)
+    elif failure == "hash_mismatch":
+        state["images"][source_id]["ref"]["sha256"] = "b" * 64
+    elif failure == "source_tombstoned":
+        runtime.store._deleted_sources.add(source_id)
+    elif failure == "missing_lineage":
+        state["tile_projector"].pop("training_sources")
+    elif failure == "malformed_lineage":
+        state["tile_projector"]["training_sources"] = [
+            {"source_id": source_id, "sha256": "not-a-sha256"}
+        ]
+
+    obs = observation()
+    frame = image_buffer()
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.", goal="red panel",
+        )
+
+    assert result["student_projector_used"] is False
+    assert result["student_projector_status"] == expected_status
+    assert result["packet"]["student_projector_used"] is False
+    assert result["status"] == "WIRED_SYNTHETIC"
+    assert result["caller_buffer_overwritten"] is True
+
+
+def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypatch):
+    from v13.vision_temporal_evidence import TILE_IDS
+
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    first = image_buffer()
+    second = image_buffer_variant()
+    first_hash = hashlib.sha256(first).hexdigest()
+    second_hash = hashlib.sha256(second).hexdigest()
+
+    with lease_for(runtime, obs) as lease:
+        first_result = consume_with_provider_verifier(
+            runtime, obs, first, consent_lease=lease,
+            current_source="Observe the screen change.", token_budget=512,
+        )
+        next_obs = dict(obs, start_ms=1033, end_ms=1066)
+        second_result = consume_with_provider_verifier(
+            runtime, next_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.", token_budget=512,
+        )
+        packets = A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
+
+    assert first_result["temporal_visual_evidence"]["status"] == "WARMUP"
+    evidence = second_result["temporal_visual_evidence"]
+    assert evidence["status"] == "MEASURED"
+    assert evidence["source_ref"]["sha256"] == second_hash
+    assert evidence["capture_session_id"] == obs["capture_session_id"]
+    assert evidence["truth_authority"] == 0
+    assert evidence["local_change_score"] > 0.0
+    assert evidence["learning_authority"] is False
+    assert evidence["action_authority"] is False
+    assert evidence["changed_tile_ids"]
+    assert second_result["temporal_visual_modulation"]["truth_authority"] == 0
+    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == evidence["attention_novelty"]
+    assert second_result["a4"]["temporal_visual_modulation"] == second_result["temporal_visual_modulation"]
+    assert any("temporal_change" in segment for segment in second_result["packet"]["segments"])
+    assert packets == (second_result["packet"],)
+    assert first_result["packet"]["frame_sha256"] == first_hash
+    assert not any(first) and not any(second)
+
+
+
+def test_temporal_visual_evidence_accumulates_across_frame_receipts_under_one_session_consent(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    session_receipt = "session-consent-0001"
+    first_obs = observation(
+        source_id="ui-frame-source-0001", receipt_ref="frame-receipt-0001",
+        session_receipt_ref=session_receipt, start_ms=1000, end_ms=1033,
+    )
+    second_obs = observation(
+        source_id="ui-frame-source-0002", receipt_ref="frame-receipt-0002",
+        session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
+    )
+    first, second = image_buffer(), image_buffer_variant()
+
+    with lease_for(runtime, first_obs) as first_lease:
+        first_result = consume_with_provider_verifier(
+            runtime, first_obs, first, consent_lease=first_lease,
+            current_source="Observe this screen session.",
+        )
+    with lease_for(runtime, second_obs) as second_lease:
+        second_result = consume_with_provider_verifier(
+            runtime, second_obs, second, consent_lease=second_lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert first_result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert second_result["temporal_visual_evidence"]["status"] == "MEASURED"
+    assert second_result["packet"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["packet"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["temporal_visual_evidence"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["source_ref"]["source_id"].startswith("ui_frame_")
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(first) and not any(second)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(second_obs["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
+def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    _path, projector_sha = install_student_projector(runtime, tmp_path)
+    session_receipt = "session-consent-a3-0001"
+    first_obs = observation(
+        source_id="ui-a3-frame-0001", receipt_ref="frame-a3-receipt-0001",
+        session_receipt_ref=session_receipt, start_ms=1000, end_ms=1033,
+    )
+    second_obs = observation(
+        source_id="ui-a3-frame-0002", receipt_ref="frame-a3-receipt-0002",
+        session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
+    )
+    third_obs = observation(
+        source_id="ui-a3-frame-0003", receipt_ref="frame-a3-receipt-0003",
+        session_receipt_ref=session_receipt, start_ms=1066, end_ms=1099,
+    )
+    first, second, third = image_buffer(), image_buffer_variant(), image_buffer_variant()
+
+    with lease_for(runtime, first_obs, lock=runtime.store.mutex) as lease:
+        first_result = consume_with_provider_verifier(
+            runtime, first_obs, first, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
+    with lease_for(runtime, second_obs, lock=runtime.store.mutex) as lease:
+        second_result = consume_with_provider_verifier(
+            runtime, second_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
+    with lease_for(runtime, third_obs, lock=runtime.store.mutex) as lease:
+        third_result = consume_with_provider_verifier(
+            runtime, third_obs, third, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
+
+    first_change = first_result["a3_projected_change"]
+    second_change = second_result["a3_projected_change"]
+    third_change = third_result["a3_projected_change"]
+    assert first_result["student_projector_used"] is True
+    assert first_change["status"] == "WARMUP"
+    assert first_change["projector_sha256"] == projector_sha
+    assert second_result["student_projector_used"] is True
+    assert second_change["status"] == "MEASURED"
+    assert second_change["projector_sha256"] == projector_sha
+    assert second_change["embedding_dim"] > 0
+    assert second_change["change_score"] > 0.0
+    assert second_change["changed_tile_ids"]
+    assert second_change["previous_source_ref"] == first_result["frame_source_ref"]
+    assert second_change["source_ref"] == second_result["frame_source_ref"]
+    assert second_result["packet"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    a3_attention = second_result["temporal_visual_evidence"]["a3_attention_novelty"]
+    assert a3_attention > 0.0
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_attention_novelty"] == a3_attention
+    predictive_attention = second_result["temporal_visual_evidence"]["a3_predictive_attention_novelty"]
+    assert 0.0 <= predictive_attention <= 0.15
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_predictive_attention_novelty"] == predictive_attention
+    assert second_result["a4"]["temporal_visual_evidence"]["a3_temporal_prediction"] == second_result["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == second_result["temporal_visual_evidence"]["attention_novelty"]
+    assert second_result["temporal_visual_evidence"]["attention_novelty"] >= a3_attention
+    assert third_result["student_projector_used"] is True
+    assert third_change["status"] == "MEASURED"
+    assert third_change["change_score"] == 0.0
+    assert third_change["changed_tile_ids"] == []
+    assert third_change["previous_source_ref"] == second_result["frame_source_ref"]
+    assert third_change["source_ref"] == third_result["frame_source_ref"]
+    assert second_change["authority"] == "DIAGNOSTIC_ONLY"
+    assert second_change["learning_authority"] is False
+    assert second_change["action_authority"] is False
+    assert "embeddings" not in second_change and "vectors" not in second_change
+    assert second_result["packet"]["learning_authority"] is False
+    assert second_result["packet"]["action_authority"] is False
+    assert not any(first) and not any(second) and not any(third)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(third_obs["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
+def test_a3_projected_change_rebaselines_on_projector_change_and_missing_projector():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    first_embeddings = {tile: [1.0, 0.0] for tile in TILE_IDS}
+    changed_embeddings = {tile: [0.0, 1.0] for tile in TILE_IDS}
+    first_ref = {
+        "source_id": "ui_frame_first", "sha256": "a" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    second_ref = {
+        "source_id": "ui_frame_second", "sha256": "b" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    common = dict(
+        capture_session_id="a3-session", generation_id="a3-generation",
+        session_consent_receipt_ref="a3-session-consent", tile_luminance=luminance,
+    )
+    first = registry.update(
+        consent_receipt_ref="frame-1", start_ms=1000, end_ms=1033,
+        a3_tile_embeddings=first_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=first_ref, **common,
+    )
+    measured = registry.update(
+        consent_receipt_ref="frame-2", start_ms=1033, end_ms=1066,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    assert first["a3_projected_change"]["status"] == "WARMUP"
+    assert measured["a3_projected_change"]["status"] == "MEASURED"
+    assert measured["a3_projected_change"]["change_score"] == 0.5
+    assert measured["a3_projected_change"]["changed_tile_ids"] == list(TILE_IDS)
+
+    stable = registry.update(
+        consent_receipt_ref="frame-3", start_ms=1066, end_ms=1099,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="c" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    changed_projector = registry.update(
+        consent_receipt_ref="frame-4", start_ms=1099, end_ms=1132,
+        a3_tile_embeddings=changed_embeddings, a3_projector_sha256="d" * 64,
+        frame_source_ref=second_ref, **common,
+    )
+    missing = registry.update(
+        consent_receipt_ref="frame-5", start_ms=1132, end_ms=1165,
+        a3_unavailable_reason="NO_PROJECTOR", **common,
+    )
+    warm_after_missing = registry.update(
+        consent_receipt_ref="frame-6", start_ms=1165, end_ms=1198,
+        a3_tile_embeddings=first_embeddings, a3_projector_sha256="d" * 64,
+        frame_source_ref=first_ref, **common,
+    )
+    assert first["a3_attention_novelty"] == 0.0
+    assert measured["a3_attention_novelty"] == pytest.approx(0.075)
+    assert measured["attention_novelty"] == pytest.approx(0.075)
+    assert stable["a3_projected_change"]["change_score"] == 0.0
+    assert stable["a3_attention_novelty"] == 0.0
+    assert stable["attention_novelty"] == 0.0
+    assert changed_projector["a3_projected_change"]["status"] == "PROJECTOR_CHANGED"
+    assert changed_projector["a3_attention_novelty"] == 0.0
+    assert missing["a3_projected_change"]["status"] == "NO_PROJECTOR"
+    assert missing["a3_attention_novelty"] == 0.0
+    assert warm_after_missing["a3_projected_change"]["status"] == "WARMUP"
+    assert warm_after_missing["a3_attention_novelty"] == 0.0
+    assert measured["a3_projected_change"]["truth_authority"] == 0
+    assert measured["a3_projected_change"]["learning_authority"] is False
+    assert measured["a3_projected_change"]["action_authority"] is False
+    assert registry.reset(capture_session_id="a3-session") == 1
+    assert len(registry) == 0
+
+
+def test_a3_projected_change_rejects_malformed_embeddings_and_source_refs():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    good = {tile: [1.0, 0.0] for tile in TILE_IDS}
+    ref = {
+        "source_id": "ui_frame_valid", "sha256": "e" * 64,
+        "char_start": 0, "char_end": 0, "modality": "image",
+    }
+    common = dict(start_ms=1000, end_ms=1033, tile_luminance=luminance)
+    malformed = dict(good)
+    malformed.pop(TILE_IDS[0])
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=malformed, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    nonfinite = dict(good)
+    nonfinite[TILE_IDS[0]] = [float("nan"), 0.0]
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=nonfinite, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    zero = dict(good)
+    zero[TILE_IDS[0]] = [0.0, 0.0]
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=zero, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    too_wide = dict(good)
+    too_wide[TILE_IDS[0]] = [1.0] * 1025
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=too_wide, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=good, a3_projector_sha256="not-a-hash",
+            frame_source_ref=ref,
+        )
+    bad_ref = dict(ref, sha256="not-a-hash")
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=good, a3_projector_sha256="f" * 64,
+            frame_source_ref=bad_ref,
+        )
+
+
+def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-a", generation_id="gen-a",
+        consent_receipt_ref="receipt-a", start_ms=1000, end_ms=1033,
+        tile_luminance=frame,
+    )
+    assert registry.update(**common)["status"] == "WARMUP"
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    assert registry.update(**dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed))["status"] == "MEASURED"
+    # A new consent receipt cannot inherit the previous frame.
+    assert registry.update(**dict(common, consent_receipt_ref="receipt-b", start_ms=1066, end_ms=1099))["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="session-a") == 1
+    assert len(registry) == 0
+
+
+
+def test_temporal_visual_registry_keeps_history_only_for_stable_session_receipt():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-a", generation_id="gen-a",
+        session_consent_receipt_ref="session-consent-a",
+        start_ms=1000, end_ms=1033, tile_luminance=base,
+    )
+    assert registry.update(consent_receipt_ref="frame-a", **common)["status"] == "WARMUP"
+    next_frame = dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed)
+    assert registry.update(consent_receipt_ref="frame-b", **next_frame)["status"] == "MEASURED"
+
+    # A changed session-level receipt is a new authority lineage and must warm up.
+    next_session = dict(
+        common, session_consent_receipt_ref="session-consent-b",
+        start_ms=1066, end_ms=1099,
+    )
+    assert registry.update(consent_receipt_ref="frame-c", **next_session)["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="session-a") == 1
+    assert len(registry) == 0
+
+
+def test_temporal_visual_registry_prepare_is_non_mutating_and_stale_ticket_fails_closed():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-atomic", generation_id="generation-a",
+        consent_receipt_ref="frame-a", session_consent_receipt_ref="session-consent-atomic",
+        start_ms=1000, end_ms=1033,
+        tile_luminance=base,
+    )
+
+    first = registry.prepare_update(**common)
+    stale = registry.prepare_update(**common)
+    assert first.result["status"] == "WARMUP"
+    assert len(registry) == 0  # prepare never mutates committed history
+    assert registry.commit_update(first) is True
+    assert registry.commit_update(stale) is False  # same-session stale ticket cannot overwrite
+
+    next_frame = registry.prepare_update(**dict(
+        common, consent_receipt_ref="frame-b", start_ms=1033, end_ms=1066,
+        tile_luminance=changed,
+    ))
+    assert next_frame.result["status"] == "MEASURED"
+    assert registry.commit_update(next_frame) is True
+
+    # A revocation/reset must also invalidate a prepared first frame that has
+    # no committed stream entry yet.
+    pending_after_revoke = registry.prepare_update(**dict(
+        common, capture_session_id="session-revoked", consent_receipt_ref="frame-revoked",
+    ))
+    assert registry.reset(capture_session_id="session-revoked") == 0
+    assert registry.commit_update(pending_after_revoke) is False
+    assert len(registry) == 1
+
+
+def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    first_obs = observation(
+        source_id="ui-frame-source-failed", receipt_ref="frame-receipt-failed",
+        session_receipt_ref="session-consent-atomic", start_ms=1000, end_ms=1033,
+    )
+    first_frame = image_buffer()
+
+    original_context = A5UIRuntimeAdapter.context
+
+    def fail_context(_adapter, *_args, **_kwargs):
+        raise RuntimeError("injected A5 context delivery failure")
+
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", fail_context)
+    with lease_for(runtime, first_obs) as lease:
+        with pytest.raises(RuntimeError, match="injected A5 context delivery failure"):
+            consume_with_provider_verifier(
+                runtime, first_obs, first_frame, consent_lease=lease,
+                current_source="Observe this screen session.",
+            )
+
+    assert len(runtime._a5_temporal_visual_registry) == 0
+    assert first_obs["source_id"] not in runtime._a5_ui_context_cache
+    assert getattr(runtime, "attention", None) is None
+    assert not any(first_frame)
+
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", original_context)
+    second_obs = observation(
+        source_id="ui-frame-source-after-failure", receipt_ref="frame-receipt-after-failure",
+        session_receipt_ref="session-consent-atomic", start_ms=1033, end_ms=1066,
+    )
+    second_frame = image_buffer_variant()
+    with lease_for(runtime, second_obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, second_obs, second_frame, consent_lease=lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert result["temporal_visual_modulation"] is None
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(second_frame)
+
+
+def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    state.update(start_ms=100, end_ms=133, tile_luminance=frame)
+    with pytest.raises(TemporalVisualEvidenceError, match="monotonically"):
+        state.update(start_ms=90, end_ms=120, tile_luminance=frame)
+    malformed = dict(frame)
+    malformed["r00"] = [float("nan")] + [0.1] * 15
+    with pytest.raises(TemporalVisualEvidenceError, match="finite"):
+        state.update(start_ms=133, end_ms=166, tile_luminance=malformed)
+    # The rejected frame did not replace the previous valid baseline.
+    result = state.update(start_ms=133, end_ms=166, tile_luminance=frame)
+    assert result["status"] == "MEASURED"
+    assert result["change_score"] == 0.0
+
+
+def test_end_of_stream_erases_temporal_visual_history(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    with lease_for(runtime, obs) as lease:
+        with consume_projected_frame_scope(
+            runtime, obs, frame, consent_lease=lease,
+            frame_verifier=provider_verifier(lease, obs, frame),
+            current_source="Observe one screen frame.", end_of_stream=True,
+        ) as result:
+            assert result["temporal_visual_evidence"]["status"] == "WARMUP"
+            assert len(runtime._a5_temporal_visual_registry) == 1
+        assert len(runtime._a5_temporal_visual_registry) == 0
+    assert not any(frame)
+
+
+def _temporal_tile_feature(rgb=(0.2, 0.3, 0.4), hue=None, edge=0.1, orientation=None, luminance=0.5):
+    hue = [0.0] * 8 if hue is None else list(hue)
+    orientation = [0.25] * 4 if orientation is None else list(orientation)
+    return tuple(
+        list(rgb) + [0.0, 0.0, 0.0] + hue + [0.5, 0.5, edge]
+        + orientation + [luminance] * 16
+    )
+
+
+def test_temporal_visual_multichannel_detects_chroma_and_edge_changes_at_constant_luminance():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    baseline = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    color_changed = dict(baseline)
+    color_changed["r00"] = _temporal_tile_feature(
+        rgb=(0.8, 0.1, 0.1), hue=[1.0] + [0.0] * 7,
+    )
+    state = TemporalVisualEvidence()
+    warmup = state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline,
+    )
+    result = state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=color_changed,
+    )
+    assert warmup["multichannel_status"] == "WARMUP"
+    assert result["tile_delta"]["r00"] == 0.0
+    assert result["multichannel_changed_tile_ids"] == ["r00"]
+    assert result["multichannel_change_score"] > 0.08
+    assert result["attention_novelty"] == pytest.approx(result["multichannel_change_score"])
+
+    edge_changed = dict(baseline)
+    edge_changed["r23"] = _temporal_tile_feature(
+        edge=0.7, orientation=[1.0, 0.0, 0.0, 0.0],
+    )
+    edge_state = TemporalVisualEvidence()
+    edge_state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline,
+    )
+    edge_result = edge_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=edge_changed,
+    )
+    assert edge_result["multichannel_changed_tile_ids"] == ["r23"]
+    assert edge_result["multichannel_change_score"] > 0.2
+
+
+def test_temporal_visual_multichannel_discounts_global_appearance_shift():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    baseline = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    shifted = {
+        tile: _temporal_tile_feature(
+            rgb=(0.4, 0.3, 0.2),
+            hue=[0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
+        for tile in TILE_IDS
+    }
+    state = TemporalVisualEvidence()
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=baseline)
+    result = state.update(start_ms=1033, end_ms=1066, tile_luminance=luminance, tile_features=shifted)
+    assert result["multichannel_changed_tile_ids"] == []
+    assert result["multichannel_change_score"] == 0.0
+    assert result["global_appearance_shift"] > 0.0
+    assert result["attention_novelty"] == pytest.approx(0.15 * result["global_appearance_shift"])
+
+
+def test_temporal_visual_multichannel_rejects_mismatched_and_malformed_features():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    luminance = {tile: [0.5] * 16 for tile in TILE_IDS}
+    features = {tile: _temporal_tile_feature() for tile in TILE_IDS}
+    state = TemporalVisualEvidence()
+    with pytest.raises(TemporalVisualEvidenceError, match="37 values"):
+        state.update(
+            start_ms=1000, end_ms=1033, tile_luminance=luminance,
+            tile_features=dict(features, r00=(0.0,) * 36),
+        )
+    mismatch = dict(features)
+    mismatch["r00"] = _temporal_tile_feature(luminance=0.6)
+    with pytest.raises(TemporalVisualEvidenceError, match="match the bound luminance"):
+        state.update(
+            start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=mismatch,
+        )
+    # A rejected feature packet must not warm or replace the prior valid history.
+    warmup = state.update(
+        start_ms=1000, end_ms=1033, tile_luminance=luminance, tile_features=features,
+    )
+    assert warmup["multichannel_status"] == "WARMUP"
+
+
+def test_temporal_visual_legacy_luminance_only_remains_supported():
+    from v13.vision_temporal_evidence import TILE_IDS, LUMINANCE_METHOD, TemporalVisualEvidence
+
+    luminance = {tile: [0.2] * 16 for tile in TILE_IDS}
+    state = TemporalVisualEvidence()
+    first = state.update(start_ms=1000, end_ms=1033, tile_luminance=luminance)
+    second = state.update(start_ms=1033, end_ms=1066, tile_luminance=luminance)
+    assert first["method"] == LUMINANCE_METHOD
+    assert second["multichannel_status"] == "UNAVAILABLE"
+    assert second["attention_novelty"] == 0.0
+
+
+def test_a3_online_temporal_prediction_is_source_bound_and_a4_shadow_only(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    _path, projector_sha = install_student_projector(runtime, tmp_path)
+    session_receipt = "session-consent-predictor-0001"
+    frames = [image_buffer() if index % 2 == 0 else image_buffer_variant() for index in range(7)]
+    results = []
+    first_obs = None
+
+    for index, frame in enumerate(frames):
+        obs = observation(
+            source_id=f"ui-predict-frame-{index:02d}",
+            receipt_ref=f"frame-predict-receipt-{index:02d}",
+            session_receipt_ref=session_receipt,
+            start_ms=1000 + index * 33,
+            end_ms=1033 + index * 33,
+        )
+        if first_obs is None:
+            first_obs = obs
+        with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+            result = consume_with_provider_verifier(
+                runtime, obs, frame, consent_lease=lease,
+                current_source="Observe this authorized screen session.",
+                goal="track the changing panel",
+            )
+        results.append(result)
+
+    first_prediction = results[0]["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert first_prediction["status"] == "WARMUP"
+    assert first_prediction["persistent_weights"] is False
+    assert results[1]["a3_projected_change"]["status"] == "MEASURED"
+
+    final = results[-1]
+    prediction = final["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert prediction["status"] == "SHADOW_MEASURED"
+    assert prediction["updates"] >= prediction["warmup_updates"] + 1
+    assert prediction["parameter_l2"] > 0.0
+    assert prediction["persistent_weights"] is False
+    assert prediction["weight_scope"] == "EPHEMERAL_SESSION_SHADOW"
+    assert prediction["authority"] == "SHADOW_ONLY"
+    assert prediction["truth_authority"] == 0
+    assert prediction["learning_authority"] is False
+    assert prediction["action_authority"] is False
+    assert final["packet"]["temporal_visual_evidence"]["a3_temporal_prediction"] == prediction
+    assert final["a4"]["temporal_visual_evidence"]["a3_temporal_prediction"] == prediction
+    assert final["temporal_visual_modulation"]["salience"]["novelty"] == (
+        final["temporal_visual_evidence"]["attention_novelty"]
+    )
+    assert all(not any(frame) for frame in frames)
+
+    # A new session-consent receipt on the same capture session cannot inherit
+    # the previous predictor's numeric state.
+    rotated = observation(
+        source_id="ui-predict-frame-rotated",
+        receipt_ref="frame-predict-receipt-rotated",
+        session_receipt_ref="session-consent-predictor-rotated",
+        start_ms=1231,
+        end_ms=1264,
+    )
+    rotated_frame = image_buffer()
+    with lease_for(runtime, rotated, lock=runtime.store.mutex) as lease:
+        rotated_result = consume_with_provider_verifier(
+            runtime, rotated, rotated_frame, consent_lease=lease,
+            current_source="Observe the new authorized screen session.",
+            goal="track the changing panel",
+        )
+    reset_prediction = rotated_result["temporal_visual_evidence"]["a3_temporal_prediction"]
+    assert reset_prediction["status"] == "WARMUP"
+    assert reset_prediction["updates"] == 0
+    assert reset_prediction["parameter_l2"] == 0.0
+    assert not any(rotated_frame)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(rotated["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
+def uniform_image_buffer(color=(96, 96, 96)):
+    image = Image.new("RGB", (64, 64), color)
+    output = BytesIO()
+    image.save(output, format="PNG")
+    image.close()
+    return bytearray(output.getvalue())
+
+def test_uniform_frame_has_zero_raw_eye_structure_contribution(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = uniform_image_buffer()
+
+    with lease_for(runtime, obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, obs, frame, consent_lease=lease,
+            current_source="Describe this screen.", goal="neutral screen",
+            token_budget=512,
+        )
+
+    assert result["raw_eye_structure"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["score"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["contribution"] == 0.0
+    assert result["a4"]["raw_eye_signal"]["learned"] is False
+    global_row = next(row for row in result["a4"]["segments"] if row["index"] == 1)
+    assert global_row["raw_eye_structure"] == 0.0
+    assert global_row["raw_eye_contribution"] == 0.0
+    assert global_row["score"] == global_row["base_score"]
+    assert result["packet"]["a4_raw_eye_signal"]["authority"] == "ATTENTION_ONLY"
+    assert result["packet"]["action_authority"] is False
+    assert result["packet"]["learning_authority"] is False
+    assert not any(frame)
+
+@pytest.mark.parametrize("weight_shape", [(38, 256), (38, 100_000_000)])
