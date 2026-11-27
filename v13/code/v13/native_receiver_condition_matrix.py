@@ -1,10 +1,11 @@
-"""Source-bound, serial nine-condition inputs for native receiver task scoring.
+"""Source-bound, serial twelve-condition inputs for native receiver task scoring.
 
 This is an input producer only: it never loads a model, scores tokens, persists
 vectors, changes weights, grants approval, or enables production B3 routing.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import math
@@ -13,8 +14,11 @@ import struct
 from collections.abc import Mapping
 
 from .native_receiver_utility import CONDITIONS, TASK_FAMILIES
+from .native_receiver_audit_controls import (
+    AuditControlError, build_private_omission_proof, moment_matched_random_rows,
+)
 
-SCHEMA = "v14.native-receiver-condition-matrix/2"
+SCHEMA = "v14.native-receiver-condition-matrix/3"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 REQUIRED_APPROVAL_KIND = "NATIVE_RECEIVER_MATRIX"
 MAX_ROWS, MAX_DIM, MAX_ELEMENTS, MAX_TARGET_TOKENS = 64, 8192, 262144, 512
@@ -90,7 +94,7 @@ def _record(record, name):
     _ref(checked.get("source_ref"), name)
     if not isinstance(checked.get("pairs"), list) or len(checked["pairs"]) < 2:
         raise NativeReceiverConditionMatrixError(name + " needs at least two aligned token rows")
-    return dict(checked)
+    return copy.deepcopy(dict(checked))
 
 
 def _bindings(record):
@@ -170,6 +174,40 @@ def _control(control, name, task, main, adapter_sha, main_sender, main_receiver)
         "brain_generation_id": record.get("brain_generation_id")}
 
 
+def _private_control(control, task, main, adapter_sha, main_sender, main_receiver):
+    """Bind a redacted view of the same task without requiring equal token count."""
+    if not isinstance(control, Mapping):
+        raise NativeReceiverConditionMatrixError("INTACT_NO_PRIVATE control record is required")
+    if (control.get("task_group_id") != task["task_group_id"]
+            or control.get("task_family") != task["task_family"]
+            or control.get("session_id") != task["session_id"]):
+        raise NativeReceiverConditionMatrixError("intact-no-private control must preserve task/session/family")
+    record = _record(control.get("record"), "INTACT_NO_PRIVATE")
+    source = _ref(record.get("source_ref"), "INTACT_NO_PRIVATE")
+    if source == _ref(main.get("source_ref"), "task"):
+        raise NativeReceiverConditionMatrixError("intact-no-private control must use a distinct redacted source")
+    sender, receiver = _bindings(record)
+    if sender != main_sender or receiver != main_receiver:
+        raise NativeReceiverConditionMatrixError("intact-no-private model/tap binding differs from the task")
+    if (record.get("event_id") != main.get("event_id")
+            or record.get("brain_generation_id") != main.get("brain_generation_id")):
+        raise NativeReceiverConditionMatrixError("intact-no-private control must preserve task event/generation")
+    _exact, rows, _s, _r = _packet(
+        record, control.get("candidate_packet"), adapter_sha, "INTACT_NO_PRIVATE",
+    )
+    if len(rows) + 1 > MAX_ROWS or len(rows) * len(rows[0]) > MAX_ELEMENTS:
+        raise NativeReceiverConditionMatrixError("intact-no-private geometry exceeds native limits")
+    meta = {
+        "task_group_id": task["task_group_id"],
+        "task_family": task["task_family"],
+        "source_ref": source,
+        "record_sha256": record["record_sha256"],
+        "event_id": record.get("event_id"),
+        "brain_generation_id": record.get("brain_generation_id"),
+    }
+    return record, rows, meta
+
+
 def build_entity_substitution_proof(original_text, alternate_text, original_record, alternate_record, entity_byte_spans):
     """Verify a same-template, entity-only text pair without returning raw text."""
     if type(original_text) is not str or type(alternate_text) is not str:
@@ -247,7 +285,7 @@ def _entity_positions(main, alternate, proof):
     return positions
 
 
-def _build_rows(condition, baseline, exact, candidate, ood, entity, deranged, entity_positions, seed):
+def _build_rows(condition, baseline, exact, candidate, ood, entity, deranged, no_private, moment_random, entity_positions, seed):
     if condition == "NO_MESSAGE":
         # No sender rows are injected; the native receiver decodes its own BOS.
         return [], "NO_MESSAGE_NO_INJECTED_ROWS_V1"
@@ -266,6 +304,8 @@ def _build_rows(condition, baseline, exact, candidate, ood, entity, deranged, en
     elif condition == "REPEAT":
         mean = [sum(row[j] for row in candidate) / len(candidate) for j in range(len(candidate[0]))]
         message, recipe = [mean[:] for _ in candidate], "BOS_PLUS_MEAN_REPEAT_V1"
+    elif condition == "MOMENT_MATCHED_RANDOM":
+        message, recipe = moment_random, "BOS_PLUS_MOMENT_MATCHED_ORTHOGONAL_ROW_MIX_V1"
     elif condition == "OOD":
         message, recipe = ood, "BOS_PLUS_CROSS_TASK_FAMILY_SOURCE_V1"
     elif condition == "ENTITY_SUBSTITUTION":
@@ -275,6 +315,8 @@ def _build_rows(condition, baseline, exact, candidate, ood, entity, deranged, en
         recipe = "BOS_PLUS_ENTITY_SPAN_ONLY_SUBSTITUTION_V1"
     elif condition == "DERANGED_MESSAGE":
         message, recipe = deranged, "BOS_PLUS_SAME_FAMILY_DERANGED_CANDIDATE_V1"
+    elif condition == "INTACT_NO_PRIVATE":
+        message, recipe = no_private, "BOS_PLUS_INTACT_NO_PRIVATE_CANDIDATE_V1"
     else:
         raise NativeReceiverConditionMatrixError("unknown receiver condition")
     return [list(row) for row in baseline] + [list(row) for row in message], recipe
@@ -310,7 +352,8 @@ class NativeReceiverConditionMatrix:
             item = self._build_one(spec["condition"])
             for key in ("condition", "input_sha256", "input_rows", "input_dim", "message_source_ref",
                         "message_record_sha256", "message_event_id", "message_generation_id",
-                        "native_source_id", "native_generation_id", "adapter_sha256", "control_recipe"):
+                        "native_source_id", "native_generation_id", "adapter_sha256", "control_proof_sha256",
+                        "text_token_ids_sha256", "text_token_count", "control_recipe"):
                 if item.get(key) != spec.get(key):
                     raise NativeReceiverConditionMatrixError("condition input changed after approval binding")
             item["approval_binding_sha256"] = self._receipt["approval_binding_sha256"]
@@ -323,8 +366,9 @@ class NativeReceiverConditionMatrix:
 
 
 def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet,
-        candidate_packet, ood_control, entity_control, deranged_control):
-    """Create the nine source-bound task-score inputs; no native execution occurs.
+        candidate_packet, ood_control, entity_control, deranged_control,
+        intact_no_private_control, private_byte_spans):
+    """Create the twelve source-bound task-score inputs; no native execution occurs.
 
     Entity proof is built in memory from both source texts and declared byte
     spans; only source hashes and changed token positions escape.
@@ -379,11 +423,23 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
     )
     if deranged_meta["task_family"] != family:
         raise NativeReceiverConditionMatrixError("deranged control must preserve task family")
-    control_sources = [ood_meta, entity_meta, deranged_meta]
-    if (len({item["source_ref"]["source_id"] for item in control_sources}) != 3
-            or len({item["source_ref"]["sha256"] for item in control_sources}) != 3
-            or len({item["task_group_id"] for item in control_sources}) != 3):
-        raise NativeReceiverConditionMatrixError("OOD/entity/deranged controls must use distinct sources and task groups")
+    no_private_record, no_private_rows, no_private_meta = _private_control(
+        intact_no_private_control, task, main, adapter_sha, main_sender, main_receiver,
+    )
+    try:
+        private_proof = build_private_omission_proof(
+            task["source_text"], intact_no_private_control.get("source_text"),
+            main, no_private_record, private_byte_spans,
+        )
+    except AuditControlError as exc:
+        raise NativeReceiverConditionMatrixError("intact-no-private byte-span proof failed") from exc
+    private_proof_sha = _json_sha(private_proof)
+    control_sources = [ood_meta, entity_meta, deranged_meta, no_private_meta]
+    if (len({item["source_ref"]["source_id"] for item in control_sources}) != 4
+            or len({item["source_ref"]["sha256"] for item in control_sources}) != 4
+            or len({item["task_group_id"] for item in control_sources[:3]}) != 3
+            or no_private_meta["task_group_id"] != task_id):
+        raise NativeReceiverConditionMatrixError("OOD/entity/deranged/no-private source bindings are not distinct as required")
     proof = build_entity_substitution_proof(task["source_text"], entity_control.get("source_text"),
         main, entity_record, entity_control.get("entity_byte_spans"))
     changed = _entity_positions(main, entity_record, proof)
@@ -394,17 +450,38 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         "bos_input_sha256": _input_sha(baseline_rows), "target_token_ids_sha256": target_sha,
         "target_token_count": len(target_ids)})
     seed = task_id + ":" + source["sha256"]
+    try:
+        moment_random = _rows(moment_matched_random_rows(candidate, seed), "moment-matched random rows")
+    except AuditControlError as exc:
+        raise NativeReceiverConditionMatrixError("moment-matched random control could not be constructed") from exc
+    direct_text_tokens = main.get("receiver", {}).get("token_ids")
+    if (not isinstance(direct_text_tokens, (list, tuple)) or not 1 <= len(direct_text_tokens) <= MAX_TARGET_TOKENS
+            or any(type(token) is not int or token < 0 or token > 2147483647 for token in direct_text_tokens)):
+        raise NativeReceiverConditionMatrixError("direct-text reference requires receiver-tokenizer source IDs")
+    direct_text_tokens = list(direct_text_tokens)
+    direct_text_payload = struct.pack("<" + "i" * len(direct_text_tokens), *direct_text_tokens)
+    direct_text_sha = hashlib.sha256(direct_text_payload).hexdigest()
     task_event = main.get("event_id")
     task_generation = main.get("brain_generation_id")
     if type(task_event) is not str or not task_event or type(task_generation) is not str or not task_generation:
         raise NativeReceiverConditionMatrixError("task event/generation binding is missing")
 
     def build_one(condition):
-        vectors, recipe = _build_rows(
-            condition, baseline_rows, exact, candidate, ood_rows, entity_rows, deranged_rows, changed, seed,
-        )
+        if condition == "DIRECT_TEXT_REFERENCE":
+            vectors, recipe = [], "DIRECT_TEXT_TOKEN_INPUT_REFERENCE_V1"
+            text_ids = list(direct_text_tokens)
+            input_sha = direct_text_sha
+            positions = list(range(len(text_ids)))
+        else:
+            vectors, recipe = _build_rows(
+                condition, baseline_rows, exact, candidate, ood_rows, entity_rows,
+                deranged_rows, no_private_rows, moment_random, changed, seed,
+            )
+            text_ids = []
+            input_sha = _input_sha(vectors)
+            positions = list(range(len(vectors)))
         rows = len(vectors)
-        # Empty NO_MESSAGE inputs still carry the receiver width as metadata.
+        # Empty NO_MESSAGE and direct-text inputs still carry receiver width metadata.
         dim = len(vectors[0]) if rows else len(baseline_rows[0])
         if rows > MAX_ROWS or rows * dim > MAX_ELEMENTS:
             raise NativeReceiverConditionMatrixError("condition input exceeds native receiver limits")
@@ -423,12 +500,22 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             message_ref, message_record, message_adapter = deranged_meta["source_ref"], deranged_meta["record_sha256"], adapter_sha
             message_event, message_generation = deranged_meta["event_id"], deranged_meta["brain_generation_id"]
             native_source, native_generation = message_ref["source_id"], message_generation
+        elif condition == "INTACT_NO_PRIVATE":
+            message_ref, message_record, message_adapter = no_private_meta["source_ref"], no_private_meta["record_sha256"], adapter_sha
+            message_event, message_generation = no_private_meta["event_id"], no_private_meta["brain_generation_id"]
+            native_source, native_generation = message_ref["source_id"], message_generation
+        elif condition == "DIRECT_TEXT_REFERENCE":
+            message_ref, message_record, message_adapter = source, main["record_sha256"], None
+            message_event, message_generation = task_event, task_generation
+            native_source, native_generation = source["source_id"], task_generation
         else:
             message_ref, message_record = source, main["record_sha256"]
             message_adapter = None if condition == "EXACT_MESSAGE" else adapter_sha
             message_event, message_generation = task_event, task_generation
             native_source, native_generation = source["source_id"], task_generation
-        return {"schema": "v14.native-receiver-condition-input/1", "condition": condition,
+        control_proof = private_proof_sha if condition == "INTACT_NO_PRIVATE" else None
+        text_sha = direct_text_sha if condition == "DIRECT_TEXT_REFERENCE" else None
+        return {"schema": "v14.native-receiver-condition-input/2", "condition": condition,
             "task_group_id": task_id, "task_family": family, "session_id": session,
             "source_ref": source, "message_source_ref": message_ref,
             "message_record_sha256": message_record, "message_event_id": message_event,
@@ -436,8 +523,10 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             "native_generation_id": native_generation, "sender": main_sender, "receiver": main_receiver,
             "target_token_ids_sha256": target_sha, "target_token_count": target_count,
             "context_sha256": context_sha, "adapter_sha256": message_adapter,
-            "vectors": vectors, "position_ids": list(range(rows)), "position_mode": POSITION_MODE,
-            "input_rows": rows, "input_dim": dim, "input_sha256": _input_sha(vectors),
+            "control_proof_sha256": control_proof,
+            "vectors": vectors, "text_token_ids": text_ids, "text_token_ids_sha256": text_sha,
+            "text_token_count": len(text_ids), "position_ids": positions, "position_mode": POSITION_MODE,
+            "input_rows": rows, "input_dim": dim, "input_sha256": input_sha,
             "control_recipe": recipe, "persisted": False, "production_route": False,
             "semantic_use_proven": False, "training_authority": 0, "native_receiver_authority": 0}
 
@@ -446,13 +535,14 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
         item = build_one(condition)
         specs.append({key: item[key] for key in ("condition", "input_sha256", "input_rows", "input_dim",
             "message_source_ref", "message_record_sha256", "message_event_id", "message_generation_id",
-            "native_source_id", "native_generation_id", "adapter_sha256", "control_recipe")})
+            "native_source_id", "native_generation_id", "adapter_sha256", "control_proof_sha256",
+            "text_token_ids_sha256", "text_token_count", "control_recipe")})
         del item
     bindings = sorted(
-        [source, ood_meta["source_ref"], entity_meta["source_ref"], deranged_meta["source_ref"]],
+        [source, ood_meta["source_ref"], entity_meta["source_ref"], deranged_meta["source_ref"], no_private_meta["source_ref"]],
         key=lambda x: (x["source_id"], x["sha256"]),
     )
-    if len({x["source_id"] for x in bindings}) != 4 or len({x["sha256"] for x in bindings}) != 4:
+    if len({x["source_id"] for x in bindings}) != 5 or len({x["sha256"] for x in bindings}) != 5:
         raise NativeReceiverConditionMatrixError("matrix source bindings are not disjoint")
     material = {"schema": SCHEMA, "status": "MATRIX_READY_NOT_SCORED", "task_group_id": task_id,
         "task_family": family, "session_id": session, "source_ref": source, "source_bindings": bindings,
@@ -461,7 +551,12 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             "extractor_receipt_sha256": baseline["extractor_receipt_sha256"],
             "input_sha256": _input_sha(baseline_rows)},
         "target_token_ids_sha256": target_sha, "target_token_count": target_count,
-        "context_sha256": context_sha, "adapter_sha256": adapter_sha, "conditions": specs,
+        "context_sha256": context_sha, "adapter_sha256": adapter_sha,
+        "private_omission_proof": {"sha256": private_proof_sha,
+            "removed_byte_count": private_proof["removed_byte_count"],
+            "proof_kind": private_proof["proof_kind"],
+            "semantic_privacy_classification_proven": False},
+        "conditions": specs,
         "condition_count": len(CONDITIONS), "required_approval_kind": REQUIRED_APPROVAL_KIND,
         "approval_binding_kind": "UNSIGNED_DIGEST_ONLY", "approval_granted": False,
         "persisted": False, "production_route": False, "semantic_use_proven": False,
