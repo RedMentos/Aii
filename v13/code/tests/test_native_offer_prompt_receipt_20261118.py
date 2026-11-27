@@ -228,7 +228,17 @@ class PurePromptReceipt(unittest.TestCase):
         ]
         m = messages_ascii(selected)
         prompt = render(m)
-        rows = pieces_for_prompt(prompt, bos=False)
+        data = prompt.encode("utf-8")
+        literals = [json.dumps(x["verified_quotes"][0]["text"], ensure_ascii=True).encode("utf-8")
+                    for x in selected]
+        offsets = []
+        cursor = 0
+        for literal in literals:
+            start = data.find(literal, cursor)
+            self.assertGreaterEqual(start, 0)
+            offsets.extend((start, start + len(literal)))
+            cursor = start + len(literal)
+        rows = pieces_for_prompt(prompt, split_offsets=offsets, bos=False)
         native_ids = [row["id"] for row in rows]
         result = inspect(m, prompt, HEADER, token_pieces=rows,
                          native_token_ids=native_ids)
@@ -249,7 +259,7 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertGreaterEqual(literal_start, 0)
 
         rows = pieces_for_prompt(prompt, bos=False)
-        rows[1]["piece"] = "mismatched"
+        rows[0]["piece"] = "mismatched"
         native_ids = [row["id"] for row in rows]
         result = inspect(m, prompt, HEADER, token_pieces=rows,
                          native_token_ids=native_ids)
@@ -343,9 +353,15 @@ class NativeHTTPBound(unittest.TestCase):
             if endpoint == "/apply-template":
                 return {"prompt": render(payload["messages"])}
             if endpoint == "/tokenize":
-                if payload.get("with_pieces"):
-                    return {"tokens": [{"id": 2, "piece": payload["content"]}]}
-                return {"tokens": [1, 2]}
+                prompt = payload["content"]
+                data = prompt.encode("utf-8")
+                literal = json.dumps(SECRET, ensure_ascii=False).encode("utf-8")
+                first = data.find(literal)
+                second = data.find(literal, first + len(literal))
+                offsets = (first, first + len(literal), second, second + len(literal))
+                rows = pieces_for_prompt(prompt, split_offsets=offsets, bos=False)
+                full_ids = [1] + [row["id"] for row in rows]
+                return {"tokens": rows if payload.get("with_pieces") else full_ids}
             raise AssertionError(endpoint)
         r._json = post
         return r
