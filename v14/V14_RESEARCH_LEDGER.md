@@ -1955,3 +1955,19 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - Updated both Perception-owned workflows to expect the exact current consumer blob `4bfcf31a7738bb390781babab8e11518896a3580`. No test was weakened; only the stale source identity was rebound.
 - On the earlier code/test head, the A4 synthetic ablation passed on Python 3.13/3.14, but the new full predictor/consumer pytest step was still running. The feature-set and VAD failures are from pre-pin-refresh commits and must be superseded by the queued exact-head runs `45935761586` and `45935761531`.
 - New exact-head workflow runs at the latest pin-refresh commit: A4 ablation `45935761585`, feature-set `45935761586`, VAD comparator `45935761531`, staged/integrated `45935761490`, runtime-deploy `45935761505`; results pending at this ledger update.
+
+
+## R-180 — Co-observation is distinct from retention and plasticity (2026-11-27)
+
+- Primary source read: Timm Hess, Abhishek Jha, Gido M. van de Ven, Tinne Tuytelaars, *Forgetting, plasticity, and co-observation: a third facet of continual learning*, arXiv:2608.18803 (2026-08-19). The arXiv text is available; the associated repository README labels the work CoLLAs 2026, but the proceedings record was not independently verified in this run.
+- Empirical setup: four uniformly partitioned data chunks; supervised CIFAR-100/ImageNet-100 with ResNet-18, and self-supervised ImageNet-100 with Barlow Twins and I-JEPA/ViT-B/16; fixed optimization budget, linear-probe evaluation, three seeds (six for I-JEPA). Their ensemble baseline controls for forgetting, yet incremental-joint training still outperforms it, indicating a separate co-observation deficit.
+- Replay results: in their ImageNet-100 representation-level evaluation, a 3% exemplar buffer did not consistently match the ensemble; about 15% matched the ensemble, and 30% closed roughly half the remaining gap to incremental-joint training. Distillation tracked the ensemble but did not close the co-observation gap. These percentages are not transferable to the 13-feature A4 predictor; they are a reason to test, not a parameter recommendation.
+- OSS: [TimmHess/Co-ob](https://github.com/TimmHess/Co-ob) declares MIT. README says it vendors a patched Avalanche tree and uses a CaSSLe fork for SSL training; those nested components require separate license/dependency review. No code was copied.
+- V14 experiment proposal: compare current sequential A4 updates with a tiny source-/generation-/consent-scoped process-local replay of prior 13-feature transition pairs, sampled alongside the current pair at an equal gradient/update budget. Test buffer sizes 1/4/8/16 against no-replay and transient-only controls on session-disjoint acoustic regimes. Measure current/old-regime MAE, omission/commission error, gradient and parameter deltas, update count, bytes, restart/consent reset, and holdout retention. No PCM/transcript storage; no replay across consent scopes; never persist raw observations. Do not assume a tiny buffer will reproduce the paper's vision results.
+- Relevance: this adds a third diagnostic axis to A4 evaluation—co-observation—rather than treating lower update count or preserved weights as sufficient evidence of learning.
+
+
+### Run 57 exact-test correction
+
+- The new exact predictor/consumer pytest gate ran on Python 3.13 and 3.14 and found **40 passed / 1 failed** on each. The failing assertion was a fixture assumption: the post-consolidation error was large enough to cross the threshold again immediately, so no transient delta remained. Production code compiled; the other 40 tests and six synthetic ablation tests passed.
+- Corrected only the restart test sequence/threshold (0.8, max norm 2.0) so it first commits once, then creates a sub-threshold pending delta before loading the saved state. The exact-head rerun for this correction is pending; no PASS claim yet.
