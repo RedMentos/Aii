@@ -181,7 +181,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
             "divergence": "JENSEN_SHANNON_NATS",
             "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
             "vocab_size": 32000,
-            "receiver_model_sha256": RECEIVER_SHA,
+            "receiver_model_sha256": RECEIVER["model_sha256"],
             "pl": {
                 "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
                 "jsd_nats": pl_nats,
