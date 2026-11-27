@@ -2561,7 +2561,7 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 
 ## Research & Perception — Run 70 (2026-11-27)
 
-- **Current PR:** [#2565](https://github.com/RedMentos/Aii/pull/2565), branch `research-perception/v14-a3-tile-ood-abstention-20261127-run70`, latest checkpoint `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`. It adds optional descriptor-based OOD abstention to the A3 tile projector used by `:image find`; no model or weight change.
+- **Current PR:** [#2565](https://github.com/RedMentos/Aii/pull/2565), branch `research-perception/v14-a3-tile-ood-abstention-20261127-run70`, latest code/test checkpoint `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`; workflow-path commit `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`; later commits are documentation-only. It adds optional descriptor-based OOD abstention to the A3 tile projector used by `:image find`; no model or weight change.
 - **Local:** CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0 scratch reproduction PASS: six synthetic source images, 16/16 held-out in-domain tiles retained, black/checkerboard shifts 0/16 retained. Full repository pytest is NOT_RUN locally because there is no mounted checkout and GitHub DNS fails.
 - **CI:** exact-head workflows are pending/readback required: visual bridge run 46051827002, MediaProjection ingress run 46051826940, shared staged/integrated run 46051827046. Do not call CI green until the final exact-head results are read.
 - **Integration:** stacked on #2563; the #2563 shared staged/integrated failure on Core/QA-owned source pins/assertions remains a merge blocker. Core owns #2562's active `vision_ui_frame_ingress.py` edits; this PR deliberately avoids that file.
@@ -2571,9 +2571,9 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 
 ### Run 70 — final verification / blocking issue
 
-- PR [#2565](https://github.com/RedMentos/Aii/pull/2565) latest head `f081baeb3d681bc8c98c99457ac2983fc1e93cd1` (code head `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`; workflow commit `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`).
+- PR [#2565](https://github.com/RedMentos/Aii/pull/2565) (code head `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`; workflow commit `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`).
 - Focused CI: visual bridge 46051827002 PASS (24 tests + 3 subtests on Python 3.13/3.14, including `test_vision.py`); MediaProjection ingress 46051826940 PASS (31/31 on Python 3.13/3.14).
-- Shared gate 46051827046 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. New Perception-caused failure: `unsupported lifecycle source: vision.py` in two stage tests. Core was asked on #2562 to add/pin the source or coordinate a stage-allowed consumer. Existing Core audio/observer/arithmetic pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
-- PR #2565 is NOT_MERGE_READY and stacked on #2563; do not merge before the stale `vision.py` source pin and #2563 shared gate are resolved. Core owns the allowlist/pins; QA owns migration assertions.
+- Shared gate 46051827046 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. New Perception-caused failure: `unsupported lifecycle source: vision.py` in two stage tests. Core was asked on #2562 to refresh the existing `PINS['vision.py']` hash in `scripts/source_lifecycle_lock_integration_candidate.py` from `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5` to `dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b`, plus dependent expected hashes; the path is already pinned. Existing Core audio/observer/arithmetic pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
+- PR #2565 is NOT_MERGE_READY and stacked on #2563; do not merge before the stale `vision.py` source pin and #2563 shared gate are resolved. Core owns the source-lock pin; QA owns migration assertions.
 - Local scratch tests PASS, but full local repo pytest NOT_RUN (no checkout/DNS). REDMI_UNVERIFIED; updater/install state UNKNOWN; no device action or deployment; NOT_RELEASED.
 - **Next:** Core refreshes the existing `PINS['vision.py']` hash and dependent expected hashes in the lifecycle lock; QA repairs its migration assertions; then rerun the exact shared staged/integrated candidate. No user action required.
