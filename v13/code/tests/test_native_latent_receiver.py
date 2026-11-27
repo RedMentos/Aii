@@ -313,7 +313,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     )
     assert "--hybrid-state-roundtrip" in commands[0]
     assert result["status"] == "SCORED"
-    assert len(result["condition_scores"]) == 8
+    assert len(result["condition_scores"]) == 9
     for condition in conditions:
         score = result["condition_scores"][condition]
         snapshot = score["kv_snapshot"]
