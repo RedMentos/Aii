@@ -823,10 +823,9 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
             check, consent_guard(check),
         ) as lease:
             with monkeypatch.context() as patch:
-                patch.setattr(
-                    audio_voice_module, "extract_voice_cues",
-                    lambda _pcm, _rate, backend="python": dict(VOICED),
-                )
+                # Exercise the real RAW EAR extractor here: the context store
+                # validates the complete acoustic-cue contract, not the smaller
+                # predictor-only VOICED fixture used by the unit tests above.
                 patch.setattr(audio_voice_module.attctl, "controller", lambda _runtime: capture)
                 result = consume_pcm16_voice_window(
                     runtime, tone(), sample_rate=16000, start_ms=12_100,
@@ -842,6 +841,10 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
             assert result["c3_admission"].status == "ADMITTED"
             assert result["c3_admission"].selected
             packet_value = result["packet"]
+            packet_cues = packet_value["segments"][0]["acoustic"]["voice_cues"]
+            assert audio_voice_module.validate_voice_cues(packet_cues) == packet_cues
+            assert packet_cues == result["a4"]["voice_cues"]
+            assert packet_cues["method"] == "RAW_EAR_AUTOCORR_V3"
             assert packet_value["brain_generation_id"] == runtime.store.generation_id
             assert result["a4"]["packet_id"] == packet_value["packet_id"]
             try:
@@ -851,6 +854,17 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
                 )
             except Exception as exc:
                 pytest.fail(f"A4 temporal context validation failed: {type(exc).__name__}: {exc}")
+            invalid_result = dict(result)
+            invalid_packet = dict(packet_value)
+            invalid_segment = dict(packet_value["segments"][0])
+            invalid_acoustic = dict(invalid_segment["acoustic"])
+            invalid_acoustic["voice_cues"] = {"activity_hint": "VOICED"}
+            invalid_segment["acoustic"] = invalid_acoustic
+            invalid_packet["segments"] = [invalid_segment]
+            invalid_result["packet"] = invalid_packet
+            assert context_store.record(runtime, event["event_id"], invalid_result, window) is None
+            assert not getattr(runtime, "_audio_contexts", {})
+
             context = context_store.record(runtime, event["event_id"], result, window)
             if context is None:
                 row = runtime.store.one(
