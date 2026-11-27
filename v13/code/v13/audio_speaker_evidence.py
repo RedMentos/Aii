@@ -132,7 +132,7 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               activity_hint, embeddings):
+               activity_hint, embeddings, session_id=None, consent_scope_id=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -141,19 +141,35 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
+        if (session_id is None) != (consent_scope_id is None):
+            raise SpeakerEvidenceError("session_id and consent_scope_id must be supplied together")
+        if session_id is not None and (
+            type(session_id) is not str or not session_id.strip() or len(session_id) > 128
+        ):
+            raise SpeakerEvidenceError("speaker session id is invalid")
+        if consent_scope_id is not None and (
+            type(consent_scope_id) is not str or len(consent_scope_id) != 64
+            or any(char not in "0123456789abcdef" for char in consent_scope_id)
+        ):
+            raise SpeakerEvidenceError("speaker consent scope must be a lowercase SHA-256 digest")
+        scope = (session_id, consent_scope_id)
         batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms)
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
             "frame_step_ms", "lookback_frames", "lookback_ms",
             "confidence_threshold", "calibration_id",
         )}
-        key = (source_id, generation_id)
+        key = (source_id, generation_id, session_id, consent_scope_id)
         with self._lock:
+            reset_reason = None
             for old_key in list(self._states):
-                if old_key[0] == source_id and old_key[1] != generation_id:
+                if old_key[0] == source_id and (
+                    old_key[1] != generation_id or old_key[2:] != scope
+                ):
+                    if old_key[1] == generation_id and old_key[2:] != scope:
+                        reset_reason = "SESSION_OR_CONSENT_SCOPE_CHANGED"
                     del self._states[old_key]
             state = self._states.get(key)
-            reset_reason = None
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
