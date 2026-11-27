@@ -22,11 +22,13 @@ from .android_companion_ecdsa import ECDSAReceiptVerifier
 from .android_outcomes import accept_and_persist_companion_receipt
 from .contracts import packet
 from .common import atomic_write, dumps
+from .android_url import UnsafeAndroidUrl, https_host, validate_https_url
 
 
 _HELP = (
     ":android status|capabilities|pair|trust <key-id> --confirm|"
-    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop"
+    "launch <package> --confirm|open-url <https-url> --confirm|"
+    "poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop"
 )
 
 
@@ -177,29 +179,30 @@ class AndroidCompanionController:
         atomic_write(self.trust_path, json.dumps(trust, sort_keys=True, separators=(",", ":")))
         return dumps({"status": "PINNED", "key_id": info["key_id"], "automatic_trust": False})
 
-    def launch(self, package, confirm):
+    def _submit_action(self, capability, args, target_label, confirm, *, command, result_key):
         self.runtime.require_idle()
         if confirm is not True:
-            raise ControlDenied("explicit :android launch <package> --confirm required")
-        if type(package) is not str or len(package) > 180 or not re.fullmatch(r"[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+", package):
-            raise ControlDenied("invalid Android package name")
+            raise ControlDenied(f"explicit :android {command} --confirm required")
         self._pinned_key()
         try:
-            self._capability_registry().require_ready("launch_app")
+            self._capability_registry().require_ready(capability)
         except CapabilityRegistryError as exc:
             raise ControlDenied(str(exc)) from exc
         self.broker.start()
         session = self.runtime.session or self.runtime.store.new_session()
-        event = self.runtime.store.event(session, "Operator requested launch_app package=" + package)
+        # Keep sensitive URL path/query out of Store source text and audit rows.
+        event = self.runtime.store.event(
+            session, "Operator requested " + capability + " target=" + target_label
+        )
         proposal = self.broker.propose(
-            "launch_app", {"package": package}, ttl=30,
+            capability, args, ttl=30,
             event_id=event["event_id"], source_ref=event["source_ref"],
         )
         try:
             intent = packet(
                 "ActionIntent", "C5_ANDROID_COMPANION", event["event_id"],
                 event["brain_generation_id"], [event["source_ref"]],
-                action_id=proposal.action_id, action_type="launch_app",
+                action_id=proposal.action_id, action_type=capability,
                 permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
             )
             self.runtime.store.add_packet("ActionIntent", intent)
@@ -214,8 +217,6 @@ class AndroidCompanionController:
                     or response.get("action_id") != proposal.action_id):
                 raise ControlDenied("companion did not acknowledge the exact action id")
         except Exception as submit_exc:
-            # A timeout can happen after Android committed the request. Only a
-            # matching, explicit remote CANCELLED receipt permits local finalization.
             try:
                 remote_cancel = self.transport.cancel(proposal.action_id)
             except Exception as cancel_exc:
@@ -225,23 +226,44 @@ class AndroidCompanionController:
                 self.broker.cancel(proposal.action_id)
                 raise
             self.broker.mark_submit_uncertain(proposal.action_id)
-            return dumps({
-                "status": "SUBMIT_UNCERTAIN",
-                "action_id": proposal.action_id,
-                "package": package,
+            result = {
+                "status": "SUBMIT_UNCERTAIN", "action_id": proposal.action_id,
+                "action_type": capability, "target": target_label,
                 "submit_error": type(submit_exc).__name__,
                 "companion_cancel": remote_cancel,
                 "next": ":android poll " + proposal.action_id,
-            })
-        return dumps({
-            "status": "PENDING_USER_APPROVAL",
-            "action_id": proposal.action_id,
-            "package": package,
+            }
+            result[result_key] = target_label
+            return dumps(result)
+        result = {
+            "status": "PENDING_USER_APPROVAL", "action_id": proposal.action_id,
+            "action_type": capability, "target": target_label,
             "source_event_id": event["event_id"],
-            "companion_approval_required": True,
-            "device_execution_claimed": False,
+            "companion_approval_required": True, "device_execution_claimed": False,
             "next": ":android poll " + proposal.action_id,
-        })
+        }
+        result[result_key] = target_label
+        return dumps(result)
+
+    def launch(self, package, confirm):
+        if (type(package) is not str or len(package) > 180
+                or not re.fullmatch(r"[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+", package)):
+            raise ControlDenied("invalid Android package name")
+        return self._submit_action(
+            "launch_app", {"package": package}, package, confirm,
+            command="launch <package>", result_key="package",
+        )
+
+    def open_url(self, url, confirm):
+        try:
+            validate_https_url(url)
+            host = https_host(url)
+        except UnsafeAndroidUrl as exc:
+            raise ControlDenied(str(exc)) from exc
+        return self._submit_action(
+            "open_url", {"url": url}, host, confirm,
+            command="open-url <https-url>", result_key="url_host",
+        )
 
     def _stored_receipt_outcome(self, action_id):
         """Validate a previously committed receipt so a crash cannot force a remote retry."""
@@ -290,14 +312,14 @@ class AndroidCompanionController:
                 or not isinstance(generation_id, str)
                 or proposal.event_id != event_id
                 or proposal.source_ref != source_ref
-                or proposal.capability != "launch_app"):
+                or proposal.capability not in {"launch_app", "open_url"}):
             raise ControlDenied("stored receipt recovery source/event binding changed")
         if (intent.get("producer_component") != "C5_ANDROID_COMPANION"
                 or intent.get("event_id") != event_id
                 or intent.get("brain_generation_id") != generation_id
                 or intent.get("provenance") != [source_ref]
                 or intent.get("action_id") != action_id
-                or intent.get("action_type") != "launch_app"
+                or intent.get("action_type") != proposal.capability
                 or intent.get("permission") != "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"):
             raise ControlDenied("stored receipt recovery intent binding changed")
         actual = outcome.get("actual") if isinstance(outcome, dict) else None
@@ -332,7 +354,10 @@ class AndroidCompanionController:
                 or re.fullmatch(r"[0-9a-f]{32}", actual["receipt_nonce"]) is None
                 or actual.get("receipt_schema") != "v14.android-companion-receipt/1"
                 or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
-                or actual.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+                or actual.get("android_os_permission_status") != {
+                    "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
+                    "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
+                }.get(proposal.capability)
                 or actual.get("key_storage_status") not in {
                     "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
                 }
@@ -475,7 +500,7 @@ class AndroidCompanionController:
                     or not isinstance(source_ref, dict)
                     or not isinstance(source_ref.get("source_id"), str)
                     or provenance != [source_ref]
-                    or value.get("action_type") != "launch_app"
+                    or value.get("action_type") not in {"launch_app", "open_url"}
                     or value.get("permission") != "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"
                     or action_id in actions):
                 continue
@@ -635,6 +660,8 @@ def operator_command(runtime, args):
         return controller.trust(args[1], True)
     if command == "launch" and len(args) == 3 and args[2] == "--confirm":
         return controller.launch(args[1], True)
+    if command == "open-url" and len(args) == 3 and args[2] == "--confirm":
+        return controller.open_url(args[1], True)
     if command == "poll" and len(args) == 2:
         return controller.poll(args[1])
     if command == "cancel" and len(args) == 2:
