@@ -37,3 +37,15 @@ The implementation is a bounded two-timescale plasticity ablation inspired by Li
 ## Next step
 
 Read exact-head A4 CI and the new staged/integrated results. If focused tests pass, ask Core to rebase #2547 onto the new #2548 head and refresh only its owned pins; QA retains migration assertions. Then evaluate source/session-disjoint A4 omission false positives and continue the A5 UI-event-to-PerceptPacket path.
+
+
+## CI pin correction after initial runs
+
+The first CI after Runtime wiring found two stale expected-blob pins (not a runtime-code failure): the VAD comparator and A4/A5 feature-set workflows still expected the prior `audio_voice_cues.py` blob. Both Perception-owned workflows now pin `4bfcf31a7738bb390781babab8e11518896a3580`. Earlier runs on the pre-fix commits failed at this source-identity check and are superseded by exact-head runs:
+- A4 update gate + full predictor/consumer pytest: `45935761585`
+- A4/A5 feature-set probe: `45935761586`
+- RAW EAR vs WebRTC/libfvad: `45935761531`
+- staged/integrated regression: `45935761490`
+- RuntimeDeploy offline integrity: `45935761505`
+
+All were queued/pending at the time of this update. Do not claim their results until read back.
