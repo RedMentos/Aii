@@ -1570,9 +1570,9 @@ def test_persistent_numeric_weights_retry_repeated_cross_registry_conflicts(tmp_
 
         assert save_calls == 3
         assert len(nested_results) == 1
-        assert nested_results[0]["status"] == "SHADOW_MEASURED"
+        assert nested_results[0]["status"] == "WARMUP"  # measurement gate requires four numeric updates
         assert nested_results[0]["weight_delta_l2"] > 0.0
-        assert recovered["status"] == "SHADOW_MEASURED"
+        assert recovered["status"] == "WARMUP"  # both updates are real, but below the four-update measurement gate
         assert recovered["weight_delta_l2"] > 0.0
         assert recovered["persistence_conflict_recovered"] is True
         assert recovered["persistence_retry_count"] == 2
