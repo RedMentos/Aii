@@ -46,7 +46,7 @@ _REQUIRED = {
     "capture_method", "capture_scope", "api_level", "clock", "event_kind", "start_ms", "end_ms",
     "finality", "action_authority", "learning_authority", "raw_capture_persisted",
 }
-_OPTIONAL = {"accessibility_purpose"}
+_OPTIONAL = {"accessibility_purpose", "session_consent_receipt_ref"}
 _UI_LEASE_TOKEN = object()
 _RUNTIME_CACHE_INIT_LOCK = threading.Lock()
 
@@ -67,6 +67,10 @@ def validate_ui_observation(observation: dict) -> dict:
     receipt = observation.get("consent_receipt_ref")
     if type(receipt) is not str or not _RECEIPT.fullmatch(receipt):
         raise PermissionError("opaque current observe_ui receipt required")
+    if "session_consent_receipt_ref" in observation:
+        session_receipt = observation.get("session_consent_receipt_ref")
+        if type(session_receipt) is not str or not _RECEIPT.fullmatch(session_receipt):
+            raise PermissionError("opaque session-level observe_ui receipt required")
     method = observation.get("capture_method")
     scope = observation.get("capture_scope")
     event_kind = observation.get("event_kind")
@@ -119,18 +123,21 @@ def _summary(observation: dict) -> str:
 
 
 def _provider_args(observation: dict) -> tuple:
-    return (
+    args = (
         observation["source_id"], observation["consent_receipt_ref"],
         observation["capture_session_id"], "observe_ui", observation["capture_method"],
         observation["capture_scope"], observation["api_level"],
     )
+    if "session_consent_receipt_ref" in observation:
+        return args + (observation["session_consent_receipt_ref"],)
+    return args
 
 
 class UIObservationLease:
     """Ephemeral thread-bound handle for one OS-issued UI observation grant."""
     __slots__ = (
         "_token", "runtime", "source_id", "generation_id", "receipt",
-        "capture_session_id", "capture_method", "capture_scope", "api_level",
+        "capture_session_id", "session_receipt_ref", "capture_method", "capture_scope", "api_level",
         "_active", "_thread_id",
     )
 
@@ -143,6 +150,9 @@ class UIObservationLease:
         self.generation_id = generation_id
         self.receipt = observation["consent_receipt_ref"]
         self.capture_session_id = observation["capture_session_id"]
+        self.session_receipt_ref = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
         self.capture_method = observation["capture_method"]
         self.capture_scope = observation["capture_scope"]
         self.api_level = observation["api_level"]
@@ -175,6 +185,9 @@ class UIObservationLease:
             self.active_for(runtime, generation_id)
             and self.source_id == observation.get("source_id")
             and self.receipt == observation.get("consent_receipt_ref")
+            and self.session_receipt_ref == observation.get(
+                "session_consent_receipt_ref", observation.get("consent_receipt_ref"),
+            )
             and self.capture_session_id == observation.get("capture_session_id")
             and self.capture_method == observation.get("capture_method")
             and self.capture_scope == observation.get("capture_scope")
@@ -252,10 +265,17 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
         return (revoke_callback or (lambda sid: revoke_ui_observation(runtime, sid)))(observation["source_id"])
 
     try:
-        unsubscribe = revocation_subscribe(
-            observation["source_id"], observation["consent_receipt_ref"],
-            observation["capture_session_id"], request_cancel, cleanup,
-        )
+        if "session_consent_receipt_ref" in observation:
+            unsubscribe = revocation_subscribe(
+                observation["source_id"], observation["consent_receipt_ref"],
+                observation["capture_session_id"], request_cancel, cleanup,
+                session_consent_receipt_ref=observation["session_consent_receipt_ref"],
+            )
+        else:
+            unsubscribe = revocation_subscribe(
+                observation["source_id"], observation["consent_receipt_ref"],
+                observation["capture_session_id"], request_cancel, cleanup,
+            )
     except Exception:
         raise PermissionError("two-phase UI revocation subscription is unavailable") from None
     if not callable(unsubscribe):
@@ -521,14 +541,25 @@ class A5UIRuntimeAdapter:
                 raise ValueError("Runtime A5 UI state is invalid")
 
     @contextmanager
-    def lease(self, observation, consent_check, consent_guard, revocation_subscribe):
+    def lease(self, observation, consent_check, consent_guard, revocation_subscribe,
+              revoke_callback=None):
         event = getattr(self.runtime, "turn_event", None)
         if not isinstance(event, dict) or type(event.get("brain_generation_id")) is not str:
             raise ValueError("UI observation requires an active Runtime turn")
+        if revoke_callback is None:
+            # The provider's post-lock session-revocation callback must also
+            # erase the matching temporal RAW EYE state, not only the A5 cache.
+            try:
+                from .vision_ui_frame_ingress import temporal_visual_revocation_callback
+                revoke_callback = temporal_visual_revocation_callback(
+                    self.runtime, capture_session_id=observation["capture_session_id"],
+                )
+            except Exception:
+                revoke_callback = self.revoke
         with ui_observation_lease(
             self.runtime, observation, event["brain_generation_id"],
             consent_check, consent_guard, revocation_subscribe,
-            revoke_callback=self.revoke,
+            revoke_callback=revoke_callback,
         ) as grant:
             yield grant
 
