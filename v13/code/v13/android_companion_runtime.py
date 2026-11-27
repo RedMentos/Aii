@@ -117,15 +117,21 @@ class AndroidCompanionController:
             self.ui_frame_verifier_path, public_key, trust["key_id"], clock=self.clock,
         )
         provider = AndroidCompanionFrameProvider(self.transport, verifier)
+        provider_closed = False
         try:
             status = provider.status()
             if status.get("status") != "FRAME_READY":
+                # Close the one-shot verifier/provider before yielding an empty
+                # lease; the caller may keep the context open for the whole turn.
+                provider_closed = True
+                provider.close()
                 yield None
                 return
             with provider.open_current_turn(runtime or self.runtime) as grant:
                 yield grant
         finally:
-            provider.close()
+            if not provider_closed:
+                provider.close()
 
     def _capability_registry(self):
         return CapabilityRegistry.parse(self.transport.capabilities())
