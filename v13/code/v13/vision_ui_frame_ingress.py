@@ -734,9 +734,37 @@ def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
         revoke_ui_observation(runtime, validated["source_id"])
 
 
+@contextmanager
+def consume_projected_frame_from_provider_scope(
+    runtime, observation, frame_buffer, *, consent_lease, verify_fn, **kwargs,
+):
+    """Keep one verified frame packet available while downstream consumers run.
+
+    Nest this inside the same outer UIObservationLease and keep that lease open
+    while C3 iterates over the returned context. Exiting this scope revokes only
+    this frame's source/cache, not the Android MediaProjection session. The
+    provider entrypoint zeroizes the caller buffer before yielding; malformed
+    observations are zeroized here as well.
+    """
+    validated = None
+    try:
+        validated = validate_ui_observation(observation)
+        result = consume_projected_frame_from_provider(
+            runtime, validated, frame_buffer,
+            consent_lease=consent_lease, verify_fn=verify_fn, **kwargs,
+        )
+        yield result
+    finally:
+        if validated is None:
+            _overwrite_caller_buffer(frame_buffer)
+        else:
+            revoke_ui_observation(runtime, validated["source_id"])
+
+
 __all__ = [
     "REVISION",
     "consume_projected_frame",
     "consume_projected_frame_from_provider",
+    "consume_projected_frame_from_provider_scope",
     "consume_projected_frame_scope",
 ]
