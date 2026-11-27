@@ -1132,6 +1132,38 @@ def test_registry_passes_transient_policy_bounds_to_each_stream():
     assert predictor.max_transient_norm == 0.75
 
 
+def test_runtime_registry_defaults_to_every_final_without_experimental_config(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    registry = _runtime_audio_temporal_prediction_registry(runtime)
+    assert registry.update_policy == "EVERY_FINAL"
+    assert registry.consolidation_threshold == 0.10
+    assert registry.max_transient_norm == 1.0
+    runtime.store.close()
+
+
+def test_runtime_registry_accepts_explicit_opt_in_transient_policy(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    runtime.cfg = {
+        "raw_ear_temporal_update_policy": "TRANSIENT_CONSOLIDATE",
+        "raw_ear_consolidation_threshold": 0.25,
+        "raw_ear_max_transient_norm": 0.75,
+    }
+    registry = _runtime_audio_temporal_prediction_registry(runtime)
+    assert registry.update_policy == "TRANSIENT_CONSOLIDATE"
+    assert registry.consolidation_threshold == 0.25
+    assert registry.max_transient_norm == 0.75
+    runtime.store.close()
+
+
+def test_runtime_registry_rejects_invalid_experimental_policy_without_fallback(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    runtime.cfg = {"raw_ear_temporal_update_policy": "SILENTLY_DISABLE"}
+    with pytest.raises(AudioTemporalPredictionError, match="update_policy"):
+        _runtime_audio_temporal_prediction_registry(runtime)
+    assert not hasattr(runtime, "_raw_ear_prediction_registry")
+    runtime.store.close()
+
+
 def test_transient_consolidation_bounds_fail_closed():
     with pytest.raises(AudioTemporalPredictionError, match="consolidation bounds"):
         AudioTemporalPredictor(
