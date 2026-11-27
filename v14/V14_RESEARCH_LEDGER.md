@@ -1791,3 +1791,23 @@ Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility b
 **V14 relevance:** supports measuring update effects and interference at layer/task granularity rather than using a single global learning-rate or blanket freeze. Candidate future probe: log per-layer update norms, old-task held-out loss, new-task gain and post-restart retention for each bounded update. No production weight update was run.
 
 **Cross-entry conclusion:** These sources do not justify a model swap or a new Android capability. La-JEPA and Adaptive Guard remain abstract-only; mzCache is fully artifact/license-checked but hardware-incompatible; Learning Dynamics has no reuse license. R-004 (“Stability Does Not Mirror Plasticity”) remains abstract-only with full-text/code verification still pending.
+
+
+## R-175 — Mistake-gated online updates and auditory omission evidence (reviewed 2026-11-27)
+
+### Primary sources
+
+1. **Mistake Gating Leads to Energy and Memory Efficient Continual Learning.** *Neural Computation* (2026-11-05), DOI [10.1162/NECO.a.1602](https://doi.org/10.1162/NECO.a.1602); full arXiv preprint [arXiv:2604.14336v2](https://arxiv.org/pdf/2604.14336) (2026-07-14) read. The method gates updates to current and previously mistaken samples. The reported 50–80% update reduction is tied to incremental MNIST/EMNIST and pre-trained CIFAR-10 experiments; the paper reports no comparable gain for CIFAR-10 from scratch. CPU measurements are single-threaded; GPU batching and Android/ARM were not evaluated. The paper's reported speedups are not a mobile-performance claim.
+   - **OSS/license check:** [vanrossumlab/mistake-gating26](https://github.com/vanrossumlab/mistake-gating26) README inspected; no LICENSE file was found on the default branch. No source code was copied or reused.
+2. **Neural Responses to Unexpected Stimulus Repetitions and Omissions in Auditory Cortex Provide Mixed Evidence for Predictive Coding.** *Journal of Neuroscience* (2026-11-11), DOI [10.1523/JNEUROSCI.0545-26.2026](https://doi.org/10.1523/JNEUROSCI.0545-26.2026), PMID 41382361. The full bioRxiv preprint [10.1101/2026.03.30.713276](https://www.biorxiv.org/content/10.1101/2026.03.30.713276v1.full.pdf) was read; the final journal abstract/metadata were checked. The macaque auditory-cortex single-unit study reports enhanced responses to unexpected omissions but not to unexpected repetitions. This is mixed evidence: the measured response does not uniquely distinguish predictive error from adaptation/attention or establish semantic expectation.
+
+### V14 interpretation
+
+- Keep omission and non-observation separate. An omission may be emitted only when the source/window is valid, the expected interval is supported by enough observations, and the interval remains covered; provisional, uncertain and unobserved windows are censored. This is a timing/novelty cue, **not** a calibrated probability, proof of predictive coding, or semantic truth.
+- The current RAW EAR A4 predictor is a small 13-feature/182-parameter next-cue-delta learner. It updates on FINAL windows only, reports signed/negative/omission error and gradient/parameter-delta metrics, and is process-local by default. Local numeric-only persistence is still opt-in; no PCM or feature examples are persisted. It is not a B1/B2/C3 model-weight update.
+- The two papers suggest a future ablation, not an automatic code change: compare (a) current update-on-every-final-window, (b) error-gated updates, (c) bounded consent-scoped mistake gating, and (d) no-update baseline. Use session-disjoint sequences, zero/shuffle and unexpected-repetition controls; report MAE, false omission rate, update count, gradient norm, parameter diff, retention/restart, CPU time and RSS. Do not retain raw audio or add persistent mistake buffers without a separate privacy/consent design.
+- No model download, model swap, Android permission change or production weight update is authorized by these papers.
+
+### Implementation checkpoint
+
+PR [#2540](https://github.com/RedMentos/Aii/pull/2540), draft head `34cbb1e937fd71d07e55b0e4bee6c5f4555eb303`: A4 prediction/event expectation is now exposed as a sanitized source-bound `a4_temporal` context to B1_DETAIL, B2_GIST and C3. The context builder bounds long acoustic summaries to 256 characters rather than dropping the whole context. Current-head CI is pending after a prior context test exposed this summary-length rejection; no Redmi or native-microphone proof exists. See `v14/handoffs/RESEARCH_PERCEPTION_RUN54_20261127.md` for exact gates and next action.
