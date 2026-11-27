@@ -300,7 +300,6 @@ class PurePromptReceipt(unittest.TestCase):
 
 
 class FakeCompletionHandler(BaseHTTPRequestHandler):
-class FakeCompletionHandler(BaseHTTPRequestHandler):
     answer_status = 200
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
