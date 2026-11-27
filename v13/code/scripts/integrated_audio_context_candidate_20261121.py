@@ -13,7 +13,7 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "deb8c274022e2a4419dd38adb11ca14481c4bd91",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "02aac7567332723806d6b68791a841f02d06af16",
+    "v13/audio_voice_cues.py": "d80b803591ce9e105a97ce2583c591a327315201",
     "v13/audio_temporal_prediction.py": "c1a308a946073fe681b856b3353ba712da860579",
     "v13/audio_event_expectation.py": "4571b12aeb665f2865d53c54561cacd2562d6f95",
     "v13/audio_teacher_ear.py": "255c51fd6ade37ada2fc3309fb0cf3e18afe954d",
