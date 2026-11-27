@@ -2567,3 +2567,13 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 - **Integration:** stacked on #2563; the #2563 shared staged/integrated failure on Core/QA-owned source pins/assertions remains a merge blocker. Core owns #2562's active `vision_ui_frame_ingress.py` edits; this PR deliberately avoids that file.
 - **Device / deployment:** REDMI_UNVERIFIED; no Android/Termux or updater action; updater/install state UNKNOWN; NOT_RELEASED.
 - **Next:** read final exact-head CI, request Boss review if focused jobs pass, and wait for Core/QA to repair the parent/shared gate before merge. A5 frame-ingress adoption is a separate coordinated step. **No user action required.**
+
+
+### Run 70 — final verification / blocking issue
+
+- PR [#2565](https://github.com/RedMentos/Aii/pull/2565) latest head `f081baeb3d681bc8c98c99457ac2983fc1e93cd1` (code head `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`; workflow commit `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`).
+- Focused CI: visual bridge 46051827002 PASS (24 tests + 3 subtests on Python 3.13/3.14, including `test_vision.py`); MediaProjection ingress 46051826940 PASS (31/31 on Python 3.13/3.14).
+- Shared gate 46051827046 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. New Perception-caused failure: `unsupported lifecycle source: vision.py` in two stage tests. Core was asked on #2562 to add/pin the source or coordinate a stage-allowed consumer. Existing Core audio/observer/arithmetic pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
+- PR #2565 is NOT_MERGE_READY and stacked on #2563; do not merge before the source-allowlist issue and #2563 shared gate are resolved. Core owns the allowlist/pins; QA owns migration assertions.
+- Local scratch tests PASS, but full local repo pytest NOT_RUN (no checkout/DNS). REDMI_UNVERIFIED; updater/install state UNKNOWN; no device action or deployment; NOT_RELEASED.
+- **Next:** Core resolves the `vision.py` lifecycle-source allowlist/pin or agrees on another consumer path; QA repairs its migration assertions; then rerun the exact shared staged/integrated candidate. No user action required.

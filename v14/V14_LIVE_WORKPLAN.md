@@ -1919,3 +1919,13 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **Device / deployment.** No phone, Termux, microphone, MediaProjection or updater action was performed. REDMI_UNVERIFIED; updater/install state UNKNOWN; NOT_RELEASED. No model, weights, permissions or user data changed.
 
 **Next executable step.** Read the exact updated-head CI, then request Boss review. Resolve the #2563 parent/shared gate before merge. After Core finishes its #2562 receiver changes, coordinate a separate low-risk A5 ingress adoption of the same threshold metadata; keep the normal Runtime/C3 callsite and Android lifecycle acceptance with Core/QA. No user action required.
+
+
+### Run 70 shared-gate final addendum (2026-11-27)
+
+- Exact code/test head `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`; workflow commit `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`; docs-only PR head `f081baeb3d681bc8c98c99457ac2983fc1e93cd1`.
+- Visual bridge workflow **46051827002 PASS**: 24 tests + 3 subtests on Python 3.13 and 24 tests + 3 subtests on Python 3.14; exact log confirms `test_vision.py` was run.
+- MediaProjection ingress workflow **46051826940 PASS**: 31/31 on Python 3.13 and 31/31 on Python 3.14.
+- Shared staged/integrated workflow **46051827046 FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. A new failure from this PR is `unsupported lifecycle source: vision.py` in `test_context_offer_budget_20261116.py` and `test_postcommit_observer_20261116.py`. Core owns the lifecycle allowlist/source pins; request posted on #2562 to add `vision.py` safely or coordinate an alternate stage-allowed consumer. Other failures: Core audio-composer pin `scripts/integrated_audio_context_candidate_20261121.py` (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`), Core observer fairness pin `v13/cognition.py`, Core arithmetic pins, and QA migration assertions expecting UPDATED rather than safe PARTIAL.
+- This new Perception PR is **NOT_MERGE_READY**; do not merge until Core resolves the new source-allowlist issue and #2563's shared gate is green. Focused tests passing does not establish whole-system acceptance.
+- No local full Aii suite, no Android/Termux/Redmi, no updater action; REDMI_UNVERIFIED / updater UNKNOWN / NOT_RELEASED.

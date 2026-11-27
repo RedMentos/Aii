@@ -43,3 +43,14 @@ These are synthetic/local helper and hosted CI categories only. No native model,
 3. Resolve #2563's shared staged/integrated gate failures on Core/QA-owned pins before merging this stacked PR.
 4. After Core completes #2562, coordinate a separate A5 frame-ingress adoption of the same descriptor threshold; keep the normal Runtime/C3 callsite with Core and Android lifecycle with QA.
 5. No user action is required.
+
+## Exact-head CI final result
+
+- Code/test head: `7b55a208c03a8d7152ea40e8c6ba48b5edbafae5`.
+- Workflow path commit: `66b6dda83ec4d9c013f225573ce4b9a5c46a9503`.
+- Latest docs-only PR head: `f081baeb3d681bc8c98c99457ac2983fc1e93cd1`.
+- Visual bridge 46051827002: **PASS**, 24 tests + 3 subtests on Python 3.13 and 3.14; log confirms `test_vision.py` included.
+- MediaProjection ingress 46051826940: **PASS**, 31/31 on Python 3.13 and 31/31 on Python 3.14.
+- Shared staged/integrated 46051827046: **FAIL**. Staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. This PR introduces a new staged failure: `unsupported lifecycle source: vision.py` in `test_context_offer_budget_20261116.py` and `test_postcommit_observer_20261116.py`. Core was asked on #2562 to add `vision.py` to the lifecycle allowlist/pins or coordinate another stage-allowed consumer. Existing Core audio-composer/observer/arithmetic pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
+- Therefore PR #2565 is **NOT_MERGE_READY**. Focused tests are green, but shared integration is not. The #2563 parent gate is also unresolved.
+- No Android/Termux/Redmi test; REDMI_UNVERIFIED. Updater status UNKNOWN; no deployment.
