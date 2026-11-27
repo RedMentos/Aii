@@ -113,7 +113,7 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
-                 score_override=None, ood_source_ref_override=None):
+                 score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     if condition == "NO_MESSAGE":
@@ -122,15 +122,16 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
     elif condition == "EXACT_MESSAGE":
         message_source_ref = source_ref
         adapter_sha256 = None
-    elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
-        message_source_ref = (
-            dict(ood_source_ref_override)
-            if condition == "OOD" and ood_source_ref_override is not None
-            else {
+    elif condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
+        if condition == "OOD" and ood_source_ref_override is not None:
+            message_source_ref = dict(ood_source_ref_override)
+        elif condition == "DERANGED_MESSAGE" and deranged_source_ref_override is not None:
+            message_source_ref = dict(deranged_source_ref_override)
+        else:
+            message_source_ref = {
                 "source_id": f"control-{condition.lower()}-{task_index:02d}",
                 "sha256": sha(f"{condition}-source-{task_index}"),
             }
-        )
         adapter_sha256 = ADAPTER_SHA256
     else:
         message_source_ref = source_ref
@@ -204,7 +205,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
                    hybrid_state_roundtrip_override=None, score_overrides=None,
-                   ood_source_ref_override=None):
+                   ood_source_ref_override=None, deranged_source_ref_override=None):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -218,6 +219,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             kv_geometry_override=kv_geometry_override,
             score_override=score_overrides.get(condition),
             ood_source_ref_override=ood_source_ref_override,
+            deranged_source_ref_override=deranged_source_ref_override,
         )
         if include_hybrid_state_roundtrip and condition == "LATENT_CANDIDATE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
@@ -235,6 +237,7 @@ def _information_use_scores():
         "REPEAT": [-2.0, -2.0],
         "OOD": [-2.0, -2.0],
         "ENTITY_SUBSTITUTION": [-2.0, -2.0],
+        "DERANGED_MESSAGE": [-2.0, -2.0],
     }
 
 
@@ -263,6 +266,11 @@ def _record_information_use_cohort(derangement_mode, score_overrides):
             "source_id": f"source-{donor_index:02d}",
             "sha256": sha(f"source-{donor_index}"),
         }
+        pairing_donor_index = session_start + ((offset + 5) % 10)
+        pairing_donor_ref = {
+            "source_id": f"source-{pairing_donor_index:02d}",
+            "sha256": sha(f"source-{pairing_donor_index}"),
+        }
         result = complete_group(
             runtime,
             task_index=task_index,
@@ -270,6 +278,7 @@ def _record_information_use_cohort(derangement_mode, score_overrides):
             task_family=families[offset % len(families)],
             score_overrides=score_overrides,
             ood_source_ref_override=donor_ref,
+            deranged_source_ref_override=pairing_donor_ref,
         )
     return result["information_use_audit"]
 
@@ -296,7 +305,7 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
 
     assert result["status"] == "FIXTURE_ONLY"
     assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
-    assert effect["snapshot_count"] == 8
+    assert effect["snapshot_count"] == 9
     assert effect["candidate_differs_from_no_message_count"] == 1
     assert effect["candidate_differs_from_exact_message_count"] == 1
     assert effect["distinct_from_no_message_task_groups_by_condition"]["NO_MESSAGE"] == 0
@@ -317,7 +326,7 @@ def test_identical_input_digest_requires_identical_kv_snapshot():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
     assert "identical receiver input digest" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 7
+    assert task_score_status(runtime)["receipt_count"] == 8
     assert task_score_status(runtime)["incomplete_task_group_count"] == 1
 
 
@@ -345,7 +354,7 @@ def test_partial_kv_snapshot_coverage_is_rejected():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
     assert "partial native K/V snapshot coverage" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 7
+    assert task_score_status(runtime)["receipt_count"] == 8
 
 
 def test_twenty_task_groups_across_two_sessions_are_fixture_only():
@@ -537,13 +546,15 @@ def test_information_use_audit_exposes_system_gain_without_content_specific_gain
             task_family=family, score_overrides=scores,
         )
     audit = result["information_use_audit"]
-    assert audit["status"] == "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+    assert audit["status"] == "SYSTEM_GAIN_WITHOUT_CONTENT_SPECIFIC_SIGNAL"
     assert audit["system_gain_vs_no_message"]["mean_delta_nats_per_token"] == 1.0
     assert audit["entity_specificity_gain_vs_counterfactual"]["mean_delta_nats_per_token"] == 0.0
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is False
     assert audit["holdout_sufficient"] is True
-    assert audit["counterfactual_kind"] == "ENTITY_ONLY_SOURCE_PAIR; OOD_DERANGEMENT_NOT_ESTABLISHED"
+    assert audit["counterfactual_kind"] == "SAME_FAMILY_PAIRING_DERANGEMENT_NOT_ESTABLISHED"
+    assert audit["same_family_pairing_derangement_tested"] is False
+    assert audit["pairing_gain_pass"] is False
     assert audit["full_derangement_tested"] is False
     assert audit["semantic_use_proven"] is False
     assert result["semantic_use_proven"] is False
@@ -555,6 +566,9 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is True
     assert audit["unrelated_donor_gain_pass"] is True
+    assert audit["same_family_pairing_derangement_tested"] is True
+    assert audit["pairing_gain_pass"] is True
+    assert audit["same_family_pairing_derangement"]["status"] == "PASS"
     assert audit["full_derangement_tested"] is True
     assert audit["unrelated_donor_derangement"]["status"] == "PASS"
     assert audit["unrelated_donor_derangement"]["task_group_count"] == 20
@@ -568,17 +582,19 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
 
 def test_entity_specificity_without_full_derangement_is_not_promoted():
     audit = _record_information_use_cohort("external", _information_use_scores())
-    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is True
     assert audit["unrelated_donor_gain_pass"] is False
     assert audit["full_derangement_tested"] is False
+    assert audit["same_family_pairing_derangement_tested"] is True
+    assert audit["pairing_gain_pass"] is True
     assert audit["unrelated_donor_derangement"]["external_donor_count"] == 20
     assert audit["semantic_use_proven"] is False
 
 
 def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
-    with pytest.raises(NativeReceiverUtilityError, match="OOD/entity-substitution source must differ"):
+    with pytest.raises(NativeReceiverUtilityError, match="source must differ"):
         _record_information_use_cohort("fixed_point", _information_use_scores())
 
 
@@ -598,7 +614,7 @@ def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key
     assert derangement[count_key] == expected_count
     assert audit["full_derangement_tested"] is False
     assert audit["unrelated_donor_gain_pass"] is False
-    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
     assert audit["semantic_use_proven"] is False
 
 
