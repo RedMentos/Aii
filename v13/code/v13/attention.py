@@ -32,7 +32,7 @@ KEY='N5_ATTENTION';REVISION='n5-attention-v1';PATH='attention_policy'
 GAIN={'perceptual':.55,'callosum':.40,'workspace':.60,'focal':.65,'action':.55}  # §60
 SAL={'novelty':.35,'conflict':.65,'prediction_error':.55,'goal_violation':.75,'external_interrupt':.80}  # §60
 CAUT={'source_risk':.70,'B1_B2_disagreement':.55,'world_surprise':.45,'router_instability':.35,'teacher_dependence':.25}  # §60
-A4={'salience_gain':.45,'goal_topdown_gain':.45,'novelty_gain':.35,'teacher_hint_gain':.20,'raw_eye_structure_gain':.20,'raw_relook_authority':.70,
+A4={'salience_gain':.45,'goal_topdown_gain':.45,'novelty_gain':.35,'teacher_hint_gain':.20,'raw_relook_authority':.70,
     'suppression_max':.70,  # §51.5
     'attention_temperature':.25,'reentry_threshold':.35,'max_highres_regions':3}  # BOOT (§0 A4 knobs are TUNE/USER)
 # BOOT: how salience recruits and caution reshapes each coupling (§5.1). Caution raises re-look and B1<->B2 cross-check,
@@ -283,35 +283,15 @@ class Attention:
         rows=[]
         for i,seg in enumerate(segments):
             t=terms(seg['text']);raw=re.findall(r"\S+",seg['text'])
-            raw_eye = 0.0
-            if 'raw_eye_structure' in seg:
-                raw_eye_value = seg.get('raw_eye_structure')
-                source = seg.get('source_ref')
-                if (isinstance(raw_eye_value, bool)
-                        or not isinstance(raw_eye_value, (int, float))
-                        or not math.isfinite(float(raw_eye_value))
-                        or not 0.0 <= float(raw_eye_value) <= 1.0):
-                    raise ValueError('Invalid RAW-EYE structural salience')
-                if (seg.get('modality') != 'visual'
-                        or not isinstance(source, dict)
-                        or source.get('modality') != 'visual'
-                        or seg.get('capture_method') != 'MEDIA_PROJECTION'
-                        or seg.get('producer_component') != 'A5_VISUAL'):
-                    raise ValueError('RAW-EYE salience lacks A5 visual provenance')
-                raw_eye = float(raw_eye_value)
-            raw_eye_part = A4['raw_eye_structure_gain'] * raw_eye
             cues=sum(bool(re.search(r'\d',w)) for w in raw)+sum(w.lower().strip('.,;:!?') in NEGATION for w in raw)+seg['text'].count('?')+seg['text'].count('"')
             bottom=min(1.,cues/max(1.,.25*len(raw)))
             top=len(goal_t&set(t))/len(goal_t) if goal_t else 0.
             nov=sum(x not in seen for x in t)/len(t) if t else 0.
             hint=min(clamp(hints.get(i,0.)),A4['teacher_hint_gain'])  # capped teacher bias
-            score=clamp(g*(A4['salience_gain']*bottom+A4['goal_topdown_gain']*top+A4['novelty_gain']*nov+hint+raw_eye_part))
-            parts={'exactness':A4['salience_gain']*bottom,'goal':A4['goal_topdown_gain']*top,'novelty':A4['novelty_gain']*nov,'raw_eye_structure':raw_eye_part}
-            reason_detail=max(parts,key=parts.get)
-            reason='novelty' if reason_detail=='raw_eye_structure' else reason_detail
+            score=clamp(g*(A4['salience_gain']*bottom+A4['goal_topdown_gain']*top+A4['novelty_gain']*nov+hint))
+            parts={'exactness':A4['salience_gain']*bottom,'goal':A4['goal_topdown_gain']*top,'novelty':A4['novelty_gain']*nov}
             rows.append({'index':i,'source_ref':seg['source_ref'],'score':round(score,6),'bottom_up':round(bottom,6),'top_down':round(top,6),
-                         'novelty':round(nov,6),'raw_eye_structure':round(raw_eye,6),'raw_eye_contribution':round(raw_eye_part,6),
-                         'teacher_hint':round(hint,6),'reason':reason,'reason_detail':reason_detail})
+                         'novelty':round(nov,6),'teacher_hint':round(hint,6),'reason':max(parts,key=parts.get)})
             seen.update(t)
         if rows:
             T=A4['attention_temperature'];m=max(r['score'] for r in rows);z=[math.exp((r['score']-m)/T) for r in rows];Z=sum(z)

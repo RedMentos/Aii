@@ -199,6 +199,7 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
             self.assertEqual(result["a4"]["segments"][0]["raw_eye_contribution"], 0.0)
 
     def test_a4_rejects_raw_eye_signal_without_visual_media_projection_provenance(self):
+        from v13.a4_visual_salience import apply_raw_eye_structure
         segment = {
             "text": "visual frame observed",
             "source_ref": {
@@ -210,11 +211,12 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
             "producer_component": "A5_VISUAL",
             "raw_eye_structure": 0.8,
         }
+        a4_result = {"segments": [{"source_ref": segment["source_ref"], "score": 0.1}]}
         with self.assertRaises(ValueError):
-            self.runtime.attention.perceive(self.event["event_id"], [segment])
+            apply_raw_eye_structure(a4_result, segment, 0.8, {"global_contrast": 0.8})
 
     def test_a4_rejects_non_finite_or_out_of_range_raw_eye_signal(self):
-        from copy import deepcopy
+        from v13.a4_visual_salience import apply_raw_eye_structure
         valid = {
             "text": "visual frame observed",
             "source_ref": {
@@ -226,11 +228,17 @@ class A5VisualFrameBridgeTests(unittest.TestCase):
             "producer_component": "A5_VISUAL",
             "raw_eye_structure": 0.5,
         }
+        components = {
+            "global_contrast": 0.5,
+            "global_edge_energy": 0.5,
+            "cell_edge_energy": 0.5,
+            "spatial_color": 0.5,
+            "luminance_range": 0.5,
+        }
         for invalid in (1.01, float("nan"), True):
-            segment = deepcopy(valid)
-            segment["raw_eye_structure"] = invalid
+            a4_result = {"segments": [{"source_ref": valid["source_ref"], "score": 0.1}]}
             with self.subTest(invalid=repr(invalid)), self.assertRaises(ValueError):
-                self.runtime.attention.perceive(self.event["event_id"], [segment])
+                apply_raw_eye_structure(a4_result, valid, invalid, components)
 
     def test_provisional_frame_is_ignored_before_image_decode(self):
         obs = observation(finality="PROVISIONAL")

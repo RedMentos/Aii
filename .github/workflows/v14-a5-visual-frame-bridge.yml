@@ -5,7 +5,7 @@ on:
       - research-perception/v14-a5-visual-frame-bridge-20261127-run58
     paths:
       - "v13/code/v13/a5_visual_frame_bridge.py"
-      - "v13/code/v13/attention.py"
+      - "v13/code/v13/a4_visual_salience.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/vision.py"
@@ -13,7 +13,7 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/a5_visual_frame_bridge.py"
-      - "v13/code/v13/attention.py"
+      - "v13/code/v13/a4_visual_salience.py"
       - "v13/code/tests/test_a5_visual_frame_bridge.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/vision.py"
@@ -40,7 +40,7 @@ jobs:
       - name: Compile A5 visual bridge
         env:
           PYTHONPATH: v13/code
-        run: python -m py_compile v13/code/v13/a5_visual_frame_bridge.py v13/code/v13/attention.py
+        run: python -m py_compile v13/code/v13/a5_visual_frame_bridge.py v13/code/v13/a4_visual_salience.py
       - name: Run exact A5 visual Runtime tests
         env:
           PYTHONPATH: v13/code
