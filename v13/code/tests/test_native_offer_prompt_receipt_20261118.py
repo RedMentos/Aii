@@ -209,6 +209,21 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(span["token_count"], len(native_ids))
         self.assertEqual({x["role"] for x in span["offers"]},
                          {"B1_DETAIL", "B2_GIST"})
+        by_role = {row["role"]: row for row in span["offers"]}
+        for selected_offer in selected:
+            offer_span = by_role[selected_offer["role"]]["offer_span"]
+            encoded_offer = json.dumps(
+                selected_offer, ensure_ascii=False, sort_keys=True
+            ).encode("utf-8")
+            self.assertEqual(
+                prompt_bytes[offer_span["prompt_byte_start"]:offer_span["prompt_byte_end"]],
+                encoded_offer,
+            )
+            self.assertEqual(
+                offer_span["unique_token_count"],
+                offer_span["token_count"] - offer_span["shared_boundary_token_count"],
+            )
+            self.assertNotIn("source café", json.dumps(offer_span))
         first = next(x for x in span["offers"] if x["role"] == "B1_DETAIL")
         first_quote = first["quote_spans"][0]
         self.assertGreaterEqual(first_quote["token_start"], 1)
@@ -219,6 +234,42 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertGreater(first_quote["token_end_exclusive"], first_quote["token_start"])
         self.assertNotIn("source café", json.dumps(span))
         self.assertNotIn("second naïve", json.dumps(span))
+
+
+    def test_native_offer_envelopes_allow_one_shared_boundary_token_without_double_count(self):
+        selected = [
+            offer("B1_DETAIL", "b1", text="source café 🤗 exact"),
+            offer("B2_GIST", "b2", text="second naïve quote"),
+        ]
+        msgs = messages(selected)
+        prompt = render(msgs)
+        data = prompt.encode("utf-8")
+        first_object = json.dumps(selected[0], ensure_ascii=False, sort_keys=True).encode("utf-8")
+        second_object = json.dumps(selected[1], ensure_ascii=False, sort_keys=True).encode("utf-8")
+        first_start = data.find(first_object)
+        second_start = data.find(second_object)
+        self.assertGreaterEqual(first_start, 0)
+        self.assertGreater(second_start, first_start)
+        first_end = first_start + len(first_object)
+        split_offsets = [index for index in range(1, len(data))
+                         if index not in {first_end, second_start}]
+        rows = pieces_for_prompt(prompt, split_offsets, bos=False)
+        content_ids = [row["id"] for row in rows]
+        result = inspect(
+            msgs, prompt, HEADER, token_pieces=rows,
+            native_token_ids=[1] + content_ids,
+        )
+        span = result["native_prompt_token_span_receipt"]
+        self.assertEqual(span["status"], "VERIFIED")
+        by_role = {row["role"]: row for row in span["offers"]}
+        first = by_role["B1_DETAIL"]["offer_span"]
+        second = by_role["B2_GIST"]["offer_span"]
+        self.assertEqual(first["shared_boundary_token_count"], 1)
+        self.assertEqual(second["shared_boundary_token_count"], 1)
+        self.assertEqual(first["unique_token_count"], first["token_count"] - 1)
+        self.assertEqual(second["unique_token_count"], second["token_count"] - 1)
+        self.assertLessEqual(first["last_token_byte_end"], second["first_token_byte_start"])
+        self.assertNotIn("source café", json.dumps(span))
 
 
     def test_native_token_spans_support_ascii_escaped_unicode_and_no_added_bos(self):
@@ -247,6 +298,16 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(span["leading_added_special_token_count"], 0)
         self.assertEqual(span["trailing_added_special_token_count"], 0)
         self.assertEqual(len(span["offers"]), 2)
+        by_role = {row["role"]: row for row in span["offers"]}
+        for selected_offer in selected:
+            offer_span = by_role[selected_offer["role"]]["offer_span"]
+            encoded_offer = json.dumps(
+                selected_offer, ensure_ascii=True, sort_keys=True
+            ).encode("utf-8")
+            self.assertEqual(data[offer_span["prompt_byte_start"]:offer_span["prompt_byte_end"]],
+                             encoded_offer)
+            self.assertEqual(offer_span["unique_token_count"],
+                             offer_span["token_count"] - offer_span["shared_boundary_token_count"])
 
 
     def test_native_token_span_mismatch_partial_and_special_controls_fail_closed(self):
@@ -490,7 +551,15 @@ class SQLiteNativeAudit(unittest.TestCase):
                     "trailing_added_special_token_count": 0,
                     "content_token_ids_sha256": "e" * 64,
                     "offers": [
-                        {"role": "B1_DETAIL", "packet_id": "b1", "quote_spans": [{
+                        {"role": "B1_DETAIL", "packet_id": "b1",
+                         "offer_span": {
+                            "prompt_byte_start": 80, "prompt_byte_end": 160,
+                            "token_start": 4, "token_end_exclusive": 8, "token_count": 4,
+                            "first_token_byte_start": 0, "last_token_byte_end": 4,
+                            "first_token_piece_bytes": 10, "last_token_piece_bytes": 4,
+                            "token_boundary_aligned": True, "shared_boundary_token_count": 0,
+                            "unique_token_count": 4, "token_ids_sha256": "f" * 64},
+                         "quote_spans": [{
                             "quote_index": 0, "source_sha256": "a" * 64,
                             "source_char_start": 0, "source_char_end": len(SECRET),
                             "prompt_byte_start": 100, "prompt_byte_end": 140,
@@ -498,7 +567,15 @@ class SQLiteNativeAudit(unittest.TestCase):
                             "first_token_byte_start": 0, "last_token_byte_end": 4,
                             "first_token_piece_bytes": 10, "last_token_piece_bytes": 4,
                             "token_ids_sha256": "c" * 64}]},
-                        {"role": "B2_GIST", "packet_id": "b2", "quote_spans": [{
+                        {"role": "B2_GIST", "packet_id": "b2",
+                         "offer_span": {
+                            "prompt_byte_start": 180, "prompt_byte_end": 260,
+                            "token_start": 8, "token_end_exclusive": 12, "token_count": 4,
+                            "first_token_byte_start": 0, "last_token_byte_end": 5,
+                            "first_token_piece_bytes": 8, "last_token_piece_bytes": 5,
+                            "token_boundary_aligned": True, "shared_boundary_token_count": 0,
+                            "unique_token_count": 4, "token_ids_sha256": "g" * 64},
+                         "quote_spans": [{
                             "quote_index": 1, "source_sha256": "a" * 64,
                             "source_char_start": 0, "source_char_end": len(SECRET),
                             "prompt_byte_start": 200, "prompt_byte_end": 240,
@@ -523,6 +600,11 @@ class SQLiteNativeAudit(unittest.TestCase):
         self.assertTrue(out["turns"][0]["native_prompt_token_span_receipt_verified"])
         self.assertEqual(set(out["turns"][0]["native_prompt_token_span_receipt_roles"]),
                          {"B1_DETAIL", "B2_GIST"})
+        counts = out["turns"][0]["native_prompt_token_span_counts_by_role"]
+        self.assertEqual(counts["B1_DETAIL"]["token_count"], 4)
+        self.assertEqual(counts["B1_DETAIL"]["unique_token_count"], 4)
+        self.assertEqual(counts["B2_GIST"]["token_count"], 4)
+        self.assertEqual(counts["B2_GIST"]["unique_token_count"], 4)
         self.assertTrue(out["turns"][0]["c3_prompt_inclusion_proven"])
         self.assertFalse(out["turns"][0]["c3_semantic_use_proven"])
         self.assertFalse(gate["learned_latent_exchange_verified"])
@@ -564,7 +646,9 @@ class SQLiteNativeAudit(unittest.TestCase):
     def test_native_prompt_token_span_audit_rejects_mismatch_and_bad_bounds(self):
         for change in ("prompt_hash", "token_hash", "token_count", "token_start",
                        "missing_role", "quote_count", "malformed_role",
-                       "partial_boundary", "overlap_prompt", "overlap_tokens"):
+                       "partial_boundary", "overlap_prompt", "overlap_tokens",
+                       "missing_offer_span", "offer_byte_bounds", "offer_token_bounds",
+                       "offer_overlap_tokens", "offer_shared_boundary"):
             with self.subTest(change=change):
                 self.db.execute("DELETE FROM messages")
                 self.db.execute("DELETE FROM packets")
@@ -598,6 +682,22 @@ class SQLiteNativeAudit(unittest.TestCase):
                     span["offers"][1]["quote_spans"][0]["token_start"] = 7
                     span["offers"][1]["quote_spans"][0]["token_end_exclusive"] = 10
                     span["offers"][1]["quote_spans"][0]["token_count"] = 3
+                elif change == "missing_offer_span":
+                    del span["offers"][0]["offer_span"]
+                elif change == "offer_byte_bounds":
+                    span["offers"][1]["offer_span"]["prompt_byte_start"] = 120
+                elif change == "offer_token_bounds":
+                    span["offers"][0]["offer_span"]["token_end_exclusive"] = 521
+                elif change == "offer_overlap_tokens":
+                    span["offers"][1]["offer_span"]["token_start"] = 6
+                    span["offers"][1]["offer_span"]["token_end_exclusive"] = 12
+                    span["offers"][1]["offer_span"]["token_count"] = 6
+                    span["offers"][1]["offer_span"]["unique_token_count"] = 6
+                elif change == "offer_shared_boundary":
+                    span["offers"][1]["offer_span"]["token_start"] = 7
+                    span["offers"][1]["offer_span"]["token_count"] = 5
+                    span["offers"][1]["offer_span"]["unique_token_count"] = 4
+                    span["offers"][1]["offer_span"]["shared_boundary_token_count"] = 1
                 self.db.execute(
                     "UPDATE messages SET metadata=? WHERE event_id=?",
                     (json.dumps(metadata), "E"),

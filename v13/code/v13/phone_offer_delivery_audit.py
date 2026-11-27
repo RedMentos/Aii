@@ -178,10 +178,10 @@ def _native_prompt_inclusion_mode(report, template_roles, native_c3_output,
 
 
 def _native_prompt_token_span_roles(report, template_roles, selected, events):
-    """Validate the bounded runtime token-span receipt against this turn's offers.
+    """Validate per-organ offer-envelope and source-quote spans against this turn.
 
-    This is a consistency audit of local runtime metadata, not an independent
-    llama-server signature and not evidence of model attention or semantic use.
+    This is a consistency audit of runtime metadata, not a server signature and
+    not evidence of model attention, semantic use or native latent exchange.
     """
     witness = report.get("native_offer_prompt_receipt")
     if type(witness) is not dict:
@@ -233,12 +233,15 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
     seen_quote_indices = set()
     seen_prompt_ranges = []
     seen_token_ranges = []
+    seen_offer_prompt_ranges = []
+    offer_span_records = []
     for row in raw_spans:
         if type(row) is not dict:
             return set()
         role, ident, quote_spans = (row.get("role"), row.get("packet_id"),
                                     row.get("quote_spans"))
-        if type(role) is not str or role not in ROLES:
+        offer_span = row.get("offer_span")
+        if type(role) is not str or role not in ROLES or type(offer_span) is not dict:
             return set()
         base = base_by_role.get(role)
         if (role not in template_roles or role in seen_roles
@@ -249,6 +252,57 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
                 or not (type(events[role]["offers"].get(ident)) is int
                         and events[role]["offers"][ident] > 0)):
             return set()
+        offer_byte_start = offer_span.get("prompt_byte_start")
+        offer_byte_end = offer_span.get("prompt_byte_end")
+        offer_token_start = offer_span.get("token_start")
+        offer_token_end = offer_span.get("token_end_exclusive")
+        offer_token_count = offer_span.get("token_count")
+        offer_first_byte = offer_span.get("first_token_byte_start")
+        offer_last_byte = offer_span.get("last_token_byte_end")
+        offer_first_piece = offer_span.get("first_token_piece_bytes")
+        offer_last_piece = offer_span.get("last_token_piece_bytes")
+        offer_shared = offer_span.get("shared_boundary_token_count")
+        offer_unique = offer_span.get("unique_token_count")
+        if (type(offer_byte_start) is not int or offer_byte_start < 0
+                or type(offer_byte_end) is not int or offer_byte_end <= offer_byte_start
+                or offer_byte_end > 2_000_000
+                or type(offer_token_start) is not int or offer_token_start < prefix
+                or type(offer_token_end) is not int or offer_token_end <= offer_token_start
+                or offer_token_end > token_count - suffix
+                or type(offer_token_count) is not int
+                or offer_token_count != offer_token_end - offer_token_start
+                or type(offer_first_byte) is not int or offer_first_byte < 0
+                or type(offer_last_byte) is not int or offer_last_byte <= 0
+                or type(offer_first_piece) is not int or offer_first_piece < 1
+                or type(offer_last_piece) is not int or offer_last_piece < 1
+                or offer_first_byte >= offer_first_piece
+                or offer_last_byte > offer_last_piece
+                or (offer_token_count == 1 and
+                    (offer_first_piece != offer_last_piece or offer_first_byte >= offer_last_byte))
+                or type(offer_span.get("token_boundary_aligned")) is not bool
+                or offer_span.get("token_boundary_aligned") !=
+                   (offer_first_byte == 0 and offer_last_byte == offer_last_piece)
+                or type(offer_shared) is not int or not 0 <= offer_shared <= 1
+                or type(offer_unique) is not int
+                or offer_unique != offer_token_count - offer_shared
+                or offer_unique < 1
+                or not _valid_sha256(offer_span.get("token_ids_sha256"))
+                or any(offer_byte_start < old_end and offer_byte_end > old_start
+                       for old_start, old_end in seen_offer_prompt_ranges)):
+            return set()
+        seen_offer_prompt_ranges.append((offer_byte_start, offer_byte_end))
+        offer_span_records.append({
+            "role": role,
+            "token_start": offer_token_start,
+            "token_end_exclusive": offer_token_end,
+            "token_count": offer_token_count,
+            "first_token_byte_start": offer_first_byte,
+            "last_token_byte_end": offer_last_byte,
+            "first_token_piece_bytes": offer_first_piece,
+            "last_token_piece_bytes": offer_last_piece,
+            "shared_boundary_token_count": offer_shared,
+            "unique_token_count": offer_unique,
+        })
         seen_roles.add(role)
         quote_indices = set()
         for span in quote_spans:
@@ -267,12 +321,13 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
                     or not _valid_sha256(span.get("source_sha256"))
                     or type(source_start) is not int or source_start < 0
                     or type(source_end) is not int or source_end <= source_start
-                    or type(byte_start) is not int or byte_start < 0
+                    or type(byte_start) is not int or byte_start < offer_byte_start
                     or type(byte_end) is not int or byte_end <= byte_start
-                    or byte_end > 2_000_000
-                    or type(token_start) is not int or token_start < prefix
+                    or byte_end > offer_byte_end
+                    or type(token_start) is not int or token_start < offer_token_start
                     or type(token_end) is not int or token_end <= token_start
-                    or token_end > token_count - suffix
+                    or token_end > offer_token_end
+                    or token_start < prefix or token_end > token_count - suffix
                     or type(span_count) is not int or span_count != token_end - token_start
                     or type(first_byte) is not int or first_byte != 0
                     or type(last_byte) is not int or last_byte < 1
@@ -291,7 +346,61 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
             seen_prompt_ranges.append((byte_start, byte_end))
             seen_token_ranges.append((token_start, token_end))
         matched.add(role)
+
+    shared_by_role = {record["role"]: 0 for record in offer_span_records}
+    for left_index in range(len(offer_span_records)):
+        left = offer_span_records[left_index]
+        for right_index in range(left_index + 1, len(offer_span_records)):
+            right = offer_span_records[right_index]
+            overlap_start = max(left["token_start"], right["token_start"])
+            overlap_end = min(left["token_end_exclusive"], right["token_end_exclusive"])
+            if overlap_start >= overlap_end:
+                continue
+            if overlap_end - overlap_start != 1:
+                return set()
+            shared_index = overlap_start
+            if (left["token_end_exclusive"] - 1 == shared_index
+                    and right["token_start"] == shared_index):
+                earlier, later = left, right
+            elif (right["token_end_exclusive"] - 1 == shared_index
+                    and left["token_start"] == shared_index):
+                earlier, later = right, left
+            else:
+                return set()
+            if (earlier["last_token_piece_bytes"] != later["first_token_piece_bytes"]
+                    or earlier["last_token_byte_end"] > later["first_token_byte_start"]):
+                return set()
+            shared_by_role[left["role"]] += 1
+            shared_by_role[right["role"]] += 1
+    for record in offer_span_records:
+        if (record["shared_boundary_token_count"] != shared_by_role[record["role"]]
+                or record["unique_token_count"] !=
+                   record["token_count"] - shared_by_role[record["role"]]):
+            return set()
     return matched
+
+
+def _native_prompt_token_span_counts(report, verified_roles):
+    if not verified_roles:
+        return {}
+    witness = report.get("native_offer_prompt_receipt")
+    spans = witness.get("native_prompt_token_span_receipt") if type(witness) is dict else None
+    if type(spans) is not dict or spans.get("revision") != TOKEN_SPAN_REVISION:
+        return {}
+    result = {}
+    for row in spans.get("offers", []):
+        if type(row) is not dict or row.get("role") not in verified_roles:
+            continue
+        offer_span = row.get("offer_span")
+        if type(offer_span) is not dict:
+            continue
+        result[row["role"]] = {
+            "token_count": _count(offer_span.get("token_count")),
+            "unique_token_count": _count(offer_span.get("unique_token_count")),
+            "shared_boundary_token_count": _count(
+                offer_span.get("shared_boundary_token_count")),
+        }
+    return result
 
 
 def _audit_one(conn, index, event_id, status, metadata):
@@ -421,11 +530,16 @@ def _audit_one(conn, index, event_id, status, metadata):
         _native_prompt_token_span_roles(report, native_template_roles, selected_ids, events)
         if native_prompt_inclusion_verified else set())
     native_prompt_token_span_verified = set(native_prompt_token_span_roles) == set(ROLES)
+    native_prompt_token_span_counts_by_role = _native_prompt_token_span_counts(
+        report, native_prompt_token_span_roles)
     for role in ROLES:
         roles[role]["native_prompt_offer_inclusion_verified"] = bool(
             native_prompt_inclusion_verified and role in native_template_roles)
         roles[role]["native_prompt_token_span_receipt_verified"] = (
             role in native_prompt_token_span_roles)
+        counts = native_prompt_token_span_counts_by_role.get(role, {})
+        roles[role]["native_prompt_offer_token_count"] = counts.get("token_count")
+        roles[role]["native_prompt_offer_unique_token_count"] = counts.get("unique_token_count")
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -442,6 +556,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         "native_prompt_inclusion_mode": native_prompt_inclusion_mode,
         "native_prompt_token_span_receipt_roles": sorted(native_prompt_token_span_roles),
         "native_prompt_token_span_receipt_verified": native_prompt_token_span_verified,
+        "native_prompt_token_span_counts_by_role": native_prompt_token_span_counts_by_role,
         "c3_prompt_inclusion_proven": native_prompt_inclusion_verified,
         "c3_semantic_use_proven": False,
         "native_latent_exchange_proven": False,
@@ -477,6 +592,15 @@ def audit(conn, limit=10):
                 for t in turns),
             "native_failed_turns": sum(
                 t["roles"][role]["delivery"] == "NATIVE_FAILED_NO_OFFER"
+                for t in turns),
+            "native_prompt_span_turns": sum(
+                t["roles"][role]["native_prompt_token_span_receipt_verified"]
+                for t in turns),
+            "native_prompt_offer_tokens_total": sum(
+                (t.get("native_prompt_token_span_counts_by_role", {}).get(role, {}) or {}).get("token_count") or 0
+                for t in turns),
+            "native_prompt_offer_unique_tokens_total": sum(
+                (t.get("native_prompt_token_span_counts_by_role", {}).get(role, {}) or {}).get("unique_token_count") or 0
                 for t in turns),
         }
     # This is a *diagnostic* gate, not a functional model-acceptance gate.
@@ -520,6 +644,12 @@ def audit(conn, limit=10):
             "native_prompt_offer_inclusion_verified": both_native_prompt_inclusion > 0,
             "both_body_native_prompt_token_span_receipts_verified_turns": both_native_prompt_token_spans,
             "native_prompt_token_span_receipt_verified": both_native_prompt_token_spans > 0,
+            "native_prompt_offer_unique_tokens_by_role": {
+                role: sum(
+                    (t.get("native_prompt_token_span_counts_by_role", {}).get(role, {}) or {}).get("unique_token_count") or 0
+                    for t in turns)
+                for role in ROLES
+            },
             "native_request_prompt_hash_match_observed": both_native_prompt_inclusion > 0,
             "native_prefill_token_count_match_observed": both_native_prompt_inclusion > 0,
             "native_template_submission_reported_by_runtime": both_native > 0,
@@ -536,7 +666,7 @@ def audit(conn, limit=10):
             if both_native_prompt_inclusion else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "Prompt inclusion binds the submitted prompt hash and native prompt_n+cache_n. Token spans are a bounded runtime-reported pinned llama.cpp token-piece receipt checked for internal consistency; they are not an independent server signature and do not prove attention, semantic use, learned latent exchange or Redmi installation.",
+        "warning": "Prompt inclusion binds the submitted prompt hash and native prompt_n+cache_n. Per-organ offer-envelope and source-quote spans are bounded runtime-reported pinned llama.cpp token-piece receipts checked for internal consistency; they do not prove attention, semantic use, learned latent exchange or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
