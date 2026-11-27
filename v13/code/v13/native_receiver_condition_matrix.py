@@ -368,7 +368,7 @@ class NativeReceiverConditionMatrix:
 def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet,
         candidate_packet, ood_control, entity_control, deranged_control,
         intact_no_private_control, private_byte_spans):
-    """Create the twelve source-bound task-score inputs; no native execution occurs.
+    """Create the thirteen source-bound task-score inputs; no native execution occurs.
 
     Entity proof is built in memory from both source texts and declared byte
     spans; only source hashes and changed token positions escape.
@@ -481,11 +481,11 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
                 "receiver_model_sha256": main_receiver["model_sha256"],
                 "prompt_token_ids_sha256": direct_text_sha,
                 "prompt_token_count": len(direct_text_tokens),
-                "message_rows": len(candidate),
+                "message_rows": len(baseline_rows) + len(candidate),
                 "generation_algorithm": recipe,
                 "matched_compute_budget": "ONE_GENERATED_TOKEN_PER_MESSAGE_ROW",
             })
-            positions = list(range(len(candidate)))
+            positions = list(range(len(baseline_rows) + len(candidate)))
         else:
             vectors, recipe = _build_rows(
                 condition, baseline_rows, exact, candidate, ood_rows, entity_rows,
@@ -494,7 +494,7 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             text_ids = []
             input_sha = _input_sha(vectors)
             positions = list(range(len(vectors)))
-        rows = len(candidate) if condition == "SELF_GENERATED_MESSAGE" else len(vectors)
+        rows = len(baseline_rows) + len(candidate) if condition == "SELF_GENERATED_MESSAGE" else len(vectors)
         # Empty NO_MESSAGE and direct-text inputs still carry receiver width metadata.
         dim = len(vectors[0]) if rows else len(baseline_rows[0])
         if rows > MAX_ROWS or rows * dim > MAX_ELEMENTS:
