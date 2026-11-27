@@ -1025,6 +1025,127 @@ def test_evaluation_only_advances_temporal_context_without_learning_or_memory():
     assert result["mistake_memory_entries"] == 0
 
 
+def test_transient_consolidation_commits_only_after_bounded_threshold():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5,
+        warmup_updates=1,
+        update_policy="TRANSIENT_CONSOLIDATE",
+        consolidation_threshold=0.3,
+        max_transient_norm=1.0,
+    )
+    first = predictor.update([0.0] * FEATURE_COUNT)
+    pending = predictor.update([1.0] * FEATURE_COUNT)
+    assert first["update_applied"] is False
+    assert pending["update_applied"] is True
+    assert pending["transient_weight_delta_l2"] > 0.0
+    assert pending["persistent_weight_delta_l2"] == 0.0
+    assert pending["transient_parameter_l2"] > 0.0
+    assert pending["parameter_l2"] == 0.0
+    assert pending["updates"] == 0
+    assert pending["transient_updates"] == 1
+
+    committed = predictor.update([1.0] * FEATURE_COUNT)
+    assert committed["update_reason"] == "TRANSIENT_CONSOLIDATED"
+    assert committed["persistent_weight_delta_l2"] > 0.0
+    assert committed["consolidated_weight_delta_l2"] > 0.0
+    assert committed["consolidations"] == 1
+    assert committed["updates"] == 1
+    assert committed["transient_parameter_l2"] == 0.0
+    assert predictor._parameter_l2() > 0.0
+
+
+def test_transient_no_consolidation_is_an_explicit_ephemeral_control():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5,
+        warmup_updates=1,
+        update_policy="TRANSIENT_NO_CONSOLIDATION",
+        consolidation_threshold=0.1,
+        max_transient_norm=1.0,
+    )
+    predictor.update([0.0] * FEATURE_COUNT)
+    result = predictor.update([1.0] * FEATURE_COUNT)
+    assert result["update_applied"] is True
+    assert result["update_reason"] == "TRANSIENT_ONLY_CONTROL"
+    assert result["transient_weight_delta_l2"] > 0.0
+    assert result["persistent_weight_delta_l2"] == 0.0
+    assert result["transient_parameter_l2"] > 0.0
+    assert result["parameter_l2"] == 0.0
+    assert result["updates"] == 0
+    assert result["transient_updates"] == 1
+
+    saved = predictor.state_dict()
+    assert set(saved) == {"weights", "updates"}
+    assert not any(abs(value) > 0 for row in saved["weights"] for value in row)
+    restored = AudioTemporalPredictor(
+        update_policy="TRANSIENT_NO_CONSOLIDATION",
+        consolidation_threshold=0.1,
+        max_transient_norm=1.0,
+    )
+    restored.load_state_dict(saved)
+    assert restored.state_dict() == saved
+    assert restored._transient_parameter_l2() == 0.0
+    assert restored.transient_updates == 0
+
+
+def test_restart_keeps_consolidated_weights_but_discards_pending_transient_delta():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5,
+        warmup_updates=1,
+        update_policy="TRANSIENT_CONSOLIDATE",
+        consolidation_threshold=0.3,
+        max_transient_norm=1.0,
+    )
+    predictor.update([0.0] * FEATURE_COUNT)
+    predictor.update([1.0] * FEATURE_COUNT)
+    predictor.update([1.0] * FEATURE_COUNT)
+    committed = predictor.state_dict()
+    assert predictor._parameter_l2() > 0.0
+
+    pending = predictor.update([0.0] * FEATURE_COUNT)
+    assert pending["transient_parameter_l2"] > 0.0
+    restored = AudioTemporalPredictor(
+        update_policy="TRANSIENT_CONSOLIDATE",
+        consolidation_threshold=0.3,
+        max_transient_norm=1.0,
+    )
+    restored.load_state_dict(committed)
+    assert restored.state_dict() == committed
+    assert restored._parameter_l2() > 0.0
+    assert restored._transient_parameter_l2() == 0.0
+    assert restored.transient_updates == 0
+
+
+def test_registry_passes_transient_policy_bounds_to_each_stream():
+    registry = AudioTemporalPredictionRegistry(
+        update_policy="TRANSIENT_CONSOLIDATE",
+        consolidation_threshold=0.25,
+        max_transient_norm=0.75,
+    )
+    registry.update(
+        source_id="source-transient", generation_id="generation-transient",
+        consent_scope_id="d" * 64, start_ms=0, end_ms=1000,
+        cues=SILENCE, finality="FINAL",
+    )
+    predictor = registry._states[("source-transient", "generation-transient")].predictor
+    assert predictor.update_policy == "TRANSIENT_CONSOLIDATE"
+    assert predictor.consolidation_threshold == 0.25
+    assert predictor.max_transient_norm == 0.75
+
+
+def test_transient_consolidation_bounds_fail_closed():
+    with pytest.raises(AudioTemporalPredictionError, match="consolidation bounds"):
+        AudioTemporalPredictor(
+            update_policy="TRANSIENT_CONSOLIDATE",
+            consolidation_threshold=1.1,
+            max_transient_norm=1.0,
+        )
+    with pytest.raises(AudioTemporalPredictionError, match="consolidation bounds"):
+        AudioTemporalPredictionRegistry(
+            update_policy="TRANSIENT_CONSOLIDATE",
+            consolidation_threshold=0.0,
+        )
+
+
 def test_registry_gate_policy_is_opt_in_and_consent_rotation_resets_gate_memory():
     registry = AudioTemporalPredictionRegistry(update_policy="MEMORIZED_ERROR")
     first = registry.update(
