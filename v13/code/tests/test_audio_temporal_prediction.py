@@ -68,6 +68,9 @@ def acoustic_cues(activity, *, f0=140.0, f0_range=20.0, energy=10.0,
                   voiced_energy=5.0, voiced_fraction=0.8,
                   confidence=0.9, activity_score=0.8, prosody=0.2):
     return {
+        "method": "RAW_EAR_AUTOCORR_V3",
+        "frame_ms": 40,
+        "hop_ms": 20,
         "activity_hint": activity,
         "frame_count": 50,
         "f0_median_hz": f0,
@@ -909,7 +912,7 @@ def test_raw_ear_rejects_malformed_voice_cues_before_packet_or_attention_persist
     capture = CaptureAttention()
     monkeypatch.setattr(
         audio_voice_module, "extract_voice_cues",
-        lambda _pcm, _rate, backend="python": dict(VOICED),
+        lambda _pcm, _rate, backend="python": {"activity_hint": "VOICED"},
     )
     monkeypatch.setattr(audio_voice_module.attctl, "controller", lambda _runtime: capture)
 
