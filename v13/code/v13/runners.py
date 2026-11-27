@@ -61,7 +61,7 @@ class LlamaRunner:
         self.approval_store=approval_store;self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
         self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
-        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None;self._native_prompt_token_ids=None
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
@@ -333,15 +333,26 @@ class LlamaRunner:
         # with explicit receipts before spending all compute on prefill.
         from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        removed=[];initial_tokens=None
+        removed=[];initial_tokens=None;self._native_prompt_token_ids=None
         # A normal history can contain 32 complete pairs. Every iteration is
         # still bounded by the actual turn deadline and the overall step cap.
         reduction_steps=min(80,max(16,len(work)//2+8))
         for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
-            tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            count=len(tokens)
+            tokenize_payload={"content":p,"add_special":True}
+            if self.role == "C3_LANGUAGE":
+                tokenize_payload["with_pieces"]=True
+            token_rows=self._json("POST","/tokenize",tokenize_payload,deadline)["tokens"]
+            if type(token_rows) is not list:
+                raise Unavailable("Native tokenizer response malformed")
+            token_ids=[row.get("id") for row in token_rows] if (
+                self.role == "C3_LANGUAGE" and token_rows
+                and all(type(row) is dict and set(row)=={"id","piece"} for row in token_rows)
+            ) else token_rows
+            if any(type(ident) is not int or ident < 0 for ident in token_ids):
+                raise Unavailable("Native token IDs malformed")
+            count=len(token_ids)
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
@@ -356,12 +367,14 @@ class LlamaRunner:
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
                     'native_prompt_tokens':count,'native_tokenizer':'LLAMA_SERVER_TOKENIZE',
                     'rendered_prompt_sha256':digest(p),
-                    'native_token_ids_sha256':digest(dumps(tokens))}
+                    'native_token_ids_sha256':digest(dumps(token_ids))}
+                self._native_prompt_token_ids=list(token_ids)
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
+                    from .native_offer_prompt_receipt import inspect, attach_token_spans
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness=inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    self._prompt_admission['offer_template_witness'] = attach_token_spans(
+                        witness, p, token_rows)
                 return p,count,truncated
             candidate=admission.reduce_once(
                 work,self.role,self.cfg,
@@ -379,12 +392,14 @@ class LlamaRunner:
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
                     'native_prompt_tokens':count,'native_tokenizer':'LLAMA_SERVER_TOKENIZE',
                     'rendered_prompt_sha256':digest(p),
-                    'native_token_ids_sha256':digest(dumps(tokens))}
+                    'native_token_ids_sha256':digest(dumps(token_ids))}
+                self._native_prompt_token_ids=list(token_ids)
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
+                    from .native_offer_prompt_receipt import inspect, attach_token_spans
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness=inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    self._prompt_admission['offer_template_witness'] = attach_token_spans(
+                        witness, p, token_rows)
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
         raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
@@ -397,6 +412,7 @@ class LlamaRunner:
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         self._prompt_admission=None
+        self._native_prompt_token_ids=None
         self._native_completion_http_200=False
         self._native_stream_completed=False
         self._native_single_step_completed=False
@@ -488,6 +504,7 @@ class LlamaRunner:
                         recovery=recovery | {'retained_warm':False,'reason':'USER_CANCELLED'}
                 self.last_metrics['interruption_unload']=recovery
                 self.last_metrics['warm_process_retained']=recovery.get('retained_warm') is True
+            self._native_prompt_token_ids=None
     def _record_native_prompt_request(self,prompt,*,submitted):
         if not isinstance(prompt,str):return
         prompt_sha=digest(prompt)
@@ -542,7 +559,10 @@ class LlamaRunner:
             for pair in first_token_bias:
                 if not isinstance(pair,(list,tuple)) or len(pair)!=2 or isinstance(pair[0],bool) or not isinstance(pair[0],int) or not 0<=pair[0]<65536 or isinstance(pair[1],bool) or not isinstance(pair[1],(int,float)) or not math.isfinite(pair[1]) or abs(pair[1])>12:raise ValueError('Invalid native output delta')
             if len({p[0] for p in first_token_bias})!=len(first_token_bias):raise ValueError('Duplicate native vocabulary row')
-            native_prompt=self._json('POST','/tokenize',{'content':prompt,'add_special':True},deadline)['tokens']
+            native_prompt=getattr(self,'_native_prompt_token_ids',None)
+            if type(native_prompt) is not list or len(native_prompt)!=n or not native_prompt:
+                raise Unavailable('Native prompt token IDs missing from exact admission')
+            native_prompt=list(native_prompt)
             first_step=self.completion_one(payload|{'logit_bias':first_token_bias},cancel,deadline);ids=first_step.get('tokens',[])
             if len(ids)>1 or first_step.get('tokens_predicted',0)>1:raise Unavailable('Native output step exceeded first-position contract')
             first_tokens=len(ids)
