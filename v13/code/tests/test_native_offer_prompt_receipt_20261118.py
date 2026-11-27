@@ -238,19 +238,12 @@ class InstalledStageWitness(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="v13-native-witness-stage-") as tmp:
             target = Path(tmp) / "code"
             stager.stage(code, target)
-            relative = "v13/native_offer_prompt_receipt.py"
-            source = code / relative
-            copied = target / relative
-            self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
-                             hashlib.sha256(copied.read_bytes()).hexdigest())
-            source_runner = (code / "v13/runners.py").read_text()
-            staged_runner = (target / "v13/runners.py").read_text()
-            source_audit = (code / "v13/phone_offer_delivery_audit.py").read_text()
-            staged_audit = (target / "v13/phone_offer_delivery_audit.py").read_text()
-            self.assertNotIn("native_request_prompt_matches_admission", source_runner)
-            self.assertIn("native_request_prompt_matches_admission", staged_runner)
-            self.assertNotIn("native_prompt_inclusion_verified", source_audit)
-            self.assertIn("native_prompt_inclusion_verified", staged_audit)
+            for relative in ("v13/runners.py", "v13/native_offer_prompt_receipt.py",
+                             "v13/phone_offer_delivery_audit.py"):
+                source = code / relative
+                copied = target / relative
+                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
+                                 hashlib.sha256(copied.read_bytes()).hexdigest())
             statement = """from pathlib import Path
 from v13 import runners, native_offer_prompt_receipt as witness
 base=Path.cwd().resolve()
