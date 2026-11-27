@@ -2485,3 +2485,15 @@ Staged/integrated run 45925644732 failed: staged 20 failed / 233 passed / 10 ski
 | B1/B2/C3 master weights, sleep/replay, cross-organ self-edit | UNCHANGED / NOT_ACCEPTED | No code or evidence added for these Canon families in this run | All original Canon acceptance remains open |
 
 This overlay does not promote any feature to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. CI is Linux evidence only. Historical V13 source and master blueprint were not modified.
+
+
+## 2026-11-27 Perception evidence overlay — A5 visual screen-frame input
+
+| Canon path | Current evidence | Exact evidence | Still missing / acceptance blocker |
+|---|---|---|---|
+| A5 visual frame / Android screen observation | WIRED_SYNTHETIC, lease-bound shadow adapter | PR #2550, head `7dd720a2669e46e4965c3766c6e3fcd2849bc89f`; 6/6 PASS Python 3.13; 6/6 PASS Python 3.14; offline bridge security 39/39 PASS | Core normal-turn callsite; real MediaProjection provider and OS consent receipt; Android API/lifecycle/rotation/onStop; actual C3 feature consumption; Redmi-native proof |
+| A5 RAW-EYE / A4 attention handoff | WIRED_SYNTHETIC | Frame decode → existing RAW-EYE descriptor → A4 attention with file requests disabled → bounded PerceptAdmission; provisional ignored; revocation/lease exit clears cache | Real device frame, cross-turn source provenance, source/session-disjoint visual holdout and integrated Runtime/consumer acceptance |
+| Visual student reference | OPTIONAL STUDENT_ESTIMATE only | Existing hashed-BOW projector candidates are explicitly tagged STUDENT_ESTIMATE / REFERENCE_NOT_FACT; no teacher loaded | Train/validate student projector on consented, source-disjoint data; no caption may become truth without independent evidence |
+| Raw screenshot persistence | OFF by design | Test verifies exact frame hash is absent from Store source rows and blob names | Any future persistence requires separate explicit storage/learning consent and a distinct retention/deletion test |
+
+Do not mark Android screen perception COMPLETE. The current adapter is a local Python consumer contract; it does not create or own the Android MediaProjection session.
