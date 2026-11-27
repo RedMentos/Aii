@@ -90,15 +90,21 @@ def inputs():
     entity_control = {"task_group_id": "task-entity", "task_family": "ARITHMETIC", "session_id": "session-1",
                       "record": entity, "source_text": "The dog sat.", "entity_byte_spans": [[4, 7]],
                       "candidate_packet": packet(entity, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])}
-    return task, main, baseline, packet(main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]), ood_control, entity_control
+    deranged = record("source-deranged", "The fox ran.", [51, 52, 53],
+                      [[0.22, 0.33], [0.44, 0.55], [0.66, 0.77]])
+    deranged_control = {"task_group_id": "task-deranged", "task_family": "ARITHMETIC", "session_id": "session-1",
+                        "record": deranged,
+                        "candidate_packet": packet(deranged, [[0.22, 0.33], [0.44, 0.55], [0.66, 0.77]])}
+    return task, main, baseline, packet(main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]), ood_control, entity_control, deranged_control
 
 
 def build_with_task(monkeypatch, **overrides):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
     args = {"task": task, "pair_record": main, "baseline_packet": baseline,
-            "candidate_packet": candidate, "ood_control": ood, "entity_control": entity}
+            "candidate_packet": candidate, "ood_control": ood, "entity_control": entity,
+            "deranged_control": deranged}
     args.update(overrides)
     return task, build_native_receiver_condition_matrix(**args)
 
@@ -112,17 +118,17 @@ def approved(matrix):
     return list(matrix.iter_inputs(approval=digest, approval_validator=lambda token, expected: token == expected))
 
 
-def test_builds_eight_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
+def test_builds_nine_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
     matrix = build(monkeypatch)
     receipt = matrix.receipt
     assert receipt["status"] == "MATRIX_READY_NOT_SCORED"
-    assert receipt["condition_count"] == 8
+    assert receipt["condition_count"] == 9
     assert tuple(x["condition"] for x in receipt["conditions"]) == CONDITIONS
     assert receipt["required_approval_kind"] == "NATIVE_RECEIVER_MATRIX"
     assert receipt["approval_binding_kind"] == "UNSIGNED_DIGEST_ONLY"
     assert receipt["approval_granted"] is False and receipt["native_receiver_authority"] == 0
     assert receipt["training_authority"] == 0 and receipt["persisted"] is False
-    assert len(receipt["source_bindings"]) == 3
+    assert len(receipt["source_bindings"]) == 4
     assert "target_token_ids" not in receipt and "The cat sat." not in repr(receipt)
     result = approved(matrix)
     assert [x["condition"] for x in result] == list(CONDITIONS)
@@ -136,6 +142,8 @@ def test_builds_eight_bound_conditions_and_streams_after_one_shot_approval(monke
     assert result[2]["adapter_sha256"] == "a" * 64
     assert result[6]["message_source_ref"]["source_id"] == "source-ood"
     assert result[7]["message_source_ref"]["source_id"] == "source-entity"
+    assert result[8]["message_source_ref"]["source_id"] == "source-deranged"
+    assert result[8]["control_recipe"] == "BOS_PLUS_SAME_FAMILY_DERANGED_CANDIDATE_V1"
     assert all(x["position_ids"] == list(range(x["input_rows"])) for x in result)
     with pytest.raises(NativeReceiverConditionMatrixError, match="already consumed"):
         approved(matrix)
@@ -147,46 +155,57 @@ def test_entity_control_changes_only_declared_token_row(monkeypatch):
     assert base[0] == entity[0] and base[1] == entity[1] and base[2] != entity[2] and base[3] == entity[3]
 
 
+
+def test_deranged_control_is_same_family_and_uses_a_distinct_source(monkeypatch):
+    result = {x["condition"]: x for x in approved(build(monkeypatch))}
+    candidate = result["LATENT_CANDIDATE"]
+    deranged = result["DERANGED_MESSAGE"]
+    assert deranged["task_family"] == candidate["task_family"] == "ARITHMETIC"
+    assert deranged["message_source_ref"]["source_id"] == "source-deranged"
+    assert deranged["message_source_ref"] != candidate["message_source_ref"]
+    assert deranged["input_sha256"] != candidate["input_sha256"]
+
+
 def test_requires_matching_matrix_approval_before_yield(monkeypatch):
     matrix = build(monkeypatch)
     with pytest.raises(NativeReceiverConditionMatrixError, match="validator is required"):
         list(matrix.iter_inputs())
     with pytest.raises(NativeReceiverConditionMatrixError, match="does not bind"):
         list(matrix.iter_inputs(approval="wrong", approval_validator=lambda token, digest: token == digest))
-    assert len(approved(matrix)) == 8
+    assert len(approved(matrix)) == 9
 
 
 def test_rejects_wrong_ood_family_and_cross_session_control(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
     ood["task_family"] = "ARITHMETIC"
     with pytest.raises(NativeReceiverConditionMatrixError, match="different task family"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
-    task, main, baseline, candidate, ood, entity = inputs()
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged)
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
     ood["session_id"] = "other-session"
     with pytest.raises(NativeReceiverConditionMatrixError, match="same session"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged)
 
 
 def test_rejects_entity_text_changes_outside_declared_span_and_bad_bos_binding(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
     bad_record = record("source-entity", "The dog sat?", [11, 44, 33], [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
     entity["record"] = bad_record
     entity["source_text"] = "The dog sat?"
     entity["candidate_packet"] = packet(bad_record, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
     with pytest.raises(NativeReceiverConditionMatrixError, match="outside declared spans"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
-    task, main, baseline, candidate, ood, entity = inputs()
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged)
+    task, main, baseline, candidate, ood, entity, deranged = inputs()
     baseline["receiver_model_sha256"] = "f" * 64
     with pytest.raises(NativeReceiverConditionMatrixError, match="BOS baseline"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged)
 
 
 def test_public_receipt_is_copy_and_close_blocks_later_vector_access(monkeypatch):
@@ -194,7 +213,7 @@ def test_public_receipt_is_copy_and_close_blocks_later_vector_access(monkeypatch
     receipt = matrix.receipt
     receipt["conditions"][0]["input_sha256"] = "f" * 64
     assert matrix.receipt["conditions"][0]["input_sha256"] != "f" * 64
-    assert len(approved(matrix)) == 8
+    assert len(approved(matrix)) == 9
     matrix.close()
     with pytest.raises(NativeReceiverConditionMatrixError, match="closed"):
         approved(matrix)
@@ -345,7 +364,7 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert result["cohort_status"] == "FIXTURE_ONLY"
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["enough_holdout"] is False
-    assert result["condition_count"] == 8
+    assert result["condition_count"] == 9
     assert result["kv_snapshot_count"] == 8
     assert result["kv_snapshot_layer_id"] == 0
     assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
