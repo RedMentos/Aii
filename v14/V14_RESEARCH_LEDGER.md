@@ -2194,7 +2194,7 @@ PR #2565 extends its optional A3 tile-projector descriptor gate from the explici
 ### Evidence
 
 - Exact code/test head: 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b.
-- GitHub Actions 46057142216: PASS on Python 3.13 and 3.14; exact workflow compiles the adapter and runs both MediaProjection ingress/provider-entrypoint test files. Offline bridge/security 46057142248: PASS.
+- GitHub Actions 46057142216: PASS on Python 3.13 and 3.14; exact workflow compiles the adapter and runs both MediaProjection ingress/provider-entrypoint test files: 39/39 PASS on Python 3.13 and 39/39 on Python 3.14. Offline bridge/security 46057142248: PASS.
 - LOCAL_LINUX scratch helper reproduction, CPython 3.13.5 / NumPy 2.3.5: compile PASS; partial OOD 8/16 scored + 8/16 abstained; full OOD 0/16 scored; legacy gate-off 16/16 scored; invalid threshold controls 5/5 rejected. This is not full repository pytest.
 - Full local Aii pytest: NOT_RUN/BLOCKED (no mounted checkout; GitHub DNS unavailable). No native model, Android, Termux or Redmi test.
 
