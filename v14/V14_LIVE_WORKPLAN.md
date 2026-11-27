@@ -1774,3 +1774,15 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 - A4/A5 feature-set 45925644769 PASS both versions; RAW EAR fastpath 45925644699 155/155 PASS both; RuntimeDeploy offline 45925644734 PASS on 3.11/3.14. WebRTC/libfvad comparison 45925644686 was not yet final at this checkpoint. Staged run 45925644732 FAILs at Core composer pin plus stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED; integrated job was still running. Earlier integrated run 45924853105 failed one setup test at the same pin.
 - All A4/event evidence remains SYNTHETIC. No local full suite, native model, microphone, Android/Termux or Redmi evidence. PR #2540 remains DRAFT / NOT_RELEASED.
 - Next: Core/QA repair their owned pin/migration gates; rerun staged/integrated; Perception then evaluates source/session-disjoint omission false positives and update gating with more varied timing distributions. No default model/rate change.
+
+
+## Run 55 — final shared-gate status (2026-11-27)
+
+Latest exact-head runs after the event-expectation extension:
+- A4 temporal/event ablation 45925644718: 9/9 PASS on Python 3.13 and 3.14.
+- A4/A5 feature-set 45925644769: PASS both.
+- RAW EAR fastpath 45925644699: 155/155 PASS both; synthetic only.
+- RuntimeDeploy offline 45925644734: PASS Python 3.11/3.14.
+- WebRTC/libfvad comparison 45925644686: 3.13 job completed successfully; 3.14 still IN_PROGRESS at readback.
+- Staged/integrated run 45925644732: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated FAIL (one setup test) at the same stale Core composer pin. Staged also fails stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED.
+The integration failure is not an A4 test failure. Core owns the Recovery→Stage→RuntimeDeploy pins; QA owns migration assertions. Perception did not edit those files. No local full suite or Redmi proof.
