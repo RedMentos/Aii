@@ -1859,3 +1859,27 @@ The abstract claims that a small set of query-sensitive attention heads in audio
 - No microphone/AudioRecord, native model inference, Android/Termux or Redmi test. Synthetic cues only; `device_benchmark=false`. No PCM, transcript, speaker embedding, training example, model or weight data was downloaded or persisted.
 - Existing PR #2540 remains DRAFT / NOT_RELEASED. Its broader staged Runtime and integrated-regression gates remain FAIL on Core-owned stale source pins and QA-owned migration assertions; the A4 experiment does not repair or conceal those failures.
 - Next: verify the exact new workflow result; fix any measured A4 test defect. Core owns #2544's recovery/stage/deployer rebase; QA owns the migration status assertions. Perception must not edit those shared files. After the shared stack is reconciled, extend A4 evaluation to error-gated versus every-FINAL updates and explicit retention/restart ablations. No user action required.
+
+
+## Research & Perception Run 55 — final CI closeout (2026-11-27 02:52 CET)
+
+**Exact branch head:** `e270369a04eb20470aa717dc0464b2b03a4320a5`; PR [#2540](https://github.com/RedMentos/Aii/pull/2540), DRAFT / NOT_RELEASED. The updated sweep code commit is `b60669975184bc3a54be4b5d380c95fd91fab16a`; updated test commit is the current head above.
+
+**Exact CI evidence:**
+- A4 temporal source-isolation workflow run **45924853167**, PR merge candidate short SHA `3d56c9c`: compile PASS and **7/7 tests PASS on Python 3.13.18 and 3.14.10**; both versions emitted identical deterministic metrics.
+- Source-bound A4/A5 feature-set probe run **45924853182**: PASS on Python 3.13 and 3.14.
+- RAW EAR fastpath run **45924853240**: **155 passed** on Python 3.13 and **155 passed** on Python 3.14; benchmark output explicitly says `synthetic_benchmark=true`, `device_benchmark=false`.
+- RuntimeDeploy offline integrity run **45924853218**: PASS on Python 3.11 and 3.14.
+- Staged runtime run **45924853105**: **FAIL**, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Root blockers remain shared/Core/QA-owned: recovery builder expects composer blob `831080bceec90711bd42e0fa4eba47c669975c98`, while current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; arithmetic `v13/contracts.py` and observer `v13/cognition.py` pins are also stale, and migration still returns `PARTIAL` where the test expects `UPDATED`.
+- Integrated regression in the same run **45924853105**: **FAIL**, one setup test, at the same stale Core audio-composer pin. Perception did not edit or weaken any of these gates.
+
+**Synthetic A4 result (not device evidence):** interleaved streams exactly matched isolated execution (max metric delta 0). The 182-parameter shadow predictor changed numeric parameters and kept novelty below its 0.10 cap (max attention novelty 0.04111883; max omission novelty 0.01736616). However, it did **not** beat the persistence baseline on all cue types:
+- periodic speech: mean model MAE 0.21739024 vs persistence 0.33642678 (improvement +0.11903654);
+- non-speech impulses/noise: 0.22605715 vs 0.19615384 (worse by 0.02990331);
+- mixed activity: 0.28642224 vs 0.26395818 (worse by 0.02246406).
+
+The explicit learning-rate sweep (0.02, 0.05, 0.10, 0.20) kept the same pattern: all tested rates improved the periodic-speech fixture, but none beat persistence on the non-speech or mixed fixtures; 0.20 was least negative on those two. No default-rate change is justified. No-context reset produced zero measured updates/novelty; provisional windows were ignored; consent rotation reset the numeric state to zero. Interpretation: this is a bounded A4 shadow novelty/error signal, **not** a generally better acoustic predictor or semantic event recognizer.
+
+**Local/device boundary:** full LOCAL_LINUX Aii checkout/pytest remains BLOCKED / NOT RUN (no checkout mounted; GitHub DNS failure). No Android/Termux, microphone/AudioRecord, native model, B1/B2 normal-turn or Redmi test. Last private V13OBS #115 is historical (2026-11-24); #998/#999 expired without receipt. REDMI_UNVERIFIED; current updater/install state unknown. No device action, model/weight swap, permission change or raw audio persistence.
+
+**Next:** Core owns the stale Recovery→Stage→RuntimeDeploy pin chain; QA owns migration assertions. After their rebase, rerun the exact staged/integrated gates. Perception's next experiment is source/session-disjoint omission false-positive and update-gating evaluation; do not promote the A4 learner or change its default based on these synthetic fixtures.
