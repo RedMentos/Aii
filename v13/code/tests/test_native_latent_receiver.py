@@ -260,7 +260,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "llama_version": "b10964",
         "status": "SCORED",
         "receiver_input_dim": 2,
-        "output_dim": 8,
+        "output_dim": 2,
         "target_token_count": len(target_ids),
         "target_token_ids_sha256": target_sha,
         "conditions": native_conditions,

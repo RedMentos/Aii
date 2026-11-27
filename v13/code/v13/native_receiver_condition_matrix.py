@@ -496,7 +496,7 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             positions = list(range(len(vectors)))
         rows = len(baseline_rows) + len(candidate) if condition == "SELF_GENERATED_MESSAGE" else len(vectors)
         # Empty NO_MESSAGE and direct-text inputs still carry receiver width metadata.
-        dim = len(vectors[0]) if rows else len(baseline_rows[0])
+        dim = len(vectors[0]) if vectors else len(baseline_rows[0])
         if rows > MAX_ROWS or rows * dim > MAX_ELEMENTS:
             raise NativeReceiverConditionMatrixError("condition input exceeds native receiver limits")
         if condition == "NO_MESSAGE":

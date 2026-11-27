@@ -361,7 +361,7 @@ def test_identical_input_digest_requires_identical_kv_snapshot():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
     assert "identical receiver input digest" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 11
+    assert task_score_status(runtime)["receipt_count"] == 12
     assert task_score_status(runtime)["incomplete_task_group_count"] == 1
 
 
@@ -389,7 +389,7 @@ def test_partial_kv_snapshot_coverage_is_rejected():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
     assert "partial native K/V snapshot coverage" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 11
+    assert task_score_status(runtime)["receipt_count"] == 12
 
 
 def test_forty_task_groups_across_two_sessions_are_fixture_only():
@@ -516,7 +516,7 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 
     assert "native K/V snapshot geometry changed across task cohort" in str(error.value.__cause__)
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 23
+    assert status["receipt_count"] == 25
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 1
 
