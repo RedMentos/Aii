@@ -17,7 +17,9 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from types import SimpleNamespace
 
-from v13.native_offer_prompt_receipt import inspect, REVISION, VOLATILE_HEAD
+from v13.native_offer_prompt_receipt import (
+    inspect, REVISION, VOLATILE_HEAD, TOKEN_SPAN_REVISION,
+)
 from v13.phone_offer_delivery_audit import audit
 from v13.runners import LlamaRunner
 from v13.prompts import text as prompt_text
@@ -27,16 +29,16 @@ HEADER = "Internal hypotheses: "
 SECRET = "SECRET_NATIVE_QUOTE_DO_NOT_EXPORT"
 
 
-def source_ref():
+def source_ref(text=SECRET):
     return {"source_id": "src", "sha256": "a" * 64, "char_start": 0,
-            "char_end": len(SECRET), "modality": "text"}
+            "char_end": len(text), "modality": "text"}
 
 
-def offer(role, ident, quoted=True):
+def offer(role, ident, quoted=True, text=SECRET):
     return {"role": role, "offer_packet_id": ident,
             "hypothesis": {"summary": "untrusted", "uncertainty": "low",
                            "needs_reentry": False},
-            "verified_quotes": ([{"text": SECRET, "source_ref": source_ref(),
+            "verified_quotes": ([{"text": text, "source_ref": source_ref(text),
                                  "verification": "EXACT_SOURCE_SUBSTRING_ONLY"}]
                                 if quoted else [])}
 
@@ -53,6 +55,41 @@ def messages(offers, *, layout="legacy"):
 
 def render(msgs):
     return "<START>" + "".join(x["content"] for x in msgs) + "<ASSISTANT>"
+
+
+def render_with_special(msgs):
+    return ("<|im_start|>system\n" + msgs[0]["content"] + "<|im_end|>\n"
+            + "<|im_start|>user\n" + msgs[-1]["content"] + "<|im_end|>\n"
+            + "<|im_start|>assistant\n")
+
+
+def messages_ascii(offers):
+    material = "\n" + HEADER + json.dumps(offers, ensure_ascii=True, sort_keys=True)
+    return [{"role": "system", "content": "fixed rules" + material},
+            {"role": "user", "content": "PRIVATE_CURRENT_USER"}]
+
+
+def pieces_for_prompt(prompt, split_offsets=(), *, bos=True, special_markers=()):
+    data = prompt.encode("utf-8")
+    offsets = {0, len(data)}
+    offsets.update(x for x in split_offsets if type(x) is int and 0 < x < len(data))
+    for marker in special_markers:
+        marker_bytes = marker.encode("utf-8")
+        start = data.find(marker_bytes)
+        while start >= 0:
+            offsets.add(start)
+            offsets.add(start + len(marker_bytes))
+            start = data.find(marker_bytes, start + len(marker_bytes))
+    ordered = sorted(offsets)
+    rows = [{"id": 1, "piece": "<s>"}] if bos else []
+    for index, (start, end) in enumerate(zip(ordered, ordered[1:])):
+        chunk = data[start:end]
+        try:
+            piece = chunk.decode("utf-8")
+        except UnicodeDecodeError:
+            piece = list(chunk)
+        rows.append({"id": 100 + index, "piece": piece})
+    return rows
 
 
 class PurePromptReceipt(unittest.TestCase):
@@ -135,6 +172,75 @@ class PurePromptReceipt(unittest.TestCase):
                                  "x", HEADER)["status"], "INVALID_ENVELOPE")
 
 
+    def test_native_token_spans_bind_utf8_partial_pieces_bos_and_special_tokens(self):
+        selected = [
+            offer("B1_DETAIL", "b1", text="source café 🤗 exact"),
+            offer("B2_GIST", "b2", text="second naïve quote"),
+        ]
+        m = messages(selected)
+        prompt = render_with_special(m)
+        prompt_bytes = prompt.encode("utf-8")
+        first_literal = json.dumps(selected[0]["verified_quotes"][0]["text"],
+                                    ensure_ascii=False).encode("utf-8")
+        literal_start = prompt_bytes.find(first_literal)
+        self.assertGreaterEqual(literal_start, 0)
+        cafe = prompt_bytes.find("é".encode("utf-8"), literal_start)
+        self.assertGreaterEqual(cafe, 0)
+        rows = pieces_for_prompt(
+            prompt,
+            split_offsets=(literal_start + 1, cafe + 1,
+                           literal_start + len(first_literal) // 2),
+            bos=True,
+            special_markers=("<|im_start|>", "<|im_end|>"),
+        )
+        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        span = result["native_prompt_token_span_receipt"]
+        self.assertEqual(result["status"], "RENDERED_WITH_QUOTES")
+        self.assertEqual(span["revision"], TOKEN_SPAN_REVISION)
+        self.assertEqual(span["status"], "VERIFIED")
+        self.assertEqual(span["leading_added_special_token_count"], 1)
+        self.assertEqual(span["token_count"], len(rows))
+        self.assertEqual({x["role"] for x in span["offers"]},
+                         {"B1_DETAIL", "B2_GIST"})
+        first = next(x for x in span["offers"] if x["role"] == "B1_DETAIL")
+        first_quote = first["quote_spans"][0]
+        self.assertGreaterEqual(first_quote["token_start"], 1)
+        self.assertGreaterEqual(first_quote["token_count"], 2)
+        self.assertGreater(first_quote["token_end_exclusive"], first_quote["token_start"])
+        self.assertNotIn("source café", json.dumps(span))
+        self.assertNotIn("second naïve", json.dumps(span))
+
+
+    def test_native_token_spans_support_ascii_escaped_unicode_and_no_added_bos(self):
+        selected = [
+            offer("B1_DETAIL", "b1", text="naïve résumé"),
+            offer("B2_GIST", "b2", text="plain summary"),
+        ]
+        m = messages_ascii(selected)
+        prompt = render(m)
+        rows = pieces_for_prompt(prompt, bos=False)
+        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        span = result["native_prompt_token_span_receipt"]
+        self.assertEqual(span["status"], "VERIFIED")
+        self.assertEqual(span["leading_added_special_token_count"], 0)
+        self.assertEqual(len(span["offers"]), 2)
+
+
+    def test_native_token_span_mismatch_and_ambiguous_bos_fail_closed(self):
+        selected = [offer("B1_DETAIL", "b1"), offer("B2_GIST", "b2")]
+        m = messages(selected)
+        prompt = render(m)
+        rows = pieces_for_prompt(prompt)
+        rows[1]["piece"] = "mismatched"
+        result = inspect(m, prompt, HEADER, token_pieces=rows)
+        self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
+                         "TOKEN_PIECES_DO_NOT_RECONSTRUCT_PROMPT")
+        ambiguous = [{"id": 1, "piece": ""}] + pieces_for_prompt(prompt, bos=False)
+        result = inspect(m, prompt, HEADER, token_pieces=ambiguous)
+        self.assertEqual(result["native_prompt_token_span_receipt"]["status"],
+                         "AMBIGUOUS_ADDED_SPECIAL_PREFIX")
+
+
 class FakeCompletionHandler(BaseHTTPRequestHandler):
     answer_status = 200
     def do_POST(self):
@@ -188,6 +294,9 @@ class NativeHTTPBound(unittest.TestCase):
             if endpoint == "/apply-template":
                 return {"prompt": render(payload["messages"])}
             if endpoint == "/tokenize":
+                if payload.get("with_pieces"):
+                    return {"tokens": [{"id": 1, "piece": "<s>"},
+                                       {"id": 2, "piece": payload["content"]}]}
                 return {"tokens": [1] * 24}
             raise AssertionError(endpoint)
         r._json = post
@@ -206,6 +315,10 @@ class NativeHTTPBound(unittest.TestCase):
         self.assertTrue(receipt["native_request_prompt_submitted"])
         self.assertTrue(receipt["native_request_prompt_matches_admission"])
         self.assertEqual(receipt["native_request_prompt_sha256"], self.server.last_prompt_sha256)
+        span = receipt["native_prompt_token_span_receipt"]
+        self.assertEqual(span["status"], "VERIFIED")
+        self.assertEqual(span["leading_added_special_token_count"], 1)
+        self.assertEqual(len(span["offers"]), 2)
         self.assertEqual(runner.last_metrics["status"], "FINAL")
         self.assertNotIn(SECRET, json.dumps(runner.last_metrics))
         self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(runner.last_metrics))
@@ -298,13 +411,36 @@ class SQLiteNativeAudit(unittest.TestCase):
                 "native_template_rendered": True,
                 "native_template_submitted": True, "native_completion_http_200": True,
                 "native_prompt_sha256": "a" * 64,
+                "native_token_ids_sha256": "b" * 64,
+                "native_prompt_tokens": 521,
                 "native_request_prompt_sha256": "a" * 64,
                 "native_request_prompt_submitted": True,
                 "native_request_prompt_matches_admission": True,
                 "source_span_revalidated_here": False,
                 "native_semantic_use_proven": False,
                 "offers": [{"role": r, "packet_id": pid, "rendered_quote_count": 1}
-                           for r, pid in (("B1_DETAIL", "b1"), ("B2_GIST", "b2"))]}
+                           for r, pid in (("B1_DETAIL", "b1"), ("B2_GIST", "b2"))],
+                "native_prompt_token_span_receipt": {
+                    "revision": TOKEN_SPAN_REVISION, "status": "VERIFIED",
+                    "prompt_sha256": "a" * 64, "token_ids_sha256": "b" * 64,
+                    "token_count": 521, "leading_added_special_token_count": 1,
+                    "offers": [
+                        {"role": "B1_DETAIL", "packet_id": "b1", "quote_spans": [{
+                            "quote_index": 0, "source_sha256": "a" * 64,
+                            "source_char_start": 0, "source_char_end": len(SECRET),
+                            "prompt_byte_start": 100, "prompt_byte_end": 140,
+                            "token_start": 5, "token_end_exclusive": 8, "token_count": 3,
+                            "first_token_byte_start": 0, "last_token_byte_end": 4,
+                            "token_ids_sha256": "c" * 64}]},
+                        {"role": "B2_GIST", "packet_id": "b2", "quote_spans": [{
+                            "quote_index": 1, "source_sha256": "a" * 64,
+                            "source_char_start": 0, "source_char_end": len(SECRET),
+                            "prompt_byte_start": 200, "prompt_byte_end": 240,
+                            "token_start": 9, "token_end_exclusive": 12, "token_count": 3,
+                            "first_token_byte_start": 1, "last_token_byte_end": 5,
+                            "token_ids_sha256": "d" * 64}]},
+                    ],
+                }}
 
     def test_both_native_rendered_and_sent_is_still_metadata_only(self):
         self.seed(self.witness())
@@ -315,6 +451,11 @@ class SQLiteNativeAudit(unittest.TestCase):
         self.assertEqual(gate["both_body_native_prompt_inclusion_verified_turns"], 1)
         self.assertTrue(gate["native_template_submission_reported_by_runtime"])
         self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(gate["native_prompt_token_span_receipt_verified"])
+        self.assertEqual(gate["both_body_native_prompt_token_span_receipts_verified_turns"], 1)
+        self.assertTrue(out["turns"][0]["native_prompt_token_span_receipt_verified"])
+        self.assertEqual(set(out["turns"][0]["native_prompt_token_span_receipt_roles"]),
+                         {"B1_DETAIL", "B2_GIST"})
         self.assertTrue(out["turns"][0]["c3_prompt_inclusion_proven"])
         self.assertFalse(out["turns"][0]["c3_semantic_use_proven"])
         self.assertFalse(gate["learned_latent_exchange_verified"])
@@ -352,6 +493,43 @@ class SQLiteNativeAudit(unittest.TestCase):
                 self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
                 self.assertFalse(out["turns"][0]["c3_prompt_inclusion_proven"])
                 self.assertFalse(gate["learned_latent_exchange_verified"])
+
+    def test_native_prompt_token_span_audit_rejects_mismatch_and_bad_bounds(self):
+        for change in ("prompt_hash", "token_hash", "token_count", "token_start",
+                       "missing_role", "quote_count", "malformed_role"):
+            with self.subTest(change=change):
+                self.db.execute("DELETE FROM messages")
+                self.db.execute("DELETE FROM packets")
+                self.db.execute("DELETE FROM telemetry")
+                self.seed(self.witness())
+                raw = self.db.execute(
+                    "SELECT metadata FROM messages WHERE event_id=?", ("E",)
+                ).fetchone()[0]
+                metadata = json.loads(raw)
+                span = metadata["runner"]["native_offer_prompt_receipt"][
+                    "native_prompt_token_span_receipt"]
+                if change == "prompt_hash":
+                    span["prompt_sha256"] = "e" * 64
+                elif change == "token_hash":
+                    span["token_ids_sha256"] = "e" * 64
+                elif change == "token_count":
+                    span["token_count"] = 520
+                elif change == "token_start":
+                    span["offers"][0]["quote_spans"][0]["token_start"] = 521
+                elif change == "missing_role":
+                    span["offers"].pop()
+                elif change == "quote_count":
+                    span["offers"][0]["quote_spans"].pop()
+                elif change == "malformed_role":
+                    span["offers"][0]["role"] = []
+                self.db.execute(
+                    "UPDATE messages SET metadata=? WHERE event_id=?",
+                    (json.dumps(metadata), "E"),
+                )
+                out = audit(self.db)
+                self.assertFalse(out["turns"][0]["native_prompt_token_span_receipt_verified"])
+                self.assertFalse(out["end_to_end_gate"]["native_prompt_token_span_receipt_verified"])
+
 
     def test_wrong_packet_boolean_token_no_http_or_no_witness_never_promote(self):
         for change in ("wrong_packet", "bool_quotes", "no_http", "no_witness", "no_tokens"):
