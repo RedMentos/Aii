@@ -25,8 +25,8 @@ Core #2562 imported the current A5/A4 Perception receiver and failed two NPY-hea
 
 - LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated helper harness: py_compile PASS, 4/4 PASS (valid archive, huge declared shape, truncated payload, wrong fixed shape). The malformed cases prove np.load is not reached.
 - Full local Aii checkout/pytest: BLOCKED / NOT_RUN; no checkout mounted and GitHub DNS unavailable.
-- Exact code/test head 09e8cee23fab4fe9144253f93bab0a62c3119882, final docs-only CI head f46e38841913667055a16fa7826a5f41923cb0c9: MediaProjection ingress 46038637335 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46038637336 PASS on Python 3.11 and 3.14.
-- Shared staged/integrated 46038637341 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Other staged failures are Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed.
+- Exact code/test head 09e8cee23fab4fe9144253f93bab0a62c3119882, final docs-only CI head a4bf7081708dfa959b58cc4ca00d0971da0ac41c: MediaProjection ingress 46039137962 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46039137910 PASS on Python 3.11 and 3.14.
+- Shared staged/integrated 46039137849 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Other staged failures are Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed.
 - Redmi/Android/Termux: REDMI_UNVERIFIED. No device access or update. Release NOT_RELEASED.
 
 ## Integration owners
