@@ -199,6 +199,7 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
             or not _valid_sha256(token_ids_sha)
             or spans.get("token_ids_sha256") != token_ids_sha
             or token_count is None
+            or type(spans.get("token_count")) is not int
             or spans.get("token_count") != token_count
             or token_count != _count(report.get("prompt_tokens"))
             or not _native_prefill_token_count_match(report)):
@@ -230,8 +231,10 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
             return set()
         role, ident, quote_spans = (row.get("role"), row.get("packet_id"),
                                     row.get("quote_spans"))
+        if type(role) is not str or role not in ROLES:
+            return set()
         base = base_by_role.get(role)
-        if (type(role) is not str or role not in template_roles or role in seen_roles
+        if (role not in template_roles or role in seen_roles
                 or base is None or ident != base.get("packet_id")
                 or type(quote_spans) is not list
                 or len(quote_spans) != base.get("rendered_quote_count")
