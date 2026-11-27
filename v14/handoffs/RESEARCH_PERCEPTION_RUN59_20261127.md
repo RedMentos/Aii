@@ -40,3 +40,16 @@ R-179 records only an abstract-level review of Llama-Mobile (arXiv:2608.21134, 2
 3. Boss: reconcile the #2548 -> #2549 -> #2550 stack onto the current integration/release head after exact-head CI; do not equate merge with phone install.
 
 Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No user action required.
+
+
+## Next Perception finding — A4 omission session-scope audit
+
+A static code audit found a conditional cross-session false-positive risk in the existing A4 event expectation path:
+
+- audio_event_expectation.py keys process-local expectation state by (source_id, generation_id) and resets it only when consent_scope_id (SHA-256 of the consent receipt) changes.
+- audio_voice_cues.py passes source_id, generation_id and consent_scope_id but no session_id.
+- The Store events table already contains session_id, and consume_pcm16_voice_window has event_id; Store.one can resolve the session without reading message text.
+- Therefore, if the same source, generation and consent receipt are reused across two chat sessions in one Runtime process, expected intervals / expected_next_ms could carry over. This is a conditional risk, not a measured live false positive; the provider may already issue a new receipt per session.
+- Existing event-expectation tests cover uncertain, low-confidence and late windows but not same-source/same-receipt session rotation.
+
+Next test: seed a valid periodic pattern in session A, then use the same source/generation/receipt in session B; B must be WARMUP and produce no omission until it independently accumulates MIN_INTERVALS. Verify source revocation resets all session keys. Implementation must add session_id to the event registry key and consumer call, and Core must refresh the exact audio_event_expectation.py pin in integrated_audio_context_candidate_20261121.py before staged/integrated tests. Ledger R-180 records this as CODE_AUDIT_ONLY / OPEN, not a proven runtime bug.
