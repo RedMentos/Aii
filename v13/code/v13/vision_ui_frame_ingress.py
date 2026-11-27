@@ -230,11 +230,11 @@ class ProviderFrameVerifier:
             return False
         self._used = True
         if (
-            runtime is not self._runtime
+            type(observation) is not dict
+            or runtime is not self._runtime
             or lease is not self._lease
             or not lease.active_for(runtime, self._generation_id)
             or not lease.matches(runtime, observation, self._generation_id)
-            or type(observation) is not dict
             or observation.get("source_id") != self._source_id
             or observation.get("capture_session_id") != self._capture_session_id
             or observation.get("consent_receipt_ref") != self._receipt
