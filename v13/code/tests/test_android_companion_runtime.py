@@ -340,6 +340,7 @@ def test_immediate_android_receipt_context_rejects_tampered_provenance_and_obser
             "outcome_kind": "ANDROID_COMPANION_RECEIPT",
             "capability": "launch_app",
             "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
+            "android_os_permission_status": "NOT_REQUIRED_FOR_LAUNCH_APP",
             "evidence_level": "COMPANION_RECEIPT_ONLY",
             "observed": False,
             "t8_authoritative": False,
