@@ -86,7 +86,7 @@ public final class ReceiptFactoryTest {
                     "OUTCOME_UNKNOWN", true, 1_000_000L);
             fail("package mismatch");
         } catch (IllegalArgumentException expected) {
-            assertEquals("action request digest or package mismatch", expected.getMessage());
+            assertEquals("action request digest or target mismatch", expected.getMessage());
         }
         try {
             ReceiptFactory.create(action("PENDING_USER_APPROVAL", PACKAGE), new FakeSigner(),
