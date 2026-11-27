@@ -855,7 +855,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if _sha256_file(binary) != binary_sha256_before:
         raise NativeReceiverError("native receiver binary changed during task-matrix probe")
     return {
-        "schema": "v14.native-receiver-task-matrix/1",
+        "schema": "v14.native-receiver-task-matrix/2",
         "status": "SCORED",
         "sender_role": sender_role,
         "receiver_role": receiver_role,
