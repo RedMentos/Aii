@@ -1424,10 +1424,10 @@ def test_persistent_numeric_weights_retry_interleaved_session_conflict(tmp_path)
 
 
 def _assert_temporal_reset_preserves_shared_numeric_checkpoint(tmp_path, reset_kind):
-    runtime, _event = make_runtime(tmp_path)
+    runtime, event = make_runtime(tmp_path)
     registry = AudioTemporalPredictionRegistry(store=runtime.store)
     source_id = "source-reset-preserves-weights"
-    generation_id = runtime.store.generation_id
+    generation_id = event["brain_generation_id"]
     consent_scope_id = "a" * 64
     key = registry._persistent_key(source_id, generation_id)[2]
     session_b = runtime.store.new_session("RAW EAR temporal reset fixture")
