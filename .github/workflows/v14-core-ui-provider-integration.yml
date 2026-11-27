@@ -35,6 +35,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install focused dependencies
         run: python -m pip install --upgrade pip numpy pillow pytest cryptography
+      - name: Report exact provider source digest
+        run: sha256sum v13/code/v13/vision.py v13/code/v13/vision_ui_frame_ingress.py
       - name: Compile provider and Core consumer
         env:
           PYTHONPATH: v13/code
