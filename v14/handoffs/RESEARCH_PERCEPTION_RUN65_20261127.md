@@ -38,3 +38,8 @@ The new scope makes the provider → A5 packet → downstream-consumer lifetime 
 
 ## Next concrete action
 Core: rebase #2408 onto #2557 and put normal C3 context consumption inside consume_projected_frame_from_provider_scope(). QA: independently verify permission denial/revocation, MediaProjection onStop, process death, restart and rollback. Perception: after that integration, add A5 audio/UI source-consumer coverage without duplicating capture providers.
+
+
+## Private device receipt check
+- Read-only owner-relay requests in RedMentos/Aiiii: #1017 HEALTH, #1018 PIPELINE_STATUS, #1019 DIAGNOSTICS (created 2026-11-27T11:23:36Z; expires after 600 seconds).
+- Immediate readback: zero authenticated device_status comments for all three. Status: NO_LIVE_RECEIPT. The historical V13OBS #115 snapshot is not current install/updater proof. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission or data action was performed.
