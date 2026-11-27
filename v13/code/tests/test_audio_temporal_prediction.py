@@ -1069,9 +1069,15 @@ def test_transient_no_consolidation_is_an_explicit_ephemeral_control():
     assert result["transient_weight_delta_l2"] > 0.0
     assert result["persistent_weight_delta_l2"] == 0.0
     assert result["transient_parameter_l2"] > 0.0
+    assert result["transient_parameter_l2"] <= predictor.max_transient_norm + 1e-8
     assert result["parameter_l2"] == 0.0
     assert result["updates"] == 0
     assert result["transient_updates"] == 1
+    for target in ([0.0] * FEATURE_COUNT, [1.0] * FEATURE_COUNT) * 12:
+        bounded = predictor.update(target)
+        assert bounded["transient_parameter_l2"] <= predictor.max_transient_norm + 1e-8
+        assert bounded["parameter_l2"] == 0.0
+        assert bounded["updates"] == 0
 
     saved = predictor.state_dict()
     assert set(saved) == {"weights", "updates"}
