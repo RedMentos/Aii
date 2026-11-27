@@ -839,8 +839,25 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
                 "source_id": SOURCE, "consent_receipt": RECEIPT,
                 "consent_check": check, "_consent_lease": lease,
             }
+            assert result["c3_admission"].status == "ADMITTED"
+            assert result["c3_admission"].selected
+            packet_value = result["packet"]
+            assert packet_value["brain_generation_id"] == runtime.store.generation_id
+            assert result["a4"]["packet_id"] == packet_value["packet_id"]
+            try:
+                context_store._a4_temporal_context(
+                    result["a4"], packet_value, packet_value["source_ref"],
+                    packet_value["segments"][0], event["event_id"], SOURCE,
+                )
+            except Exception as exc:
+                pytest.fail(f"A4 temporal context validation failed: {type(exc).__name__}: {exc}")
             context = context_store.record(runtime, event["event_id"], result, window)
-            assert context is not None
+            if context is None:
+                row = runtime.store.one(
+                    "SELECT metrics FROM telemetry WHERE event_id=? ORDER BY id DESC LIMIT 1",
+                    (event["event_id"],),
+                )
+                pytest.fail(f"audio context record returned None; last telemetry={row}")
             temporal = context["body"]["a4_temporal"]
             assert temporal["schema"] == "v14.raw-ear-a4-temporal-context/1"
             assert temporal["learning_authority"] is False
