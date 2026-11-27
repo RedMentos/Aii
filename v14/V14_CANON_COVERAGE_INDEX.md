@@ -2402,3 +2402,72 @@ Exact code/test head 7bd80e419c851471d95b44cc032efe205a23ab91: the focused recei
 | B3 / Enlightened Space — LFM2 full-hybrid sequence-state diagnostic | Native receiver's opt-in state roundtrip now pre-fills from the actual LATENT_CANDIDATE matrix, hashes and records its rows, restores attention/KV plus recurrent shortconv state into a fresh same-model context, and compares a fixed continuation. Python task-score and Runtime bridge read the receipt from the candidate condition. | PR #2524 code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8; initial handoff commit 82d79103af7aa80d1ec29b688ec2f3ecca78acc8; later docs/board commits follow on the same branch; schema v2; LOCAL_LINUX CPython 3.13.5 scratch contract 6/6 PASS; standalone C++ float32-LE digest helper compile/run PASS. Exact GitHub Actions on code/test SHA 1417250fb28c4e30c5c4e0d8150e673248ad10a8: native receiver 45888866164 completed FAILURE only at the Core-owned observer fairness pin (test_native_latent_receiver_stage.py::test_native_receiver_is_composed_and_runtime_contracts_pass; ValueError: observer fairness source changed: v13/cognition.py). The focused condition-matrix/task-score suite passed 52/52 on Python 3.13 and 52/52 on Python 3.14; the extended receiver suite passed 92 tests and failed only that same Core pin on each version. py_compile passed. The exact pinned llama.cpp Linux API build/selftest passed; Android arm64-v8a cross-compile passed (compile-only); public privacy scan CLEAN. Staged/integrated 45888866275 completed FAILURE: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, due to the same Core observer-fairness pin plus two migration assertions returning PARTIAL instead of UPDATED. RuntimeDeploy offline integrity 45888866345 completed SUCCESS on Python 3.11 and 3.14. These are CI results, not local full-repository tests, real GGUF execution or Redmi proof. | Exact CI completion; real LFM2 GGUF execution; different-weight source/receiver mapping; learned projector/receiver weights and gradient/retention; generated-answer/task correctness; source authentication and adversarial privacy/safety; normal-turn consumer; Redmi measurement. | CODE_PRESENT / WIRED_SYNTHETIC_DIAGNOSTIC / LOCAL_SCRATCH_PASS / CI_FOCUSED_PASS_CORE_PIN_BLOCKED_STAGED_FAIL_RUNTIMEDEPLOY_PASS / REAL_GGUF_UNVERIFIED / REDMI_UNVERIFIED / B3_OFF |
 
 This is a stronger prefill baseline than the earlier BOS-only roundtrip, but remains same-model state serialization. It does not establish cross-model latent communication, trained coupling, semantic use, learning, or production routing. The full system and P0 #1904 remain OPEN.
+
+## Research & Perception Run 53 — RAW EAR source-bound Runtime evidence overlay (2026-11-26)
+
+| Canon family | Current candidate consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| Voice/Audio A0–A5 → ContextOS/C3 | Draft PR #2540 binds caller-supplied PCM16 into timed A5 acoustic features, A4 prosody/speaker evidence, optional audio SourceRefs in ContextOS provenance and C3 context refs. Existing event, consolidation, history and duplex refs remain present. Raw PCM is not persisted by this candidate path. | Exact code/test SHA 6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd; RAW EAR fastpath 122/122 PASS on Python 3.13 and 122/122 PASS on Python 3.14; prosody PASS Python 3.11/3.13; consent revocation PASS; A4/A5 feature-set PASS Python 3.13/3.14; WebRTC/libfvad Python 3.13 PASS (9 comparator tests + 133 source-bound audio tests); Python 3.14 comparator PASS (9 comparator tests + 133 source-bound audio tests); privacy CLEAN. Staged-runtime fails on Core-owned stale pins and migration expectations; integrated-regression fails on Core's old audio-candidate pin. | Android AudioRecord provider and consent receipt; real microphone; full duplex/barging; ASR teacher and separate trainable decoder/vocoder; B1/B2 normal-turn consumption; real model inference; gradient/parameter update, retention/restart; authenticated Redmi test. | WIRED_SYNTHETIC / DRAFT / ANDROID_UNVERIFIED / NOT_RELEASED |
+
+The hosted benchmark is synthetic-only (16-kHz generated signals, five iterations, device_benchmark=false); it is not Redmi latency or RSS. Full local Aii checkout was NOT_RUN because GitHub DNS resolution failed. Core PR #2538 was notified to rebase onto #2540 and refresh its own recovery/stage/deployer pins. No historical Canon or V14 master bytes changed.
+
+## Research & Perception Run 54 — RAW EAR cue-contract and A4/A5 integrity overlay (2026-11-27)
+
+| Canon family | Current candidate implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A0–A5 / RAW EAR audio perception | Caller-supplied PCM16 enters the timed RAW EAR producer; full cue schema is validated before canonical A5 PerceptPacket creation/persistence. A4 receives the same validated cue view. | Draft PR #2540 code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`; RAW EAR 155/155 PASS on Python 3.13 and 3.14; feature-set 15/15 PASS on both; 15/15 source-manifest blob readback; privacy scan PASS. | Android AudioRecord/microphone provider, real consent/revocation receipt, annotated real-speech corpus, native acoustic latency/RSS and Redmi proof. | WIRED_SYNTHETIC / DRAFT / ANDROID_UNVERIFIED / NOT_RELEASED |
+| A4↔A5 acoustic cue integrity | Audio context consumer validates that A4 voice cues equal the validated A5 packet cues before storing any B1/B2/C3 context. Malformed producer cues and valid-but-mismatched A4 cues are negative controls. | Exact Perception candidate tests are included in #2540; RAW EAR and A4/A5 focused CI PASS on Python 3.13/3.14. | Real microphone input, model-based prosody/speaker inference, long-running source-disjoint outcome/retention tests and real Android execution. | WIRED_SYNTHETIC / CI_FOCUSED_PASS / NOT_ANDROID_VERIFIED |
+| B1_DETAIL / B2_GIST / C3 audio-context consumer | Source-bound optional audio context is prepared for the existing B1/B2/C3 roles; raw PCM is not persisted by this candidate path. | Candidate builder source manifest 15/15 exact; focused consumer path is exercised by synthetic Runtime tests. | Native B1/B2/C3 model invocation, useful offers, normal-turn answer quality, B1/B2 mutual re-entry, persistent weight learning and Redmi TTFT/PSS. | WIRED_SYNTHETIC / DRAFT / NOT_ACCEPTED |
+| Shared staged/integrated Runtime | The candidate is not yet integrated into the Core recovery/stage/deployer chain. | Exact-head staged runtime: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression: one failure. Stale Core recovery audio-builder pin, arithmetic/cognition pins and migration PARTIAL-vs-UPDATED assertions remain. | Core/QA rebase and exact source-pin refresh, migration repair, full staged/integrated PASS, independent review and release queue. | CI_BLOCKED_CORE_OWNERSHIP / NOT_RELEASED |
+
+The current Perception composer blob is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`. Core PR #2544 was notified to rebase and refresh its own Recovery→Stage→RuntimeDeploy pin chain; QA owns migration status repair. WebRTC/libfvad Python 3.13 comparator passed (9 comparator + 166 source-bound audio tests); Python 3.14 PASS (9 comparator tests + 166 source-bound audio tests). RuntimeDeploy offline Python 3.11/3.14 and public-content privacy scan passed.
+
+**Platform boundary:** full local Aii checkout/pytest NOT_RUN because GitHub DNS failed; no native model, Android/Termux, microphone or Redmi execution. Private read-only requests #998/#999 expired with NO_LIVE_RECEIPT; the last V13OBS #115 remains historical. REDMI_UNVERIFIED; updater state unverified; NOT_RELEASED.
+
+This overlay does not promote P0 chat, B1/B2 native offer quality, B3 trained latent coupling, persistent body-weight learning, Android device control, microphone capture, full voice I/O, self-edit or any other Canon family.
+
+
+## Research & Perception Run 55 — additive capability evidence overlay (2026-11-27)
+
+This overlay records only the Perception evidence from PR #2540. It does **not** change the historical V13 inventory, any other organ's acceptance status, the master blueprint, or the release gate.
+
+| Canon path | Evidence level at this checkpoint | Evidence / exact boundary |
+|---|---|---|
+| A0 raw sensor / Android microphone | NOT_IMPLEMENTED / OFF | No AudioRecord provider or live microphone permission path was added or tested. |
+| A5 timed audio PerceptPacket | WIRED_SYNTHETIC | PR #2540's caller-supplied PCM16 path validates source/generation/consent chronology and produces the timed packet; synthetic CI only. No native capture. |
+| A4 acoustic / temporal attention | WIRED_SYNTHETIC | Existing A4 temporal predictor and event expectation feed a source-bound `a4_temporal` context object. New A4 run 45924853167 passed 7/7 tests on Python 3.13.18 and 3.14.10. |
+| A4 numeric predictor state | SYNTHETIC_WEIGHT_DELTA_ONLY | 182-parameter predictor has nonzero ephemeral numeric deltas in synthetic CI. Consent rotation resets it; no persistent production weight update, no master B1/B2/C3 weight change. |
+| B1/B2/C3 audio-context receipt | WIRED_SYNTHETIC | The candidate composer attaches sanitized source-bound A4 context for B1_DETAIL/B2_GIST/C3. Semantic consumption, valid native offers and useful answer quality remain unproven. |
+| B1/B2 native offer quality | FAIL / UNVERIFIED | Last available private receipt is historical; zero valid offers and TIME_BUDGET remain the last known phone evidence. No new device receipt. |
+| Trained cross-organ latent coupling / JEPA | NOT_PROVEN | This A4 cue path is symbolic/source-bound metadata, not learned hidden-state exchange, JEPA training or cross-organ gradients. |
+| Voice full duplex / trainable decoder | NOT_IMPLEMENTED | No microphone, speaker effector, barge-in or voice-learning path was changed. |
+| Android device control / updater | REDMI_UNVERIFIED | No Android/Termux/Redmi test or update request; current updater/install state unknown. |
+
+**Exact candidate and CI:** PR #2540, code/test head `e270369a04eb20470aa717dc0464b2b03a4320a5`; final docs/handoff branch head before this overlay `028b2c90d572845cee6903b9d7ae680cc9ce2243`. A4 workflow 45924853167: 7/7 PASS on Python 3.13.18 and 3.14.10. A4/A5 feature-set 45924853182 PASS on both; RAW EAR fastpath 45924853240 155/155 PASS on both; RuntimeDeploy offline 45924853218 PASS on Python 3.11/3.14. These are hosted Linux CI with synthetic cues, not LOCAL_LINUX hardware or Android evidence.
+
+**A4 synthetic outcome:** interleaved and isolated source streams match exactly (max metric difference 0). The model beats persistence only on periodic-speech cues (+0.11903654 MAE improvement), but loses on non-speech (-0.02990331) and mixed activity (-0.02246406); rates 0.02–0.20 do not remove those two regressions. Maximum attention novelty 0.04111883 under the 0.10 cap. No default-rate change or generalized prediction claim is justified.
+
+**Open integration gates:** staged run 45924853105 FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated regression FAIL (one setup test). Core-owned recovery still pins composer `831080bceec90711bd42e0fa4eba47c669975c98` while current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions also remain. Core/QA own those files; Perception did not relax guards.
+
+**Platform:** full local Aii suite NOT RUN (no checkout mounted; DNS failure). No Android/Termux, microphone, native model or Redmi test. REDMI_UNVERIFIED; NOT_RELEASED. This overlay must not be read as whole-system completion or as evidence for any other Canon family.
+
+
+### Run 55 extension — A4 event expectation (2026-11-27)
+
+| Canon path | Evidence level | Additive evidence |
+|---|---|---|
+| A4 temporal event expectation | WIRED_SYNTHETIC | Existing `AudioEventExpectationRegistry` tested with timed VOICED/SILENCE cue sequences. On-time event does not trigger omission; a valid FINAL silence window crossing expected onset+tolerance triggers one bounded omission. |
+| A4 omission confidence | SYNTHETIC_PROXY_ONLY | Confidence proxy 0.60, novelty 0.03 under 0.05 cap for the deterministic fixture; not calibrated probability and not a real-world false-positive rate. |
+| A4 censoring/consent/source isolation | WIRED_SYNTHETIC | UNCERTAIN censors, PROVISIONAL ignored, consent rotation resets, no-context reset emits no omission, interleaved streams match isolated streams. |
+| A0 microphone / real acoustic ingress | NOT_IMPLEMENTED / OFF | No AudioRecord or microphone provider tested. |
+
+**Exact CI:** A4 temporal + event workflow 45925644718, 9/9 PASS on Python 3.13 and 3.14. A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparator 45925644686 and integrated regression 45925644732 were still running at this checkpoint; staged job in 45925644732 already failed at the shared Core composer pin plus stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED.
+
+All evidence is synthetic/hosted CI. No local full suite, Android/Termux, microphone, native model or Redmi proof. No release. Other Canon families remain unchanged.
+
+
+### Run 55 — latest shared-gate status (2026-11-27)
+
+A4 temporal/event ablation 45925644718 passed 9/9 on Python 3.13/3.14; A4/A5 feature-set 45925644769 passed both; RAW EAR fastpath 45925644699 passed 155/155 on both (synthetic benchmark only); RuntimeDeploy offline 45925644734 passed on Python 3.11/3.14. WebRTC/libfvad comparison 45925644686 had a successful 3.13 job while 3.14 remained in progress.
+
+Staged/integrated run 45925644732 failed: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated one setup failure. Shared blockers are Core's stale recovery composer pin, arithmetic/observer source pins, and QA migration PARTIAL-vs-UPDATED assertions. No Perception gate was relaxed. PR #2540 remains DRAFT / NOT_RELEASED. Local full suite NOT RUN; REDMI_UNVERIFIED.

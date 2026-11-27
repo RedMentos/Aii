@@ -2289,3 +2289,100 @@ Read-only owner-relay requests were created as private issues #978 (HEALTH) and 
 - **Research R-169:** full-text preprint arXiv:2611.12062v1 (2026-11-09) shows that hybrid cache transfer requires separate token-wise K/V/MLA and recurrent-state mechanisms; same-geometry state copy/correction differs from target recurrence replay. 16–48B GPU results do not generalize to LFM2/Android; translator code/weights are internal, not public OSS.
 - **Device / updater:** REDMI_UNVERIFIED. No fresh authenticated device receipt, no deployment, no update request. The historical V13OBS #115 snapshot from 2026-11-24 reported auto-update enabled at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; it is not current updater/runtime proof. No model, weight, app, permission or user data changed.
 - **Next:** Core rebase #2525 onto the live #2524 branch ref, refresh the observer/recovery/source pins and fix the two migration PARTIAL-vs-UPDATED assertions, then rerun staged/integrated CI. Do not weaken source-pin checks. A real GGUF diagnostic requires separate explicit local approval and must use an already-present model (no download or productive swap). No user action is needed for this Core integration step. P0 #1904 remains OPEN; B3 stays OFF.
+
+
+## Research & Perception — latest verified next action (Run 51, 2026-11-26)
+
+- **Current candidate:** PR #2540, branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, code/test SHA `1adf5bc8cde81fcded17590bebae189a778d3f31`, based on current #2524 head `a47907c4a0603e602581c6462ecb845211eb0445`. Draft / NOT_RELEASED.
+- **Rebase:** #2527's old branch was stale against the current #2524 parent. A new branch was created from the live parent and carries the child Perception audio files, tests, workflows, experiments and handoffs without overwriting current parent native-receiver/cognition/workflow changes or the shared workplan/coverage/board. No force-push. #2527 remains a stale-base draft; Core #2538 still targets the old #2527 base and must rebase/re-pin after this PR is reviewed.
+- **New executable path:** the candidate overlay connects caller-supplied PCM16 through one `AudioConsentLease`, A5 timed audio packet, A4 voice/speaker/temporal evidence, source-bound B1/B2 context and C3 acoustic-only context in the normal Runtime turn. The lease surrounds the original turn/generator; revocation tombstones and source checks remain active. Provisional audio is not admitted to C3; raw PCM is not persisted. This is not a live microphone provider, speech decoder/vocoder, full-duplex path or Redmi proof.
+- **Source-pin check:** all 12 `SOURCE_BLOBS` entries in the audio candidate match the current branch file blobs, including Runtime, Cognition, audio cue/temporal modules, admission, attention and contracts.
+- **Regression fixed:** the stale #2527 head failed because four German notices remained inside an embedded Python bytes literal. They are now ASCII; a dedicated regression test checks the embedded bytes block. The previous stale head's RAW EAR tests failed at import with `SyntaxError: bytes can only contain ASCII literal characters`. The shared staged/integrated failures were separate Core-owned source-pin/migration failures; they were not weakened or modified here.
+- **LOCAL_LINUX:** isolated exact bytes-literal reproducer `python -m py_compile` PASS; ASCII guard PASS; AST confirms bytes payload PASS. Full local Aii checkout/pytest/native build NOT_RUN: no checkout is mounted and `git ls-remote` failed because GitHub DNS could not resolve.
+- **GitHub CI:** exact current-base PR #2540 workflows 45900587836 (RAW EAR/libfvad comparison), 45900587850 (optional NumPy), 45900587866 (A4/A5 feature-set), and 45900587881 (staged/integrated) were IN_PROGRESS at the last poll. Do not claim these as PASS until completed.
+- **Research R-170:** full-text preprint arXiv:2611.34278v1 (2026-11-25) shows cross-model mapped-cache handoffs can break target prompt-injection/refusal behavior. HandoffGuard helps on tested donors but does not stop guard-aware source fine-tuning; no official code/weights or mobile validation. B3 remains OFF pending source authentication, trust/consent, target-side safety and red-team/retention gates.
+- **Device / updater:** latest available consented V13OBS #115 snapshot is historical (2026-11-24): auto-update was enabled and the app/runtime reported UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI was STOPPED_BY_USER, model process stopped, and recorded B1/B2 native attempts yielded zero valid offers. A fresh read-only PIPELINE_STATUS request was sent; no device receipt had arrived at the last poll. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, model/weight/permission/data change or deployment was performed. REDMI_UNVERIFIED.
+- **Release / user effect:** NOT_RELEASED. The new path can pass consent-bound acoustic context into the normal software Runtime when a permitted provider supplies PCM16, but no Android microphone provider or installed-phone behavior was tested. P0 #1904 basic chat and B1/B2 valid-offer delivery remain OPEN.
+- **Next:** wait for exact-head PR #2540 CI. If Perception tests pass, Core rebases #2538 onto #2540 and refreshes the audio-builder/recovery/source pins, then reruns staged/integrated tests. After that, test only with a permitted provider and an already-present model; no model download/swap without separate explicit approval. No user action required.
+
+
+
+
+## Research & Perception Run 53 — RAW EAR Runtime provenance repair (2026-11-26)
+
+**Code/test checkpoint:** PR #2540, branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, exact code/test head `6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd`. The candidate now matches the actual Runtime newline anchors, adds optional audio SourceRefs to ContextOS provenance, and adds audio SourceRefs to C3 context refs while retaining existing event/consolidation/history/duplex refs. The test suite now checks those two downstream bindings and the source-bound negative control.
+
+**Exact GitHub Actions evidence at the code/test head:**
+- RAW EAR fastpath: 122/122 PASS on Python 3.13 and 122/122 PASS on Python 3.14; compile passed; deterministic benchmark ran.
+- RAW EAR prosody-to-attention: PASS on Python 3.11 and 3.13.
+- consent revocation: PASS.
+- source-bound A4/A5 feature-set probe: PASS on Python 3.13 and 3.14.
+- WebRTC/libfvad comparison: Python 3.13 PASS (9 comparison tests and 133 source-bound audio tests; pinned native libfvad shared-library smoke and WebRTC backend smoke passed); Python 3.14 was still running at this checkpoint.
+- privacy scan CLEAN; private-bridge tests PASS; offline Python 3.11 and 3.14 PASS.
+- staged-runtime FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. The shared stage reports stale Core-owned pins for `scripts/integrated_audio_context_candidate_20261121.py`, `v13/contracts.py` and `v13/cognition.py`, plus two migration assertions expecting UPDATED where the actual status is PARTIAL.
+- integrated-regression FAIL: one failure solely because Core's `termux_runtime_recovery_candidate_20261121.py` still pins the old audio candidate blob `831080bceec90711bd42e0fa4eba47c669975c98`.
+
+**Local/device boundary:** Full local Aii checkout and full local pytest NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. Isolated local Python anchor-reproduction checks PASS. GitHub-hosted CI is not Redmi. The 5-iteration benchmark is synthetic-only: on the hosted x86 runner, white-noise NumPy median was 16.57 ms vs Python 118.00 ms; other tested signal types were roughly 13.7 ms for both. Speaker-summary timing excludes model inference. `device_benchmark=false`. These numbers are not Redmi latency/RSS.
+
+**Runtime/user effect:** The draft candidate path is source-bound from caller-supplied PCM16 through A5 timed features, A4 prosody/speaker evidence and C3 context/ContextOS provenance. It is not a release and has not been installed. No AudioRecord microphone provider, full-duplex voice, ASR decoder/vocoder, B1/B2 normal-turn acceptance, real model inference, gradient/weight update or Android UI control was proven.
+
+**Coordination:** Core PR #2538 was notified to rebase onto #2540 and refresh only Core-owned recovery/stage/deployer pins; QA must reconcile the PARTIAL-vs-UPDATED migration expectations. No Core-owned files were modified here.
+
+**Device/deployment:** Latest available consented private V13OBS #115 snapshot is still 2026-11-24: auto-update enabled and runtime reported UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, but AI runtime STOPPED_BY_USER and model process stopped. Newer read-only relay issue #991 expired without a device receipt. No update request was sent. REDMI_UNVERIFIED; NOT_RELEASED.
+
+**Next action:** finish Python 3.14 libfvad comparison; Core/QA refresh the stale pins and rerun staged/integrated CI. After that, independently review the Runtime consumer and obtain explicit permission before any microphone/provider or device experiment. No user action required.
+
+
+Coverage overlay added to v14/V14_CANON_COVERAGE_INDEX.md at the Run 53 checkpoint. It records the RAW EAR→A4→ContextOS/C3 candidate as WIRED_SYNTHETIC/DRAFT only; no Android or acceptance promotion.
+
+Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PASS (9 comparator tests + 133 source-bound audio tests). All Perception-focused checks at code/test SHA 6911d2f are green; staged/integrated remain blocked by Core/QA-owned pins and migration expectations.
+
+## Verified checkpoint — Research & Perception Run 54 (2026-11-27)
+
+- **Current code/test candidate:** [PR #2540](https://github.com/RedMentos/Aii/pull/2540), draft / NOT_RELEASED; branch `research-perception/v14-raw-ear-currentparent-20261126-run52`; code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`. Current release branch HEAD is still `8d93236c753f0194224c19edc7411d8d7082b1d6`; the candidate has not been merged or deployed.
+- **New behavior:** RAW EAR validates the full acoustic cue contract before A5 PerceptPacket creation/persistence. The source-bound audio context consumer rejects A4 cues that do not exactly match the A5 packet. Positive tests use the actual extractor; malformed-cue and A4/A5 mismatch negatives fail closed. Source manifest readback is 15/15 exact.
+- **Exact CI:** RAW EAR 155/155 PASS on Python 3.13 and 3.14; A4/A5 feature-set 15/15 PASS on both; WebRTC/libfvad Python 3.13 PASS (9 comparator tests + 166 source-bound audio tests), Python 3.14 PASS (9 comparator tests + 166 source-bound audio tests); RuntimeDeploy offline Python 3.11/3.14 PASS; public-content privacy scan PASS. Staged runtime remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated regression FAILs one setup test because Core-owned recovery/audio-builder pins are stale; staged also has stale arithmetic/observer pins and two migration `PARTIAL` vs `UPDATED` assertions.
+- **Local/device:** no local full Aii checkout (GitHub DNS failed), so full local pytest NOT_RUN. No native model inference, Android/Termux test, microphone/AudioRecord or Redmi measurement. REDMI_UNVERIFIED; NOT_RELEASED.
+- **Device receipt:** last private V13OBS #115 is historical (2026-11-24): auto-update was enabled and runtime/dashboard were UP_TO_DATE at `8d93236`, but AI was STOPPED_BY_USER, model process STOPPED and autostart false; B1/B2 still TIME_BUDGET with zero valid offers. Fresh read-only #998 HEALTH and #999 PIPELINE_STATUS expired without device comments: NO_LIVE_RECEIPT. Current updater/install state is therefore UNVERIFIED; no UPDATE_REQUEST or device action was sent.
+- **Research:** R-176 records MixMoMo (arXiv:2611.33981v1, 2026-11-25 preprint). Its 35B–80B models and 16/24-GB Snapdragon 8 Elite hardware are not a Redmi 6-GB-class recommendation; no public extension source/license was found. No model download or swap.
+- **Next concrete action:** Core/QA rebase the Core stack onto #2540, refresh the Recovery→Stage→RuntimeDeploy pins bottom-up, repair the migration status assertions and rerun staged/integrated CI. Then continue source-disjoint A4 attention/salience outcome tests. Keep microphone capture OFF until the Android provider and consent/revocation path are independently reviewed.
+
+**User action: none required.** No model, weight, permission, updater setting, device data or installed release was changed.
+
+
+## Research & Perception — Run 55 (2026-11-27)
+
+- **New code:** PR #2540 branch now contains the A4 temporal source-isolation experiment and Python 3.13/3.14 workflow. Experiment commit: `2a6d4d8ede170d669e21e5093970dc143711a4c2`. It exercises the existing A4 predictor registry with generated cue fixtures and checks interleaved/isolated stream parity, parameter deltas, persistence-baseline comparison, novelty caps, provisional censoring, no-context reset and consent rotation.
+- **Test status:** local full Aii suite BLOCKED / NOT RUN because there is no checkout and GitHub DNS fails. New CI workflow was pushed, but an exact run result was not visible yet; do not call it PASS. The earlier #2540 Perception-focused CI passed on code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`; staged/integrated checks still fail on Core-owned source pins and QA migration assertions.
+- **User-visible effect:** no installed-device effect. The draft #2540 code path remains caller-supplied PCM16 → timed A5 packet → A4 acoustic/prosody/temporal cues → optional source-bound B1/B2/C3 context. The new experiment validates stream isolation of the A4 registry only; it does not make the microphone, B1/B2 offer delivery or C3 answer path work on the phone.
+- **Redmi / updater:** last private V13OBS #115 is historical (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, autostart false; B1/B2 had zero valid offers and TIME_BUDGET. Read-only #998 HEALTH and #999 PIPELINE_STATUS expired with NO_LIVE_RECEIPT. Current updater/install state is UNKNOWN; no UPDATE_REQUEST, manual Termux command or device action was sent. REDMI_UNVERIFIED.
+- **Research:** R-177 LATER is a simulation-only action-conditioned temporal memory reference; no official OSS license was found. R-178 is abstract-only audio attention-head timing work; not usable without model-native attention access. No model or weights were downloaded or swapped.
+- **Next:** verify the exact A4 CI, then coordinate Core #2544 and QA migration rebase. No action is needed from the user.
+
+
+## Research & Perception — Run 55 final (2026-11-27)
+
+- **Code/PR:** A4 source-isolation and learning-rate sweep are in [PR #2540](https://github.com/RedMentos/Aii/pull/2540), branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, code/test head `e270369a04eb20470aa717dc0464b2b03a4320a5` (documentation-only commits followed; branch readback before final handoff closeout was `0a8560067117a28569861cc7c548d662367678c7`). PR remains DRAFT / NOT_RELEASED.
+- **Verified CI:** A4 workflow 45924853167 passed compile + 7/7 tests on Python 3.13.18 and 3.14.10. A4/A5 feature-set 45924853182 passed both versions; RAW EAR fastpath 45924853240 passed 155/155 on both; RuntimeDeploy offline 45924853218 passed Python 3.11/3.14.
+- **Important negative result:** the 182-parameter A4 predictor is not robust across all synthetic cue types. It beats the persistence baseline for periodic speech (+0.1190 MAE), but loses on non-speech (-0.0299) and mixed activity (-0.0225). A 0.02–0.20 learning-rate sweep did not remove those two regressions. Source interleaving parity was exact; no-context/provisional/consent-reset controls passed. No default change is justified.
+- **Integration still blocked:** staged run 45924853105 failed 20 tests / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression failed one setup test. The shared cause is Core's stale audio-composer source pin, with additional stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Core/QA own those files; Perception did not modify them.
+- **Local/device:** full local suite NOT_RUN (no checkout; DNS failure). All CI is hosted Linux; the A4 benchmark is synthetic and says `device_benchmark=false`. No Android/Termux, microphone, native model, B1/B2 normal-turn or Redmi test. Last private V13OBS #115 is historical; #998/#999 expired with NO_LIVE_RECEIPT. Current updater/install state is unknown. REDMI_UNVERIFIED.
+- **Next:** Core/QA rebase their owned pins/assertions, then rerun staged/integrated. Perception next tests source/session-disjoint omission false positives and update gating. **No user action needed.** No model, weight, permission, updater setting or device data was changed.
+
+
+## Run 55 extension — A4 event expectation (2026-11-27)
+
+- The existing A4 event-expectation registry now has a deterministic omission ablation in [PR #2540](https://github.com/RedMentos/Aii/pull/2540), code/test head `f45eb1b30befc406b5f65f4f0858d06785de4bd9`.
+- CI run 45925644718: compile PASS and 9/9 tests PASS on Python 3.13 and 3.14. Expected-on-time event produces no omission; a missing expected VOICED onset under valid FINAL silence produces one omission with confidence proxy 0.60 and novelty 0.03 under the 0.05 cap. UNCERTAIN/PROVISIONAL/consent-reset/no-context controls behave as intended; interleaved sources match isolated streams.
+- This is synthetic timing-rule evidence, not calibrated probability or real microphone evidence. No PCM or user audio.
+- A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparison 45925644686 and integrated job 45925644732 were still running at the checkpoint. Staged run 45925644732 already FAILs on the Core audio-composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; prior integrated run 45924853105 also failed at that composer pin.
+- Local full suite NOT RUN; REDMI_UNVERIFIED; current updater/install state unknown; NOT_RELEASED. No device/model/permission change. Next: Core/QA repair their owned gates; Perception continues source/session-disjoint omission false-positive/update-gating ablations. No user action needed.
+
+
+## Run 55 — latest CI status (2026-11-27)
+
+A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 PASS both; RuntimeDeploy offline 45925644734 PASS on 3.11/3.14. WebRTC/libfvad comparison 45925644686 has a successful 3.13 job, while 3.14 was still running at last readback.
+
+The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
+
+No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**

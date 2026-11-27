@@ -1,9 +1,15 @@
 """Synthetic RAW EAR voice-cue extraction and real A4/C3 adapter regressions."""
 from concurrent.futures import ThreadPoolExecutor
+import ast
+import importlib.util
+import json
+import sys
+import types
 import math
 import random
 import struct
 import threading
+from pathlib import Path
 import time
 from contextlib import contextmanager
 from types import SimpleNamespace
@@ -111,7 +117,17 @@ class _LinearizableConsentProvider:
 
 
 def packet_count(store, event_id):
-    return store.one("SELECT COUNT(*) AS n FROM packets WHERE event_id=?", (event_id,))["n"]
+    return store.one(
+        "SELECT COUNT(*) AS n FROM packets WHERE event_id=? AND kind='PerceptPacket'",
+        (event_id,),
+    )["n"]
+
+
+def a4_receipt_count(store, event_id):
+    return store.one(
+        "SELECT COUNT(*) AS n FROM packets WHERE event_id=? AND kind='A4AttentionReceipt'",
+        (event_id,),
+    )["n"]
 
 
 def attention_count(store, event_id):
@@ -303,7 +319,25 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         assert cues["method"] == "RAW_EAR_AUTOCORR_V3"
         assert cues["voiced_energy_range_db"] is not None
         assert packet_count(runtime.store, event["event_id"]) == 1
+        assert a4_receipt_count(runtime.store, event["event_id"]) == 1
         assert attention_count(runtime.store, event["event_id"]) == 1
+        receipt_row = runtime.store.one(
+            "SELECT payload FROM packets WHERE kind='A4AttentionReceipt' AND event_id=?",
+            (event["event_id"],),
+        )
+        receipt = json.loads(receipt_row["payload"])
+        assert receipt["provenance"] == [result["packet"]["source_ref"]]
+        assert receipt["source_ref"] == result["packet"]["source_ref"]
+        assert receipt["percept_packet_id"] == result["packet"]["packet_id"]
+        assert receipt["start_ms"] == result["packet"]["segments"][0]["start_ms"]
+        assert receipt["end_ms"] == result["packet"]["segments"][0]["end_ms"]
+        assert receipt["finality"] == "FINAL"
+        assert receipt["score_vector"]["kind"] == "A4_CONTROL_SCORE_NOT_AAD"
+        assert receipt["score_vector"]["salience"] == result["a4"]["attention"]["salience"]
+        assert receipt["learning_authority"] is False
+        assert receipt["action_authority"] is False
+        assert receipt["truth_authority"] == 0
+        assert result["a4"]["attention_receipt_id"] == receipt["packet_id"]
         digest = result["packet"]["source_ref"]["sha256"]
         assert not (tmp_path / "data" / "blobs" / digest).exists()
     finally:
@@ -317,7 +351,13 @@ def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatc
     class CaptureAttention:
         def modulate(self, event_id, sal=None):
             observed.update(sal or {})
-            return {"captured": True}
+            return {
+                "captured": True,
+                "gains": {"perceptual": 0.55, "callosum": 0.40, "workspace": 0.60,
+                          "focal": 0.65, "action": 0.55},
+                "salience": 0.0, "caution": 0.0, "interrupt": False,
+                "interrupt_reason": None, "truth_authority": 0,
+            }
 
     monkeypatch.setattr(audio_voice_cues_module.attctl, "controller", lambda runtime: CaptureAttention())
     try:
@@ -331,7 +371,7 @@ def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatc
         assert score > 0.6
         assert observed["novelty"] >= 0.9 * score
         assert observed["external_interrupt"] >= 0.25 * score
-        assert result["a4"]["attention"] == {"captured": True}
+        assert result["a4"]["attention"]["captured"] is True
         assert "prosody_change=" in result["c3_admission"].selected[0].summary
     finally:
         runtime.store.close()
@@ -405,6 +445,30 @@ def test_tampered_voice_cues_fail_validation():
         validate_voice_cues(cues)
 
 
+def test_malformed_a4_attention_vector_is_not_persisted(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+
+    class MalformedAttention:
+        def modulate(self, event_id, sal=None):
+            return {"captured": True}
+
+    monkeypatch.setattr(audio_voice_cues_module.attctl, "controller",
+                        lambda runtime: MalformedAttention())
+    try:
+        with pytest.raises(ValueError, match="A4 attention score vector"):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+                finality="FINAL", token_budget=512,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert a4_receipt_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
 def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
     runtime, event = make_runtime(tmp_path)
     try:
@@ -417,6 +481,7 @@ def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
                 finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
+        assert a4_receipt_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
@@ -430,7 +495,13 @@ def test_temporal_voice_evidence_gates_only_voice_salience_in_a4(tmp_path, monke
     class CaptureAttention:
         def modulate(self, event_id, sal=None):
             observed.append(dict(sal or {}))
-            return {"captured": True}
+            return {
+                "captured": True,
+                "gains": {"perceptual": 0.55, "callosum": 0.40, "workspace": 0.60,
+                          "focal": 0.65, "action": 0.55},
+                "salience": 0.0, "caution": 0.0, "interrupt": False,
+                "interrupt_reason": None, "truth_authority": 0,
+            }
 
     monkeypatch.setattr(audio_voice_cues_module.attctl, "controller", lambda runtime: CaptureAttention())
     short_tone = tone(140, sample_rate=16000, seconds=0.04)
@@ -470,7 +541,13 @@ def test_runtime_default_temporal_state_persists_across_audio_windows(tmp_path, 
     class CaptureAttention:
         def modulate(self, event_id, sal=None):
             observed.append(dict(sal or {}))
-            return {"captured": True}
+            return {
+                "captured": True,
+                "gains": {"perceptual": 0.55, "callosum": 0.40, "workspace": 0.60,
+                          "focal": 0.65, "action": 0.55},
+                "salience": 0.0, "caution": 0.0, "interrupt": False,
+                "interrupt_reason": None, "truth_authority": 0,
+            }
 
     monkeypatch.setattr(
         audio_voice_cues_module.attctl, "controller",
@@ -1159,3 +1236,295 @@ def test_outer_audio_lease_is_thread_bound_and_nonserializable(tmp_path):
             assert RECEIPT not in repr(lease)
     finally:
         runtime.store.close()
+
+
+def test_provisional_audio_window_can_be_promoted_to_final_same_window(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    state = TemporalVoiceEvidence()
+    pcm = tone(140, sample_rate=16000, seconds=0.08)
+    try:
+        provisional = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="PROVISIONAL", token_budget=512, temporal_state=state,
+        )
+        assert provisional["a4"]["finality"] == "PROVISIONAL"
+        assert provisional["a4"]["temporal_state_mode"] == "PREVIEW_ONLY"
+        assert provisional["a4"]["temporal_voice"]["preview_only"] is True
+        assert state._last_end_ms is None
+        assert provisional["c3_admission"].status == "EMPTY_OR_UNAUTHORIZED"
+
+        final = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512, temporal_state=state,
+        )
+        assert final["a4"]["finality"] == "FINAL"
+        assert final["a4"]["temporal_state_mode"] == "COMMITTED"
+        assert final["a4"]["temporal_voice"]["preview_only"] is False
+        assert state._last_end_ms == 180
+        assert final["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 2
+        assert a4_receipt_count(runtime.store, event["event_id"]) == 2
+        assert attention_count(runtime.store, event["event_id"]) == 2
+    finally:
+        runtime.store.close()
+
+
+def test_provisional_audio_does_not_advance_stateful_vad_or_speaker_registry(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    calls = []
+
+    def forbidden_vad_push(self, *args, **kwargs):
+        calls.append("vad")
+        raise AssertionError("provisional windows must not advance stateful VAD")
+
+    class ForbiddenSpeakerRegistry:
+        def update(self, **kwargs):
+            calls.append("speaker")
+            raise AssertionError("provisional windows must not advance speaker lookback")
+
+    monkeypatch.setattr(SileroVADStream, "push_pcm16", forbidden_vad_push)
+    monkeypatch.setattr(
+        audio_voice_cues_module, "_runtime_speaker_evidence_registry",
+        lambda runtime: ForbiddenSpeakerRegistry(),
+    )
+    vad_stream = object.__new__(SileroVADStream)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140, sample_rate=16000, seconds=0.08),
+            sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="PROVISIONAL", token_budget=512, vad_stream=vad_stream,
+            speaker_embeddings={"fixture": [0.1, 0.2]},
+        )
+        assert calls == []
+        assert result["a4"]["temporal_state_mode"] == "PREVIEW_ONLY"
+        assert "VAD" in result["packet"]["segments"][0]["unmeasured"]
+    finally:
+        runtime.store.close()
+
+
+def test_integrated_audio_candidate_source_blob_pins_match_current_tree():
+    code_dir = Path(__file__).resolve().parents[1]
+    candidate_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("v14_integrated_audio_candidate", candidate_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    mismatches = []
+    for relative, expected in module.SOURCE_BLOBS.items():
+        source = code_dir / relative
+        assert source.is_file() and not source.is_symlink(), relative
+        actual = module._git_blob_sha1(source.read_bytes())
+        if actual != expected:
+            mismatches.append((relative, expected, actual))
+    assert not mismatches, f"stale integrated audio candidate source pins: {mismatches}"
+
+
+def _load_integrated_audio_candidate_sources():
+    code_dir = Path(__file__).resolve().parents[1]
+    script = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("integrated_audio_context_candidate_run51", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    sources = {
+        relative: (code_dir / relative).read_bytes()
+        for relative in ("v13/runtime.py", "v13/cognition.py", "v13/arithmetic_reflex.py")
+    }
+    return module, module.apply_sources(code_dir, sources)
+
+
+def _load_candidate_audio_context_store(candidate, monkeypatch):
+    module = types.ModuleType("v13.audio_context_store")
+    module.__package__ = "v13"
+    source = candidate["v13/audio_context_store.py"]
+    exec(compile(source, "v13/audio_context_store.py", "exec"), module.__dict__)
+    monkeypatch.setitem(sys.modules, "v13.audio_context_store", module)
+    return module
+
+
+def test_integrated_audio_candidate_applies_compiles_and_requires_two_phase_revocation():
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    expected = {
+        "v13/runtime.py",
+        "v13/cognition.py",
+        "v13/arithmetic_reflex.py",
+        "v13/audio_context_store.py",
+    }
+    assert expected.issubset(candidate)
+    for path in sorted(expected):
+        compile(candidate[path], path, "exec")
+
+    runtime_source = candidate["v13/runtime.py"].decode("utf-8")
+    assert "audio_rejection=e.pop('_audio_rejection',None)" in runtime_source
+    assert "MISSING_REVOCATION_SUBSCRIPTION" in runtime_source
+    assert "meta['audio_input']={'status':'REJECTED'" in runtime_source
+    assert "Audio is processed transiently; raw PCM is not persisted." in runtime_source
+    assert "provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else [])" in runtime_source
+    assert "context_refs=[e['source_ref'],*meta.get('audio_source_refs',[])" in runtime_source
+
+    tree = ast.parse(runtime_source)
+    wanted = {"_AUDIO_WINDOW_REQUIRED_FIELDS", "_AUDIO_WINDOW_OPTIONAL_FIELDS"}
+    assignments = [
+        node for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id in wanted for target in node.targets)
+    ]
+    validator = next(
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_validate_audio_window"
+    )
+    namespace = {}
+    exec(compile(ast.Module(body=assignments + [validator], type_ignores=[]),
+                 "candidate_audio_validator.py", "exec"), namespace)
+    assert "consent_revocation_subscribe" in namespace["_AUDIO_WINDOW_REQUIRED_FIELDS"]
+    assert namespace["_AUDIO_WINDOW_OPTIONAL_FIELDS"] == {"teacher_ear"}
+
+    valid = {
+        "pcm16": b"\\x00\\x00" * 160,
+        "sample_rate": 16000,
+        "start_ms": 0,
+        "source_id": SOURCE_ID,
+        "consent_receipt": RECEIPT,
+        "consent_check": lambda *_: True,
+        "consent_guard": lambda *_: None,
+        "finality": "FINAL",
+        "consent_revocation_subscribe": lambda *_: (lambda: None),
+    }
+    assert namespace["_validate_audio_window"](valid) == valid
+    missing = dict(valid)
+    missing.pop("consent_revocation_subscribe")
+    with pytest.raises(ValueError, match="exact PCM16/consent fields"):
+        namespace["_validate_audio_window"](missing)
+    invalid = dict(valid)
+    invalid["consent_revocation_subscribe"] = None
+    with pytest.raises(ValueError, match="two-phase consent revocation subscription"):
+        namespace["_validate_audio_window"](invalid)
+
+
+def test_integrated_audio_candidate_context_store_is_source_bound_and_revocable(tmp_path, monkeypatch):
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    context_store = _load_candidate_audio_context_store(candidate, monkeypatch)
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    event_id = event["event_id"]
+    generation_id = event["brain_generation_id"]
+
+    with audio_consent_lease(
+        runtime, SOURCE_ID, generation_id, RECEIPT, provider.check, provider.lease
+    ) as lease:
+        audio_result = consume_pcm16_voice_window(
+            runtime,
+            tone(140),
+            sample_rate=16000,
+            start_ms=0,
+            event_id=event_id,
+            generation_id=generation_id,
+            source_id=SOURCE_ID,
+            consent_receipt=RECEIPT,
+            consent_check=None,
+            consent_guard=None,
+            consent_lease=lease,
+            finality="FINAL",
+            token_budget=256,
+        )
+        assert audio_result["c3_admission"].status == "ADMITTED"
+        audio_window = {
+            "source_id": SOURCE_ID,
+            "consent_receipt": RECEIPT,
+            "consent_check": provider.check,
+            "_consent_lease": lease,
+        }
+        context = context_store.record(runtime, event_id, audio_result, audio_window)
+        assert context is not None
+        visible = context_store.view(runtime, event_id, "C3")
+        assert visible is not None
+        summary = runtime.store.read_source(context["summary_source_ref"])
+        body = json.loads(summary)
+        assert body["transcript"] is None
+        assert body["learning_authority"] is False
+        assert body["action_authority"] is False
+        assert "pcm16" not in summary.lower()
+        assert "raw_pcm" not in summary.lower()
+
+    assert context_store.view(runtime, event_id, "C3") is None
+    assert context_store.has_context(runtime, event_id) is False
+
+
+def test_integrated_audio_candidate_surfaces_missing_revocation_hook_on_legacy_queue_item(tmp_path, monkeypatch):
+    _module, candidate = _load_integrated_audio_candidate_sources()
+    _load_candidate_audio_context_store(candidate, monkeypatch)
+    runtime_source = candidate["v13/runtime.py"].decode("utf-8")
+    tree = ast.parse(runtime_source)
+    wrapper = next(
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_audio_lease_turn"
+    )
+    candidate_runtime = types.ModuleType("v13._candidate_runtime_run51")
+    candidate_runtime.__package__ = "v13"
+    candidate_runtime.threading = threading
+    candidate_runtime._AUDIO_ORIGINAL_TURN = lambda self, event: event.get("_audio_rejection")
+    exec(compile(ast.Module(body=[wrapper], type_ignores=[]),
+                 "candidate_audio_runtime.py", "exec"), candidate_runtime.__dict__)
+
+    runtime, event = make_runtime(tmp_path)
+    runtime._audio_contexts = {}
+    runtime._audio_revocation_contexts = {}
+    runtime.turn_event = None
+    runtime.current = None
+    runtime.cancel_event = threading.Event()
+    notices = []
+    runtime.notice = notices.append
+    event["_audio_window"] = {"source_id": SOURCE_ID, "consent_receipt": RECEIPT}
+
+    result = candidate_runtime._audio_lease_turn(runtime, event)
+    assert result == "MISSING_REVOCATION_SUBSCRIPTION"
+    assert "_audio_window" not in event
+    assert notices and "two-phase revocation protection" in notices[0]
+
+def test_integrated_audio_candidate_embedded_runtime_bytes_literal_is_ascii():
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "integrated_audio_context_candidate_20261121.py"
+    )
+    source = script.read_text(encoding="utf-8")
+    start = source.index("runtime += b'''")
+    end = source.index("\n'''", start)
+    embedded = source[start:end]
+    non_ascii = sorted({ord(ch) for ch in embedded if ord(ch) > 127})
+    assert not non_ascii, "embedded bytes patch contains non-ASCII code points: " + repr(non_ascii)
+
+def test_integrated_audio_candidate_rejects_unreviewed_runtime_and_cognition_sources():
+    code_dir = Path(__file__).resolve().parents[1]
+    module_path = code_dir / "scripts" / "integrated_audio_context_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("integrated_audio_candidate_guard_test", module_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    sources = {
+        "v13/runtime.py": (code_dir / "v13" / "runtime.py").read_bytes(),
+        "v13/cognition.py": (code_dir / "v13" / "cognition.py").read_bytes(),
+    }
+    bad_runtime = dict(sources)
+    bad_runtime["v13/runtime.py"] = bad_runtime["v13/runtime.py"].replace(
+        b"latewatch.start", b"latewatch.removed", 1
+    )
+    with pytest.raises(ValueError, match="reviewed submit/turn/observer"):
+        module.apply_sources(code_dir, bad_runtime)
+
+    bad_cognition = dict(sources)
+    bad_cognition["v13/cognition.py"] = bad_cognition["v13/cognition.py"].replace(
+        b"Consumer query scope changed", b"Consumer query scope changed?", 1
+    )
+    with pytest.raises(ValueError, match="analyst audio source verification"):
+        module.apply_sources(code_dir, bad_cognition)

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-26T19:55:14Z",
+  "updated_at": "2026-11-27T02:06:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -233,19 +233,23 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX CPython 3.13.5 scratch contract 6/6 PASS; standalone C++ float32-LE helper compile/run PASS; GitHub CI focused 52/52 on Python 3.13/3.14, Linux pinned API build PASS, arm64 cross-compile PASS (compile-only), privacy scan CLEAN; extended suite 92 PASS/1 Core pin FAIL on both versions; staged/integrated FAIL on Core pin plus two migration PARTIAL assertions; RuntimeDeploy offline PASS; full local Aii checkout NOT_RUN; REAL_GGUF_UNVERIFIED; REDMI_UNVERIFIED.",
-      "next_step": "Core now rebases #2525 onto the live #2524 branch, refreshes the observer/recovery/source pins without weakening them, fixes the two migration PARTIAL-vs-UPDATED assertions and reruns staged/integrated CI. After integration is green, a real LFM2 GGUF run requires separate explicit local approval and an already-present model. Continue RAW EAR/A0-A5 separately; microphone provider and Redmi capture remain unverified.",
+      "proof_environment": "GitHub Actions Linux focused CI PASS; LOCAL_LINUX isolated anchor reproduction PASS; full local checkout BLOCKED; no native Android/Redmi.",
+      "next_step": "Core rebinds the recovery composer and arithmetic/observer pins to exact current source; QA fixes migration PARTIAL-vs-UPDATED. Rerun staged/integrated. Perception keeps A4 synthetic only and proceeds to broader source/session-disjoint omission false-positive tests; no default rate change.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26T20:55:14+01:00",
+      "last_checkpoint": "2026-11-27T01:52:30Z",
       "latest_candidate_pr": {
-        "pr": 2487,
-        "head_sha": "5c6a7571fa64bca9dc92675063cf662d710178c7",
-        "base": "research-perception/v14-a4-audio-source-outcomes-current-20261124-run16",
-        "state": "OPEN_DRAFT_PARTIAL_CI_FAILED",
-        "scope": "RAW EAR speaker-window chronology: monotonic accepted window start/end, chronology retained across model/calibration and long-gap resets; no new PCM persistence, microphone, identity, learning or action authority. Code/test head be0b17406de955e78625b55fe4a9c6239f23b284; current PR head includes docs-only commits.",
-        "ci": "Focused RAW EAR fastpath 143/143 PASS on Python 3.13 and 3.14 (run 45547732118); staged-runtime and integrated-regression FAIL on run 45548304030 due stale Core recovery source pin scripts/record_only_controller_guard_20261116.py (expected SHA 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9); two-checkout migration PARTIAL. No Android microphone or Redmi proof."
+        "pr": 2540,
+        "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+        "final_head": "f45eb1b30befc406b5f65f4f0858d06785de4bd9",
+        "experiment_commit": "a44c39b1e1e5c9b38942cdc0dd55aa410105e4cc",
+        "test_commit": "f45eb1b30befc406b5f65f4f0858d06785de4bd9",
+        "status": "DRAFT_A4_CI_GREEN_SHARED_STAGED_AND_INTEGRATED_FAIL_NOT_RELEASED",
+        "ci": "A4 temporal/event 45925644718 9/9 PASS on Python 3.13/3.14; A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14; WebRTC/libfvad 45925644686 Python 3.13 completed successfully, 3.14 IN_PROGRESS; staged/integrated 45925644732 FAIL (20 failed/233 passed/10 skipped/2 errors/41 subtests; integrated one setup failure) at Core composer pin plus stale arithmetic/observer pins and QA migration assertion.",
+        "local_linux": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+        "redmi": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
+        "branch_head_before_final_handoff": "0a8560067117a28569861cc7c548d662367678c7"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n\nRun 47: Perception #2524 head 7bd80e419c851471d95b44cc032efe205a23ab91 adds a holdout-gated information_use_audit separating candidate-vs-NO_MESSAGE system gain from candidate-vs-ENTITY_SUBSTITUTION source-specificity gain. Three synthetic regressions cover system-only gain, content-specific signal, and insufficient holdout. LOCAL_LINUX CPython 3.13.5 isolated logic 3/3 PASS; full local Aii suite NOT_RUN; exact native/staged CI 45856881120/45856880943 IN_PROGRESS at checkpoint; RuntimeDeploy 45856880964 PASS. R-166 Draft-KV full-text/Apache-2.0 OSS review and R-167 HST full-text review recorded. Full unrelated-question derangement, real GGUF, generated-answer correctness and Redmi remain OPEN.\nRun 47 exact CI closeout: code/test head 7bd80e419c851471d95b44cc032efe205a23ab91. Native receiver workflow 45856881120: Python 3.13/3.14 each 83 passed / 1 failed; all three new information-use audit tests passed; sole failure is the Core-owned observer fairness source pin for v13/cognition.py. Staged/integrated 45856880943: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, same pin mismatch plus two migration PARTIAL assertions. Pinned Linux API build PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline integrity 45856880964 PASS; privacy scan CLEAN. Full local Aii suite NOT_RUN; local isolated gate 3/3 PASS. No GGUF or Redmi proof.\nPrivate device boundary: last authenticated V13OBS #115 is historical (2026-11-24 09:28:11Z): auto-update/dashboard/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER/model process STOPPED; last turn C3 7 tokens (~6.30s, TTFT ~2.05s), B1/B2 TIME_BUDGET and zero valid offers, native probe SMOKE_PARTIAL. Fresh read-only relay issues #978 HEALTH and #979 PIPELINE_STATUS had NO_LIVE_RECEIPT at 16:23:13Z. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart or device action. Current updater state UNVERIFIED.\nRun 49: PR #2524 schema v2 moves the LFM2 full-hybrid state roundtrip from BOS to actual LATENT_CANDIDATE prefill, with candidate row/hash/decode binding; task-score and Runtime bridge consume the candidate receipt. Head 1417250fb28c4e30c5c4e0d8150e673248ad10a8. LOCAL_LINUX scratch contract 6/6 PASS and standalone C++ hash helper compile/run PASS; exact CI 45888866164/45888866275/45888866345 QUEUED. Same-model diagnostic only; no GGUF, cross-model learning, normal-turn or Redmi proof; B3 OFF.\nRun 49 CI closeout: native receiver focused condition-matrix/task-score 52/52 PASS on Python 3.13 and 3.14; extended receiver 92 PASS/1 Core-owned observer fairness pin FAIL on each; py_compile PASS; pinned Linux API build/selftest PASS; arm64-v8a cross-compile PASS (compile-only); privacy scan CLEAN. Staged/integrated 20 failed/233 passed/10 skipped/2 errors/41 subtests, same Core pin plus two migration PARTIAL-vs-UPDATED assertions; RuntimeDeploy offline 3.11/3.14 PASS. No GGUF or Redmi proof."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. 2026-11-25: PR #2487 code/test head be0b17406de955e78625b55fe4a9c6239f23b284 has focused 143/143 PASS, but staged/integrated fails at the Core-owned recovery source hash and migration remains PARTIAL; no Android/microphone proof. Supporting PR #2489 code commit 8ebc18b322745dfb96b524e25933408597ae92eb adds a read-only latent-tap audit; local synthetic tests 9/9 PASS, no native tap cohort, no B3 acceptance. Board remains IN_PROGRESS_PARTIAL; user action not required.\nRun 38: source-bound eight-condition matrix/likelihood bridge exact native CI 19+59 PASS on Python 3.13/3.14; Android arm64 cross-compile only. R-158 full-text LCF and scoped negative Pythia result added. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 38: R-158 LCF/negative transfer and R-159 pinned llama.cpp API audit recorded. No audio provider, microphone, native GGUF cohort or Redmi proof.\nRun 39: Perception #2524 now preserves the C++ read-only K/V snapshot through the Python matrix parser and ephemeral Runtime task-score receipt; synthetic validation only, no raw K/V persisted. LOCAL_LINUX isolated helper reproduction + scratch py_compile PASS; exact child CI pending. Parent #2519 staged/integrated currently FAILS on stale Core-owned CMakeLists source pin; no GGUF/Redmi proof.\nRun 39 research note R-161 reviewed the full preprint *Cross-Modal StateKV Injection* (arXiv:2611.22304, 17 Nov 2026): visual-token K/V projection + gated residual rewriting can preserve carrier cache length, but reported gains are modest/task-dependent, provider compute/memory remains, no repeated-run statistics or matched-compute controls, and no mobile/general-family proof. No code/license reuse identified. Concrete A5 follow-up is provenance-bound visual-token alignment with matched-observation and matched-compute controls, not an immediate Redmi model choice.\nRun 40: PR #2524 exact code/test head 8f7c73065e8f92e5988fe12fa88038dc41ece530; native task-utility consumer now reports read-only K/V state effects and rejects same-input K/V inconsistency/partial coverage. Focused tests 26/26 on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared staged/integrated still fails on Core-owned source pin. LOCAL_LINUX scratch 5/5 PASS; full checkout NOT_RUN. No GGUF/Redmi proof.\n\nRun 47: Perception #2524 head 7bd80e419c851471d95b44cc032efe205a23ab91 adds a holdout-gated information_use_audit separating candidate-vs-NO_MESSAGE system gain from candidate-vs-ENTITY_SUBSTITUTION source-specificity gain. Three synthetic regressions cover system-only gain, content-specific signal, and insufficient holdout. LOCAL_LINUX CPython 3.13.5 isolated logic 3/3 PASS; full local Aii suite NOT_RUN; exact native/staged CI 45856881120/45856880943 IN_PROGRESS at checkpoint; RuntimeDeploy 45856880964 PASS. R-166 Draft-KV full-text/Apache-2.0 OSS review and R-167 HST full-text review recorded. Full unrelated-question derangement, real GGUF, generated-answer correctness and Redmi remain OPEN.\nRun 47 exact CI closeout: code/test head 7bd80e419c851471d95b44cc032efe205a23ab91. Native receiver workflow 45856881120: Python 3.13/3.14 each 83 passed / 1 failed; all three new information-use audit tests passed; sole failure is the Core-owned observer fairness source pin for v13/cognition.py. Staged/integrated 45856880943: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests, same pin mismatch plus two migration PARTIAL assertions. Pinned Linux API build PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline integrity 45856880964 PASS; privacy scan CLEAN. Full local Aii suite NOT_RUN; local isolated gate 3/3 PASS. No GGUF or Redmi proof.\nPrivate device boundary: last authenticated V13OBS #115 is historical (2026-11-24 09:28:11Z): auto-update/dashboard/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER/model process STOPPED; last turn C3 7 tokens (~6.30s, TTFT ~2.05s), B1/B2 TIME_BUDGET and zero valid offers, native probe SMOKE_PARTIAL. Fresh read-only relay issues #978 HEALTH and #979 PIPELINE_STATUS had NO_LIVE_RECEIPT at 16:23:13Z. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart or device action. Current updater state UNVERIFIED.\nRun 49: PR #2524 schema v2 moves the LFM2 full-hybrid state roundtrip from BOS to actual LATENT_CANDIDATE prefill, with candidate row/hash/decode binding; task-score and Runtime bridge consume the candidate receipt. Head 1417250fb28c4e30c5c4e0d8150e673248ad10a8. LOCAL_LINUX scratch contract 6/6 PASS and standalone C++ hash helper compile/run PASS; exact CI 45888866164/45888866275/45888866345 QUEUED. Same-model diagnostic only; no GGUF, cross-model learning, normal-turn or Redmi proof; B3 OFF.\nRun 49 CI closeout: native receiver focused condition-matrix/task-score 52/52 PASS on Python 3.13 and 3.14; extended receiver 92 PASS/1 Core-owned observer fairness pin FAIL on each; py_compile PASS; pinned Linux API build/selftest PASS; arm64-v8a cross-compile PASS (compile-only); privacy scan CLEAN. Staged/integrated 20 failed/233 passed/10 skipped/2 errors/41 subtests, same Core pin plus two migration PARTIAL-vs-UPDATED assertions; RuntimeDeploy offline 3.11/3.14 PASS. No GGUF or Redmi proof.\nRun 53 (2026-11-26): PR #2540 head/code-test SHA 6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd. RAW EAR fastpath 122/122 PASS Python 3.13 and 122/122 PASS Python 3.14; RAW EAR prosody PASS Python 3.11/3.13; consent revocation PASS; A4/A5 feature-set PASS Python 3.13/3.14; WebRTC/libfvad comparison Python 3.13 PASS (9 comparison tests + 133 source-bound audio tests, pinned native libfvad and WebRTC smoke); privacy CLEAN; private bridge PASS; offline Python 3.11/3.14 PASS. Synthetic host benchmark only: white-noise NumPy median 16.57ms vs Python 118.00ms; speaker summary excludes model inference; device_benchmark=false. Staged-runtime FAIL (20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests) due Core-owned stale audio candidate/contracts/cognition pins and migration PARTIAL-vs-UPDATED assertions; integrated-regression one failure due Core audio blob pin. Full local checkout NOT_RUN (GitHub DNS); isolated anchor reproducer PASS; no Android/Redmi proof.\nResearch ledger R-171–R-174 added: La-JEPA (abstract-only/no code license), mzCache (MIT artifact but rooted 12GB Snapdragon 8 Elite/Gen3 hardware mismatch), Adaptive Guard (IEEE abstract-only/no code), Learning Dynamics (abstract-only/no LICENSE).\nRun 54 (2026-11-27): PR #2540 code/test SHA 58af4c96e09543bed3428c77e89c10c513838c25. RAW EAR 155/155 PASS Python 3.13 and 3.14; A4/A5 feature-set 15/15 PASS on both; WebRTC/libfvad Python 3.13 PASS (9 comparator tests + 166 source-bound audio tests), Python 3.14 IN_PROGRESS at last poll; RuntimeDeploy offline Python 3.11/3.14 PASS; public-content privacy scan PASS. Producer now validates complete RAW EAR cues before A5 packet persistence; context consumer rejects A4/A5 cue mismatch. Positive test uses the real extractor; malformed-cue and mismatch negatives fail closed. Composer blob 3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1; source manifest 15/15 exact. Staged runtime FAIL (20 failed/233 passed/10 skipped/2 errors/41 subtests) due Core-owned recovery composer pin plus stale contracts/cognition pins and two migration PARTIAL-vs-UPDATED assertions; integrated regression FAIL one Core composer pin. Full local checkout NOT_RUN (GitHub DNS); no Android/Redmi proof; REDMI_UNVERIFIED; NOT_RELEASED. Core #2544 was notified with the exact composer blob and rebase request; QA owns migration assertions.\nRun54 comparator closeout: WebRTC/libfvad Python 3.14 now PASS (9 comparator tests + 166 source-bound audio tests), matching Python 3.13. The only remaining Perception-lane shared failures are Core-owned staged/integrated pins and migration assertions. Run 55: A4 source-isolation experiment and Python 3.13/3.14 workflow added at 2a6d4d8; CI result pending, local full suite blocked, no Android/microphone proof. Run 55 final: A4 source-isolation/rate sweep CI passed 7/7 on Python 3.13/3.14. Synthetic results beat persistence only on periodic speech and regress on non-speech/mixed cues. Shared staged/integrated gates still fail at Core/QA-owned pins/assertions; REDMI_UNVERIFIED. Run 55 event extension: expected-on-time no omission; valid FINAL silence at expected onset emits one bounded omission (confidence proxy .60, novelty .03/cap .05); uncertain/provisional/consent/no-context controls and interleaved-source parity pass on Python 3.13/3.14. Synthetic only. Latest exact-head CI 45925644732: staged and integrated fail at Core/QA-owned shared pins/assertions; separate A4/event 9/9, feature-set, RAW EAR and offline RuntimeDeploy checks pass. WebRTC comparator 3.14 remains pending."
     },
     {
       "id": "V14-007",
@@ -289,8 +293,8 @@
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
       "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
+      "last_checkpoint": "2026-11-27",
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.\nRun 54 (2026-11-27): Perception #2540 adds full RAW EAR cue validation before A5 packet persistence and A4↔A5 cue-consistency rejection before the synthetic B1/B2/C3 audio-context consumer. Focused CI: RAW EAR 155/155 and feature-set 15/15 on Python 3.13/3.14; no Android microphone provider, AudioRecord capture, speech decoder/vocoder, full duplex or Redmi test. Staged/integrated remains blocked by Core-owned pins/migration assertions. Voice I/O remains PARTIAL / ANDROID_UNVERIFIED."
     },
     {
       "id": "V14-010",
@@ -423,18 +427,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "GitHub Actions Linux focused CI; no full local checkout; no Termux/Redmi execution.",
+      "next_step": "Keep caller-supplied PCM16 only. After Core/QA repair the shared pin/migration stack, continue source/session-disjoint A4 omission false-positive and update-gating tests. No AudioRecord or Android capture claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-27T01:52:30Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2540,
+        "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+        "code_experiment_commit": "2a6d4d8ede170d669e21e5093970dc143711a4c2",
+        "status": "DRAFT_CI_PENDING_INTEGRATION_BLOCKED",
+        "scope": "Consent-bound caller PCM16 A5/A4 source-bound B1/B2/C3 context plus A4 temporal predictor/event expectation; additive synthetic source-isolation ablation",
+        "ci": "A4 source-isolation workflow pushed; exact result not visible yet. Earlier Perception focused CI passed on 58af4c96; staged/integrated still fail at Core/QA-owned gates.",
+        "local_linux": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+        "redmi": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence.\nRun 53 (2026-11-26): PR #2540 head/code-test SHA 6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd. RAW EAR fastpath 122/122 PASS Python 3.13 and 122/122 PASS Python 3.14; RAW EAR prosody PASS Python 3.11/3.13; consent revocation PASS; A4/A5 feature-set PASS Python 3.13/3.14; WebRTC/libfvad comparison Python 3.13 PASS (9 comparison tests + 133 source-bound audio tests, pinned native libfvad and WebRTC smoke); privacy CLEAN; private bridge PASS; offline Python 3.11/3.14 PASS. Synthetic host benchmark only: white-noise NumPy median 16.57ms vs Python 118.00ms; speaker summary excludes model inference; device_benchmark=false. Staged-runtime FAIL (20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests) due Core-owned stale audio candidate/contracts/cognition pins and migration PARTIAL-vs-UPDATED assertions; integrated-regression one failure due Core audio blob pin. Full local checkout NOT_RUN (GitHub DNS); isolated anchor reproducer PASS; no Android/Redmi proof.\nRun 54 (2026-11-27): PR #2540 code/test SHA 58af4c96e09543bed3428c77e89c10c513838c25. RAW EAR 155/155 PASS Python 3.13 and 3.14; A4/A5 feature-set 15/15 PASS on both; WebRTC/libfvad Python 3.13 PASS (9 comparator tests + 166 source-bound audio tests), Python 3.14 IN_PROGRESS at last poll; RuntimeDeploy offline Python 3.11/3.14 PASS; public-content privacy scan PASS. Producer now validates complete RAW EAR cues before A5 packet persistence; context consumer rejects A4/A5 cue mismatch. Positive test uses the real extractor; malformed-cue and mismatch negatives fail closed. Composer blob 3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1; source manifest 15/15 exact. Staged runtime FAIL (20 failed/233 passed/10 skipped/2 errors/41 subtests) due Core-owned recovery composer pin plus stale contracts/cognition pins and two migration PARTIAL-vs-UPDATED assertions; integrated regression FAIL one Core composer pin. Full local checkout NOT_RUN (GitHub DNS); no Android/Redmi proof; REDMI_UNVERIFIED; NOT_RELEASED. Core #2544 was notified with the exact composer blob and rebase request; QA owns migration assertions.\nRun54 comparator closeout: WebRTC/libfvad Python 3.14 now PASS (9 comparator tests + 166 source-bound audio tests), matching Python 3.13. The only remaining Perception-lane shared failures are Core-owned staged/integrated pins and migration assertions. Run 55: #2540 now includes A4 temporal predictor/event expectation and a synthetic source-isolation experiment; exact new CI pending, REDMI_UNVERIFIED. Run 55 final: A4 workflow 45924853167 passed 7/7 on Python 3.13/3.14; predictor improves periodic-speech synthetic cues but not non-speech/mixed; no device proof."
     },
     {
       "id": "V14-019",
@@ -529,7 +536,7 @@
   "latest_integrated_head_verified_at": "2026-11-23T16:24:49Z",
   "release_gate_status": "Exact release-development SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 has 22/22 observed GitHub Actions workflow runs SUCCESS and private V13OBS #115 confirms that exact SHA installed with auto-update enabled. Functional acceptance remains OPEN: AI runtime STOPPED_BY_USER, autostart false, model process stopped, B1/B2 zero valid offers and native latent exchange unproven. No fresh #915–917 receipt; REDMI_UNVERIFIED for current runtime behavior.",
   "phone_receipt": {
-    "state": "LAST_AVAILABLE_PRIVATE_V13OBS_8D932_RUNTIME_STOPPED_READS_PENDING",
+    "state": "LAST_AVAILABLE_PRIVATE_V13OBS_8D932_RUNTIME_STOPPED_NO_LIVE_RECEIPT",
     "issue": 115,
     "updated_at": "2026-11-24T09:28:11Z",
     "installed_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
@@ -560,16 +567,16 @@
       "c3_semantic_use_proven": false
     },
     "read_requests_pending": {
-      "health_issue": 948,
-      "pipeline_status_issue": 949,
-      "diagnostics_issue": 950,
-      "created_at": "2026-11-26T01:57:48Z",
-      "last_polled_at": "2026-11-26T02:03:41Z",
-      "expires_at": 1795658868
+      "health_issue": 998,
+      "pipeline_status_issue": 999,
+      "created_at": "2026-11-27T01:10:35Z",
+      "last_polled_at": "2026-11-27T01:31:58Z",
+      "expires_at": 1795742435,
+      "status": "NO_LIVE_RECEIPT_AFTER_EXPIRY"
     },
     "receipt_is_historical": true,
     "no_newer_receipt": true,
-    "note": "Fresh read-only owner requests #948/#949/#950 returned no device comments at second poll. No device command, update request, restart, shell, model/weight/permission change or device-data mutation performed."
+    "note": "Last available V13OBS #115 is historical (2026-11-24). Fresh read-only owner requests #998/#999 expired without device comments. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, model/weight/permission change or device-data mutation was performed; current updater/runtime state remains unverified."
   },
   "capability_snapshot": [
     {
@@ -1385,6 +1392,75 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "research_perception_run55": {
+      "timestamp": "2026-11-27T01:52:30Z",
+      "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+      "final_head": "f45eb1b30befc406b5f65f4f0858d06785de4bd9",
+      "experiment_commit": "b60669975184bc3a54be4b5d380c95fd91fab16a",
+      "test_commit": "e270369a04eb20470aa717dc0464b2b03a4320a5",
+      "pull_request": 2540,
+      "a4_workflow_run": 45924853167,
+      "a4_ci": "PASS_PY313_7_OF_7_AND_PY314_7_OF_7",
+      "feature_set_run": 45924853182,
+      "raw_ear_fastpath_run": 45924853240,
+      "raw_ear_fastpath": "155_OF_155_PY313_AND_PY314",
+      "runtime_deploy_offline_run": 45924853218,
+      "staged_integrated_run": 45924853105,
+      "staged": "FAIL_20_FAILED_233_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS",
+      "integrated": "FAIL_ONE_SETUP_AT_CORE_STALE_AUDIO_COMPOSER_PIN",
+      "synthetic_metrics": {
+        "source_interleaving_parity": true,
+        "max_metric_difference": 0,
+        "speech_periodic_mean_improvement_mae": 0.11903654,
+        "non_speech_mean_improvement_mae": -0.02990331,
+        "mixed_activity_mean_improvement_mae": -0.02246406,
+        "max_attention_novelty": 0.04111883,
+        "max_omission_novelty": 0.01736616
+      },
+      "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+      "device": "REDMI_UNVERIFIED; last private V13OBS #115 historical; #998/#999 expired NO_LIVE_RECEIPT",
+      "release": "NOT_RELEASED",
+      "user_action_required": false,
+      "branch_head_before_final_handoff": "0a8560067117a28569861cc7c548d662367678c7",
+      "exact_ci": "A4 7/7 PASS on Python 3.13.18 and 3.14.10; feature-set PASS both; RAW EAR 155/155 both; RuntimeDeploy offline PASS 3.11/3.14; staged and integrated FAIL on shared Core/QA pins/assertions.",
+      "event_expectation": {
+        "workflow_run": 45925644718,
+        "status": "PASS_PY313_9_OF_9_AND_PY314_9_OF_9",
+        "expected_on_time_omission": false,
+        "missing_event_omission": true,
+        "timing_confidence_proxy": 0.6,
+        "omission_novelty": 0.03,
+        "omission_attention_cap": 0.05,
+        "uncertain_censored": true,
+        "provisional_ignored": true,
+        "consent_rotation_resets": true,
+        "no_context_omissions": 0,
+        "interleaved_equals_isolated": true,
+        "environment": "SYNTHETIC_ONLY",
+        "device_benchmark": false
+      },
+      "event_code_commit": "a44c39b1e1e5c9b38942cdc0dd55aa410105e4cc",
+      "event_test_commit": "f45eb1b30befc406b5f65f4f0858d06785de4bd9",
+      "latest_ci_update": {
+        "timestamp": "2026-11-27T02:06:00Z",
+        "a4_event_run": 45925644718,
+        "a4_event": "PASS_9_OF_9_PY313_AND_PY314",
+        "feature_set_run": 45925644769,
+        "feature_set": "PASS_PY313_AND_PY314",
+        "raw_ear_run": 45925644699,
+        "raw_ear": "155_OF_155_PY313_AND_PY314_SYNTHETIC_ONLY",
+        "runtime_deploy_run": 45925644734,
+        "runtime_deploy": "PASS_PY311_AND_PY314",
+        "webrtc_comparator_run": 45925644686,
+        "webrtc_comparator": "PY313_JOB_SUCCESS_PY314_IN_PROGRESS",
+        "staged_integrated_run": 45925644732,
+        "staged": "FAIL_20_FAILED_233_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS",
+        "integrated": "FAIL_ONE_SETUP_AT_CORE_RECOVERY_COMPOSER_PIN",
+        "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+        "redmi": "REDMI_UNVERIFIED",
+        "release": "NOT_RELEASED"
+      }
     }
   },
   "qa_latest_checkpoint": {
@@ -1439,6 +1515,40 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "perception_latest_checkpoint": {
+    "date": "2026-11-27",
+    "timestamp": "2026-11-27T01:33:13Z",
+    "owner": "Research & Perception",
+    "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+    "pull_request": 2540,
+    "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+    "code_test_sha": "58af4c96e09543bed3428c77e89c10c513838c25",
+    "composer_blob": "3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1",
+    "status": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_CORE_PIN_BLOCKED",
+    "tests": {
+      "raw_ear_fastpath_py313": "PASS_155_OF_155",
+      "raw_ear_fastpath_py314": "PASS_155_OF_155",
+      "a4_a5_feature_set_py313": "PASS_15_OF_15",
+      "a4_a5_feature_set_py314": "PASS_15_OF_15",
+      "webrtc_libfvad_py313": "PASS_9_COMPARATOR_PLUS_166_SOURCE_BOUND_AUDIO",
+      "webrtc_libfvad_py314": "PASS_9_COMPARATOR_PLUS_166_SOURCE_BOUND_AUDIO",
+      "runtime_deploy_offline_py311_py314": "PASS",
+      "public_content_privacy_scan": "PASS",
+      "staged_runtime": "FAIL_CORE_AUDIO_PIN_CONTRACTS_COGNITION_AND_MIGRATION",
+      "integrated_regression": "FAIL_ONE_CORE_AUDIO_BUILDER_PIN",
+      "source_manifest": "PASS_15_OF_15",
+      "local_full_checkout": "BLOCKED_GITHUB_DNS",
+      "local_full_pytest": "NOT_RUN"
+    },
+    "device": "REDMI_UNVERIFIED; no fresh owner-read receipt or Android/microphone test",
+    "release": "NOT_RELEASED",
+    "user_action_required": false,
+    "research_entries": [
+      "R-175",
+      "R-176"
+    ],
+    "next_action": "Core/QA rebase and refresh recovery/stage/deployer pins, fix migration PARTIAL-vs-UPDATED assertions, rerun staged/integrated; then source-disjoint A4 attention tests."
+  },
+  "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T20:55:14+01:00",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
@@ -1558,93 +1668,6 @@
       "a7fdf6e82b0dc0a0f6a7d9a285a4ded52cece6d5"
     ]
   },
-  "previous_perception_checkpoint": {
-    "timestamp": "2026-11-26T16:46:45Z",
-    "owner": "Research & Perception",
-    "branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
-    "pr": 2524,
-    "pr_url": "https://github.com/RedMentos/Aii/pull/2524",
-    "base_pr": 2519,
-    "base_sha": "5f2ef5393f25085d2e2968118982d72b823b99b4",
-    "code_test_sha": "91cae713b409e1b5e95bc06c446a5152e726cbd9",
-    "implementation_commits": [
-      "61e0045443fbecfdc9a229c202322f943eddaf8e",
-      "3efb9e1e530b0304e485a85d7c6b882a85a69bb5",
-      "743a74234c43a4ce08f6c3f0fac09496212939c2",
-      "91cae713b409e1b5e95bc06c446a5152e726cbd9"
-    ],
-    "head_sha": "e1ba8f22aec81d913f983393be52738a4ca9d678",
-    "docs_only_commits_after_code_head": [
-      "1a180690b77fbd9054937ab882a2133de346c7a8",
-      "d801cd924a6fba28a763dfcbb6d8e1d9ba3c694b",
-      "aed3a6a06e61db3cd7a236328eb442be5dd83715",
-      "fd62994e9e44a5e33a0ac02ca53f1eb271cb6771",
-      "e51901ee120e49edbc6e6b9b1b34fa2b32c0dc73",
-      "1927c8513d286073c02f9d165ec5b3d9363f47fe",
-      "842d4852085f810552d550ceab5467a61e509850",
-      "e1ba8f22aec81d913f983393be52738a4ca9d678"
-    ],
-    "status": "DRAFT_FOCUSED_49_PASS_STAGE_BLOCKED_CORE_OBSERVER_PIN_NATIVE_BUILD_ARM64_COMPILE_PASS_RUNTIMEDEPLOY_OFFLINE_PASS_P0_1904_OPEN",
-    "workflow_runs": {
-      "native_receiver": 45861303391,
-      "staged_integrated": 45861303423,
-      "runtime_deploy_offline": 45861303433
-    },
-    "tests": {
-      "local_linux_isolated_derangement": "6/6 PASS; CPython 3.13.5",
-      "local_linux_py_compile": "2/2 PASS; isolated scratch files",
-      "local_full_checkout": "NOT_RUN; no mounted Aii checkout and GitHub DNS unavailable",
-      "focused_python_313": "49/49 Perception matrix/task-score tests PASS; separate stage-composition test FAIL on Core-owned v13/cognition.py observer fairness pin",
-      "focused_python_314": "49/49 Perception matrix/task-score tests PASS; separate stage-composition test FAIL on Core-owned v13/cognition.py observer fairness pin",
-      "linux_pinned_api_build": "PASS",
-      "android_arm64_cross_compile": "PASS_COMPILE_ONLY; no device execution",
-      "shared_staged_integrated": "FAIL; 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; same Core pin plus two migration PARTIAL assertions",
-      "runtime_deploy_offline": "PASS on Python 3.11 and 3.14; no deployment",
-      "public_privacy_scan": "CLEAN",
-      "redmi_native": "REDMI_UNVERIFIED"
-    },
-    "consumer": "native_receiver_utility -> task-score cohort result -> native_receiver_task_matrix_bridge. CONTENT_SPECIFIC_SIGNAL now requires system gain, entity-specific gain and a positive OOD delta under a session-local cross-family no-fixed-point donor permutation. Aggregate counts only; semantic_use_proven=false; generated_answer_correctness_proven=false; production_route=false; training_authority=0; native_receiver_authority=0; persisted=false. Core Runtime consumer was previously observed to return the result unchanged, but #2525 is stale-base and this remains opt-in diagnostic, not normal-turn chat.",
-    "cross_lane_core_pr": {
-      "number": 2525,
-      "head_sha": "9fdf321c9c14ab3b27d0d5947eaca443d5796df3",
-      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
-      "last_observed_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
-      "status": "DRAFT_STALE_BASE_REBASE_REQUIRED_MERGEABLE_FALSE",
-      "normal_turn": "NOT_CONNECTED",
-      "next_action": "Core rebase #2525 onto current #2524 and refresh exact observer/recovery/source pins; rerun staged/integrated CI without weakening pin checks."
-    },
-    "device": "REDMI_UNVERIFIED; V13OBS #115 is historical 2026-11-24: auto-update enabled/runtime UP_TO_DATE at 8d93236 but AI STOPPED_BY_USER and model process STOPPED; owner-read #978/#979 had NO_LIVE_RECEIPT at last poll; no UPDATE_REQUEST or deployment.",
-    "release": "NOT_RELEASED; no deployment",
-    "research": "R-168 full-text arXiv:2611.34278v1 preprint (2026-11-25): cross-model KV handoffs can undermine safety and prompt-injection defence, leak cache content and degrade capability after repeated remapping. H200 / 3B-32B only; no official code/licence found; no LFM2 or Android generalization. Source hashes are integrity, not producer authentication. Future B3 gates need provenance/authenticity, transport integrity, trust/consent, injection/backdoor/privacy and multi-hop retention tests.",
-    "next_action": "Core refreshes #2525 onto latest #2524 and reruns exact staged/integrated gates. P0 #1904 remains OPEN. After integration is green, use only an already-present GGUF with separate explicit local approval for a native diagnostic. Before B3 activation, add source-authentication, mapper/backdoor, indirect-injection, cache-privacy and multi-hop retention gates. No user action needed now; B3 OFF.",
-    "parallel_perception_prs": {
-      "2527_raw_ear_temporal_chronology": {
-        "head_sha": "34299eb052e96cd7dc5cd9ca95aa9edee0aefbac",
-        "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
-        "merge_base_sha": "b298719af8faf75811d03d486de7725395a590b0",
-        "ahead_by": 74,
-        "behind_by": 9,
-        "code_test_sha": "ef61d48f93621cb3d7813628eb96203eea2be1ee",
-        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
-        "tests": "LOCAL_LINUX CPython 3.13.5 14/14 plus 10,000 monotonic windows and 1,000 backward-start negatives; CI A4/A5 feature-set 14/14 on Python 3.13/3.14; RAW EAR comparison 9/9; RuntimeDeploy offline PASS; shared stage fails at Core audio-builder pin",
-        "consumer": "audio_voice_cues.consume_pcm16_voice_window -> TemporalVoiceEvidenceRegistry -> A4; microphone provider remains OFF"
-      },
-      "2498_raw_ear_next_delta": {
-        "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
-        "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
-        "base_branch": "research-perception/latent-event-scope-20261125-run12",
-        "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
-        "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
-        "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
-      }
-    },
-    "p0_issue_1904": {
-      "status": "OPEN",
-      "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; Run 48 is diagnostic-only and does not close this gate.",
-      "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
-      "release_or_redmi_proof": false
-    }
-  },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
     "package_id": "V14-NATIVE-TARGET-SCORE-001",
@@ -1730,20 +1753,18 @@
     "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
   },
   "latest_owner_read_attempt": {
-    "requested_at": "2026-11-26T01:57:48Z",
-    "last_polled_at": "2026-11-26T02:03:41Z",
+    "requested_at": "2026-11-27T01:10:35Z",
+    "last_polled_at": "2026-11-27T01:31:58Z",
     "commands": [
       "HEALTH",
-      "PIPELINE_STATUS",
-      "DIAGNOSTICS"
+      "PIPELINE_STATUS"
     ],
     "issues": {
-      "health": 948,
-      "pipeline_status": 949,
-      "diagnostics": 950
+      "health": 998,
+      "pipeline_status": 999
     },
-    "expires_at": 1795658868,
-    "status": "NO_LIVE_RECEIPT_AT_SECOND_POLL",
+    "expires_at": 1795742435,
+    "status": "NO_LIVE_RECEIPT_AFTER_EXPIRY",
     "source": "private owner-read relay",
     "effect": "read-only; no device action"
   },
@@ -2060,6 +2081,174 @@
         "9e985a030f28757b9014c24060868dbd9421bccf",
         "de50b857525496dfdc9c9f4e4846110b08abd8ef"
       ]
+    },
+    {
+      "timestamp": "2026-11-26T21:49:58.666Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+      "pr": 2540,
+      "pr_url": "https://github.com/RedMentos/Aii/pull/2540",
+      "base_pr": 2524,
+      "base_sha": "a47907c4a0603e602581c6462ecb845211eb0445",
+      "code_test_sha": "1adf5bc8cde81fcded17590bebae189a778d3f31",
+      "head_sha": "8f11d8f894795ba9108d1ae0d7405b62aed9b6c3",
+      "implementation_commits": [
+        "09a7d1452d9d3753a0556847261954724807305c",
+        "5d9a675460381d22287d8692b0d509bae83a7b69",
+        "5636c23a44e9d38ce17e5b16c358c77f0c2a0faa",
+        "aa6883da35cf256076b82983371710189dda772b",
+        "b39d6fe88a96b263d21fa08b2054754240a6d3b5",
+        "b2c9f0f8ef77a0f9905f938259e2a5e22b840c5a",
+        "b2b904ec1cc5ba99fe00c22522acdc4ae30f6813",
+        "b173ca3900110952b701a0735dd1dcbff116464c",
+        "40c0aeff243cf15e4f72bab4571cccfb6026288d",
+        "aaafaf164ed140632d73e159f1b0e3d3c7d0f608",
+        "5b64ff64462c9da974fdc608dfa7bd5604a3a850",
+        "67243e0785d691afd84367328f61bbdbc7f72af6",
+        "362d79b58a0081abe8b028c0b4aa63f912d050b5",
+        "cc41ec47afe0fcd6bf2df3bde067a113220729d7",
+        "0617dc5d279ecb0ba6755858e8232e9a37ee482f",
+        "0727e48239561e035bce0383eabc0d9947642ea8",
+        "a64a554e735a61ec88763d5ac4d6dab069262290",
+        "3016b990fe8d8ac1b028474309edf17a414afe9a",
+        "1adf5bc8cde81fcded17590bebae189a778d3f31",
+        "974765a4eb86b0d4145d0468d2576d87bbd907da",
+        "939c8bed2b0845cf990874e5713b98c731798804",
+        "8f11d8f894795ba9108d1ae0d7405b62aed9b6c3"
+      ],
+      "status": "DRAFT_CURRENT_BASE_CI_IN_PROGRESS_SOURCE_PINS_MATCH_LOCAL_BYTES_REGRESSION_PASS_P0_1904_OPEN",
+      "workflow_runs": {
+        "raw_ear_vad_comparison": 45900587836,
+        "raw_ear_optional_numpy": 45900587850,
+        "a4_a5_feature_set": 45900587866,
+        "staged_integrated": 45900587881
+      },
+      "tests": {
+        "local_linux_bytes_literal_compile": "PASS; isolated Python bytes-literal reproducer",
+        "local_linux_ascii_guard": "PASS; all embedded runtime bytes-block characters ASCII",
+        "local_linux_ast_payload": "PASS; AST confirms bytes payload",
+        "local_full_checkout": "NOT_RUN; no mounted Aii checkout; git ls-remote failed on GitHub DNS",
+        "raw_ear_vad_comparison": "IN_PROGRESS at exact code/test SHA 1adf5bc8cde81fcded17590bebae189a778d3f31",
+        "raw_ear_optional_numpy": "IN_PROGRESS at exact code/test SHA 1adf5bc8cde81fcded17590bebae189a778d3f31",
+        "a4_a5_feature_set": "IN_PROGRESS at exact code/test SHA 1adf5bc8cde81fcded17590bebae189a778d3f31",
+        "staged_integrated": "IN_PROGRESS; Core-owned exact pins not changed here",
+        "real_gguf": "NOT_RUN; no explicit approval and no native model execution",
+        "redmi_native": "REDMI_UNVERIFIED"
+      },
+      "consumer": "Caller-supplied PCM16 -> one AudioConsentLease -> A5 timed PerceptPacket -> A4 voice/speaker/temporal evidence -> source-bound B1/B2 context and acoustic-only C3 context in the normal Runtime turn. Provisional windows excluded from C3; raw PCM not persisted; revocation tombstones/source checks retained. No Android microphone provider or live device proof.",
+      "research": "R-170 full-text preprint arXiv:2611.34278v1 (2026-11-25): mapped cross-model caches can weaken refusal/prompt-injection defenses; HandoffGuard helps on tested donors but guard-aware source fine-tuning still bypasses. 3B-32B/GPU only; no official code/weights or mobile validation. B3 stays OFF pending source authentication, target-side safety and red-team gates.",
+      "device": "Historical consented V13OBS #115 (2026-11-24): auto-update enabled and app/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER, model process stopped, B1/B2 zero valid offers. Fresh read-only PIPELINE_STATUS requested; NO_LIVE_RECEIPT at last poll. REDMI_UNVERIFIED.",
+      "release": "NOT_RELEASED; GitHub PR is not deployment.",
+      "next_action": "Wait for exact PR #2540 CI. If Perception gates pass, Core rebases #2538 onto #2540, refreshes audio-builder/recovery/source pins without weakening them, then reruns staged/integrated. No user action required.",
+      "cross_lane_core_pr": {
+        "number": 2538,
+        "head_sha": "dc2e9d5a6f8b4c3d9f2a7e1c5b0a4d8f7c6e5b4a",
+        "base_branch": "research-perception/v14-audio-temporal-window-order-20261126-run41b",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "next_action": "Core rebase onto #2540 after exact Perception CI and refresh the audio-builder/recovery pins."
+      },
+      "parallel_perception_prs": {
+        "2527_raw_ear_temporal_chronology": {
+          "head_sha": "f42c814c76d1898cedbd1e1660bd70e17647f4c0",
+          "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+          "status": "DRAFT_STALE_BASE_SUPERSEDED_BY_2540_NO_FORCE_PUSH",
+          "next_action": "Use current-base #2540; do not force-push the old branch."
+        },
+        "2498_raw_ear_next_delta": {
+          "head_sha": "4ef5da3d74d8c2e91eea6d0064e781b3dc97f3d6",
+          "code_test_sha": "8167033a8f133c8feb89c341df3720a5db765504",
+          "base_branch": "research-perception/latent-event-scope-20261125-run12",
+          "status": "DRAFT_CORE_AUDIO_SOURCE_PIN_BLOCKED",
+          "tests": "RAW EAR fastpath 142/142 on Python 3.13/3.14; deterministic synthetic benchmark and privacy scan CLEAN; VAD/libfvad and offline RuntimeDeploy PASS; staged/integrated fail at Core-owned audio builder/recovery source pin",
+          "consumer": "audio_voice_cues -> 13-D acoustic cue vector -> 182-parameter process-local LMS -> capped A4 novelty 0.10; no PCM/transcript/embedding persistence"
+        }
+      },
+      "p0_issue_1904": {
+        "status": "OPEN",
+        "effect": "P0 basic chat correctness and B1/B2 valid OfferPacket delivery remain unresolved; this audio path does not close the gate.",
+        "last_device_evidence": "Historical V13OBS #115 (2026-11-24): AI STOPPED_BY_USER, model process STOPPED, zero valid B1/B2 offers; no newer authenticated receipt.",
+        "release_or_redmi_proof": false
+      },
+      "docs_head_sha": "8f11d8f894795ba9108d1ae0d7405b62aed9b6c3",
+      "handoff_sha": "8f11d8f894795ba9108d1ae0d7405b62aed9b6c3",
+      "branch_head_before_board_checkpoint_update": "8f11d8f894795ba9108d1ae0d7405b62aed9b6c3"
+    },
+    {
+      "date": "2026-11-26",
+      "timestamp": "2026-11-26T22:13:28.817Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+      "pull_request": 2540,
+      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "code_test_sha": "6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd",
+      "status": "DRAFT_FOCUSED_CI_PASS_STAGED_CORE_PIN_BLOCKED",
+      "tests": {
+        "raw_ear_fastpath_py313": "PASS_122_OF_122",
+        "raw_ear_fastpath_py314": "PASS_122_OF_122",
+        "raw_ear_prosody_py311": "PASS",
+        "raw_ear_prosody_py313": "PASS",
+        "consent_revocation": "PASS",
+        "a4_a5_feature_set_py313": "PASS",
+        "a4_a5_feature_set_py314": "PASS",
+        "libfvad_webrtc_py313": "PASS_9_COMPARISON_TESTS_PLUS_133_AUDIO_TESTS",
+        "libfvad_webrtc_py314": "IN_PROGRESS_AT_CHECKPOINT",
+        "privacy": "CLEAN",
+        "private_bridge": "PASS",
+        "offline_py311_py314": "PASS",
+        "staged_runtime": "FAIL_CORE_PINS_AND_MIGRATION_EXPECTATIONS",
+        "integrated_regression": "FAIL_ONE_CORE_AUDIO_BLOB_PIN",
+        "local_full_checkout": "BLOCKED_GITHUB_DNS",
+        "local_anchor_reproduction": "PASS"
+      },
+      "device": "REDMI_UNVERIFIED; last available consented #115 is 2026-11-24; no new receipt",
+      "release": "NOT_RELEASED",
+      "user_action_required": false,
+      "research_entries": [
+        "R-171",
+        "R-172",
+        "R-173",
+        "R-174"
+      ],
+      "next_action": "Core/QA refresh stale recovery/stage/deployer pins and migration expectations; finish Python 3.14 comparator; rerun staged/integrated."
+    },
+    {
+      "date": "2026-11-26",
+      "timestamp": "2026-11-26T22:14:53.399Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+      "pull_request": 2540,
+      "base_branch": "research-perception/v14-kv-snapshot-consumer-20261126-run35",
+      "code_test_sha": "6911d2f8b2a93a38b3ddca4a9d3550ee6892dcdd",
+      "status": "DRAFT_ALL_PERCEPTION_FOCUSED_CI_PASS_STAGED_CORE_PIN_BLOCKED",
+      "tests": {
+        "raw_ear_fastpath_py313": "PASS_122_OF_122",
+        "raw_ear_fastpath_py314": "PASS_122_OF_122",
+        "raw_ear_prosody_py311": "PASS",
+        "raw_ear_prosody_py313": "PASS",
+        "consent_revocation": "PASS",
+        "a4_a5_feature_set_py313": "PASS",
+        "a4_a5_feature_set_py314": "PASS",
+        "libfvad_webrtc_py313": "PASS_9_COMPARISON_TESTS_PLUS_133_AUDIO_TESTS",
+        "libfvad_webrtc_py314": "PASS_9_COMPARISON_TESTS_PLUS_133_AUDIO_TESTS",
+        "privacy": "CLEAN",
+        "private_bridge": "PASS",
+        "offline_py311_py314": "PASS",
+        "staged_runtime": "FAIL_CORE_PINS_AND_MIGRATION_EXPECTATIONS",
+        "integrated_regression": "FAIL_ONE_CORE_AUDIO_BLOB_PIN",
+        "local_full_checkout": "BLOCKED_GITHUB_DNS",
+        "local_anchor_reproduction": "PASS"
+      },
+      "device": "REDMI_UNVERIFIED; last available consented #115 is 2026-11-24; no new receipt",
+      "release": "NOT_RELEASED",
+      "user_action_required": false,
+      "research_entries": [
+        "R-171",
+        "R-172",
+        "R-173",
+        "R-174"
+      ],
+      "next_action": "Core/QA refresh stale recovery/stage/deployer pins and migration expectations; finish Python 3.14 comparator; rerun staged/integrated.",
+      "closeout": true
     }
   ]
 }

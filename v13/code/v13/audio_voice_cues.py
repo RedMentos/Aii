@@ -9,6 +9,7 @@ deterministic heuristics, not a trained VAD, speech classifier, or calibrated pr
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import struct
 from contextlib import contextmanager
@@ -19,6 +20,20 @@ from statistics import median
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_temporal_prediction import (
+    AudioTemporalPredictionError,
+    AudioTemporalPredictionRegistry,
+    predictive_attention_novelty,
+    predictive_omission_novelty,
+    unavailable_prediction,
+)
+from .audio_event_expectation import (
+    AudioEventExpectationError,
+    AudioEventExpectationRegistry,
+    predictive_event_omission_novelty,
+    unavailable_expectation,
+)
+from .audio_teacher_ear import TeacherEarConsentLease, validate_teacher_ear_result
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -26,7 +41,7 @@ from .audio_percept_contract import audio_percept_packet
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
-from .contracts import validate
+from .contracts import packet, validate
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -78,6 +93,40 @@ def _speaker_change_decision(evidence, cues):
     return "DEFER"
 
 
+
+
+
+def _a4_attention_score_vector(attention_result: dict) -> dict:
+    """Validate the controller's A4 control scores; this is not an AAD attention probability."""
+    if type(attention_result) is not dict:
+        raise ValueError("A4 attention score vector is missing")
+    gains = attention_result.get("gains")
+    expected_gains = {"perceptual", "callosum", "workspace", "focal", "action"}
+    if type(gains) is not dict or set(gains) != expected_gains:
+        raise ValueError("A4 attention score vector: gain vector is incomplete")
+    salience = attention_result.get("salience")
+    caution = attention_result.get("caution")
+    if any(type(value) not in (int, float) or not math.isfinite(float(value))
+           or not 0.0 <= float(value) <= 1.0 for value in (salience, caution)):
+        raise ValueError("A4 attention salience/caution is invalid")
+    if any(type(value) not in (int, float) or not math.isfinite(float(value))
+           or not 0.0 <= float(value) <= 1.0 for value in gains.values()):
+        raise ValueError("A4 attention gain value is invalid")
+    interrupt = attention_result.get("interrupt")
+    reason = attention_result.get("interrupt_reason")
+    if type(interrupt) is not bool or (reason is not None and type(reason) is not str):
+        raise ValueError("A4 attention interrupt decision is invalid")
+    if attention_result.get("truth_authority") != 0:
+        raise PermissionError("A4 attention scores cannot carry truth authority")
+    return {
+        "kind": "A4_CONTROL_SCORE_NOT_AAD",
+        "salience": float(salience),
+        "caution": float(caution),
+        "gains": {key: float(gains[key]) for key in sorted(gains)},
+        "interrupt": interrupt,
+        "interrupt_reason": reason,
+        "truth_authority": 0,
+    }
 
 # Protect first-use get/create/set on a shared Runtime during concurrent audio calls.
 _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
@@ -419,7 +468,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
 
 
 def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_id=None):
-    """Clear process-local A4 voice and speaker-change state after revocation or teardown."""
+    """Clear A4 voice, speaker and consent-scoped prediction state after revoke/teardown."""
     count = 0
     registry = getattr(runtime, "_raw_ear_temporal_registry", None)
     if registry is not None:
@@ -431,6 +480,18 @@ def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_i
         if not isinstance(speaker_registry, SpeakerChangeEvidenceRegistry):
             raise ValueError("runtime RAW EAR speaker registry has an invalid type")
         speaker_registry.reset(source_id=source_id, generation_id=generation_id)
+    prediction_registry = getattr(runtime, "_raw_ear_prediction_registry", None)
+    if prediction_registry is None and _raw_ear_prediction_persistence_enabled(runtime):
+        prediction_registry = _runtime_audio_temporal_prediction_registry(runtime)
+    if prediction_registry is not None:
+        if not isinstance(prediction_registry, AudioTemporalPredictionRegistry):
+            raise ValueError("runtime RAW EAR prediction registry has an invalid type")
+        prediction_registry.reset(source_id=source_id, generation_id=generation_id)
+    event_registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+    if event_registry is not None:
+        if not isinstance(event_registry, AudioEventExpectationRegistry):
+            raise ValueError("runtime RAW EAR event expectation registry has an invalid type")
+        event_registry.reset(source_id=source_id, generation_id=generation_id)
     return count
 
 
@@ -465,6 +526,49 @@ def _runtime_speaker_evidence_registry(runtime):
                     raise ValueError("runtime cannot retain bounded RAW EAR speaker state") from exc
     if not isinstance(registry, SpeakerChangeEvidenceRegistry):
         raise ValueError("runtime RAW EAR speaker registry has an invalid type")
+    return registry
+
+
+def _raw_ear_prediction_persistence_enabled(runtime):
+    cfg = getattr(runtime, "cfg", None)
+    return isinstance(cfg, dict) and cfg.get("raw_ear_persist_prediction_weights") is True
+
+
+def _runtime_audio_temporal_prediction_registry(runtime):
+    registry = getattr(runtime, "_raw_ear_prediction_registry", None)
+    if registry is None:
+        with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
+            registry = getattr(runtime, "_raw_ear_prediction_registry", None)
+            if registry is None:
+                if _raw_ear_prediction_persistence_enabled(runtime):
+                    store = getattr(runtime, "store", None)
+                    if store is None:
+                        raise ValueError("persistent RAW EAR weights require the local Runtime Store")
+                    registry = AudioTemporalPredictionRegistry(store=store)
+                else:
+                    registry = AudioTemporalPredictionRegistry()
+                try:
+                    setattr(runtime, "_raw_ear_prediction_registry", registry)
+                except Exception as exc:
+                    raise ValueError("runtime cannot retain bounded RAW EAR prediction state") from exc
+    if not isinstance(registry, AudioTemporalPredictionRegistry):
+        raise ValueError("runtime RAW EAR prediction registry has an invalid type")
+    return registry
+
+
+def _runtime_audio_event_expectation_registry(runtime):
+    registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+    if registry is None:
+        with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
+            registry = getattr(runtime, "_raw_ear_event_expectation_registry", None)
+            if registry is None:
+                registry = AudioEventExpectationRegistry()
+                try:
+                    setattr(runtime, "_raw_ear_event_expectation_registry", registry)
+                except Exception as exc:
+                    raise ValueError("runtime cannot retain bounded RAW EAR event expectation state") from exc
+    if not isinstance(registry, AudioEventExpectationRegistry):
+        raise ValueError("runtime RAW EAR event expectation registry has an invalid type")
     return registry
 
 
@@ -687,12 +791,18 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                               speaker_embeddings: dict | None = None,
+                               teacher_result: dict | None = None,
+                               teacher_lease: TeacherEarConsentLease | None = None,
+                               teacher_receipt: str | None = None,
+                               transcript_receipt: str | None = None):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if type(finality) is not str or finality not in {"FINAL", "PROVISIONAL"}:
+        raise ValueError("finality must be FINAL or PROVISIONAL")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -705,13 +815,18 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         segment = raw["segments"][0]
         cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
-        if vad_stream is not None:
+        # Stateful VAD advances only on FINAL windows. Provisional windows still
+        # feed immediate RAW EAR cues and A4 attention, but cannot consume a frame
+        # that will later be promoted and replayed as FINAL.
+        if vad_stream is not None and finality == "FINAL":
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
                 stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
             )
             cues["vad"] = validate_vad_evidence(vad_evidence)
-            cues = validate_voice_cues(cues)
+        # Validate every producer result before it enters the canonical packet or
+        # is persisted; previously this only ran when the optional VAD was enabled.
+        cues = validate_voice_cues(cues)
         audio_packet = audio_percept_packet(
             event_id=event_id,
             generation_id=generation_id,
@@ -726,8 +841,41 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        # Teacher ASR is a separate, optional hypothesis channel. It is validated
+        # under distinct teacher-use and transcript-use receipts and is never
+        # copied into the persisted PerceptPacket or A4 receipt.
+        teacher_ear = None
+        teacher_ear_status = "NOT_SUPPLIED"
+        if teacher_result is not None:
+            try:
+                teacher_ear = validate_teacher_ear_result(
+                    teacher_result,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=audio_segment["start_ms"],
+                    end_ms=audio_segment["end_ms"],
+                    finality=finality,
+                    teacher_receipt=teacher_receipt,
+                    transcript_receipt=transcript_receipt,
+                    teacher_lease=teacher_lease,
+                )
+                if finality == "PROVISIONAL":
+                    teacher_ear = None
+                    teacher_ear_status = "PROVISIONAL_NOT_ADMITTED"
+                else:
+                    teacher_ear_status = "CALLER_SUPPLIED_UNVERIFIED"
+            except (PermissionError, ValueError) as exc:
+                runtime.store.log(
+                    "teacher_ear_rejected", event_id,
+                    {"error": type(exc).__name__},
+                )
+                teacher_ear = None
+                teacher_ear_status = "REJECTED"
         speaker_evidence = None
-        if speaker_embeddings is not None:
+        # Speaker lookback is stateful too; defer it until FINAL so a provisional
+        # window and its later promotion cannot count the same embedding twice.
+        if speaker_embeddings is not None and finality == "FINAL":
             try:
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
@@ -756,6 +904,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
                 or speaker_change_decision == "DEFER"):
             audio_segment["unmeasured"].append("speaker_change")
+        if vad_stream is not None and finality == "PROVISIONAL":
+            audio_segment["unmeasured"].append("VAD")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -777,24 +927,56 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             runtime, audio_packet, lease_active=lease_active,
         )
 
+        provisional = finality == "PROVISIONAL"
         if temporal_state is None:
-            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
+            temporal_registry = _runtime_temporal_voice_registry(runtime)
+            temporal_update = temporal_registry.preview if provisional else temporal_registry.update
         else:
             if not isinstance(temporal_state, TemporalVoiceEvidence):
                 raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-            temporal_voice = temporal_state.update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
+            temporal_update = temporal_state.preview if provisional else temporal_state.update
+        temporal_voice = temporal_update(
+            source_id=source_id,
+            generation_id=generation_id,
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            cues=cues,
+        )
+        # Both predictors are consent-scoped shadow signals. Only FINAL windows
+        # update state; provisional windows are explicitly censored by the registries.
+        try:
+            if type(consent_receipt) is not str or not consent_receipt:
+                raise AudioTemporalPredictionError("audio consent receipt is invalid")
+            consent_scope_id = hashlib.sha256(consent_receipt.encode("utf-8")).hexdigest()
+            audio_temporal_prediction = _runtime_audio_temporal_prediction_registry(runtime).update(
+                source_id=source_id, generation_id=generation_id,
+                consent_scope_id=consent_scope_id,
+                start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                cues=cues, finality=finality,
             )
+            audio_temporal_predictive_novelty = predictive_attention_novelty(audio_temporal_prediction)
+            audio_temporal_omission_novelty = predictive_omission_novelty(audio_temporal_prediction)
+        except Exception as exc:
+            audio_temporal_prediction = unavailable_prediction("REJECTED")
+            audio_temporal_prediction["error"] = type(exc).__name__
+            audio_temporal_predictive_novelty = 0.0
+            audio_temporal_omission_novelty = 0.0
+
+        try:
+            if type(consent_receipt) is not str or not consent_receipt:
+                raise AudioEventExpectationError("audio consent receipt is invalid")
+            audio_event_expectation = _runtime_audio_event_expectation_registry(runtime).update(
+                source_id=source_id, generation_id=generation_id,
+                consent_scope_id=consent_scope_id,
+                start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                cues=cues, finality=finality,
+            )
+            audio_event_omission_novelty = predictive_event_omission_novelty(audio_event_expectation)
+        except Exception as exc:
+            audio_event_expectation = unavailable_expectation("REJECTED")
+            audio_event_expectation["error"] = type(exc).__name__
+            audio_event_omission_novelty = 0.0
+
         speaker_change_score = 0.0
         speaker_change_candidate = None
         if speaker_evidence is not None:
@@ -808,6 +990,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     or 0.0
                 )
         voice_novelty = max(
+            audio_temporal_predictive_novelty,
+            audio_temporal_omission_novelty,
+            audio_event_omission_novelty,
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
             0.35 * speaker_change_score,
@@ -827,6 +1012,22 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "novelty": min(1.0, max(zcr, voice_novelty)),
             "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
         })
+        score_vector = _a4_attention_score_vector(attention_result)
+        a4_receipt = packet(
+            "A4AttentionReceipt", "A4_AUDIO", event_id, generation_id,
+            [audio_packet["source_ref"]],
+            source_ref=audio_packet["source_ref"],
+            percept_packet_id=audio_packet["packet_id"],
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            finality=audio_segment["finality"],
+            score_vector=score_vector,
+            learning_authority=False,
+            action_authority=False,
+            truth_authority=0,
+        )
+        # The same consent lease still protects this source-bound A4 receipt.
+        runtime.store.add_packet("A4AttentionReceipt", a4_receipt)
         a4 = {
             "packet_id": audio_packet["packet_id"],
             "source_id": source_id,
@@ -835,9 +1036,18 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "audio_temporal_prediction": audio_temporal_prediction,
+            "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
+            "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
+            "audio_event_expectation": audio_event_expectation,
+            "audio_event_omission_novelty": audio_event_omission_novelty,
+            "temporal_state_mode": "PREVIEW_ONLY" if provisional else "COMMITTED",
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
+            "attention_score_vector": score_vector,
+            "attention_receipt_id": a4_receipt["packet_id"],
+            "attention_receipt": a4_receipt,
             "learning_authority": False,
             "action_authority": False,
         }
@@ -892,11 +1102,19 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "a4": a4,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
+            "audio_temporal_prediction": audio_temporal_prediction,
+            "audio_temporal_predictive_novelty": audio_temporal_predictive_novelty,
+            "audio_temporal_omission_novelty": audio_temporal_omission_novelty,
+            "audio_event_expectation": audio_event_expectation,
+            "audio_event_omission_novelty": audio_event_omission_novelty,
             "speaker_change_evidence": speaker_evidence,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
+            "teacher_ear_status": teacher_ear_status,
         }
+        if teacher_ear is not None:
+            result["teacher_ear"] = teacher_ear
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
         return result

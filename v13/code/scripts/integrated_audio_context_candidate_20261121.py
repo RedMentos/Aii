@@ -11,17 +11,20 @@ from pathlib import Path
 
 SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
-    "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
+    "v13/cognition.py": "deb8c274022e2a4419dd38adb11ca14481c4bd91",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "b18e450162b062b09368a12b1ca18924ed8c5025",
+    "v13/audio_voice_cues.py": "d80b803591ce9e105a97ce2583c591a327315201",
+    "v13/audio_temporal_prediction.py": "c1a308a946073fe681b856b3353ba712da860579",
+    "v13/audio_event_expectation.py": "4571b12aeb665f2865d53c54561cacd2562d6f95",
+    "v13/audio_teacher_ear.py": "255c51fd6ade37ada2fc3309fb0cf3e18afe954d",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
-    "v13/audio_temporal_evidence.py": "098ce2ec6bb0b744166d711a3401b7acf0252de1",
+    "v13/audio_temporal_evidence.py": "cacf649007a89cbfe74924536e413747d1392db3",
     "v13/audio_ear.py": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
     "v13/audio_percept_contract.py": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
     "v13/a5_audio_admission_bridge.py": "6d8790f29525b4c32c84b5b63d834cfd70a7037e",
     "v13/percept_admission.py": "4f44dc42e8784d1ae3aa71b3cc3c8cb184de8ea4",
     "v13/attention.py": "0f6a81e7380aa6716bbac4e4ef5834d108601a70",
-    "v13/contracts.py": "7b21d9c5076015716851b5d432a5730e4e17da92",
+    "v13/contracts.py": "6065a471f5f623abea57725d33d362d9eb806013",
 }
 
 
@@ -50,17 +53,29 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
             raise ValueError("audio source blob changed: " + relative)
 
     result = dict(sources)
+    for relative in ("v13/audio_temporal_prediction.py", "v13/audio_event_expectation.py"):
+        result[relative] = (code_dir / relative).read_bytes()
     runtime = result.get("v13/runtime.py")
     if not isinstance(runtime, bytes):
         raise ValueError("upstream integrated Runtime candidate missing")
-    required = (
-        b"arithmetic_answer",
-        b"LOCAL_EXACT_ARITHMETIC",
-        b"source_recall_refs",
+    runtime_required = (
+        b"class Runtime:\n",
+        b"    def submit(self,text):\n",
+        b"    def _turn(self,e):\n",
         b"latewatch.start",
     )
-    if any(marker not in runtime for marker in required):
-        raise ValueError("upstream Runtime is not the reviewed arithmetic/context/observer composition")
+    if any(marker not in runtime for marker in runtime_required):
+        raise ValueError("upstream Runtime is not the reviewed submit/turn/observer composition")
+
+    cognition = result.get("v13/cognition.py")
+    if not isinstance(cognition, bytes):
+        raise ValueError("upstream integrated Cognition candidate missing")
+    cognition_required = (
+        b"Consumer query scope changed",
+        b"enlightened_source_refs",
+    )
+    if any(marker not in cognition for marker in cognition_required):
+        raise ValueError("upstream Cognition is not the reviewed source-bound consumer composition")
 
     runtime = _replace(
         runtime,
@@ -68,9 +83,9 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b'''_AUDIO_WINDOW_REQUIRED_FIELDS = {
     "pcm16", "sample_rate", "start_ms", "source_id",
     "consent_receipt", "consent_check", "consent_guard", "finality",
+    "consent_revocation_subscribe",
 }
-# Optional only for text-only fallback; when supplied, the callback must register both revoke phases.
-_AUDIO_WINDOW_OPTIONAL_FIELDS = {"consent_revocation_subscribe"}
+_AUDIO_WINDOW_OPTIONAL_FIELDS = {"teacher_ear"}
 
 
 def _validate_audio_window(value):
@@ -101,12 +116,40 @@ def _validate_audio_window(value):
         raise ValueError("audio_window requires a live consent provider")
     if not callable(value["consent_guard"]):
         raise ValueError("audio_window requires a linearizable consent guard")
-    if ("consent_revocation_subscribe" in value
-            and not callable(value["consent_revocation_subscribe"])):
-        raise ValueError("audio_window revocation subscription must be callable")
+    if not callable(value["consent_revocation_subscribe"]):
+        raise ValueError("audio_window requires a two-phase consent revocation subscription")
     result = {key: value[key] for key in _AUDIO_WINDOW_REQUIRED_FIELDS}
-    if "consent_revocation_subscribe" in value:
-        result["consent_revocation_subscribe"] = value["consent_revocation_subscribe"]
+    teacher = value.get("teacher_ear")
+    if teacher is not None:
+        teacher_fields = {
+            "result", "teacher_receipt", "transcript_receipt",
+            "consent_check", "consent_guard", "consent_revocation_subscribe",
+        }
+        if type(teacher) is not dict or set(teacher) != teacher_fields:
+            raise ValueError("teacher_ear must use the exact separate consent fields")
+        if type(teacher["result"]) is not dict:
+            raise ValueError("teacher_ear result must be an object")
+        for name in ("teacher_receipt", "transcript_receipt"):
+            receipt_value = teacher[name]
+            if type(receipt_value) is not str or not receipt_value.strip() or len(receipt_value) > 256:
+                raise ValueError("teacher_ear receipt is invalid")
+        if teacher["teacher_receipt"] == teacher["transcript_receipt"]:
+            raise ValueError("teacher-use and transcript-use require distinct receipts")
+        if not callable(teacher["consent_check"]):
+            raise ValueError("teacher_ear requires a separate consent provider")
+        if not callable(teacher["consent_guard"]):
+            raise ValueError("teacher_ear requires a separate linearizable guard")
+        if teacher["consent_guard"] is value["consent_guard"]:
+            raise ValueError("teacher_ear must use a distinct provider guard")
+        if not callable(teacher["consent_revocation_subscribe"]):
+            raise ValueError("teacher_ear requires two-phase revocation subscriptions")
+        try:
+            teacher_bytes = len(dumps(teacher["result"]).encode("utf-8"))
+        except Exception:
+            raise ValueError("teacher_ear result is not bounded JSON") from None
+        if teacher_bytes > 8192:
+            raise ValueError("teacher_ear result exceeds the 8192-byte queue bound")
+        result["teacher_ear"] = dict(teacher)
     return result
 
 
@@ -117,7 +160,7 @@ class Runtime:
     runtime = _replace(
         runtime,
         b"    def submit(self,text):\n        b=len(text.encode())\n",
-        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        text_bytes=len(text.encode())\n        b=text_bytes+(len(audio_window['pcm16']) if audio_window is not None else 0)\n",
+        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        text_bytes=len(text.encode())\n        teacher_bytes=(len(dumps(audio_window['teacher_ear']['result']).encode('utf-8')) if audio_window is not None and 'teacher_ear' in audio_window else 0)\n        b=text_bytes+(len(audio_window['pcm16']) if audio_window is not None else 0)+teacher_bytes\n",
         "submit audio queue bounds",
     )
     runtime = _replace(
@@ -131,6 +174,12 @@ class Runtime:
         b"            e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b\n",
         b"            e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes'])\n            if audio_window is not None:e['_audio_window']=audio_window\n            self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b\n",
         "process-local audio queue handoff",
+    )
+    runtime = _replace(
+        runtime,
+        b"self.wake.set();self.notice('Eingabe gespeichert.');return e['event_id']",
+        b"self.wake.set();self.notice('Eingabe gespeichert.' if audio_window is None else 'Audio is processed transiently; raw PCM is not persisted.');return e['event_id']",
+        "volatile audio submission notice",
     )
     runtime = _replace(
         runtime,
@@ -151,8 +200,14 @@ class Runtime:
         b"        view=self._audio_context_view(eid,'C3')\n"
         b"        if not view:return None,None\n"
         b"        return ('RAW_EAR_ACOUSTIC','\\nRAW_EAR_ACOUSTIC (consent-bound; acoustic features only; not a transcript):',view),view['summary_source_ref']\n"
-        b"    def _turn(self,e):\n        audio_window=e.pop('_audio_window',None);audio_result=None;audio_source_ref=None\n        eid=e['event_id']",
+        b"    def _turn(self,e):\n        audio_window=e.pop('_audio_window',None);audio_rejection=e.pop('_audio_rejection',None);audio_result=None;audio_source_ref=None\n        eid=e['event_id']",
         "audio context methods and turn entry",
+    )
+    runtime = _replace(
+        runtime,
+        b"mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};status='FINAL';",
+        b"mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};\n        if audio_rejection:meta['audio_input']={'status':'REJECTED','reason':audio_rejection,'capture_authority':'CALLER_SUPPLIED_PCM16','learning_authority':False,'action_authority':False}\n        status='FINAL';",
+        "audio rejection metadata",
     )
     runtime = _replace(
         runtime,
@@ -164,17 +219,23 @@ class Runtime:
         b"                    audio_result=consume_pcm16_voice_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
         b"                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,source_id=audio_window['source_id'],\n"
         b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],consent_guard=audio_window['consent_guard'],consent_lease=audio_window.get('_consent_lease'),\n"
-        b"                        token_budget=512,finality=audio_window['finality'])\n"
+        b"                        token_budget=512,finality=audio_window['finality'],\n"
+        b"                        teacher_result=(audio_window['teacher_ear'].get('result') if audio_window.get('teacher_ear') and audio_window['teacher_ear'].get('_teacher_lease') else None),\n"
+        b"                        teacher_lease=(audio_window['teacher_ear'].get('_teacher_lease') if audio_window.get('teacher_ear') else None),\n"
+        b"                        teacher_receipt=(audio_window['teacher_ear'].get('teacher_receipt') if audio_window.get('teacher_ear') else None),\n"
+        b"                        transcript_receipt=(audio_window['teacher_ear'].get('transcript_receipt') if audio_window.get('teacher_ear') else None))\n"
         b"                    meta['audio_input']={'status':'A5_A4_C3_VOICE_CUE_ADMISSION','packet_id':audio_result['packet']['packet_id'],\n"
         b"                        'voice_activity_hint':audio_result['a4']['voice_activity_hint'],\n"
         b"                        'voice_cue_method':audio_result['a4']['voice_cues']['method'],\n"
         b"                        'source_id':audio_window['source_id'],'finality':audio_window['finality'],\n"
         b"                        'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
-        b"                        'learning_authority':False,'action_authority':False}\n"
+        b"                        'learning_authority':False,'action_authority':False,\n"
+        b"                        'teacher_ear_status':audio_result.get('teacher_ear_status','NOT_SUPPLIED')}\n"
         b"                    audio_context=self._audio_context_record(eid,audio_result,audio_window)\n"
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
         b"                except Exception as exc:\n"
         b"                    self.store.log('audio_input_unavailable',eid,{'stage':'a5_a4_admission','error':type(exc).__name__})\n"
+        b"                    audio_rejection='A5_A4_ADMISSION_FAILED'\n"
         b"            elif audio_window is not None:\n"
         b"                meta['audio_input']={'status':'SKIPPED_EXACT_FASTPATH'}\n"
         b"            exec_state=self.executive.begin",
@@ -198,8 +259,8 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
-        b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[]),budget_scale=body['modulation'].get('context_budget_scale',1.))",
-        b"provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))",
+        b"provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))",
+        b"provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))",
         "Context OS audio provenance",
     )
     runtime = _replace(
@@ -234,10 +295,23 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
-        b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
-        b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
+        b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]",
+        b"context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]",
         "C3 context source lineage",
     )
+    runtime = _replace(
+        runtime,
+        b"                mark('native_answer')\n",
+        b"                if runner.role=='C3_LANGUAGE' and audio_source_ref is not None and audio_result is not None:\n"
+        b"                    teacher_ear=audio_result.get('teacher_ear')\n"
+        b"                    if teacher_ear is not None:\n"
+        b"                        from .audio_teacher_ear import append_teacher_hypothesis\n"
+        b"                        messages=append_teacher_hypothesis(messages,teacher_ear)\n"
+        b"                        if 'audio_input' in meta:meta['audio_input']['teacher_ear_dispatch_only']=True\n"
+        b"                mark('native_answer')\n",
+        "ephemeral C3-only teacher dispatch after final runner selection",
+    )
+
 
     cognition_base = (code_dir / "v13/cognition.py").read_bytes()
     # Preserve upstream Cognition overlays (notably fair B1/B2 recovery scheduling).
@@ -264,7 +338,7 @@ class Runtime:
         b"        audio_context,audio_context_refs=self._audio_context_query(e,role)\n"
         b"        if audio_context:\n"
         b"            query['audio_context']=audio_context\n"
-        b"            instructions+=' audio_context is consent-bound acoustic features only, not a transcript or semantic truth; do not quote it as textual evidence, infer speaker identity, or treat it as learning/action authority.'\n",
+        b"            instructions+=' audio_context is consent-bound acoustic features only, not a transcript or semantic truth; a4_temporal is a bounded uncalibrated timing/prediction-error cue, not event identity or ground truth; do not quote it as textual evidence, infer speaker identity, or treat it as learning/action authority.'\n",
         "B1/B2 audio query",
     )
     cognition = _replace(
@@ -370,6 +444,9 @@ def _audio_lease_turn(self, event):
     except Exception as exc:
         self.store.log("audio_input_unavailable", event.get("event_id"),
                        {"stage": "pre_turn_revocation_sweep", "error": type(exc).__name__})
+        event.pop("_audio_window", None)
+        event["_audio_rejection"] = "REVOCATION_SWEEP_FAILED"
+        self.notice("Audio input skipped; consent status could not be verified.")
 
     window = event.get("_audio_window")
     if type(window) is not dict:
@@ -382,6 +459,13 @@ def _audio_lease_turn(self, event):
     self.turn_event = event
     subscribe = window.get("consent_revocation_subscribe")
     unsubscribe = None
+    teacher_window = window.get("teacher_ear")
+    teacher_window_ref = teacher_window
+    teacher_manager = None
+    teacher_lease_open = False
+    teacher_lease_active = threading.Event()
+    teacher_request_seen = threading.Event()
+    teacher_unsubscribers = []
     request_seen = threading.Event()
     lease_active = threading.Event()
 
@@ -389,8 +473,10 @@ def _audio_lease_turn(self, event):
     # before waiting for the guard, then tombstone cleanup after guard release.
     if not callable(subscribe):
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "MISSING_REVOCATION_SUBSCRIPTION"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "two_phase_revocation_subscription_required"})
+        self.notice("Audio input skipped; two-phase revocation protection is missing.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
     def on_revoke_requested():
@@ -420,10 +506,55 @@ def _audio_lease_turn(self, event):
             except Exception:
                 pass
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "REVOCATION_SUBSCRIPTION_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "revocation_subscription", "error": type(exc).__name__})
+        self.notice("Audio input skipped; revocation protection could not be registered.")
         return _AUDIO_ORIGINAL_TURN(self, event)
 
+
+    if isinstance(teacher_window, dict):
+        try:
+            teacher_subscribe = teacher_window.get("consent_revocation_subscribe")
+            if not callable(teacher_subscribe):
+                raise TypeError("teacher two-phase revocation provider is missing")
+            def on_teacher_revoke_requested():
+                teacher_request_seen.set()
+                if isinstance(teacher_window_ref, dict):
+                    teacher_window_ref.pop("result", None)
+                if teacher_lease_active.is_set():
+                    active = getattr(self, "turn_event", None)
+                    if (getattr(self, "current", None) == "turn"
+                            and isinstance(active, dict)
+                            and active.get("event_id") == event_id
+                            and self.store.generation_id == generation_id):
+                        self.cancel_event.set()
+            def on_teacher_revoked():
+                if isinstance(teacher_window_ref, dict):
+                    teacher_window_ref.pop("result", None)
+                    teacher_window_ref["_revoked"] = True
+            for teacher_receipt_value in (
+                teacher_window["teacher_receipt"],
+                teacher_window["transcript_receipt"],
+            ):
+                teacher_unsubscribe = teacher_subscribe(
+                    source_id, teacher_receipt_value, generation_id,
+                    on_teacher_revoke_requested, on_teacher_revoked,
+                )
+                if not callable(teacher_unsubscribe):
+                    raise TypeError("teacher revocation subscription must return unsubscribe")
+                teacher_unsubscribers.append(teacher_unsubscribe)
+        except Exception as exc:
+            for teacher_unsubscribe in teacher_unsubscribers:
+                try:
+                    teacher_unsubscribe()
+                except Exception:
+                    pass
+            teacher_unsubscribers.clear()
+            window.pop("teacher_ear", None)
+            teacher_window = None
+            self.store.log("teacher_ear_unavailable", event_id,
+                           {"stage": "revocation_subscription", "error": type(exc).__name__})
     from .audio_voice_cues import audio_consent_lease
     try:
         manager = audio_consent_lease(
@@ -442,23 +573,82 @@ def _audio_lease_turn(self, event):
             except Exception:
                 pass
         event.pop("_audio_window", None)
+        event["_audio_rejection"] = "RUNTIME_CONSENT_LEASE_FAILED"
         self.store.log("audio_input_unavailable", event_id,
                        {"stage": "runtime_consent_lease", "error": type(exc).__name__})
+        self.notice("Audio input skipped; Runtime consent lease could not be opened.")
         return _AUDIO_ORIGINAL_TURN(self, event)
+
+    if isinstance(teacher_window, dict):
+        try:
+            from .audio_teacher_ear import teacher_ear_consent_lease
+            teacher_manager = teacher_ear_consent_lease(
+                source_id, generation_id,
+                teacher_window["teacher_receipt"], teacher_window["transcript_receipt"],
+                teacher_window["consent_check"], teacher_window["consent_guard"],
+            )
+            teacher_lease = teacher_manager.__enter__()
+            teacher_lease_open = True
+            teacher_lease_active.set()
+            teacher_window["_teacher_lease"] = teacher_lease
+            if teacher_request_seen.is_set():
+                self.cancel_event.set()
+        except Exception as exc:
+            teacher_lease_active.clear()
+            if teacher_lease_open and teacher_manager is not None:
+                teacher_lease_open = False
+                try:
+                    teacher_manager.__exit__(None, None, None)
+                except Exception:
+                    pass
+            teacher_manager = None
+            for teacher_unsubscribe in teacher_unsubscribers:
+                try:
+                    teacher_unsubscribe()
+                except Exception:
+                    pass
+            teacher_unsubscribers.clear()
+            window.pop("teacher_ear", None)
+            teacher_window = None
+            self.store.log("teacher_ear_unavailable", event_id,
+                           {"stage": "separate_consent_lease", "error": type(exc).__name__})
 
     window["_consent_lease"] = lease
     try:
         try:
             result = _AUDIO_ORIGINAL_TURN(self, event)
         except BaseException as exc:
-            manager.__exit__(type(exc), exc, exc.__traceback__)
-            lease_active.clear()
+            teacher_lease_active.clear()
+            try:
+                if teacher_lease_open and teacher_manager is not None:
+                    teacher_lease_open = False
+                    teacher_manager.__exit__(type(exc), exc, exc.__traceback__)
+            finally:
+                manager.__exit__(type(exc), exc, exc.__traceback__)
+                lease_active.clear()
             raise
         else:
-            manager.__exit__(None, None, None)
-            lease_active.clear()
+            teacher_lease_active.clear()
+            try:
+                if teacher_lease_open and teacher_manager is not None:
+                    teacher_lease_open = False
+                    teacher_manager.__exit__(None, None, None)
+            finally:
+                manager.__exit__(None, None, None)
+                lease_active.clear()
             return result
     finally:
+        teacher_lease_active.clear()
+        if isinstance(teacher_window_ref, dict):
+            teacher_window_ref.pop("_teacher_lease", None)
+            teacher_window_ref.pop("result", None)
+        window.pop("teacher_ear", None)
+        for teacher_unsubscribe in teacher_unsubscribers:
+            try:
+                teacher_unsubscribe()
+            except Exception as exc:
+                self.store.log("teacher_ear_unavailable", event_id,
+                               {"stage": "revocation_unsubscribe", "error": type(exc).__name__})
         lease_active.clear()
         window.pop("_consent_lease", None)
         try:
@@ -515,12 +705,156 @@ Runtime.close = _audio_lease_close
 
     result["v13/audio_context_store.py"] = b'''"""Process-local consent-bound acoustic context with revocation tombstones."""
 import json
+import math
 import threading
 from pathlib import Path
 
 from .common import dumps
 
 _MAX_REVOCATION_CONTEXTS = 64
+
+
+def _safe_float(value):
+    if value is None:
+        return None
+    if type(value) not in (int, float) or not math.isfinite(float(value)):
+        raise ValueError("A4 temporal value must be finite")
+    return round(float(value), 8)
+
+
+def _safe_int(value, *, optional=False):
+    if optional and value is None:
+        return None
+    if type(value) is not int or value < 0:
+        raise ValueError("A4 temporal timestamp/count is invalid")
+    return value
+
+
+def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id):
+    if (type(a4) is not dict or a4.get("packet_id") != packet_value.get("packet_id")
+            or a4.get("source_id") != source_id or a4.get("finality") != "FINAL"):
+        raise ValueError("A4 temporal evidence is not bound to the final audio packet")
+    receipt = a4.get("attention_receipt")
+    if (type(receipt) is not dict or receipt.get("source_ref") != source
+            or receipt.get("event_id") != event_id
+            or receipt.get("finality") != "FINAL"
+            or receipt.get("start_ms") != segment.get("start_ms")
+            or receipt.get("end_ms") != segment.get("end_ms")
+            or a4.get("attention_receipt_id") != receipt.get("packet_id")):
+        raise ValueError("A4 attention receipt does not match the audio source/window")
+    prediction = a4.get("audio_temporal_prediction")
+    expectation = a4.get("audio_event_expectation")
+    if type(prediction) is not dict or type(expectation) is not dict:
+        raise ValueError("A4 temporal prediction/expectation is missing")
+    pred_fields = (
+        "prediction_error_mae", "persistence_baseline_mae", "improvement_mae",
+        "excess_prediction_error", "signed_prediction_error",
+        "negative_prediction_error", "omission_prediction_error",
+        "commission_prediction_error", "omission_attention_novelty",
+        "attention_novelty", "gradient_l2", "gradient_clip_scale",
+        "weight_delta_l2", "parameter_l2", "learning_rate",
+    )
+    pred = {
+        "schema": str(prediction.get("schema", ""))[:96],
+        "method": str(prediction.get("method", ""))[:96],
+        "status": str(prediction.get("status", ""))[:48],
+        "updates": _safe_int(prediction.get("updates", 0)),
+        "parameter_count": _safe_int(prediction.get("parameter_count", 0)),
+    }
+    for name in pred_fields:
+        pred[name] = _safe_float(prediction.get(name))
+    pred.update({
+        "weight_scope": str(prediction.get("weight_scope", ""))[:64],
+        "weight_persistence": prediction.get("weight_persistence") is True,
+        "training_data_persisted": prediction.get("training_data_persisted") is True,
+        "learning_authority": False,
+        "action_authority": False,
+        "truth_authority": False,
+    })
+    if (pred["training_data_persisted"] or prediction.get("learning_authority") is not False
+            or prediction.get("action_authority") is not False
+            or prediction.get("truth_authority") is not False):
+        raise ValueError("A4 predictor authority/persistence contract changed")
+    observed_activity = expectation.get("observed_activity")
+    if observed_activity not in {"SILENCE", "VOICED", "IMPULSIVE", "UNVOICED_NOISE", "UNCERTAIN"}:
+        raise ValueError("A4 observed activity is invalid")
+    if (expectation.get("state_persistence") is not False
+            or expectation.get("calibrated_probability") is not False
+            or expectation.get("learning_authority") is not False
+            or expectation.get("action_authority") is not False
+            or expectation.get("truth_authority") is not False):
+        raise ValueError("A4 event expectation authority/persistence contract changed")
+    expected = []
+    for item in expectation.get("expected_events", [])[:2]:
+        if type(item) is not dict or item.get("activity_class") not in {"VOICED", "IMPULSIVE"}:
+            raise ValueError("A4 expected event is invalid")
+        expected.append({
+            "activity_class": item["activity_class"],
+            "expected_at_ms": _safe_int(item.get("expected_at_ms")),
+            "tolerance_ms": _safe_int(item.get("tolerance_ms")),
+            "timing_confidence_proxy": _safe_float(item.get("timing_confidence_proxy")),
+        })
+    omissions = []
+    for item in expectation.get("omissions", [])[:2]:
+        if type(item) is not dict or item.get("activity_class") not in {"VOICED", "IMPULSIVE"}:
+            raise ValueError("A4 omission is invalid")
+        omissions.append({
+            "activity_class": item["activity_class"],
+            "expected_at_ms": _safe_int(item.get("expected_at_ms")),
+            "observed_at_ms": _safe_int(item.get("observed_at_ms"), optional=True),
+            "lateness_ms": _safe_int(item.get("lateness_ms")),
+            "timing_confidence_proxy": _safe_float(item.get("timing_confidence_proxy")),
+        })
+    score = a4.get("attention_score_vector")
+    if type(score) is not dict:
+        raise ValueError("A4 attention score vector is missing")
+    gains = score.get("gains")
+    expected_gains = {"perceptual", "callosum", "workspace", "focal", "action"}
+    if type(gains) is not dict or set(gains) != expected_gains:
+        raise ValueError("A4 attention gain vector is invalid")
+    if score.get("truth_authority") != 0 or type(score.get("interrupt")) is not bool:
+        raise ValueError("A4 attention authority/interrupt contract is invalid")
+    score_vector = {
+        "kind": str(score.get("kind", ""))[:64],
+        "salience": _safe_float(score.get("salience")),
+        "caution": _safe_float(score.get("caution")),
+        "gains": {key: _safe_float(gains[key]) for key in sorted(expected_gains)},
+        "interrupt": score["interrupt"],
+        "interrupt_reason": (
+            str(score.get("interrupt_reason"))[:96]
+            if score.get("interrupt_reason") is not None else None
+        ),
+        "truth_authority": 0,
+    }
+    return {
+        "schema": "v14.raw-ear-a4-temporal-context/1",
+        "attention_receipt_id": str(a4.get("attention_receipt_id", ""))[:128],
+        "attention_score_vector": score_vector,
+        "temporal_prediction": pred,
+        "event_expectation": {
+            "schema": str(expectation.get("schema", ""))[:96],
+            "method": str(expectation.get("method", ""))[:96],
+            "status": str(expectation.get("status", ""))[:48],
+            "observed_activity": observed_activity,
+            "expected_events": expected,
+            "omissions": omissions,
+            "omission_detected": expectation.get("omission_detected") is True,
+            "timing_confidence_proxy": _safe_float(expectation.get("timing_confidence_proxy")),
+            "attention_novelty": _safe_float(expectation.get("attention_novelty")),
+            "interval_samples": _safe_int(expectation.get("interval_samples", 0)),
+            "state_scope": str(expectation.get("state_scope", ""))[:64],
+            "state_persistence": expectation.get("state_persistence") is True,
+            "calibrated_probability": expectation.get("calibrated_probability") is True,
+            "event_identity_authority": False,
+            "learning_authority": False,
+            "action_authority": False,
+            "truth_authority": False,
+        },
+        "authority": "A4_BOUNDED_TEMPORAL_PREDICTION_ONLY",
+        "learning_authority": False,
+        "action_authority": False,
+        "truth_authority": False,
+    }
 
 
 def _lock(runtime):
@@ -752,11 +1086,21 @@ def record(runtime, event_id, audio_result, audio_window):
         runtime.store.log("audio_input_unavailable", event_id,
                           {"stage": "voice_cue_validation", "reason": "MISSING_OR_INVALID"})
         return None
+    a4 = audio_result.get("a4")
+    try:
+        a4_voice_cues = validate_voice_cues(a4.get("voice_cues")) if type(a4) is dict else None
+        if a4_voice_cues != voice_cues:
+            raise ValueError("A4 voice cues do not match the canonical A5 packet")
+    except Exception:
+        runtime.store.log("audio_input_unavailable", event_id,
+                          {"stage": "a4_voice_cue_binding", "reason": "MISMATCH_OR_INVALID"})
+        return None
     receipt = segment.get("consent_receipt_ref")
     source_id = source.get("source_id")
     if source_id != audio_window.get("source_id") or receipt != audio_window.get("consent_receipt"):
         return None
     try:
+        a4_temporal = _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
         lease = _lease(audio_window, runtime, source_id, receipt)
         observations = []
         for item in selected:
@@ -765,14 +1109,21 @@ def record(runtime, event_id, audio_result, audio_window):
             end = getattr(item, "end_ms", None)
             if (getattr(item, "source_id", None) != source_id
                     or getattr(item, "modality", None) != "audio"
-                    or type(summary) is not str or not summary or len(summary) > 256
+                    or type(summary) is not str or not summary
                     or type(start) is not int or type(end) is not int
                     or start < 0 or end <= start or end - start > 1000):
                 continue
+            summary_truncated = len(summary) > 256
+            if summary_truncated:
+                summary = summary[:253]
+                if " " in summary:
+                    summary = summary.rsplit(" ", 1)[0]
+                summary += "..."
             observations.append({
                 "source_id": source_id, "modality": "audio",
                 "start_ms": start, "end_ms": end,
-                "summary": summary, "priority": getattr(item, "priority", 0),
+                "summary": summary, "summary_truncated": summary_truncated,
+                "priority": getattr(item, "priority", 0),
             })
         if not observations:
             return None
@@ -782,6 +1133,7 @@ def record(runtime, event_id, audio_result, audio_window):
             "audio_source_ref": source,
             "observations": observations,
             "voice_cues": voice_cues,
+            "a4_temporal": a4_temporal,
             "authority": "ACOUSTIC_FEATURES_ONLY",
             "transcript": None,
             "learning_authority": False,

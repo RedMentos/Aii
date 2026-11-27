@@ -1739,3 +1739,175 @@ Code/test head: `91cae713b409e1b5e95bc06c446a5152e726cbd9`. Perception utility b
 **Status:** FULL_TEXT_READ / PREPRINT / PAPER_CC_BY_4.0 / NO_PUBLIC_TRANSLATOR_CODE_OR_WEIGHTS / OBJECT_SPECIFIC_TRANSFER / SAME_MODEL_BASELINE_ONLY / NO_LFM2_OR_ANDROID_GENERALIZATION / REDMI_UNVERIFIED / B3_OFF.
 
 **Source:** https://arxiv.org/abs/2611.12062
+
+
+## R-170 — Latent-in-the-Middle: security of cross-model latent communication
+
+**Paper:** Manit Baser, Vyoman Jain, Rachel Yeo Hui Min, Xianglin Yang, Meenatchi Sundaram Muthu Selva Annamalai, Dinil Mon Divakaran, *Latent-in-the-Middle: On the Security of Cross-Model Latent Communication in Multi-Agent Systems*, arXiv:2611.34278v1, submitted 2026-11-25. Preprint; not peer-reviewed. Full text reviewed: threat model, mapper setup, attack results, HandoffGuard, limitations and conclusion.
+
+**Evidence:** The authors test three model families (Ministral 3 8B→14B, Qwen3 14B→32B, Llama 3.2 3B→3.1 8B), four mapper families (ridge, MLP, CacheBridge, SwaT), and two calibration corpora (FineWeb-Edu and UltraChat), yielding 24 settings. Mapper fitting uses 500 sequences of 1,024 tokens per calibration corpus. The reported native prompt-injection success of 0.4% for Meta-SecAlign-8B rises as high as 44.2% after a mapped-cache handoff. Untrusted/de-aligned sources raise harmful-response rates across the tested settings; mapper-aware optimization can exceed ordinary target-only GCG. Their target-side HandoffGuard p1 brings the tested de-aligned-source HarmBench rate to within 4.5 percentage points of native on the three main pairs; stronger p2 reduces rates further but over-refuses. A guard-aware LoRA attacker still reaches 73.3–87.5% ASR in 300 steps, so the guard is not a substitute for source authentication.
+
+**Limits / mobile relevance:** Mapper and model experiments are 3B–32B-class; the mapper-aware GCG runs use an NVIDIA H200. The switching experiment does not generate tokens between switches; realistic multi-turn switching, cache composition and latency/utility/safety trade-offs are left open. Prompt-injection mitigation partly works by refusing, not by restoring the target's original input-role defense. No LFM2, ARM, Android or Redmi result is reported. The arXiv record/paper did not identify an official implementation repository, released weights or a reusable software/weight licence; no code or weights reused.
+
+**V14 consequence:** A mapped latent/KV cache is an untrusted input channel, not a trust or permission boundary. Before any B3/foreign-state activation, require authenticated producer identity (not only a hash), exact source/target/mapper manifests, session/generation and position binding, integrity/expiry, explicit trust/consent labels, target-side safety evaluation, and negative controls for aligned vs de-aligned donors, wrong mapper, prompt injection, mapper-aware attack, privacy leakage and multi-hop retention. Foreign latent state must never grant tool/action/OS permission or become verified evidence by itself. Keep B3 OFF until these gates and real receiver utility are demonstrated.
+
+**Daily research digest addendum (2026-11-26):** No new primary JEPA, continual-online-learning, plasticity or Android-memory result with comparable new empirical evidence was verified since the previous digest. R-170 is the material new finding for the latent-coupling/security boundary. The immediate V14 experiment is a small, source-authenticated receiver red-team matrix, not porting HandoffGuard's large-model training recipe to Android.
+
+**Source:** https://arxiv.org/abs/2611.34278
+
+
+## R-171 — La-JEPA: Compact Robot Policies with Latent World Modeling (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2611.08156v1, submitted 2026-11-05; preprint, abstract/metadata only in this pass. The abstract describes a compact action policy trained in a pretrained V-JEPA 2.1 feature space, with joint future-feature and action prediction during training and action-only generation at inference. Reported evaluations cover RoboTwin 2.0, LIBERO-Plus and four real-robot tasks, with the authors reporting performance comparable to pi0.5. These are author-reported abstract claims; the full paper and independent reproduction were not completed here.
+
+**OSS/license:** Official repository https://github.com/mt-clemente/lajepa, inspected at `1d767f958171e5089b30a345a430a66597039ce2`. README is a placeholder saying code is coming; no LICENSE, implementation or weights were present at readback. **No code/weight reuse.**
+
+**V14 relevance:** useful architectural hypothesis for separating a predictive latent training objective from a low-latency action decoder. It does not demonstrate Android feasibility, native B3 coupling or cross-organ learning. Candidate experiment only: a tiny source-bound future-UI-state predictor compared against an action-only baseline, with session-disjoint holdout and zero/shuffle controls. No implementation or model change authorized by this paper.
+
+## R-172 — mzCache: On-Device LLM Memory Management under Multitasking (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2609.01338v1; ACM MobiCom 2026, DOI 10.1145/3795866.3844495. Full paper text was reviewed through an arXiv HTML mirror; artifact documentation was checked directly. The system overlaps CPU restoration with GPU prefill and uses fine-grained memory/KV-cache eviction and restoration to reduce multitasking interference. Its reported results are tied to its specific rooted Snapdragon test devices and llama.cpp/OpenCL implementation; they are not a generic Android benchmark.
+
+**OSS/license/revision:** Official repository https://github.com/HongseungYu/mzcache, read at `f06f5ba155cfa1dcd837b3b9aa6a7efc95b919ff`; repository LICENSE is MIT. The artifact is based on a pinned llama.cpp revision and includes OpenCL SVM/shared-buffer hooks. Model-weight licenses remain separate and must be checked per model; the repository MIT license does not grant rights to Qwen/EXAONE weights.
+
+**Hardware boundary:** EVALUATION.md specifies rooted Android, Snapdragon 8 Elite/8 Gen 3, 12 GB RAM and 30 GB free device storage; host preparation requires about 70 GB, with large model/state files. This is outside the Redmi 6-GB-class target. No port or benchmark was run.
+
+**V14 relevance:** design reference only for overlapping memory restoration with prefill and measuring KV residency. Not a current port candidate: hardware/driver/root assumptions are incompatible, and no model/weight download or swap was performed. No code reused.
+
+## R-173 — Adaptive Guard: Memory-Efficient On-Device LLM Inference on Android via Dynamic Quantization and ART GC Co-Design (reviewed 2026-11-26)
+
+**Source/status:** IEEE GAISS 2026, DOI 10.1109/GAISS66401.2026.11779656; conference dates reported as 2026-10-28 to 2026-10-30. Only the IEEE abstract/metadata were accessible; full text was blocked by the publisher in this pass. The abstract reports dynamic FP16/INT8/INT4 selection from Android memory-pressure callbacks, GC-pause coordination and KV-cache eviction, with claimed reductions in OOM/GC spikes and sub-500-ms median token latency on its tested models/devices. These are abstract-level claims, not independently reproduced results.
+
+**OSS/license:** No official implementation or weight license was found in this pass. No reuse.
+
+**V14 relevance:** a hypothesis for a future Android ResourceGuard experiment: correlate trim callbacks and ART GC pauses with PSS, prefill and TTFT before considering any quantization transition. Do not implement dynamic model switching or change installed weights based on abstract-only results.
+
+## R-174 — Learning Dynamics of Continual Learning (reviewed 2026-11-26)
+
+**Source/status:** arXiv:2609.33620, preprint (2026-09); abstract/metadata only in this pass. The paper frames continual-learning behavior in terms of layer/token interactions, forgetting and plasticity loss. Detailed experimental conditions were not re-read here, so no quantitative claim is promoted.
+
+**OSS/license:** Author repository https://github.com/Joshua-Ren/learning-dynamics-cl, inspected at `b4962ccf5646754b800981f1b207ef65a1a89b6f`; README links the arXiv paper, but no LICENSE file was present. The code stack is research-oriented and heavyweight; no reuse.
+
+**V14 relevance:** supports measuring update effects and interference at layer/task granularity rather than using a single global learning-rate or blanket freeze. Candidate future probe: log per-layer update norms, old-task held-out loss, new-task gain and post-restart retention for each bounded update. No production weight update was run.
+
+**Cross-entry conclusion:** These sources do not justify a model swap or a new Android capability. La-JEPA and Adaptive Guard remain abstract-only; mzCache is fully artifact/license-checked but hardware-incompatible; Learning Dynamics has no reuse license. R-004 (“Stability Does Not Mirror Plasticity”) remains abstract-only with full-text/code verification still pending.
+
+
+## R-175 — Mistake-gated online updates and auditory omission evidence (reviewed 2026-11-27)
+
+### Primary sources
+
+1. **Mistake Gating Leads to Energy and Memory Efficient Continual Learning.** *Neural Computation* (2026-11-05), DOI [10.1162/NECO.a.1602](https://doi.org/10.1162/NECO.a.1602); full arXiv preprint [arXiv:2604.14336v2](https://arxiv.org/pdf/2604.14336) (2026-07-14) read. The method gates updates to current and previously mistaken samples. The reported 50–80% update reduction is tied to incremental MNIST/EMNIST and pre-trained CIFAR-10 experiments; the paper reports no comparable gain for CIFAR-10 from scratch. CPU measurements are single-threaded; GPU batching and Android/ARM were not evaluated. The paper's reported speedups are not a mobile-performance claim.
+   - **OSS/license check:** [vanrossumlab/mistake-gating26](https://github.com/vanrossumlab/mistake-gating26) README inspected; no LICENSE file was found on the default branch. No source code was copied or reused.
+2. **Neural Responses to Unexpected Stimulus Repetitions and Omissions in Auditory Cortex Provide Mixed Evidence for Predictive Coding.** *Journal of Neuroscience* (2026-11-11), DOI [10.1523/JNEUROSCI.0545-26.2026](https://doi.org/10.1523/JNEUROSCI.0545-26.2026), PMID 41382361. The full bioRxiv preprint [10.1101/2026.03.30.713276](https://www.biorxiv.org/content/10.1101/2026.03.30.713276v1.full.pdf) was read; the final journal abstract/metadata were checked. The macaque auditory-cortex single-unit study reports enhanced responses to unexpected omissions but not to unexpected repetitions. This is mixed evidence: the measured response does not uniquely distinguish predictive error from adaptation/attention or establish semantic expectation.
+
+### V14 interpretation
+
+- Keep omission and non-observation separate. An omission may be emitted only when the source/window is valid, the expected interval is supported by enough observations, and the interval remains covered; provisional, uncertain and unobserved windows are censored. This is a timing/novelty cue, **not** a calibrated probability, proof of predictive coding, or semantic truth.
+- The current RAW EAR A4 predictor is a small 13-feature/182-parameter next-cue-delta learner. It updates on FINAL windows only, reports signed/negative/omission error and gradient/parameter-delta metrics, and is process-local by default. Local numeric-only persistence is still opt-in; no PCM or feature examples are persisted. It is not a B1/B2/C3 model-weight update.
+- The two papers suggest a future ablation, not an automatic code change: compare (a) current update-on-every-final-window, (b) error-gated updates, (c) bounded consent-scoped mistake gating, and (d) no-update baseline. Use session-disjoint sequences, zero/shuffle and unexpected-repetition controls; report MAE, false omission rate, update count, gradient norm, parameter diff, retention/restart, CPU time and RSS. Do not retain raw audio or add persistent mistake buffers without a separate privacy/consent design.
+- No model download, model swap, Android permission change or production weight update is authorized by these papers.
+
+### Implementation checkpoint
+
+PR [#2540](https://github.com/RedMentos/Aii/pull/2540), draft head `34cbb1e937fd71d07e55b0e4bee6c5f4555eb303`: A4 prediction/event expectation is now exposed as a sanitized source-bound `a4_temporal` context to B1_DETAIL, B2_GIST and C3. The context builder bounds long acoustic summaries to 256 characters rather than dropping the whole context. Current-head CI is pending after a prior context test exposed this summary-length rejection; no Redmi or native-microphone proof exists. See `v14/handoffs/RESEARCH_PERCEPTION_RUN54_20261127.md` for exact gates and next action.
+
+## R-176 — MixMoMo mixed-precision MoE inference on mobile GPUs/NPUs (reviewed 2026-11-27)
+
+**Primary source:** [MixMoMo: Mixed-Precision Mixture-of-Experts Inference on Mobile GPUs and NPUs](https://arxiv.org/abs/2611.33981), arXiv:2611.33981v1, submitted 2026-11-25; preprint, not peer-reviewed in the reviewed record.
+
+- Method: per-expert quantization-impact profiles, critical input-dimension selection, activation-risk estimation and quality-budgeted mixed precision; runtime allocation spans mobile GPU/NPU paths. The paper reports an approximately 18 MiB profile and an approximately 8,000-line C++ extension to llama.cpp.
+- Reported evaluation: 35B/48B/80B MoE models on OnePlus 13/15 with Snapdragon 8 Elite Gen4/Gen5 and 24/16 GB RAM; five benchmarks. Claimed average decoding speedup is 3.72× over uniform Q4_0 and 1.53× over the strongest compared baseline.
+- Evidence limits: the critical-dimension correlation illustration is narrow relative to the broad generalization claim; the reviewed paper does not provide a public trial-count/confidence-interval analysis sufficient to infer robustness across arbitrary experts/models. No Redmi/6-GB Snapdragon 732G evidence. The Snapdragon HTP/HVX scheduling and large-model regime are not portable assumptions.
+- OSS/license: the paper describes the llama.cpp extension but no public MixMoMo source repository or extension license was located in the arXiv record or exact-title repository search. The upstream llama.cpp MIT license does not automatically license unpublished extension code. No source or weights reused.
+- V14 decision: **research-only**. Do not change current LFM2.5 models, download weights or swap B1/B2. If compatible sparse-MoE weights are later available and separately approved, test per-expert quantization sensitivity against routing-score and frequency baselines at a matched average-bit budget, with held-out task quality, TTFT, RSS, thermal and rollback evidence. This paper is not a Redmi model recommendation.
+
+## Research & Perception Run 54 — RAW EAR cue-contract enforcement and A4/A5 integrity (2026-11-27)
+
+- PR [#2540](https://github.com/RedMentos/Aii/pull/2540), branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, exact code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`, draft / NOT_RELEASED.
+- Runtime change: `consume_pcm16_voice_window` now validates the complete RAW EAR cue schema unconditionally before canonical A5 PerceptPacket creation/persistence, including when the optional stateful VAD stream is absent. The audio context consumer additionally rejects a valid-but-different A4 cue view unless it exactly matches the validated A5 packet cues.
+- Regression change: positive context test uses the real RAW EAR extractor; shared fixtures now satisfy the complete cue schema; negative controls reject malformed producer cues before packet/A4 persistence and reject A4↔A5 cue mismatch before B1/B2/C3 context creation. Candidate builder source manifest readback: 15/15 exact.
+- Exact GitHub Actions: RAW EAR fastpath 155/155 PASS on Python 3.13 and 155/155 PASS on 3.14; A4/A5 feature-set 15/15 PASS on each; WebRTC/libfvad comparator Python 3.13 PASS (9 comparator tests + 166 source-bound audio tests), Python 3.14 PASS (9 comparator tests + 166 source-bound audio tests); RuntimeDeploy offline integrity Python 3.11/3.14 PASS; public-content privacy scan PASS. Staged runtime FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated regression FAIL (one setup failure), both dominated by Core-owned stale recovery/audio-builder pins; staged also reports stale Core arithmetic/observer pins and two migration PARTIAL-vs-UPDATED assertions. No Perception guard was relaxed.
+- The exact current Perception composer blob is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; the 15-entry source manifest matches the live branch. Core PR #2544 was notified to rebase and refresh its own recovery/stage/deployer pin chain. QA owns migration status repair.
+- Full local Aii checkout/pytest NOT_RUN because the container has no checkout and GitHub DNS failed. No native model, microphone, Android/Termux or Redmi test; `device_benchmark=false`. Last private V13OBS #115 is historical; owner-read requests #998/#999 expired with NO_LIVE_RECEIPT. REDMI_UNVERIFIED; NOT_RELEASED.
+- Handoff: `v14/handoffs/RESEARCH_PERCEPTION_RUN54_20261127.md`. Next: Core/QA rebase and pin repair, finish Python 3.14 comparator, rerun staged/integrated, then continue source-disjoint A4 attention/salience work. No user action required.
+
+
+## R-177 — LATER: action-conditioned temporal evidence retrieval for predictive world models (2026-11-27)
+
+**Primary record:** Zihan Zhou, Wenxi Xu, Qilin Wang and Hao Tang, *LATER: Learning Action-Conditioned Temporal Evidence Retrieval for Predictive World Models*, arXiv:2611.25671v1, submitted 2026-11-19: https://arxiv.org/abs/2611.25671 . The arXiv record/abstract and an extended paper rendering were inspected; the original PDF was not retrieved in this run. Status is therefore **ABSTRACT + EXTENDED RENDERING VERIFIED / NOT FULL PRIMARY-PDF REVIEWED**.
+
+**Reported method and evidence:** LATER extends CF-JEPA with separate recurrent writers for controllable and uncontrollable transition memories. A query formed from the current state and candidate action reads completed-transition memories through a gated low-rank response bridge. Memory is held fixed during candidate rollouts; multi-cut auxiliary targets train the writers even while zero-initialized bridge gates initially block the main loss. The abstract reports distracted Two-Stage PushT terminal success of 25.0% versus 15.5% for reconstructed CF-JEPA, and a 20.2% reduction in along-push MAE under distractors in a separate six-model/two-seed comparison. The extended rendering describes selected paired friction-history interventions and a higher H100 runtime/allocator peak than CF-JEPA. These are **simulation results**, not real-robot, V14, or Android measurements.
+
+**OSS / rights:** no official source repository or weight package/license was located in this run. No code, weights, dataset or dependency was reused or downloaded. The paper is a method reference only.
+
+**V14 testable adaptation:** for the existing WorldJEPA/episodic recall path, compare (a) recent-only context, (b) source-exact committed transition retrieval, (c) action-conditioned retrieval from completed SourceRef-bound transitions, (d) shuffled-history and zero-memory controls. Keep candidate rollouts read-only so imagined outcomes cannot rewrite observed memory. Split by source and session; test delayed outcomes, stale/forgotten sources, held-out action utility, retention, restart and rollback. This is a JEPA/Memory-owned follow-up, not an A4 implementation claim and not an instruction to import LATER code.
+
+## R-178 — When Sounds Turn Heads: attention-head timing for audio event grounding (2026-11-27)
+
+**Primary record:** Jongbhin Woo, Jaewook Jeong and Joon Son Chung, *When Sounds Turn Heads: Recovering Event Timing That Audio LLMs Fail to Say*, arXiv:2611.25960v1, submitted 2026-11-19: https://arxiv.org/abs/2611.25960 . **Abstract only** was verified in this run; full paper, model-specific methods and appendices were not reviewed.
+
+The abstract claims that a small set of query-sensitive attention heads in audio LLMs track queried sound intervals even when the generated answer misses or mis-times them. A training-free head-guided decoder rescores candidate intervals while retaining the model's separate decision about whether the sound exists. The abstract reports mIoU rising from 0.07–0.36 to 0.48–0.56 on recordings released after model training for the evaluated settings. This is not a result on V14 RAW EAR or LFM2.5.
+
+**OSS / rights:** no official implementation/checkpoint repository or license was located in this run; no code or weights reused. The current RAW EAR feature interface does not expose native transformer attention heads, so this is not presently implementable as a drop-in. Revisit only if an approved audio teacher/runtime exposes source-bound attention maps; keep event-presence decisions separate from timestamp priors and add random-head, shuffled-query and absent-event controls. No model download, swap or dependency change.
+
+## Research & Perception Run 55 — A4 temporal source-isolation ablation (2026-11-27)
+
+- Added `v14/experiments/a4_temporal_ablation_20261127.py`, `test_a4_temporal_ablation_20261127.py` and `.github/workflows/v14-a4-temporal-ablation.yml` on branch `research-perception/v14-raw-ear-currentparent-20261126-run52`. Experiment source commit: `2a6d4d8ede170d669e21e5093970dc143711a4c2`. Readback blob SHAs: experiment `a7f1e9401b24561ce11d0704b48b815d46b931b7`, tests `ed79cb765fa8b2a178709aa2572de7c75add04df`, workflow `a98d5ededdd31549977540f7e22f7d05962dbbb0`.
+- The experiment calls the existing `AudioTemporalPredictionRegistry`; it does not alter the production Runtime. It measures independent synthetic speech/non-speech streams, interleaved-versus-isolated stream parity, learned next-cue-delta error against the predictor's persistence baseline, numeric adapter deltas, bounded A4 novelty, no-context reset, provisional-window censoring and consent-rotation reset.
+- Local full Aii tests: **BLOCKED / NOT RUN**. No repository checkout is mounted and `git ls-remote` fails DNS resolution. GitHub Actions result for the new workflow was not yet visible at this checkpoint; **CI PENDING/UNVERIFIED**, not PASS.
+- No microphone/AudioRecord, native model inference, Android/Termux or Redmi test. Synthetic cues only; `device_benchmark=false`. No PCM, transcript, speaker embedding, training example, model or weight data was downloaded or persisted.
+- Existing PR #2540 remains DRAFT / NOT_RELEASED. Its broader staged Runtime and integrated-regression gates remain FAIL on Core-owned stale source pins and QA-owned migration assertions; the A4 experiment does not repair or conceal those failures.
+- Next: verify the exact new workflow result; fix any measured A4 test defect. Core owns #2544's recovery/stage/deployer rebase; QA owns the migration status assertions. Perception must not edit those shared files. After the shared stack is reconciled, extend A4 evaluation to error-gated versus every-FINAL updates and explicit retention/restart ablations. No user action required.
+
+
+## Research & Perception Run 55 — final CI closeout (2026-11-27 02:52 CET)
+
+**Exact branch head:** `e270369a04eb20470aa717dc0464b2b03a4320a5`; PR [#2540](https://github.com/RedMentos/Aii/pull/2540), DRAFT / NOT_RELEASED. The updated sweep code commit is `b60669975184bc3a54be4b5d380c95fd91fab16a`; updated test commit is the current head above.
+
+**Exact CI evidence:**
+- A4 temporal source-isolation workflow run **45924853167**, PR merge candidate short SHA `3d56c9c`: compile PASS and **7/7 tests PASS on Python 3.13.18 and 3.14.10**; both versions emitted identical deterministic metrics.
+- Source-bound A4/A5 feature-set probe run **45924853182**: PASS on Python 3.13 and 3.14.
+- RAW EAR fastpath run **45924853240**: **155 passed** on Python 3.13 and **155 passed** on Python 3.14; benchmark output explicitly says `synthetic_benchmark=true`, `device_benchmark=false`.
+- RuntimeDeploy offline integrity run **45924853218**: PASS on Python 3.11 and 3.14.
+- Staged runtime run **45924853105**: **FAIL**, 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Root blockers remain shared/Core/QA-owned: recovery builder expects composer blob `831080bceec90711bd42e0fa4eba47c669975c98`, while current Perception composer is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; arithmetic `v13/contracts.py` and observer `v13/cognition.py` pins are also stale, and migration still returns `PARTIAL` where the test expects `UPDATED`.
+- Integrated regression in the same run **45924853105**: **FAIL**, one setup test, at the same stale Core audio-composer pin. Perception did not edit or weaken any of these gates.
+
+**Synthetic A4 result (not device evidence):** interleaved streams exactly matched isolated execution (max metric delta 0). The 182-parameter shadow predictor changed numeric parameters and kept novelty below its 0.10 cap (max attention novelty 0.04111883; max omission novelty 0.01736616). However, it did **not** beat the persistence baseline on all cue types:
+- periodic speech: mean model MAE 0.21739024 vs persistence 0.33642678 (improvement +0.11903654);
+- non-speech impulses/noise: 0.22605715 vs 0.19615384 (worse by 0.02990331);
+- mixed activity: 0.28642224 vs 0.26395818 (worse by 0.02246406).
+
+The explicit learning-rate sweep (0.02, 0.05, 0.10, 0.20) kept the same pattern: all tested rates improved the periodic-speech fixture, but none beat persistence on the non-speech or mixed fixtures; 0.20 was least negative on those two. No default-rate change is justified. No-context reset produced zero measured updates/novelty; provisional windows were ignored; consent rotation reset the numeric state to zero. Interpretation: this is a bounded A4 shadow novelty/error signal, **not** a generally better acoustic predictor or semantic event recognizer.
+
+**Local/device boundary:** full LOCAL_LINUX Aii checkout/pytest remains BLOCKED / NOT RUN (no checkout mounted; GitHub DNS failure). No Android/Termux, microphone/AudioRecord, native model, B1/B2 normal-turn or Redmi test. Last private V13OBS #115 is historical (2026-11-24); #998/#999 expired without receipt. REDMI_UNVERIFIED; current updater/install state unknown. No device action, model/weight swap, permission change or raw audio persistence.
+
+**Next:** Core owns the stale Recovery→Stage→RuntimeDeploy pin chain; QA owns migration assertions. After their rebase, rerun the exact staged/integrated gates. Perception's next experiment is source/session-disjoint omission false-positive and update-gating evaluation; do not promote the A4 learner or change its default based on these synthetic fixtures.
+
+
+## Run 55 extension — A4 event-expectation omission ablation (2026-11-27)
+
+The same A4 experiment now also exercises the existing `AudioEventExpectationRegistry` directly. Code commit `a44c39b1e1e5c9b38942cdc0dd55aa410105e4cc`; test/code branch head `f45eb1b30befc406b5f65f4f0858d06785de4bd9`; workflow run **45925644718** completed with **9/9 tests PASS on Python 3.13 and 3.14** and identical deterministic output.
+
+Synthetic controlled result:
+- Four VOICED onsets establish three 2-second intervals. An on-time fifth event produces no omission and 0 novelty.
+- A final valid SILENCE window spanning the expected 8,000 ms event plus tolerance produces one omitted-VOICED event, timing-confidence proxy 0.60 and bounded omission novelty 0.03 (cap 0.05).
+- UNCERTAIN censors the expected event; PROVISIONAL is ignored but leaves the prior state unchanged, so a later FINAL silence window is evaluated; consent rotation resets the interval model; a no-context reset never accumulates enough intervals to emit an omission.
+- Interleaved expected/missing streams match isolated execution exactly.
+
+This is a deterministic timing-rule fixture, not calibrated event probability, semantic audio understanding, or a false-positive estimate on real audio. No PCM, microphone, speaker identity or user data was used or stored.
+
+At this checkpoint, A4/A5 feature-set run **45925644769** passed on Python 3.13/3.14; RAW EAR fastpath **45925644699** passed 155/155 on each; RuntimeDeploy offline **45925644734** passed on Python 3.11/3.14. WebRTC/libfvad comparison **45925644686** was still in progress (3.13 benchmark step completed; 3.14 not final). Staged runtime **45925644732** failed at the same Core composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertion; integrated regression in that run was still running at this checkpoint. Previous integrated run **45924853105** failed one setup test at the same Core composer pin.
+
+LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVERIFIED; PR #2540 remains DRAFT / NOT_RELEASED.
+
+
+## Run 55 — latest CI completion update (2026-11-27)
+
+- A4 temporal + event omission workflow 45925644718: **9/9 PASS on Python 3.13 and 3.14**.
+- A4/A5 source-bound feature-set 45925644769: **PASS on both Python versions**.
+- RAW EAR fastpath 45925644699: **155/155 PASS on both Python versions**; synthetic benchmark flag true, device benchmark false.
+- RuntimeDeploy offline integrity 45925644734: **PASS on Python 3.11 and 3.14**.
+- WebRTC/libfvad comparison 45925644686: Python 3.13 job completed successfully through source/ABI checks and A4/A5 runtime tests; Python 3.14 job remained IN_PROGRESS at final readback, so the comparison is not fully green yet.
+- Staged + integrated run 45925644732: **FAIL**. Staged job repeats 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated job fails one setup test. Both stop at the same Core-owned recovery composer pin mismatch. Staged additionally fails stale arithmetic and observer source pins plus migration PARTIAL-vs-UPDATED assertions.
+- No Perception file or gate was changed to hide these failures. Core/QA ownership remains unchanged.

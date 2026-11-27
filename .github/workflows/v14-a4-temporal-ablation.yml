@@ -1,0 +1,50 @@
+name: V14 A4 temporal source-isolation ablation
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v14/experiments/a4_temporal_ablation_20261127.py"
+      - "v14/experiments/test_a4_temporal_ablation_20261127.py"
+      - ".github/workflows/v14-a4-temporal-ablation.yml"
+  pull_request:
+    branches:
+      - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
+    paths:
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v14/experiments/a4_temporal_ablation_20261127.py"
+      - "v14/experiments/test_a4_temporal_ablation_20261127.py"
+      - ".github/workflows/v14-a4-temporal-ablation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  ablation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile exact A4 predictor and ablation
+        env:
+          PYTHONPATH: v13/code:v14/experiments
+        run: |
+          python -m py_compile v13/code/v13/audio_temporal_prediction.py v14/experiments/a4_temporal_ablation_20261127.py v14/experiments/test_a4_temporal_ablation_20261127.py
+      - name: Run source-isolation, persistence-baseline and negative-control tests
+        env:
+          PYTHONPATH: v13/code:v14/experiments
+        run: python -m unittest discover -s v14/experiments -p "test_a4_temporal_ablation_20261127.py" -v
+      - name: Emit deterministic synthetic benchmark summary
+        env:
+          PYTHONPATH: v13/code:v14/experiments
+        run: python v14/experiments/a4_temporal_ablation_20261127.py

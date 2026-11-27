@@ -6,8 +6,18 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_teacher_ear.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
       - ".github/workflows/v14-raw-ear-vad-comparison.yml"
@@ -20,8 +30,18 @@ on:
       - "boss/v14-audio-antialias-integration-20261122"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_teacher_ear.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
       - ".github/workflows/v14-raw-ear-vad-comparison.yml"
@@ -45,7 +65,7 @@ jobs:
       - name: Install test-only WebRTC comparator
         run: |
           python -m pip install --upgrade pip
-          python -m pip install webrtcvad-wheels==2.0.14.post1
+          python -m pip install webrtcvad-wheels==2.0.14.post1 numpy==2.2.6 pytest==9.2.0
       - name: Build pinned native libfvad shared library
         run: |
           sudo apt-get update
@@ -67,13 +87,38 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/audio_temporal_prediction.py \
+            v13/code/v13/audio_event_expectation.py \
+            v13/code/v13/audio_teacher_ear.py \
+            v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/tests/test_audio_teacher_ear_runtime_v14.py \
+            v13/code/tests/test_audio_temporal_prediction.py \
             v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_temporal_evidence.py \
+            v13/code/tests/test_audio_ear_voice_cues_v14.py \
+            v13/code/tests/test_audio_speaker_evidence.py \
+            v13/code/tests/test_audio_temporal_evidence.py \
             v14/experiments/raw_ear_vad_compare.py \
             v14/experiments/test_raw_ear_vad_compare.py
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: b18e450162b062b09368a12b1ca18924ed8c5025
-          V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
-        run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
+          V14_EXPECTED_RAW_EAR_V3_BLOB: d80b803591ce9e105a97ce2583c591a327315201
+          V14_EXPECTED_TEACHER_EAR_BLOB: 255c51fd6ade37ada2fc3309fb0cf3e18afe954d
+          V14_EXPECTED_TEMPORAL_VOICE_BLOB: cacf649007a89cbfe74924536e413747d1392db3
+        run: |
+          test "$(git hash-object v13/code/v13/audio_voice_cues.py)" = "$V14_EXPECTED_RAW_EAR_V3_BLOB"
+          test "$(git hash-object v13/code/v13/audio_teacher_ear.py)" = "$V14_EXPECTED_TEACHER_EAR_BLOB"
+          python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
+
+      - name: Run source-bound A4/A5 Runtime audio tests
+        env:
+          PYTHONPATH: v13/code
+        run: >-
+          python -m pytest
+          v13/code/tests/test_audio_ear_voice_cues_v14.py
+          v13/code/tests/test_audio_speaker_evidence.py
+          v13/code/tests/test_audio_temporal_evidence.py
+          v13/code/tests/test_audio_teacher_ear_runtime_v14.py
+          v13/code/tests/test_audio_temporal_prediction.py
+          -q

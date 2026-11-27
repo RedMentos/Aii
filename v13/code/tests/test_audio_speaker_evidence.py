@@ -325,7 +325,21 @@ def test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candida
     class CapturingAttention:
         def modulate(self, event_id, sal):
             captured["sal"] = dict(sal)
-            return {"sal": dict(sal)}
+            return {
+                "sal": dict(sal),
+                "gains": {
+                    "perceptual": 1.0,
+                    "callosum": 1.0,
+                    "workspace": 1.0,
+                    "focal": 1.0,
+                    "action": 1.0,
+                },
+                "salience": max(sal.values(), default=0.0),
+                "caution": 0.0,
+                "interrupt": False,
+                "interrupt_reason": None,
+                "truth_authority": 0,
+            }
 
     monkeypatch.setattr(
         audio_voice_module.attctl,
