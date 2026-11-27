@@ -146,3 +146,32 @@ def test_staged_runtime_greeting_and_acknowledgment_path_end_to_end():
             check=False,
         )
         assert result.returncode == 0, result.stdout + "\n" + result.stderr
+
+
+def test_android_ui_overlay_locates_current_fair_budget_ask_signatures():
+    path = CODE / "scripts/integrated_android_ui_runtime_candidate_20261127.py"
+    spec = importlib.util.spec_from_file_location("android_ui_runtime_overlay", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    signatures = (
+        b"                def ask(role,focus=None,use_peer=True):",
+        b"                def ask(role,focus=None,use_peer=True,role_end=None):",
+        b"                def ask(role,focus=None,use_peer=True,role_end=None,preanswer_budgeted=True):",
+    )
+    for signature in signatures:
+        raw = signature + b"\n                    pass\n                sched=object()\n"
+        start, end = module._ask_block_bounds(raw)
+        assert raw[start:end].startswith(signature)
+        assert raw[end:].startswith(b"\n                sched=")
+
+    duplicate = signatures[-1] + b"\n                def ask(role,focus=None,use_peer=True):\n"
+    with pytest.raises(ValueError, match="exactly one"):
+        module._ask_block_bounds(duplicate)
+
+    unsupported = signatures[-1].replace(
+        b"preanswer_budgeted=True", b"unreviewed=False"
+    ) + b"\n                sched=object()\n"
+    with pytest.raises(ValueError, match="unsupported optional parameters"):
+        module._ask_block_bounds(unsupported)
+
