@@ -14,6 +14,7 @@ from dataclasses import asdict, dataclass
 SCHEMA = "v14.android-capability-registry/1"
 CAPABILITY_IDS = (
     "launch_app",
+    "open_url",
     "audio_capture",
     "observe_ui",
     "screen_capture",
@@ -159,6 +160,17 @@ class CapabilityRegistry:
             or launch.learning_authority is not False
         ):
             raise CapabilityRegistryError("launch_app contract mismatch")
+
+        open_url = by_id["open_url"]
+        if (
+            open_url.status != expected_status
+            or open_url.provider != "ANDROID_ACTION_VIEW_HTTPS"
+            or open_url.per_action_consent is not True
+            or open_url.android_os_permission_required is not False
+            or open_url.result_observed is not False
+            or open_url.learning_authority is not False
+        ):
+            raise CapabilityRegistryError("open_url contract mismatch")
 
         screen_capture = by_id["screen_capture"]
         media_projection_present = screen_capture.provider == "MEDIA_PROJECTION_ONE_SHOT"
