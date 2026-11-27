@@ -56,3 +56,7 @@ Next test: seed a valid periodic pattern in session A, then use the same source/
 
 
 Final branch readback after the R-180 ledger, handoff and board updates: c30ac7467f8c7021507613f6c92471591fbcc355. The A5 code/test head remains fca70db671c14a76c56920d63f4d05d6183a43b8; no code changed after that CI-tested head.
+
+## Device / deployment receipt
+
+Private owner-read requests HEALTH / PIPELINE_STATUS / DIAGNOSTICS were issued as V13READ issues #1008–#1010 with a 10-minute expiry. All three expired without an authenticated device comment: NO_LIVE_RECEIPT. The last accessible private V13OBS #115 snapshot was updated 2026-11-24; it does not establish the current installed state for this run. Updater state was therefore not reverified. No UPDATE_REQUEST, model download/swap, Termux command, permission change or device action was attempted. RELEASE-SHA: NOT_RELEASED.
