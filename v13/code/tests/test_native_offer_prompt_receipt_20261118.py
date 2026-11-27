@@ -488,6 +488,8 @@ class SQLiteNativeAudit(unittest.TestCase):
                     "revision": TOKEN_SPAN_REVISION, "status": "VERIFIED",
                     "prompt_sha256": "a" * 64, "token_ids_sha256": "b" * 64,
                     "token_count": 521, "leading_added_special_token_count": 1,
+                    "trailing_added_special_token_count": 0,
+                    "content_token_ids_sha256": "e" * 64,
                     "offers": [
                         {"role": "B1_DETAIL", "packet_id": "b1", "quote_spans": [{
                             "quote_index": 0, "source_sha256": "a" * 64,
@@ -495,13 +497,15 @@ class SQLiteNativeAudit(unittest.TestCase):
                             "prompt_byte_start": 100, "prompt_byte_end": 140,
                             "token_start": 5, "token_end_exclusive": 8, "token_count": 3,
                             "first_token_byte_start": 0, "last_token_byte_end": 4,
+                            "first_token_piece_bytes": 10, "last_token_piece_bytes": 4,
                             "token_ids_sha256": "c" * 64}]},
                         {"role": "B2_GIST", "packet_id": "b2", "quote_spans": [{
                             "quote_index": 1, "source_sha256": "a" * 64,
                             "source_char_start": 0, "source_char_end": len(SECRET),
                             "prompt_byte_start": 200, "prompt_byte_end": 240,
                             "token_start": 9, "token_end_exclusive": 12, "token_count": 3,
-                            "first_token_byte_start": 1, "last_token_byte_end": 5,
+                            "first_token_byte_start": 0, "last_token_byte_end": 5,
+                            "first_token_piece_bytes": 8, "last_token_piece_bytes": 5,
                             "token_ids_sha256": "d" * 64}]},
                     ],
                 }}
@@ -560,7 +564,8 @@ class SQLiteNativeAudit(unittest.TestCase):
 
     def test_native_prompt_token_span_audit_rejects_mismatch_and_bad_bounds(self):
         for change in ("prompt_hash", "token_hash", "token_count", "token_start",
-                       "missing_role", "quote_count", "malformed_role"):
+                       "missing_role", "quote_count", "malformed_role",
+                       "partial_boundary", "overlap_prompt", "overlap_tokens"):
             with self.subTest(change=change):
                 self.db.execute("DELETE FROM messages")
                 self.db.execute("DELETE FROM packets")
@@ -586,6 +591,14 @@ class SQLiteNativeAudit(unittest.TestCase):
                     span["offers"][0]["quote_spans"].pop()
                 elif change == "malformed_role":
                     span["offers"][0]["role"] = []
+                elif change == "partial_boundary":
+                    span["offers"][0]["quote_spans"][0]["first_token_byte_start"] = 1
+                elif change == "overlap_prompt":
+                    span["offers"][1]["quote_spans"][0]["prompt_byte_start"] = 120
+                elif change == "overlap_tokens":
+                    span["offers"][1]["quote_spans"][0]["token_start"] = 7
+                    span["offers"][1]["quote_spans"][0]["token_end_exclusive"] = 10
+                    span["offers"][1]["quote_spans"][0]["token_count"] = 3
                 self.db.execute(
                     "UPDATE messages SET metadata=? WHERE event_id=?",
                     (json.dumps(metadata), "E"),
