@@ -18,7 +18,7 @@
 
 ## Device / updater boundary
 
-No fresh authenticated private device receipt was available. Last available private V13OBS #115 is historical (2026-11-24) and reported runtime/model process stopped; it is not current installation proof. Installed SHA and updater state remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, capture, model/weight swap or data action was performed. GitHub PR #2566 is not a deployment. **NOT_RELEASED.**
+No fresh authenticated receipt is available today. The latest private V13OBS #115 (updated 2026-11-24 09:28:11Z) last reported auto-update enabled and dashboard/runtime UP_TO_DATE at updated_commit `8d93236c753f0194224c19edc7411d8d7082b1d6`; the AI runtime was STOPPED_BY_USER, model process STOPPED, service/dashboard process RUNNING and autostart false. Its last observed turn was 6.295 s / TTFT 2.046 s / 358 prompt tokens / 7 C3 tokens; B1/B2 native probes ended TIME_BUDGET at 53.2/54.2 s with zero valid offers; native probe SMOKE_PARTIAL. Newer private V13READ requests expired without a device_status reply: NO_LIVE_RECEIPT. This is historical, not a current install confirmation. The reported 8d932 development-branch commit is 83 commits ahead of the latest integrated release head b20e9 (37/37 CI green); do not conflate them. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, capture, model/weight swap or data action was performed. GitHub PR #2566 is not a deployment. **REDMI_UNVERIFIED / NOT_RELEASED.**
 
 ---
 
