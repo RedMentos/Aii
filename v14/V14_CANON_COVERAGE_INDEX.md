@@ -2502,3 +2502,13 @@ This overlay does not promote A5 to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEP
 ### Run 64 final gate status (2026-11-27)
 
 The focused receiver is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted: final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` passes 25/25 on Python 3.13 and 25/25 on Python 3.14; runtime deployment integrity passes. Shared staged/integrated remains **FAIL** on Core-owned source pins and QA migration assertions. No local full-repo, native Android, real C3-turn or Redmi evidence. Do not promote the A5 screen/UI path beyond WIRED_SYNTHETIC. Core normal-turn Runtime/C3 and QA Android lifecycle remain OPEN.
+
+
+## 2026-11-28 evidence overlay — consent-gated Android ACTION_VIEW
+
+- **Canon families:** Android capability/companion control, C5 action intent, JEF/C6 outcome publication, Enlightened-Space source-bound context, restart/recovery and permission boundaries.
+- **Classification:** `WIRED_SYNTHETIC / CI-CANDIDATE`; `DRAFT_NOT_RELEASED`; `REDMI_UNVERIFIED`. Do not promote to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF or ACCEPTED.
+- **Code:** PR #2576, code SHA `0b2b7697449da81e9c6f141eae0a4ee066fd8575`, stacked on #2573/#2568. The ready `open_url` capability remains local-TTY and visible-consent gated; receipt recovery is redacted and non-dispatchable; JEF metadata explicitly carries no device observation, learning, production or training authority.
+- **Evidence:** prior code-head broker/contract/simulation/capture-gate PASS; Python 3.13/3.14 suites each 147/148 and companion-outcome suites each 177/178 with sole QA source-pin failure; Gradle 77 tests with one stale assertion corrected in final head; exact-head workflows queued. Local full checkout unavailable due GitHub DNS.
+- **Missing acceptance:** exact-head CI; QA guard/migration reconciliation; independent QA/Boss review; normal-turn model action proposal; real companion APK install and authorized Redmi test; observed browser/UI outcome; trained latent coupling; T8 learning authority; voice/audio acceptance.
+- **Interpretation limit:** Android ACTION_VIEW API output is documented as nothing. A signed companion receipt is not browser-render proof, user-visible content proof, native latent evidence or learning evidence.

@@ -1,4 +1,42 @@
 
+
+## Latest verified handoff — 2026-11-28 (Core & Harness)
+
+**Code branch:** `core/v14-open-url-ci-repair-20261128-run3`  
+**Code SHA:** `0b2b7697449da81e9c6f141eae0a4ee066fd8575`  
+**Review PR:** [#2576](https://github.com/RedMentos/Aii/pull/2576) — draft, stacked on [#2573](https://github.com/RedMentos/Aii/pull/2573), itself based on #2568.  
+**Release/deployment:** NOT_RELEASED. **Redmi:** REDMI_UNVERIFIED.
+
+### Actual code changes
+- `open_url` is now recognized as a ready capability, but it remains explicitly consent-gated; unfinished capabilities stay fail-closed.
+- Fixed the literal-dot package validation used by `launch_app`.
+- Legacy companion receipt metadata now defaults to non-authoritative values; verifier output cannot grant device observation, production routing, World/T8 learning, training or native-receiver authority.
+- Added read-only recovery of a verified HTTPS action receipt after restart. It restores no URL or action arguments and returns `recovery_only=True`, so it cannot be dispatched again.
+- Persisted the full non-authority metadata consumed by the JEF/Enlightened-Space receipt publisher.
+- Refreshed the Core-owned staged UI source pin and corrected the Android companion test fixture/import and target-mismatch assertion.
+- Corrected the screen-capture negative test to mutate the actual screen_capture slot rather than observe_ui.
+
+### Test evidence and limits
+- Exact final head `0b2b7697449da81e9c6f141eae0a4ee066fd8575`: full GitHub Actions set was QUEUED at last readback.
+- Pre-final code head `48007af149e86174b0655a01a56b810ccc932169`: broker, contract, simulation and capture-session-gate jobs PASS. Python 3.13/3.14 frame-provider suites each had 147 PASS / 1 FAIL; companion-outcome suites each had 177 PASS / 1 FAIL. The sole failure in those suites was the QA-owned stale controller-guard source pin.
+- The pre-final Android Gradle run compiled the companion and ran 77 unit tests; one old assertion expected “package mismatch” while the generic contract correctly returned “target mismatch”. That assertion is corrected in final code SHA `0b2b769`; exact-head rerun is queued.
+- Staged/integrated regression on the pre-final head remains FAIL because of the QA-owned JEF source pin and two migration assertions that report PARTIAL while tests expect UPDATED. Do not weaken the guard or relabel PARTIAL as UPDATED without QA review.
+- Local full checkout/pytest/Gradle NOT RUN: `git ls-remote` failed because github.com DNS could not be resolved. GitHub Actions is CI, not local or Android proof.
+- Android process-restart workflow had not completed at last readback.
+
+### Cross-owner blockers
+1. QA owns `record_only_controller_guard_20261116.py`. It still pins the older `jefbridge.py` SHA-256 `875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff`; the reviewed JEF receipt publisher on #2573 is `441ede97018c4490fceb15553230f949006424f6717b4fa4cf597f963575d812`. QA must refresh the exact accepted hash without weakening the guard.
+2. QA must reconcile the two-checkout migration assertions that expect UPDATED while the tested updater path reports PARTIAL.
+3. PR #2572's native receiver matrix tests are 15/15 PASS on Python 3.13 and 3.14 and RuntimeDeploy integrity is PASS, but staged integration is blocked by the same guard. Its aggregate K/V task-score cohort should be explicitly distinguished from the current matrix task group before a consumer attributes those effects to one matrix run.
+
+### Next executable work
+- Finish exact-head CI for #2576; after QA resolves the shared guard/migration blockers, rerun staged/integrated regression.
+- Integrate the compatible #2568 → #2573 → #2576 stack only after independent QA/Boss review.
+- Continue P0 normal-turn A/B/B1/B2/C4/JEF/C3 wiring and the native receiver path. The staged arithmetic/greeting fastpaths and this Android receipt path are not Redmi acceptance or whole-system completion.
+- Preserve local TTY and visible Android consent; keep companion default-OFF. No model/weight/permission swap or device command is authorized by this checkpoint.
+
+**User action:** none. No manual Termux command, model download, permission grant or device test is needed now.
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 66)
 
 **User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, restart, permission change, model download/swap or device-data mutation is needed for this draft Perception integration.
