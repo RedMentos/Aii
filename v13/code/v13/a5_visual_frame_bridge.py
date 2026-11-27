@@ -452,7 +452,9 @@ def consume_visual_frame(
 
     attention = attctl.controller(runtime)
     a4 = attention.perceive(event_id, segments, goal=goal, file_requests=False)
-    a4 = a4vis.apply_raw_eye_structure(a4, segments[0], raw_eye_score, raw_eye_components)
+    a4 = a4vis.apply_raw_eye_structure(
+        a4, segments[0], raw_eye_score, raw_eye_components, segment_index=0
+    )
     candidate = Percept(
         observation["source_id"],
         "visual",
