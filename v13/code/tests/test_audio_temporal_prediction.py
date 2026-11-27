@@ -867,6 +867,8 @@ def test_a4_temporal_prediction_is_source_bound_into_b1_b2_and_c3_context(tmp_pa
             assert temporal["temporal_prediction"]["training_data_persisted"] is False
             assert "pcm16" not in json.dumps(context["body"])
             assert context["body"]["transcript"] is None
+            assert context["body"]["observations"]
+            assert all(len(item["summary"]) <= 256 for item in context["body"]["observations"])
             for role in ("B1_DETAIL", "B2_GIST", "C3"):
                 viewed = context_store.view(runtime, event["event_id"], role)
                 assert viewed is not None
