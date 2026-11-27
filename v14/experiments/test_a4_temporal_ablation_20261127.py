@@ -45,6 +45,29 @@ class A4TemporalAblationTests(unittest.TestCase):
                 self.assertIsNotNone(metrics["mean_persistence_baseline_mae"])
                 self.assertIsNotNone(metrics["mean_improvement_mae"])
 
+    def test_event_expectation_distinguishes_on_time_from_missing_event(self):
+        event = self.result["event_expectation"]
+        self.assertFalse(event["expected_on_time"]["omission_detected"])
+        self.assertTrue(event["missing_event"]["omission_detected"])
+        self.assertGreater(event["missing_event"]["omission_novelty"], 0.0)
+        self.assertLessEqual(event["missing_event"]["omission_novelty"], event["attention_gain_cap"])
+        self.assertGreaterEqual(event["missing_event"]["timing_confidence_proxy"], 0.45)
+
+    def test_event_expectation_source_isolation_and_censoring_controls(self):
+        event = self.result["event_expectation"]
+        self.assertTrue(event["source_isolation_equal"])
+        self.assertEqual(event["uncertain_control"]["status"], "CENSORED_UNCERTAIN")
+        self.assertFalse(event["uncertain_control"]["omission_detected"])
+        self.assertEqual(event["provisional_control"]["status"], "PROVISIONAL_IGNORED")
+        self.assertTrue(event["provisional_control"]["state_retained"])
+        self.assertTrue(event["provisional_control"]["final_after_provisional_detected"])
+        self.assertEqual(event["consent_reset_control"]["status"], "RESET_CONSENT_SCOPE")
+        self.assertFalse(event["consent_reset_control"]["omission_detected"])
+        self.assertEqual(event["consent_reset_control"]["interval_samples"], 0)
+        self.assertEqual(event["no_context_control"]["omissions"], 0)
+        self.assertEqual(event["no_context_control"]["max_omission_novelty"], 0.0)
+        self.assertEqual(event["no_context_control"]["final_stream_count"], 0)
+
     def test_no_context_negative_control_never_learns_or_emits_novelty(self):
         control = self.result["no_context_control"]
         self.assertEqual(control["measured_windows"], 0)
