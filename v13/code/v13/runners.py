@@ -316,8 +316,14 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    if type(witness) is dict:
+                        witness.update({
+                            'native_prompt_sha256': digest(p),
+                            'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
+                            'native_prompt_tokens': count,
+                        })
+                    self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             candidate=admission.reduce_once(
                 work,self.role,self.cfg,
@@ -336,8 +342,14 @@ class LlamaRunner:
                 if self.role == 'C3_LANGUAGE':
                     from .native_offer_prompt_receipt import inspect
                     from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    if type(witness) is dict:
+                        witness.update({
+                            'native_prompt_sha256': digest(p),
+                            'native_token_ids_sha256': digest(json.dumps(tokens, separators=(',', ':'))),
+                            'native_prompt_tokens': count,
+                        })
+                    self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
         raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
