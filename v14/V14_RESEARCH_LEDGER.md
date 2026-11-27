@@ -2088,3 +2088,31 @@ For the future normal-turn A5/A4 → B1/B2/C3 consumer, measure **answer quality
 ## Run 65 private-device receipt check — 2026-11-27T11:23:36Z
 
 - Read-only owner-relay requests were created in private RedMentos/Aiiii: #1017 HEALTH, #1018 PIPELINE_STATUS, #1019 DIAGNOSTICS. Immediate readback found zero authenticated device_status comments on all three: NO_LIVE_RECEIPT. Do not infer current installed SHA, updater state, runtime process or phone health from the old 2026-11-24 V13OBS #115 snapshot. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission or data action was performed.
+
+
+## R-184 — Preflight optional A3 projector NPY headers before allocation (2026-11-27)
+
+### Primary technical source review
+- NumPy's public `numpy.lib.format.read_array_header_1_0` and `read_array_header_2_0` APIs read an NPY header and leave the stream immediately after it, returning shape, memory order and dtype: https://numpy.org/doc/stable/reference/generated/numpy.lib.format.read_array_header_1_0.html
+- The current NumPy source shows why this matters for a ZIP-backed `.npz`: `read_array` parses the shape, computes `count`, and on the non-file-object path allocates `numpy.ndarray(count, dtype)` before reading the payload: https://github.com/numpy/numpy/blob/main/numpy/lib/_format_impl.py (see `read_array`, shape/count and array allocation).
+- `allow_pickle=False` prevents object-array unpickling, but it does not constrain a numeric array's declared element count. ZIP uncompressed-byte caps alone do not validate the internal NPY shape.
+
+### Reproduced V14 gap
+The optional `vision_ui_frame_ingress._load_local_tile_projector()` already checks the exact four ZIP member names, file type, SHA-256, compressed/uncompressed byte limits, symlink/FIFO behavior and `allow_pickle=False`. It nevertheless called `np.load(BytesIO(raw))` before checking the NPY shapes. A tiny member can declare an enormous numeric tensor and omit its payload; NumPy may attempt the shape-derived allocation before the truncated read is detected. The projector is optional LAB_SHADOW_ONLY, but inspecting it must not create a memory-pressure path.
+
+### V14 implementation
+- PR [#2558](https://github.com/RedMentos/Aii/pull/2558), child of [#2557](https://github.com/RedMentos/Aii/pull/2557), branch `research-perception/v14-a5-projector-npy-header-preflight-20261127-run66`.
+- Exact head: `39b148c28007775139ff75f8d8fd4ff21cbe0a10`; runtime module blob `cfd86b34d4db9cf1e6fb59fc82bc372efaef5aa9`; regression-test blob `6a1b7df21d2d2a4985725c6f2d9cb16538d6f7e3`.
+- New preflight reads only NPY 1.0/2.0 headers before `np.load`, accepts only the exact four names, float64, fixed `mu/sd/meta` shapes and `W=(38, 1..4096)`, and verifies exact header-plus-payload byte counts within the existing 8 MiB cap. Unsupported/malformed/truncated/oversized headers fail closed with `PROJECTOR_TENSOR_HEADER_INVALID`; the handcrafted RAW-EYE path remains available.
+- No dependency, model, weight, persistent user state, Android permission or action/learning authority changed.
+
+### Reproduction and verification boundary
+- LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5 isolated preflight reproduction: **PASS**. A valid archive header was accepted; a sub-4-KiB archive declaring `W=(38,100,000,000)` was rejected before `np.load`; a truncated in-range tensor was also rejected. This was an isolated helper reproduction, not the full repository suite.
+- Repository regression adds both huge-shape and truncated-payload cases and monkeypatches `np.load` to assert it is never reached for invalid headers.
+- Exact-head GitHub Actions for PR #2558: **PENDING at ledger checkpoint**. Full local Aii checkout/pytest: **BLOCKED / NOT_RUN** because no checkout is mounted and `git ls-remote` cannot resolve github.com.
+- PR #2557 parent evidence remains separate: exact focused MediaProjection workflow 45990252040 **PASS** (28/28 Python 3.13 and 28/28 Python 3.14); RuntimeDeploy integrity 45990252168 **PASS**; shared staged/integrated 45990252237 **FAIL** on Core-owned composer/arithmetic/observer pins and QA migration assertions. That parent is still WIRED_SYNTHETIC, not a normal Runtime/C3 or Android capture proof.
+- Private device relay #1017–#1019 returned no authenticated comments. The latest available private V13OBS #115 snapshot is 2026-11-24: updater reported enabled/UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false; B1/B2 still had TIME_BUDGET failures. This is historical only, not current install/updater proof.
+- Status: **FOCUSED LOCAL HELPER PASS / EXACT CI PENDING / FULL LOCAL SUITE BLOCKED / REDMI_UNVERIFIED / NOT_RELEASED**.
+
+### Canon mapping and next test
+This hardens the optional A3 local student-projector read used by the A5 UI-frame path; it is a resource-safety improvement, not new visual understanding, trained latent coupling or an A5 normal-turn consumer. After exact CI, keep Core's normal Runtime/C3 lease-scoped consumer and QA's Android consent/onStop/process-death/revoke/restart/rollback as separate acceptance steps. Do not enable screen capture or promote the optional projector from this PR.
