@@ -327,3 +327,22 @@ def test_controller_open_current_turn_checks_readiness_and_closes_provider(monke
     with controller.open_current_turn(object()) as grant:
         assert grant is None
         assert events == ["verifier", "provider", "provider_close"]
+
+
+def test_normal_runtime_composer_preserves_audio_and_ui_source_bindings():
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "termux_runtime_recovery_candidate_20261121.py"
+    spec = importlib.util.spec_from_file_location("v14_ui_audio_composer_test", builder_path)
+    assert spec is not None and spec.loader is not None
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    composed = builder.build_sources(code_dir)
+    cognition = composed["v13/cognition.py"].decode("utf-8")
+    assert "audio_context_refs" in cognition
+    assert "ephemeral_ui_binding" in cognition
+    assert "ephemeral_ui_source_refs" in cognition
+    scope = cognition.split("def analyst_context", 1)[1].split("def communicate", 1)[0]
+    assert "query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])" in scope
+    assert "query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')" in scope
+    assert "query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])" in scope
+

@@ -18,7 +18,7 @@ NATIVE_RECEIVER_BLOB_SHA1 = "e27b47d6eccc28123f35480996dd71914da61a4e"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "3c71a71b4171f49c20b57fadee190b22576fa953"
 UI_RUNTIME_OVERLAY = "scripts/integrated_android_ui_runtime_candidate_20261127.py"
-UI_RUNTIME_OVERLAY_BLOB_SHA1 = "5a88eb284a9129a6ed98a40d4b94b95f8d89ed1c"
+UI_RUNTIME_OVERLAY_BLOB_SHA1 = "109e525011104db4febf68b041d99f766177353d"
 
 
 def _git_blob_sha1(raw: bytes) -> str:

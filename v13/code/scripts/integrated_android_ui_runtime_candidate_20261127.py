@@ -56,6 +56,37 @@ def _append_offer_parameter(raw: bytes) -> bytes:
     return raw[:end] + b",ui_context=None" + raw[end:]
 
 
+def _bind_ui_offer_scope(raw: bytes) -> bytes:
+    """Bind UI metadata without dropping the audio-source lineage added upstream."""
+    base_anchor = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\n"
+    )
+    audio_anchor = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):\n"
+    )
+    base_count = raw.count(base_anchor)
+    audio_count = raw.count(audio_anchor)
+    if audio_count == 1 and base_count == 0:
+        anchor = audio_anchor
+    elif base_count == 1 and audio_count == 0:
+        anchor = base_anchor
+    else:
+        raise ValueError(
+            "Android UI overlay anchor mismatch: source-bound query/offer scope "
+            + f"base={base_count} audio={audio_count}"
+        )
+    replacement = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])\n"
+        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\n"
+        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\n"
+    )
+    return raw.replace(anchor, replacement, 1)
+
+
+
+
 def _ask_block_bounds(raw: bytes) -> tuple[int, int]:
     marker = b"                def ask("
     if raw.count(marker) != 1:
@@ -190,14 +221,7 @@ def _patch_cognition(raw: bytes) -> bytes:
         b"            p['ephemeral_ui_source_refs']=ui_refs\n",
         "bind UI receipt to the exact body offer",
     )
-    raw = _replace_once(
-        raw,
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\n",
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
-        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\n"
-        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\n",
-        "reject UI binding substitution between query and offer",
-    )
+    raw = _bind_ui_offer_scope(raw)
     raw = _replace_once(
         raw,
         b"                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})\n",
@@ -209,26 +233,46 @@ def _patch_cognition(raw: bytes) -> bytes:
 
 
 def _patch_operator(raw: bytes) -> bytes:
-    if b"if cmd=='android':" in raw:
-        raise ValueError("Android operator route is already present")
-    raw = _replace_once(
-        raw,
-        b":ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)\n",
-        b":ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)\n"
-        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)\n",
-        "document local consent-gated Android companion commands",
+    newline = bytes((10,))
+    has_route = b"if cmd=='android':" in raw
+    has_help = b":android status|capabilities|" in raw
+    if has_route and has_help:
+        return raw
+    if has_route or has_help:
+        raise ValueError("Android operator route/help is only partially present")
+
+    help_line = (
+        b":android status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop (separate companion; default OFF; visible OS/per-action consent)"
+        + newline
+    )
+    help_matches = [
+        line for line in raw.splitlines(keepends=True)
+        if line.lstrip().startswith(b":ctxos ")
+    ]
+    if len(help_matches) != 1:
+        raise ValueError(
+            "Android UI overlay anchor mismatch: Context OS help line count="
+            + str(len(help_matches))
+        )
+    help_anchor = help_matches[0]
+    if not help_anchor.endswith(newline):
+        help_anchor += newline
+    raw = raw.replace(help_matches[0], help_anchor + help_line, 1)
+
+    callosum = (
+        b"        if cmd=='callosum':" + newline
+        + b"            from .callosum import operator_command" + newline
+        + b"            return operator_command(r,args)" + newline
+    )
+    android = (
+        b"        if cmd=='android':" + newline
+        + b"            from .android_companion_runtime import operator_command" + newline
+        + b"            return operator_command(r,args)" + newline
     )
     raw = _replace_once(
         raw,
-        b"        if cmd=='callosum':\n"
-        b"            from .callosum import operator_command\n"
-        b"            return operator_command(r,args)\n",
-        b"        if cmd=='callosum':\n"
-        b"            from .callosum import operator_command\n"
-        b"            return operator_command(r,args)\n"
-        b"        if cmd=='android':\n"
-        b"            from .android_companion_runtime import operator_command\n"
-        b"            return operator_command(r,args)\n",
+        callosum,
+        callosum + android,
         "dispatch local Android companion controls",
     )
     return raw
