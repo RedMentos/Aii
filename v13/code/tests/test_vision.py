@@ -5,6 +5,11 @@ import threading
 import unittest
 from pathlib import Path
 from v13 import vision
+from v13.a4_visual_salience import (
+    VisionTemporalEvidenceRegistry,
+    apply_raw_eye_structure,
+    reset_visual_temporal_state,
+)
 from v13.common import Unavailable
 from v13.config import initialize
 from v13.store import Store
@@ -193,6 +198,207 @@ class Vision(unittest.TestCase):
         self.assertEqual(rejected['status'], 'OUT_OF_DISTRIBUTION')
         self.assertEqual(rejected['tiles'], []); self.assertEqual(len(rejected['ood_regions']), 16)
         self.assertTrue(all(value is None for row in rejected['heat'] for value in row))
+
+
+class VisionTemporalEvidence(unittest.TestCase):
+    def setUp(self):
+        reset_visual_temporal_state()
+
+    def tearDown(self):
+        reset_visual_temporal_state()
+
+    @staticmethod
+    def components(offset=0.0):
+        return {
+            "global_contrast": 0.10 + offset,
+            "global_edge_energy": 0.20 + offset,
+            "cell_edge_energy": 0.30 + offset,
+            "spatial_color": 0.40 + offset,
+            "luminance_range": 0.50 + offset,
+        }
+
+    @staticmethod
+    def frame_ref(digest):
+        return {
+            "source_id": "ui_frame_" + digest[:12],
+            "modality": "visual",
+            "sha256": digest,
+            "char_start": 0,
+            "char_end": 0,
+        }
+
+    @staticmethod
+    def a4_result(frame_ref, base_score=0.50):
+        return {
+            "segments": [
+                {
+                    "index": 0,
+                    "source_ref": {
+                        "source_id": "screen-source",
+                        "modality": "ui",
+                        "sha256": "a" * 64,
+                        "char_start": 0,
+                        "char_end": 0,
+                    },
+                    "score": 0.20,
+                },
+                {"index": 1, "source_ref": frame_ref, "score": base_score},
+            ],
+            "highres": [],
+        }
+
+    @staticmethod
+    def segment(frame_ref, start_ms, end_ms, *, finality="FINAL",
+                session="capture-session-a", consent="consent-receipt-a"):
+        return {
+            "modality": "visual",
+            "source_ref": frame_ref,
+            "capture_method": "MEDIA_PROJECTION",
+            "producer_component": "A5_VISUAL",
+            "capture_session_id": session,
+            "consent_receipt_ref": consent,
+            "start_ms": start_ms,
+            "end_ms": end_ms,
+            "clock": "ELAPSED_REALTIME",
+            "finality": finality,
+        }
+
+    def apply_frame(self, digest, start_ms, end_ms, *, offset=0.0,
+                    finality="FINAL", session="capture-session-a",
+                    consent="consent-receipt-a", segment_index=1):
+        frame = self.frame_ref(digest)
+        result = self.a4_result(frame)
+        segment = self.segment(
+            frame, start_ms, end_ms, finality=finality,
+            session=session, consent=consent,
+        )
+        apply_raw_eye_structure(
+            result, segment, 0.40, self.components(offset), segment_index=segment_index,
+        )
+        return result
+
+    def test_a4_temporal_change_is_source_scoped_and_modulates_attention(self):
+        first = self.apply_frame("1" * 64, 1000, 1100)
+        first_signal = first["raw_eye_signal"]["temporal_visual_change"]
+        self.assertEqual(first_signal["status"], "WARMUP")
+        self.assertEqual(first["segments"][1]["temporal_visual_change_contribution"], 0.0)
+
+        second = self.apply_frame("2" * 64, 1200, 1300, offset=0.20)
+        signal = second["raw_eye_signal"]["temporal_visual_change"]
+        self.assertEqual(signal["status"], "MEASURED")
+        self.assertAlmostEqual(signal["change_score"], 0.20, places=6)
+        self.assertTrue(signal["change_detected"])
+        self.assertGreater(second["segments"][1]["temporal_visual_change_contribution"], 0.0)
+        self.assertGreater(second["segments"][1]["score"], second["segments"][1]["base_score"])
+        self.assertAlmostEqual(sum(row["weight"] for row in second["segments"]), 1.0, places=5)
+        self.assertEqual(signal["authority"], "ATTENTION_ONLY")
+        self.assertFalse(signal["persisted"])
+        self.assertFalse(signal["learned"])
+        self.assertEqual(signal["truth_authority"], 0)
+        self.assertFalse(signal["action_authority"])
+        self.assertFalse(signal["learning_authority"])
+
+    def test_identical_components_are_a_zero_change_negative_control(self):
+        self.apply_frame("3" * 64, 1000, 1100)
+        result = self.apply_frame("4" * 64, 1200, 1300)
+        signal = result["raw_eye_signal"]["temporal_visual_change"]
+        self.assertEqual(signal["status"], "MEASURED")
+        self.assertEqual(signal["change_score"], 0.0)
+        self.assertFalse(signal["change_detected"])
+        self.assertEqual(result["segments"][1]["temporal_visual_change_contribution"], 0.0)
+
+    def test_provisional_frame_does_not_advance_final_baseline(self):
+        self.apply_frame("5" * 64, 1000, 1100)
+        provisional = self.apply_frame(
+            "6" * 64, 1200, 1300, offset=0.20, finality="PROVISIONAL",
+        )
+        self.assertEqual(
+            provisional["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "PROVISIONAL_IGNORED",
+        )
+        final = self.apply_frame("7" * 64, 1400, 1500, offset=0.20)
+        signal = final["raw_eye_signal"]["temporal_visual_change"]
+        self.assertEqual(signal["status"], "MEASURED")
+        self.assertAlmostEqual(signal["change_score"], 0.20, places=6)
+
+    def test_consent_and_session_boundaries_reset_without_cross_scope_delta(self):
+        self.apply_frame("8" * 64, 1000, 1100)
+        new_session = self.apply_frame(
+            "9" * 64, 1200, 1300, offset=0.20, session="capture-session-b",
+        )
+        self.assertEqual(
+            new_session["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "SCOPE_RESET",
+        )
+        new_consent = self.apply_frame(
+            "a" * 64, 1400, 1500, offset=0.30,
+            session="capture-session-b", consent="consent-receipt-b",
+        )
+        self.assertEqual(
+            new_consent["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "SCOPE_RESET",
+        )
+
+    def test_gap_and_clock_regression_reset_instead_of_inventing_change(self):
+        self.apply_frame("b" * 64, 1000, 1100)
+        gap = self.apply_frame("c" * 64, 200000, 200100, offset=0.40)
+        self.assertEqual(
+            gap["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "GAP_RESET",
+        )
+        clock = self.apply_frame("d" * 64, 190000, 190100, offset=0.50)
+        self.assertEqual(
+            clock["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "CLOCK_OR_OVERLAP_RESET",
+        )
+
+    def test_bad_target_row_does_not_mutate_temporal_state(self):
+        frame = self.frame_ref("e" * 64)
+        result = self.a4_result(frame)
+        with self.assertRaises(ValueError):
+            apply_raw_eye_structure(
+                result, self.segment(frame, 1000, 1100), 0.40,
+                self.components(), segment_index=99,
+            )
+        valid = self.apply_frame("f" * 64, 1200, 1300)
+        self.assertEqual(
+            valid["raw_eye_signal"]["temporal_visual_change"]["status"],
+            "WARMUP",
+        )
+
+    def test_missing_scope_keeps_static_raw_eye_path_available(self):
+        frame = self.frame_ref("0" * 64)
+        result = self.a4_result(frame)
+        segment = {
+            "modality": "visual",
+            "source_ref": frame,
+            "capture_method": "MEDIA_PROJECTION",
+            "producer_component": "A5_VISUAL",
+        }
+        apply_raw_eye_structure(result, segment, 0.40, self.components())
+        signal = result["raw_eye_signal"]["temporal_visual_change"]
+        self.assertEqual(signal["status"], "UNAVAILABLE")
+        self.assertGreater(result["segments"][1]["raw_eye_contribution"], 0.0)
+        self.assertEqual(result["segments"][1]["temporal_visual_change_contribution"], 0.0)
+
+    def test_registry_is_bounded_and_rejects_invalid_metadata(self):
+        registry = VisionTemporalEvidenceRegistry(max_streams=2, max_gap_ms=1000)
+        invalid = registry.observe(
+            source_id="", capture_session_id="s", consent_receipt_ref="c",
+            start_ms=1, end_ms=2, finality="FINAL", frame_sha256="1" * 64,
+            components=self.components(),
+        )
+        self.assertEqual(invalid["status"], "UNAVAILABLE")
+        for index in range(3):
+            registry.observe(
+                source_id=f"source-{index}",
+                capture_session_id=f"session-{index}",
+                consent_receipt_ref=f"consent-{index}",
+                start_ms=1000, end_ms=1100, finality="FINAL",
+                frame_sha256=str(index) * 64,
+                components=self.components(),
+            )
+        self.assertLessEqual(registry.state_count, 2)
 
 if __name__ == '__main__':
     unittest.main()
