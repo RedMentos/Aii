@@ -1810,3 +1810,10 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **Tests / gates:** GitHub Actions workflow 45974814847 compiled the exact module/tests and passed 25/25 tests on Python 3.13 and 25/25 on Python 3.14. Fixtures use generated PNGs and synthetic provider/lease state. Full local Aii checkout/pytest remains BLOCKED/NOT_RUN because no local checkout is mounted and GitHub DNS fails. Shared staged run 45974814855 fails 20/233/10/2/41 at pre-existing Core-owned audio-composer/arithmetic/observer source pins and QA PARTIAL-vs-UPDATED migration assertions; integrated regression was still running at last poll. No pin or migration assertion was weakened.
 
 **Integration boundary:** Core provider PR #2408 must rebase onto #2557; Core still owns the normal-turn Runtime/C3 callsite and must keep the lease live through context consumption. QA owns independent Android MediaProjection consent/onStop, cancel/revoke, process restart and rollback. The provider remains OFF until those gates and a consented Redmi receipt exist. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+### Run 64 final verification addendum (2026-11-27)
+
+- Final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f`: focused MediaProjection ingress workflow 45975248573 **PASS** (py_compile + 25/25 Python 3.13 + 25/25 Python 3.14); runtime deployment integrity 45975248638 **PASS**.
+- Shared staged workflow 45975248465 **FAIL** (20 failed/233 passed/10 skipped/2 errors/41 subtests) on pre-existing Core Recovery audio-composer, arithmetic and observer source pins plus QA migration PARTIAL-vs-UPDATED assertions. Integrated regression 45975248465 **FAIL** (1 Core Recovery audio-composer pin). Perception focused tests are green; shared product gate is not.
+- Full local checkout unavailable; no Android/Redmi proof. Next: Core rebase/port provider onto #2557 and wire normal Runtime/C3; QA repairs migration expectations and tests OS consent/onStop/restart/rollback. No deployment.
