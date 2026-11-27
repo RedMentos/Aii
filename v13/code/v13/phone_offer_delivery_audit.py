@@ -137,6 +137,44 @@ def _runtime_native_template_receipts(report, selected, events):
     return matched
 
 
+
+def _valid_sha256(value):
+    return (type(value) is str and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
+def _native_prefill_token_count_match(report):
+    prompt_tokens = _count(report.get("prompt_tokens"))
+    timings = report.get("timings")
+    if type(timings) is not dict or prompt_tokens is None:
+        return False
+    prompt_n, cache_n = timings.get("prompt_n"), timings.get("cache_n")
+    return (type(prompt_n) is int and prompt_n >= 0
+            and type(cache_n) is int and cache_n >= 0
+            and prompt_n + cache_n == prompt_tokens)
+
+
+def _native_prompt_inclusion_mode(report, template_roles, native_c3_output,
+                                  incomplete, prefill_count_matched):
+    if (not native_c3_output or incomplete or set(template_roles) != set(ROLES)
+            or not prefill_count_matched):
+        return None
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return None
+    request_sha = witness.get("native_request_prompt_sha256")
+    prompt_sha = witness.get("native_prompt_sha256")
+    if (witness.get("native_completion_http_200") is not True
+            or witness.get("native_template_submitted") is not True
+            or witness.get("native_request_prompt_submitted") is not True
+            or witness.get("native_request_prompt_matches_admission") is not True
+            or not _valid_sha256(prompt_sha)
+            or not _valid_sha256(request_sha)
+            or request_sha != prompt_sha):
+        return None
+    return "HTTP_COMPLETION_PROMPT_HASH_AND_PREFILL_COUNT"
+
+
 def _audit_one(conn, index, event_id, status, metadata):
     meta = _obj(metadata)
     raw_selected = meta.get("selected_offer_ids")
@@ -255,6 +293,14 @@ def _audit_one(conn, index, event_id, status, metadata):
                              if native_c3_output and not incomplete else set())
     for role in ROLES:
         roles[role]["native_template_http200_submitted"] = role in native_template_roles
+    native_prefill_token_count_matched = _native_prefill_token_count_match(report)
+    native_prompt_inclusion_mode = _native_prompt_inclusion_mode(
+        report, native_template_roles, native_c3_output, incomplete,
+        native_prefill_token_count_matched)
+    native_prompt_inclusion_verified = native_prompt_inclusion_mode is not None
+    for role in ROLES:
+        roles[role]["native_prompt_offer_inclusion_verified"] = bool(
+            native_prompt_inclusion_verified and role in native_template_roles)
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -266,7 +312,10 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_native_output_observed": native_c3_output,
         "native_template_http200_submitted_roles": sorted(native_template_roles),
         "audit_incomplete": incomplete,
-        "c3_prompt_inclusion_proven": False,
+        "native_prefill_token_count_matched": native_prefill_token_count_matched,
+        "native_prompt_offer_inclusion_verified": native_prompt_inclusion_verified,
+        "native_prompt_inclusion_mode": native_prompt_inclusion_mode,
+        "c3_prompt_inclusion_proven": native_prompt_inclusion_verified,
         "c3_semantic_use_proven": False,
         "native_latent_exchange_proven": False,
         "c3_prompt_admission": _prompt_admission(report),
@@ -316,6 +365,8 @@ def audit(conn, limit=10):
         t["c3_native_output_observed"] and not t["audit_incomplete"]
         and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
         for t in turns)
+    both_native_prompt_inclusion = sum(
+        t["native_prompt_offer_inclusion_verified"] for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
         and t["c3_reporter"] and t["c3_generated_tokens"] == 0
@@ -323,6 +374,7 @@ def audit(conn, limit=10):
     incomplete_turns = sum(t["audit_incomplete"] for t in turns)
     proof_status = ("NO_ASSISTANT_TURNS" if not turns
                     else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED" if both_native_prompt_inclusion
                     else "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED" if both_native
                     else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
                     else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
@@ -333,9 +385,12 @@ def audit(conn, limit=10):
             "status": proof_status,
             "both_body_selected_delivered_and_c3_generated_turns": both,
             "both_body_native_template_http200_reported_turns": both_native,
+            "both_body_native_prompt_inclusion_verified_turns": both_native_prompt_inclusion,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
-            "native_prompt_offer_inclusion_verified": False,
+            "native_prompt_offer_inclusion_verified": both_native_prompt_inclusion > 0,
+            "native_request_prompt_hash_match_observed": both_native_prompt_inclusion > 0,
+            "native_prefill_token_count_match_observed": both_native_prompt_inclusion > 0,
             "native_template_submission_reported_by_runtime": both_native > 0,
             "source_span_revalidated_by_audit": False,
             "learned_latent_exchange_verified": False,
@@ -343,9 +398,11 @@ def audit(conn, limit=10):
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_EXACT_NATIVE_PROMPT_BINDING"
+            if both_native_prompt_inclusion else
             "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
             if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
-        "warning": "Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.",
+        "warning": "Exact prompt inclusion requires the request prompt hash to match the post-admission template witness and native prompt_n+cache_n to match the admitted token count. This does not prove attention, semantic use, learned latent exchange or Redmi installation.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
