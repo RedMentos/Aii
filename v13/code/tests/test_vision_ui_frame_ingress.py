@@ -370,7 +370,7 @@ def test_scoped_frame_consumer_revokes_source_after_success_and_failure(monkeypa
             frame_verifier=verifier, current_source="Describe this screen.",
             goal="red panel", token_budget=512,
         ) as result:
-            assert result["status"] == "A5_RAW_EYE_CONSUMED"
+            assert result["status"] == "WIRED_SYNTHETIC"
             assert obs["source_id"] in runtime._a5_ui_context_cache
             assert lease.active_for(runtime, runtime.turn_event["brain_generation_id"])
         assert revoked == [obs["source_id"]]
@@ -635,7 +635,7 @@ def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
         assert result["student_projector_used"] is False
         assert result["student_projector_status"] == "PROJECTOR_FILE_UNAVAILABLE"
         assert result["packet"]["student_projector_used"] is False
-        assert result["status"] == "WIRED_SYNTHETIC"
+        assert result["status"] == "A5_RAW_EYE_CONSUMED"
         assert result["caller_buffer_overwritten"] is True
 
 
