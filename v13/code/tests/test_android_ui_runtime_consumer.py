@@ -395,7 +395,7 @@ def test_ood_student_estimate_is_never_promoted_into_c3_ui_prompt():
         "text": "RAW_EYE: low-level structure only; no OCR or object identity",
     }
 
-    query, returned_binding, returned_refs = body_ui_query(
+    query, returned_binding, returned_refs = android_ui_runtime.body_ui_query(
         ui_context, "event-ood", "generation-ood"
     )
 
