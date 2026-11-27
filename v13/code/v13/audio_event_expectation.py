@@ -156,10 +156,25 @@ class AudioEventExpectationRegistry:
             raise AudioEventExpectationError("activity_hint is invalid")
         activity_score = _finite_unit(cues.get("activity_score"), "activity_score")
         key = (source_id, generation_id, session_id)
+        # Consent is scoped to the capture source and Runtime generation, not
+        # just the current Store session. A new receipt in a new Store session
+        # must invalidate stale timing history from every older session for
+        # this source/generation; otherwise revoked-session state remains live
+        # in memory until LRU eviction even though it cannot be queried directly.
+        stale_keys = [
+            existing_key
+            for existing_key, existing_state in self._states.items()
+            if existing_key[:2] == (source_id, generation_id)
+            and existing_state.consent_scope_id != consent_scope_id
+        ]
+        for stale_key in stale_keys:
+            self._states.pop(stale_key, None)
         state = self._states.get(key)
-        if state is not None and state.consent_scope_id != consent_scope_id:
-            self._states.pop(key, None)
-            self._states[key] = _StreamState(consent_scope_id, start_ms, end_ms)
+        if state is None and stale_keys:
+            state = _StreamState(consent_scope_id, start_ms, end_ms)
+            self._states[key] = state
+            while len(self._states) > self.max_streams:
+                self._states.popitem(last=False)
             return self._base("RESET_CONSENT_SCOPE", activity, len(self._states))
         if state is None:
             state = _StreamState(consent_scope_id, start_ms, end_ms)

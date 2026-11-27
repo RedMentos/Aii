@@ -1799,3 +1799,21 @@ The integration failure is not an A4 test failure. Core owns the Recovery→Stag
 - Local Linux scratch checks passed, but no full local checkout (GitHub DNS unavailable). No Termux/Redmi or native microphone proof; REDMI_UNVERIFIED; NOT_RELEASED.
 - Next: finish remaining Python 3.14 comparator CI; Core refreshes recovery pins and reruns staged/integrated; QA fixes migration assertions; Perception moves to source/session-disjoint A4 omission false positives and A5 UI/PerceptPacket.
 - Research: R-175 implementation follow-up; new R-179 full-text review of Li & van Rossum (2020) synaptic caching. GPL-3.0 simulation code not reused.
+
+
+## 2026-11-27 — Research & Perception Run 64: signed MediaProjection RAW-EYE ingress
+
+**PR:** [#2557](https://github.com/RedMentos/Aii/pull/2557), draft, stacked on Perception #2556. **Exact head:** `642b981e9a91bfc618992cabb0c72ac8c801b51c`.
+
+The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_frame_from_provider` is restored. It validates the provider's one-shot verifier and the live source/session/generation-bound UIObservationLease, enforces 8 MiB / 4 MP frame bounds, verifies digest and size, decodes a private snapshot, computes RAW-EYE global + 4×4 tile features, A4 salience/attention and bounded A5 context admission, then zeroizes the caller-owned frame buffer. Provisional observations do not enter final C3 context. An installed tile projector is read-only LAB_SHADOW_ONLY; no teacher is loaded and no learning/action/truth authority is granted.
+
+**Tests / gates:** GitHub Actions workflow 45974814847 compiled the exact module/tests and passed 25/25 tests on Python 3.13 and 25/25 on Python 3.14. Fixtures use generated PNGs and synthetic provider/lease state. Full local Aii checkout/pytest remains BLOCKED/NOT_RUN because no local checkout is mounted and GitHub DNS fails. Shared staged run 45975248465 **FAILS** 20/233/10/2/41 at pre-existing Core-owned audio-composer/arithmetic/observer source pins and QA PARTIAL-vs-UPDATED migration assertions; integrated regression **FAILS** one Core Recovery audio-composer pin (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`). No pin or migration assertion was weakened.
+
+**Integration boundary:** Core provider PR #2408 must rebase onto #2557; Core still owns the normal-turn Runtime/C3 callsite and must keep the lease live through context consumption. QA owns independent Android MediaProjection consent/onStop, cancel/revoke, process restart and rollback. The provider remains OFF until those gates and a consented Redmi receipt exist. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+### Run 64 final verification addendum (2026-11-27)
+
+- Final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f`: focused MediaProjection ingress workflow 45975248573 **PASS** (py_compile + 25/25 Python 3.13 + 25/25 Python 3.14); runtime deployment integrity 45975248638 **PASS**.
+- Shared staged workflow 45975248465 **FAIL** (20 failed/233 passed/10 skipped/2 errors/41 subtests) on pre-existing Core Recovery audio-composer, arithmetic and observer source pins plus QA migration PARTIAL-vs-UPDATED assertions. Integrated regression 45975248465 **FAIL** (1 Core Recovery audio-composer pin). Perception focused tests are green; shared product gate is not.
+- Full local checkout unavailable; no Android/Redmi proof. Next: Core rebase/port provider onto #2557 and wire normal Runtime/C3; QA repairs migration expectations and tests OS consent/onStop/restart/rollback. No deployment.

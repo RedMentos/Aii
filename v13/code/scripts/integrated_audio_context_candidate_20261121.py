@@ -15,7 +15,7 @@ SOURCE_BLOBS = {
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
     "v13/audio_voice_cues.py": "1e5982e438a1b9c36be2529e4fc702149e61df56",
     "v13/audio_temporal_prediction.py": "7904ae980235efdb1487f80bb48fa035fc6b2dcc",
-    "v13/audio_event_expectation.py": "bef9e2ff9f5617636b1579fc4ae06182fc858da8",
+    "v13/audio_event_expectation.py": "91cd482a80189af01c1ef9c2e0e51852b2bcdace",
     "v13/audio_teacher_ear.py": "255c51fd6ade37ada2fc3309fb0cf3e18afe954d",
     "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
     "v13/audio_temporal_evidence.py": "cacf649007a89cbfe74924536e413747d1392db3",

@@ -1,3 +1,59 @@
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 65)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, restart, permission change, model download/swap or device-data mutation is needed for this draft Perception integration.
+
+## Signed MediaProjection → A5 RAW-EYE → downstream lifetime
+
+- PR #2557 — restore the signed MediaProjection RAW-EYE receiver: https://github.com/RedMentos/Aii/pull/2557. Branch: research-perception/v14-vision-ui-frame-ingress-20261127-run64, stacked on #2556 parent 0367e5db3a4bd0e44c5192bc785823fc6f1f35f0.
+- Current branch HEAD at exact-head CI closeout: a68dd8a28f9ed6d069ddc840c0308157f7b3f16e (documentation-only descendants follow). Code commit: ba79ec7b4fef9b0dc0929725310588f689b747c9; focused test commit: 19ffeb54287627d02255845f9c9e660105e12a78.
+- New API: vision_ui_frame_ingress.consume_projected_frame_from_provider_scope(). It calls the one-shot provider verifier, yields the source-bound PerceptPacket while the caller's outer UIObservationLease remains active, and revokes the frame's source/cache after the downstream scope exits (including exceptions). The provider path zeroizes the caller-owned mutable frame buffer before yielding; invalid metadata is also zeroized.
+- Exact-current-head MediaProjection workflow 45989072923 PASS: py_compile + 28/28 tests on Python 3.13 and 28/28 on Python 3.14. The three new tests cover scope lifetime, downstream exception cleanup and invalid-observation zeroization. Runtime deployment integrity workflow 45989073050 PASS. Earlier focused workflow 45988257517 also passed at the code/test commit.
+- Shared staged-runtime workflow 45988257446 FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Current failures are existing Core audio-composer/arithmetic/observer source-pin mismatches and QA migration assertions expecting UPDATED while the honest runtime result is PARTIAL. Exact current-head shared workflow 45989073323 completed FAIL: staged-runtime 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression 1 failure on the Core-owned pinned audio composition input. The staged failures also include existing Core arithmetic/observer pins and QA PARTIAL-vs-UPDATED migration assertions. No Perception ingress test failed.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN (no local checkout mounted and GitHub DNS unavailable). CI is not a local test or Redmi proof.
+- Core #2408 still owns the normal Runtime → A5 → C3 same-turn consumer. This new scope API is a handoff contract, not evidence of a real C3 turn. No Android APK/device capture or Redmi result exists: REDMI_UNVERIFIED / NOT_RELEASED.
+
+## Next integration
+
+Core should rebase #2408 onto #2557 and wrap the normal C3 context read/generation inside consume_projected_frame_from_provider_scope(), keeping the same outer lease active until C3 finishes. QA owns the independent MediaProjection consent, onStop, process-death, revoke, restart and rollback tests. Keep screen capture OFF until those gates and a fresh consented Redmi receipt exist.
+
+## Research candidate — GoClick UI grounding (not selected or downloaded)
+
+- GoClick (arXiv:2604.23941, 2026-04-27; author repo MIT; GoClick-Base model card MIT) is a narrow screenshot+function-description → coordinate grounder, not a general A5 vision model or action authority.
+- A community ONNX export advertises INT8 component files totalling about 303 MB (91+80+132 MB), but it is not the author-maintained Android release and has no Redmi/732G benchmark or verified ARM64 operator profile.
+- Keep as an optional A5 action-grounding candidate only. No files or weights were downloaded. Any experiment requires explicit approval for the download and a separate decision before productive use; first compare CPU/NNAPI, PSS, TTFT, coordinate hit-rate and false-target negatives on a real consented device.
+
+## Device / updater boundary
+
+Latest available private V13OBS #115 remains historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS had no device comments before expiry. New read-only owner-relay requests #1017 HEALTH, #1018 PIPELINE_STATUS and #1019 DIAGNOSTICS were created at 2026-11-27T11:23:36Z; immediate readback found zero authenticated device_status comments on all three (NO_LIVE_RECEIPT). There is no fresh receipt proving the current installed SHA or live updater state; device/updater state remains UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change or data action was performed.
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 64)
+
+**User action: none required.** Do not run a Termux command, send UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for this draft Perception receiver.
+
+## Signed MediaProjection → A5 RAW-EYE consumer
+
+- [#2557 — restore the signed MediaProjection RAW-EYE receiver](https://github.com/RedMentos/Aii/pull/2557), stacked on Perception #2556 exact parent head `0367e5db3a4bd0e44c5192bc785823fc6f1f35f0`.
+- Exact code/test head: `642b981e9a91bfc618992cabb0c72ac8c801b51c`; branch `research-perception/v14-vision-ui-frame-ingress-20261127-run64`.
+- Core provider PR [#2408](https://github.com/RedMentos/Aii/pull/2408) imports `vision_ui_frame_ingress.consume_projected_frame_from_provider`; that module was absent from its current tree. #2557 restores the receiver expected by `UIFrameGrant.consume()`.
+- The receiver validates the exact observation/lease/one-shot verifier, bounds the frame to 8 MiB / 4 MP, checks digest and byte count, zeroizes caller-owned frame buffers, computes RAW-EYE global + 4×4 tile features and A4 salience, and emits a source-bound PerceptPacket plus bounded A5 context envelope. Optional installed projector remains LAB_SHADOW_ONLY; no teacher/model download, training, persistence, action or learning authority.
+- Final code/test SHA remains `642b981e9a91bfc618992cabb0c72ac8c801b51c`; final-head focused workflow **45975248573 PASS**: py_compile and **25/25 tests on Python 3.13 + 25/25 on Python 3.14**. Runtime deployment integrity **45975248638 PASS**. Generated PNGs and synthetic provider/lease fixtures only.
+- Shared staged/integrated workflow **45975248465 FAIL**: staged **20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests** on existing Core audio-composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions; integrated regression **1 failure** on Core Recovery's stale audio-composer pin `831080bceec90711bd42e0fa4eba47c669975c98`. No Perception ingress test failed; no pin or assertion was weakened.
+- LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN** (no local checkout mounted; GitHub DNS failure). CI is Linux evidence, not a local or Android measurement.
+- No normal-turn Runtime/C3 callsite, Android MediaProjection consent/onStop proof, APK/device capture or Redmi result yet. **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+## Next executable integration
+
+Core should rebase #2408 onto #2557 and connect `UIFrameGrant.consume()` to the normal Runtime turn/C3 context while the observation lease remains live. QA owns independent OS-consent, MediaProjection onStop, cancel/revoke, process-restart and rollback acceptance. Keep capture OFF until those gates and a consented Redmi receipt exist.
+
+## Device/updater boundary
+
+Latest available private V13OBS #115 is still historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Fresh read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS returned no device comments before expiry. Current install/updater/runtime state is therefore unverified; no device action was sent or performed.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 62)
 
 **User action: none required.** Do not run a Termux command, send an UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for these draft PRs.
@@ -2446,3 +2502,12 @@ A4 temporal/event ablation 45925644718 is 9/9 PASS on Python 3.13/3.14; A4/A5 fe
 The exact staged/integrated run 45925644732 is now final: staged FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated FAIL (one setup test), both due the old Core recovery composer pin; staged also hits stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. Core/QA own those files. This does not invalidate the A4 9/9 synthetic tests, but blocks integration/release.
 
 No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED, NOT_RELEASED. Current updater/install state unknown. No device or model action. **No user action needed.**
+
+
+## Run 64 verification addendum — 2026-11-27
+
+- Final PR head at the last readback: `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` (docs-only commits after code/test SHA `642b981e9a91bfc618992cabb0c72ac8c801b51c`).
+- Exact final-head focused workflow **45975248573 PASS**: `py_compile`, 25/25 tests on Python 3.13, 25/25 on Python 3.14. Runtime deployment integrity **45975248638 PASS**.
+- Shared staged/integrated workflow **45975248465 FAIL**: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression 1 failure on Core Recovery's stale audio-composer pin (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`). The staged failures also include Core arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe result is PARTIAL. No Perception ingress test failed and no gate was weakened.
+- Local full Aii checkout/pytest remains BLOCKED / NOT_RUN; no Android/Redmi capture or normal-turn C3 proof. REDMI_UNVERIFIED / NOT_RELEASED.
+- Core coordination is recorded on #2408 and #2555: rebase/port the provider onto #2557, wire the normal Runtime/C3 callsite, and preserve the lease through C3 consumption. QA owns Android consent/onStop/restart/rollback.
