@@ -1,3 +1,26 @@
+# CURRENT VERIFIED NEXT ACTION — Research & Perception Run 69 (2026-11-27)
+
+**User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this draft fix.
+
+## Optional A3 projector header safety
+
+- Draft [#2563 — preflight local A3 projector NPY headers before allocation](https://github.com/RedMentos/Aii/pull/2563), branch research-perception/v14-npy-preflight-on-audio-session-20261127-run69, stacked on #2561 base SHA c43bd2a84f3329704b80a237bb23e61e6d614c78.
+- Current candidate head at checkpoint: 09e8cee23fab4fe9144253f93bab0a62c3119882. Code blob 6572cd4a3516824b1b5f7618c6fdf7a090f74807; regression test blob 5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5.
+- The loader now inspects the four exact NPY headers before np.load, bounding dtype, fixed dimensions, output dimension and exact payload bytes. The malformed optional projector fails closed while the handcrafted RAW-EYE path remains available.
+- LOCAL_LINUX isolated CPython 3.13.5 / NumPy 2.3.5: py_compile PASS, 4/4 helper checks PASS. Full local Aii checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails.
+- Exact candidate CI runs 46038314334 (MediaProjection ingress) and 46038314335 (shared staged/integrated) were IN_PROGRESS at last poll. Read exact final results before claiming success.
+- No Android/Termux/Redmi execution or device receipt. REDMI_UNVERIFIED / NOT_RELEASED. This is not P0 chat, normal Runtime/C3 or learned perception acceptance.
+
+## Next executable integration
+
+After focused CI passes, Core rebases #2562 onto #2563 and refreshes its Recovery → Stage → RuntimeDeploy source pins; rerun staged/integrated. Core retains ownership of its audio/arithmetic/observer pins, QA retains the migration PARTIAL-vs-UPDATED assertions, and Boss/Integrator syncs V14-023 in the shared board. The earlier sibling #2558 carries the same preflight on the older #2557 stack; this #2563 port is the current #2561-compatible candidate.
+
+## Device / updater boundary
+
+No fresh authenticated Redmi receipt is available. The installed SHA, updater state, runtime state, Android MediaProjection lifecycle and microphone/frame providers remain REDMI_UNVERIFIED / UNKNOWN. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change or deployment was performed.
+
+---
+
 # Perception Run 67 — verified checkpoint (2026-11-27)
 
 - **New implementation:** PR [#2559](https://github.com/RedMentos/Aii/pull/2559), branch `research-perception/v14-a5-raw-eye-a4-structure-20261127-run67b`, exact code/test head `0411d6fc539a2442e7f49886da87cc7fbbb25c73` (base #2557 at `95c6dd27e15de798cb4b69ddc1d1f5abda746386`). Module blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`; test blob `6f654d8b90500d0b089ae3154851ba6d22a440f4`.
