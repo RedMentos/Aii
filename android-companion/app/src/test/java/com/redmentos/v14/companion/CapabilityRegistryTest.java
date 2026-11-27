@@ -46,11 +46,20 @@ public final class CapabilityRegistryTest {
 
     @Test public void onlyTheImplementedLaunchCapabilityCanBecomeReady() {
         List<CapabilityRegistry.Capability> items = CapabilityRegistry.entries(true, true);
-        assertEquals(8, items.size());
+        assertEquals(9, items.size());
         int ready = 0;
         for (CapabilityRegistry.Capability item : items) {
             if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)) ready++;
-            if (!"launch_app".equals(item.id)) {
+            if ("launch_app".equals(item.id) || "open_url".equals(item.id)) {
+                assertEquals(item.id, "READY_WITH_PER_ACTION_CONSENT", item.status);
+                assertTrue(item.perActionConsent);
+                assertFalse(item.androidOsPermissionRequired);
+                assertFalse(item.resultObserved);
+                assertFalse(item.learningAuthority);
+                if ("open_url".equals(item.id)) {
+                    assertEquals("ANDROID_ACTION_VIEW_HTTPS", item.provider);
+                }
+            } else {
                 assertEquals(item.id, "OFF_NOT_IMPLEMENTED", item.status);
                 assertEquals(item.id, "NONE", item.provider);
                 assertFalse(item.perActionConsent);
@@ -63,7 +72,7 @@ public final class CapabilityRegistryTest {
                 assertFalse(item.learningAuthority);
             }
         }
-        assertEquals(1, ready);
+        assertEquals(2, ready);
     }
 
     @Test public void launchReceiptDoesNotClaimObservationOrLearningAuthority() {
@@ -96,6 +105,7 @@ public final class CapabilityRegistryTest {
         assertFalse(audio.learningAuthority);
         assertFalse(CompanionProvider.isImplementedCapability("audio_capture"));
         assertTrue(CompanionProvider.isImplementedCapability("launch_app"));
+        assertTrue(CompanionProvider.isImplementedCapability("open_url"));
     }
 
     @Test public void capabilitySnapshotIgnoresStalePersistedOnAfterProcessStart() throws Exception {

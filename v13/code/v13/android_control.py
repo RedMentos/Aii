@@ -14,7 +14,9 @@ import sqlite3
 import threading
 import time
 
-CAPABILITIES = frozenset({"launch_app", "observe_ui", "tap", "swipe", "type_text", "back"})
+from .android_url import UnsafeAndroidUrl, validate_https_url
+
+CAPABILITIES = frozenset({"launch_app", "open_url", "observe_ui", "tap", "swipe", "type_text", "back"})
 MAX_TEXT = 256
 MAX_PACKAGE = 180
 _ACTIVE_STATES = ("PROPOSED", "APPROVED", "DISPATCHED", "SUBMIT_UNCERTAIN", "RECEIPT_CONSUMED")
@@ -39,7 +41,7 @@ def _canonical(capability, args):
     if capability not in CAPABILITIES or type(args) is not dict:
         raise ControlDenied("unsupported action")
     keys = {
-        "launch_app": {"package"}, "observe_ui": set(),
+        "launch_app": {"package"}, "open_url": {"url"}, "observe_ui": set(),
         "tap": {"x", "y"}, "swipe": {"x1", "y1", "x2", "y2", "duration_ms"},
         "type_text": {"text"}, "back": set()
     }[capability]
@@ -51,6 +53,11 @@ def _canonical(capability, args):
             c.isascii() and (c.isalnum() or c in "._") for c in pkg
         ) or "." not in pkg:
             raise ControlDenied("invalid package")
+    if capability == "open_url":
+        try:
+            validate_https_url(args["url"])
+        except UnsafeAndroidUrl as exc:
+            raise ControlDenied(str(exc)) from exc
     if capability == "type_text":
         t = args["text"]
         if not isinstance(t, str) or not 1 <= len(t) <= MAX_TEXT or any(ord(c) < 32 for c in t):
@@ -113,7 +120,11 @@ class AndroidControlBroker:
                 self.db.execute("UPDATE control_actions SET state='EXPIRED' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "expired_on_restore", digest)
                 continue
-            if args_json is None and state != "RECEIPT_CONSUMED":
+            missing_args_ok = (
+                state == "RECEIPT_CONSUMED"
+                or (capability == "open_url" and state in ("DISPATCHED", "SUBMIT_UNCERTAIN"))
+            )
+            if args_json is None and not missing_args_ok:
                 self.db.execute("UPDATE control_actions SET state='DROPPED_ON_RESTART' WHERE action_id=?", (action_id,))
                 self._audit(action_id, "sensitive_args_dropped_on_restart", digest)
                 continue
@@ -208,9 +219,10 @@ class AndroidControlBroker:
             p = Proposal(action_id, capability, dict(args), expires_at, digest,
                          event_id, dict(source_ref) if source_ref is not None else None)
             self.pending[action_id] = p
-            # Never persist raw typed text. The native companion currently accepts
-            # launch_app only; other non-sensitive action types remain restart-safe.
-            args_json = None if capability == "type_text" else json.dumps(
+            # Never persist raw typed text or full URLs (which may contain tokens).
+            # A dispatched open_url needs only its digest/source binding to recover
+            # the signed receipt; an unsubmitted one is dropped after restart.
+            args_json = None if capability in {"type_text", "open_url"} else json.dumps(
                 args, sort_keys=True, separators=(",", ":"), ensure_ascii=True
             )
             source_json = json.dumps(source_ref, sort_keys=True, separators=(",", ":")) if source_ref is not None else None
@@ -347,8 +359,10 @@ class AndroidControlBroker:
                         or any(ch not in "0123456789abcdef" for ch in digest)):
                     raise ValueError("invalid digest")
                 if args_json is None:
-                    if capability != "type_text":
+                    if capability not in {"type_text", "open_url"}:
                         raise ValueError("missing non-sensitive arguments")
+                    # Both capabilities intentionally discard sensitive payloads
+                    # after dispatch; receipt recovery needs only digest/source binding.
                     args = {}
                 else:
                     args = json.loads(args_json)

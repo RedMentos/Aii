@@ -110,6 +110,42 @@ public final class CompanionDbApprovalTest {
         };
     }
 
+    @Test public void completedOpenUrlReceiptsRedactPathAndQueryAfterDurableCommit() throws Exception {
+        String url = "https://example.com/private/path?session_token=secret";
+        String digest = Canonical.requestDigest("open_url", url);
+        for (int i = 0; i < 2; i++) {
+            String actionId = (i == 0 ? "c" : "d").repeat(32);
+            JSONObject request = new JSONObject()
+                    .put("schema", "v14.android-action-request/1")
+                    .put("action_id", actionId)
+                    .put("capability", "open_url")
+                    .put("args", new JSONObject().put("url", url))
+                    .put("digest", digest)
+                    .put("companion_local_consent_required", true)
+                    .put("android_os_permission_required", false)
+                    .put("permission_bypass", false)
+                    .put("model_authority", false)
+                    .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
+            assertTrue(first.insertPending(actionId, request.toString(), url, NOW + 10_000L));
+            assertTrue(first.claimForExecution(actionId, NOW));
+            String receipt = "{\"signed\":true}";
+            if (i == 0) {
+                first.finish(actionId, "EXECUTING", "OUTCOME_UNKNOWN", receipt);
+            } else {
+                assertTrue(first.finishClaimed(actionId, "EXECUTING", "OUTCOME_UNKNOWN", receipt));
+            }
+            CompanionDb.Action stored = first.get(actionId);
+            assertEquals("OUTCOME_UNKNOWN", stored.status);
+            assertEquals("example.com", stored.targetValue);
+            assertFalse(stored.requestJson.contains("session_token"));
+            assertFalse(stored.requestJson.contains("/private/path"));
+            JSONObject redacted = new JSONObject(stored.requestJson);
+            assertEquals("example.com", redacted.getJSONObject("args").getString("url_host"));
+            assertEquals(digest, redacted.getString("digest"));
+            assertEquals(receipt, stored.receiptJson);
+        }
+    }
+
     @Test public void concurrentApproveAndDenyHaveExactlyOneWinner() throws Exception {
         insertPending(NOW + 10_000L);
         CountDownLatch ready = new CountDownLatch(2);

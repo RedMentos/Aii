@@ -8,6 +8,7 @@ from v13 import android_control, android_outcomes, jefbridge
 from v13.enlightened_space import EnlightenedSpace
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
+from v13.android_url import https_host
 from v13.store import Store
 from v13.operator import Operator
 
@@ -99,19 +100,29 @@ class FakeTransport:
             "schema": "v14.android-capability-registry/1",
             "enabled": self.enabled,
             "termux_paired": True,
-            "capabilities": [{
-                "capability": "launch_app",
-                "status": "READY_WITH_PER_ACTION_CONSENT" if self.enabled else "OFF_STOP_SWITCH",
-            }],
+            "capabilities": [
+                {
+                    "capability": "launch_app",
+                    "status": "READY_WITH_PER_ACTION_CONSENT" if self.enabled else "OFF_STOP_SWITCH",
+                },
+                {
+                    "capability": "open_url",
+                    "status": "READY_WITH_PER_ACTION_CONSENT" if self.enabled else "OFF_STOP_SWITCH",
+                },
+            ],
         }
 
     def submit(self, request):
         self.submitted.append(request)
-        self.pending_items.append({
+        item = {
             "action_id": request["action_id"],
-            "package": request["args"]["package"],
             "expires_at_ms": int(request["expires_at"] * 1000),
-        })
+        }
+        if request["capability"] == "launch_app":
+            item["package"] = request["args"]["package"]
+        elif request["capability"] == "open_url":
+            item["url_host"] = https_host(request["args"]["url"])
+        self.pending_items.append(item)
         return {"status": "PENDING_USER_APPROVAL", "action_id": request["action_id"]}
 
     def outcome(self, action_id):
@@ -133,6 +144,101 @@ def make_runtime(tmp_path):
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
     return RuntimeStub(home)
+
+
+def test_open_url_is_consent_gated_source_bound_and_not_persisted_in_termux(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "8" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    url = "https://example.com/path?session_token=private"
+
+    with pytest.raises(android_control.ControlDenied):
+        controller.open_url("http://example.com", True)
+    with pytest.raises(android_control.ControlDenied):
+        controller.open_url(url, False)
+    assert transport.submitted == []
+
+    pending = json.loads(controller.open_url(url, True))
+    assert pending["status"] == "PENDING_USER_APPROVAL"
+    assert pending["action_type"] == "open_url"
+    assert pending["url_host"] == "example.com"
+    assert url not in json.dumps(pending)
+    request = transport.submitted[0]
+    assert request["capability"] == "open_url"
+    assert request["args"] == {"url": url}
+    assert request["companion_local_consent_required"] is True
+    assert request["permission_bypass"] is False
+    assert request["model_authority"] is False
+
+    args_json = controller.broker.db.execute(
+        "SELECT args_json FROM control_actions WHERE action_id=?",
+        (pending["action_id"],),
+    ).fetchone()[0]
+    assert args_json is None
+    event_row = runtime.store.one(
+        "SELECT packet FROM events WHERE id=?", (pending["source_event_id"],)
+    )
+    event = json.loads(event_row["packet"])
+    source_text = runtime.store.read_source(event["source_ref"])
+    assert url not in str(source_text)
+    assert "example.com" in str(source_text)
+
+    transport.receipt = _signed_receipt_for_request(
+        transport, pending["action_id"], "9" * 32
+    )
+    recorded = json.loads(controller.poll(pending["action_id"]))
+    assert recorded["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recorded["observed"] is False
+    assert recorded["t8_authoritative"] is False
+    assert recorded["world_learning_eligible"] is False
+    assert recorded["jef_space"]["status"] == "PUBLISHED"
+    assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert recorded["jef_space"]["t8_authoritative"] is False
+    assert recorded["jef_space"]["world_learning_eligible"] is False
+    followup = runtime.store.event(runtime.session, "Did the browser open?")
+    space = EnlightenedSpace(runtime.store, runtime.session)
+    for receiver in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        view = space.consume(followup, receiver, query="Did the browser open?")
+        action_messages = [item for item in view["messages"] if item["from"] == "C5_ACTION"]
+        assert len(action_messages) == 1
+        assert action_messages[0]["authority"] == "CONTROL_ONLY"
+        assert "open_url receipt" in action_messages[0]["semantic_cue_not_fact"]
+    actual = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (pending["action_id"],),
+    )
+    persisted = json.loads(actual["payload"])
+    assert persisted["actual"]["capability"] == "open_url"
+    assert persisted["actual"]["android_os_permission_status"] == "NOT_REQUIRED_FOR_OPEN_URL"
+    assert url not in json.dumps(persisted)
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_operator_tty_routes_open_url_and_rejects_non_tty_origin(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "a" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    runtime._android_companion_controller = controller
+
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        Operator(runtime).run(
+            ":android open-url https://example.com/path --confirm",
+            origin="MODEL",
+        )
+    result = json.loads(Operator(runtime).run(
+        ":android open-url https://example.com/path --confirm"
+    ))
+    assert result["status"] == "PENDING_USER_APPROVAL"
+    assert result["action_type"] == "open_url"
+    assert result["url_host"] == "example.com"
+    assert transport.submitted[0]["capability"] == "open_url"
+    controller.broker.close()
+    runtime.store.close()
 
 
 def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative(tmp_path, monkeypatch):
@@ -234,6 +340,7 @@ def test_immediate_android_receipt_context_rejects_tampered_provenance_and_obser
             "outcome_kind": "ANDROID_COMPANION_RECEIPT",
             "capability": "launch_app",
             "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
+            "android_os_permission_status": "NOT_REQUIRED_FOR_LAUNCH_APP",
             "evidence_level": "COMPANION_RECEIPT_ONLY",
             "observed": False,
             "t8_authoritative": False,
@@ -621,8 +728,13 @@ def _signed_receipt_for_request(
     body = {
         **BODY,
         "action_id": action_id,
+        "capability": request["capability"],
         "digest": request["digest"],
         "nonce": nonce,
+        "os_permission_status": {
+            "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
+            "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
+        }[request["capability"]],
         "status": status,
         "local_consent": status != "USER_DENIED",
     }
@@ -958,3 +1070,9 @@ def test_committed_receipt_recovery_rejects_tampered_signature_without_remote_re
     assert len(transport.submitted) == 1
     restarted.broker.close()
     runtime.store.close()
+
+
+def test_operator_android_help_includes_open_url(tmp_path):
+    runtime = make_runtime(tmp_path)
+    output = Operator(runtime).run(":android")
+    assert "open-url <https-url> --confirm" in output

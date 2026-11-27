@@ -7,25 +7,30 @@ on:
       - qa/v14-companion-os-permission-contract-20261122
       - core/v14-android-action-journal-qa-rebase-20261123-run1
       - core/v14-android-action-journal-instrumented-restart-20261124-run1
+      - core/v14-android-open-url-api-20261125-run2
   pull_request:
     branches:
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-final-qa-20261122
       - core/v14-android-action-journal-qa-rebase-20261123-run1
+      - core/v14-android-action-journal-instrumented-restart-20261124-run1
     paths:
       - 'v13/code/v13/contracts.py'
       - 'v13/code/v13/android_control.py'
+      - 'v13/code/v13/android_url.py'
       - 'v13/code/v13/android_outcomes.py'
       - 'v13/code/v13/android_companion_protocol.py'
       - 'v13/code/v13/android_companion_ecdsa.py'
       - 'v13/code/v13/android_companion_transport.py'
       - 'v13/code/v13/android_companion_runtime.py'
+      - 'v13/code/v13/operator.py'
       - 'v13/code/tests/test_android_companion_runtime.py'
       - 'v13/code/tests/test_android_companion_outcome_adapter.py'
       - 'v13/code/tests/test_android_companion_ecdsa.py'
       - 'v13/code/tests/test_android_companion_transport.py'
       - 'v13/code/tests/test_android_control.py'
+      - 'v13/code/tests/test_android_url.py'
       - '.github/workflows/v14-core-companion-outcome.yml'
 jobs:
   companion-outcome:
@@ -43,6 +48,6 @@ jobs:
       - name: Install test runner
         run: python -m pip install pytest
       - name: Compile companion boundary
-        run: python -m py_compile v13/code/v13/contracts.py v13/code/v13/android_control.py v13/code/v13/android_outcomes.py v13/code/v13/android_companion_protocol.py v13/code/v13/android_companion_ecdsa.py v13/code/v13/android_companion_transport.py v13/code/v13/android_companion_runtime.py v13/code/tests/test_android_companion_runtime.py v13/code/tests/test_android_companion_outcome_adapter.py v13/code/tests/test_android_companion_ecdsa.py v13/code/tests/test_android_companion_transport.py v13/code/tests/test_android_control.py
+        run: python -m py_compile v13/code/v13/contracts.py v13/code/v13/android_url.py v13/code/v13/android_control.py v13/code/v13/android_outcomes.py v13/code/v13/android_companion_protocol.py v13/code/v13/android_companion_ecdsa.py v13/code/v13/android_companion_transport.py v13/code/v13/android_companion_runtime.py v13/code/v13/operator.py v13/code/tests/test_android_companion_runtime.py v13/code/tests/test_android_companion_outcome_adapter.py v13/code/tests/test_android_companion_ecdsa.py v13/code/tests/test_android_companion_transport.py v13/code/tests/test_android_control.py v13/code/tests/test_android_url.py
       - name: Run existing and new Android control regressions
-        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_outcomes.py v13/code/tests/test_android_companion_protocol.py v13/code/tests/test_android_companion_outcome_adapter.py v13/code/tests/test_android_companion_ecdsa.py v13/code/tests/test_android_companion_transport.py v13/code/tests/test_android_companion_runtime.py
+        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_url.py v13/code/tests/test_android_outcomes.py v13/code/tests/test_android_companion_protocol.py v13/code/tests/test_android_companion_outcome_adapter.py v13/code/tests/test_android_companion_ecdsa.py v13/code/tests/test_android_companion_transport.py v13/code/tests/test_android_companion_runtime.py

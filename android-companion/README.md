@@ -5,7 +5,15 @@ continue to be named `v13`). It is not installed by the V13 updater.
 
 ## Current scope
 
-- One API-first capability: `launch_app`, with a user-visible per-action consent screen.
+- API-first capabilities: `launch_app` and `open_url`, each with a user-visible
+  per-action consent screen. `open_url` accepts only bounded ASCII HTTPS URLs and
+  dispatches Android `ACTION_VIEW` with `CATEGORY_BROWSABLE`; it never observes the
+  browser result or submits forms.
+- Full URL query/path values stay inside the companion's private approval record and
+  visible consent screen only while approval/receipt recovery is pending. The companion
+  atomically redacts the URL to its host when a signed receipt becomes durable. Termux
+  stores only the URL digest and host label, never the full URL in its audit database or
+  Store packets.
 - Termux caller pairing is explicit and bound to the installed package signing-certificate
   SHA-256 digest.
 - A local stop switch disables new requests; the default state is OFF.
