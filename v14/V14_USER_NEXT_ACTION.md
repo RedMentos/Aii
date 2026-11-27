@@ -1,3 +1,62 @@
+# Current user-facing checkpoint — Run 75 (2026-11-27)
+
+**Keine Aktion nötig.** Kein Modell wurde heruntergeladen oder ausgetauscht, keine Berechtigung geändert, kein Gerät angesprochen und kein Deployment ausgelöst. Ein Push auf den Entwicklungsbranch ist kein Telefon-Update.
+
+- Arbeitsstand: PR #2566, Branch research-perception/v14-a3-ood-calibration-20261127-run72, Code-/Test-HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac. DRAFT, NOT_RELEASED.
+- Neue native Diagnose: Die Receiver-Matrix berechnet jetzt PL/CIC-Jensen–Shannon-Divergenz aus tatsächlichen nativen First-next-token-Logits: Kandidat vs. kein Senderinput (PL) und Kandidat vs. same-family other-example/DERANGED_MESSAGE (CIC). Das Ergebnis enthält Modell-/Input-/Logit-Hashes und nur skalare Werte; Rohlogits werden nicht exportiert oder gespeichert.
+- Weitere Korrekturen: Der Receiver-self-message-Test bindet die volle BOS-plus-Sender-Row-Geometrie; native Condition-Receipts liefern jetzt input_rows und context_rows.
+- Tests: Lokaler isolierter C++17-JSD-Helper mit -Wall -Wextra -Werror PASS; Python-Mathematik-Scratch PASS. Vollständiger lokaler Aii-Checkout und Repo-Tests BLOCKED (kein Checkout, GitHub-DNS-Fehler). Vorläufer-CI 46074686027: Linux pinned API build PASS, Android arm64 Cross-Compile PASS, fokussierte Matrix-/Score-Tests PASS; vollständige Python-Jobs scheiterten zusätzlich an der jetzt behobenen Row-Receipt-Ausgabe und an einem separaten Core-Audio-Pin. Exakte aktuelle Native-CI 46075616512 war für HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac noch QUEUED.
+- Gesamtsystem: Shared staged/integrated run 46075014940 bleibt FAIL wegen Core/QA-Pins (Audio-Composer, cognition.py, vision.py-Lifecycle) und Migration PARTIAL-vs-UPDATED. Das ist nicht durch diesen Perception-Patch behoben.
+- Grenzen: JSD misst Empfänger-Sensitivität, nicht Verständnis oder Aufgabennutzen. Noch kein aggregierter PL/CIC-Holdout, keine task-accuracy CAG/SSG, kein echter GGUF-Lauf, kein normaler Runtime-Consumer und kein trainierter Cross-Model-Latentpfad. B3 bleibt OFF.
+- Redmi/Updater: REDMI_UNVERIFIED; kein frischer Gerätebeleg. Der Branch wurde nicht auf den Release-Branch gebracht; kein Auto-Updater-/Deploymentpfad wurde genutzt. NOT_RELEASED.
+- Nächster Schritt: Exakte CI schließen; danach PL/CIC über mindestens 20 source-disjoint Gruppen aggregieren und task-accuracy CAG/SSG mit gepaarten Konfidenz-/Äquivalenztests ergänzen. Erst danach ein bereits autorisiertes reales GGUF testen. Keine Modell- oder Geräteaktion ohne getrennte Freigabe.
+
+---
+
+# Current user-facing checkpoint — Run 74 (2026-11-27)
+
+**Keine Nutzeraktion erforderlich.** Es wurde kein Modell heruntergeladen/ausgetauscht, keine Berechtigung geändert, kein Telefonbefehl gesendet und keine Gerätedaten verändert.
+
+- **Neue ausführbare Diagnose:** PR [#2566](https://github.com/RedMentos/Aii/pull/2566), Branch `research-perception/v14-a3-ood-calibration-20261127-run72`, aktueller Code-/Test-HEAD `df7cf374c421fc68fd9d9ae014b7b36320020bfc`. Die native Receiver-Matrix hat jetzt 13 Bedingungen: zusätzlich zu den vorhandenen Kontrollen erzeugt derselbe Receiver eine eigene greedy Hidden-State-Nachricht über dieselbe Schnittstelle und mit derselben Token-/Row-Anzahl wie die Sender-Nachricht. Der Native-Runner re-injiziert diese Zustände, berechnet den echten Float32-Input-Hash und bindet Prompt-/Generations-Hashes und KV-Snapshot an den Score-Receipt.
+- **Auswertung:** Der neue `SELF_SUBSTITUTION_GAP` vergleicht den Sender-Kandidaten mit dieser Receiver-eigenen Nachricht. Der derzeitige Wert ist ein gepaarter Target-Token-Logprob-Proxy, **keine Task-Accuracy und kein Beweis eigenständigen Agentenwerts**. Ein positiver Wert wird nur als Signal ausgewiesen, wenn der Kandidat den Self-Control auf dem Holdout schlägt. Keine Rohtexte oder Token-IDs werden in Receipts persistiert.
+- **Research:** Huixiang Zhang & Mahzabeen Emu, *Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM*, arXiv:2607.26773v1, eingereicht 29.07.2026, Preprint ohne bestätigtes Peer Review. Der vollständige Text wurde geprüft. Die Studie trennt Message-Presence, Message-Identity, Content-Attributable Gain und Self-Substitution; sie zeigt, dass hohe Prediction-Divergence nicht automatisch höhere Task-Accuracy bedeutet. R-194 hält Evidenz und Grenzen fest.
+- **Exact-head CI bei Checkpoint:** Native Receiver workflow [46072764805](https://github.com/RedMentos/Aii/actions/runs/46072764805) war IN_PROGRESS: Python 3.13/3.14 Checkout, Setup und Compile-Step PASS; fokussierte Matrix-/Bridge-Tests liefen noch. Linux pinned-API build lief; Android NDK-Setup lief. Shared staged/integrated [46072764819](https://github.com/RedMentos/Aii/actions/runs/46072764819) war ebenfalls IN_PROGRESS. RuntimeDeploy [46072764695], A5 [46072764654], MediaProjection [46072764637] und private-bridge tests [46072759570] waren auf diesem HEAD PASS. Keine noch laufende Prüfung wird als bestanden gewertet.
+- **LOCAL_LINUX:** vollständiger Aii-Checkout und lokale Tests BLOCKED; `git ls-remote` scheiterte an GitHub-DNS. Daher kein lokales pytest, kein lokaler C++-Build und kein lokaler GGUF-Lauf.
+- **Gerät/Release:** kein autorisiertes verbundenes Redmi, kein frischer privater Owner-Receipt, kein echter GGUF-Modellpaar-Test. `REDMI_UNVERIFIED`, `B3_OFF`, `NOT_RELEASED`. PR/Push ist kein Deployment. P0-Basic-Chat #1904 bleibt offen.
+
+**Nächster ausführbarer Schritt:** Exact-head CI abschließen; danach PL/CIC mit Jensen–Shannon-Divergenz auf tatsächlichen Receiver-Logitverteilungen ergänzen und CAG/SSG mit gepaarter Task-Accuracy, Konfidenzintervallen und Negativ-/Äquivalenzkontrollen messen. Anschließend mindestens 20 gepaarte Holdout-Gruppen auf einem bereits autorisierten, gepinnten echten GGUF ausführen. Bis dahin bleibt die Funktion eine synthetisch verdrahtete Diagnose, keine akzeptierte native Latent-Kopplung.
+
+Checkpoint: 2026-11-27T21:30:39Z. **Keine Aktion nötig.**
+
+
+---
+
+# CURRENT VERIFIED NEXT ACTION — Research & Perception Run 72 (2026-11-27)
+
+**User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this research-only draft.
+
+## A3 OOD calibration comparison
+
+- Draft [PR #2566 — compare source-disjoint A3 OOD calibration methods](https://github.com/RedMentos/Aii/pull/2566), branch `research-perception/v14-a3-ood-calibration-20261127-run72`, stacked on #2565 at `b3896e3a3ba5a85de8ea67f45d123ef8e74da075`.
+- Code/test SHA: `6d0b446a607a42cdbf7f35c6567761e1781703e2`. Experiment: `v14/experiments/vision_ood_calibration.py`; tests: `v14/experiments/test_vision_ood_calibration.py`; existing A5 workflow now also runs the experiment on Python 3.13/3.14.
+- LOCAL_LINUX isolated scratch: py_compile PASS; 12/12 tests PASS; 30 seeded synthetic source-disjoint repeats PASS. The full Aii checkout is not mounted, so full repository pytest was NOT_RUN. The local harness mirrors the production tile feature and threshold helper logic; this is not full repository or Android proof.
+- Results: current RMS-z heuristic 7.33% in-domain source rejection and 85.5% posterization-shift source rejection; RMS-z source-max conformal alpha 0.10 gives 9.17% in-domain rejection with the same 85.5% posterization detection. Shrinkage Mahalanobis is worse on posterization and slower in the host microbenchmark. Keep the current production RMS-z gate unchanged and optional/shadow-only.
+- Exact #2566 hosted CI PASS: run 46062787585, Python 3.13.18 and 3.14.10, each 36 passed + 3 subtests passed and one-repeat OOD smoke. Related ingress run 46062787525 PASS 39/39 on both versions. This remains CI only, not device proof. #2565 remains blocked by its parent/shared Core/QA integration gate. See R-192 and `v14/handoffs/RESEARCH_PERCEPTION_RUN72_20261127.md`.
+
+## Remaining product integration
+
+- Core PR #2564 now attempts the normal same-turn UI-frame Runtime/C3 consumer, but the latest CI is not green: MediaProjection→Runtime/C3 run 46061246343 has two Python frame-provider failures in Core-owned operator dispatch (`operator.py` rejects `:help`); audio/observer run 46061246219 has two failures on the Android UI overlay anchor; staged/integrated run 46061246173 reports 16 failed / 250 passed / 10 skipped / 2 errors / 48 subtests, including the overlay mismatch and PARTIAL-vs-UPDATED migration assertions. These are Core-owned; Perception has not changed those files.
+- Core must explicitly reconcile the #2565/#2563 A5 provider/preflight chain into #2564; its current base is #2562, so do not assume the newest Perception provider is already included. The actual Runtime `audio_window` receiver with event/generation/consent-lease propagation is still missing.
+- QA owns the visible MediaProjection/AudioRecord provider, OS permission, revoke/onStop, process-death, restart and rollback acceptance.
+- Perception's next calibration step requires consented real UI frames with app/session/version-disjoint fit/calibration/test groups. No real device frames were collected in this run.
+- P0 basic chat issue #1904 remains OPEN; this OOD experiment does not repair it.
+
+## Device / updater boundary
+
+No fresh authenticated receipt is available today. The latest private V13OBS #115 (updated 2026-11-24 09:28:11Z) last reported auto-update enabled and dashboard/runtime UP_TO_DATE at updated_commit `8d93236c753f0194224c19edc7411d8d7082b1d6`; the AI runtime was STOPPED_BY_USER, model process STOPPED, service/dashboard process RUNNING and autostart false. Its last observed turn was 6.295 s / TTFT 2.046 s / 358 prompt tokens / 7 C3 tokens; B1/B2 native probes ended TIME_BUDGET at 53.2/54.2 s with zero valid offers; native probe SMOKE_PARTIAL. Newer private V13READ requests expired without a device_status reply: NO_LIVE_RECEIPT. This is historical, not a current install confirmation. The reported 8d932 development-branch commit is 83 commits ahead of the latest integrated release head b20e9 (37/37 CI green); do not conflate them. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, capture, model/weight swap or data action was performed. GitHub PR #2566 is not a deployment. **REDMI_UNVERIFIED / NOT_RELEASED.**
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — Research & Perception Run 69 (2026-11-27)
 
 **User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this draft fix.
@@ -2605,3 +2664,50 @@ The signed one-shot Android audio consumer in Perception PR #2312 is **not yet c
 **Run 71 readback:** a prior documentation-only readback was 6f3e87e6c9c946041a95d430b50ad0165bebac7e; later evidence-only addenda recorded the signed-audio Runtime audit and exact test evidence. The code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Use PR #2565 for the live docs branch head; no code/test changes followed focused workflow 46057142216 (39/39 on Python 3.13 and 39/39 on Python 3.14). PR remains mergeable=false / NOT_MERGE_READY.
 
 **Audio PR evidence:** #2312's focused workflow 44992975596 passes 20/20 on Python 3.13 and 20/20 on Python 3.14; privacy/offline workflow 44992972977 passes; integrated-regression job in 44992975599 passes. The staged-runtime job in 44992975599 fails 2 migration assertions (238 passed, 10 skipped, 47 subtests passed): the fixture expects UPDATED while the observed migration is PARTIAL because Runtime reports ERROR. The 20 passing focused tests still use RuntimeStub for the positive submit path; they do not overcome the missing Runtime audio_window receiver.
+
+
+## Research & Perception Run 76 — 2026-11-28
+
+**Branch / PR:** `research-perception/v14-a3-ood-calibration-20261127-run72`, draft PR #2566.  
+**Code/test SHA:** `6d3cf4a874462be3cbf250d1b566ff1c7cabde48` (read back after push).  
+**Release:** NOT_RELEASED. **Device:** REDMI_UNVERIFIED. **Start/end:** UNKNOWN / UNKNOWN.
+
+### Functional checkpoint
+
+- The existing #2566 diagnostic receiver matrix now includes the 13th `SELF_GENERATED_MESSAGE` arm, native first-next-token full-vocabulary PL/CIC JSD, and paired task-accuracy CAG/SSG summaries with 20-group source/session/family coverage checks. The 20-group test is a synthetic fixture only. The evaluator explicitly reports `persisted=false`; no durable cohort evidence or raw logits are stored, and no real native model cohort has run.
+- Fixed four exact-head Python test failures caused by the synthetic fixture referencing undefined `RECEIVER_SHA`; the fixture now binds to `RECEIVER["model_sha256"]`. This does not change model/runtime behavior or authority.
+
+### Tests and exact evidence
+
+- LOCAL_LINUX scratch, CPython 3.13.5: fixture-expression/hash/bounds check PASS. This is not the repository pytest suite.
+- Prior exact native workflow 46081870981 on parent code/test SHA `6a4df8c9ecabdaafab81f691248449c32da6ecbb`: Python 3.13 and 3.14 each failed four tests at the same undefined `RECEIVER_SHA` fixture reference; py_compile passed, pinned llama.cpp Linux build passed, Android arm64-v8a cross-compile passed. Fix committed at `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`; a new exact-head CI result has not yet been observed.
+- Shared staged/integrated workflow 46081871090 remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) on the Core-owned audio-composer source pin, lifecycle `vision.py` source support, cognition observer pin and QA migration PARTIAL-vs-UPDATED assertions. No Perception-owned source in that failure was edited.
+- Full local Aii checkout / pytest / native build: BLOCKED / NOT_RUN; no checkout was mounted and GitHub DNS was unavailable.
+
+### Cross-lane NPY preflight readback
+
+The new #2576 cross-lane failure is a stale source composition, not a current Perception regression. #2576 uses `vision_ui_frame_ingress.py` blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`, which lacks `_validate_projector_npy_headers`, while its test blob `6a1b7df21d2d2a4985725c6f2d9cb16538d6f7e3` contains the malformed-shape allocation-bomb test. Current Perception #2563 has code blob `6572cd4a3516824b1b5f7618c6fdf7a090f74807` with preflight and test blob `5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5`; its ingress workflow passed 31/31 on Python 3.13 and 31/31 on 3.14. #2565/#2570 use the OOD-aware provider blob `8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332` and paired test blob `31c6fab9124967e9cb49c98be79f975d2ad9df07`; #2565 ingress passed 39/39 on both versions. Exact blob comparison and the Core-owned rebase/port request were posted to #2576 and #2563. Do not remove the negative allocation-bomb test.
+
+### Research
+
+- Added R-196 after full review of arXiv:2610.28905 (2026-10-20). Its main V14 implication is dependency-aware handoff timing: early/recurrent exchange when the next computation depends on the message; late fusion when independent evidence can mature first. The diffusion-specific adapter is not a direct autoregressive LFM2/llama.cpp port. No code/weights reused.
+- Existing R-194/R-195 causal-audit implementation remains diagnostic; no native GGUF evidence or trained cross-model latent coupling.
+
+### Next executable work
+
+1. Obtain exact-head CI for `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`; repair any new failures before changing the cohort design.
+2. Keep the 20-group synthetic aggregator clearly synthetic and `persisted=false`; next acceptance requires a real already-authorized pinned GGUF, at least 20 source-disjoint groups across two sessions and two task families, paired task accuracy and restart/rollback evidence. Do not download or swap a model without separate approval.
+3. Core must port the current #2563/#2565 Perception source pair into #2576 and refresh its own source pins; QA retains Android consent/lifecycle acceptance.
+4. Keep B3 OFF, the normal-turn user path unclaimed, and all Redmi-native behavior UNVERIFIED.
+
+
+### Run 76 research supplement — R-197
+
+Full review of Zou et al., *Latent Collaboration in Multi-Agent Systems*, PMLR 306 (ICML 2026 Spotlight), plus source/license inspection of `Gen-Verse/LatentMAS` main commit `9a9e4d331eb11430bd9e64754c6b252b06d73031`. The implementation uses one shared `ModelWrapper` for all role prompts and concatenates same-shape per-layer KV caches; it is not an independently weighted multi-model team. The paper itself leaves heterogeneous agents to a trainable adapter. Code is Apache-2.0; Qwen3-4B weights are Apache-2.0; the 4B model listing is 8.06 GB; the paper used 8×A100-80G and does not validate Android/ARM/GGUF. V14 should reuse the design only as a same-model baseline, not as evidence that B1/B2 already share a learned latent space. The next cross-model task must run actual sender inference, a trainable source→receiver adapter and receiver consumption with distinct model hashes, gradients/diff/retention/restart and source-disjoint task-accuracy/PL/CIC evidence. No code or weights were reused.
+
+
+### Device / updater receipt check — 2026-11-28
+
+- Last authenticated private V13OBS snapshot (2026-11-24 09:28:11 UTC): auto-update enabled; dashboard and pipeline runtime reported UP_TO_DATE at commit `8d93236c753f0194224c19edc7411d8d7082b1d6`. The AI runtime was `STOPPED_BY_USER`, model process `STOPPED`, autostart false, and native model residency unavailable. This is historical state, not proof that the current PR is installed.
+- New read-only owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS were created at 2026-11-27 23:40:06 UTC with 10-minute expiry. Last poll at 23:40:19 UTC found all three still open with no device comment: `NO_LIVE_RECEIPT_PENDING`.
+- No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell command, model download/swap, permission change or deployment was issued. The normal updater path is not verified for this PR. Current installation remains REDMI_UNVERIFIED; no manual Termux command is required.

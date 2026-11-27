@@ -16,6 +16,7 @@ from v13.native_receiver_utility import (
 from v13.native_latent_receiver import PINNED_LLAMA_REVISION
 from v13.native_receiver_task_matrix_bridge import (
     NativeReceiverTaskMatrixBridgeError,
+    _validate_prediction_distribution_audit,
     score_and_record_native_receiver_condition_matrix,
 )
 from v13.native_receiver_task_score import task_score_status
@@ -33,8 +34,11 @@ def f32sha(rows):
 
 
 def record(source_id, text, token_ids, candidate_rows, receiver_rows=None):
-    receiver_rows = receiver_rows or [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
-    spans = [[0, 3], [4, 7], [8, 12]]
+    if receiver_rows is None:
+        receiver_rows = [[0.1, 0.2] for _ in token_ids]
+    if len(token_ids) != len(receiver_rows):
+        raise AssertionError("fixture token/receiver row mismatch")
+    spans = [[0, 3], [4, 7], [8, 12]] if len(token_ids) == 3 else [[0, 3], [4, len(text)]]
     src = {"source_id": source_id, "sha256": sha(text), "char_start": 0, "char_end": len(text)}
     sender = {"role": "B1_DETAIL", "tap_id": "lfm2.result_norm.final.v1",
               "activation_space": "FINAL_RMSNORM_PREFILL_F32",
@@ -90,15 +94,29 @@ def inputs():
     entity_control = {"task_group_id": "task-entity", "task_family": "ARITHMETIC", "session_id": "session-1",
                       "record": entity, "source_text": "The dog sat.", "entity_byte_spans": [[4, 7]],
                       "candidate_packet": packet(entity, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])}
-    return task, main, baseline, packet(main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]), ood_control, entity_control
+    deranged = record("source-deranged", "The fox ran.", [51, 52, 53],
+                      [[0.22, 0.33], [0.44, 0.55], [0.66, 0.77]])
+    deranged_control = {"task_group_id": "task-deranged", "task_family": "ARITHMETIC", "session_id": "session-1",
+                        "record": deranged,
+                        "candidate_packet": packet(deranged, [[0.22, 0.33], [0.44, 0.55], [0.66, 0.77]])}
+    no_private = record("source-no-private", "The cat", [11, 22], [[0.11, 0.22], [0.37, 0.44]])
+    no_private["event_id"] = main["event_id"]
+    no_private["brain_generation_id"] = main["brain_generation_id"]
+    no_private_rows = [[0.11, 0.22], [0.37, 0.44]]
+    no_private_control = {"task_group_id": "task-main", "task_family": "ARITHMETIC", "session_id": "session-1",
+        "record": no_private, "source_text": "The cat", "candidate_packet": packet(no_private, no_private_rows)}
+    private_spans = [{"start": 7, "end": 12, "label": "PRIVATE"}]
+    return task, main, baseline, packet(main, [[0.11, 0.22], [0.37, 0.44], [0.55, 0.66]]), ood_control, entity_control, deranged_control, no_private_control, private_spans
 
 
 def build_with_task(monkeypatch, **overrides):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     args = {"task": task, "pair_record": main, "baseline_packet": baseline,
-            "candidate_packet": candidate, "ood_control": ood, "entity_control": entity}
+            "candidate_packet": candidate, "ood_control": ood, "entity_control": entity,
+            "deranged_control": deranged, "intact_no_private_control": no_private,
+            "private_byte_spans": private_spans}
     args.update(overrides)
     return task, build_native_receiver_condition_matrix(**args)
 
@@ -112,17 +130,17 @@ def approved(matrix):
     return list(matrix.iter_inputs(approval=digest, approval_validator=lambda token, expected: token == expected))
 
 
-def test_builds_eight_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
+def test_builds_thirteen_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
     matrix = build(monkeypatch)
     receipt = matrix.receipt
     assert receipt["status"] == "MATRIX_READY_NOT_SCORED"
-    assert receipt["condition_count"] == 8
+    assert receipt["condition_count"] == 13
     assert tuple(x["condition"] for x in receipt["conditions"]) == CONDITIONS
     assert receipt["required_approval_kind"] == "NATIVE_RECEIVER_MATRIX"
     assert receipt["approval_binding_kind"] == "UNSIGNED_DIGEST_ONLY"
     assert receipt["approval_granted"] is False and receipt["native_receiver_authority"] == 0
     assert receipt["training_authority"] == 0 and receipt["persisted"] is False
-    assert len(receipt["source_bindings"]) == 3
+    assert len(receipt["source_bindings"]) == 5
     assert "target_token_ids" not in receipt and "The cat sat." not in repr(receipt)
     result = approved(matrix)
     assert [x["condition"] for x in result] == list(CONDITIONS)
@@ -134,9 +152,31 @@ def test_builds_eight_bound_conditions_and_streams_after_one_shot_approval(monke
     assert result[0]["control_recipe"] == "NO_MESSAGE_NO_INJECTED_ROWS_V1"
     assert result[1]["adapter_sha256"] is None
     assert result[2]["adapter_sha256"] == "a" * 64
-    assert result[6]["message_source_ref"]["source_id"] == "source-ood"
-    assert result[7]["message_source_ref"]["source_id"] == "source-entity"
-    assert all(x["position_ids"] == list(range(x["input_rows"])) for x in result)
+    assert result[6]["control_recipe"] == "BOS_PLUS_MOMENT_MATCHED_ORTHOGONAL_ROW_MIX_V1"
+    assert result[7]["message_source_ref"]["source_id"] == "source-ood"
+    assert result[8]["message_source_ref"]["source_id"] == "source-entity"
+    assert result[9]["message_source_ref"]["source_id"] == "source-deranged"
+    assert result[9]["control_recipe"] == "BOS_PLUS_SAME_FAMILY_DERANGED_CANDIDATE_V1"
+    assert result[10]["message_source_ref"]["source_id"] == "source-no-private"
+    assert result[10]["control_recipe"] == "BOS_PLUS_INTACT_NO_PRIVATE_CANDIDATE_V1"
+    assert result[10]["control_proof_sha256"] == receipt["private_omission_proof"]["sha256"]
+    assert receipt["private_omission_proof"]["semantic_privacy_classification_proven"] is False
+    assert result[11]["control_recipe"] == "DIRECT_TEXT_TOKEN_INPUT_REFERENCE_V1"
+    assert result[11]["text_token_ids"] == [11, 22, 33]
+    assert result[11]["input_rows"] == 0 and result[11]["vectors"] == []
+    assert result[11]["position_ids"] == [0, 1, 2]
+    assert result[11]["input_sha256"] == result[11]["text_token_ids_sha256"]
+    assert result[12]["condition"] == "SELF_GENERATED_MESSAGE"
+    assert result[12]["control_recipe"] == "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+    assert result[12]["text_token_ids"] == [11, 22, 33]
+    assert result[12]["text_token_ids_sha256"] == result[11]["text_token_ids_sha256"]
+    # Match the complete injected candidate geometry: BOS baseline + sender rows.
+    assert result[12]["input_rows"] == result[2]["input_rows"]
+    assert result[12]["vectors"] == []
+    assert result[12]["position_ids"] == result[2]["position_ids"]
+    assert result[12]["adapter_sha256"] is None
+    assert result[12]["input_sha256"] != result[12]["text_token_ids_sha256"]
+    assert all(x["position_ids"] == list(range(x["input_rows"])) for x in result if x["condition"] != "DIRECT_TEXT_REFERENCE")
     with pytest.raises(NativeReceiverConditionMatrixError, match="already consumed"):
         approved(matrix)
 
@@ -147,46 +187,85 @@ def test_entity_control_changes_only_declared_token_row(monkeypatch):
     assert base[0] == entity[0] and base[1] == entity[1] and base[2] != entity[2] and base[3] == entity[3]
 
 
+
+def test_deranged_control_is_same_family_and_uses_a_distinct_source(monkeypatch):
+    result = {x["condition"]: x for x in approved(build(monkeypatch))}
+    candidate = result["LATENT_CANDIDATE"]
+    deranged = result["DERANGED_MESSAGE"]
+    assert deranged["task_family"] == candidate["task_family"] == "ARITHMETIC"
+    assert deranged["message_source_ref"]["source_id"] == "source-deranged"
+    assert deranged["message_source_ref"] != candidate["message_source_ref"]
+    assert deranged["input_sha256"] != candidate["input_sha256"]
+
+
 def test_requires_matching_matrix_approval_before_yield(monkeypatch):
     matrix = build(monkeypatch)
     with pytest.raises(NativeReceiverConditionMatrixError, match="validator is required"):
         list(matrix.iter_inputs())
     with pytest.raises(NativeReceiverConditionMatrixError, match="does not bind"):
         list(matrix.iter_inputs(approval="wrong", approval_validator=lambda token, digest: token == digest))
-    assert len(approved(matrix)) == 8
+    assert len(approved(matrix)) == 13
 
 
 def test_rejects_wrong_ood_family_and_cross_session_control(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     ood["task_family"] = "ARITHMETIC"
     with pytest.raises(NativeReceiverConditionMatrixError, match="different task family"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
-    task, main, baseline, candidate, ood, entity = inputs()
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged,
+            intact_no_private_control=no_private, private_byte_spans=private_spans)
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     ood["session_id"] = "other-session"
     with pytest.raises(NativeReceiverConditionMatrixError, match="same session"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged,
+            intact_no_private_control=no_private, private_byte_spans=private_spans)
+
+
+
+def test_deranged_control_rejects_family_or_session_mismatch(monkeypatch):
+    import v13.native_tokenwise_pairing as pairing
+    monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
+    deranged["task_family"] = "RELATION"
+    with pytest.raises(NativeReceiverConditionMatrixError, match="preserve task family"):
+        build_native_receiver_condition_matrix(
+            task=task, pair_record=main, baseline_packet=baseline,
+            candidate_packet=candidate, ood_control=ood, entity_control=entity,
+            deranged_control=deranged, intact_no_private_control=no_private,
+            private_byte_spans=private_spans,
+        )
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
+    deranged["session_id"] = "other-session"
+    with pytest.raises(NativeReceiverConditionMatrixError, match="same session"):
+        build_native_receiver_condition_matrix(
+            task=task, pair_record=main, baseline_packet=baseline,
+            candidate_packet=candidate, ood_control=ood, entity_control=entity,
+            deranged_control=deranged, intact_no_private_control=no_private,
+            private_byte_spans=private_spans,
+        )
 
 
 def test_rejects_entity_text_changes_outside_declared_span_and_bad_bos_binding(monkeypatch):
     import v13.native_tokenwise_pairing as pairing
     monkeypatch.setattr(pairing, "_validate_native_pair_record", lambda value: dict(value))
-    task, main, baseline, candidate, ood, entity = inputs()
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     bad_record = record("source-entity", "The dog sat?", [11, 44, 33], [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
     entity["record"] = bad_record
     entity["source_text"] = "The dog sat?"
     entity["candidate_packet"] = packet(bad_record, [[0.11, 0.22], [0.77, 0.88], [0.55, 0.66]])
     with pytest.raises(NativeReceiverConditionMatrixError, match="outside declared spans"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
-    task, main, baseline, candidate, ood, entity = inputs()
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged,
+            intact_no_private_control=no_private, private_byte_spans=private_spans)
+    task, main, baseline, candidate, ood, entity, deranged, no_private, private_spans = inputs()
     baseline["receiver_model_sha256"] = "f" * 64
     with pytest.raises(NativeReceiverConditionMatrixError, match="BOS baseline"):
         build_native_receiver_condition_matrix(task=task, pair_record=main, baseline_packet=baseline,
-            candidate_packet=candidate, ood_control=ood, entity_control=entity)
+            candidate_packet=candidate, ood_control=ood, entity_control=entity, deranged_control=deranged,
+            intact_no_private_control=no_private, private_byte_spans=private_spans)
 
 
 def test_public_receipt_is_copy_and_close_blocks_later_vector_access(monkeypatch):
@@ -194,7 +273,7 @@ def test_public_receipt_is_copy_and_close_blocks_later_vector_access(monkeypatch
     receipt = matrix.receipt
     receipt["conditions"][0]["input_sha256"] = "f" * 64
     assert matrix.receipt["conditions"][0]["input_sha256"] != "f" * 64
-    assert len(approved(matrix)) == 8
+    assert len(approved(matrix)) == 13
     matrix.close()
     with pytest.raises(NativeReceiverConditionMatrixError, match="closed"):
         approved(matrix)
@@ -227,10 +306,13 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
         receiver_sha = kwargs["expected_model_sha256"]
         scores = {}
         for item in kwargs["condition_inputs"]:
-            digest = item["input_sha256"]
+            text_tokens = item.get("text_token_ids", [])
+            self_message = item["condition"] == "SELF_GENERATED_MESSAGE"
+            context_rows = len(text_tokens) if item["condition"] == "DIRECT_TEXT_REFERENCE" else (item["input_rows"] if item["input_rows"] > 0 else 1)
+            native_input_sha = sha("self-native-input-" + item["task_group_id"]) if self_message else item["input_sha256"]
+            digest = native_input_sha
             if item["condition"] == wrong_condition:
                 digest = "f" * 64
-            context_rows = item["input_rows"] if item["input_rows"] > 0 else 1
             positions = list(range(context_rows))
             position_sha = sha(struct.pack("<" + "i" * context_rows, *positions))
             combined_sha = sha("kv-combined-" + item["condition"])
@@ -262,7 +344,7 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
                 "recurrent_state_included": False,
                 "condition": item["condition"],
                 "receiver_model_sha256": receiver_sha,
-                "input_sha256": item["input_sha256"],
+                "input_sha256": native_input_sha,
             }
             if item["condition"] == bad_kv_condition:
                 kv_snapshot["stable_read_sha256"] = "f" * 64
@@ -283,10 +365,21 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
                 "llama_version": "synthetic-fixture",
                 "kv_snapshot": kv_snapshot,
             }
+            if self_message:
+                scores[item["condition"]]["self_generation"] = {
+                    "schema": "v14.native-receiver-self-generation/1",
+                    "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+                    "prompt_token_count": len(text_tokens),
+                    "prompt_token_ids_sha256": item["text_token_ids_sha256"],
+                    "generated_token_count": item["input_rows"],
+                    "generated_token_ids_sha256": sha("generated-" + item["task_group_id"]),
+                    "message_input_sha256": native_input_sha,
+                    "decode_status": 0,
+                }
             if item["condition"] == missing_kv_condition:
                 scores[item["condition"]].pop("kv_snapshot")
         return {
-            "schema": "v14.native-receiver-task-matrix/1",
+            "schema": "v14.native-receiver-task-matrix/3",
             "status": "SCORED",
             "sender_role": kwargs["sender_role"],
             "receiver_role": kwargs["receiver_role"],
@@ -345,8 +438,8 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert result["cohort_status"] == "FIXTURE_ONLY"
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["enough_holdout"] is False
-    assert result["condition_count"] == 8
-    assert result["kv_snapshot_count"] == 8
+    assert result["condition_count"] == 13
+    assert result["kv_snapshot_count"] == 13
     assert result["kv_snapshot_layer_id"] == 0
     assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
     assert result["kv_snapshot_stable"] is True
@@ -365,9 +458,9 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert "token_logprobs" not in repr(result)
     assert "target_token_ids" not in result and "source_text" not in result
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 8
+    assert status["receipt_count"] == 13
     stored = runtime._native_receiver_task_score_receipts
-    assert len(stored) == 8
+    assert len(stored) == 13
     for receipt in stored:
         snapshot = receipt["native"]["kv_snapshot"]
         assert snapshot["condition"] == receipt["condition"]
@@ -528,3 +621,71 @@ def test_matrix_bridge_rejects_session_mismatch_before_native_probe(monkeypatch)
             home="/tmp/v14-home", model_path="/tmp/v14-home/models/receiver.gguf",
             deadline=1.0e12, target_environment="SYNTHETIC")
     assert calls == []
+
+
+def test_native_prediction_distribution_audit_is_bound_to_candidate_no_message_and_deranged_rows():
+    inputs = [{"input_sha256": sha("matrix-condition-" + str(i))} for i in range(13)]
+    receiver = {"model_sha256": "d" * 64}
+    log2 = __import__("math").log(2.0)
+    audit = {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "receiver_model_sha256": receiver["model_sha256"],
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2, "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1, "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[9]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False, "raw_logits_persisted": False,
+    }
+    clean = _validate_prediction_distribution_audit(
+        audit, receiver=receiver, condition_inputs=inputs,
+    )
+    assert clean["pl"]["jsd_nats"] == 0.2
+    assert clean["cic"]["jsd_nats"] == 0.1
+    assert clean["raw_logits_exported"] is False
+
+
+def test_native_prediction_distribution_audit_rejects_cross_matrix_other_example():
+    inputs = [{"input_sha256": sha("matrix-condition-" + str(i))} for i in range(13)]
+    receiver = {"model_sha256": "d" * 64}
+    log2 = __import__("math").log(2.0)
+    audit = {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "receiver_model_sha256": receiver["model_sha256"],
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2, "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": inputs[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1, "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": inputs[2]["input_sha256"],
+            "reference_input_sha256": "f" * 64,
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False, "raw_logits_persisted": False,
+    }
+    with pytest.raises(NativeReceiverTaskMatrixBridgeError, match="not bound"):
+        _validate_prediction_distribution_audit(
+            audit, receiver=receiver, condition_inputs=inputs,
+        )

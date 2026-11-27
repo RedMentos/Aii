@@ -21,12 +21,13 @@ from .native_hybrid_state import (
     validate_native_hybrid_state_roundtrip,
 )
 
-TASK_SCHEMA = "v14.native-receiver-task-score/1"
+TASK_SCHEMA = "v14.native-receiver-task-score/3"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
-RESULT_SCHEMA = "v14.native-receiver-task-utility/1"
+RESULT_SCHEMA = "v14.native-receiver-task-utility/3"
 SCORE_METHOD = "TEACHER_FORCED_TARGET_LOGPROB_V1"
-CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION")
-LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"})
+CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE")
+TASK_ACCURACY_CONDITIONS = ("NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE")
+LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE"})
 TASK_FAMILIES = frozenset({"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"})
 ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 KV_SNAPSHOT_SCHEMA = "v14.native-receiver-kv-snapshot/1"
@@ -55,6 +56,7 @@ def _validate_duplicate_input_digests(group):
         reference = items[0]["native"].get("token_logprobs")
         if not isinstance(reference, list):
             raise NativeReceiverUtilityError("identical input receipt lacks tokenwise scores")
+        reference_answer = items[0]["native"].get("task_answer")
         for item in items[1:]:
             scores = item["native"].get("token_logprobs")
             if (not isinstance(scores, list) or len(scores) != len(reference)
@@ -63,6 +65,20 @@ def _validate_duplicate_input_digests(group):
                            for a, b in zip(reference, scores))):
                 raise NativeReceiverUtilityError(
                     "identical input digest produced different target scores"
+                )
+            answer = item["native"].get("task_answer")
+            if (reference_answer is None) != (answer is None):
+                raise NativeReceiverUtilityError(
+                    "identical input digest has partial task-answer coverage"
+                )
+            if reference_answer is not None and any(
+                reference_answer[key] != answer[key] for key in (
+                    "generated_token_ids_sha256", "generated_token_count",
+                    "generation_token_budget", "eos_terminated", "exact_match",
+                )
+            ):
+                raise NativeReceiverUtilityError(
+                    "identical input digest produced different generated answers"
                 )
 
 
@@ -158,6 +174,102 @@ def _audit_ood_donor_derangement(groups):
         "session_count": len(by_session),
         **totals,
         "sessions": session_reports,
+        "source_identity": "SOURCE_ID_AND_SHA256",
+    }
+
+
+
+def _audit_same_family_pairing_derangement(groups):
+    """Require a session-local, same-family, no-fixed-point donor permutation.
+
+    DERANGED_MESSAGE must carry a different task's candidate from the same
+    session and task family. This isolates example pairing without changing
+    the task surface/family. Source IDs and hashes remain aggregate-only.
+    """
+    by_session_family = defaultdict(list)
+    source_owner = {}
+    for task_group_id, group in groups.items():
+        anchor = group["NO_MESSAGE"]
+        source_ref = anchor["source_ref"]
+        source_key = (source_ref["source_id"], source_ref["sha256"])
+        if source_key in source_owner:
+            raise NativeReceiverUtilityError("duplicate task source in pairing derangement cohort")
+        owner = {
+            "task_group_id": task_group_id,
+            "session_id": anchor["session_id"],
+            "task_family": anchor["task_family"],
+        }
+        source_owner[source_key] = owner
+        by_session_family[(owner["session_id"], owner["task_family"])].append(owner)
+
+    totals = {
+        "task_group_count": len(groups),
+        "matched_donor_count": 0,
+        "unique_donor_count": 0,
+        "fixed_point_count": 0,
+        "cross_family_count": 0,
+        "external_donor_count": 0,
+        "cross_session_donor_count": 0,
+        "duplicate_donor_count": 0,
+    }
+    reports = []
+    all_pass = bool(by_session_family)
+    for (session_id, task_family), owners in sorted(by_session_family.items()):
+        task_ids = {owner["task_group_id"] for owner in owners}
+        donors = []
+        fixed_points = cross_family = external = cross_session = 0
+        for owner in owners:
+            message_ref = groups[owner["task_group_id"]]["DERANGED_MESSAGE"]["message_source_ref"]
+            donor_key = (message_ref["source_id"], message_ref["sha256"])
+            donor = source_owner.get(donor_key)
+            if donor is None:
+                external += 1
+            elif donor["session_id"] != session_id:
+                cross_session += 1
+            elif donor["task_family"] != task_family:
+                cross_family += 1
+            elif donor["task_group_id"] == owner["task_group_id"]:
+                fixed_points += 1
+            else:
+                donors.append(donor["task_group_id"])
+
+        unique = len(set(donors))
+        duplicates = len(donors) - unique
+        passed = (
+            len(owners) >= 2
+            and len(donors) == len(owners)
+            and unique == len(owners)
+            and set(donors) == task_ids
+            and not (fixed_points or cross_family or external or cross_session or duplicates)
+        )
+        reports.append({
+            "task_group_count": len(owners),
+            "matched_donor_count": len(donors),
+            "unique_donor_count": unique,
+            "fixed_point_count": fixed_points,
+            "cross_family_count": cross_family,
+            "external_donor_count": external,
+            "cross_session_donor_count": cross_session,
+            "duplicate_donor_count": duplicates,
+            "pass": passed,
+        })
+        for key, value in (
+            ("matched_donor_count", len(donors)),
+            ("unique_donor_count", unique),
+            ("fixed_point_count", fixed_points),
+            ("cross_family_count", cross_family),
+            ("external_donor_count", external),
+            ("cross_session_donor_count", cross_session),
+            ("duplicate_donor_count", duplicates),
+        ):
+            totals[key] += value
+        all_pass &= passed
+
+    return {
+        "status": "PASS" if all_pass else "NOT_ESTABLISHED",
+        "session_family_count": len(by_session_family),
+        **totals,
+        "session_families": reports,
         "source_identity": "SOURCE_ID_AND_SHA256",
     }
 
@@ -448,6 +560,129 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
         "decode_status": 0, "native_input_consumed": True,
         "llama_version": _id(value.get("llama_version"), "native.llama_version")[:120],
     }
+    if "task_answer" in value:
+        answer = value.get("task_answer")
+        if (condition not in TASK_ACCURACY_CONDITIONS
+                or not isinstance(answer, Mapping)
+                or answer.get("schema") != "v14.native-receiver-task-answer/1"
+                or answer.get("method") != "GREEDY_EXACT_TOKEN_MATCH_V1"
+                or answer.get("condition") != condition
+                or answer.get("input_sha256") != input_hash
+                or answer.get("target_token_ids_sha256") != target_hash
+                or type(answer.get("generated_token_count")) is not int
+                or not 1 <= answer["generated_token_count"] <= min(64, max(16, target_count + 8))
+                or answer.get("generation_token_budget") != min(64, max(16, target_count + 8))
+                or type(answer.get("eos_terminated")) is not bool
+                or type(answer.get("exact_match")) is not bool
+                or (answer["exact_match"] and not answer["eos_terminated"])
+                or type(answer.get("decode_status")) is not int
+                or answer.get("decode_status") != 0
+                or answer.get("native_input_consumed") is not True):
+            raise NativeReceiverUtilityError("native task-answer receipt is invalid")
+        native_data["task_answer"] = {
+            "schema": "v14.native-receiver-task-answer/1",
+            "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+            "condition": condition,
+            "input_sha256": input_hash,
+            "target_token_ids_sha256": target_hash,
+            "generated_token_count": answer["generated_token_count"],
+            "generated_token_ids_sha256": _sha(
+                answer.get("generated_token_ids_sha256"), "task_answer.generated_token_ids_sha256"),
+            "generation_token_budget": answer["generation_token_budget"],
+            "eos_terminated": answer["eos_terminated"],
+            "exact_match": answer["exact_match"],
+            "decode_status": 0,
+            "native_input_consumed": True,
+        }
+    if "prediction_distribution_audit" in value:
+        audit = value.get("prediction_distribution_audit")
+        log2 = math.log(2.0)
+        if (condition != "LATENT_CANDIDATE"
+                or not isinstance(audit, Mapping)
+                or audit.get("schema") != "v14.native-receiver-prediction-distribution-audit/1"
+                or audit.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
+                or audit.get("divergence") != "JENSEN_SHANNON_NATS"
+                or audit.get("normalization") != "DIVIDE_BY_LN2_TO_UNIT_INTERVAL"
+                or type(audit.get("vocab_size")) is not int
+                or not 1 <= audit["vocab_size"] <= 1_000_000
+                or audit.get("receiver_model_sha256") != model_sha
+                or audit.get("raw_logits_exported") is not False
+                or audit.get("raw_logits_persisted") is not False):
+            raise NativeReceiverUtilityError("native PL/CIC distribution-audit metadata is invalid")
+        clean_audit = {
+            "schema": "v14.native-receiver-prediction-distribution-audit/1",
+            "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+            "divergence": "JENSEN_SHANNON_NATS",
+            "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+            "vocab_size": audit["vocab_size"],
+            "receiver_model_sha256": model_sha,
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+        }
+        expected_audits = {
+            "pl": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "cic": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+        }
+        for name, comparison in expected_audits.items():
+            item = audit.get(name)
+            nats = item.get("jsd_nats") if isinstance(item, Mapping) else None
+            normalized = item.get("jsd_normalized") if isinstance(item, Mapping) else None
+            current_sha = item.get("current_input_sha256") if isinstance(item, Mapping) else None
+            reference_sha = item.get("reference_input_sha256") if isinstance(item, Mapping) else None
+            current_logits_sha = item.get("current_logits_sha256") if isinstance(item, Mapping) else None
+            reference_logits_sha = item.get("reference_logits_sha256") if isinstance(item, Mapping) else None
+            if (not isinstance(item, Mapping)
+                    or item.get("comparison") != comparison
+                    or current_sha != input_hash
+                    or type(reference_sha) is not str or len(reference_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in reference_sha)
+                    or type(current_logits_sha) is not str or len(current_logits_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in current_logits_sha)
+                    or type(reference_logits_sha) is not str or len(reference_logits_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in reference_logits_sha)
+                    or type(nats) not in (int, float) or not math.isfinite(float(nats))
+                    or not 0.0 <= float(nats) <= log2 + 1.0e-9
+                    or type(normalized) not in (int, float) or not math.isfinite(float(normalized))
+                    or not 0.0 <= float(normalized) <= 1.0 + 1.0e-9
+                    or abs(float(normalized) - float(nats) / log2) > 1.0e-9):
+                raise NativeReceiverUtilityError("native PL/CIC JSD value or source binding is invalid")
+            clean_audit[name] = {
+                "comparison": comparison,
+                "jsd_nats": float(nats),
+                "jsd_normalized": float(normalized),
+                "current_input_sha256": input_hash,
+                "reference_input_sha256": reference_sha,
+                "current_logits_sha256": current_logits_sha,
+                "reference_logits_sha256": reference_logits_sha,
+            }
+        native_data["prediction_distribution_audit"] = clean_audit
+    if condition == "SELF_GENERATED_MESSAGE":
+        generated = value.get("self_generation")
+        if (not isinstance(generated, Mapping)
+                or generated.get("schema") != "v14.native-receiver-self-generation/1"
+                or generated.get("algorithm") != "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+                or type(generated.get("prompt_token_count")) is not int
+                or not 1 <= generated["prompt_token_count"] <= 64
+                or type(generated.get("generated_token_count")) is not int
+                or not 1 <= generated["generated_token_count"] <= 64
+                or type(generated.get("decode_status")) is not int
+                or generated["decode_status"] != 0
+                or generated.get("message_input_sha256") != input_hash):
+            raise NativeReceiverUtilityError("receiver self-generated message receipt is invalid")
+        prompt_sha = _sha(generated.get("prompt_token_ids_sha256"), "self_generation.prompt_token_ids_sha256")
+        generated_sha = _sha(generated.get("generated_token_ids_sha256"), "self_generation.generated_token_ids_sha256")
+        native_data["self_generation"] = {
+            "schema": "v14.native-receiver-self-generation/1",
+            "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+            "prompt_token_count": generated["prompt_token_count"],
+            "prompt_token_ids_sha256": prompt_sha,
+            "generated_token_count": generated["generated_token_count"],
+            "generated_token_ids_sha256": generated_sha,
+            "message_input_sha256": input_hash,
+            "decode_status": 0,
+        }
+    elif "self_generation" in value:
+        raise NativeReceiverUtilityError("unexpected receiver self-generation receipt")
     if env in {"TERMUX_ANDROID", "REDMI"}:
         native_data["device_execution_receipt_sha256"] = _sha(
             value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
@@ -484,7 +719,7 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
 
 def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_family, session_id,
         source_ref, message_source_ref, receiver, target_token_ids_sha256, target_token_count,
-        context_sha256, input_sha256, native_receipt, adapter_sha256=None):
+        context_sha256, input_sha256, native_receipt, adapter_sha256=None, control_proof_sha256=None):
     """Bind a native score to a held-out task without storing text, token IDs or vectors.
 
     native_receipt must come from the native score producer. Hashing it gives
@@ -508,19 +743,26 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
     if type(target_token_count) is not int or not 1 <= target_token_count <= 512:
         raise NativeReceiverUtilityError("target_token_count must be in [1, 512]")
     if condition == "NO_MESSAGE":
-        if message_source is not None or adapter_sha256 is not None:
-            raise NativeReceiverUtilityError("NO_MESSAGE must not bind a sender source or adapter")
-    elif condition == "EXACT_MESSAGE":
-        if message_source != source or adapter_sha256 is not None:
-            raise NativeReceiverUtilityError("EXACT_MESSAGE must use exact source text and no adapter")
+        if message_source is not None or adapter_sha256 is not None or control_proof_sha256 is not None:
+            raise NativeReceiverUtilityError("NO_MESSAGE must not bind a sender source, adapter or proof")
+    elif condition in {"EXACT_MESSAGE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"}:
+        if message_source != source or adapter_sha256 is not None or control_proof_sha256 is not None:
+            raise NativeReceiverUtilityError(condition + " must use the task source without an adapter/proof")
+    elif condition == "INTACT_NO_PRIVATE":
+        if message_source is None or message_source["sha256"] == source["sha256"]:
+            raise NativeReceiverUtilityError("intact-no-private source must be distinct from the task source")
+        _sha(adapter_sha256, "adapter_sha256")
+        _sha(control_proof_sha256, "control_proof_sha256")
     else:
         if message_source is None:
             raise NativeReceiverUtilityError("latent/control condition missing message source")
-        if condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+        if condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
             if message_source["sha256"] == source["sha256"]:
-                raise NativeReceiverUtilityError("OOD/entity-substitution source must differ")
+                raise NativeReceiverUtilityError("OOD/entity-substitution/deranged source must differ")
         elif message_source != source:
             raise NativeReceiverUtilityError("in-distribution latent control source mismatch")
+        if control_proof_sha256 is not None:
+            raise NativeReceiverUtilityError("unexpected control proof on non-redaction condition")
         _sha(adapter_sha256, "adapter_sha256")
     native = _native_score(
         native_receipt, receiver_data["model_sha256"], input_hash, target_sha,
@@ -535,7 +777,7 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
         "score_method": SCORE_METHOD, "token_logprobs": native["token_logprobs"],
         "mean_target_logprob": sum(native["token_logprobs"]) / target_token_count,
         "context_sha256": context_sha, "input_sha256": input_hash,
-        "adapter_sha256": adapter_sha256, "native": native,
+        "adapter_sha256": adapter_sha256, "control_proof_sha256": control_proof_sha256, "native": native,
         "native_receipt_sha256": _digest(native), "persisted": False,
         "training_authority": 0, "native_receiver_authority": 0,
     }
@@ -558,22 +800,243 @@ def _check_receipt(receipt):
         receiver=receipt.get("receiver"), target_token_ids_sha256=receipt.get("target_token_ids_sha256"),
         target_token_count=receipt.get("target_token_count"), context_sha256=receipt.get("context_sha256"),
         input_sha256=receipt.get("input_sha256"), native_receipt=receipt.get("native"),
-        adapter_sha256=receipt.get("adapter_sha256"))
+        adapter_sha256=receipt.get("adapter_sha256"), control_proof_sha256=receipt.get("control_proof_sha256"))
     if rebuilt != dict(receipt) or receipt.get("native_receipt_sha256") != _digest(receipt["native"]):
         raise NativeReceiverUtilityError("task-score derived/native receipt digest mismatch")
     return rebuilt
 
 
-def _bootstrap_ci(values, samples, seed):
+def _bootstrap_ci(values, samples, seed, confidence=0.95):
+    if type(confidence) not in (int, float) or not 0.0 < float(confidence) < 1.0:
+        raise NativeReceiverUtilityError("bootstrap confidence must be in (0, 1)")
     rng = random.Random(seed)
     n = len(values)
     draws = sorted(sum(values[rng.randrange(n)] for _ in range(n)) / n for _ in range(samples))
-    return draws[int(.025 * (samples - 1))], draws[int(.975 * (samples - 1))]
+    tail = (1.0 - float(confidence)) / 2.0
+    return draws[int(tail * (samples - 1))], draws[int((1.0 - tail) * (samples - 1))]
 
 
-def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_sessions=2,
-        min_task_families=2, min_tasks_per_session=5, min_tasks_per_family=4,
-        min_tasks_per_session_family=2, min_mean_delta_nats=0.02, min_win_rate=0.70,
+def _paired_accuracy_delta_report(values, *, bootstrap_samples, seed, equivalence_margin=0.05):
+    if not values:
+        raise NativeReceiverUtilityError("paired task-accuracy deltas are empty")
+    mean = sum(values) / len(values)
+    wins = sum(value > 0 for value in values)
+    ties = sum(value == 0 for value in values)
+    losses = sum(value < 0 for value in values)
+    low95, high95 = _bootstrap_ci(values, bootstrap_samples, seed, confidence=0.95)
+    low90, high90 = _bootstrap_ci(values, bootstrap_samples, seed + 1, confidence=0.90)
+    return {
+        "paired_task_group_count": len(values),
+        "mean_accuracy_delta": mean,
+        "median_accuracy_delta": statistics.median(values),
+        "win_rate": wins / len(values),
+        "tie_rate": ties / len(values),
+        "loss_rate": losses / len(values),
+        "bootstrap_95pct_low": low95,
+        "bootstrap_95pct_high": high95,
+        "bootstrap_90pct_low": low90,
+        "bootstrap_90pct_high": high90,
+        "positive_effect_supported": low95 > 0.0,
+        "equivalent_within_margin": low90 >= -equivalence_margin and high90 <= equivalence_margin,
+        "equivalence_margin": equivalence_margin,
+    }
+
+
+def _summarize_task_accuracy(task_accuracy_groups, *, sessions, families,
+        tasks_per_session, tasks_per_family, tasks_per_session_family,
+        native_binding, bootstrap_samples, seed):
+    if not task_accuracy_groups:
+        return {
+            "schema": "v14.native-receiver-task-accuracy/1",
+            "status": "NOT_COLLECTED",
+            "evidence_class": None,
+            "task_group_count": 0,
+            "minimum_task_groups": 20,
+            "holdout_sufficient": False,
+            "acceptance_gate_passed": False,
+            "generated_answer_correctness_proven": False,
+            "semantic_use_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    group_count = len(task_accuracy_groups)
+    balanced = all(
+        tasks_per_session_family[(session, family)] >= 2
+        for session in sessions for family in families
+    )
+    enough = (
+        group_count >= 20 and len(sessions) >= 2 and len(families) >= 2
+        and min(tasks_per_session.values()) >= 10
+        and min(tasks_per_family.values()) >= 4 and balanced
+    )
+    cag_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["DERANGED_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    ssg_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["SELF_GENERATED_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    ope_values = [
+        int(group["LATENT_CANDIDATE"]) - int(group["NO_MESSAGE"])
+        for group in task_accuracy_groups
+    ]
+    cag = _paired_accuracy_delta_report(cag_values, bootstrap_samples=bootstrap_samples, seed=seed)
+    ssg = _paired_accuracy_delta_report(ssg_values, bootstrap_samples=bootstrap_samples, seed=seed + 11)
+    ope = _paired_accuracy_delta_report(ope_values, bootstrap_samples=bootstrap_samples, seed=seed + 23)
+    kind, environment = native_binding[:2]
+    evidence = "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else environment
+    status = "SYNTHETIC_FIXTURE_ONLY" if kind == "SYNTHETIC_FIXTURE" else (
+        "MEASURED_NOT_ACCEPTED" if enough else "INSUFFICIENT_HOLDOUT"
+    )
+    rates = {
+        condition: sum(bool(group[condition]) for group in task_accuracy_groups) / group_count
+        for condition in TASK_ACCURACY_CONDITIONS
+    }
+    return {
+        "schema": "v14.native-receiver-task-accuracy/1",
+        "status": status,
+        "evidence_class": evidence,
+        "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+        "answer_normalization": "STRIP_ONE_TERMINAL_EOS_FROM_BOTH_SEQUENCES",
+        "task_group_count": group_count,
+        "minimum_task_groups": 20,
+        "session_count": len(sessions),
+        "task_family_count": len(families),
+        "holdout_sufficient": bool(enough),
+        "balanced_session_family_coverage": balanced,
+        "exact_match_rate_by_condition": rates,
+        "cag": cag,
+        "ssg": ssg,
+        "ope": ope,
+        "cag_positive": bool(enough and cag["positive_effect_supported"]),
+        "ssg_positive": bool(enough and ssg["positive_effect_supported"]),
+        "cag_equivalent": bool(enough and cag["equivalent_within_margin"]),
+        "ssg_equivalent": bool(enough and ssg["equivalent_within_margin"]),
+        "equivalence_confidence": 0.90,
+        "positive_effect_confidence": 0.95,
+        "equivalence_margin": 0.05,
+        "acceptance_gate_passed": False,
+        "generated_answer_correctness_proven": False,
+        "semantic_use_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+        "interpretation_limit": (
+            "Exact receiver-token sequence match on the held-out task target, with one terminal EOS "
+            "removed. This is benchmark-level exact-match evidence, not semantic equivalence or "
+            "general language understanding; confidence/equivalence results remain diagnostic."
+        ),
+    }
+
+
+
+def _bootstrap_scalar_summary(values, *, bootstrap_samples, seed):
+    if not values:
+        raise NativeReceiverUtilityError("distribution-audit metric is empty")
+    low, high = _bootstrap_ci(values, bootstrap_samples, seed, confidence=0.95)
+    return {
+        "count": len(values),
+        "mean": sum(values) / len(values),
+        "median": statistics.median(values),
+        "bootstrap_95pct_low": low,
+        "bootstrap_95pct_high": high,
+    }
+
+
+def _summarize_prediction_distribution_audit(audits, *, sessions, families,
+        tasks_per_session, tasks_per_family, tasks_per_session_family,
+        native_binding, bootstrap_samples, seed):
+    if not audits:
+        return {
+            "schema": "v14.native-receiver-prediction-distribution-cohort/1",
+            "status": "NOT_COLLECTED",
+            "evidence_class": None,
+            "task_group_count": 0,
+            "minimum_task_groups": 20,
+            "holdout_sufficient": False,
+            "acceptance_gate_passed": False,
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    group_count = len(audits)
+    balanced = all(
+        tasks_per_session_family[(session, family)] >= 2
+        for session in sessions for family in families
+    )
+    enough = (
+        group_count >= 20 and len(sessions) >= 2 and len(families) >= 2
+        and min(tasks_per_session.values()) >= 10
+        and min(tasks_per_family.values()) >= 4 and balanced
+    )
+    pl_nats = [audit["pl"]["jsd_nats"] for audit in audits]
+    pl_normalized = [audit["pl"]["jsd_normalized"] for audit in audits]
+    cic_nats = [audit["cic"]["jsd_nats"] for audit in audits]
+    cic_normalized = [audit["cic"]["jsd_normalized"] for audit in audits]
+    difference = [cic - pl for cic, pl in zip(cic_normalized, pl_normalized)]
+    diff95_low, diff95_high = _bootstrap_ci(difference, bootstrap_samples, seed + 31, confidence=0.95)
+    diff90_low, diff90_high = _bootstrap_ci(difference, bootstrap_samples, seed + 32, confidence=0.90)
+    kind, environment = native_binding[:2]
+    evidence = "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else environment
+    status = "SYNTHETIC_FIXTURE_ONLY" if kind == "SYNTHETIC_FIXTURE" else (
+        "MEASURED_NOT_ACCEPTED" if enough else "INSUFFICIENT_HOLDOUT"
+    )
+    return {
+        "schema": "v14.native-receiver-prediction-distribution-cohort/1",
+        "status": status,
+        "evidence_class": evidence,
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "task_group_count": group_count,
+        "minimum_task_groups": 20,
+        "session_count": len(sessions),
+        "task_family_count": len(families),
+        "holdout_sufficient": bool(enough),
+        "balanced_session_family_coverage": balanced,
+        "pl": {
+            "jsd_nats": _bootstrap_scalar_summary(pl_nats, bootstrap_samples=bootstrap_samples, seed=seed),
+            "jsd_normalized": _bootstrap_scalar_summary(pl_normalized, bootstrap_samples=bootstrap_samples, seed=seed + 1),
+        },
+        "cic": {
+            "jsd_nats": _bootstrap_scalar_summary(cic_nats, bootstrap_samples=bootstrap_samples, seed=seed + 2),
+            "jsd_normalized": _bootstrap_scalar_summary(cic_normalized, bootstrap_samples=bootstrap_samples, seed=seed + 3),
+        },
+        "cic_minus_pl_normalized": {
+            "mean": sum(difference) / group_count,
+            "median": statistics.median(difference),
+            "bootstrap_95pct_low": diff95_low,
+            "bootstrap_95pct_high": diff95_high,
+            "bootstrap_90pct_low": diff90_low,
+            "bootstrap_90pct_high": diff90_high,
+            "equivalence_margin": 0.05,
+            "equivalent_within_margin": diff90_low >= -0.05 and diff90_high <= 0.05,
+        },
+        "acceptance_gate_passed": False,
+        "raw_logits_exported": False,
+        "raw_logits_persisted": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+        "interpretation_limit": (
+            "Per-group full-vocabulary first-next-token JSD is aggregated over source-disjoint "
+            "paired task groups. PL and CIC are distributional movement metrics, not task correctness "
+            "or proof of trained latent communication; raw logits are neither exported nor persisted."
+        ),
+    }
+
+
+def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_sessions=2,
+        min_task_families=2, min_tasks_per_session=20, min_tasks_per_family=8,
+        min_tasks_per_session_family=4, min_mean_delta_nats=0.02, min_win_rate=0.70,
         bootstrap_samples=1000, seed=17):
     """Evaluate paired held-out target-logprob proxy on source-disjoint crossed cohorts.
 
@@ -622,11 +1085,48 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
     kv_cohort_geometry = None
     hybrid_state_roundtrips = []
     hybrid_state_roundtrip_mode = None
+    task_accuracy_groups = []
+    task_accuracy_mode = None
+    prediction_distribution_audits = []
+    prediction_distribution_audit_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
         first = group["NO_MESSAGE"]
         candidate = group["LATENT_CANDIDATE"]
+        answer_presence = [
+            isinstance(group[name]["native"].get("task_answer"), Mapping)
+            for name in TASK_ACCURACY_CONDITIONS
+        ]
+        if any(answer_presence) and not all(answer_presence):
+            raise NativeReceiverUtilityError("task-accuracy cohort has partial arm coverage")
+        has_task_accuracy = all(answer_presence)
+        if task_accuracy_mode is None:
+            task_accuracy_mode = has_task_accuracy
+        elif task_accuracy_mode != has_task_accuracy:
+            raise NativeReceiverUtilityError("task-accuracy coverage changed across task groups")
+        if has_task_accuracy:
+            task_accuracy_groups.append({
+                name: group[name]["native"]["task_answer"]["exact_match"]
+                for name in TASK_ACCURACY_CONDITIONS
+            })
+        distribution_audit = candidate["native"].get("prediction_distribution_audit")
+        has_distribution_audit = isinstance(distribution_audit, Mapping)
+        if prediction_distribution_audit_mode is None:
+            prediction_distribution_audit_mode = has_distribution_audit
+        elif prediction_distribution_audit_mode != has_distribution_audit:
+            raise NativeReceiverUtilityError(
+                "PL/CIC distribution-audit coverage changed across task cohort"
+            )
+        if has_distribution_audit:
+            if (distribution_audit["pl"]["reference_input_sha256"]
+                    != group["NO_MESSAGE"]["native"]["input_sha256"]
+                    or distribution_audit["cic"]["reference_input_sha256"]
+                    != group["DERANGED_MESSAGE"]["native"]["input_sha256"]):
+                raise NativeReceiverUtilityError(
+                    "PL/CIC audit reference inputs do not match the paired control arms"
+                )
+            prediction_distribution_audits.append(distribution_audit)
         roundtrip = candidate["native"].get("hybrid_state_roundtrip")
         has_roundtrip = roundtrip is not None
         if hybrid_state_roundtrip_mode is None:
@@ -659,9 +1159,9 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             elif native_binding != key: raise NativeReceiverUtilityError("native runner/model changed across cohort")
             if condition == "NO_MESSAGE":
                 if item["message_source_ref"] is not None: raise NativeReceiverUtilityError("NO_MESSAGE contains sender data")
-            elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
+            elif condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE"}:
                 if item["message_source_ref"]["sha256"] == item["source_ref"]["sha256"]:
-                    raise NativeReceiverUtilityError("OOD/entity-substitution did not change sender source")
+                    raise NativeReceiverUtilityError("OOD/entity-substitution/deranged/no-private did not change sender source")
             elif item["message_source_ref"] != item["source_ref"]:
                 raise NativeReceiverUtilityError("in-distribution message source mismatch")
             scores[condition].append(item["mean_target_logprob"])
@@ -718,45 +1218,102 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "bootstrap_95pct_low": low, "bootstrap_95pct_high": high, "pass": passed}
     system_gain = delta_report["NO_MESSAGE"]
     entity_specificity_gain = delta_report["ENTITY_SUBSTITUTION"]
+    moment_matched_gain = delta_report["MOMENT_MATCHED_RANDOM"]
+    intact_no_private_gain = delta_report["INTACT_NO_PRIVATE"]
+    candidate_vs_direct_text = delta_report["DIRECT_TEXT_REFERENCE"]
+    self_substitution = delta_report["SELF_GENERATED_MESSAGE"]
+    self_substitution_pass = bool(enough and self_substitution["pass"])
+    direct_text_deltas = [
+        group["DIRECT_TEXT_REFERENCE"]["mean_target_logprob"] - group["NO_MESSAGE"]["mean_target_logprob"]
+        for group in groups.values()
+    ]
+    direct_text_mean = sum(direct_text_deltas) / len(direct_text_deltas)
+    direct_text_win = sum(value > 0 for value in direct_text_deltas) / len(direct_text_deltas)
+    direct_text_low, direct_text_high = _bootstrap_ci(
+        direct_text_deltas, bootstrap_samples, seed + len(deltas) + 1,
+    )
+    direct_text_validity_pass = bool(
+        enough and direct_text_mean >= min_mean_delta_nats
+        and direct_text_win >= min_win_rate and direct_text_low > 0
+    )
+    direct_text_validity = {
+        "mean_delta_nats_per_token_vs_no_message": direct_text_mean,
+        "win_rate": direct_text_win,
+        "bootstrap_95pct_low": direct_text_low,
+        "bootstrap_95pct_high": direct_text_high,
+        "pass": direct_text_validity_pass,
+    }
     unrelated_donor_gain = delta_report["OOD"]
+    pairing_gain = delta_report["DERANGED_MESSAGE"]
     donor_derangement = _audit_ood_donor_derangement(groups)
+    pairing_derangement = _audit_same_family_pairing_derangement(groups)
     full_derangement_tested = donor_derangement["status"] == "PASS"
+    pairing_derangement_tested = pairing_derangement["status"] == "PASS"
     system_gain_pass = bool(enough and system_gain["pass"])
     entity_specificity_pass = bool(enough and entity_specificity_gain["pass"])
+    pairing_gain_pass = bool(enough and pairing_derangement_tested and pairing_gain["pass"])
     unrelated_donor_gain_pass = bool(
         enough and full_derangement_tested and unrelated_donor_gain["pass"]
     )
+    all_pass &= direct_text_validity_pass
     if not enough:
         information_use_status = "INSUFFICIENT_HOLDOUT"
-    elif system_gain_pass and entity_specificity_pass and unrelated_donor_gain_pass:
-        information_use_status = "CONTENT_SPECIFIC_SIGNAL"
+    elif not direct_text_validity_pass:
+        information_use_status = "DIRECT_TEXT_REFERENCE_NOT_VALIDATED"
+    elif system_gain_pass and entity_specificity_pass and pairing_gain_pass:
+        information_use_status = (
+            "CONTENT_SPECIFIC_SIGNAL" if unrelated_donor_gain_pass
+            else "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
+        )
+    elif system_gain_pass and pairing_gain_pass:
+        information_use_status = "PAIRING_SIGNAL_WITHOUT_ENTITY_COUNTERFACTUAL"
     elif system_gain_pass and entity_specificity_pass:
-        information_use_status = "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+        information_use_status = "ENTITY_SPECIFIC_GAIN_WITHOUT_SAME_FAMILY_PAIRING"
     elif system_gain_pass:
-        information_use_status = "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+        information_use_status = "SYSTEM_GAIN_WITHOUT_CONTENT_SPECIFIC_SIGNAL"
     else:
         information_use_status = "NO_SYSTEM_GAIN_ESTABLISHED"
     information_use_audit = {
-        "schema": "v14.native-receiver-information-use-audit/1",
+        "schema": "v14.native-receiver-information-use-audit/4",
         "status": information_use_status,
         "system_gain_vs_no_message": dict(system_gain),
         "entity_specificity_gain_vs_counterfactual": dict(entity_specificity_gain),
+        "moment_matched_random_gain_vs_control": dict(moment_matched_gain),
+        "intact_no_private_gain_vs_control": dict(intact_no_private_gain),
+        "candidate_vs_direct_text_reference": dict(candidate_vs_direct_text),
+        "self_substitution_gap_vs_receiver_generated_message": dict(self_substitution),
+        "separate_agent_value_pass": self_substitution_pass,
+        "separate_agent_value_status": (
+            "SEPARATE_AGENT_VALUE_SIGNAL" if self_substitution_pass
+            else "NO_SEPARATE_AGENT_VALUE_ESTABLISHED"
+        ),
+        "self_substitution_interpretation": (
+            "Positive paired target-logprob proxy means the sender message outperforms a "
+            "receiver-generated latent sequence at the same message-row budget; this is not task accuracy."
+        ),
+        "direct_text_validity_reference": direct_text_validity,
+        "pairing_gain_vs_same_family_deranged_control": dict(pairing_gain),
+        "same_family_pairing_derangement": pairing_derangement,
+        "cross_family_unrelated_donor_gain": dict(unrelated_donor_gain),
         "unrelated_donor_gain_vs_deranged_control": dict(unrelated_donor_gain),
         "unrelated_donor_derangement": donor_derangement,
         "system_gain_pass": system_gain_pass,
         "entity_specificity_pass": entity_specificity_pass,
+        "pairing_gain_pass": pairing_gain_pass,
+        "same_family_pairing_derangement_tested": pairing_derangement_tested,
         "unrelated_donor_gain_pass": unrelated_donor_gain_pass,
         "holdout_sufficient": bool(enough),
         "counterfactual_kind": (
-            "SESSION_LOCAL_NO_FIXED_POINT_CROSS_FAMILY_DONOR_PERMUTATION"
-            if full_derangement_tested
-            else "ENTITY_ONLY_SOURCE_PAIR; OOD_DERANGEMENT_NOT_ESTABLISHED"
+            "SAME_FAMILY_SESSION_LOCAL_NO_FIXED_POINT_PERMUTATION"
+            if pairing_derangement_tested
+            else "SAME_FAMILY_PAIRING_DERANGEMENT_NOT_ESTABLISHED"
         ),
         "full_derangement_tested": full_derangement_tested,
+        "cross_family_ood_derangement_tested": full_derangement_tested,
         "interpretation_limit": (
-            "Teacher-forced target-logprob proxy only; a complete matched-versus-"
-            "deranged donor effect is necessary but does not prove generated-answer "
-            "correctness or semantic use."
+            "Teacher-forced target-logprob proxy only. Moment-matched, intact-no-private, "
+            "direct-text and same-family deranged controls improve causal discrimination, "
+            "but no generated-answer correctness or semantic use is proven."
         ),
         "semantic_use_proven": False,
         "generated_answer_correctness_proven": False,
@@ -808,6 +1365,28 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
             "native_receiver_authority": 0,
             "persisted": False,
         }
+    task_accuracy = _summarize_task_accuracy(
+        task_accuracy_groups,
+        sessions=sessions,
+        families=families,
+        tasks_per_session=tasks_per_session,
+        tasks_per_family=tasks_per_family,
+        tasks_per_session_family=tasks_per_session_family,
+        native_binding=native_binding,
+        bootstrap_samples=bootstrap_samples,
+        seed=seed + 97,
+    )
+    prediction_distribution_audit = _summarize_prediction_distribution_audit(
+        prediction_distribution_audits,
+        sessions=sessions,
+        families=families,
+        tasks_per_session=tasks_per_session,
+        tasks_per_family=tasks_per_family,
+        tasks_per_session_family=tasks_per_session_family,
+        native_binding=native_binding,
+        bootstrap_samples=bootstrap_samples,
+        seed=seed + 137,
+    )
     try:
         hybrid_state_roundtrip_effect = summarize_native_hybrid_state_roundtrips(hybrid_state_roundtrips)
     except NativeHybridStateReceiptError as exc:
@@ -837,8 +1416,13 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=20, min_s
         "holdout_status": "SUFFICIENT_HOLDOUT" if enough else "INSUFFICIENT_HOLDOUT",
         "mean_target_logprob_by_condition": {k: sum(v) / len(v) for k, v in sorted(scores.items())},
         "paired_candidate_deltas": delta_report, "candidate_beats_all_controls": bool(all_pass),
+        "direct_text_reference_validated": direct_text_validity_pass,
         "kv_snapshot_effect": kv_snapshot_effect,
         "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
+        "task_accuracy": task_accuracy,
+        "task_accuracy_measured": bool(task_accuracy_groups),
+        "prediction_distribution_audit": prediction_distribution_audit,
+        "prediction_distribution_audit_measured": bool(prediction_distribution_audits),
         "information_use_audit": information_use_audit,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,

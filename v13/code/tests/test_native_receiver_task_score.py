@@ -1,6 +1,8 @@
 import hashlib
 import struct
 
+import math
+
 import pytest
 
 from v13.native_receiver_utility import (
@@ -25,6 +27,7 @@ RECEIVER = {
     "tokenizer_revision": "c3-tokenizer-r1",
 }
 ADAPTER_SHA256 = "a" * 64
+TASK_ACCURACY_CONDITIONS = {"NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE"}
 
 
 def sha(value):
@@ -109,28 +112,43 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
         input_sha256=base["input_sha256"],
         native_receipt=native,
         adapter_sha256=base["adapter_sha256"],
+        control_proof_sha256=base.get("control_proof_sha256"),
     )
 
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
-                 score_override=None, ood_source_ref_override=None):
+                 score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None,
+                 include_task_accuracy=False, task_accuracy_overrides=None,
+                 include_prediction_distribution_audit=False):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
+    control_proof_sha256 = None
     if condition == "NO_MESSAGE":
         message_source_ref = None
         adapter_sha256 = None
     elif condition == "EXACT_MESSAGE":
         message_source_ref = source_ref
         adapter_sha256 = None
-    elif condition in {"OOD", "ENTITY_SUBSTITUTION"}:
-        message_source_ref = (
-            dict(ood_source_ref_override)
-            if condition == "OOD" and ood_source_ref_override is not None
-            else {
+    elif condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"}:
+        message_source_ref = source_ref
+        adapter_sha256 = None
+    elif condition == "INTACT_NO_PRIVATE":
+        message_source_ref = {
+            "source_id": f"control-intact-no-private-{task_index:02d}",
+            "sha256": sha(f"intact-no-private-source-{task_index}"),
+        }
+        adapter_sha256 = ADAPTER_SHA256
+        control_proof_sha256 = sha(f"private-span-proof-{task_index}")
+    elif condition in {"OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE"}:
+        if condition == "OOD" and ood_source_ref_override is not None:
+            message_source_ref = dict(ood_source_ref_override)
+        elif condition == "DERANGED_MESSAGE" and deranged_source_ref_override is not None:
+            message_source_ref = dict(deranged_source_ref_override)
+        else:
+            message_source_ref = {
                 "source_id": f"control-{condition.lower()}-{task_index:02d}",
                 "sha256": sha(f"{condition}-source-{task_index}"),
             }
-        )
         adapter_sha256 = ADAPTER_SHA256
     else:
         message_source_ref = source_ref
@@ -153,6 +171,74 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
     }
+    if include_prediction_distribution_audit and condition == "LATENT_CANDIDATE":
+        pl_nats = 0.10 + 0.001 * (task_index % 10)
+        cic_nats = 0.20 + 0.001 * (task_index % 10)
+        log2 = math.log(2.0)
+        native["prediction_distribution_audit"] = {
+            "schema": "v14.native-receiver-prediction-distribution-audit/1",
+            "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+            "divergence": "JENSEN_SHANNON_NATS",
+            "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+            "vocab_size": 32000,
+            "receiver_model_sha256": RECEIVER["model_sha256"],
+            "pl": {
+                "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+                "jsd_nats": pl_nats,
+                "jsd_normalized": pl_nats / log2,
+                "current_input_sha256": input_sha,
+                "reference_input_sha256": sha(f"input-{task_index}-NO_MESSAGE"),
+                "current_logits_sha256": sha(f"pl-current-{task_index}"),
+                "reference_logits_sha256": sha(f"pl-reference-{task_index}"),
+            },
+            "cic": {
+                "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+                "jsd_nats": cic_nats,
+                "jsd_normalized": cic_nats / log2,
+                "current_input_sha256": input_sha,
+                "reference_input_sha256": sha(f"input-{task_index}-DERANGED_MESSAGE"),
+                "current_logits_sha256": sha(f"cic-current-{task_index}"),
+                "reference_logits_sha256": sha(f"cic-reference-{task_index}"),
+            },
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+        }
+    if include_task_accuracy and condition in TASK_ACCURACY_CONDITIONS:
+        overrides = task_accuracy_overrides or {}
+        if condition in overrides:
+            exact_match = overrides[condition]
+        else:
+            exact_match = {
+                "NO_MESSAGE": task_index % 3 == 0,
+                "LATENT_CANDIDATE": task_index % 2 == 0,
+                "DERANGED_MESSAGE": task_index % 4 == 0,
+                "SELF_GENERATED_MESSAGE": task_index % 5 == 0,
+            }[condition]
+        native["task_answer"] = {
+            "schema": "v14.native-receiver-task-answer/1",
+            "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+            "condition": condition,
+            "input_sha256": input_sha,
+            "target_token_ids_sha256": target_sha,
+            "generated_token_count": 3,
+            "generated_token_ids_sha256": sha(f"generated-answer-{task_index}-{condition}"),
+            "generation_token_budget": 16,
+            "eos_terminated": True,
+            "exact_match": exact_match,
+            "decode_status": 0,
+            "native_input_consumed": True,
+        }
+    if condition == "SELF_GENERATED_MESSAGE":
+        native["self_generation"] = {
+            "schema": "v14.native-receiver-self-generation/1",
+            "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+            "prompt_token_count": 3,
+            "prompt_token_ids_sha256": sha(f"self-prompt-{task_index}"),
+            "generated_token_count": 2,
+            "generated_token_ids_sha256": sha(f"self-generated-{task_index}"),
+            "message_input_sha256": input_sha,
+            "decode_status": 0,
+        }
     if kv_digest_override is not None:
         position_sha = hashlib.sha256(struct.pack("<i", 0)).hexdigest()
         combined_sha = sha("kv-combined-" + kv_digest_override)
@@ -197,6 +283,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         input_sha256=input_sha,
         native_receipt=native,
         adapter_sha256=adapter_sha256,
+        control_proof_sha256=control_proof_sha256,
     )
 
 
@@ -204,7 +291,9 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
                    source_ref_override=None, input_overrides=None, kv_overrides=None,
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
                    hybrid_state_roundtrip_override=None, score_overrides=None,
-                   ood_source_ref_override=None):
+                   ood_source_ref_override=None, deranged_source_ref_override=None,
+                   include_task_accuracy=False, task_accuracy_overrides=None,
+                   include_prediction_distribution_audit=False):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -218,6 +307,10 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             kv_geometry_override=kv_geometry_override,
             score_override=score_overrides.get(condition),
             ood_source_ref_override=ood_source_ref_override,
+            deranged_source_ref_override=deranged_source_ref_override,
+            include_task_accuracy=include_task_accuracy,
+            task_accuracy_overrides=task_accuracy_overrides,
+            include_prediction_distribution_audit=include_prediction_distribution_audit,
         )
         if include_hybrid_state_roundtrip and condition == "LATENT_CANDIDATE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
@@ -233,28 +326,33 @@ def _information_use_scores():
         "ZERO": [-2.0, -2.0],
         "SHUFFLE": [-2.0, -2.0],
         "REPEAT": [-2.0, -2.0],
+        "MOMENT_MATCHED_RANDOM": [-2.0, -2.0],
         "OOD": [-2.0, -2.0],
         "ENTITY_SUBSTITUTION": [-2.0, -2.0],
+        "DERANGED_MESSAGE": [-2.0, -2.0],
+        "INTACT_NO_PRIVATE": [-2.0, -2.0],
+        "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
+        "SELF_GENERATED_MESSAGE": [-2.0, -2.0],
     }
 
 
-def _record_information_use_cohort(derangement_mode, score_overrides):
+def _record_information_use_cohort(derangement_mode, score_overrides, pairing_mode="cycle"):
     runtime = type("Runtime", (), {"session": "session-A"})()
     families = ("ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER")
     result = None
-    for task_index in range(20):
-        session_start = (task_index // 10) * 10
+    for task_index in range(40):
+        session_start = (task_index // 20) * 20
         offset = task_index - session_start
         if derangement_mode == "cycle":
-            donor_index = session_start + ((offset + 1) % 10)
+            donor_index = session_start + ((offset + 1) % 20)
         elif derangement_mode == "fixed_point":
-            donor_index = task_index if task_index == 0 else session_start + ((offset + 1) % 10)
+            donor_index = task_index if task_index == 0 else session_start + ((offset + 1) % 20)
         elif derangement_mode == "duplicate":
-            donor_index = session_start + 3 if task_index in (0, 1) else session_start + ((offset + 1) % 10)
+            donor_index = session_start + 3 if task_index in (0, 1) else session_start + ((offset + 1) % 20)
         elif derangement_mode == "cross_session":
-            donor_index = 10 if task_index == 0 else session_start + ((offset + 1) % 10)
+            donor_index = 20 if task_index == 0 else session_start + ((offset + 1) % 20)
         elif derangement_mode == "same_family":
-            donor_index = session_start + ((offset + 5) % 10)
+            donor_index = session_start + ((offset + 5) % 20)
         elif derangement_mode == "external":
             donor_index = None
         else:
@@ -263,13 +361,26 @@ def _record_information_use_cohort(derangement_mode, score_overrides):
             "source_id": f"source-{donor_index:02d}",
             "sha256": sha(f"source-{donor_index}"),
         }
+        if pairing_mode == "cycle":
+            pairing_donor_index = session_start + ((offset + 5) % 20)
+        elif pairing_mode == "cross_family":
+            pairing_donor_index = session_start + ((offset + 1) % 20)
+        elif pairing_mode == "external":
+            pairing_donor_index = None
+        else:
+            raise AssertionError(f"unknown pairing mode: {pairing_mode}")
+        pairing_donor_ref = None if pairing_donor_index is None else {
+            "source_id": f"source-{pairing_donor_index:02d}",
+            "sha256": sha(f"source-{pairing_donor_index}"),
+        }
         result = complete_group(
             runtime,
             task_index=task_index,
-            session_id=f"session-{task_index // 10}",
+            session_id=f"session-{task_index // 20}",
             task_family=families[offset % len(families)],
             score_overrides=score_overrides,
             ood_source_ref_override=donor_ref,
+            deranged_source_ref_override=pairing_donor_ref,
         )
     return result["information_use_audit"]
 
@@ -281,7 +392,7 @@ def test_single_complete_synthetic_task_group_is_not_enough_for_utility():
     assert result["task_group_count"] == 1
     assert result["enough_holdout"] is False
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
-    assert result["minimum_task_groups"] == 20
+    assert result["minimum_task_groups"] == 40
     assert result["semantic_use_proven"] is False
     assert result["training_authority"] == result["native_receiver_authority"] == 0
     assert result["persisted"] is False
@@ -296,7 +407,7 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
 
     assert result["status"] == "FIXTURE_ONLY"
     assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
-    assert effect["snapshot_count"] == 8
+    assert effect["snapshot_count"] == 13
     assert effect["candidate_differs_from_no_message_count"] == 1
     assert effect["candidate_differs_from_exact_message_count"] == 1
     assert effect["distinct_from_no_message_task_groups_by_condition"]["NO_MESSAGE"] == 0
@@ -317,7 +428,7 @@ def test_identical_input_digest_requires_identical_kv_snapshot():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, input_overrides=input_overrides, kv_overrides=kv_overrides)
     assert "identical receiver input digest" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 7
+    assert task_score_status(runtime)["receipt_count"] == 12
     assert task_score_status(runtime)["incomplete_task_group_count"] == 1
 
 
@@ -345,25 +456,25 @@ def test_partial_kv_snapshot_coverage_is_rejected():
     with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation") as error:
         complete_group(runtime, kv_overrides={"NO_MESSAGE": "only-one-snapshot"})
     assert "partial native K/V snapshot coverage" in str(error.value.__cause__)
-    assert task_score_status(runtime)["receipt_count"] == 7
+    assert task_score_status(runtime)["receipt_count"] == 12
 
 
-def test_twenty_task_groups_across_two_sessions_are_fixture_only():
+def test_forty_task_groups_across_two_sessions_are_fixture_only():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         result = complete_group(runtime, task_index, session_id, family)
     assert result["status"] == "FIXTURE_ONLY"
     assert result["evidence_class"] == "SYNTHETIC"
-    assert result["task_group_count"] == 20
+    assert result["task_group_count"] == 40
     assert result["session_count"] == 2
     assert result["enough_holdout"] is True
     assert result["balanced_session_family_coverage"] is True
     assert result["tasks_per_session_family"] == {
-        "session-A": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
-        "session-B": {"ARITHMETIC": 5, "ENTITY_RECALL": 5},
+        "session-A": {"ARITHMETIC": 10, "ENTITY_RECALL": 10},
+        "session-B": {"ARITHMETIC": 10, "ENTITY_RECALL": 10},
     }
     assert result["candidate_beats_all_controls"] is False
     assert result["semantic_use_proven"] is False
@@ -395,12 +506,12 @@ def test_duplicate_condition_is_rejected():
 
 def test_receipt_cap_is_bounded_and_explicit_clear_discards_memory():
     runtime = type("Runtime", (), {"session": "session-A"})()
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         complete_group(runtime, task_index, session_id, family)
     assert task_score_status(runtime)["receipt_count"] == MAX_TASK_SCORE_RECEIPTS
-    extra = make_receipt(21, "session-C", "OTHER", "NO_MESSAGE")
+    extra = make_receipt(41, "session-C", "OTHER", "NO_MESSAGE")
     with pytest.raises(NativeReceiverTaskScoreError, match="full"):
         record_task_score_receipt(runtime, extra)
     cleared = clear_task_score_cohort(runtime)
@@ -414,8 +525,8 @@ def test_collector_rejects_duplicate_source_content_across_task_groups():
     runtime = type("Runtime", (), {"session": "session-A"})()
     shared_source = make_receipt(0, "session-A", "ARITHMETIC", "NO_MESSAGE")["source_ref"]
     with pytest.raises(NativeReceiverTaskScoreError, match="failed validation"):
-        for task_index in range(20):
-            session_id = "session-A" if task_index < 10 else "session-B"
+        for task_index in range(40):
+            session_id = "session-A" if task_index < 20 else "session-B"
             family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
             override = shared_source if task_index == 1 else None
             complete_group(
@@ -427,19 +538,19 @@ def test_collector_rejects_duplicate_source_content_across_task_groups():
 def test_collector_rejects_sparse_session_family_cross_even_when_totals_pass():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         if session_id == "session-A":
             family = "ENTITY_RECALL" if task_index == 1 else "ARITHMETIC"
         else:
-            family = "ARITHMETIC" if task_index == 10 else "ENTITY_RECALL"
+            family = "ARITHMETIC" if task_index == 20 else "ENTITY_RECALL"
         result = complete_group(runtime, task_index, session_id, family)
     assert result["status"] == "FIXTURE_ONLY"
-    assert result["tasks_per_session"] == {"session-A": 10, "session-B": 10}
-    assert result["tasks_per_family"] == {"ARITHMETIC": 10, "ENTITY_RECALL": 10}
+    assert result["tasks_per_session"] == {"session-A": 20, "session-B": 20}
+    assert result["tasks_per_family"] == {"ARITHMETIC": 20, "ENTITY_RECALL": 20}
     assert result["tasks_per_session_family"] == {
-        "session-A": {"ARITHMETIC": 9, "ENTITY_RECALL": 1},
-        "session-B": {"ARITHMETIC": 1, "ENTITY_RECALL": 9},
+        "session-A": {"ARITHMETIC": 19, "ENTITY_RECALL": 1},
+        "session-B": {"ARITHMETIC": 1, "ENTITY_RECALL": 19},
     }
     assert result["balanced_session_family_coverage"] is False
     assert result["enough_holdout"] is False
@@ -472,7 +583,7 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 
     assert "native K/V snapshot geometry changed across task cohort" in str(error.value.__cause__)
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 15
+    assert status["receipt_count"] == 25
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 1
 
@@ -480,8 +591,8 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate():
     runtime = type("Runtime", (), {"session": "session-A"})()
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         params_sha = sha(f"native-context-params-{task_index}")
         result = complete_group(
@@ -497,15 +608,15 @@ def test_hybrid_state_roundtrip_effect_is_read_only_and_not_part_of_utility_gate
     assert result["status"] == "FIXTURE_ONLY"
     assert result["candidate_beats_all_controls"] is False
     assert effect["status"] == "SAME_MODEL_ROUNDTRIP_PASS"
-    assert effect["task_group_count"] == 20
+    assert effect["task_group_count"] == 40
     assert effect["prefill_condition"] == "LATENT_CANDIDATE"
     assert effect["prefill_rows_min"] == 1
     assert effect["prefill_rows_median"] == 2.5
     assert effect["prefill_rows_max"] == 4
-    assert effect["context_params_variant_count"] == 20
+    assert effect["context_params_variant_count"] == 40
     assert effect["state_bytes_min"] == effect["state_bytes_max"] == 4096
     assert effect["top1_match_rate"] == 1.0
-    assert effect["truncated_restore_rejected_count"] == 20
+    assert effect["truncated_restore_rejected_count"] == 40
     assert effect["same_model_only"] is True
     assert effect["cross_model_transfer_proven"] is False
     assert effect["trained_latent_coupling_proven"] is False
@@ -525,25 +636,32 @@ def test_information_use_audit_exposes_system_gain_without_content_specific_gain
         "ZERO": [-2.0, -2.0],
         "SHUFFLE": [-2.0, -2.0],
         "REPEAT": [-2.0, -2.0],
+        "MOMENT_MATCHED_RANDOM": [-2.0, -2.0],
         "OOD": [-2.0, -2.0],
         "ENTITY_SUBSTITUTION": [-1.0, -1.0],
+        "DERANGED_MESSAGE": [-2.0, -2.0],
+        "INTACT_NO_PRIVATE": [-2.0, -2.0],
+        "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
+        "SELF_GENERATED_MESSAGE": [-2.0, -2.0],
     }
     result = None
-    for task_index in range(20):
-        session_id = "session-A" if task_index < 10 else "session-B"
+    for task_index in range(40):
+        session_id = "session-A" if task_index < 20 else "session-B"
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         result = complete_group(
             runtime, task_index=task_index, session_id=session_id,
             task_family=family, score_overrides=scores,
         )
     audit = result["information_use_audit"]
-    assert audit["status"] == "SYSTEM_GAIN_WITHOUT_ENTITY_SPECIFIC_SIGNAL"
+    assert audit["status"] == "SYSTEM_GAIN_WITHOUT_CONTENT_SPECIFIC_SIGNAL"
     assert audit["system_gain_vs_no_message"]["mean_delta_nats_per_token"] == 1.0
     assert audit["entity_specificity_gain_vs_counterfactual"]["mean_delta_nats_per_token"] == 0.0
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is False
     assert audit["holdout_sufficient"] is True
-    assert audit["counterfactual_kind"] == "ENTITY_ONLY_SOURCE_PAIR; OOD_DERANGEMENT_NOT_ESTABLISHED"
+    assert audit["counterfactual_kind"] == "SAME_FAMILY_PAIRING_DERANGEMENT_NOT_ESTABLISHED"
+    assert audit["same_family_pairing_derangement_tested"] is False
+    assert audit["pairing_gain_pass"] is False
     assert audit["full_derangement_tested"] is False
     assert audit["semantic_use_proven"] is False
     assert result["semantic_use_proven"] is False
@@ -555,30 +673,53 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is True
     assert audit["unrelated_donor_gain_pass"] is True
+    assert audit["same_family_pairing_derangement_tested"] is True
+    assert audit["pairing_gain_pass"] is True
+    assert audit["self_substitution_gap_vs_receiver_generated_message"]["mean_delta_nats_per_token"] == 1.0
+    assert audit["separate_agent_value_pass"] is True
+    assert audit["separate_agent_value_status"] == "SEPARATE_AGENT_VALUE_SIGNAL"
+    assert audit["same_family_pairing_derangement"]["status"] == "PASS"
     assert audit["full_derangement_tested"] is True
     assert audit["unrelated_donor_derangement"]["status"] == "PASS"
-    assert audit["unrelated_donor_derangement"]["task_group_count"] == 20
-    assert audit["unrelated_donor_derangement"]["matched_donor_count"] == 20
-    assert audit["unrelated_donor_derangement"]["unique_donor_count"] == 20
+    assert audit["unrelated_donor_derangement"]["task_group_count"] == 40
+    assert audit["unrelated_donor_derangement"]["matched_donor_count"] == 40
+    assert audit["unrelated_donor_derangement"]["unique_donor_count"] == 40
     assert audit["unrelated_donor_derangement"]["fixed_point_count"] == 0
     assert audit["unrelated_donor_derangement"]["same_family_count"] == 0
     assert audit["unrelated_donor_gain_vs_deranged_control"]["pass"] is True
     assert audit["semantic_use_proven"] is False
 
 
-def test_entity_specificity_without_full_derangement_is_not_promoted():
+def test_same_family_pairing_signal_is_not_overstated_without_cross_family_ood():
     audit = _record_information_use_cohort("external", _information_use_scores())
-    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
     assert audit["system_gain_pass"] is True
     assert audit["entity_specificity_pass"] is True
     assert audit["unrelated_donor_gain_pass"] is False
     assert audit["full_derangement_tested"] is False
-    assert audit["unrelated_donor_derangement"]["external_donor_count"] == 20
+    assert audit["same_family_pairing_derangement_tested"] is True
+    assert audit["pairing_gain_pass"] is True
+    assert audit["unrelated_donor_derangement"]["external_donor_count"] == 40
     assert audit["semantic_use_proven"] is False
 
 
+
+def test_same_family_pairing_audit_rejects_cross_family_and_external_donors():
+    for mode, count_key in (("cross_family", "cross_family_count"),
+                            ("external", "external_donor_count")):
+        audit = _record_information_use_cohort(
+            "cycle", _information_use_scores(), pairing_mode=mode,
+        )
+        derangement = audit["same_family_pairing_derangement"]
+        assert derangement["status"] == "NOT_ESTABLISHED"
+        assert derangement[count_key] == 40
+        assert audit["same_family_pairing_derangement_tested"] is False
+        assert audit["pairing_gain_pass"] is False
+        assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_SAME_FAMILY_PAIRING"
+
+
 def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
-    with pytest.raises(NativeReceiverUtilityError, match="OOD/entity-substitution source must differ"):
+    with pytest.raises(NativeReceiverUtilityError, match="source must differ"):
         _record_information_use_cohort("fixed_point", _information_use_scores())
 
 
@@ -587,8 +728,8 @@ def test_ood_receipt_rejects_fixed_point_donor_before_cohort_audit():
     [
         ("duplicate", "duplicate_donor_count", 2),
         ("cross_session", "cross_session_donor_count", 1),
-        ("same_family", "same_family_count", 20),
-        ("external", "external_donor_count", 20),
+        ("same_family", "same_family_count", 40),
+        ("external", "external_donor_count", 40),
     ],
 )
 def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key, expected_count):
@@ -598,7 +739,7 @@ def test_full_derangement_rejects_invalid_ood_donor_permutations(mode, count_key
     assert derangement[count_key] == expected_count
     assert audit["full_derangement_tested"] is False
     assert audit["unrelated_donor_gain_pass"] is False
-    assert audit["status"] == "ENTITY_SPECIFIC_GAIN_WITHOUT_FULL_DERANGEMENT"
+    assert audit["status"] == "CONTENT_SPECIFIC_SIGNAL_WITHOUT_CROSS_FAMILY_OOD"
     assert audit["semantic_use_proven"] is False
 
 
@@ -684,3 +825,175 @@ def test_hybrid_state_roundtrip_absence_is_explicitly_unavailable():
     assert result["hybrid_state_roundtrip_effect"]["status"] == "UNAVAILABLE"
     assert result["hybrid_state_roundtrip_effect"]["cross_model_transfer_proven"] is False
     assert result["hybrid_state_roundtrip_effect"]["influence_on_utility_gate"] is False
+
+
+def test_native_task_accuracy_cag_ssg_uses_paired_exact_match_with_confidence_and_equivalence():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = None
+    for task_index in range(20):
+        session_id = "session-A" if task_index < 10 else "session-B"
+        family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
+        result = complete_group(
+            runtime, task_index, session_id, family, include_task_accuracy=True,
+            include_prediction_distribution_audit=True,
+        )
+
+    accuracy = result["task_accuracy"]
+    assert result["status"] == "FIXTURE_ONLY"
+    assert accuracy["status"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert accuracy["evidence_class"] == "SYNTHETIC"
+    assert accuracy["task_group_count"] == 20
+    assert accuracy["holdout_sufficient"] is True
+    assert accuracy["cag"]["mean_accuracy_delta"] == 0.25
+    assert accuracy["ssg"]["mean_accuracy_delta"] == 0.3
+    assert 0.0 <= accuracy["cag"]["bootstrap_95pct_low"] <= accuracy["cag"]["bootstrap_95pct_high"] <= 1.0
+    assert -1.0 <= accuracy["ssg"]["bootstrap_90pct_low"] <= accuracy["ssg"]["bootstrap_90pct_high"] <= 1.0
+    distribution = result["prediction_distribution_audit"]
+    assert distribution["status"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert distribution["evidence_class"] == "SYNTHETIC"
+    assert distribution["task_group_count"] == 20
+    assert distribution["holdout_sufficient"] is True
+    assert distribution["pl"]["jsd_nats"]["count"] == 20
+    assert distribution["cic"]["jsd_normalized"]["count"] == 20
+    assert distribution["cic_minus_pl_normalized"]["equivalent_within_margin"] is False
+    assert distribution["acceptance_gate_passed"] is False
+    assert distribution["raw_logits_exported"] is False
+    assert distribution["raw_logits_persisted"] is False
+    assert accuracy["acceptance_gate_passed"] is False
+    assert accuracy["generated_answer_correctness_proven"] is False
+    assert result["generated_answer_correctness_proven"] is False
+    assert result["semantic_use_proven"] is False
+    assert result["production_route"] is False
+    assert result["training_authority"] == result["native_receiver_authority"] == 0
+    assert result["persisted"] is False
+
+
+def test_task_accuracy_is_not_reported_when_native_generation_was_not_requested():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    result = complete_group(runtime)
+    assert result["task_accuracy"]["status"] == "NOT_COLLECTED"
+    assert result["task_accuracy"]["task_group_count"] == 0
+    assert result["task_accuracy"]["acceptance_gate_passed"] is False
+    assert result["prediction_distribution_audit"]["status"] == "NOT_COLLECTED"
+
+
+def test_task_accuracy_partial_arm_coverage_fails_closed():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    for condition in CONDITIONS:
+        receipt = make_receipt(
+            0, "session-A", "ARITHMETIC", condition,
+            include_task_accuracy=condition in {"LATENT_CANDIDATE", "DERANGED_MESSAGE"},
+        )
+        if condition == CONDITIONS[-1]:
+            with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+                record_task_score_receipt(runtime, receipt)
+        else:
+            record_task_score_receipt(runtime, receipt)
+    assert task_score_status(runtime)["complete_task_group_count"] == 0
+
+
+def test_task_answer_exact_match_requires_eos_termination():
+    receipt = make_receipt(
+        0, "session-A", "ARITHMETIC", "LATENT_CANDIDATE", include_task_accuracy=True,
+    )
+    native = dict(receipt["native"])
+    answer = dict(native["task_answer"])
+    answer["eos_terminated"] = False
+    native["task_answer"] = answer
+    with pytest.raises(NativeReceiverUtilityError, match="native task-answer receipt is invalid"):
+        build_native_receiver_task_score_receipt(
+            condition=receipt["condition"],
+            task_group_id=receipt["task_group_id"],
+            task_family=receipt["task_family"],
+            session_id=receipt["session_id"],
+            source_ref=receipt["source_ref"],
+            message_source_ref=receipt["message_source_ref"],
+            receiver=receipt["receiver"],
+            target_token_ids_sha256=receipt["target_token_ids_sha256"],
+            target_token_count=receipt["target_token_count"],
+            context_sha256=receipt["context_sha256"],
+            input_sha256=receipt["input_sha256"],
+            native_receipt=native,
+            adapter_sha256=receipt["adapter_sha256"],
+            control_proof_sha256=receipt.get("control_proof_sha256"),
+        )
+
+
+def test_prediction_distribution_audit_coverage_cannot_change_mid_cohort():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    complete_group(
+        runtime, 0, "session-A", "ARITHMETIC",
+        include_prediction_distribution_audit=True,
+    )
+    with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+        complete_group(
+            runtime, 1, "session-B", "ENTITY_RECALL",
+            include_prediction_distribution_audit=False,
+        )
+
+
+def test_prediction_distribution_audit_rejects_inconsistent_jsd_normalization():
+    receipt = make_receipt(
+        0, "session-A", "ARITHMETIC", "LATENT_CANDIDATE",
+        include_prediction_distribution_audit=True,
+    )
+    native = dict(receipt["native"])
+    audit = dict(native["prediction_distribution_audit"])
+    pl = dict(audit["pl"])
+    pl["jsd_normalized"] = 0.99
+    audit["pl"] = pl
+    native["prediction_distribution_audit"] = audit
+    with pytest.raises(NativeReceiverUtilityError, match="native PL/CIC JSD value or source binding is invalid"):
+        build_native_receiver_task_score_receipt(
+            condition=receipt["condition"],
+            task_group_id=receipt["task_group_id"],
+            task_family=receipt["task_family"],
+            session_id=receipt["session_id"],
+            source_ref=receipt["source_ref"],
+            message_source_ref=receipt["message_source_ref"],
+            receiver=receipt["receiver"],
+            target_token_ids_sha256=receipt["target_token_ids_sha256"],
+            target_token_count=receipt["target_token_count"],
+            context_sha256=receipt["context_sha256"],
+            input_sha256=receipt["input_sha256"],
+            native_receipt=native,
+            adapter_sha256=receipt["adapter_sha256"],
+            control_proof_sha256=receipt.get("control_proof_sha256"),
+        )
+
+
+def test_prediction_distribution_audit_reference_must_match_paired_control_inputs():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    for condition in CONDITIONS:
+        receipt = make_receipt(
+            0, "session-A", "ARITHMETIC", condition,
+            include_prediction_distribution_audit=condition == "LATENT_CANDIDATE",
+        )
+        if condition == "LATENT_CANDIDATE":
+            native = dict(receipt["native"])
+            audit = dict(native["prediction_distribution_audit"])
+            pl = dict(audit["pl"])
+            pl["reference_input_sha256"] = sha("not-the-no-message-input")
+            audit["pl"] = pl
+            native["prediction_distribution_audit"] = audit
+            receipt = build_native_receiver_task_score_receipt(
+                condition=receipt["condition"],
+                task_group_id=receipt["task_group_id"],
+                task_family=receipt["task_family"],
+                session_id=receipt["session_id"],
+                source_ref=receipt["source_ref"],
+                message_source_ref=receipt["message_source_ref"],
+                receiver=receipt["receiver"],
+                target_token_ids_sha256=receipt["target_token_ids_sha256"],
+                target_token_count=receipt["target_token_count"],
+                context_sha256=receipt["context_sha256"],
+                input_sha256=receipt["input_sha256"],
+                native_receipt=native,
+                adapter_sha256=receipt["adapter_sha256"],
+                control_proof_sha256=receipt.get("control_proof_sha256"),
+            )
+        if condition == CONDITIONS[-1]:
+            with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+                record_task_score_receipt(runtime, receipt)
+        else:
+            record_task_score_receipt(runtime, receipt)

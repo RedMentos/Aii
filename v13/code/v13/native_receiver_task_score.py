@@ -15,7 +15,7 @@ from .native_receiver_utility import (
     evaluate_native_receiver_task_utility,
 )
 
-MAX_TASK_SCORE_RECEIPTS = 160
+MAX_TASK_SCORE_RECEIPTS = 520
 
 
 class NativeReceiverTaskScoreError(ValueError):
@@ -61,7 +61,7 @@ def task_score_status(runtime):
 def record_task_score_receipts(runtime, receipts):
     """Atomically add a bounded batch; failed validation leaves the buffer unchanged."""
     if not isinstance(receipts, (list, tuple)) or not 1 <= len(receipts) <= len(CONDITIONS):
-        raise NativeReceiverTaskScoreError("task-score batch must contain 1..8 receipts")
+        raise NativeReceiverTaskScoreError("task-score batch must contain 1..12 receipts")
     try:
         checked = [_check_receipt(item) for item in receipts]
     except NativeReceiverUtilityError as exc:
@@ -105,7 +105,8 @@ def remove_task_score_group(runtime, task_group_id):
 
 def build_and_record_task_score_receipt(runtime, *, condition, task_group_id, task_family,
         session_id, source_ref, message_source_ref, receiver, target_token_ids_sha256,
-        target_token_count, context_sha256, input_sha256, native_receipt, adapter_sha256=None):
+        target_token_count, context_sha256, input_sha256, native_receipt, adapter_sha256=None,
+        control_proof_sha256=None):
     """Build a hash/source-bound receipt and add it to the in-memory cohort."""
     if session_id != getattr(runtime, "session", None):
         raise NativeReceiverTaskScoreError("task-score session differs from the active Runtime session")
@@ -123,6 +124,7 @@ def build_and_record_task_score_receipt(runtime, *, condition, task_group_id, ta
         input_sha256=input_sha256,
         native_receipt=native_receipt,
         adapter_sha256=adapter_sha256,
+        control_proof_sha256=control_proof_sha256,
     )
     return receipt, record_task_score_receipt(runtime, receipt)
 

@@ -136,6 +136,44 @@ bool logprob_from_logits(const float * logits, int vocab_size, int token_id, dou
     return std::isfinite(result) && result <= 1.0e-7;
 }
 
+bool jsd_from_logits(const float * left, const float * right, int vocab_size, double & result) {
+    if (!left || !right || vocab_size < 1) return false;
+    double left_max = -std::numeric_limits<double>::infinity();
+    double right_max = -std::numeric_limits<double>::infinity();
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        if (std::isnan(a) || std::isnan(b) ||
+            (std::isinf(a) && a > 0.0) || (std::isinf(b) && b > 0.0)) return false;
+        if (std::isfinite(a)) left_max = std::max(left_max, a);
+        if (std::isfinite(b)) right_max = std::max(right_max, b);
+    }
+    if (!std::isfinite(left_max) || !std::isfinite(right_max)) return false;
+    long double left_sum = 0.0L, right_sum = 0.0L;
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        if (std::isfinite(a)) left_sum += std::exp(a - left_max);
+        if (std::isfinite(b)) right_sum += std::exp(b - right_max);
+    }
+    if (!(left_sum > 0.0L) || !(right_sum > 0.0L)) return false;
+    long double divergence = 0.0L;
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        const long double p = std::isfinite(a) ? std::exp(a - left_max) / left_sum : 0.0L;
+        const long double q = std::isfinite(b) ? std::exp(b - right_max) / right_sum : 0.0L;
+        const long double midpoint = 0.5L * (p + q);
+        if (p > 0.0L) divergence += 0.5L * p * std::log(p / midpoint);
+        if (q > 0.0L) divergence += 0.5L * q * std::log(q / midpoint);
+    }
+    const long double upper = std::log(2.0L);
+    if (!std::isfinite(static_cast<double>(divergence)) ||
+        divergence < -1.0e-12L || divergence > upper + 1.0e-9L) return false;
+    result = static_cast<double>(std::max(0.0L, std::min(upper, divergence)));
+    return std::isfinite(result);
+}
+
 bool valid_sha256_hex(const std::string & value) {
     if (value.size() != 64) return false;
     return std::all_of(value.begin(), value.end(), [](unsigned char ch) {
@@ -340,6 +378,14 @@ int selftest_embedding_positions() {
 }
 #endif
 
+bool exact_answer_match(std::vector<int32_t> generated, std::vector<int32_t> expected,
+                         int32_t eos_token, bool eos_terminated) {
+    if (!eos_terminated || eos_token < 0) return false;
+    if (!generated.empty() && generated.back() == eos_token) generated.pop_back();
+    if (!expected.empty() && expected.back() == eos_token) expected.pop_back();
+    return generated == expected;
+}
+
 int selftest() {
     const std::vector<float> input{1.0f, 2.0f, 3.0f, 4.0f};
     if (!valid_batch(2, 2, input)) return 1;
@@ -371,6 +417,25 @@ int selftest() {
     if (logprob_from_logits(equal_logits, 2, 2, logprob)) return 19;
     const float nan_logits[] = {std::numeric_limits<float>::quiet_NaN(), 0.0f};
     if (logprob_from_logits(nan_logits, 2, 0, logprob)) return 20;
+    const float jsd_a[] = {0.0f, 1.0f, -2.0f};
+    const float jsd_same[] = {0.0f, 1.0f, -2.0f};
+    const float jsd_b[] = {8.0f, 0.0f, -8.0f};
+    double jsd_ab = 0.0, jsd_ba = 0.0;
+    if (!jsd_from_logits(jsd_a, jsd_same, 3, jsd_ab) || std::abs(jsd_ab) > 1.0e-12) return 29;
+    if (!jsd_from_logits(jsd_a, jsd_b, 3, jsd_ab) || jsd_ab <= 0.0 ||
+        jsd_ab > std::log(2.0) + 1.0e-12) return 30;
+    if (!jsd_from_logits(jsd_b, jsd_a, 3, jsd_ba) || std::abs(jsd_ab - jsd_ba) > 1.0e-12) return 31;
+    if (jsd_from_logits(nan_logits, jsd_b, 2, jsd_ab)) return 32;
+    const float all_negative_infinity[] = {
+        -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()
+    };
+    if (jsd_from_logits(all_negative_infinity, all_negative_infinity, 2, jsd_ab)) return 33;
+    const int32_t eos_token = 2;
+    if (!exact_answer_match({10, 11, eos_token}, {10, 11}, eos_token, true)) return 34;
+    if (!exact_answer_match({10, 11, eos_token}, {10, 11, eos_token}, eos_token, true)) return 35;
+    if (exact_answer_match({10, 12, eos_token}, {10, 11}, eos_token, true)) return 36;
+    if (exact_answer_match({10, 11}, {10, 11}, eos_token, false)) return 37;
+    if (exact_answer_match({10, 11, 12, eos_token}, {10, 11}, eos_token, true)) return 38;
 #ifdef V14_WITH_LLAMA
     const int position_layout_status = selftest_embedding_positions();
     if (position_layout_status != 0) return position_layout_status;
@@ -539,6 +604,7 @@ struct MatrixInput {
     int rows = 0;
     std::vector<int> positions;
     std::vector<float> values;
+    std::vector<int32_t> text_tokens;
 };
 
 bool run_hybrid_state_roundtrip(
@@ -734,10 +800,10 @@ bool run_hybrid_state_roundtrip(
 
 void print_version() {
     const char * version = llama_version();
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown")
-              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/1\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\"}\n";
+              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/3\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\",\"prediction_distribution_audit_supported\":true,\"prediction_distribution_audit_schema\":\"v14.native-receiver-prediction-distribution-audit/1\",\"task_accuracy_supported\":true,\"task_accuracy_schema\":\"v14.native-receiver-task-answer/1\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
@@ -779,7 +845,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         return 4;
     }
     if (receiver_input_dim != input_dim) {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\""
                   << v14::json_escape(llama_version() ? llama_version() : "unknown")
                   << "\",\"status\":\"DIMENSION_MISMATCH\",\"input_rows\":" << rows
@@ -848,7 +914,7 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         target_score_json << "],\"decode_status\":" << target_decode_status
                           << ",\"native_input_consumed\":true}";
     }
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(llama_version() ? llama_version() : "unknown")
               << "\",\"status\":\"DECODED\",\"input_rows\":" << rows
@@ -890,14 +956,169 @@ bool decode_bos(llama_context * ctx, const llama_model * model, int & decode_sta
     return decode_status == 0;
 }
 
+bool decode_text_tokens(llama_context * ctx, const llama_model * model,
+                        const std::vector<int32_t> & tokens, int & decode_status) {
+    if (!ctx || !model || tokens.empty() || tokens.size() > 64) return false;
+    const llama_vocab * vocab = llama_model_get_vocab(model);
+    const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
+    if (vocab_size < 1) return false;
+    llama_memory_clear(llama_get_memory(ctx), true);
+    for (std::size_t i = 0; i < tokens.size(); ++i) {
+        if (tokens[i] < 0 || tokens[i] >= vocab_size) return false;
+        BatchGuard batch;
+        batch.value = llama_batch_init(1, 0, 1);
+        batch.active = true;
+        if (!batch.value.token || !batch.value.pos || !batch.value.n_seq_id ||
+            !batch.value.seq_id || !batch.value.logits || !batch.value.seq_id[0]) return false;
+        batch.value.n_tokens = 1;
+        batch.value.token[0] = static_cast<llama_token>(tokens[i]);
+        batch.value.pos[0] = static_cast<llama_pos>(i);
+        batch.value.n_seq_id[0] = 1;
+        batch.value.seq_id[0][0] = 0;
+        batch.value.logits[0] = 1;
+        decode_status = llama_decode(ctx, batch.value);
+        if (decode_status != 0) return false;
+    }
+    return true;
+}
+
+bool generate_self_message(llama_context * ctx, const llama_model * model,
+                           const std::vector<int32_t> & prompt_tokens, int message_rows,
+                           int input_dim, std::vector<float> & message,
+                           std::vector<int32_t> & generated_tokens, int & decode_status) {
+    if (!ctx || !model || prompt_tokens.empty() || prompt_tokens.size() > 64 ||
+        message_rows < 1 || message_rows > v14::kMaxRows) return false;
+    const llama_vocab * vocab = llama_model_get_vocab(model);
+    const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
+    if (vocab_size < 1) return false;
+    int output_dim = llama_model_n_embd_out(model);
+    if (output_dim <= 0) output_dim = llama_model_n_embd(model);
+    if (output_dim != input_dim) return false;
+    if (!decode_text_tokens(ctx, model, prompt_tokens, decode_status)) return false;
+    const llama_token eos = llama_vocab_eos(vocab);
+    message.clear();
+    generated_tokens.clear();
+    message.reserve(static_cast<std::size_t>(message_rows) * input_dim);
+    generated_tokens.reserve(static_cast<std::size_t>(message_rows));
+    for (int row = 0; row < message_rows; ++row) {
+        const float * logits = llama_get_logits_ith(ctx, -1);
+        if (!logits) return false;
+        int selected = -1;
+        float best = -std::numeric_limits<float>::infinity();
+        for (int token = 0; token < vocab_size; ++token) {
+            if (eos >= 0 && token == eos) continue;
+            const float value = logits[token];
+            if (!std::isfinite(value)) continue;
+            if (selected < 0 || value > best) {
+                selected = token;
+                best = value;
+            }
+        }
+        if (selected < 0) return false;
+        BatchGuard batch;
+        batch.value = llama_batch_init(1, 0, 1);
+        batch.active = true;
+        if (!batch.value.token || !batch.value.pos || !batch.value.n_seq_id ||
+            !batch.value.seq_id || !batch.value.logits || !batch.value.seq_id[0]) return false;
+        batch.value.n_tokens = 1;
+        batch.value.token[0] = static_cast<llama_token>(selected);
+        batch.value.pos[0] = static_cast<llama_pos>(prompt_tokens.size() + static_cast<std::size_t>(row));
+        batch.value.n_seq_id[0] = 1;
+        batch.value.seq_id[0][0] = 0;
+        batch.value.logits[0] = 1;
+        decode_status = llama_decode(ctx, batch.value);
+        if (decode_status != 0) return false;
+        const float * hidden = llama_get_embeddings_ith(ctx, 0);
+        if (!hidden) return false;
+        for (int column = 0; column < input_dim; ++column) {
+            const float value = hidden[column];
+            if (!std::isfinite(value) || std::abs(value) > 1.0e6f) return false;
+            message.push_back(value);
+        }
+        generated_tokens.push_back(static_cast<int32_t>(selected));
+    }
+    return message.size() == static_cast<std::size_t>(message_rows) * input_dim &&
+        generated_tokens.size() == static_cast<std::size_t>(message_rows);
+}
+
+
+bool prefill_task_answer_context(llama_context * ctx, const llama_model * model,
+                                 const MatrixInput & item,
+                                 const std::vector<float> & condition_input,
+                                 int input_dim, int output_dim, int & decode_status) {
+    if (!ctx || !model) return false;
+    if (item.condition == "NO_MESSAGE") return decode_bos(ctx, model, decode_status);
+    if (item.condition == "DIRECT_TEXT_REFERENCE")
+        return decode_text_tokens(ctx, model, item.text_tokens, decode_status);
+    std::vector<float> ignored_output;
+    return decode_embeddings(ctx, model, item.rows, input_dim, output_dim,
+                             item.positions, condition_input, ignored_output, decode_status);
+}
+
+bool generate_task_answer(llama_context * ctx, const llama_model * model,
+                          int context_rows, int max_tokens,
+                          std::vector<int32_t> & generated_tokens,
+                          bool & eos_terminated, int & decode_status) {
+    if (!ctx || !model || context_rows < 1 || max_tokens < 1 || max_tokens > 64) return false;
+    const llama_vocab * vocab = llama_model_get_vocab(model);
+    const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
+    if (vocab_size < 1) return false;
+    const llama_token eos = llama_vocab_eos(vocab);
+    generated_tokens.clear();
+    generated_tokens.reserve(static_cast<std::size_t>(max_tokens));
+    eos_terminated = false;
+    decode_status = 0;
+    for (int step = 0; step < max_tokens; ++step) {
+        const float * logits = llama_get_logits_ith(ctx, -1);
+        if (!logits) return false;
+        int selected = -1;
+        float best = -std::numeric_limits<float>::infinity();
+        for (int token = 0; token < vocab_size; ++token) {
+            const float value = logits[token];
+            if (!std::isfinite(value)) continue;
+            if (selected < 0 || value > best) {
+                selected = token;
+                best = value;
+            }
+        }
+        if (selected < 0) return false;
+        generated_tokens.push_back(static_cast<int32_t>(selected));
+        if (eos >= 0 && selected == eos) {
+            eos_terminated = true;
+            break;
+        }
+        BatchGuard batch;
+        batch.value = llama_batch_init(1, 0, 1);
+        batch.active = true;
+        if (!batch.value.token || !batch.value.pos || !batch.value.n_seq_id ||
+            !batch.value.seq_id || !batch.value.logits || !batch.value.seq_id[0]) return false;
+        batch.value.n_tokens = 1;
+        batch.value.token[0] = static_cast<llama_token>(selected);
+        batch.value.pos[0] = static_cast<llama_pos>(context_rows + step);
+        batch.value.n_seq_id[0] = 1;
+        batch.value.seq_id[0][0] = 0;
+        batch.value.logits[0] = 1;
+        decode_status = llama_decode(ctx, batch.value);
+        if (decode_status != 0) return false;
+    }
+    return !generated_tokens.empty() && decode_status == 0;
+}
+
+bool task_accuracy_condition(const std::string & condition) {
+    return condition == "NO_MESSAGE" || condition == "LATENT_CANDIDATE" ||
+        condition == "DERANGED_MESSAGE" || condition == "SELF_GENERATED_MESSAGE";
+}
+
 int run_native_matrix(const std::string & model_path, int input_dim, int threads,
                       const std::vector<MatrixInput> & matrices,
                       const std::vector<int32_t> & target_tokens,
                       const std::string & target_hash,
-                      bool include_hybrid_state_roundtrip) {
+                      bool include_hybrid_state_roundtrip,
+                      bool include_task_accuracy) {
     const std::vector<std::string> expected_conditions = {
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
+        "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"
     };
     const std::string verified_target_hash = v14::target_token_ids_sha256(target_tokens);
     if (matrices.size() != expected_conditions.size() || target_tokens.empty() ||
@@ -909,11 +1130,35 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
     for (std::size_t i = 0; i < matrices.size(); ++i) {
         const auto & item = matrices[i];
         if (item.condition != expected_conditions[i] || item.rows < 0 || item.rows > v14::kMaxRows) return 2;
-        if (item.rows == 0) {
-            if (item.condition != "NO_MESSAGE" || !item.positions.empty() || !item.values.empty()) return 2;
+        if (item.condition == "DIRECT_TEXT_REFERENCE") {
+            if (item.rows != 0 || !item.positions.empty() || !item.values.empty() ||
+                item.text_tokens.empty() || item.text_tokens.size() > 64) return 2;
+            if (std::any_of(item.text_tokens.begin(), item.text_tokens.end(),
+                            [](int32_t token) { return token < 0; })) return 2;
+            max_rows = std::max(max_rows, static_cast<int>(item.text_tokens.size()));
+            max_position = std::max(max_position, static_cast<int>(item.text_tokens.size()) - 1);
             continue;
         }
-        if (item.condition == "NO_MESSAGE" ||
+        if (item.condition == "SELF_GENERATED_MESSAGE") {
+            if (item.rows < 1 || item.rows > v14::kMaxRows || !item.values.empty() ||
+                item.text_tokens.empty() || item.text_tokens.size() > 64 ||
+                !v14::valid_positions(item.rows, item.positions, v14::kMaxPosition) ||
+                item.positions.size() != static_cast<std::size_t>(item.rows)) return 2;
+            if (std::any_of(item.text_tokens.begin(), item.text_tokens.end(),
+                            [](int32_t token) { return token < 0; })) return 2;
+            for (int row = 0; row < item.rows; ++row)
+                if (item.positions[static_cast<std::size_t>(row)] != row) return 2;
+            max_rows = std::max(max_rows, item.rows);
+            max_position = std::max(max_position,
+                static_cast<int>(item.text_tokens.size()) + item.rows - 1);
+            continue;
+        }
+        if (item.rows == 0) {
+            if (item.condition != "NO_MESSAGE" || !item.positions.empty() ||
+                !item.values.empty() || !item.text_tokens.empty()) return 2;
+            continue;
+        }
+        if (item.condition == "NO_MESSAGE" || !item.text_tokens.empty() ||
             !v14::valid_batch(item.rows, input_dim, item.values) ||
             !v14::valid_positions(item.rows, item.positions, v14::kMaxPosition) ||
             item.positions.size() != static_cast<std::size_t>(item.rows)) return 2;
@@ -922,6 +1167,10 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         max_rows = std::max(max_rows, item.rows);
         max_position = std::max(max_position, item.positions.back());
     }
+    const int answer_token_budget = include_task_accuracy
+        ? std::min(64, std::max(16, static_cast<int>(target_tokens.size()) + 8)) : 0;
+    const int continuation_budget = std::max(
+        static_cast<int>(target_tokens.size()), answer_token_budget);
     BackendGuard backend;
     ModelGuard model;
     ContextGuard context;
@@ -931,15 +1180,20 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
     model.value = llama_model_load_from_file(model_path.c_str(), model_params);
     if (!model.value) return 3;
     const int model_context = llama_model_n_ctx_train(model.value);
-    if (model_context <= 0 || max_position + 1 + static_cast<int>(target_tokens.size()) > model_context) return 4;
+    if (model_context <= 0 || max_position + 1 + continuation_budget > model_context) return 4;
     int receiver_input_dim = llama_model_n_embd_inp(model.value);
     if (receiver_input_dim <= 0) receiver_input_dim = llama_model_n_embd(model.value);
     int output_dim = llama_model_n_embd_out(model.value);
     if (output_dim <= 0) output_dim = llama_model_n_embd(model.value);
     if (receiver_input_dim <= 0 || output_dim <= 0 || receiver_input_dim != input_dim) return 4;
+    const bool needs_self_message = std::any_of(
+        matrices.begin(), matrices.end(), [](const MatrixInput & item) {
+            return item.condition == "SELF_GENERATED_MESSAGE";
+        });
+    if (needs_self_message && output_dim != input_dim) return 4;
     llama_context_params context_params = llama_context_default_params();
     context_params.n_ctx = static_cast<uint32_t>(std::min(
-        model_context, std::max(64, max_position + 1 + static_cast<int>(target_tokens.size()))));
+        model_context, std::max(64, max_position + 1 + continuation_budget)));
     context_params.n_batch = static_cast<uint32_t>(max_rows);
     context_params.n_ubatch = static_cast<uint32_t>(max_rows);
     context_params.n_seq_max = 1;
@@ -950,6 +1204,12 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
     context_params.attention_type = LLAMA_ATTENTION_TYPE_CAUSAL;
     context.value = llama_init_from_model(model.value, context_params);
     if (!context.value) return 5;
+    const llama_vocab * receiver_vocab = llama_model_get_vocab(model.value);
+    const int receiver_vocab_size = receiver_vocab ? llama_vocab_n_tokens(receiver_vocab) : 0;
+    if (receiver_vocab_size < 1) return 4;
+    std::vector<float> no_message_logits, current_message_logits, other_example_logits;
+    std::string no_message_input_sha, current_message_input_sha, other_example_input_sha;
+    std::string no_message_logits_sha, current_message_logits_sha, other_example_logits_sha;
     std::ostringstream condition_json;
     condition_json << "[";
     std::string hybrid_state_roundtrip_json;
@@ -957,12 +1217,62 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         const auto & item = matrices[i];
         std::vector<float> output;
         int decode_status = -999;
-        const int target_context_rows = item.rows == 0 ? 1 : item.rows;
-        const bool decoded = item.rows == 0
-            ? decode_bos(context.value, model.value, decode_status)
-            : decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
-                                item.positions, item.values, output, decode_status);
+        const bool direct_text = item.condition == "DIRECT_TEXT_REFERENCE";
+        const bool self_generated = item.condition == "SELF_GENERATED_MESSAGE";
+        const int target_context_rows = direct_text
+            ? static_cast<int>(item.text_tokens.size()) : (item.rows == 0 ? 1 : item.rows);
+        std::vector<int> output_positions = item.positions;
+        if (direct_text) {
+            output_positions.resize(item.text_tokens.size());
+            for (std::size_t position = 0; position < output_positions.size(); ++position)
+                output_positions[position] = static_cast<int>(position);
+        }
+        std::vector<float> condition_input = item.values;
+        std::vector<int32_t> generated_tokens;
+        int self_generation_decode_status = -999;
+        std::string condition_input_sha;
+        bool decoded = false;
+        if (item.condition == "NO_MESSAGE") {
+            decoded = decode_bos(context.value, model.value, decode_status);
+            condition_input_sha = v14::sha256_hex(std::vector<uint8_t>{});
+        } else if (direct_text) {
+            decoded = decode_text_tokens(context.value, model.value, item.text_tokens, decode_status);
+            condition_input_sha = v14::target_token_ids_sha256(item.text_tokens);
+        } else if (self_generated) {
+            decoded = generate_self_message(context.value, model.value, item.text_tokens, item.rows,
+                input_dim, condition_input, generated_tokens, self_generation_decode_status);
+            if (decoded) {
+                condition_input_sha = v14::float32_le_sha256(condition_input);
+                decoded = v14::valid_sha256_hex(condition_input_sha) &&
+                    decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
+                        item.positions, condition_input, output, decode_status);
+            }
+        } else {
+            condition_input_sha = v14::float32_le_sha256(condition_input);
+            decoded = decode_embeddings(context.value, model.value, item.rows, input_dim, output_dim,
+                item.positions, condition_input, output, decode_status);
+        }
         if (!decoded) return 6;
+        const float * first_next_token_logits = llama_get_logits_ith(context.value, -1);
+        if (!first_next_token_logits) return 7;
+        std::vector<float> first_logits(
+            first_next_token_logits, first_next_token_logits + receiver_vocab_size
+        );
+        const std::string first_logits_sha = logits_step_sha256(first_logits.data(), receiver_vocab_size);
+        if (!v14::valid_sha256_hex(first_logits_sha)) return 7;
+        if (item.condition == "NO_MESSAGE") {
+            no_message_logits = std::move(first_logits);
+            no_message_input_sha = condition_input_sha;
+            no_message_logits_sha = first_logits_sha;
+        } else if (item.condition == "LATENT_CANDIDATE") {
+            current_message_logits = std::move(first_logits);
+            current_message_input_sha = condition_input_sha;
+            current_message_logits_sha = first_logits_sha;
+        } else if (item.condition == "DERANGED_MESSAGE") {
+            other_example_logits = std::move(first_logits);
+            other_example_input_sha = condition_input_sha;
+            other_example_logits_sha = first_logits_sha;
+        }
         if (include_hybrid_state_roundtrip && item.condition == "LATENT_CANDIDATE") {
             if (!run_hybrid_state_roundtrip(model.value, context_params, item,
                                             input_dim, output_dim, target_tokens,
@@ -986,16 +1296,56 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         int target_decode_status = decode_status;
         if (!score_target_tokens(context.value, model.value, target_context_rows,
                                  target_tokens, token_logprobs, target_decode_status)) return 7;
+        std::ostringstream task_answer_json;
+        if (include_task_accuracy && task_accuracy_condition(item.condition)) {
+            int answer_prefill_status = -999;
+            if (!prefill_task_answer_context(context.value, model.value, item, condition_input,
+                                             input_dim, output_dim, answer_prefill_status)) return 11;
+            std::vector<int32_t> answer_tokens;
+            bool eos_terminated = false;
+            int answer_decode_status = -999;
+            if (!generate_task_answer(context.value, model.value, target_context_rows,
+                                      answer_token_budget, answer_tokens,
+                                      eos_terminated, answer_decode_status)) return 11;
+            const llama_token eos = llama_vocab_eos(receiver_vocab);
+            const bool exact_match = v14::exact_answer_match(
+                answer_tokens, target_tokens, static_cast<int32_t>(eos), eos_terminated);
+            const std::string answer_sha256 = v14::target_token_ids_sha256(answer_tokens);
+            if (!v14::valid_sha256_hex(answer_sha256) || answer_decode_status != 0) return 11;
+            task_answer_json << ",\"task_answer\":{\"schema\":\"v14.native-receiver-task-answer/1\""
+                             << ",\"method\":\"GREEDY_EXACT_TOKEN_MATCH_V1\""
+                             << ",\"condition\":\"" << item.condition << "\""
+                             << ",\"input_sha256\":\"" << condition_input_sha << "\""
+                             << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
+                             << ",\"generated_token_count\":" << answer_tokens.size()
+                             << ",\"generated_token_ids_sha256\":\"" << answer_sha256 << "\""
+                             << ",\"generation_token_budget\":" << answer_token_budget
+                             << ",\"eos_terminated\":" << (eos_terminated ? "true" : "false")
+                             << ",\"exact_match\":" << (exact_match ? "true" : "false")
+                             << ",\"decode_status\":" << answer_decode_status
+                             << ",\"native_input_consumed\":true}";
+        }
         if (i) condition_json << ",";
         condition_json << "{\"condition\":\"" << item.condition << "\""
                        << ",\"input_rows\":" << item.rows
+                       << ",\"input_sha256\":\"" << condition_input_sha << "\""
                        << ",\"context_rows\":" << target_context_rows
                        << ",\"input_dim\":" << input_dim
-                       << ",\"position_ids\":" << v14::positions_json(item.positions)
+                       << ",\"position_ids\":" << v14::positions_json(output_positions)
                        << ",\"position_mode\":\"" << v14::kPositionMode << "\""
                        << ",\"decode_status\":" << decode_status
-                       << ",\"native_input_consumed\":true"
-                       << ",\"kv_snapshot\":" << v14::native_kv_snapshot_json(kv_snapshot)
+                       << ",\"native_input_consumed\":true";
+        if (self_generated) {
+            condition_json << ",\"self_generation\":{\"schema\":\"v14.native-receiver-self-generation/1\""
+                           << ",\"algorithm\":\"GREEDY_RECEIVER_HIDDEN_STATE_V1\""
+                           << ",\"prompt_token_count\":" << item.text_tokens.size()
+                           << ",\"prompt_token_ids_sha256\":\"" << v14::target_token_ids_sha256(item.text_tokens) << "\""
+                           << ",\"generated_token_count\":" << generated_tokens.size()
+                           << ",\"generated_token_ids_sha256\":\"" << v14::target_token_ids_sha256(generated_tokens) << "\""
+                           << ",\"message_input_sha256\":\"" << condition_input_sha << "\""
+                           << ",\"decode_status\":" << self_generation_decode_status << "}";
+        }
+        condition_json << ",\"kv_snapshot\":" << v14::native_kv_snapshot_json(kv_snapshot)
                        << ",\"target_score\":{\"schema\":\"v14.native-receiver-target-score/1\""
                        << ",\"score_method\":\"TEACHER_FORCED_TARGET_LOGPROB_V1\""
                        << ",\"target_token_count\":" << target_tokens.size()
@@ -1006,18 +1356,54 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
             condition_json << v14::number(token_logprobs[j]);
         }
         condition_json << "],\"decode_status\":" << target_decode_status
-                       << ",\"native_input_consumed\":true}}";
+                       << ",\"native_input_consumed\":true}"
+                       << task_answer_json.str() << "}";
     }
     condition_json << "]";
-    std::cout << "{\"schema\":\"v14.native-receiver-task-matrix/1\""
+    if (no_message_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        current_message_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        other_example_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        !v14::valid_sha256_hex(no_message_input_sha) ||
+        !v14::valid_sha256_hex(current_message_input_sha) ||
+        !v14::valid_sha256_hex(other_example_input_sha)) return 10;
+    double pl_jsd_nats = 0.0, cic_jsd_nats = 0.0;
+    if (!v14::jsd_from_logits(current_message_logits.data(), no_message_logits.data(),
+                              receiver_vocab_size, pl_jsd_nats) ||
+        !v14::jsd_from_logits(current_message_logits.data(), other_example_logits.data(),
+                              receiver_vocab_size, cic_jsd_nats)) return 10;
+    const double jsd_scale = std::log(2.0);
+    std::cout << "{\"schema\":\"v14.native-receiver-task-matrix/3\""
               << ",\"runner_revision\":\"" << V14_LLAMA_REVISION << "\""
               << ",\"llama_version\":\"" << v14::json_escape(llama_version() ? llama_version() : "unknown") << "\""
               << ",\"status\":\"SCORED\""
+              << ",\"task_accuracy_enabled\":" << (include_task_accuracy ? "true" : "false")
               << ",\"receiver_input_dim\":" << receiver_input_dim
               << ",\"output_dim\":" << output_dim
               << ",\"target_token_count\":" << target_tokens.size()
               << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
-              << ",\"conditions\":" << condition_json.str();
+              << ",\"conditions\":" << condition_json.str()
+              << ",\"prediction_distribution_audit\":{"
+              << "\"schema\":\"v14.native-receiver-prediction-distribution-audit/1\""
+              << ",\"method\":\"FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1\""
+              << ",\"divergence\":\"JENSEN_SHANNON_NATS\""
+              << ",\"normalization\":\"DIVIDE_BY_LN2_TO_UNIT_INTERVAL\""
+              << ",\"vocab_size\":" << receiver_vocab_size
+              << ",\"pl\":{\"comparison\":\"LATENT_CANDIDATE_VS_NO_MESSAGE\""
+              << ",\"jsd_nats\":" << v14::number(pl_jsd_nats)
+              << ",\"jsd_normalized\":" << v14::number(pl_jsd_nats / jsd_scale)
+              << ",\"current_input_sha256\":\"" << current_message_input_sha << "\""
+              << ",\"reference_input_sha256\":\"" << no_message_input_sha << "\""
+              << ",\"current_logits_sha256\":\"" << current_message_logits_sha << "\""
+              << ",\"reference_logits_sha256\":\"" << no_message_logits_sha << "\"}"
+              << ",\"cic\":{\"comparison\":\"LATENT_CANDIDATE_VS_DERANGED_MESSAGE\""
+              << ",\"jsd_nats\":" << v14::number(cic_jsd_nats)
+              << ",\"jsd_normalized\":" << v14::number(cic_jsd_nats / jsd_scale)
+              << ",\"current_input_sha256\":\"" << current_message_input_sha << "\""
+              << ",\"reference_input_sha256\":\"" << other_example_input_sha << "\""
+              << ",\"current_logits_sha256\":\"" << current_message_logits_sha << "\""
+              << ",\"reference_logits_sha256\":\"" << other_example_logits_sha << "\"}"
+              << ",\"raw_logits_exported\":false,\"raw_logits_persisted\":false}";
+
     if (include_hybrid_state_roundtrip) {
         if (hybrid_state_roundtrip_json.empty()) return 9;
         std::cout << ",\"hybrid_state_roundtrip\":" << hybrid_state_roundtrip_json;
@@ -1040,6 +1426,7 @@ int main(int argc, char ** argv) {
     std::string model_path, positions_text, target_hash, conditions_text;
     int rows = 0, input_dim = 0, threads = 1, target_count = 0, matrix_count = 0;
     bool include_hybrid_state_roundtrip = false;
+    bool include_task_accuracy = false;
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
         if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
@@ -1052,6 +1439,7 @@ int main(int argc, char ** argv) {
         else if (arg == "--matrix-count" && i + 1 < argc) matrix_count = std::atoi(argv[++i]);
         else if (arg == "--conditions" && i + 1 < argc) conditions_text = argv[++i];
         else if (arg == "--hybrid-state-roundtrip") include_hybrid_state_roundtrip = true;
+        else if (arg == "--task-accuracy") include_task_accuracy = true;
         else {
             std::cerr << "unknown or incomplete argument\n";
             return 64;
@@ -1060,7 +1448,8 @@ int main(int argc, char ** argv) {
     if (matrix_count > 0) {
         const std::vector<std::string> expected_conditions = {
             "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-            "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION"
+            "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
+            "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"
         };
         std::vector<std::string> conditions;
         std::stringstream condition_stream(conditions_text);
@@ -1071,7 +1460,7 @@ int main(int argc, char ** argv) {
             conditions != expected_conditions || target_count < 1 || target_count > 512 ||
             (include_hybrid_state_roundtrip && target_count > 64) ||
             !v14::valid_sha256_hex(target_hash)) {
-            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 8 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip]\n";
+            std::cerr << "usage: native_latent_receiver --model PATH --matrix-count 13 --conditions CSV --input-dim D --threads N --target-count N --target-token-ids-sha256 SHA256 [--hybrid-state-roundtrip] [--task-accuracy]\n";
             return 64;
         }
         std::vector<MatrixInput> matrices;
@@ -1095,17 +1484,50 @@ int main(int argc, char ** argv) {
                     std::cerr << "truncated matrix position payload\n";
                     return 65;
                 }
-                item.values.resize(static_cast<std::size_t>(item.rows) * input_dim);
-                const std::size_t value_bytes = item.values.size() * sizeof(float);
-                std::cin.read(reinterpret_cast<char *>(item.values.data()), static_cast<std::streamsize>(value_bytes));
-                if (std::cin.gcount() != static_cast<std::streamsize>(value_bytes) ||
-                    !v14::valid_batch(item.rows, input_dim, item.values) ||
-                    !v14::valid_positions(item.rows, item.positions, v14::kMaxPosition)) {
-                    std::cerr << "invalid matrix embedding payload\n";
+                if (item.condition == "SELF_GENERATED_MESSAGE") {
+                    if (!v14::valid_positions(item.rows, item.positions, v14::kMaxPosition)) {
+                        std::cerr << "invalid self-message positions\n";
+                        return 65;
+                    }
+                } else {
+                    item.values.resize(static_cast<std::size_t>(item.rows) * input_dim);
+                    const std::size_t value_bytes = item.values.size() * sizeof(float);
+                    std::cin.read(reinterpret_cast<char *>(item.values.data()), static_cast<std::streamsize>(value_bytes));
+                    if (std::cin.gcount() != static_cast<std::streamsize>(value_bytes) ||
+                        !v14::valid_batch(item.rows, input_dim, item.values) ||
+                        !v14::valid_positions(item.rows, item.positions, v14::kMaxPosition)) {
+                        std::cerr << "invalid matrix embedding payload\n";
+                        return 65;
+                    }
+                }
+            }
+            int32_t text_count = -1;
+            std::cin.read(reinterpret_cast<char *>(&text_count), sizeof(text_count));
+            if (std::cin.gcount() != static_cast<std::streamsize>(sizeof(text_count)) ||
+                text_count < 0 || text_count > 64) {
+                std::cerr << "invalid direct-text token count\n";
+                return 65;
+            }
+            if (item.condition == "DIRECT_TEXT_REFERENCE" || item.condition == "SELF_GENERATED_MESSAGE") {
+                if ((item.condition == "DIRECT_TEXT_REFERENCE" && (item.rows != 0 || text_count < 1)) ||
+                    (item.condition == "SELF_GENERATED_MESSAGE" && (item.rows < 1 || text_count < 1))) {
+                    std::cerr << "text/self-message condition requires bounded prompt tokens and compatible rows\n";
                     return 65;
                 }
-            } else if (item.condition != "NO_MESSAGE") {
-                std::cerr << "empty input is allowed only for NO_MESSAGE\n";
+                item.text_tokens.resize(static_cast<std::size_t>(text_count));
+                const std::size_t text_bytes = static_cast<std::size_t>(text_count) * sizeof(int32_t);
+                std::cin.read(reinterpret_cast<char *>(item.text_tokens.data()), static_cast<std::streamsize>(text_bytes));
+                if (std::cin.gcount() != static_cast<std::streamsize>(text_bytes) ||
+                    std::any_of(item.text_tokens.begin(), item.text_tokens.end(),
+                                [](int32_t token) { return token < 0; })) {
+                    std::cerr << "invalid direct/self-message token payload\n";
+                    return 65;
+                }
+            } else if (text_count != 0) {
+                std::cerr << "text tokens are allowed only for DIRECT_TEXT_REFERENCE or SELF_GENERATED_MESSAGE\n";
+                return 65;
+            } else if (item.rows == 0 && item.condition != "NO_MESSAGE") {
+                std::cerr << "empty input is allowed only for NO_MESSAGE or DIRECT_TEXT_REFERENCE\n";
                 return 65;
             }
             matrices.push_back(std::move(item));
@@ -1123,7 +1545,7 @@ int main(int argc, char ** argv) {
             return 67;
         }
         return run_native_matrix(model_path, input_dim, threads, matrices, target_tokens, target_hash,
-                                  include_hybrid_state_roundtrip);
+                                  include_hybrid_state_roundtrip, include_task_accuracy);
     }
     std::vector<int> positions;
     if (include_hybrid_state_roundtrip || model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
@@ -1160,7 +1582,7 @@ int main(int argc, char ** argv) {
     return run_native(model_path, rows, input_dim, threads, positions, input, target_tokens, target_hash);
 #else
     if (argc == 2 && std::string(argv[1]) == "--version") {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\"LOCAL_CORE_ONLY\"}\n";
         return 0;
     }

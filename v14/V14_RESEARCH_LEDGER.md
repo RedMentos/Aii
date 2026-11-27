@@ -2225,3 +2225,163 @@ PR #2312 head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2:
 - Integrated-regression job in 44992975599: PASS.
 - Staged-runtime job in 44992975599: FAIL, 2 failed / 238 passed / 10 skipped / 47 subtests passed. Both failures are two-checkout migration assertions expecting UPDATED while the observed state is PARTIAL with Runtime ERROR.
 The focused tests use a RuntimeStub that accepts audio_window; they do not demonstrate the real Runtime path.
+
+
+## R-192 — source-disjoint A3 OOD calibration: RMS-z vs shrinkage Mahalanobis vs conformal (2026-11-27)
+
+### Primary-source review and evidence depth
+
+**Janiak, Binkowski & Kajdanowicz — “A Geometry-Based View of Mahalanobis OOD Detection,” ICML 2026, PMLR 306:50747–50778.** Official proceedings page: https://proceedings.mlr.press/v306/janiak26a.html . The official metadata/abstract were checked; the PDF could not be retrieved in this run, so this remains **ABSTRACT_ONLY**, not a full-paper read. The abstract reports that Mahalanobis OOD performance is representation/pretraining/fine-tuning dependent and relates the variation to within-class spectral structure and local intrinsic dimensionality. It argues against replacing the current RMS-z descriptor with full covariance by assumption.
+
+**Li et al. — “SCOPE: Sequential Conformal Probing for Reliable OOD Rejection in LLM Services,” arXiv:2606.21255, first submitted 2026-06-19 (later version listed 2026-09-06).** Primary record: https://arxiv.org/abs/2606.21255 ; HTML: https://arxiv.org/html/2606.21255 . Method and experiment sections in the HTML were reviewed; this is an arXiv preprint and peer-review status was not verified. SCOPE chooses a readable hidden layer, fits an in-distribution conformal gate on a separate calibration split and uses a sequential e-process to accumulate persistent service-boundary evidence. It is an LLM service-boundary detector, not a drop-in image/projector detector. No official code repository or code/weight license was verified; no code was reused.
+
+**Marques & Berenson — “Local Conformal Calibration of Dynamics Uncertainty from Semantic Images,” arXiv:2605.13028 (2026-05-13), WAFR 2026 workshop project page.** Primary record: https://arxiv.org/abs/2605.13028 ; author project page: https://um-arm-lab.github.io/ocular/ . The author page's method/experiment description was reviewed, not a full proceedings PDF. OCULAR uses a learned visual representation plus velocity/action context, a regression-tree partition and a separate conformal holdout set to calibrate dynamics uncertainty across visually similar simulated environments. The experiments are Isaac Sim / planar double-integrator, not Android perception. Its useful transfer is the principle of conditioning calibration on observed source/context similarity; its dynamics-coverage guarantee must not be relabelled as image OOD-classification accuracy.
+
+No author implementation, model weights or dataset was reused. No new runtime dependency was introduced; the experiment uses the existing NumPy/Pillow research/test environment.
+
+### V14 implementation
+
+Draft PR #2566, branch `research-perception/v14-a3-ood-calibration-20261127-run72`, stacked on Perception #2565 at base head `b3896e3a3ba5a85de8ea67f45d123ef8e74da075`.
+
+New `v14/experiments/vision_ood_calibration.py` uses the existing V13 `vision.boxes` and 37-dimensional `vision.tile_features` functions and compares:
+1. the production RMS-z score and production leave-one-source-out q95-of-q95 heuristic;
+2. diagonal-shrinkage Mahalanobis (fixed shrinkage 0.25) with the same source-disjoint heuristic;
+3. source-level split-conformal thresholds for both fixed scores.
+
+The conformal exchangeability unit is the **maximum tile score per independent image source**. This gives a source-level marginal false-rejection calibration statement conditional on the fitted score and source-group exchangeability. It does not give per-tile conditional coverage, guarantee OOD detection, or survive arbitrary app/version distribution shift. Insufficient calibration-source count yields an infinite threshold rather than a fabricated finite-sample resolution.
+
+The experiment uses 24 fit sources, 20 separate calibration sources and 20 separate in-domain test sources per repeat, 16 tiles/source and 37 features. Five controlled synthetic shifts are evaluated: black, checkerboard, inversion, random noise and posterization. All fit/calibration/test source IDs are pairwise disjoint. No production threshold or Runtime behavior changes.
+
+### LOCAL_LINUX evidence
+
+Environment: Linux x86_64, CPython 3.13.5, NumPy 2.3.5, Pillow 12.3.0.
+- `py_compile`: PASS for experiment and tests.
+- Focused pytest: 12/12 PASS.
+- End-to-end synthetic ablation: 30 seeded repeats PASS.
+- Full local Aii checkout/pytest: NOT_RUN/BLOCKED; no repository checkout is mounted. The isolated harness used a local mirror of the exact production `boxes`, `tile_features` and `tile_descriptor_threshold` logic; this is not full-repository test evidence.
+- Updated hosted CI readback: exact PR #2566 workflow run 46062787585 PASS on Python 3.13.18 and 3.14.10; each job reports 36 passed and 3 subtests passed, plus the one-repeat experiment smoke. Related MediaProjection ingress run 46062787525 PASS 39/39 on both versions; offline RuntimeDeploy integrity run 46062787616 PASS on Python 3.11.18/3.14.10. These are CI only, not Android/device or release proof.
+
+### Results — mean rejection rates over 30 repeats
+
+Source-level rejection (primary gate metric):
+
+| Detector / threshold | In-domain false rejection | Black | Checker | Invert | Noise | Posterize |
+|---|---:|---:|---:|---:|---:|---:|
+| RMS-z + production heuristic | 7.33% | 100% | 100% | 100% | 100% | 85.5% |
+| RMS-z + source-max conformal, alpha 0.10 | 9.17% | 100% | 100% | 100% | 100% | 85.5% |
+| Shrinkage Mahalanobis + source-disjoint heuristic | 16.83% | 100% | 100% | 100% | 100% | 50.83% |
+| Shrinkage Mahalanobis + source-max conformal, alpha 0.10 | 10.5% | 100% | 100% | 100% | 92.33% | 36.17% |
+
+Tile-level in-domain false rejection: RMS heuristic 0.92%, RMS conformal 0.97%, shrinkage heuristic 1.66%, shrinkage conformal 1.01%. Posterize tile rejection: 22.46%, 23.13%, 8.57%, 5.97% respectively. The executable script emits source- and tile-level metrics.
+
+LOCAL_LINUX microbenchmark, 384 training rows → 16 query rows:
+- RMS-z scoring median 0.060 ms / p95 0.0749 ms.
+- Shrinkage Mahalanobis median 0.0961 ms / p95 0.1446 ms.
+- Production 37-D feature extraction for 16 tiles median 3.5031 ms / p95 4.8486 ms.
+- Raw float64 feature matrix: 113,664 bytes for 384×37; 4,736 bytes for one 16×37 source.
+
+These are x86_64 scratch measurements only, not ARM, Termux or Redmi measurements.
+
+### Interpretation / V14 decision
+
+RMS-z remains the better candidate on this synthetic UI distribution. Source-max conformal RMS-z gives an explicit nominal alpha interpretation for source-level false rejection, but did not improve OOD detection over the current heuristic here: both rejected 85.5% of posterized sources, while observed in-domain source rejection was 9.17% for conformal versus 7.33% for the heuristic. Shrinkage Mahalanobis is weaker on the near-shift posterization control and slower in this host microbenchmark.
+
+**Decision:** keep the current production RMS-z gate unchanged and optional/shadow-only. Do not promote the conformal threshold or covariance score from this synthetic experiment. Next require consented real UI frames with app/session/version-disjoint fit/calibration/test groups, then compare false abstention, missed OOD and retained in-domain coverage. A local app/source-conditioned calibration may be investigated only after that data exists.
+
+### Canon and integration boundary
+
+Relevant path: A3 Student Projector / A5 PerceptPacket / A4 attention-preserving abstention. PR #2565's provider→A5→optional A3 path remains WIRED_SYNTHETIC / focused CI evidence only. This experiment does not prove normal Runtime/C3 consumption, trained A3 weights, B3 latent coupling, real semantic correctness, Android MediaProjection lifecycle, microphone capture, P0 basic chat or whole-system acceptance.
+
+PR #2566 is DRAFT / NOT_RELEASED and stacked until #2565/#2563 and Core/QA shared integration gates are resolved. Android / Termux / Redmi remains REDMI_UNVERIFIED. Last private V13OBS #115 (2026-11-24) reported auto-update enabled/runtime UP_TO_DATE at 8d93236, but AI STOPPED_BY_USER/model process STOPPED and B1/B2 TIME_BUDGET; newer private V13READ requests had NO_LIVE_RECEIPT. Current installation is not reconfirmed; no device action was performed.
+
+
+## R-193 — Same-family deranged-cache control for B3 latent-transfer claims (2026-11-27)
+
+**Primary paper:** Jiaming Cheng, Subhransu Das, Rajiv Ramnath, *When Does Latent Communication Pay? A Causal Audit of Relayed KV Caches in Multi-Agent LLMs*, arXiv:2608.04893 (v1 submitted 2026-08-05; v2 2026-08-27; preprint, not peer reviewed). [arXiv record](https://arxiv.org/abs/2608.04893). Full-text methods/results were reviewed from the available paper copy; the arXiv record does not expose a verified code repository URL or code/weight license, and exact-title searches did not identify an authoritative audit-harness repository. No code was reused.
+
+**Finding:** a cache/latent path beating a zero-message baseline is not sufficient evidence of example-specific communication. The paper separates true paired cache from zero, moment-matched random, fixed-point-free deranged cache, intact-no-private cache, and direct-text reference. It evaluates released relay systems (LatentMAS, C2C, KVComm) under natural and calibrated receiver-necessity regimes, with repeated seeds and batch-local permutations. In natural tasks, generic cache gains can survive while the true-vs-deranged pairing effect is practically negligible; calibrated tasks show that the method can detect receiver necessity when private information is deliberately required. This is an audit method for relay claims, not proof that heterogeneous models can share a learned latent space.
+
+**Related independent primary paper (full HTML reviewed):** Huixiang Zhang and Mahzabeen Emu, *Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM*, arXiv:2607.26773v1 (2026-07-29; preprint, not peer reviewed). [arXiv record](https://arxiv.org/abs/2607.26773). It uses four message settings (no message, current-example, other-example, receiver self-generated under matched compute) and five metrics: positive signaling (PS), positive listening (PL), causal influence of communication (CIC), content-attributable gain (CAG), and self-substitution gap (SSG). It evaluates Qwen3-4B/8B on GSM8K, ARC-Challenge and MATH-500 using one NVIDIA A40 48GB, 16 Xeon cores and 128GB RAM; the paired sets are 100/60 GSM8K, 80/40 ARC-C and 60/40 MATH-500, with 1–3 decoding seeds. Example: Qwen3-4B GSM8K overall effect −1.00 pp decomposes into −6.17 pp from an other-example message and +5.17 pp from example-specific content; on MATH-500, +15.00 pp decomposes into +8.33 pp other-example and +6.67 pp content-specific. It also shows that CAG and SSG can differ: a sender can beat an other-example message without beating a compute-matched self-generated message. The experiments are high-memory Linux/GPU, not mobile. No authoritative code repository or code/weight license was verified; the arXiv license applies to the paper, not an implementation.
+
+**Combined implementation implication:** the new DERANGED_MESSAGE condition implements the other-example arm only. The current utility's teacher-forced target-logprob delta is not the paper's full audit. Next, add the remaining first-paper arms (moment-matched random, intact-no-private, direct-text validity reference) and the second paper's self-generated arm; expose receiver prediction distributions for PL/CIC (first-token and teacher-forced Jensen–Shannon), task-level accuracy for CAG/SSG, and paired confidence/equivalence tests. Keep PS and component restoration/NLD as later extensions if their sample-size and runtime cost are justified. No semantic-use claim until the native receiver demonstrates these outcomes on actual model outputs.
+
+**V14 decision:** the previous native receiver audit's OOD donor permutation was deliberately cross-family. That is useful as an unrelated-donor control, but it confounds task-family shift with example pairing. Keep it as a separate secondary control and add a same-family, same-session, different-example arm. Do not relabel the existing OOD arm as the paper's matched-vs-deranged contrast.
+
+**Implemented on Perception branch / draft PR #2566** (branch research-perception/v14-a3-ood-calibration-20261127-run72, exact code/test head 2c0ab7421c079f5c64ac15ac0345b712944548db):
+- Added ninth condition DERANGED_MESSAGE to native_receiver_condition_matrix.py (matrix schema v2). It binds a different source/task group from the same session and task family, with the same model/tap/adapter and token geometry.
+- Added a cohort audit in native_receiver_utility.py that requires a fixed-point-free, one-to-one source permutation inside each session × task-family group; it reports fixed points, cross-family, external, cross-session and duplicate donors separately.
+- Added a distinct pairing-effect delta and status. Cross-family OOD remains separate; content-specific status now requires same-family pairing evidence plus entity counterfactual evidence. semantic_use_proven remains false.
+- Updated Python and C++ native matrix condition order/count, receipt cap (180 = 20 groups × 9 conditions), fixtures, negative tests and workflow branch filters.
+
+**Verification:**
+- LOCAL_LINUX CPython 3.13.5 isolated audit-helper harness: PASS (valid same-family permutation accepted; cross-family, external and fixed-point controls rejected). Full local repository pytest: NOT_RUN/BLOCKED because no checkout is mounted and shell GitHub DNS resolution is unavailable.
+- GitHub Actions exact head: run 46066036057 — Linux pinned-API build PASS; Android arm64 cross-compile PASS; focused receiver tests 55 PASS on Python 3.13 and 55 PASS on Python 3.14. The enclosing Python runtime job is FAIL at the separate staged source-tap test because Core-owned lifecycle validation rejects vision.py as an unsupported lifecycle source.
+- Related exact-head runs: runtime deployment integrity 46066036056 PASS; MediaProjection RAW-EYE ingress 46066036089 PASS; A5 visual bridge/A3 OOD 46066036060 PASS. Shared staged/integrated run 46066036095 FAIL: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Causes are Core/QA-owned pins/assertions: Recovery expects audio-composer Git blob 831080bceec90711bd42e0fa4eba47c669975c98 but the source changed; observer pin for v13/cognition.py is stale; vision.py is absent from the accepted lifecycle-source set; two checkout-migration tests receive PARTIAL rather than UPDATED. Core was notified on #2562 and #1984.
+- No native GGUF/model inference or generated-answer correctness was run. No Redmi device/owner receipt, deployment, release, model download, weight change or permission change.
+
+**Remaining audit gap:** this is one of the six arms, not the full protocol. Still needed: moment-matched random, intact-no-private, direct-text validity reference, larger/multi-seed same-family cohorts, generated-answer accuracy/retention, and a real native model pair. Current status is WIRED_SYNTHETIC, not NATIVE_LINUX_PROOF, REAL_REDM I_PROOF or ACCEPTED.
+
+
+## R-194 — causal audit of latent-channel utility and receiver self-substitution — 2026-11-27
+
+- **Primary source:** Huixiang Zhang & Mahzabeen Emu, *Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM*, arXiv:2607.26773v1, submitted 2026-07-29. Full paper reviewed (not abstract-only); preprint, no peer-review acceptance identified. [arXiv record](https://arxiv.org/abs/2607.26773).
+- **Research question:** A receiver's output changing after a latent message does not establish that it used example-specific information or that a separate sender adds value. The paper distinguishes Positive Signaling (PS), Positive Listening (PL), Causal Influence of Communication (CIC), Content-Attributable Gain (CAG), and Self-Substitution Gap (SSG).
+- **Method:** Intervene at the actual receiver injection boundary with current-example, no-message, same-sender other-example, and receiver-self-generated messages. PL and CIC compare receiver prediction distributions (the paper uses first-token JSD); CAG compares task utility current vs other-example; SSG compares current sender message vs receiver-generated message.
+- **Reported evidence (paper only):** Qwen3-4B GSM8K OPE −1.00 percentage point decomposes into OME −6.17 pp + CAG +5.17 pp. Qwen3-4B MATH-500 OPE +15.00 pp decomposes into OME +8.33 pp + CAG +6.67 pp. The paper reports +10.00 pp SSG on MATH-500 for Qwen3-8B. These are not V14 measurements; benchmark/model scale and compute differ from Redmi.
+- **V14 adaptation:** PR #2566 adds `SELF_GENERATED_MESSAGE` as the 13th native receiver-matrix condition. The pinned llama.cpp receiver greedily emits exactly the candidate's row count from the same source prompt, captures one hidden-state vector per generated token, injects those rows through the existing embedding interface, then scores the unchanged target continuation. Prompt/model/request hashes and native hidden-row/token/KV receipt hashes are bound; no raw text/token IDs/hidden vectors are persisted.
+- **Measured implementation status:** Code/test HEAD `df7cf374c421fc68fd9d9ae014b7b36320020bfc`, PR #2566 draft. Exact-head native CI 46072764805 and shared staged/integrated CI 46072764819 were still IN_PROGRESS at the checkpoint; RuntimeDeploy 46072764695, A5 46072764654, MediaProjection 46072764637 and private bridge 46072759570 were PASS. LOCAL_LINUX full checkout/build/test BLOCKED by GitHub DNS. No real GGUF run or Redmi proof.
+- **Important limitation:** The current SSG field is a paired target-token log-probability proxy, not task accuracy. A positive likelihood delta cannot establish correctness or general separate-agent value. The current implementation does not compute PL/CIC JSD or CAG/SSG accuracy; it is a WIRED_SYNTHETIC diagnostic path pending exact CI and real model evidence.
+- **Next experiment:** Add first-token (and optionally sequence) Jensen–Shannon divergence for PL/CIC using actual receiver logits; evaluate CAG and SSG with paired task correctness on ≥20 source-disjoint held-out groups, bootstrap confidence intervals and an equivalence band. Include prompt-only/self, no-message, other-example, sender-candidate and receiver-self arms. Do not enable B3, swap weights or promote a latent adapter from likelihood-only evidence.
+
+
+## R-195 — Native first-token PL/CIC measurement implementation (2026-11-27)
+
+**Relationship:** implementation follow-through on R-194, not a newly reviewed paper. The full text of Zhang & Emu, Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM, arXiv:2607.26773v1 (2026-07-29), was reviewed in R-194. It is a preprint, not peer-reviewed.
+
+- Operational mapping: PL compares the receiver's next-token distribution under the current example's LATENT_CANDIDATE with NO_MESSAGE. CIC compares that current-example distribution with a same-family other-example donor, mapped to DERANGED_MESSAGE. Both are measured at the first next-token position after receiver prefill.
+- Implementation: the native llama.cpp runner now captures full-vocabulary receiver logits in-process for those three arms, computes stable Jensen–Shannon divergence, emits nats plus a JSD / ln(2) value in [0,1], and returns only scalar values and SHA-256 provenance. Raw logits are not exported or persisted. The native binary advertises the capability; the Python wrapper requires it and validates model/input bindings, comparison identities, vocabulary size and mathematical bounds; the bridge revalidates against the exact approved matrix.
+- Numerical controls: C++ selftests cover identity (JSD=0), positive divergence, symmetry, the ln(2) upper bound, NaN rejection and all-negative-infinity rejection. A local isolated C++17 helper compile/test with -Wall -Wextra -Werror passed; Python scratch mathematical invariants passed. These are algorithm checks, not the full repository build.
+- Evidence state: code/test HEAD 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac, PR #2566 DRAFT. Exact-head native CI 46075616512 was QUEUED at checkpoint. The predecessor run 46074686027 passed pinned Linux API build, Android arm64 cross-compile and focused matrix/task-score tests, but its full Python 3.13/3.14 stage failed on the row-geometry receipt omission (fixed in 697283e8e0ff5ef95fc4ca19fabab73ab665f9ac) plus a separate Core-owned audio-composer pin. Full local Aii checkout/tests remain BLOCKED by GitHub DNS. No actual GGUF inference or Redmi execution.
+- Interpretation limit: JSD measures distribution sensitivity, not semantic use, task correctness, or beneficial communication. CIC's same-family donor control does not substitute for source/session-disjoint cohort design. CAG and SSG still require paired task-accuracy outcomes and confidence/equivalence controls; the existing target-token logprob SSG remains a proxy.
+- Reuse/license: no external code or weights were imported. The native API remains pinned to llama.cpp b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 (MIT); no new dependency or model download.
+- Next experiment: after exact CI is green, persist the validated audit in candidate task-score receipts, aggregate PL/CIC over at least 20 source-disjoint held-out groups across at least two sessions and two task families, then add paired task-accuracy CAG/SSG and equivalence bands. Keep B3 OFF until a real authorized GGUF demonstrates receiver consumption and task utility.
+
+
+## R-196 — Timing-aware latent handoff in diffusion-agent collaboration (2026-11-28)
+
+**Primary source reviewed in full:** Alan-Barsag Gazzaev, Alexey Gavrilov, Sergey Muravyov and Ilya Makarov, *Hidden Messages Between Diffusion Language Model Agents: Causal Evidence for Latent Communication*, arXiv:2610.28905, submitted 2026-10-20: https://arxiv.org/abs/2610.28905 . The arXiv HTML full text, methods, results, appendices and limitations were inspected. This is a preprint; no peer-reviewed venue was established.
+
+**Method:** Two independent masked-diffusion agents retain separate contexts, canvases and denoising trajectories. A task-specific supervised adapter compresses sender hidden state into four signed BF16 vectors (4 × 128), then a receiver-side residual or virtual-prefix projector consumes them. Backbones are frozen during reported channel training; the learned component is the task-specific communication adapter, not an emergent general-purpose shared language. Causal controls include no-message, same-example matched, different-example deranged, zero, moment-matched random and self-message. The paper also intervenes on delivery time.
+
+**Reported evidence (paper only):**
+- HM-Synth / Tiny-A2D: no-message 8.6%, matched 72.9%, deranged 9.3%; matched-minus-deranged +63.6 percentage points (95% paired-bootstrap CI +61.5 to +65.8).
+- Dream-7B dependency-spanning task: no-message 9.8%, matched two-stage exchange 100.0%, deranged 0.0%, one late-only transfer 10.8%. The first message is needed to change what the second agent computes, so late fusion cannot replace the early query/reply.
+- Distributed QASC: no-message 72.6%, matched four-round recurrent exchange 80.8%, deranged 46.8%, one late-only transfer 87.8%. Late-only exceeds recurrent by +7.0 points (95% paired-bootstrap CI +4.4 to +9.6) while using one transfer and three agent forward passes instead of four transfers and nine forward passes. The reported QASC split is 7,134 training, 1,000 development and 926 held-out examples; the paper evaluates the full 1,000-example development set.
+- The paper's key result is conditional: recurrent/early exchange is necessary when one agent's next computation depends on an earlier message; a late handoff can be both cheaper and better when private evidence can mature independently. Message count alone is not a measure of useful collaboration.
+
+**Hardware, license and reuse audit:** Tiny-A2D uses the 0.6B diffusion checkpoint on an NVIDIA Quadro RTX 8000; Dream-7B uses H100 80GB GPUs. The Tiny adapter is 6.1 MiB, but this is not the backbone footprint. These are not Android/ARM measurements. The paper states both model checkpoints are Apache-2.0 and QASC is CC-BY-4.0. The linked implementation repository was identified, but its code license was not verified; no code, model weights or dataset were copied or downloaded.
+
+**Limits:** Only two-agent settings and two diffusion backbones are studied; natural-question evidence is currently QASC on Dream-7B. Adapters are supervised and task-specific; zero-shot transfer across heterogeneous tasks was not established. A matched text-channel and wall-clock comparison is future work. Dense latent states are explicitly not a privacy mechanism. The diffusion-specific virtual-prefix/residual interface is not directly interchangeable with the current autoregressive llama.cpp/LFM2 receiver.
+
+**V14 adaptation hypothesis (not implemented):** Make handoff timing a learned/event-driven decision based on whether another organ's next computation depends on the incoming state and whether the sender's own evidence has matured. Compare one late B1/B2→C4 handoff against an early query/reply re-entry and a bounded recurrent schedule, holding the receiver, task, model revision and compute budget fixed. Use the existing causal controls (matched, no-message, same-family deranged, zero, moment-matched random and receiver-self), then add paired task correctness, PL/CIC distribution metrics, latency/TTFT and RSS/PSS. Split by source/session and keep the holdout disjoint. A late-fusion win must not suppress early exchange where a downstream lookup/planning step is conditional on the message. Do not copy the diffusion architecture into the autoregressive runtime without a model-compatible receiver adapter.
+
+**Status:** FULL_ARXIV_HTML_REVIEWED / PREPRINT_NOT_PEER_REVIEWED / PAPER_ONLY_RESULTS / APACHE_2_MODEL_CHECKPOINTS_AND_CC_BY_4_QASC_AS_STATED_IN_PAPER / CODE_REPO_LICENSE_UNVERIFIED / NO_REUSE_OR_DOWNLOAD / NO_ANDROID_OR_REDMI_PROOF / V14_TIMING_ABLATION_PROPOSED.
+
+
+## R-197 — Latent Collaboration in Multi-Agent Systems (Zou et al., ICML 2026 Spotlight)
+
+**Primary publication:** Jiaru Zou et al., *Latent Collaboration in Multi-Agent Systems*, Proceedings of the 43rd International Conference on Machine Learning, PMLR 306:168813–168847 (2026), ICML 2026 Spotlight. Official proceedings: https://proceedings.mlr.press/v306/zou26k.html ; arXiv:2511.20639. The full paper, method, experiments, appendices and implementation notes were reviewed.
+
+**Actual mechanism:** Each role performs autoregressive latent-thought generation by feeding last-layer hidden states back as inputs. A ridge-regression alignment matrix (W_a=(W_{out}^{T}W_{out}+lambda I)^{-1}W_{out}^{T}W_{in}) maps the hidden state toward that model's own input-embedding space. The complete per-layer KV cache (original prompt plus generated latent steps) is then concatenated into the next role's cache. This is a shared working-memory path, not a small abstract embedding packet.
+
+**Critical scope distinction:** The released code constructs one `LatentMASMethod` with one `ModelWrapper` and loops through role prompts (planner/critic/refiner/judger) on that same underlying model. All agents share the same transformer weights and compatible layer/cache shape. The paper explicitly says heterogeneous agents require a trainable adapter to align and share latent representations. Therefore it demonstrates same-model latent reasoning/cache relay; it does **not** demonstrate independently weighted B1/B2 bodies exchanging learned cross-model states. The theorem's lossless KV-transfer claim is about cache concatenation under compatible transformer structure, not arbitrary cross-model semantic equivalence.
+
+**Reported evidence (paper only):** Qwen3-4B/8B/14B on nine benchmarks in sequential and hierarchical setups, with three independent runs; all experiments used 8× NVIDIA A100-80G GPUs. The paper reports mean gains over a single model of 14.6% (sequential) / 13.3% (hierarchical), gains over TextMAS of 2.8% / 4.6%, average 4× / 4.3× end-to-end speedups, and 70.8% / 83.7% fewer system output tokens. These are paper-reported aggregate figures, not Redmi measurements. Results are not uniformly positive: some individual cells show small accuracy regressions versus TextMAS (e.g. Qwen3-8B sequential ARC-E and ARC-C; Qwen3-4B hierarchical GSM8K). Latent-step ablation peaks around 40–80 steps and plateaus or declines at 160.
+
+**Limits and device relevance:** Qwen3-4B is listed as an 8.06 GB model repository; even before KV cache, it exceeds the historical Redmi free-RAM budget. The paper does not evaluate quantized GGUF, llama.cpp, ARM64, Android, low-RAM cache management, independent model weights, or heterogeneous B1/B2 bodies. The code uses PyTorch/Hugging Face Transformers and optional vLLM; the repository's `requirements.txt` omits vLLM even though `methods/latent_mas.py` imports `vllm.SamplingParams` unconditionally, a reproducibility/packaging caveat.
+
+**License/reuse:** Official code repository `Gen-Verse/LatentMAS` main read at commit `9a9e4d331eb11430bd9e64754c6b252b06d73031`; repository LICENSE is Apache-2.0. The Qwen3-4B Hugging Face model card/license is Apache-2.0. Other Qwen3 model variants and all benchmark datasets were not separately audited in this run. No code, weights or datasets were copied or downloaded.
+
+**V14 implication:** Use LatentMAS only as a same-model baseline/reference for latent thought recurrence and KV working-memory transfer. Do not treat it as the missing B1↔B2 coupling. V14 still needs a genuine sender-model → trained adapter → receiver-model path with distinct model hashes, explicit architecture/tensor manifests, source-bound paired hidden-state training data, gradients/parameter diff, held-out retention and restart tests, and native task-accuracy/PL/CIC evidence. Direct KV concatenation should be allowed only for a proven compatible architecture/cache contract; otherwise route through a trainable cross-model adapter. The current #2566 matrix is receiver-side consumption of precomputed latent rows and does not yet execute the sender model or train the adapter.
+
+**Status:** PEER_REVIEWED_ICML_2026_SPOTLIGHT / FULL_PAPER_AND_APPENDIX_REVIEWED / CODE_APACHE_2 / QWEN3_4B_WEIGHT_APACHE_2 / SAME_MODEL_ONLY_EVIDENCE / 8xA100_NOT_MOBILE / NO_REUSE_OR_DOWNLOAD / CROSS_MODEL_V14_IMPLEMENTATION_STILL_OPEN.

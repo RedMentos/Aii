@@ -13,11 +13,12 @@ import os
 import struct
 import subprocess
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 from .native_hybrid_state import HYBRID_STATE_SCHEMA, validate_native_hybrid_state_roundtrip
 
-SCHEMA = "v14.native-latent-receiver/2"
+SCHEMA = "v14.native-latent-receiver/3"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
@@ -562,6 +563,67 @@ def _build_native_hybrid_state_roundtrip_receipt(raw, *, expected_model_sha256,
         raise NativeReceiverError("native hybrid-state roundtrip receipt failed validation") from exc
 
 
+def _validate_prediction_distribution_audit(value, *, expected_model_sha256, prepared):
+    """Validate native full-vocabulary first-next-token PL/CIC JSD and source bindings."""
+    def valid_sha256(item):
+        return (type(item) is str and len(item) == 64
+                and all(char in "0123456789abcdef" for char in item))
+    if not isinstance(value, Mapping) or value.get("schema") != "v14.native-receiver-prediction-distribution-audit/1":
+        raise NativeReceiverError("native prediction-distribution audit schema is invalid")
+    if (value.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
+            or value.get("divergence") != "JENSEN_SHANNON_NATS"
+            or value.get("normalization") != "DIVIDE_BY_LN2_TO_UNIT_INTERVAL"
+            or type(value.get("vocab_size")) is not int or not 1 <= value["vocab_size"] <= 1_000_000
+            or value.get("raw_logits_exported") is not False
+            or value.get("raw_logits_persisted") is not False):
+        raise NativeReceiverError("native prediction-distribution audit metadata is invalid")
+    if not isinstance(prepared, list) or len(prepared) != 13:
+        raise NativeReceiverError("prediction-distribution audit lacks the thirteen prepared conditions")
+    expected = {
+        "pl": ("LATENT_CANDIDATE_VS_NO_MESSAGE", prepared[2]["input_sha256"], prepared[0]["input_sha256"]),
+        "cic": ("LATENT_CANDIDATE_VS_DERANGED_MESSAGE", prepared[2]["input_sha256"], prepared[9]["input_sha256"]),
+    }
+    clean = {
+        "schema": value["schema"],
+        "method": value["method"],
+        "divergence": value["divergence"],
+        "normalization": value["normalization"],
+        "vocab_size": value["vocab_size"],
+    }
+    log2 = math.log(2.0)
+    for name, (comparison, current_sha, reference_sha) in expected.items():
+        item = value.get(name)
+        if not isinstance(item, Mapping) or item.get("comparison") != comparison:
+            raise NativeReceiverError("native " + name.upper() + " comparison identity is invalid")
+        if item.get("current_input_sha256") != current_sha or item.get("reference_input_sha256") != reference_sha:
+            raise NativeReceiverError("native " + name.upper() + " input binding differs from the approved matrix")
+        current_logits_sha = item.get("current_logits_sha256")
+        reference_logits_sha = item.get("reference_logits_sha256")
+        if (not valid_sha256(current_logits_sha) or not valid_sha256(reference_logits_sha)):
+            raise NativeReceiverError("native " + name.upper() + " logits digest is invalid")
+        nats = item.get("jsd_nats")
+        normalized = item.get("jsd_normalized")
+        if (type(nats) not in (int, float) or not math.isfinite(float(nats))
+                or not 0.0 <= float(nats) <= log2 + 1.0e-9
+                or type(normalized) not in (int, float) or not math.isfinite(float(normalized))
+                or not 0.0 <= float(normalized) <= 1.0 + 1.0e-9
+                or abs(float(normalized) - float(nats) / log2) > 1.0e-9):
+            raise NativeReceiverError("native " + name.upper() + " JSD value is outside its mathematical bounds")
+        clean[name] = {
+            "comparison": comparison,
+            "jsd_nats": float(nats),
+            "jsd_normalized": float(normalized),
+            "current_input_sha256": current_sha,
+            "reference_input_sha256": reference_sha,
+            "current_logits_sha256": current_logits_sha,
+            "reference_logits_sha256": reference_logits_sha,
+        }
+    clean["receiver_model_sha256"] = expected_model_sha256
+    clean["raw_logits_exported"] = False
+    clean["raw_logits_persisted"] = False
+    return clean
+
+
 def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
                  sender_tap_id, sender_model_revision, sender_model_sha256, tokenizer_revision,
                  receiver_model_revision, source_id, generation_id, condition_inputs,
@@ -569,18 +631,19 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  cancel_event=None, target_environment=None,
                  device_execution_receipt_sha256=None, device_runtime_build_id=None,
                  include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
-                 context_sha256=None):
-    """Score the fixed eight-condition task matrix with one native model load.
+                 context_sha256=None, include_task_accuracy=False):
+    """Score the fixed thirteen-condition task matrix with one native model load.
 
-    Only hashes, target-token log-probabilities, dimensions and optional sanitized
-    same-model hybrid-state metrics are returned. No raw state, text, token IDs,
-    vectors, learning, routing or persistence are added.
+    Only hashes, target-token log-probabilities, optional exact-match correctness
+    booleans and sanitized same-model state metrics are returned. No raw state,
+    text, token IDs, vectors, learning, routing or persistence are added.
     """
     from .native_receiver_utility import validate_native_receiver_kv_snapshot
 
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION",
+        "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE",
     )
     if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
         raise NativeReceiverError("unsupported or identical sender/receiver roles")
@@ -599,12 +662,14 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if position_mode != POSITION_MODE:
         raise NativeReceiverError("task matrix position mode differs from the pinned receiver contract")
     if not isinstance(condition_inputs, (list, tuple)) or len(condition_inputs) != len(conditions):
-        raise NativeReceiverError("native task matrix must contain exactly eight ordered conditions")
+        raise NativeReceiverError("native task matrix must contain exactly twelve ordered conditions")
     if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
     if type(include_hybrid_state_roundtrip) is not bool:
         raise NativeReceiverError("hybrid-state roundtrip opt-in must be boolean")
+    if type(include_task_accuracy) is not bool:
+        raise NativeReceiverError("task-accuracy opt-in must be boolean")
     if include_hybrid_state_roundtrip and (len(target_token_ids) > 64
             or type(receiver_tokenizer_revision) is not str or not receiver_tokenizer_revision):
         raise NativeReceiverError("hybrid-state roundtrip requires 1..64 target IDs and receiver tokenizer revision")
@@ -622,14 +687,58 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             raise NativeReceiverError("native task matrix condition order is invalid")
         vectors = item.get("vectors")
         position_ids = item.get("position_ids")
+        text_token_ids = item.get("text_token_ids", [])
         if expected_condition == "NO_MESSAGE":
-            if vectors not in ([], ()) or position_ids not in ([], ()):
-                raise NativeReceiverError("NO_MESSAGE must contain no injected rows or positions")
+            if vectors not in ([], ()) or position_ids not in ([], ()) or text_token_ids not in ([], ()):
+                raise NativeReceiverError("NO_MESSAGE must contain no injected rows, positions or text tokens")
             prepared.append({
                 "condition": expected_condition, "rows": 0, "positions": [],
                 "payload": b"", "input_sha256": hashlib.sha256(b"").hexdigest(),
+                "text_token_ids": [], "context_rows": 1,
             })
             continue
+        if expected_condition == "DIRECT_TEXT_REFERENCE":
+            if vectors not in ([], ()) or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 64:
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE requires 1..64 receiver-tokenizer IDs and no vectors")
+            if any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids):
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE token IDs must be non-negative int32 values")
+            positions = _validate_positions(position_ids, len(text_token_ids), position_mode)
+            if positions != list(range(len(text_token_ids))):
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE positions must be contiguous and zero based")
+            token_payload = struct.pack("<" + "i" * len(text_token_ids), *text_token_ids)
+            input_sha256 = hashlib.sha256(token_payload).hexdigest()
+            if item.get("text_token_ids_sha256") != input_sha256 or item.get("input_sha256") != input_sha256:
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE token digest changed after approval")
+            prepared.append({
+                "condition": expected_condition, "rows": 0, "positions": positions,
+                "payload": b"", "input_sha256": input_sha256,
+                "text_token_ids": list(text_token_ids), "context_rows": len(text_token_ids),
+            })
+            continue
+        if expected_condition == "SELF_GENERATED_MESSAGE":
+            rows = item.get("input_rows")
+            if (vectors not in ([], ()) or type(rows) is not int or not 1 <= rows <= MAX_ROWS
+                    or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 64
+                    or any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids)):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE requires bounded prompt tokens and message rows")
+            positions = _validate_positions(position_ids, rows, position_mode)
+            if positions != list(range(rows)):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE positions must be contiguous and zero based")
+            token_payload = struct.pack("<" + "i" * len(text_token_ids), *text_token_ids)
+            prompt_sha = hashlib.sha256(token_payload).hexdigest()
+            if (item.get("text_token_ids_sha256") != prompt_sha
+                    or type(item.get("input_sha256")) is not str or len(item["input_sha256"]) != 64
+                    or any(ch not in "0123456789abcdef" for ch in item["input_sha256"])):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE request digest or prompt binding is invalid")
+            prepared.append({
+                "condition": expected_condition, "rows": rows, "positions": positions,
+                "payload": b"", "input_sha256": item["input_sha256"],
+                "text_token_ids": list(text_token_ids), "context_rows": rows,
+                "prompt_sha256": prompt_sha, "message_rows": rows,
+            })
+            continue
+        if text_token_ids not in ([], ()):
+            raise NativeReceiverError(expected_condition + " must not carry direct-text token IDs")
         rows, dim, payload, input_sha256 = _vector_payload(vectors)
         if input_dim is None:
             input_dim = dim
@@ -641,6 +750,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         prepared.append({
             "condition": expected_condition, "rows": rows, "positions": positions,
             "payload": payload, "input_sha256": input_sha256,
+            "text_token_ids": [], "context_rows": rows,
         })
     if input_dim is None:
         raise NativeReceiverError("native task matrix has no message-bearing condition")
@@ -650,6 +760,9 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         if item["rows"]:
             matrix_payload.extend(struct.pack("<" + "i" * item["rows"], *item["positions"]))
             matrix_payload.extend(item["payload"])
+        matrix_payload.extend(struct.pack("<i", len(item["text_token_ids"])))
+        if item["text_token_ids"]:
+            matrix_payload.extend(struct.pack("<" + "i" * len(item["text_token_ids"]), *item["text_token_ids"]))
     matrix_payload.extend(target_payload)
 
     injected_binary = binary_path is not None
@@ -708,13 +821,18 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
     if (version_data.get("task_matrix_supported") is not True
-            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1"
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/3"
             or version_data.get("kv_snapshot_supported") is not True
-            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
-        raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
+            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"
+            or version_data.get("prediction_distribution_audit_supported") is not True
+            or version_data.get("prediction_distribution_audit_schema") != "v14.native-receiver-prediction-distribution-audit/1"):
+        raise NativeReceiverUnavailable("native receiver binary lacks task-matrix, K/V snapshot or PL/CIC prediction-distribution audit support")
     if include_hybrid_state_roundtrip and (version_data.get("hybrid_state_roundtrip_supported") is not True
             or version_data.get("hybrid_state_roundtrip_schema") != HYBRID_STATE_SCHEMA):
         raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned full-hybrid state roundtrip")
+    if include_task_accuracy and (version_data.get("task_accuracy_supported") is not True
+            or version_data.get("task_accuracy_schema") != "v14.native-receiver-task-answer/1"):
+        raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned task-accuracy generator")
 
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
@@ -727,6 +845,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     ]
     if include_hybrid_state_roundtrip:
         command.append("--hybrid-state-roundtrip")
+    if include_task_accuracy:
+        command.append("--task-accuracy")
     started = time.monotonic()
     returncode, stdout, stderr = _run_cancelable(command, bytes(matrix_payload), deadline, cancel_event)
     duration_s = time.monotonic() - started
@@ -736,14 +856,22 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raw = json.loads(stdout.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise NativeReceiverError("native receiver returned invalid task-matrix JSON") from exc
-    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/1"
+    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/3"
             or raw.get("runner_revision") != PINNED_LLAMA_REVISION or raw.get("status") != "SCORED"
             or raw.get("receiver_input_dim") != input_dim
             or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
             or raw.get("target_token_count") != len(target_ids)
             or raw.get("target_token_ids_sha256") != target_sha256
+            or raw.get("task_accuracy_enabled", False) is not include_task_accuracy
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
+    if "prediction_distribution_audit" not in raw:
+        raise NativeReceiverError("native receiver omitted the required PL/CIC prediction-distribution audit")
+    prediction_distribution_audit = _validate_prediction_distribution_audit(
+        raw.get("prediction_distribution_audit"),
+        expected_model_sha256=expected_model_sha256,
+        prepared=prepared,
+    )
     hybrid_state_roundtrip = None
     if include_hybrid_state_roundtrip:
         hybrid_state_roundtrip = _build_native_hybrid_state_roundtrip_receipt(
@@ -765,8 +893,12 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if not isinstance(native_conditions, list) or len(native_conditions) != len(conditions):
         raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
     condition_scores = {}
+    task_accuracy_conditions = frozenset({
+        "NO_MESSAGE", "LATENT_CANDIDATE", "DERANGED_MESSAGE", "SELF_GENERATED_MESSAGE",
+    })
+    generation_budget = min(64, max(16, len(target_ids) + 8))
     for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
-        expected_context_rows = 1 if prepared_item["rows"] == 0 else prepared_item["rows"]
+        expected_context_rows = prepared_item["context_rows"]
         if (not isinstance(native_item, dict) or native_item.get("condition") != expected
                 or native_item.get("input_rows") != prepared_item["rows"]
                 or native_item.get("context_rows") != expected_context_rows
@@ -776,13 +908,34 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                 or type(native_item.get("decode_status")) is not int or native_item.get("decode_status") != 0
                 or native_item.get("native_input_consumed") is not True):
             raise NativeReceiverError("native receiver condition receipt is missing or misbound: " + expected)
+        if expected == "SELF_GENERATED_MESSAGE":
+            actual_input_sha = native_item.get("input_sha256")
+            self_generation = native_item.get("self_generation")
+            if (type(actual_input_sha) is not str or len(actual_input_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in actual_input_sha)
+                    or not isinstance(self_generation, dict)
+                    or self_generation.get("schema") != "v14.native-receiver-self-generation/1"
+                    or self_generation.get("algorithm") != "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+                    or self_generation.get("prompt_token_count") != len(prepared_item["text_token_ids"])
+                    or self_generation.get("prompt_token_ids_sha256") != prepared_item["prompt_sha256"]
+                    or self_generation.get("generated_token_count") != prepared_item["message_rows"]
+                    or self_generation.get("decode_status") != 0
+                    or self_generation.get("message_input_sha256") != actual_input_sha
+                    or type(self_generation.get("generated_token_ids_sha256")) is not str
+                    or len(self_generation["generated_token_ids_sha256"]) != 64
+                    or any(ch not in "0123456789abcdef" for ch in self_generation["generated_token_ids_sha256"])):
+                raise NativeReceiverError("native receiver self-generated message receipt is misbound")
+        else:
+            actual_input_sha = prepared_item["input_sha256"]
+            if native_item.get("input_sha256") != actual_input_sha:
+                raise NativeReceiverError("native receiver condition input digest changed")
         try:
             kv_snapshot = validate_native_receiver_kv_snapshot(
                 native_item.get("kv_snapshot"),
                 expected_rows=expected_context_rows,
                 expected_condition=expected,
                 expected_model_sha256=expected_model_sha256,
-                expected_input_sha256=prepared_item["input_sha256"],
+                expected_input_sha256=actual_input_sha,
             )
         except Exception as exc:
             raise NativeReceiverError(
@@ -806,7 +959,9 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             "llama_cpp_revision": PINNED_LLAMA_REVISION,
             "binary_sha256": binary_sha256_before,
             "receiver_model_sha256": expected_model_sha256,
-            "input_sha256": prepared_item["input_sha256"],
+            "input_sha256": actual_input_sha,
+            "input_rows": int(native_item["input_rows"]),
+            "context_rows": int(native_item["context_rows"]),
             "target_token_ids_sha256": target_sha256,
             "target_token_count": len(target_ids),
             "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
@@ -815,10 +970,50 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             "native_input_consumed": True,
             "llama_version": str(raw.get("llama_version", ""))[:120],
         }
+        task_answer = native_item.get("task_answer")
+        if include_task_accuracy and expected in task_accuracy_conditions:
+            if (not isinstance(task_answer, dict)
+                    or task_answer.get("schema") != "v14.native-receiver-task-answer/1"
+                    or task_answer.get("method") != "GREEDY_EXACT_TOKEN_MATCH_V1"
+                    or task_answer.get("condition") != expected
+                    or task_answer.get("input_sha256") != actual_input_sha
+                    or task_answer.get("target_token_ids_sha256") != target_sha256
+                    or type(task_answer.get("generated_token_count")) is not int
+                    or not 1 <= task_answer["generated_token_count"] <= generation_budget
+                    or task_answer.get("generation_token_budget") != generation_budget
+                    or type(task_answer.get("eos_terminated")) is not bool
+                    or type(task_answer.get("exact_match")) is not bool
+                    or (task_answer["exact_match"] and not task_answer["eos_terminated"])
+                    or type(task_answer.get("decode_status")) is not int
+                    or task_answer.get("decode_status") != 0
+                    or task_answer.get("native_input_consumed") is not True):
+                raise NativeReceiverError("native task-answer receipt is missing or misbound: " + expected)
+            answer_hash = task_answer.get("generated_token_ids_sha256")
+            if (type(answer_hash) is not str or len(answer_hash) != 64
+                    or any(ch not in "0123456789abcdef" for ch in answer_hash)):
+                raise NativeReceiverError("native task-answer token digest is invalid: " + expected)
+            receipt["task_answer"] = {
+                "schema": "v14.native-receiver-task-answer/1",
+                "method": "GREEDY_EXACT_TOKEN_MATCH_V1",
+                "condition": expected,
+                "input_sha256": actual_input_sha,
+                "target_token_ids_sha256": target_sha256,
+                "generated_token_count": task_answer["generated_token_count"],
+                "generated_token_ids_sha256": answer_hash,
+                "generation_token_budget": generation_budget,
+                "eos_terminated": task_answer["eos_terminated"],
+                "exact_match": task_answer["exact_match"],
+                "decode_status": 0,
+                "native_input_consumed": True,
+            }
+        elif task_answer is not None:
+            raise NativeReceiverError("unexpected native task-answer receipt: " + expected)
         if target_env in {"TERMUX_ANDROID", "REDMI"}:
             receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
             receipt["device_runtime_build_id"] = device_runtime_build_id
         receipt["kv_snapshot"] = kv_snapshot
+        if expected == "SELF_GENERATED_MESSAGE":
+            receipt["self_generation"] = dict(self_generation)
         condition_scores[expected] = receipt
 
     if hybrid_state_roundtrip is not None:
@@ -827,8 +1022,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverError("receiver model changed during task-matrix probe")
     if _sha256_file(binary) != binary_sha256_before:
         raise NativeReceiverError("native receiver binary changed during task-matrix probe")
-    return {
-        "schema": "v14.native-receiver-task-matrix/1",
+    result = {
+        "schema": "v14.native-receiver-task-matrix/3",
         "status": "SCORED",
         "sender_role": sender_role,
         "receiver_role": receiver_role,
@@ -846,9 +1041,14 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         "target_token_ids_sha256": target_sha256,
         "duration_s": float(duration_s),
         "condition_scores": condition_scores,
+        "task_accuracy_enabled": include_task_accuracy,
+        "task_accuracy_conditions": sorted(task_accuracy_conditions) if include_task_accuracy else [],
         "native_input_consumed": len(condition_scores) == len(conditions),
         "production_route": False,
         "semantic_use_proven": False,
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
+    if prediction_distribution_audit is not None:
+        result["prediction_distribution_audit"] = prediction_distribution_audit
+    return result
