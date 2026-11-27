@@ -15,7 +15,7 @@ from .native_receiver_utility import (
     evaluate_native_receiver_task_utility,
 )
 
-MAX_TASK_SCORE_RECEIPTS = 160
+MAX_TASK_SCORE_RECEIPTS = 180
 
 
 class NativeReceiverTaskScoreError(ValueError):
@@ -61,7 +61,7 @@ def task_score_status(runtime):
 def record_task_score_receipts(runtime, receipts):
     """Atomically add a bounded batch; failed validation leaves the buffer unchanged."""
     if not isinstance(receipts, (list, tuple)) or not 1 <= len(receipts) <= len(CONDITIONS):
-        raise NativeReceiverTaskScoreError("task-score batch must contain 1..8 receipts")
+        raise NativeReceiverTaskScoreError("task-score batch must contain 1..9 receipts")
     try:
         checked = [_check_receipt(item) for item in receipts]
     except NativeReceiverUtilityError as exc:
