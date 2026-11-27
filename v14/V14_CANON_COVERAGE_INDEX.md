@@ -2560,3 +2560,18 @@ The local helper tests are isolated scratch evidence; GitHub Actions is hosted L
 | Android companion AudioRecord provider | OFF / NOT_IMPLEMENTED | QA CapabilityRegistry explicitly says no visible one-shot AudioRecord provider; AudioCaptureDefaultOffTest confirms RECORD_AUDIO and microphone foreground service are absent | Visible consent flow, AudioRecord start/stop, route/silence handling, revocation, process-death/restart, real device |
 
 PR #2312's 20/20 focused Python 3.13 and 20/20 Python 3.14 tests are stub-level receipt/adapter evidence only; the staged migration gate remains FAIL (2 migration assertions), so the signed Android capture path remains ISOLATED_MOCK / BLOCKED at the real Runtime boundary.
+
+
+## Research & Perception Run 72 — A3 OOD calibration evidence overlay (2026-11-27; additive)
+
+The historical 1,255-heading inventory above is unchanged. This overlay records one experiment; it does not mark the Canon path accepted.
+
+| Canon path | Evidence status | Exact evidence | Still not proven |
+|---|---|---|---|
+| A3 optional tile-projector OOD abstention, source-disjoint calibration | EXPERIMENTAL / WIRED_SYNTHETIC | Draft PR #2566; 37-D production RAW-EYE feature interface; RMS-z vs diagonal-shrinkage Mahalanobis vs source-max split-conformal; 30 synthetic source-disjoint repeats; LOCAL_LINUX scratch py_compile PASS and 12/12 focused tests PASS | Real app/session/version-disjoint UI sources; semantic OOD detection; production threshold promotion; trained A3 weights |
+| A5 MediaProjection → RAW-EYE → optional A3 gate | WIRED_SYNTHETIC / FOCUSED_CI_PARENT_ONLY | Parent PR #2565 exact focused CI 39/39 on Python 3.13 and 39/39 on Python 3.14; #2566 adds the calibration experiment but its exact hosted CI was not yet verified at this checkpoint | Normal same-turn Runtime/C3 consumer, shared staged/integrated acceptance, OS MediaProjection lifecycle, real Android frame, Redmi |
+| A4 attention after full/partial A3 abstention | CODE_PRESENT / WIRED_SYNTHETIC_PARENT | Parent #2565 keeps RAW-EYE and A4 available when the optional A3 student abstains | Native attention utility, real frame quality, source/session-disjoint utility and Redmi proof |
+
+**Research decision:** the current RMS-z production heuristic remains unchanged and optional/shadow-only. On the synthetic UI generator, source-max conformal RMS-z had 9.17% in-domain source rejection and 85.5% posterization-shift source rejection; the current heuristic had 7.33% and 85.5%. Shrinkage Mahalanobis was weaker on posterization and slower in the x86_64 host microbenchmark. See R-192, Workplan Run 72 and the Run72 handoff for the full metrics, assumptions and limitations.
+
+No claim is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Full local Aii pytest was not run; the local tests used an isolated mirror of production feature helpers. Android / Termux / Redmi remains REDMI_UNVERIFIED; updater/install state UNKNOWN; NOT_RELEASED.
