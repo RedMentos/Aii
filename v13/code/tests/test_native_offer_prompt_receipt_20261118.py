@@ -139,7 +139,10 @@ class FakeCompletionHandler(BaseHTTPRequestHandler):
     answer_status = 200
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
-        self.rfile.read(length)
+        request = json.loads(self.rfile.read(length))
+        prompt = request.get("prompt")
+        if isinstance(prompt, str):
+            self.server.last_prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         self.send_response(self.answer_status)
         self.send_header("Content-Type", "text/event-stream")
         if self.answer_status == 200:
@@ -200,6 +203,9 @@ class NativeHTTPBound(unittest.TestCase):
         self.assertEqual(receipt["status"], "RENDERED_WITH_QUOTES")
         self.assertTrue(receipt["native_template_submitted"])
         self.assertTrue(receipt["native_completion_http_200"])
+        self.assertTrue(receipt["native_request_prompt_submitted"])
+        self.assertTrue(receipt["native_request_prompt_matches_admission"])
+        self.assertEqual(receipt["native_request_prompt_sha256"], self.server.last_prompt_sha256)
         self.assertEqual(runner.last_metrics["status"], "FINAL")
         self.assertNotIn(SECRET, json.dumps(runner.last_metrics))
         self.assertNotIn("PRIVATE_CURRENT_USER", json.dumps(runner.last_metrics))
@@ -232,12 +238,19 @@ class InstalledStageWitness(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="v13-native-witness-stage-") as tmp:
             target = Path(tmp) / "code"
             stager.stage(code, target)
-            for relative in ("v13/runners.py", "v13/native_offer_prompt_receipt.py",
-                             "v13/phone_offer_delivery_audit.py"):
-                source = code / relative
-                copied = target / relative
-                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
-                                 hashlib.sha256(copied.read_bytes()).hexdigest())
+            relative = "v13/native_offer_prompt_receipt.py"
+            source = code / relative
+            copied = target / relative
+            self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
+                             hashlib.sha256(copied.read_bytes()).hexdigest())
+            source_runner = (code / "v13/runners.py").read_text()
+            staged_runner = (target / "v13/runners.py").read_text()
+            source_audit = (code / "v13/phone_offer_delivery_audit.py").read_text()
+            staged_audit = (target / "v13/phone_offer_delivery_audit.py").read_text()
+            self.assertNotIn("native_request_prompt_matches_admission", source_runner)
+            self.assertIn("native_request_prompt_matches_admission", staged_runner)
+            self.assertNotIn("native_prompt_inclusion_verified", source_audit)
+            self.assertIn("native_prompt_inclusion_verified", staged_audit)
             statement = """from pathlib import Path
 from v13 import runners, native_offer_prompt_receipt as witness
 base=Path.cwd().resolve()
@@ -271,7 +284,8 @@ class SQLiteNativeAudit(unittest.TestCase):
         self.db.close()
 
     def seed(self, witness=None, *, selected=("b1", "b2"), tokens=10):
-        runner = {"role": "C3_LANGUAGE", "generated_tokens": tokens}
+        runner = {"role": "C3_LANGUAGE", "generated_tokens": tokens,
+                  "prompt_tokens": 521, "timings": {"prompt_n": 500, "cache_n": 21}}
         if witness is not None:
             runner["native_offer_prompt_receipt"] = witness
         self.db.execute(
@@ -290,6 +304,10 @@ class SQLiteNativeAudit(unittest.TestCase):
         return {"revision": REVISION, "status": "RENDERED_WITH_QUOTES",
                 "native_template_rendered": True,
                 "native_template_submitted": True, "native_completion_http_200": True,
+                "native_prompt_sha256": "a" * 64,
+                "native_request_prompt_sha256": "a" * 64,
+                "native_request_prompt_submitted": True,
+                "native_request_prompt_matches_admission": True,
                 "source_span_revalidated_here": False,
                 "native_semantic_use_proven": False,
                 "offers": [{"role": r, "packet_id": pid, "rendered_quote_count": 1}
@@ -299,12 +317,48 @@ class SQLiteNativeAudit(unittest.TestCase):
         self.seed(self.witness())
         out = audit(self.db)
         gate = out["end_to_end_gate"]
-        self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED")
+        self.assertEqual(gate["status"], "BOTH_BODY_NATIVE_PROMPT_INCLUSION_VERIFIED")
         self.assertEqual(gate["both_body_native_template_http200_reported_turns"], 1)
+        self.assertEqual(gate["both_body_native_prompt_inclusion_verified_turns"], 1)
         self.assertTrue(gate["native_template_submission_reported_by_runtime"])
-        self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(gate["native_prompt_offer_inclusion_verified"])
+        self.assertTrue(out["turns"][0]["c3_prompt_inclusion_proven"])
+        self.assertFalse(out["turns"][0]["c3_semantic_use_proven"])
         self.assertFalse(gate["learned_latent_exchange_verified"])
         self.assertNotIn(SECRET, json.dumps(out))
+
+
+    def test_prompt_inclusion_requires_exact_request_hash_and_prefill_count(self):
+        for change in ("request_hash_mismatch", "request_not_submitted",
+                       "admission_mismatch", "prefill_count_mismatch"):
+            with self.subTest(change=change):
+                self.db.execute("DELETE FROM messages")
+                self.db.execute("DELETE FROM packets")
+                self.db.execute("DELETE FROM telemetry")
+                self.seed(self.witness())
+                raw = self.db.execute(
+                    "SELECT metadata FROM messages WHERE event_id=?", ("E",)
+                ).fetchone()[0]
+                metadata = json.loads(raw)
+                witness = metadata["runner"]["native_offer_prompt_receipt"]
+                if change == "request_hash_mismatch":
+                    witness["native_request_prompt_sha256"] = "b" * 64
+                elif change == "request_not_submitted":
+                    witness["native_request_prompt_submitted"] = False
+                elif change == "admission_mismatch":
+                    witness["native_request_prompt_matches_admission"] = False
+                elif change == "prefill_count_mismatch":
+                    metadata["runner"]["timings"]["prompt_n"] = 499
+                self.db.execute(
+                    "UPDATE messages SET metadata=? WHERE event_id=?",
+                    (json.dumps(metadata), "E"),
+                )
+                out = audit(self.db)
+                gate = out["end_to_end_gate"]
+                self.assertEqual(gate["both_body_native_template_http200_reported_turns"], 1)
+                self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+                self.assertFalse(out["turns"][0]["c3_prompt_inclusion_proven"])
+                self.assertFalse(gate["learned_latent_exchange_verified"])
 
     def test_wrong_packet_boolean_token_no_http_or_no_witness_never_promote(self):
         for change in ("wrong_packet", "bool_quotes", "no_http", "no_witness", "no_tokens"):
