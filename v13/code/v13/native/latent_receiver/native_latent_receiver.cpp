@@ -136,6 +136,44 @@ bool logprob_from_logits(const float * logits, int vocab_size, int token_id, dou
     return std::isfinite(result) && result <= 1.0e-7;
 }
 
+bool jsd_from_logits(const float * left, const float * right, int vocab_size, double & result) {
+    if (!left || !right || vocab_size < 1) return false;
+    double left_max = -std::numeric_limits<double>::infinity();
+    double right_max = -std::numeric_limits<double>::infinity();
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        if (std::isnan(a) || std::isnan(b) ||
+            (std::isinf(a) && a > 0.0) || (std::isinf(b) && b > 0.0)) return false;
+        if (std::isfinite(a)) left_max = std::max(left_max, a);
+        if (std::isfinite(b)) right_max = std::max(right_max, b);
+    }
+    if (!std::isfinite(left_max) || !std::isfinite(right_max)) return false;
+    long double left_sum = 0.0L, right_sum = 0.0L;
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        if (std::isfinite(a)) left_sum += std::exp(a - left_max);
+        if (std::isfinite(b)) right_sum += std::exp(b - right_max);
+    }
+    if (!(left_sum > 0.0L) || !(right_sum > 0.0L)) return false;
+    long double divergence = 0.0L;
+    for (int i = 0; i < vocab_size; ++i) {
+        const double a = static_cast<double>(left[i]);
+        const double b = static_cast<double>(right[i]);
+        const long double p = std::isfinite(a) ? std::exp(a - left_max) / left_sum : 0.0L;
+        const long double q = std::isfinite(b) ? std::exp(b - right_max) / right_sum : 0.0L;
+        const long double midpoint = 0.5L * (p + q);
+        if (p > 0.0L) divergence += 0.5L * p * std::log(p / midpoint);
+        if (q > 0.0L) divergence += 0.5L * q * std::log(q / midpoint);
+    }
+    const long double upper = std::log(2.0L);
+    if (!std::isfinite(static_cast<double>(divergence)) ||
+        divergence < -1.0e-12L || divergence > upper + 1.0e-9L) return false;
+    result = static_cast<double>(std::max(0.0L, std::min(upper, divergence)));
+    return std::isfinite(result);
+}
+
 bool valid_sha256_hex(const std::string & value) {
     if (value.size() != 64) return false;
     return std::all_of(value.begin(), value.end(), [](unsigned char ch) {
@@ -371,6 +409,19 @@ int selftest() {
     if (logprob_from_logits(equal_logits, 2, 2, logprob)) return 19;
     const float nan_logits[] = {std::numeric_limits<float>::quiet_NaN(), 0.0f};
     if (logprob_from_logits(nan_logits, 2, 0, logprob)) return 20;
+    const float jsd_a[] = {0.0f, 1.0f, -2.0f};
+    const float jsd_same[] = {0.0f, 1.0f, -2.0f};
+    const float jsd_b[] = {8.0f, 0.0f, -8.0f};
+    double jsd_ab = 0.0, jsd_ba = 0.0;
+    if (!jsd_from_logits(jsd_a, jsd_same, 3, jsd_ab) || std::abs(jsd_ab) > 1.0e-12) return 29;
+    if (!jsd_from_logits(jsd_a, jsd_b, 3, jsd_ab) || jsd_ab <= 0.0 ||
+        jsd_ab > std::log(2.0) + 1.0e-12) return 30;
+    if (!jsd_from_logits(jsd_b, jsd_a, 3, jsd_ba) || std::abs(jsd_ab - jsd_ba) > 1.0e-12) return 31;
+    if (jsd_from_logits(nan_logits, jsd_b, 2, jsd_ab)) return 32;
+    const float all_negative_infinity[] = {
+        -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()
+    };
+    if (jsd_from_logits(all_negative_infinity, all_negative_infinity, 2, jsd_ab)) return 33;
 #ifdef V14_WITH_LLAMA
     const int position_layout_status = selftest_embedding_positions();
     if (position_layout_status != 0) return position_layout_status;
@@ -1066,6 +1117,12 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
     context_params.attention_type = LLAMA_ATTENTION_TYPE_CAUSAL;
     context.value = llama_init_from_model(model.value, context_params);
     if (!context.value) return 5;
+    const llama_vocab * receiver_vocab = llama_model_get_vocab(model.value);
+    const int receiver_vocab_size = receiver_vocab ? llama_vocab_n_tokens(receiver_vocab) : 0;
+    if (receiver_vocab_size < 1) return 4;
+    std::vector<float> no_message_logits, current_message_logits, other_example_logits;
+    std::string no_message_input_sha, current_message_input_sha, other_example_input_sha;
+    std::string no_message_logits_sha, current_message_logits_sha, other_example_logits_sha;
     std::ostringstream condition_json;
     condition_json << "[";
     std::string hybrid_state_roundtrip_json;
@@ -1109,6 +1166,26 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                 item.positions, condition_input, output, decode_status);
         }
         if (!decoded) return 6;
+        const float * first_next_token_logits = llama_get_logits_ith(context.value, -1);
+        if (!first_next_token_logits) return 7;
+        std::vector<float> first_logits(
+            first_next_token_logits, first_next_token_logits + receiver_vocab_size
+        );
+        const std::string first_logits_sha = logits_step_sha256(first_logits.data(), receiver_vocab_size);
+        if (!v14::valid_sha256_hex(first_logits_sha)) return 7;
+        if (item.condition == "NO_MESSAGE") {
+            no_message_logits = std::move(first_logits);
+            no_message_input_sha = condition_input_sha;
+            no_message_logits_sha = first_logits_sha;
+        } else if (item.condition == "LATENT_CANDIDATE") {
+            current_message_logits = std::move(first_logits);
+            current_message_input_sha = condition_input_sha;
+            current_message_logits_sha = first_logits_sha;
+        } else if (item.condition == "DERANGED_MESSAGE") {
+            other_example_logits = std::move(first_logits);
+            other_example_input_sha = condition_input_sha;
+            other_example_logits_sha = first_logits_sha;
+        }
         if (include_hybrid_state_roundtrip && item.condition == "LATENT_CANDIDATE") {
             if (!run_hybrid_state_roundtrip(model.value, context_params, item,
                                             input_dim, output_dim, target_tokens,
@@ -1166,6 +1243,18 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
                        << ",\"native_input_consumed\":true}}";
     }
     condition_json << "]";
+    if (no_message_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        current_message_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        other_example_logits.size() != static_cast<std::size_t>(receiver_vocab_size) ||
+        !v14::valid_sha256_hex(no_message_input_sha) ||
+        !v14::valid_sha256_hex(current_message_input_sha) ||
+        !v14::valid_sha256_hex(other_example_input_sha)) return 10;
+    double pl_jsd_nats = 0.0, cic_jsd_nats = 0.0;
+    if (!v14::jsd_from_logits(current_message_logits.data(), no_message_logits.data(),
+                              receiver_vocab_size, pl_jsd_nats) ||
+        !v14::jsd_from_logits(current_message_logits.data(), other_example_logits.data(),
+                              receiver_vocab_size, cic_jsd_nats)) return 10;
+    const double jsd_scale = std::log(2.0);
     std::cout << "{\"schema\":\"v14.native-receiver-task-matrix/3\""
               << ",\"runner_revision\":\"" << V14_LLAMA_REVISION << "\""
               << ",\"llama_version\":\"" << v14::json_escape(llama_version() ? llama_version() : "unknown") << "\""
@@ -1174,7 +1263,29 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
               << ",\"output_dim\":" << output_dim
               << ",\"target_token_count\":" << target_tokens.size()
               << ",\"target_token_ids_sha256\":\"" << verified_target_hash << "\""
-              << ",\"conditions\":" << condition_json.str();
+              << ",\"conditions\":" << condition_json.str()
+              << ",\"prediction_distribution_audit\":{"
+              << "\"schema\":\"v14.native-receiver-prediction-distribution-audit/1\""
+              << ",\"method\":\"FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1\""
+              << ",\"divergence\":\"JENSEN_SHANNON_NATS\""
+              << ",\"normalization\":\"DIVIDE_BY_LN2_TO_UNIT_INTERVAL\""
+              << ",\"vocab_size\":" << receiver_vocab_size
+              << ",\"pl\":{\"comparison\":\"LATENT_CANDIDATE_VS_NO_MESSAGE\""
+              << ",\"jsd_nats\":" << v14::number(pl_jsd_nats)
+              << ",\"jsd_normalized\":" << v14::number(pl_jsd_nats / jsd_scale)
+              << ",\"current_input_sha256\":\"" << current_message_input_sha << "\""
+              << ",\"reference_input_sha256\":\"" << no_message_input_sha << "\""
+              << ",\"current_logits_sha256\":\"" << current_message_logits_sha << "\""
+              << ",\"reference_logits_sha256\":\"" << no_message_logits_sha << "\"}"
+              << ",\"cic\":{\"comparison\":\"LATENT_CANDIDATE_VS_DERANGED_MESSAGE\""
+              << ",\"jsd_nats\":" << v14::number(cic_jsd_nats)
+              << ",\"jsd_normalized\":" << v14::number(cic_jsd_nats / jsd_scale)
+              << ",\"current_input_sha256\":\"" << current_message_input_sha << "\""
+              << ",\"reference_input_sha256\":\"" << other_example_input_sha << "\""
+              << ",\"current_logits_sha256\":\"" << current_message_logits_sha << "\""
+              << ",\"reference_logits_sha256\":\"" << other_example_logits_sha << "\"}"
+              << ",\"raw_logits_exported\":false,\"raw_logits_persisted\":false}";
+
     if (include_hybrid_state_roundtrip) {
         if (hybrid_state_roundtrip_json.empty()) return 9;
         std::cout << ",\"hybrid_state_roundtrip\":" << hybrid_state_roundtrip_json;
