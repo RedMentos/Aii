@@ -391,6 +391,7 @@ def test_callosum_routes_matrix_status_through_the_real_operator_consumer(monkey
 
     status = json.loads(callosum.operator_command(runtime, ["matrix-status"]))
     assert status["status"] == "READY"
+    assert status["native_receiver_effects"]["status"] == "EMPTY"
     assert runtime.store.states == {}
 
     with pytest.raises(PermissionError, match="no local one-shot approval"):
