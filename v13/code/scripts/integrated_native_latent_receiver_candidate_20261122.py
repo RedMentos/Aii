@@ -8,7 +8,7 @@ from pathlib import Path
 
 BASE_PINS = {
     "v13/cognition.py": "208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90",
-    "v13/callosum.py": "f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748",
+    "v13/callosum.py": frozenset({"f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748", "40f5e0f623ffcbcffba901bc4bfba9fe289b1e9410b764db9f1a2193e3b0c348"}),
     "v13/runners.py": "c90fd1e62173b570addceebb93b594bb86d0b92fa46286767a3a59b49c07720d",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "9c9974699b622347e380f3626a171bf21bae9acd3683772411052190e9b06840",
@@ -185,6 +185,10 @@ OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|a
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
+def _matches_base_pin(path, expected):
+    actual = _sha256(path.read_bytes())
+    accepted = expected if isinstance(expected, (set, frozenset, tuple, list)) else (expected,)
+    return actual in accepted
 def _replace(raw,old,new,label):
     count=raw.count(old)
     if count!=1: raise ValueError("native receiver overlay anchor mismatch: "+label+" count="+str(count))
@@ -193,7 +197,7 @@ def apply_sources(code_dir,sources):
     code_dir=Path(code_dir).resolve(strict=True)
     for relative,expected in BASE_PINS.items():
         path=code_dir/relative
-        if path.is_symlink() or not path.is_file() or _sha256(path.read_bytes())!=expected:
+        if path.is_symlink() or not path.is_file() or not _matches_base_pin(path, expected):
             raise ValueError("native receiver base source changed: "+relative)
     result=dict(sources)
     cognition=result.get("v13/cognition.py",(code_dir/"v13/cognition.py").read_bytes())
