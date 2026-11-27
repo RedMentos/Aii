@@ -248,6 +248,9 @@ class EnlightenedSpace:
                 or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
                 or actual.get("capability") not in {"launch_app", "open_url"}
                 or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+                or actual.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+                or actual.get("companion_user_approval") is not True
+                or actual.get("device_execution_claimed") is not False
                 or actual.get("android_os_permission_status") != {
                     "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
                     "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
