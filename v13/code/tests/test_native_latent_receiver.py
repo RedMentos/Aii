@@ -158,22 +158,32 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     binary.chmod(0o755)
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE",
+        "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE",
     )
     condition_inputs = []
     native_conditions = []
     target_ids = [101, 202]
     target_sha = hashlib.sha256(struct.pack("<ii", *target_ids)).hexdigest()
-    position_sha = hashlib.sha256(struct.pack("<i", 0)).hexdigest()
     for condition in conditions:
-        vectors = [] if condition == "NO_MESSAGE" else [[0.25, -0.5]]
-        positions = [] if condition == "NO_MESSAGE" else [0]
-        condition_inputs.append({"condition": condition, "vectors": vectors, "position_ids": positions})
+        text_tokens = [301, 302, 303] if condition == "DIRECT_TEXT_REFERENCE" else []
+        vectors = [] if condition in {"NO_MESSAGE", "DIRECT_TEXT_REFERENCE"} else [[0.25, -0.5]]
+        positions = list(range(len(text_tokens))) if text_tokens else ([] if condition == "NO_MESSAGE" else [0])
+        input_item = {"condition": condition, "vectors": vectors, "position_ids": positions,
+                      "text_token_ids": text_tokens}
+        if text_tokens:
+            text_payload = struct.pack("<iii", *text_tokens)
+            input_item["text_token_ids_sha256"] = hashlib.sha256(text_payload).hexdigest()
+            input_item["input_sha256"] = input_item["text_token_ids_sha256"]
+        condition_inputs.append(input_item)
+        context_rows = len(text_tokens) if text_tokens else 1
+        context_positions = list(range(context_rows))
+        position_sha = hashlib.sha256(struct.pack("<" + "i" * context_rows, *context_positions)).hexdigest()
         snapshot_digest = hashlib.sha256(("snapshot-" + condition).encode()).hexdigest()
         native_conditions.append({
             "condition": condition,
             "input_rows": len(vectors),
-            "context_rows": 1,
+            "context_rows": context_rows,
             "input_dim": 2,
             "position_ids": positions,
             "position_mode": POSITION_MODE,
@@ -187,8 +197,8 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
                 "sequence_id": 0,
                 "layer_id": 0,
                 "attention_layer_count": 12,
-                "active_cell_count": 1,
-                "position_ids": [0],
+                "active_cell_count": context_rows,
+                "position_ids": context_positions,
                 "position_sha256": position_sha,
                 "k_shape": [64, 8, 128, 1],
                 "v_shape": [128, 8, 64, 1],
@@ -217,7 +227,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
             },
         })
     raw = {
-        "schema": "v14.native-receiver-task-matrix/1",
+        "schema": "v14.native-receiver-task-matrix/2",
         "runner_revision": PINNED_LLAMA_REVISION,
         "llama_version": "b10964",
         "status": "SCORED",
@@ -270,7 +280,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "runner_revision": PINNED_LLAMA_REVISION,
         "llama_version": "b10964",
         "task_matrix_supported": True,
-        "task_matrix_schema": "v14.native-receiver-task-matrix/1",
+        "task_matrix_schema": "v14.native-receiver-task-matrix/2",
         "kv_snapshot_supported": True,
         "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
         "hybrid_state_roundtrip_supported": True,
@@ -313,17 +323,22 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     )
     assert "--hybrid-state-roundtrip" in commands[0]
     assert result["status"] == "SCORED"
-    assert len(result["condition_scores"]) == 9
+    assert len(result["condition_scores"]) == 12
     for condition in conditions:
         score = result["condition_scores"][condition]
         snapshot = score["kv_snapshot"]
         assert snapshot["condition"] == condition
         assert snapshot["receiver_model_sha256"] == model_sha
-        assert snapshot["position_count"] == 1
+        assert snapshot["position_count"] == (3 if condition == "DIRECT_TEXT_REFERENCE" else 1)
         assert "position_ids" not in snapshot
         if condition == "NO_MESSAGE":
             assert score["input_sha256"] == hashlib.sha256(b"").hexdigest()
             assert "hybrid_state_roundtrip" not in score
+        elif condition == "DIRECT_TEXT_REFERENCE":
+            expected_text_sha = hashlib.sha256(struct.pack("<iii", 301, 302, 303)).hexdigest()
+            assert score["input_sha256"] == expected_text_sha
+            assert score["input_rows"] == 0
+            assert snapshot["position_count"] == 3
         elif condition == "LATENT_CANDIDATE":
             roundtrip = score["hybrid_state_roundtrip"]
             candidate_input_sha = hashlib.sha256(struct.pack("<2f", 0.25, -0.5)).hexdigest()
