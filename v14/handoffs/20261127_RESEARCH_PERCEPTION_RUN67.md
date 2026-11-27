@@ -23,7 +23,7 @@ Base: research-perception/v14-vision-ui-frame-ingress-20261127-run64 @ 95c6dd27e
 - Initial head 7ae077f... had 28 pass / 1 fail because the test expected rounded A4 weights to sum within 1e-6; the existing helper rounds each of 18 weights to six decimals. Test tolerance corrected to 1e-5; exact head 0411d6f passed both jobs.
 - LOCAL_LINUX scratch helper reproduction: 3/3 PASS (positive, uniform negative, invalid provenance). This is not the full repo suite.
 - Full local Aii checkout/pytest BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS unavailable).
-- Shared staged/integrated workflow 46016490897 was IN_PROGRESS at last poll; no success claim.
+- Shared staged/integrated workflow 46016490897 completed FAIL: integrated 1 Core audio-composer pin failure; staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Perception-focused workflow remains PASS; Core/QA own the blocking pins.
 - REDMI_UNVERIFIED / NOT_RELEASED. No device, private relay, model, permission, updater, or data action.
 
 ## Research
