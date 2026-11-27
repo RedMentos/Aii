@@ -7,17 +7,28 @@ import hashlib
 from pathlib import Path
 
 BASE_PINS = {
-    "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
+    "v13/cognition.py": "208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90",
     "v13/callosum.py": "f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748",
     "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
-    "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
+    "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186",
+    "v13/native_receiver_matrix_runtime.py": "c63628068d045c0eb2064fad5cdc12a75fc7f2b5865f27cef1a8f6df5741cd38",
+    "v13/native_probe_approval.py": "d1a780008746ec34a80fd51a3dbaa48dede45fc47a24a968917a6a2aa2d67af0",
+    "v13/native_hybrid_state.py": "21526937979c91b8931c221d0f990460cc69e73c34c1db245b83dab1cbcacc6e",
+    "v13/native_tap_contract.py": "19f1e2794e0ed4ec9c8770e9c9d987c42f66ff7c4922aefc0cb383287f0e26a5",
+    "v13/native_tokenwise_pair_capture.py": "042d6a24005295878aa3658ce3a2966b995143d35e9953b67825253056c85f93",
+    "v13/native_tokenwise_pairing.py": "1f3cc694b564387c81f1141478bd313fc9ffc8353435e9a1f315baf30dd99de9",
+    "v13/native_tokenwise_receiver_probe.py": "b314f1d7518462559aa84e4413ba7d91cc79906ac7fc574a72ef19d84753a323",
+    "v13/native_receiver_task_matrix_bridge.py": "b967cd83c1855bb9502cb2ff6ef070bc859e648349ab4a28c31979043bb3db8f",
+    "v13/native_receiver_utility.py": "dcc4a225e4c8eb2eabc6596562c3418ab743b7f61d08c9d3cbb9eaaa41759399",
+    "v13/native_receiver_task_score.py": "2b10140795e4ef3afec31fb6290f1c6a9304342dcd466e092e2554965c424545",
+    "v13/native_receiver_condition_matrix.py": "409d9c7237acb9c7ec4b976ea88dddbcf2bafdd4a83110d7cc9d289cd724be6f"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
+    "v13/native_latent_receiver.py": "1fe02445eb0c6a200ba7ad089321e49c9280653668954f09d1c040b7f49ba493",
     "v13/native/latent_receiver/CMakeLists.txt": "6884bf0ce7613b20c2f02ffe1a1213d2609f56b9318d947f0a1bd0fb40cfe516",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "1bccf4156ca2c27d3d63077ff39329d680845201f0c94ae669924ffb710afb8f",
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "751251958a55da177591324b4e31685f70bad69feb53f74022b4915a8d137f84",
     "v13/native/latent_receiver/native_receiver_kv_snapshot.cpp": "a2968af85c5e0875ba6408047b88a915efe2b9d5fe815442685179b382f5fefc",
     "v13/native/latent_receiver/native_receiver_kv_snapshot.hpp": "69a706f6a38e6faca434c6079bfee693acfc8bfba18acb7df48b491dc760eac9",
     "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
