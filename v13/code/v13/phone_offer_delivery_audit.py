@@ -205,7 +205,11 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
             or not _native_prefill_token_count_match(report)):
         return set()
     prefix = spans.get("leading_added_special_token_count")
-    if type(prefix) is not int or prefix not in (0, 1):
+    suffix = spans.get("trailing_added_special_token_count")
+    if (type(prefix) is not int or type(suffix) is not int
+            or not 0 <= prefix <= 2 or not 0 <= suffix <= 2
+            or prefix + suffix > 2
+            or not _valid_sha256(spans.get("content_token_ids_sha256"))):
         return set()
     raw_base = witness.get("offers")
     raw_spans = spans.get("offers")
@@ -226,6 +230,9 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
 
     matched = set()
     seen_roles = set()
+    seen_quote_indices = set()
+    seen_prompt_ranges = []
+    seen_token_ranges = []
     for row in raw_spans:
         if type(row) is not dict:
             return set()
@@ -253,7 +260,10 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
             token_start, token_end = span.get("token_start"), span.get("token_end_exclusive")
             span_count = span.get("token_count")
             first_byte, last_byte = span.get("first_token_byte_start"), span.get("last_token_byte_end")
+            first_piece_bytes = span.get("first_token_piece_bytes")
+            last_piece_bytes = span.get("last_token_piece_bytes")
             if (type(qi) is not int or not 0 <= qi < 16 or qi in quote_indices
+                    or qi in seen_quote_indices
                     or not _valid_sha256(span.get("source_sha256"))
                     or type(source_start) is not int or source_start < 0
                     or type(source_end) is not int or source_end <= source_start
@@ -262,13 +272,24 @@ def _native_prompt_token_span_roles(report, template_roles, selected, events):
                     or byte_end > 2_000_000
                     or type(token_start) is not int or token_start < prefix
                     or type(token_end) is not int or token_end <= token_start
-                    or token_end > token_count
+                    or token_end > token_count - suffix
                     or type(span_count) is not int or span_count != token_end - token_start
-                    or type(first_byte) is not int or first_byte < 0
+                    or type(first_byte) is not int or first_byte != 0
                     or type(last_byte) is not int or last_byte < 1
+                    or type(first_piece_bytes) is not int or first_piece_bytes < 1
+                    or type(last_piece_bytes) is not int or last_piece_bytes < 1
+                    or last_byte != last_piece_bytes
                     or not _valid_sha256(span.get("token_ids_sha256"))):
                 return set()
+            if (any(byte_start < old_end and byte_end > old_start
+                    for old_start, old_end in seen_prompt_ranges)
+                    or any(token_start < old_end and token_end > old_start
+                           for old_start, old_end in seen_token_ranges)):
+                return set()
             quote_indices.add(qi)
+            seen_quote_indices.add(qi)
+            seen_prompt_ranges.append((byte_start, byte_end))
+            seen_token_ranges.append((token_start, token_end))
         matched.add(role)
     return matched
 
