@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 A5_RUNTIME_CONSUMER = "v13/a5_visual_runtime_consumer.py"
-A5_RUNTIME_CONSUMER_BLOB_SHA1 = "3049b960ddbec0ddc6fe78236f1615ab2575212e"
+A5_RUNTIME_CONSUMER_BLOB_SHA1 = "a6f3ed1d2515d1b16b866126393dacd3f34b1226"
 A5_FRAME_ADAPTER = "v13/a5_visual_frame_bridge.py"
 A5_FRAME_ADAPTER_BLOB_SHA1 = "c7a5c2a46f561fbf4453a555ace569a27a1ed978"
 A4_VISUAL_SALIENCE = "v13/a4_visual_salience.py"
