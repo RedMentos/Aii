@@ -299,7 +299,15 @@ class LlamaRunner:
         for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
-            with_pieces = self.role == 'C3_LANGUAGE'
+            preliminary_witness = None
+            hypothesis_heading = None
+            if self.role == 'C3_LANGUAGE':
+                from .native_offer_prompt_receipt import inspect
+                from .prompts import text as v13_prompt_text
+                hypothesis_heading = v13_prompt_text(self.cfg, 'hypotheses')
+                preliminary_witness = inspect(work, p, hypothesis_heading)
+            with_pieces = (type(preliminary_witness) is dict
+                           and preliminary_witness.get('status') == 'RENDERED_WITH_QUOTES')
             tokens = self._json("POST", "/tokenize",
                                 {"content": p, "add_special": True,
                                  "with_pieces": with_pieces}, deadline)["tokens"]
@@ -309,11 +317,26 @@ class LlamaRunner:
                 token_ids = [row.get("id") for row in tokens
                              if type(row) is dict and type(row.get("id")) is int]
                 if len(token_ids) != len(tokens):
-                    raise Unavailable("Native token ID response invalid")
+                    # Keep ordinary C3 generation available on older servers;
+                    # an absent with_pieces response only disables span evidence.
+                    tokens = self._json("POST", "/tokenize",
+                                        {"content": p, "add_special": True}, deadline)["tokens"]
+                    with_pieces = False
+                    if type(preliminary_witness) is dict:
+                        from .native_offer_prompt_receipt import TOKEN_SPAN_REVISION
+                        preliminary_witness['native_prompt_token_span_receipt'] = {
+                            'revision': TOKEN_SPAN_REVISION,
+                            'status': 'NATIVE_WITH_PIECES_UNAVAILABLE',
+                            'token_count': None,
+                            'leading_added_special_token_count': None,
+                            'offers': [],
+                        }
+                    token_ids = tokens
             else:
                 token_ids = tokens
-                if any(type(token_id) is not int for token_id in token_ids):
-                    raise Unavailable("Native token ID response invalid")
+            if (type(token_ids) is not list
+                    or any(type(token_id) is not int for token_id in token_ids)):
+                raise Unavailable("Native token ID response invalid")
             count = len(token_ids)
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
@@ -328,10 +351,8 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
-                    from .prompts import text as v13_prompt_text
-                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'),
-                                      token_pieces=tokens)
+                    witness = (inspect(work, p, hypothesis_heading, token_pieces=tokens)
+                               if with_pieces else preliminary_witness)
                     if type(witness) is dict:
                         ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
                         witness.update({
