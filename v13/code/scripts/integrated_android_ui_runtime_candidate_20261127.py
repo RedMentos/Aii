@@ -59,11 +59,11 @@ def _append_offer_parameter(raw: bytes) -> bytes:
 def _bind_ui_offer_scope(raw: bytes) -> bytes:
     """Bind UI metadata without dropping the audio-source lineage added upstream."""
     base_anchor = (
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\\n"
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\n"
     )
     audio_anchor = (
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\\n"
-        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):\\n"
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):\n"
     )
     base_count = raw.count(base_anchor)
     audio_count = raw.count(audio_anchor)
@@ -77,10 +77,10 @@ def _bind_ui_offer_scope(raw: bytes) -> bytes:
             + f"base={base_count} audio={audio_count}"
         )
     replacement = (
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\\n"
-        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])\\n"
-        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\\n"
-        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\\n"
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])\n"
+        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\n"
+        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\n"
     )
     return raw.replace(anchor, replacement, 1)
 
