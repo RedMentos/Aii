@@ -266,13 +266,6 @@ def apply_raw_eye_structure(a4_result, segment, score, components, *, segment_in
         key: round(_unit(components[key], f"RAW-EYE {key}"), 6)
         for key in _COMPONENTS
     }
-    temporal_change = _temporal_visual_change(a4_result, segment, clean_components)
-    temporal_score = (
-        temporal_change["change_score"]
-        if temporal_change["status"] == "MEASURED" else 0.0
-    )
-    temporal_contribution = RAW_EYE_TEMPORAL_GAIN * temporal_score
-
     rows = a4_result.get("segments")
     if not isinstance(rows, list):
         raise ValueError("A4 result has no segment salience rows")
@@ -285,6 +278,14 @@ def apply_raw_eye_structure(a4_result, segment, score, components, *, segment_in
     if len(matches) != 1:
         raise ValueError("RAW-EYE source/index does not map to exactly one A4 row")
     row = matches[0]
+
+    # Validate the target row before mutating the process-local temporal ledger.
+    temporal_change = _temporal_visual_change(a4_result, segment, clean_components)
+    temporal_score = (
+        temporal_change["change_score"]
+        if temporal_change["status"] == "MEASURED" else 0.0
+    )
+    temporal_contribution = RAW_EYE_TEMPORAL_GAIN * temporal_score
     base_score = _unit(row.get("score"), "A4 base salience")
     contribution = RAW_EYE_STRUCTURE_GAIN * score
     row["base_score"] = round(base_score, 6)
