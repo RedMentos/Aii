@@ -488,7 +488,7 @@ def test_kv_snapshot_geometry_must_remain_stable_across_task_groups(geometry_ove
 
     assert "native K/V snapshot geometry changed across task cohort" in str(error.value.__cause__)
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 15
+    assert status["receipt_count"] == 17
     assert status["complete_task_group_count"] == 1
     assert status["incomplete_task_group_count"] == 1
 
