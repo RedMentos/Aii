@@ -20,9 +20,11 @@ import zipfile
 from contextlib import contextmanager
 from pathlib import Path
 
+from . import a4_visual_salience
 from . import attention as attention_module
 from . import vision
 from .a5_context_envelope import A5Item, admit_a5
+from .a5_visual_frame_bridge import raw_eye_structure
 from .a5_ui_admission_bridge import (
     A5UIRuntimeAdapter,
     UIObservationLease,
@@ -541,7 +543,7 @@ def consume_projected_frame(
             "sha256": frame_sha256,
             "char_start": 0,
             "char_end": 0,
-            "modality": "image",
+            "modality": "visual",
         }
         ui_summary = _summary(observation)
         ui_ref = {
@@ -614,6 +616,30 @@ def consume_projected_frame(
                 except Exception:
                     student_status = "INFERENCE_FAILED"
 
+            if (
+                len(region_records) != MAX_REGIONS
+                or region_records[0][0].get("region_id") != "g"
+                or len(tile_feature_rows) != GRID * GRID
+            ):
+                raise ValueError("RAW EYE global/grid feature coverage is incomplete")
+            np = vision._np()
+            global_features = np.asarray(region_records[0][2], dtype=np.float32).reshape(-1)
+            if global_features.size != 37:
+                raise ValueError("RAW EYE global feature geometry is invalid")
+            structure_cells = []
+            for row in tile_feature_rows:
+                values = np.asarray(row, dtype=np.float32).reshape(-1)
+                if values.size != 37:
+                    raise ValueError("RAW EYE tile feature geometry is invalid")
+                structure_cells.append(np.concatenate((values[:3], values[16:18])))
+            structure_vector = np.concatenate([global_features] + structure_cells)
+            raw_eye_score, raw_eye_components = raw_eye_structure(structure_vector)
+            raw_eye_score = round(float(raw_eye_score), 6)
+            raw_eye_components = {
+                key: round(float(value), 6)
+                for key, value in raw_eye_components.items()
+            }
+
             for region, box, features, salience in region_records:
                 region_id = region["region_id"]
                 margin = student_scores.get(region_id)
@@ -633,10 +659,26 @@ def consume_projected_frame(
                     "time_basis": "ELAPSED_REALTIME",
                     "finality": observation["finality"],
                     "authority": "RAW_FEATURE_MEASUREMENT",
+                    "modality": "image",
                     "raw_capture_persisted": False,
                     "learning_authority": False,
                     "action_authority": False,
                 }
+                if region_id == "g":
+                    # The global frame row is the A5 visual-structure carrier.
+                    # Keep its SourceRef tied to the same frame digest while
+                    # making the visual modality explicit for the A4 adapter.
+                    region_ref["modality"] = "visual"
+                    segment.update({
+                        "modality": "visual",
+                        "producer_component": "A5_VISUAL",
+                        "capture_method": observation["capture_method"],
+                        "capture_scope": observation["capture_scope"],
+                        "capture_session_id": observation["capture_session_id"],
+                        "consent_receipt_ref": observation["consent_receipt_ref"],
+                        "raw_eye_structure": raw_eye_score,
+                        "raw_eye_components": raw_eye_components,
+                    })
                 if margin is not None:
                     segment["student_goal_margin"] = round(margin, 4)
                     segment["student_estimate_authority"] = "STUDENT_ESTIMATE"
@@ -655,6 +697,9 @@ def consume_projected_frame(
 
         a4 = attention_module.controller(runtime).perceive(
             event["event_id"], segments, goal=goal, file_requests=False
+        )
+        a4 = a4_visual_salience.apply_raw_eye_structure(
+            a4, segments[1], raw_eye_score, raw_eye_components, segment_index=1
         )
         admission = admit(percepts, token_budget, max_items=12)
         context_items = [
@@ -692,6 +737,9 @@ def consume_projected_frame(
                 "projector_sha256": student.get("sha256") if student_scores else None,
                 "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
             },
+            raw_eye_structure=raw_eye_score,
+            raw_eye_components=raw_eye_components,
+            a4_raw_eye_signal=a4.get("raw_eye_signal"),
             learning_authority=False, action_authority=False, truth_authority=0,
         )
         validate("PerceptPacket", percept_packet)
@@ -728,6 +776,8 @@ def consume_projected_frame(
             "student_projector_used": bool(student_scores),
             "student_projector_status": student_status,
             "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
+            "raw_eye_structure": raw_eye_score,
+            "raw_eye_components": raw_eye_components,
             "learning_authority": False,
             "action_authority": False,
             "truth_authority": 0,
