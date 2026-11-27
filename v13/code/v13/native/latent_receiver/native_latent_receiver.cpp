@@ -789,7 +789,7 @@ void print_version() {
     std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown")
-              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/3\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\"}\n";
+              << "\",\"target_score_supported\":true,\"target_score_schema\":\"v14.native-receiver-target-score/1\",\"task_matrix_supported\":true,\"task_matrix_schema\":\"v14.native-receiver-task-matrix/3\",\"kv_snapshot_supported\":true,\"kv_snapshot_schema\":\"v14.native-receiver-kv-snapshot/1\",\"hybrid_state_roundtrip_supported\":true,\"hybrid_state_roundtrip_schema\":\"v14.native-hybrid-state-roundtrip/2\",\"prediction_distribution_audit_supported\":true,\"prediction_distribution_audit_schema\":\"v14.native-receiver-prediction-distribution-audit/1\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
