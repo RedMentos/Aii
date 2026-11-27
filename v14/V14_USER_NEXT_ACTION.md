@@ -1,3 +1,27 @@
+# CURRENT VERIFIED NEXT ACTION — Research & Perception Run 72 (2026-11-27)
+
+**User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this research-only draft.
+
+## A3 OOD calibration comparison
+
+- Draft [PR #2566 — compare source-disjoint A3 OOD calibration methods](https://github.com/RedMentos/Aii/pull/2566), branch `research-perception/v14-a3-ood-calibration-20261127-run72`, stacked on #2565 at `b3896e3a3ba5a85de8ea67f45d123ef8e74da075`.
+- Code/test SHA: `6d0b446a607a42cdbf7f35c6567761e1781703e2`. Experiment: `v14/experiments/vision_ood_calibration.py`; tests: `v14/experiments/test_vision_ood_calibration.py`; existing A5 workflow now also runs the experiment on Python 3.13/3.14.
+- LOCAL_LINUX isolated scratch: py_compile PASS; 12/12 tests PASS; 30 seeded synthetic source-disjoint repeats PASS. The full Aii checkout is not mounted, so full repository pytest was NOT_RUN. The local harness mirrors the production tile feature and threshold helper logic; this is not full repository or Android proof.
+- Results: current RMS-z heuristic 7.33% in-domain source rejection and 85.5% posterization-shift source rejection; RMS-z source-max conformal alpha 0.10 gives 9.17% in-domain rejection with the same 85.5% posterization detection. Shrinkage Mahalanobis is worse on posterization and slower in the host microbenchmark. Keep the current production RMS-z gate unchanged and optional/shadow-only.
+- Exact #2566 hosted CI was not yet verified at this checkpoint. #2565 remains blocked by its parent/shared Core/QA integration gate. See R-192 and `v14/handoffs/RESEARCH_PERCEPTION_RUN72_20261127.md`.
+
+## Remaining product integration
+
+- Core must reconcile the existing `vision.py` lifecycle source pin, rebase the normal A5 frame provider into the same-turn Runtime/C3 consumer, and add the actual Runtime audio_window receiver with event/generation/consent-lease propagation.
+- QA owns the visible MediaProjection/AudioRecord provider, OS permission, revoke/onStop, process-death, restart and rollback acceptance.
+- Perception's next calibration step requires consented real UI frames with app/session/version-disjoint fit/calibration/test groups. No real device frames were collected in this run.
+
+## Device / updater boundary
+
+No fresh authenticated private device receipt was available. Last available private V13OBS #115 is historical (2026-11-24) and reported runtime/model process stopped; it is not current installation proof. Installed SHA and updater state remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, capture, model/weight swap or data action was performed. GitHub PR #2566 is not a deployment. **NOT_RELEASED.**
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — Research & Perception Run 69 (2026-11-27)
 
 **User action: none required.** Do not run a Termux command, request an update, restart the app, change permissions, download/swap a model or modify device data for this draft fix.
