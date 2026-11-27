@@ -570,7 +570,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  device_execution_receipt_sha256=None, device_runtime_build_id=None,
                  include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
                  context_sha256=None):
-    """Score the fixed nine-condition task matrix with one native model load.
+    """Score the fixed twelve-condition task matrix with one native model load.
 
     Only hashes, target-token log-probabilities, dimensions and optional sanitized
     same-model hybrid-state metrics are returned. No raw state, text, token IDs,
@@ -580,7 +580,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
 
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
-        "SHUFFLE", "REPEAT", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE",
+        "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE",
     )
     if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
         raise NativeReceiverError("unsupported or identical sender/receiver roles")
@@ -599,7 +600,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if position_mode != POSITION_MODE:
         raise NativeReceiverError("task matrix position mode differs from the pinned receiver contract")
     if not isinstance(condition_inputs, (list, tuple)) or len(condition_inputs) != len(conditions):
-        raise NativeReceiverError("native task matrix must contain exactly nine ordered conditions")
+        raise NativeReceiverError("native task matrix must contain exactly twelve ordered conditions")
     if (not isinstance(target_token_ids, (list, tuple)) or not 1 <= len(target_token_ids) <= 512
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in target_token_ids)):
         raise NativeReceiverError("target token IDs must be 1..512 non-negative int32 values")
@@ -622,14 +623,36 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             raise NativeReceiverError("native task matrix condition order is invalid")
         vectors = item.get("vectors")
         position_ids = item.get("position_ids")
+        text_token_ids = item.get("text_token_ids", [])
         if expected_condition == "NO_MESSAGE":
-            if vectors not in ([], ()) or position_ids not in ([], ()):
-                raise NativeReceiverError("NO_MESSAGE must contain no injected rows or positions")
+            if vectors not in ([], ()) or position_ids not in ([], ()) or text_token_ids not in ([], ()):
+                raise NativeReceiverError("NO_MESSAGE must contain no injected rows, positions or text tokens")
             prepared.append({
                 "condition": expected_condition, "rows": 0, "positions": [],
                 "payload": b"", "input_sha256": hashlib.sha256(b"").hexdigest(),
+                "text_token_ids": [], "context_rows": 1,
             })
             continue
+        if expected_condition == "DIRECT_TEXT_REFERENCE":
+            if vectors not in ([], ()) or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 512:
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE requires 1..512 receiver-tokenizer IDs and no vectors")
+            if any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids):
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE token IDs must be non-negative int32 values")
+            positions = _validate_positions(position_ids, len(text_token_ids), position_mode)
+            if positions != list(range(len(text_token_ids))):
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE positions must be contiguous and zero based")
+            token_payload = struct.pack("<" + "i" * len(text_token_ids), *text_token_ids)
+            input_sha256 = hashlib.sha256(token_payload).hexdigest()
+            if item.get("text_token_ids_sha256") != input_sha256 or item.get("input_sha256") != input_sha256:
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE token digest changed after approval")
+            prepared.append({
+                "condition": expected_condition, "rows": 0, "positions": positions,
+                "payload": b"", "input_sha256": input_sha256,
+                "text_token_ids": list(text_token_ids), "context_rows": len(text_token_ids),
+            })
+            continue
+        if text_token_ids not in ([], ()):
+            raise NativeReceiverError(expected_condition + " must not carry direct-text token IDs")
         rows, dim, payload, input_sha256 = _vector_payload(vectors)
         if input_dim is None:
             input_dim = dim
@@ -641,6 +664,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         prepared.append({
             "condition": expected_condition, "rows": rows, "positions": positions,
             "payload": payload, "input_sha256": input_sha256,
+            "text_token_ids": [], "context_rows": rows,
         })
     if input_dim is None:
         raise NativeReceiverError("native task matrix has no message-bearing condition")
@@ -650,6 +674,9 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         if item["rows"]:
             matrix_payload.extend(struct.pack("<" + "i" * item["rows"], *item["positions"]))
             matrix_payload.extend(item["payload"])
+        matrix_payload.extend(struct.pack("<i", len(item["text_token_ids"])))
+        if item["text_token_ids"]:
+            matrix_payload.extend(struct.pack("<" + "i" * len(item["text_token_ids"]), *item["text_token_ids"]))
     matrix_payload.extend(target_payload)
 
     injected_binary = binary_path is not None
@@ -708,7 +735,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
     if (version_data.get("task_matrix_supported") is not True
-            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/1"
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/2"
             or version_data.get("kv_snapshot_supported") is not True
             or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
         raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
@@ -736,7 +763,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raw = json.loads(stdout.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise NativeReceiverError("native receiver returned invalid task-matrix JSON") from exc
-    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/1"
+    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/2"
             or raw.get("runner_revision") != PINNED_LLAMA_REVISION or raw.get("status") != "SCORED"
             or raw.get("receiver_input_dim") != input_dim
             or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
@@ -766,7 +793,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverError("native receiver task-matrix condition list is incomplete")
     condition_scores = {}
     for expected, prepared_item, native_item in zip(conditions, prepared, native_conditions):
-        expected_context_rows = 1 if prepared_item["rows"] == 0 else prepared_item["rows"]
+        expected_context_rows = prepared_item["context_rows"]
         if (not isinstance(native_item, dict) or native_item.get("condition") != expected
                 or native_item.get("input_rows") != prepared_item["rows"]
                 or native_item.get("context_rows") != expected_context_rows
