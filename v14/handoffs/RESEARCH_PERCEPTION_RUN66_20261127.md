@@ -50,3 +50,10 @@ Primary source reviewed:
 - Focused MediaProjection workflow 45992488704 PASS (30/30 Python 3.13 and 30/30 Python 3.14); exact docs-only head workflow 45992743680 PASS (30/30 both). RuntimeDeploy integrity 45992743691 PASS on Python 3.11/3.14.
 - Shared staged/integrated workflow 45992743722 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure. Root causes: Core Recovery pinned audio-composer blob mismatch (`831080bceec90711bd42e0fa4eba47c669975c98`), Core arithmetic/observer pins, and QA migration assertions expecting UPDATED while actual safe result is PARTIAL. No Perception ingress test failed.
 - PR remains DRAFT / NOT_RELEASED; no normal Runtime/C3 consumer or Redmi proof. P0 #1904 remains open.
+
+
+## New primary research reviewed during Run 66 (R-185)
+
+- GlassGround (arXiv:2611.33760v1, 2026-11-25, full 27-page preprint): same-state screenshot vs wearable-camera GUI grounding; 94.8% vs 48.5% mean accuracy across ten open-source models. ReGround raises camera accuracy to 59.4%; PairDistill adds 9.4/12.2 pp on 9B/8B backbones over three seeds, but needs paired training captures. Static single-step only; no action sequences. Its GitHub link returned 404; dataset/code license unverified, no reuse.
+- Bel (arXiv:2611.27222v1, 2026-11-20, full preprint): render each sampled action on its own image and use a correctness probability plus threshold/margin to override greedy. Reported +2.8 to +12.1 pp offline gains; live runs are emulator-based. Uses Jev 1.14 through OpenRouter, up to nine candidate calls; no local GPU, but remote/proprietary scorer. No implementation repo/license found, no reuse.
+- V14 proposal only: preserve native screenshot vs camera provenance; later test marked-action scoring only if a local visual judge exists, with holdout apps/devices and latency/memory/calibration metrics. No current Redmi-suitable model alternative, download, permission or action change.

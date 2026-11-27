@@ -286,7 +286,16 @@
         "device": "REDMI_UNVERIFIED; no fresh private receipt",
         "release": "NOT_RELEASED",
         "next_action": "Core continues normal Runtime/C3 integration on #2557; #2558 is optional projector hardening. Core/QA repair their shared pins/migration assertions; QA separately proves Android lifecycle. Keep capture/projector OFF; P0 #1904 remains open.",
-        "code_test_sha": "39b148c28007775139ff75f8d8fd4ff21cbe0a10"
+        "code_test_sha": "39b148c28007775139ff75f8d8fd4ff21cbe0a10",
+        "research_note": {
+          "ledger": "R-185",
+          "papers": [
+            "arXiv:2611.33760v1 (GlassGround, 2026-11-25; preprint; code/data license unverified)",
+            "arXiv:2611.27222v1 (Bel, 2026-11-20; preprint; proprietary Jev API; no code license found)"
+          ],
+          "status": "RESEARCH_ONLY_NO_REUSE_NO_MODEL_CHANGE",
+          "next_experiment": "paired native screenshot/camera provenance and marked-action judgement with local visual scorer, held-out apps/devices; not Redmi-ready"
+        }
       }
     },
     {

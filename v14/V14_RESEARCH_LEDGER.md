@@ -2127,3 +2127,29 @@ This hardens the optional A3 local student-projector read used by the A5 UI-fram
 - LOCAL_LINUX full repository suite remains **BLOCKED / NOT_RUN**; only the isolated helper reproduction ran locally. CI is not a local full-suite or Redmi measurement.
 - Parent #2557 remains a synthetic A5 provider receiver; the new #2558 change is optional projector resource hardening. Neither proves a normal Runtime/C3 turn or Android screen capture.
 - No current private device receipt: #1017–#1019 returned NO_LIVE_RECEIPT; V13OBS #115 is historical 2026-11-24. P0 issue #1904 remains OPEN. **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+
+## R-185 — Native-screen vs camera GUI grounding; action-in-image judgement (2026-11-27)
+
+### Primary papers read in full (both arXiv v1 preprints; not peer-reviewed)
+
+**GlassGround: GUI Grounding Beyond Native Screenshots with Egocentric Wearable Vision** — Yun Wang et al., arXiv:2611.33760v1, submitted 2026-11-25, 27 pages. Full HTML reviewed.
+- The benchmark pairs the same GUI state/instruction/target across native screenshots and wearable-camera captures: 536 GUI states, 102 apps, 3,250 grounding tasks across Android/iOS, 16 physical observations per task (52,000 task-observation instances), four wearable devices and four lighting conditions.
+- Across ten open-source grounding models, mean accuracy falls from **94.8% on native screenshots to 48.5% on physical camera images**. Resizing/warping explain only part of the gap; the Warped→Physical drop is 29.2 pp. ReGround/local zoom raises physical accuracy to 59.4% but leaves the main camera-content gap; automatic rectification reaches 63.0%.
+- PairDistill aligns corresponding target representations across paired screenshot/camera views plus coordinate supervision. It improves physical-image accuracy by **9.4 pp** (UI-Venus-2-9B) and **12.2 pp** (MAI-UI-8B), averaged over three seeds; combined with ReGround reaches 69.6% / 64.4%. Training uses 4,880 paired screenshot/camera examples; screenshots are not needed at inference.
+- Limits: static single-step grounding, no action sequences or feedback, smartphone displays only; not an Android on-device benchmark. Model sizes (8B/9B) and training setup do not establish Redmi feasibility.
+- Reuse/licensing: the paper links `github.com/yunnw/GlassGround`, but that URL returned 404 on 2026-11-27. No dataset/code/weight license could be verified; the arXiv page only identifies the paper's arXiv non-exclusive license. **No code, data or weights reused.**
+
+**Bel: Step-Level Policy Improvement of Visual Agents Without Training** — Jiajun Fan et al., arXiv:2611.27222v1, submitted 2026-11-20. Full HTML reviewed.
+- Method: generate greedy + eight sampled actions, draw each candidate on its own copy of the current screenshot/camera image, ask a visual decision model for a correctness probability, and override greedy only when its score is below threshold `tau` and another candidate leads by margin `m`. The overlay, not coordinates alone, drives the gain.
+- Reported offline mean step-success gains over greedy: **+4.7 pp** (GUI-R1-3B), **+2.8 pp** (GUI-R1-7B), **+12.1 pp** (Qwen2.5-VL-3B) across six GUI test sets; live AndroidWorld/MiniWoB++ evaluations use Android emulators, three runs per template. The decision model is Jev 1.14 via OpenRouter API; one call per candidate, with up to nine candidates. The paper says Bel itself needs no local GPU, but it still depends on remote inference and a proprietary decision model.
+- Limits: not a fully local method; live Android evidence is emulator-based, not a physical Redmi; candidate sampling multiplies calls/latency; threshold selection uses AndroidControl-High; the result depends on Jev's calibration and availability.
+- Reuse/licensing: no code repository or implementation license was linked/found; Jev is a provider API, not a locally licensed checkpoint. **No code, weights or API dependency adopted.**
+
+### Concrete V14 implications (research proposal, not implemented)
+1. Keep native Android MediaProjection/screenshot pixels distinct from camera-recaptured UI. Add explicit observation-kind/pixel-source and screen-geometry/rectification provenance to A5/PerceptPacket before any camera path is introduced; never treat a screenshot-trained grounding score as a camera-grounding guarantee.
+2. If a local image-capable action scorer becomes available, test a Bel-like candidate renderer: draw each candidate action on an isolated copy of the same authorized frame, score the marked observation, and retain greedy unless a calibrated threshold **and** margin are met. The scorer must not gain Android action permission; OS capability gates and per-action approval remain independent.
+3. Reproducible experiment: paired same-state native screenshot/camera observations; stratify by target size, lighting, perspective and device; compare coordinate-only vs marked-action judgement; hold out apps/devices; report point-in-target, task success, calibration, latency, memory and abstention. No live action and no model download in this run.
+
+### Decision for current V14/Redmi
+No new model alternative is recommended: GlassGround's adaptation uses 8B/9B models, while Bel relies on a remote proprietary visual judge and multiple candidate calls. Neither supplies a licensed, measured, local ARM64 model suitable for the current Redmi budget. This is a future perception/action-evaluation experiment only; it does not alter the current A5 capture gate, #1904 P0, installed models, weights, permissions or release status.
