@@ -170,8 +170,11 @@ class AudioEventExpectationRegistry:
         for stale_key in stale_keys:
             self._states.pop(stale_key, None)
         state = self._states.get(key)
-        if stale_keys:
-            self._states[key] = _StreamState(consent_scope_id, start_ms, end_ms)
+        if state is None and stale_keys:
+            state = _StreamState(consent_scope_id, start_ms, end_ms)
+            self._states[key] = state
+            while len(self._states) > self.max_streams:
+                self._states.popitem(last=False)
             return self._base("RESET_CONSENT_SCOPE", activity, len(self._states))
         if state is None:
             state = _StreamState(consent_scope_id, start_ms, end_ms)
