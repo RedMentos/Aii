@@ -202,7 +202,7 @@ def score_and_record_native_receiver_condition_matrix(
     device_runtime_build_id=None,
     include_hybrid_state_roundtrip=False,
 ):
-    """Consume one approved matrix, score all conditions, and atomically record nine receipts.
+    """Consume one approved matrix, score all conditions, and atomically record twelve receipts.
 
     approval_validator must bind a real one-shot Runtime approval to the matrix
     digest. source_validator(receipt, phase) must re-check the current source
