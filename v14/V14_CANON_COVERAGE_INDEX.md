@@ -2497,3 +2497,8 @@ This overlay does not promote any feature to NATIVE_LINUX_PROOF, REAL_REDM I_PRO
 | Raw screenshot persistence | OFF by design | Test verifies exact frame hash is absent from Store source rows and blob names | Any future persistence requires separate explicit storage/learning consent and a distinct retention/deletion test |
 
 Do not mark Android screen perception COMPLETE. The current adapter is a local Python consumer contract; it does not create or own the Android MediaProjection session.
+
+
+### Run 58 CI refresh — 2026-11-27
+
+The A5 visual adapter's exact hosted gate is now **6/6 Python 3.13 PASS + 6/6 Python 3.14 PASS**; staged context/integrated regression is **PASS**; offline bridge security is **39/39 PASS**. This raises the adapter from an untested candidate to `WIRED_SYNTHETIC`, not `NATIVE_LINUX_PROOF`, `REAL_REDM I_PROOF` or `ACCEPTED`. Core normal-turn invocation and Android MediaProjection provider remain missing. Private device status is still `NO_LIVE_RECEIPT`; updater/deployment and Redmi are unverified.
