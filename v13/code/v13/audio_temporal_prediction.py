@@ -38,6 +38,10 @@ class AudioTemporalPredictionError(ValueError):
     pass
 
 
+class AudioTemporalPredictionConflict(AudioTemporalPredictionError):
+    """The shared numeric checkpoint advanced after this session loaded it."""
+
+
 def _finite_number(value, name: str, *, optional: bool = False) -> float:
     if optional and value is None:
         return 0.0
@@ -486,6 +490,8 @@ class AudioTemporalPredictionRegistry:
         result.setdefault("update_applied", False)
         result.setdefault("update_reason", result.get("status", "UNAVAILABLE"))
         result.setdefault("mistake_memory_entries", 0)
+        result.setdefault("persistence_conflict_recovered", False)
+        result.setdefault("persistence_retry_count", 0)
         result["weight_persistence"] = self.persistent_weights_enabled
         result["temporal_history_scope"] = "EPHEMERAL_SESSION_CONSENT_SCOPED_PROCESS"
         result["weight_scope"] = (
@@ -494,6 +500,53 @@ class AudioTemporalPredictionRegistry:
         )
         result["training_data_persisted"] = False
         return result
+
+    @staticmethod
+    def _new_predictor(self):
+        return AudioTemporalPredictor(
+            update_policy=self.update_policy,
+            mistake_memory_capacity=self.mistake_memory_capacity,
+            consolidation_threshold=self.consolidation_threshold,
+            max_transient_norm=self.max_transient_norm,
+        )
+
+    @staticmethod
+    def _snapshot_session_state(predictor):
+        """Keep session-local traces while refreshing shared persisted weights."""
+        return (
+            predictor._previous,
+            tuple(predictor._mistake_keys.keys()),
+            [list(row) for row in predictor._transient_weights],
+            predictor.transient_updates,
+            predictor.consolidations,
+        )
+
+    @staticmethod
+    def _restore_session_state(predictor, snapshot):
+        previous, mistake_keys, transient_weights, transient_updates, consolidations = snapshot
+        predictor._previous = previous
+        predictor._mistake_keys = OrderedDict((key, None) for key in mistake_keys)
+        predictor._transient_weights = [list(row) for row in transient_weights]
+        predictor.transient_updates = transient_updates
+        predictor.consolidations = consolidations
+
+    def _retry_conflicted_update(self, source_id, generation_id, consent_scope_id, delta, snapshot):
+        """Reload the newest shared weights and replay one session update exactly once."""
+        saved, version, status = self._load_persistent(
+            source_id, generation_id, consent_scope_id,
+        )
+        if status != "OK":
+            raise AudioTemporalPredictionConflict("shared predictor checkpoint is no longer current")
+        predictor = self._new_predictor()
+        predictor.load_state_dict(saved)
+        self._restore_session_state(predictor, snapshot)
+        result = predictor.update(delta)
+        version = self._save_persistent(
+            source_id, generation_id, consent_scope_id, predictor, version,
+        )
+        result["persistence_conflict_recovered"] = True
+        result["persistence_retry_count"] = 1
+        return predictor, version, result
 
     @staticmethod
     def _validate_scope(value: str) -> None:
@@ -581,7 +634,7 @@ class AudioTemporalPredictionRegistry:
             row = connection.execute("SELECT version FROM states WHERE key=?", (key,)).fetchone()
             current = row[0] if row else 0
             if current != expected_version:
-                raise ValueError("Stale persistent predictor state write")
+                raise AudioTemporalPredictionConflict("Stale persistent predictor state write")
             version = current + 1
             connection.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)", (key, version, encoded))
             rows = self._persistent_rows(connection)
@@ -628,12 +681,7 @@ class AudioTemporalPredictionRegistry:
         return len(keys)
 
     def _new_state(self, source_id, generation_id, consent_scope_id, start_ms, end_ms, features):
-        predictor = AudioTemporalPredictor(
-            update_policy=self.update_policy,
-            mistake_memory_capacity=self.mistake_memory_capacity,
-            consolidation_threshold=self.consolidation_threshold,
-            max_transient_norm=self.max_transient_norm,
-        )
+        predictor = self._new_predictor()
         version = 0
         reset_reason = None
         if self._store is not None:
@@ -655,12 +703,7 @@ class AudioTemporalPredictionRegistry:
 
     def _reset_state(self, source_id, generation_id, consent_scope_id,
                      start_ms, end_ms, features, previous_version):
-        predictor = AudioTemporalPredictor(
-            update_policy=self.update_policy,
-            mistake_memory_capacity=self.mistake_memory_capacity,
-            consolidation_threshold=self.consolidation_threshold,
-            max_transient_norm=self.max_transient_norm,
-        )
+        predictor = self._new_predictor()
         version = previous_version
         if self._store is not None:
             version = self._save_persistent(
@@ -759,6 +802,10 @@ class AudioTemporalPredictionRegistry:
             state.last_start_ms = start_ms
             state.last_end_ms = end_ms
             self._states.move_to_end(key)
+            session_snapshot = (
+                self._snapshot_session_state(state.predictor)
+                if self._store is not None else None
+            )
             result = state.predictor.update(delta)
             if self._store is not None:
                 try:
@@ -766,6 +813,14 @@ class AudioTemporalPredictionRegistry:
                         source_id, generation_id, consent_scope_id,
                         state.predictor, state.store_version,
                     )
+                except AudioTemporalPredictionConflict:
+                    try:
+                        state.predictor, state.store_version, result = self._retry_conflicted_update(
+                            source_id, generation_id, consent_scope_id, delta, session_snapshot,
+                        )
+                    except Exception:
+                        self._states.pop(key, None)
+                        return self._decorate(unavailable_prediction("PERSISTENCE_CONFLICT"))
                 except Exception:
                     self._states.pop(key, None)
                     return self._decorate(unavailable_prediction("PERSISTENCE_WRITE_FAILED"))
