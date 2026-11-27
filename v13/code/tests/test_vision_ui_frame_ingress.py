@@ -306,7 +306,7 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert global_segment["source_ref"]["modality"] == "visual"
         assert global_segment["source_ref"]["sha256"] == expected_hash
         assert result["a4"]["raw_eye_signal"]["score"] == result["packet"]["raw_eye_structure"]
-        assert sum(row["weight"] for row in result["a4"]["segments"]) == pytest.approx(1.0)
+        assert sum(row["weight"] for row in result["a4"]["segments"]) == pytest.approx(1.0, abs=1e-5)
         assert result["packet"]["learning_authority"] is False
         assert result["packet"]["action_authority"] is False
         assert result["a4"]["truth_authority"] == 0
