@@ -821,8 +821,10 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if (version_data.get("task_matrix_supported") is not True
             or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/3"
             or version_data.get("kv_snapshot_supported") is not True
-            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
-        raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
+            or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"
+            or version_data.get("prediction_distribution_audit_supported") is not True
+            or version_data.get("prediction_distribution_audit_schema") != "v14.native-receiver-prediction-distribution-audit/1"):
+        raise NativeReceiverUnavailable("native receiver binary lacks task-matrix, K/V snapshot or PL/CIC prediction-distribution audit support")
     if include_hybrid_state_roundtrip and (version_data.get("hybrid_state_roundtrip_supported") is not True
             or version_data.get("hybrid_state_roundtrip_schema") != HYBRID_STATE_SCHEMA):
         raise NativeReceiverUnavailable("native receiver binary does not advertise the pinned full-hybrid state roundtrip")
@@ -855,13 +857,13 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             or raw.get("target_token_ids_sha256") != target_sha256
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
-    prediction_distribution_audit = None
-    if "prediction_distribution_audit" in raw:
-        prediction_distribution_audit = _validate_prediction_distribution_audit(
-            raw.get("prediction_distribution_audit"),
-            expected_model_sha256=expected_model_sha256,
-            prepared=prepared,
-        )
+    if "prediction_distribution_audit" not in raw:
+        raise NativeReceiverError("native receiver omitted the required PL/CIC prediction-distribution audit")
+    prediction_distribution_audit = _validate_prediction_distribution_audit(
+        raw.get("prediction_distribution_audit"),
+        expected_model_sha256=expected_model_sha256,
+        prepared=prepared,
+    )
     hybrid_state_roundtrip = None
     if include_hybrid_state_roundtrip:
         hybrid_state_roundtrip = _build_native_hybrid_state_roundtrip_receipt(
