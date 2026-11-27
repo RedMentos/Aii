@@ -18,7 +18,7 @@ NATIVE_RECEIVER_BLOB_SHA1 = "e237cbdb41defd0fde2f05c6baff6ad0ff9e1ad0"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "3c71a71b4171f49c20b57fadee190b22576fa953"
 A5_VISUAL_RUNTIME_BUILDER = "scripts/integrated_a5_visual_runtime_candidate_20261127.py"
-A5_VISUAL_RUNTIME_BLOB_SHA1 = "2cc3b7d57bb062050bbf13666c848d8490ba7c5a"
+A5_VISUAL_RUNTIME_BLOB_SHA1 = "47145bc60df2d1a1f51c5a9ae0f1bedd39a3ac26"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
