@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-27T04:19:30Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.\nPerception Run 58: PR #2550 adds a lease-bound MediaProjection frame adapter to RAW-EYE/A4; exact A5 CI 6/6 PASS on Python 3.13 and 3.14, offline bridge security 39/39 PASS. Synthetic hosted Linux only; normal-turn Core callsite and Android provider remain missing; REDMI_UNVERIFIED / NOT_RELEASED.\nPerception Run 58 CI update: PR #2550 head 0b72909b735289554620f331c654da32381bbb7b now has A5 visual 6/6 PASS on Python 3.13 and 3.14, plus V13 staged context/integrated regression PASS. Core PR #2549 advanced to dbb68ca13ed78d099def6f8bb9779862f0670025 but still has separate failures in phone offer receipt, private owner-read bootstrap, C3 prompt binding and audio/observer composition. Private HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #1005-#1007 have no device replies yet; NO_LIVE_RECEIPT_PENDING.",
+  "updated_at": "2026-11-27T03:23:30Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
   "tickets": [
@@ -234,7 +234,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "GitHub Actions Linux focused CI PASS; LOCAL_LINUX isolated anchor reproduction PASS; full local checkout BLOCKED; no native Android/Redmi.",
-      "next_step": "A4 event/prediction work remains synthetic. PR #2550 adds a lease-bound A5 MediaProjection frame → RAW-EYE/A4 PerceptPacket adapter (6/6 PASS on Python 3.13/3.14); Core normal-turn callsite is still missing. Next: Core integrates it under the same lease; Perception adds source/session-disjoint A4 omission false-positive tests and then a bounded co-observation replay experiment from R-180 only with consent and utility/retention gates. Keep MEMORIZED_ERROR opt-in. PR #2550 now passes its focused A5 6/6 Python 3.13 + 6/6 Python 3.14 gate and the staged context/integrated regression; Core normal-turn visual consumer and Android provider remain open. Private device status still NO_LIVE_RECEIPT.",
+      "next_step": "Core rebinds the recovery composer and arithmetic/observer pins to exact current source; QA fixes migration PARTIAL-vs-UPDATED. Rerun staged/integrated. Perception keeps A4 synthetic only and proceeds to broader source/session-disjoint omission false-positive tests; no default rate change.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-27T01:52:30Z",
       "latest_candidate_pr": {
@@ -428,7 +428,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "GitHub Actions Linux focused CI; no full local checkout; no Termux/Redmi execution.",
-      "next_step": "Finish the VAD comparator Python 3.14 and keep MEMORIZED_ERROR opt-in because synthetic MAE regresses on two of three streams. A5 visual frame bridge is now in PR #2550 (6/6 Python 3.13/3.14); Core must wire the normal-turn consumer under the same MediaProjection lease. No Android provider or Redmi frame proof exists. PR #2550 now passes its focused A5 6/6 Python 3.13 + 6/6 Python 3.14 gate and the staged context/integrated regression; Core normal-turn visual consumer and Android provider remain open. Private device status still NO_LIVE_RECEIPT.",
+      "next_step": "Finish VAD comparison Python 3.14; Core rebase PR #2547 onto #2548 and refresh the exact recovery/composer pins; QA fixes migration PARTIAL-vs-UPDATED assertions. Then Perception tests source/session-disjoint A4 omission false positives and continues the A5 screen/UI event-to-PerceptPacket path. Keep MEMORIZED_ERROR opt-in because MAE worsens on two of three synthetic streams.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-27T03:23:30Z",
       "latest_candidate_pr": {
@@ -542,31 +542,6 @@
         2506,
         2507
       ]
-    },
-    {
-      "id": "V14-023",
-      "owner": "Research & Perception + Core & Harness + QA & Android",
-      "status": "IN_PROGRESS_PARTIAL",
-      "priority": "P1",
-      "title": "A5 MediaProjection frame → RAW-EYE/A4 PerceptPacket under revocable consent",
-      "next_step": "Core: wire A5VisualFrameAdapter into the normal Runtime turn under the same UIObservationLease; pass packet + in-memory features to the context consumer and prove revocation cancels C3 before lease release. QA: implement/test Android MediaProjection provider, API 21+/34+ lifecycle, resize/rotation, onStop/lock/status-bar stop. Perception: source/session-disjoint visual holdouts and A4 omission false-positive tests. PR #2550 focused A5 + staged/integrated regression PASS; no Android provider or Redmi proof.",
-      "latest_candidate_pr": {
-        "pr": 2550,
-        "branch": "research-perception/v14-a5-visual-frame-bridge-20261127-run58",
-        "head_sha": "0b72909b735289554620f331c654da32381bbb7b",
-        "base_branch": "core/v14-perception-rebased-runtime-20261127-run5",
-        "status": "DRAFT_A5_FOCUSED_CI_PASS_STAGED_INTEGRATED_PASS_CORE_CALLSITE_MISSING",
-        "ci": {
-          "python_313": "6/6 PASS",
-          "python_314": "6/6 PASS",
-          "offline_bridge_security": "39/39 PASS",
-          "staged_context_integrated_regression": "PASS"
-        },
-        "local_linux": "SCRATCH_PASS; full Aii checkout unavailable",
-        "redmi": "REDMI_UNVERIFIED",
-        "release": "NOT_RELEASED",
-        "base_head_sha": "dbb68ca13ed78d099def6f8bb9779862f0670025"
-      }
     }
   ],
   "current_redmi_status": "Latest available consented private V13OBS #115 snapshot remains historical (2026-11-24T09:28:11Z): updater enabled and pipeline/dashboard/runtime reported UP_TO_DATE at installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, but AI runtime STOPPED_BY_USER, model process STOPPED and autostart false. Last recorded turn: 7 generated tokens, TTFT 2.046s, prompt 358 tokens; correctness NOT SCORED. B1/B2 TIME_BUDGET and zero valid offers remain in the five-turn metadata; native latent exchange and C3 semantic use false. Older owner-read requests #915-917 are expired with no comments. Fresh read-only requests #948 HEALTH, #949 PIPELINE_STATUS and #950 DIAGNOSTICS had no comments at 2026-11-26T02:03:41Z (expiry 1795658868). No LOG_PAGE and no device action. REDMI_UNVERIFIED.",
@@ -620,12 +595,12 @@
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; A5_MEDIA_PROJECTION_FRAME_ADAPTER_PR2550",
-      "wired": "caller PCM16 → staged A5/A4/C3 consent lease; A5 UI metadata → A4 shadow; MediaProjection frame → in-memory RAW-EYE features → A4 attention + bounded PerceptAdmission",
-      "tested_synthetic": "PR #2550 exact A5 gate 6/6 Python 3.13 and 6/6 Python 3.14; inherited offline bridge security 39/39 PASS",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK",
+      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock",
+      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins",
       "tested_android": "NOT_VERIFIED",
-      "active": "WIRED_SYNTHETIC / SHADOW_ONLY / NO_ANDROID_PROVIDER",
-      "evidence": "No Android MediaProjection provider, actual OS consent UI, normal-turn C3 callsite, microphone or Redmi screen frame; raw pixels/features are not persisted by the new adapter."
+      "active": "MERGED_INTEGRATION / SHADOW_ONLY",
+      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -719,12 +694,12 @@
     },
     {
       "capability": "ANDROID_UI_CONTROL",
-      "code": "A5_UI_METADATA_LEASE_SHADOW; A5_MEDIA_PROJECTION_FRAME_ADAPTER_PR2550",
-      "wired": "synthetic MediaProjection bytes → RAW-EYE descriptor → A4 PerceptPacket under revocable UI lease",
-      "tested_synthetic": "PR #2550 6/6 Python 3.13/3.14; offline bridge security 39/39",
+      "code": "A5_UI_METADATA_LEASE_SHADOW",
+      "wired": "SYNTHETIC_METADATA_INGRESS_AND_A4_ADMISSION_ONLY",
+      "tested_synthetic": "Boss 483ef A5 UI lease workflows PASS",
       "tested_android": "NOT_TESTED",
-      "active": "WIRED_SYNTHETIC / NO_OS_PROVIDER",
-      "evidence": "No actual MediaProjection provider, AccessibilityService, tap/type executor, normal-turn C3 integration or Redmi proof."
+      "active": "OFF",
+      "evidence": "No MediaProjection, AccessibilityService, screen decoder or tap/type executor on Android."
     },
     {
       "capability": "SELF_OPTIMIZATION and cross-organ weight editing",
@@ -1567,31 +1542,34 @@
   },
   "perception_latest_checkpoint": {
     "date": "2026-11-27",
-    "timestamp": "2026-11-27T04:19:30Z",
+    "timestamp": "2026-11-27T03:23:30Z",
     "owner": "Research & Perception",
-    "branch": "research-perception/v14-a5-visual-frame-bridge-20261127-run58",
-    "pull_request": 2550,
-    "base_branch": "core/v14-perception-rebased-runtime-20261127-run5",
-    "code_test_sha": "7dd720a2669e46e4965c3766c6e3fcd2849bc89f",
-    "latest_docs_sha": "0b72909b735289554620f331c654da32381bbb7b",
-    "core_base_head": "dbb68ca13ed78d099def6f8bb9779862f0670025",
-    "status": "DRAFT_A5_FOCUSED_CI_PASS_STAGED_INTEGRATED_PASS_CORE_CALLSITE_MISSING",
+    "branch": "research-perception/v14-a4-error-gated-plasticity-20261127-run56",
+    "pull_request": 2548,
+    "base_branch": "research-perception/v14-raw-ear-currentparent-20261126-run52",
+    "code_test_sha": "c73d18bc626abacdf9eb56fd09b2a65b905cdad1",
+    "composer_blob": "a50f975161d359a6cde5b4ed88cb187672c3c8bc",
+    "status": "DRAFT_FOCUSED_CI_PASS_STAGED_AND_INTEGRATED_BLOCKED",
     "tests": {
-      "a5_visual_python_313": "6/6 PASS",
-      "a5_visual_python_314": "6/6 PASS",
-      "offline_bridge_security": "39/39 PASS",
-      "staged_context_integrated_regression": "PASS",
-      "local_linux": "SCRATCH_PASS_4_CHECKS; FULL_AII_CHECKOUT_NOT_AVAILABLE"
+      "a4_ablation": "6/6 PASS Python 3.13 and 3.14",
+      "raw_ear_fastpath": "161/161 PASS Python 3.13 and 3.14",
+      "feature_set_probe": "15/15 PASS Python 3.13 and 3.14",
+      "model_lab": "73 PASS / 4 SKIPPED; privacy CLEAN",
+      "vad_compare_python313": "172 PASS",
+      "vad_compare_python314": "IN_PROGRESS",
+      "staged_runtime": "FAIL 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests",
+      "integrated_regression": "FAIL 1 stale Core recovery composer pin",
+      "latent_cache_tiny": "PASS",
+      "offline_bridge_security": "PASS"
     },
     "device": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
-    "private_relay": "NO_LIVE_RECEIPT_PENDING_ISSUES_1005_1007",
     "release": "NOT_RELEASED",
     "user_action_required": false,
     "research_entries": [
-      "R-180",
-      "R-181"
+      "R-175 follow-up",
+      "R-179"
     ],
-    "next_action": "Core normal-turn callsite under live lease; QA Android MediaProjection provider/lifecycle; Perception source/session-disjoint visual and A4 omission tests."
+    "next_action": "Finish VAD comparison Python 3.14; Core rebase PR #2547 onto #2548 and refresh the exact recovery/composer pins; QA fixes migration PARTIAL-vs-UPDATED assertions. Then Perception tests source/session-disjoint A4 omission false positives and continues the A5 screen/UI event-to-PerceptPacket path. Keep MEMORIZED_ERROR opt-in because MAE worsens on two of three synthetic streams."
   },
   "previous_perception_checkpoint": {
     "timestamp": "2026-11-26T20:55:14+01:00",
@@ -2325,34 +2303,6 @@
         "R-179"
       ],
       "next_action": "Finish VAD comparison Python 3.14; Core rebase PR #2547 onto #2548 and refresh the exact recovery/composer pins; QA fixes migration PARTIAL-vs-UPDATED assertions. Then Perception tests source/session-disjoint A4 omission false positives and continues the A5 screen/UI event-to-PerceptPacket path. Keep MEMORIZED_ERROR opt-in because MAE worsens on two of three synthetic streams."
-    },
-    {
-      "date": "2026-11-27",
-      "timestamp": "2026-11-27T04:19:30Z",
-      "owner": "Research & Perception",
-      "branch": "research-perception/v14-a5-visual-frame-bridge-20261127-run58",
-      "pull_request": 2550,
-      "base_branch": "core/v14-perception-rebased-runtime-20261127-run5",
-      "code_test_sha": "7dd720a2669e46e4965c3766c6e3fcd2849bc89f",
-      "latest_docs_sha": "0b72909b735289554620f331c654da32381bbb7b",
-      "core_base_head": "dbb68ca13ed78d099def6f8bb9779862f0670025",
-      "status": "DRAFT_A5_FOCUSED_CI_PASS_STAGED_INTEGRATED_PASS_CORE_CALLSITE_MISSING",
-      "tests": {
-        "a5_visual_python_313": "6/6 PASS",
-        "a5_visual_python_314": "6/6 PASS",
-        "offline_bridge_security": "39/39 PASS",
-        "staged_context_integrated_regression": "PASS",
-        "local_linux": "SCRATCH_PASS_4_CHECKS; FULL_AII_CHECKOUT_NOT_AVAILABLE"
-      },
-      "device": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
-      "private_relay": "NO_LIVE_RECEIPT_PENDING_ISSUES_1005_1007",
-      "release": "NOT_RELEASED",
-      "user_action_required": false,
-      "research_entries": [
-        "R-180",
-        "R-181"
-      ],
-      "next_action": "Core normal-turn callsite under live lease; QA Android MediaProjection provider/lifecycle; Perception source/session-disjoint visual and A4 omission tests."
     }
   ]
 }
