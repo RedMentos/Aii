@@ -69,3 +69,10 @@ REDMI_UNVERIFIED. No fresh private owner receipt was available; the historical V
 5. Keep P0 #1904 open until the actual basic-chat failure is reproduced and fixed.
 
 User action: none required.
+
+
+## Related independent causal audit (full HTML reviewed)
+Huixiang Zhang and Mahzabeen Emu, *Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM*, arXiv:2607.26773v1 (2026-07-29; preprint, not peer reviewed): https://arxiv.org/abs/2607.26773.
+This audit uses four message settings—no message, current-example, other-example and receiver self-generated under matched compute—and five metrics: PS, PL, CIC, CAG and SSG. It tests Qwen3-4B/8B on GSM8K, ARC-C and MATH-500 with an A40 48GB, 16 Xeon cores and 128GB RAM. Example decompositions show that aggregate effects can hide opposing terms: Qwen3-4B GSM8K −1.00 pp overall = −6.17 pp other-example + 5.17 pp example-specific; Qwen3-4B MATH-500 +15.00 pp = +8.33 pp other-example + 6.67 pp example-specific. CAG and SSG can also differ, so a sender message may add content-specific value without outperforming a compute-matched self-generated receiver message. No mobile evidence or authoritative code/weight license was found.
+
+Together with Cheng et al. arXiv:2608.04893v2, this means the current DERANGED_MESSAGE arm is only the first missing control. Remaining protocol work includes moment-matched random, intact-no-private, direct-text validity, receiver self-generated message, prediction-distribution PL/CIC, task-accuracy CAG/SSG, paired confidence/equivalence tests and hard masking/restoration checks. Current teacher-forced logprob is only a proxy; semantic_use_proven remains false.
