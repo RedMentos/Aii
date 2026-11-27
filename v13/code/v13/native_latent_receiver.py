@@ -632,7 +632,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                  device_execution_receipt_sha256=None, device_runtime_build_id=None,
                  include_hybrid_state_roundtrip=False, receiver_tokenizer_revision=None,
                  context_sha256=None, include_task_accuracy=False):
-    """Score the fixed twelve-condition task matrix with one native model load.
+    """Score the fixed thirteen-condition task matrix with one native model load.
 
     Only hashes, target-token log-probabilities, optional exact-match correctness
     booleans and sanitized same-model state metrics are returned. No raw state,
@@ -862,7 +862,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
             or raw.get("target_token_count") != len(target_ids)
             or raw.get("target_token_ids_sha256") != target_sha256
-            or raw.get("task_accuracy_enabled") is not include_task_accuracy
+            or raw.get("task_accuracy_enabled", False) is not include_task_accuracy
             or raw.get("llama_version") != version_data.get("llama_version")):
         raise NativeReceiverError("native receiver task-matrix header is missing or unbound")
     if "prediction_distribution_audit" not in raw:
