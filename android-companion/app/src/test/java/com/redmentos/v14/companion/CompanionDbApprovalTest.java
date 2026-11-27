@@ -1,5 +1,7 @@
 package com.redmentos.v14.companion;
 
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
