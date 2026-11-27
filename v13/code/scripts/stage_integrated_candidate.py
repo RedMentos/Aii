@@ -64,7 +64,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
         raise ValueError('ActionSelection source-context overlay missing or unsafe')
     action_overlay_raw = action_overlay_path.read_bytes()
     action_overlay_blob = hashlib.sha1(
-        b'blob ' + str(len(action_overlay_raw)).encode('ascii') + b'\\0' + action_overlay_raw
+        b'blob ' + str(len(action_overlay_raw)).encode('ascii') + b'\0' + action_overlay_raw
     ).hexdigest()
     if action_overlay_blob != ACTION_SOURCE_OVERLAY_GIT_BLOB:
         raise ValueError('ActionSelection source-context overlay changed')
