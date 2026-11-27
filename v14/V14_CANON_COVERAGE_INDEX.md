@@ -2612,3 +2612,32 @@ No claim is promoted to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEA
 - Evidence: local isolated C++17 JSD helper compile/test PASS; Python scratch math PASS. Full local Aii test/build BLOCKED (no checkout/GitHub DNS). Predecessor exact CI 46074686027: pinned Linux API build PASS, Android arm64 cross-compile PASS, focused matrix/task-score tests PASS; full Python jobs failed on missing row geometry (fixed in current HEAD) and a separate Core audio-composer pin. Current exact-head native CI 46075616512 QUEUED.
 - Shared gate: staged/integrated run 46075014940 failed 20/233/10 skipped/2 errors/41 subtests due Core/QA-owned stale audio/cognition pins, unsupported vision.py lifecycle source and migration PARTIAL-vs-UPDATED assertions. Do not attribute these to Perception.
 - Not accepted: no real GGUF receiver run, no task-accuracy CAG/SSG, no aggregate PL/CIC cohort, no trained latent adapter, no ordinary-turn consumer, no Android/Redmi proof. REDMI_UNVERIFIED; NOT_RELEASED. Historical Canon inventory above remains unchanged.
+
+
+---
+
+## Research & Perception Run 76 — whole-Canon evidence overlay (2026-11-28)
+
+This overlay changes no historical Canon requirement and promotes no subsystem to ACCEPTED.
+
+| Canon family | Current evidence from this lane | Exact status | Still missing |
+|---|---|---|---|
+| A3 Student Projector / A5 UI frame ingress | Perception #2563 NPY preflight code blob `6572cd4a3516824b1b5f7618c6fdf7a090f74807` with paired test blob `5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5`; 31/31 tests on Python 3.13 and 3.14. OOD-aware #2565/#2570 source blob `8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332` with paired test blob `31c6fab9124967e9cb49c98be79f975d2ad9df07`; 39/39 on both versions. | WIRED_SYNTHETIC / CI_FOCUSED_PASS / NOT_ANDROID_VERIFIED | Core #2576 currently carries stale ingress code blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0` without preflight while retaining the malformed-shape test; Core must port/rebase the exact provider. No real MediaProjection or Redmi proof. |
+| B3 / Enlightened Space / native receiver | #2566 has 13 diagnostic conditions, native first-next-token full-vocabulary PL/CIC JSD and paired task-accuracy CAG/SSG with a 20-group synthetic cohort test. Native C++ computes exact-match task outcome and generated-token hash for the receiver. | RECEIVER_SIDE_PRECOMPUTED_INPUT / WIRED_SYNTHETIC / B3_OFF / NOT_ACCEPTED | Sender model is not executed by the bridge; no trained source→receiver adapter, distinct-model end-to-end path, durable cohort persistence (`persisted=false`), real GGUF cohort, gradient/diff/retention/restart, native RSS/TTFT or normal Runtime consumer. |
+| RAW EAR / voice | Prior #2561 caller-fed audio feature and temporal evidence remains a candidate. | WIRED_SYNTHETIC / NOT_ANDROID_VERIFIED | No fresh microphone receipt in this run; no real AudioRecord provider, real-speech annotation, trainable speech decoder/vocoder, full-duplex/barging-in or Redmi evidence. |
+| B1/B2/C3, JEPA/World/Self/Memory, sleep/replay, Android control, updater/recovery, Age/permissions, adaptive judge | No new accepted runtime path was measured by this Perception run. Existing historical statuses and blockers remain unchanged. | OPEN / UNVERIFIED per prior overlays | Do not infer whole-system completion from the receiver diagnostic or focused perception CI. |
+
+### Exact #2566 checkpoint
+
+- Draft PR #2566; branch `research-perception/v14-a3-ood-calibration-20261127-run72`; code/test SHA `6d3cf4a874462be3cbf250d1b566ff1c7cabde48`; latest append-only research/docs head `a92153abfb27d41006a324dfd8f14e13c9baf9f8`.
+- Fixed the undefined `RECEIVER_SHA` synthetic fixture reference by binding to `RECEIVER["model_sha256"]`. LOCAL_LINUX scratch CPython 3.13.5 fixture/hash/bounds check PASS; full repository pytest NOT_RUN/BLOCKED.
+- Parent exact native workflow 46081870981: py_compile PASS, pinned Linux API build PASS, Android arm64 cross-compile PASS, four Python fixture failures on both 3.13 and 3.14. The fix is pushed; exact-head native receiver run 46083606293 is queued, not yet PASS.
+- Exact-head runs on docs head `a92153ab`: native receiver 46083606293, staged/integrated 46083606243, RuntimeDeploy 46083606247, A5 visual 46083606289 and MediaProjection ingress 46083606345 were queued at last poll. No new exact-head result is claimed.
+- Shared staged/integrated parent run 46081871090 remains FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests), on Core/QA-owned audio-composer, lifecycle, cognition-observer and migration pins.
+- Release NOT_RELEASED. No device update request was sent. The latest existing private device snapshot is 2026-11-24: auto-update enabled and pipeline/runtime reported UP_TO_DATE at `8d93236`, but AI runtime was STOPPED_BY_USER and model process STOPPED; native residency was unavailable. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests have no receipt as of 2026-11-27T23:40:19Z. Current installation remains REDMI_UNVERIFIED.
+
+### Research notes
+
+- R-196: full review of arXiv:2610.28905 (2026-10-20) suggests dependency-aware early-vs-late handoff; late transfer can beat recurrent exchange when evidence matures independently, but sequential dependencies need early query/reply.
+- R-197: full review of *Latent Collaboration in Multi-Agent Systems*, PMLR 306 (ICML 2026 Spotlight), shows same-model role prompts and same-shape KV-cache concatenation; heterogeneous bodies require a trainable adapter. It is not evidence of independent B1/B2 cross-model coupling. Code and Qwen3-4B weights are Apache-2.0; 8×A100-80G, no Android proof.
+- No code, weights or datasets were downloaded/reused. B3 remains OFF; no user action required.
