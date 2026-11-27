@@ -1976,7 +1976,7 @@ The signed one-shot Android audio consumer in Perception PR #2312 is not end-to-
 - py_compile PASS; focused pytest 12/12 PASS.
 - 30 seeded repeats PASS; per repeat 24 fit + 20 calibration + 20 held-out in-domain sources, 16 tiles/source, 37 features; source IDs pairwise disjoint.
 - Full local Aii repository pytest NOT_RUN/BLOCKED (no mounted checkout). The scratch harness mirrors the exact production `boxes`, `tile_features` and `tile_descriptor_threshold` helper logic; do not call this a full-repository run.
-- Exact #2566 hosted CI was not visible at the initial checkpoint; no parent PR run is attributed to this child.
+- Exact child CI later completed: workflow run 46062787585 PASS on Python 3.13.18 and 3.14.10, each 36 passed + 3 subtests passed and the one-repeat OOD JSON smoke. Related MediaProjection ingress run 46062787525 PASS 39/39 on both versions; RuntimeDeploy offline integrity run 46062787616 PASS on Python 3.11.18/3.14.10. These do not prove device deployment.
 
 **Measured result.** Mean source-level in-domain false rejection / synthetic OOD source rejection:
 - RMS-z + current heuristic: 7.33% ID; black/checker/invert/noise 100%; posterize 85.5%.
