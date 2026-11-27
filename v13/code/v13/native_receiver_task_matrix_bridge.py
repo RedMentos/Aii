@@ -26,8 +26,8 @@ from .native_receiver_utility import (
     validate_native_receiver_kv_snapshot,
 )
 
-BRIDGE_SCHEMA = "v14.native-receiver-task-matrix-bridge/1"
-NATIVE_MATRIX_SCHEMA = "v14.native-receiver-task-matrix/1"
+BRIDGE_SCHEMA = "v14.native-receiver-task-matrix-bridge/2"
+NATIVE_MATRIX_SCHEMA = "v14.native-receiver-task-matrix/2"
 _ENVIRONMENTS = frozenset({"SYNTHETIC", "LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"})
 
 
@@ -65,6 +65,17 @@ def _vectors_sha256(vectors):
     return hashlib.sha256(payload).hexdigest()
 
 
+def _token_ids_sha256(token_ids):
+    if (not isinstance(token_ids, list) or not 1 <= len(token_ids) <= 512
+            or any(type(token) is not int or token < 0 or token > 2147483647 for token in token_ids)):
+        raise NativeReceiverTaskMatrixBridgeError("direct-text token IDs are invalid")
+    try:
+        payload = struct.pack("<" + "i" * len(token_ids), *token_ids)
+    except (OverflowError, struct.error) as exc:
+        raise NativeReceiverTaskMatrixBridgeError("direct-text token IDs cannot be encoded") from exc
+    return hashlib.sha256(payload).hexdigest()
+
+
 def _validate_source(source_validator, receipt, phase):
     try:
         valid = source_validator(receipt, phase)
@@ -80,7 +91,7 @@ def _validate_source(source_validator, receipt, phase):
 
 def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
     if not isinstance(inputs, list) or len(inputs) != len(CONDITIONS):
-        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all nine conditions")
+        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all twelve conditions")
     if tuple(item.get("condition") for item in inputs if isinstance(item, Mapping)) != CONDITIONS:
         raise NativeReceiverTaskMatrixBridgeError("approved matrix condition order is invalid")
 
@@ -124,10 +135,14 @@ def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
         positions = item.get("position_ids")
         rows = item.get("input_rows")
         dim = item.get("input_dim")
+        text_tokens = item.get("text_token_ids", [])
+        text_sha = item.get("text_token_ids_sha256")
+        proof_sha = item.get("control_proof_sha256")
         if condition == "NO_MESSAGE":
-            if vectors != [] or positions != [] or rows != 0:
+            if (vectors != [] or positions != [] or rows != 0 or text_tokens != []
+                    or text_sha is not None or item.get("text_token_count") != 0 or proof_sha is not None):
                 raise NativeReceiverTaskMatrixBridgeError(
-                    "NO_MESSAGE must contain zero injected rows and zero positions"
+                    "NO_MESSAGE must contain no injected rows, text tokens or control proof"
                 )
             if item["input_sha256"] != hashlib.sha256(b"").hexdigest():
                 raise NativeReceiverTaskMatrixBridgeError("NO_MESSAGE digest must bind the empty input")
@@ -136,14 +151,31 @@ def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
             expected_dim = dim
             continue
 
-        if (not isinstance(vectors, list) or not vectors or type(rows) is not int
-                or rows != len(vectors) or type(dim) is not int or dim < 1
-                or positions != list(range(rows))):
-            raise NativeReceiverTaskMatrixBridgeError(condition + " vector geometry is invalid")
-        if any(not isinstance(row, list) or len(row) != dim for row in vectors):
-            raise NativeReceiverTaskMatrixBridgeError(condition + " vector dimensions are inconsistent")
-        if _vectors_sha256(vectors) != item["input_sha256"]:
-            raise NativeReceiverTaskMatrixBridgeError(condition + " vector digest changed after approval")
+        if condition == "DIRECT_TEXT_REFERENCE":
+            if (vectors != [] or type(rows) is not int or rows != 0 or type(dim) is not int or dim < 1
+                    or not isinstance(text_tokens, list) or not 1 <= len(text_tokens) <= 512
+                    or positions != list(range(len(text_tokens))) or item.get("text_token_count") != len(text_tokens)
+                    or not _is_sha256(text_sha) or _token_ids_sha256(text_tokens) != text_sha
+                    or item["input_sha256"] != text_sha or item.get("adapter_sha256") is not None
+                    or proof_sha is not None or item.get("control_recipe") != "DIRECT_TEXT_TOKEN_INPUT_REFERENCE_V1"):
+                raise NativeReceiverTaskMatrixBridgeError("direct-text reference token binding is invalid")
+        else:
+            if (not isinstance(text_tokens, list) or text_tokens != [] or text_sha is not None
+                    or item.get("text_token_count") != 0):
+                raise NativeReceiverTaskMatrixBridgeError(condition + " unexpectedly carries direct-text tokens")
+            if condition == "INTACT_NO_PRIVATE":
+                if not _is_sha256(proof_sha) or item.get("control_recipe") != "BOS_PLUS_INTACT_NO_PRIVATE_CANDIDATE_V1":
+                    raise NativeReceiverTaskMatrixBridgeError("intact-no-private proof/recipe is invalid")
+            elif proof_sha is not None:
+                raise NativeReceiverTaskMatrixBridgeError(condition + " unexpectedly carries a control proof")
+            if (not isinstance(vectors, list) or not vectors or type(rows) is not int
+                    or rows != len(vectors) or type(dim) is not int or dim < 1
+                    or positions != list(range(rows))):
+                raise NativeReceiverTaskMatrixBridgeError(condition + " vector geometry is invalid")
+            if any(not isinstance(row, list) or len(row) != dim for row in vectors):
+                raise NativeReceiverTaskMatrixBridgeError(condition + " vector dimensions are inconsistent")
+            if _vectors_sha256(vectors) != item["input_sha256"]:
+                raise NativeReceiverTaskMatrixBridgeError(condition + " vector digest changed after approval")
         if expected_dim is None:
             expected_dim = dim
         elif dim != expected_dim:
@@ -324,7 +356,7 @@ def score_and_record_native_receiver_condition_matrix(
 
         condition_scores = native_result.get("condition_scores")
         if not isinstance(condition_scores, Mapping) or set(condition_scores) != set(CONDITIONS):
-            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all nine condition scores")
+            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all twelve condition scores")
         expected_kind, expected_env = (
             ("SYNTHETIC_FIXTURE", "SYNTHETIC")
             if target_environment == "SYNTHETIC"
@@ -362,7 +394,8 @@ def score_and_record_native_receiver_condition_matrix(
             try:
                 kv_snapshot = validate_native_receiver_kv_snapshot(
                     native_score.get("kv_snapshot"),
-                    expected_rows=(item["input_rows"] if item["input_rows"] > 0 else 1),
+                    expected_rows=(len(item.get("text_token_ids", [])) if condition == "DIRECT_TEXT_REFERENCE"
+                        else (item["input_rows"] if item["input_rows"] > 0 else 1)),
                     expected_condition=condition,
                     expected_model_sha256=receiver["model_sha256"],
                     expected_input_sha256=item["input_sha256"],
@@ -399,6 +432,7 @@ def score_and_record_native_receiver_condition_matrix(
                 input_sha256=item["input_sha256"],
                 native_receipt=native_receipt,
                 adapter_sha256=item.get("adapter_sha256"),
+                control_proof_sha256=item.get("control_proof_sha256"),
             ))
 
         cohort = record_task_score_receipts(runtime, score_receipts)
