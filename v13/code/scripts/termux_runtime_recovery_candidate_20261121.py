@@ -14,7 +14,7 @@ AUDIO_BUILDER_BLOB_SHA1 = "92fb6fc5db705f5dd69ce20bb283ac6af59cfe25"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
-NATIVE_RECEIVER_BLOB_SHA1 = "e237cbdb41defd0fde2f05c6baff6ad0ff9e1ad0"
+NATIVE_RECEIVER_BLOB_SHA1 = "e27b47d6eccc28123f35480996dd71914da61a4e"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "3c71a71b4171f49c20b57fadee190b22576fa953"
 
