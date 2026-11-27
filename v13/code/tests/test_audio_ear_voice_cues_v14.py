@@ -1386,7 +1386,7 @@ def test_integrated_audio_candidate_applies_compiles_and_requires_two_phase_revo
     exec(compile(ast.Module(body=assignments + [validator], type_ignores=[]),
                  "candidate_audio_validator.py", "exec"), namespace)
     assert "consent_revocation_subscribe" in namespace["_AUDIO_WINDOW_REQUIRED_FIELDS"]
-    assert namespace["_AUDIO_WINDOW_OPTIONAL_FIELDS"] == set()
+    assert namespace["_AUDIO_WINDOW_OPTIONAL_FIELDS"] == {"teacher_ear"}
 
     valid = {
         "pcm16": b"\\x00\\x00" * 160,
