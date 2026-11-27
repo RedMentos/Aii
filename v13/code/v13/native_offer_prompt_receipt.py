@@ -21,7 +21,7 @@ ROLES = ("B1_DETAIL", "B2_GIST")
 TOKEN_SPAN_REVISION = "v13.native-prompt-token-span-receipt/1"
 MAX_NATIVE_TOKENS = 32768
 MAX_NATIVE_PIECE_BYTES = 2_000_000
-TEXT_FIELD = re.compile(r'"text"\\s*:\\s*')
+TEXT_FIELD = re.compile(r'"text"\s*:\s*')
 
 
 def _result(status, offers=()):
