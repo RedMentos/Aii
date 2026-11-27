@@ -1087,6 +1087,14 @@ def record(runtime, event_id, audio_result, audio_window):
                           {"stage": "voice_cue_validation", "reason": "MISSING_OR_INVALID"})
         return None
     a4 = audio_result.get("a4")
+    try:
+        a4_voice_cues = validate_voice_cues(a4.get("voice_cues")) if type(a4) is dict else None
+        if a4_voice_cues != voice_cues:
+            raise ValueError("A4 voice cues do not match the canonical A5 packet")
+    except Exception:
+        runtime.store.log("audio_input_unavailable", event_id,
+                          {"stage": "a4_voice_cue_binding", "reason": "MISMATCH_OR_INVALID"})
+        return None
     receipt = segment.get("consent_receipt_ref")
     source_id = source.get("source_id")
     if source_id != audio_window.get("source_id") or receipt != audio_window.get("consent_receipt"):
