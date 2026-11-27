@@ -2516,3 +2516,12 @@ The focused receiver is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted: fin
 
 This overlay does not promote the visual path beyond WIRED_SYNTHETIC or the product beyond NOT_RELEASED. Synthetic PNG/provider fixtures and hosted Linux CI are not native Android evidence.
 
+
+
+### Run 67 shared-gate final status (2026-11-27)
+
+- Focused A5/A4 MediaProjection receiver: **FOCUSED_CI_PASS** (29/29 Python 3.13 + 29/29 Python 3.14; py_compile PASS).
+- Shared staged/integrated product gate: **FAIL** — workflow 46016490897. Integrated: 1 Core audio-composer source-pin failure. Staged: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed, including Core audio/arithmetic/observer source pins and QA PARTIAL-vs-UPDATED migration assertions.
+- These failures are outside Perception ownership and were not weakened. Keep the A5/A4 path WIRED_SYNTHETIC / NOT_ACCEPTED; product remains NOT_RELEASED.
+- No local full-repository test, native Android test, Redmi receipt, normal-turn C3 proof or deployment. REDMI_UNVERIFIED.
+
