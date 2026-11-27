@@ -25,7 +25,7 @@ Core should rebase #2408 onto #2557 and wrap the normal C3 context read/generati
 
 ## Device / updater boundary
 
-Latest available private V13OBS #115 remains historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS had no device comments before expiry. There is no fresh receipt proving the current installed SHA or live updater state; device/updater state remains UNVERIFIED. No update request or device command was sent.
+Latest available private V13OBS #115 remains historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS had no device comments before expiry. New read-only owner-relay requests #1017 HEALTH, #1018 PIPELINE_STATUS and #1019 DIAGNOSTICS were created at 2026-11-27T11:23:36Z; immediate readback found zero authenticated device_status comments on all three (NO_LIVE_RECEIPT). There is no fresh receipt proving the current installed SHA or live updater state; device/updater state remains UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change or data action was performed.
 
 ---
 
