@@ -8,12 +8,12 @@
 - Code/test head: 09e8cee23fab4fe9144253f93bab0a62c3119882. Code blob 6572cd4a3516824b1b5f7618c6fdf7a090f74807; regression test blob 5de9aa5d1a1446e496f9bfb0215fe9fd0209fea5. Docs and handoff are also on the same PR branch.
 - The loader now inspects the four exact NPY headers before np.load, bounding dtype, fixed dimensions, output dimension and exact payload bytes. The malformed optional projector fails closed while the handcrafted RAW-EYE path remains available.
 - LOCAL_LINUX isolated CPython 3.13.5 / NumPy 2.3.5: py_compile PASS, 4/4 helper checks PASS. Full local Aii checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails.
-- Exact CI at the docs-only branch head f46e38841913667055a16fa7826a5f41923cb0c9: MediaProjection ingress 46038637335 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46038637336 PASS on Python 3.11/3.14. Shared staged/integrated 46038637341 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core's Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions remain open; no Perception ingress failure.
+- Exact CI at the docs-only branch head a4bf7081708dfa959b58cc4ca00d0971da0ac41c: MediaProjection ingress 46039137962 PASS (py_compile + 31/31 on Python 3.13 and 31/31 on Python 3.14); RuntimeDeploy integrity 46039137910 PASS on Python 3.11/3.14. Shared staged/integrated 46039137849 FAIL: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failure on Core's Recovery audio-composer blob pin 831080bceec90711bd42e0fa4eba47c669975c98. Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions remain open; no Perception ingress failure.
 - No Android/Termux/Redmi execution or device receipt. REDMI_UNVERIFIED / NOT_RELEASED. This is not P0 chat, normal Runtime/C3 or learned perception acceptance.
 
 ## Next executable integration
 
-After focused CI passes, Core rebases #2562 onto #2563 and refreshes its Recovery → Stage → RuntimeDeploy source pins; rerun staged/integrated. Core retains ownership of its audio/arithmetic/observer pins, QA retains the migration PARTIAL-vs-UPDATED assertions, and Boss/Integrator syncs V14-023 in the shared board. The earlier sibling #2558 was closed as superseded; #2563 is the current #2561-compatible candidate carrying that preflight.
+Focused CI is green; Core should now rebase #2562 onto #2563 and refreshes its Recovery → Stage → RuntimeDeploy source pins; rerun staged/integrated. Core retains ownership of its audio/arithmetic/observer pins, QA retains the migration PARTIAL-vs-UPDATED assertions, and Boss/Integrator syncs V14-023 in the shared board. The earlier sibling #2558 was closed as superseded; #2563 is the current #2561-compatible candidate carrying that preflight.
 
 ## Device / updater boundary
 
