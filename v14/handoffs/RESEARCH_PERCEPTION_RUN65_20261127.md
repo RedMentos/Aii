@@ -12,15 +12,15 @@ Perception lane on the existing PR #2557 branch. No changes to the V14 master, h
 ## GitHub evidence
 - Branch: research-perception/v14-vision-ui-frame-ingress-20261127-run64
 - Code commit: ba79ec7b4fef9b0dc0929725310588f689b747c9
-- Test/current branch HEAD: 19ffeb54287627d02255845f9c9e660105e12a78
+- Test commit: 19ffeb54287627d02255845f9c9e660105e12a78; exact-head CI closeout branch SHA before this docs sync: a68dd8a28f9ed6d069ddc840c0308157f7b3f16e
 - PR: https://github.com/RedMentos/Aii/pull/2557
 - Readback verified: ingress blob 139a68db835ddde02211dd7b9b4a9985f970dce4; provider-entrypoint test blob ec7bd10e80cb00bff360baccfca47a49b02f7df2.
 
 ## Tests and environment
-- CI / PASS: workflow 45988257517. Python 3.13: py_compile PASS, 28/28 tests PASS. Python 3.14: py_compile PASS, 28/28 tests PASS.
+- CI / PASS: exact current-head workflow 45989072923. Python 3.13: py_compile PASS, 28/28 tests PASS. Python 3.14: py_compile PASS, 28/28 tests PASS. Runtime deployment integrity 45989073050 PASS. Earlier focused code/test workflow 45988257517 also passed.
 - CI / PASS: runtime deployment integrity workflow 45988257367.
 - CI / FAIL: staged workflow 45988257446. Staged-runtime job: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Failures point to existing Core audio-composer, arithmetic and observer source pins plus QA migration PARTIAL-vs-UPDATED assertions. No new MediaProjection ingress test failed.
-- CI / IN_PROGRESS at last poll: integrated-regression job of workflow 45988257446. No pass claimed.
+- CI / FAIL: exact current-head shared workflow 45989073323. Staged-runtime: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Integrated-regression: 1 failure on the Core-owned pinned audio composition input scripts/integrated_audio_context_candidate_20261121.py. The staged suite also reports existing Core arithmetic/observer pins and QA PARTIAL-vs-UPDATED migration assertions. No Perception ingress test failed.
 - LOCAL_LINUX / BLOCKED: full Aii checkout/pytest not run because no repository checkout is mounted and GitHub DNS cannot resolve. No local test pass claimed.
 - ANDROID_TERMUX / REDMI: REDMI_UNVERIFIED. No connected phone, Android capture, OS permission or native measurement was available.
 
