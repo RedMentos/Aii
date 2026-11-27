@@ -6,22 +6,28 @@ on:
       - core/v14-body-prefill-admission-20261128-run1
     paths:
       - "v13/code/v13/native_prompt_admission.py"
-      - "v13/code/v13/focal.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/scripts/integrated_action_selection_source_refs_candidate_20261128.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
       - "v13/code/tests/test_action_selection_context_sources_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
       - "v13/code/tests/test_native_turn_budget.py"
       - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
+      - "v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py"
       - ".github/workflows/v14-core-body-prefill-admission.yml"
   pull_request:
     paths:
       - "v13/code/v13/native_prompt_admission.py"
-      - "v13/code/v13/focal.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/scripts/integrated_action_selection_source_refs_candidate_20261128.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
       - "v13/code/tests/test_action_selection_context_sources_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
       - "v13/code/tests/test_native_turn_budget.py"
       - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
+      - "v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py"
       - ".github/workflows/v14-core-body-prefill-admission.yml"
 
 permissions:
@@ -30,7 +36,7 @@ permissions:
 jobs:
   core-native-inputs:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -42,17 +48,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install focused test dependencies
         run: python -m pip install --disable-pip-version-check pytest 'numpy>=2.2,<3'
-      - name: Compile exact Core sources
+      - name: Compile exact Core and stage sources
         run: |
           python -m py_compile \
             v13/code/v13/native_prompt_admission.py \
-            v13/code/v13/focal.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/scripts/integrated_action_selection_source_refs_candidate_20261128.py \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
             v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
-            v13/code/tests/test_native_offer_prompt_receipt_20261118.py
-      - name: Run source-preserving body admission, C5 source and C3 token-span regressions
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py \
+            v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
+      - name: Run body admission, staged C5 source, C3 token-span and exact arithmetic regressions
         env:
           PYTHONPATH: v13/code
         run: |
@@ -61,18 +70,18 @@ jobs:
             v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
-            v13/code/tests/test_native_offer_prompt_receipt_20261118.py
+            v13/code/tests/test_native_offer_prompt_receipt_20261118.py \
+            v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - name: Stage the exact integrated Termux candidate
         run: |
           python v13/code/scripts/stage_integrated_candidate.py \
             --output "$RUNNER_TEMP/v14-core-native-inputs-stage"
-      - name: Re-run production admission, C5 source and C3 token-span tests against staged Runtime
+      - name: Re-run production admission and C3 token-span tests against staged Runtime
         env:
           PYTHONPATH: ${{ runner.temp }}/v14-core-native-inputs-stage
         run: |
           python -m pytest -q \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
-            v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py
       - name: Check patch whitespace
