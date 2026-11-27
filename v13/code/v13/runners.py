@@ -310,34 +310,37 @@ class LlamaRunner:
                            and preliminary_witness.get('status') == 'RENDERED_WITH_QUOTES')
             tokens = self._json("POST", "/tokenize",
                                 {"content": p, "add_special": True,
-                                 "with_pieces": with_pieces}, deadline)["tokens"]
-            if type(tokens) is not list:
-                raise Unavailable("Native tokenization response invalid")
-            if with_pieces:
-                token_ids = [row.get("id") for row in tokens
-                             if type(row) is dict and type(row.get("id")) is int]
-                if len(token_ids) != len(tokens):
-                    # Keep ordinary C3 generation available on older servers;
-                    # an absent with_pieces response only disables span evidence.
-                    tokens = self._json("POST", "/tokenize",
-                                        {"content": p, "add_special": True}, deadline)["tokens"]
-                    with_pieces = False
-                    if type(preliminary_witness) is dict:
-                        from .native_offer_prompt_receipt import TOKEN_SPAN_REVISION
-                        preliminary_witness['native_prompt_token_span_receipt'] = {
-                            'revision': TOKEN_SPAN_REVISION,
-                            'status': 'NATIVE_WITH_PIECES_UNAVAILABLE',
-                            'token_count': None,
-                            'leading_added_special_token_count': None,
-                            'offers': [],
-                        }
-                    token_ids = tokens
-            else:
-                token_ids = tokens
-            if (type(token_ids) is not list
-                    or any(type(token_id) is not int for token_id in token_ids)):
+                                 "parse_special": True}, deadline)["tokens"]
+            if (type(tokens) is not list
+                    or any(type(token_id) is not int for token_id in tokens)):
                 raise Unavailable("Native token ID response invalid")
+            token_ids = tokens
             count = len(token_ids)
+            token_piece_rows = None
+            token_piece_error = None
+            if with_pieces:
+                try:
+                    token_piece_rows = self._json(
+                        "POST", "/tokenize",
+                        {"content": p, "add_special": False, "parse_special": True,
+                         "with_pieces": True}, deadline)["tokens"]
+                    if type(token_piece_rows) is not list:
+                        token_piece_rows = None
+                        token_piece_error = "INVALID_RESPONSE"
+                except Exception as exc:
+                    token_piece_rows = None
+                    token_piece_error = type(exc).__name__
+                if token_piece_rows is None and type(preliminary_witness) is dict:
+                    from .native_offer_prompt_receipt import TOKEN_SPAN_REVISION
+                    preliminary_witness['native_prompt_token_span_receipt'] = {
+                        'revision': TOKEN_SPAN_REVISION,
+                        'status': 'NATIVE_TOKEN_PIECES_UNAVAILABLE',
+                        'token_count': count,
+                        'leading_added_special_token_count': None,
+                        'trailing_added_special_token_count': None,
+                        'offers': [],
+                        'error_type': token_piece_error or "INVALID_RESPONSE",
+                    }
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
@@ -351,8 +354,11 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    witness = (inspect(work, p, hypothesis_heading, token_pieces=tokens)
-                               if with_pieces else preliminary_witness)
+                    witness = (inspect(work, p, hypothesis_heading,
+                                        token_pieces=token_piece_rows,
+                                        native_token_ids=token_ids)
+                               if with_pieces and token_piece_rows is not None
+                               else preliminary_witness)
                     if type(witness) is dict:
                         ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
                         witness.update({
@@ -361,7 +367,7 @@ class LlamaRunner:
                             'native_prompt_tokens': count,
                         })
                         span_receipt = witness.get('native_prompt_token_span_receipt')
-                        if type(span_receipt) is dict:
+                        if type(span_receipt) is dict and span_receipt.get('status') == 'VERIFIED':
                             span_receipt['prompt_sha256'] = digest(p)
                             if span_receipt.get('token_ids_sha256') != ids_sha:
                                 span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
@@ -385,10 +391,11 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
-                    from .prompts import text as v13_prompt_text
-                    witness = inspect(work, p, v13_prompt_text(self.cfg, 'hypotheses'),
-                                      token_pieces=tokens)
+                    witness = (inspect(work, p, hypothesis_heading,
+                                        token_pieces=token_piece_rows,
+                                        native_token_ids=token_ids)
+                               if with_pieces and token_piece_rows is not None
+                               else preliminary_witness)
                     if type(witness) is dict:
                         ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
                         witness.update({
@@ -397,7 +404,7 @@ class LlamaRunner:
                             'native_prompt_tokens': count,
                         })
                         span_receipt = witness.get('native_prompt_token_span_receipt')
-                        if type(span_receipt) is dict:
+                        if type(span_receipt) is dict and span_receipt.get('status') == 'VERIFIED':
                             span_receipt['prompt_sha256'] = digest(p)
                             if span_receipt.get('token_ids_sha256') != ids_sha:
                                 span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
