@@ -116,7 +116,7 @@ class _Stream:
 
 
 class SpeakerChangeEvidenceRegistry:
-    """Bounded per-source/generation cosine look-back state; vectors remain RAM-only."""
+    """Bounded cosine look-back keyed by source, generation, Store session and consent scope; vectors remain RAM-only."""
 
     def __init__(self, *, max_streams=16, max_frames=128, reset_gap_ms=2000):
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
