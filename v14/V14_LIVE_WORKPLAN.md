@@ -1817,3 +1817,27 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 - Final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f`: focused MediaProjection ingress workflow 45975248573 **PASS** (py_compile + 25/25 Python 3.13 + 25/25 Python 3.14); runtime deployment integrity 45975248638 **PASS**.
 - Shared staged workflow 45975248465 **FAIL** (20 failed/233 passed/10 skipped/2 errors/41 subtests) on pre-existing Core Recovery audio-composer, arithmetic and observer source pins plus QA migration PARTIAL-vs-UPDATED assertions. Integrated regression 45975248465 **FAIL** (1 Core Recovery audio-composer pin). Perception focused tests are green; shared product gate is not.
 - Full local checkout unavailable; no Android/Redmi proof. Next: Core rebase/port provider onto #2557 and wire normal Runtime/C3; QA repairs migration expectations and tests OS consent/onStop/restart/rollback. No deployment.
+
+
+## Research & Perception Run 67 — A5 RAW-EYE structure now contributes to A4 (2026-11-27)
+
+**Hypothesis / gap.** The provider-facing MediaProjection path restored in #2557 extracted the global RAW-EYE descriptor and 4×4 tile features, then sent them through A4, but it did not call the existing shared RAW-EYE structural-salience adapter. The older A5 visual bridge already had that A4 connection. This was an integration inconsistency, not a missing image model.
+
+**Implementation.** Draft PR [#2559](https://github.com/RedMentos/Aii/pull/2559), stacked directly on #2557 (not dependent on optional projector-hardening #2558). Exact code/test head `0411d6fc539a2442e7f49886da87cc7fbbb25c73`; module blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`; test blob `6f654d8b90500d0b089ae3154851ba6d22a440f4`.
+
+- Reuses `a5_visual_frame_bridge.raw_eye_structure()` and `a4_visual_salience.apply_raw_eye_structure()`; no duplicate feature algorithm or capture provider.
+- Reconstructs the canonical 117-value vector from the existing 37-value global row and 16 existing 5-value cell summaries, avoiding a second image pass.
+- Marks only the global frame segment with visual modality, exact frame digest, MediaProjection capture/session/receipt provenance and A5 producer identity.
+- Applies the bounded 0.20 structural gain to the exact matching A4 row; the existing helper recomputes normalized weights, suppression and high-resolution relook.
+- Carries the five numeric structure components and the A4 receipt in the ephemeral PerceptPacket. Authority remains `ATTENTION_ONLY`, `learned=false`, `truth_authority=0`, action=false, learning=false.
+
+**Tests / evidence.**
+- LOCAL_LINUX isolated helper reproduction: **3/3 PASS** (nonuniform positive, uniform zero, invalid-provenance rejection). This is scratch logic, not full repository execution.
+- Exact focused GitHub Actions workflow `46016491056`: **PASS**, Python 3.13 `py_compile` + 29/29; Python 3.14 `py_compile` + 29/29. The first attempt exposed only an over-tight test tolerance (six-decimal rounded A4 weights summed to 1.000007); changed the test tolerance from 1e-6 to 1e-5 and retested the new exact head successfully.
+- Shared staged/integrated workflow `46016490897`: **IN_PROGRESS at last poll**; no pass claim. Previous shared failures remain Core-owned source pins and QA migration assertions until a final exact-head result says otherwise.
+- Full local Aii checkout/pytest: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS unavailable). No native GGUF, native Redmi, Android MediaProjection, normal Runtime/C3 turn, model weights or release evidence.
+
+**Research R-186.** WM-VS (arXiv:2609.20892v2, 23 Nov 2026) was read in full. Its key transferable principle is to align action-conditioned latent transitions with *future task error* and measure final closed-loop retention, not only one-step prediction or best-frame accuracy. It reports 25/30 final-retention trials; removing future-error alignment falls to 8/30. This does not validate our handcrafted structural score as progress. GlanceWAM (arXiv:2608.23927v3) was only abstract/README-level reviewed; the MIT-licensed repo uses a SkyReels-V2 DF 1.3B video backbone, 21 GB data/checkpoint bundle and A100/H200-scale evaluation/training. No model, weights or code reused.
+
+**Integration / next owner.** Core rebases #2408/#2555 onto #2557 and includes #2559 before wiring the normal same-turn Runtime/C3 consumer, keeping the outer UIObservationLease live through C3. QA independently verifies MediaProjection consent/denial, onStop, revoke, process death, restart and rollback. Capture and optional projector remain OFF. REDMI_UNVERIFIED / NOT_RELEASED. No user action required.
+
