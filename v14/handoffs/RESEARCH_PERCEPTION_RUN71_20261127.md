@@ -50,7 +50,7 @@ R-190 records the abstract-only ICML 2026 A Geometry-Based View of Mahalanobis O
 
 ## Final branch readback
 
-Current PR branch head after the handoff/ledger/workplan/coverage updates: 6f3e87e6c9c946041a95d430b50ad0165bebac7e. Code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Documentation-only head passed offline bridge/security workflow 46058233835. PR #2565 still reports mergeable=false and remains NOT_MERGE_READY. No release commit was created.
+At an earlier final-doc readback the branch head was 6f3e87e6c9c946041a95d430b50ad0165bebac7e; later documentation-only commits added the signed-audio Runtime audit and exact test evidence. Code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Use PR #2565 for the live docs branch head. Offline bridge/security workflow 46058233835 passed; PR remains NOT_MERGE_READY and no release commit was created.
 
 ## Cross-lane audio blocker found during next-step audit
 
