@@ -22,6 +22,8 @@ from pathlib import Path
 
 from . import attention as attention_module
 from . import vision
+from .a4_visual_salience import apply_raw_eye_structure
+from .a5_visual_frame_bridge import raw_eye_structure
 from .a5_context_envelope import A5Item, admit_a5
 from .a5_ui_admission_bridge import (
     A5UIRuntimeAdapter,
@@ -577,6 +579,9 @@ def consume_projected_frame(
         tile_feature_rows = []
         tile_region_ids = []
         region_records = []
+        raw_eye_score = None
+        raw_eye_components = None
+        global_segment_index = None
         try:
             for region in regions:
                 box = region["box"]
@@ -614,6 +619,23 @@ def consume_projected_frame(
                 except Exception:
                     student_status = "INFERENCE_FAILED"
 
+            # Reuse the already-computed 16 tile vectors to form the same
+            # 117-value global+4x4 layout descriptor used by vision.features.
+            # This avoids a second pass over every cropped tile.
+            if len(tile_feature_rows) != GRID * GRID:
+                raise ValueError("RAW EYE tile grid is incomplete")
+            np = vision._np()
+            global_features = vision.tile_features(image, cfg["tile_px"])
+            tile_rows = np.stack(tile_feature_rows)
+            cell_features = np.concatenate(
+                (tile_rows[:, :3], tile_rows[:, 16:17], tile_rows[:, 17:18]),
+                axis=1,
+            )
+            visual_descriptor = np.concatenate(
+                (global_features, cell_features.reshape(-1)),
+            ).astype(np.float32, copy=False)
+            raw_eye_score, raw_eye_components = raw_eye_structure(visual_descriptor)
+
             for region, box, features, salience in region_records:
                 region_id = region["region_id"]
                 margin = student_scores.get(region_id)
@@ -627,6 +649,9 @@ def consume_projected_frame(
                 segment = {
                     "text": summary,
                     "source_ref": region_ref,
+                    "modality": "visual",
+                    "capture_method": observation["capture_method"],
+                    "producer_component": "A5_RAW_EYE_UI",
                     "start_ms": observation["start_ms"],
                     "end_ms": observation["end_ms"],
                     "clock": observation["clock"],
@@ -640,6 +665,8 @@ def consume_projected_frame(
                 if margin is not None:
                     segment["student_goal_margin"] = round(margin, 4)
                     segment["student_estimate_authority"] = "STUDENT_ESTIMATE"
+                if region_id == "g":
+                    global_segment_index = len(segments)
                 segments.append(segment)
                 tile_priority = priority * 1000 + (101 if salience is None else int(round(salience * 100)))
                 percepts.append(Percept(
@@ -652,9 +679,15 @@ def consume_projected_frame(
 
         if not consent_lease.active_for(runtime, generation_id):
             raise PermissionError("UI observation was cancelled or revoked before A4 admission")
+        if global_segment_index is None or raw_eye_score is None or raw_eye_components is None:
+            raise RuntimeError("RAW EYE global structure cue is unavailable")
 
         a4 = attention_module.controller(runtime).perceive(
             event["event_id"], segments, goal=goal, file_requests=False
+        )
+        a4 = apply_raw_eye_structure(
+            a4, segments[global_segment_index], raw_eye_score, raw_eye_components,
+            segment_index=global_segment_index,
         )
         admission = admit(percepts, token_budget, max_items=12)
         context_items = [
@@ -715,6 +748,8 @@ def consume_projected_frame(
             "source_ref": ui_ref,
             "frame_source_ref": frame_ref,
             "a4": a4,
+            "raw_eye_structure": round(raw_eye_score, 6),
+            "raw_eye_components": raw_eye_components,
             "admission": admission,
             "context_envelope": envelope,
             "context_packet_count": len(context_packets),
