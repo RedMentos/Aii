@@ -6,7 +6,9 @@ on:
       - core/v14-body-prefill-admission-20261128-run1
     paths:
       - "v13/code/v13/native_prompt_admission.py"
+      - "v13/code/v13/focal.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
+      - "v13/code/tests/test_action_selection_context_sources_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
       - "v13/code/tests/test_native_turn_budget.py"
       - "v13/code/tests/test_native_offer_prompt_receipt_20261118.py"
@@ -42,7 +44,9 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/native_prompt_admission.py \
+            v13/code/v13/focal.py \
             v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py
