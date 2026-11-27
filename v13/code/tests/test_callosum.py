@@ -4,6 +4,7 @@ import json
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from v13.runtime import Runtime
 from v13.operator import Operator
@@ -86,5 +87,70 @@ class UtilityTests(Base):
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))
         self.assertEqual(doc['experience_count'],2);self.assertIn('utility_vs_no_message',doc)
         self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')
+
+
+
+class NativeProbeOperatorTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.r = Runtime(Path(self.tmp.name))
+        self.r.sleep.cycle.set_policy('enabled', 'off')
+
+    def tearDown(self):
+        self.r.close()
+        self.tmp.cleanup()
+
+    def final_source(self):
+        event = self.r.store.event(self.r.session, 'source-bound native probe dispatch fixture')
+        self.r.store.message(
+            self.r.session, event['event_id'], 'assistant', 'fixture answer',
+            'FINAL', {'model_generated': True},
+        )
+        return event
+
+    def test_operator_arm_and_revoke_native_probe(self):
+        event = self.final_source()
+        binding = {'revision': 'fixture-r1', 'sha256': 'a' * 64}
+        with patch('v13.native_probe_approval._require_local_tty'), \\
+             patch('v13.native_probe_approval._model_binding', return_value=binding):
+            armed = json.loads(Operator(self.r).run(
+                ':callosum arm-probe B1_DETAIL C3_LANGUAGE --last-source --confirm'
+            ))
+            self.assertEqual(armed['status'], 'ARMED')
+            record, _ = self.r.store.state('v14.native_probe_approval', None)
+            self.assertEqual(record['status'], 'PENDING')
+            self.assertEqual(record['source_ref'], event['source_ref'])
+            self.assertEqual(record['models'], {
+                'B1_DETAIL': binding, 'C3_LANGUAGE': binding,
+            })
+            self.assertEqual(record['probe_kind'], 'NATIVE_RECEIVER')
+            revoked = json.loads(Operator(self.r).run(':callosum revoke-probe'))
+        self.assertEqual(revoked['status'], 'REVOKED')
+        record, _ = self.r.store.state('v14.native_probe_approval', None)
+        self.assertEqual(record['status'], 'REVOKED')
+
+    def test_operator_native_probe_fails_closed_without_local_approval(self):
+        self.final_source()
+        with patch('v13.native_probe_approval._require_local_tty'):
+            with self.assertRaisesRegex(
+                PermissionError, 'fresh local :callosum arm-probe approval'
+            ):
+                Operator(self.r).run(
+                    ':callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm'
+                )
+        record, _ = self.r.store.state('v14.native_probe_approval', None)
+        self.assertIsNone(record)
+        self.assertIsNone(self.r.current)
+        self.assertFalse(getattr(self.r, '_native_probe_active', False))
+
+    def test_operator_origin_does_not_replace_os_tty_gate(self):
+        with patch('v13.native_probe_approval.os.isatty', return_value=False):
+            with self.assertRaisesRegex(PermissionError, 'interactive local TTY'):
+                Operator(self.r).run(
+                    ':callosum arm-probe B1_DETAIL C3_LANGUAGE --last-source --confirm'
+                )
+        record, _ = self.r.store.state('v14.native_probe_approval', None)
+        self.assertIsNone(record)
+
 
 if __name__=='__main__':unittest.main()

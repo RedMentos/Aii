@@ -15,6 +15,7 @@ SOURCE_SHA256 = {
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+    '4463fc10d5634776666fbc93ec0d408630396a2d8edd90e7f0cbf0162515920f',
 }
 
 REPLACEMENTS = (
@@ -97,6 +98,10 @@ def apply_source(raw):
                 and before == "                def ask(role,focus=None,use_peer=True):\n"):
             before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
             after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+        elif (source_hash == '4463fc10d5634776666fbc93ec0d408630396a2d8edd90e7f0cbf0162515920f'
+                and before == "                def ask(role,focus=None,use_peer=True):\n"):
+            before = before.replace('use_peer=True)', 'use_peer=True,role_end=None,preanswer_budgeted=True)')
+            after = after.replace('use_peer=True)', 'use_peer=True,role_end=None,preanswer_budgeted=True)')
         old, new = before.encode('utf-8'), after.encode('utf-8')
         if raw.count(old) != 1:
             raise ValueError('postcommit observer anchor mismatch')

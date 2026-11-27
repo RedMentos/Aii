@@ -7,19 +7,27 @@ import hashlib
 from pathlib import Path
 
 BASE_PINS = {
-    "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
-    "v13/callosum.py": "1fb206a3970f3e2551d94445f44b66e999628fa5b09f4c7e1c581e3e5c32b502",
-    "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
+    "v13/cognition.py": "208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90",
+    "v13/callosum.py": frozenset({"f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748", "40f5e0f623ffcbcffba901bc4bfba9fe289b1e9410b764db9f1a2193e3b0c348"}),
+    "v13/runners.py": "c90fd1e62173b570addceebb93b594bb86d0b92fa46286767a3a59b49c07720d",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
-    "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
+    "v13/contracts.py": "9c9974699b622347e380f3626a171bf21bae9acd3683772411052190e9b06840",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
 }
 NATIVE_FILES = {
-    "v13/native_latent_receiver.py": "9ef0f73a53075fc14a486f3a9de74853cb5abe58ec186d4b0e6c7c16b040842d",
-    "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
-    "v13/native/latent_receiver/native_latent_receiver.cpp": "1567ff3b957436ba637faae2c7a2cfa32d4a13fb04bbac468da363216497af0c",
+    "v13/native_latent_receiver.py": "1fe02445eb0c6a200ba7ad089321e49c9280653668954f09d1c040b7f49ba493",
+    "v13/native/latent_receiver/CMakeLists.txt": "6884bf0ce7613b20c2f02ffe1a1213d2609f56b9318d947f0a1bd0fb40cfe516",
+    "v13/native/latent_receiver/native_latent_receiver.cpp": "751251958a55da177591324b4e31685f70bad69feb53f74022b4915a8d137f84",
+    "v13/native/latent_receiver/native_receiver_kv_snapshot.cpp": "a2968af85c5e0875ba6408047b88a915efe2b9d5fe815442685179b382f5fefc",
+    "v13/native/latent_receiver/native_receiver_kv_snapshot.hpp": "69a706f6a38e6faca434c6079bfee693acfc8bfba18acb7df48b491dc760eac9",
     "v13/native/latent_receiver/position_layout.hpp": "45c28211cd03261f297c211ea4764f0f00d0ed8af68a8f00c7f7da2fe41faa7f",
-    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0"
+    "v13/native/latent_receiver/README.md": "204d2528a867b1f39cfc2ba9103bacf397e2fc0b0b4b362caffae40fd1ace8b0",
+    "v13/native_hybrid_state.py": "21526937979c91b8931c221d0f990460cc69e73c34c1db245b83dab1cbcacc6e",
+    "v13/native_receiver_task_matrix_bridge.py": "b967cd83c1855bb9502cb2ff6ef070bc859e648349ab4a28c31979043bb3db8f",
+    "v13/native_receiver_condition_matrix.py": "409d9c7237acb9c7ec4b976ea88dddbcf2bafdd4a83110d7cc9d289cd724be6f",
+    "v13/native_receiver_task_score.py": "2b10140795e4ef3afec31fb6290f1c6a9304342dcd466e092e2554965c424545",
+    "v13/native_receiver_utility.py": "dcc4a225e4c8eb2eabc6596562c3418ab743b7f61d08c9d3cbb9eaaa41759399",
+    "v13/native_receiver_matrix_runtime.py": "eb20ff212cda1f315385daeb229d7c2e1ca6827399177b10119ac777477caab1"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
@@ -28,6 +36,27 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
         register_packet_contract()
+        from . import native_probe_approval as approval
+        lease_token=getattr(self.r,"_native_probe_lease_nonce",None)
+        approval._require_runtime_probe_lease(self.r,lease_token)
+        consumed,_=self.s.state(approval.KEY,None)
+        if (not isinstance(consumed,dict) or consumed.get("status")!="CONSUMED"
+                or consumed.get("probe_kind")!="NATIVE_RECEIVER"
+                or consumed.get("sender_role")!=sender_role
+                or consumed.get("receiver_role")!=receiver_role
+                or consumed.get("session_id")!=self.r.session
+                or consumed.get("event_id")!=e.get("event_id")
+                or consumed.get("brain_generation_id")!=e.get("brain_generation_id")
+                or consumed.get("source_ref")!=source_ref):
+            raise PermissionError("Native receiver requires the exact consumed local one-shot approval")
+        approved_models={
+            sender_role:approval._model_binding(self.r,sender_role),
+            receiver_role:approval._model_binding(self.r,receiver_role),
+        }
+        if consumed.get("models")!=approved_models:
+            raise PermissionError("Native receiver model identity changed after local approval")
+        if self.r.cancel_event.is_set() or time.monotonic()>=deadline:
+            raise InterruptedError("Native receiver probe cancelled or deadline expired")
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
         if (not isinstance(source_ref,dict) or not isinstance(e,dict)
@@ -145,37 +174,21 @@ REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT bloc
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
 OPERATOR_HELP_OLD = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
 OPERATOR_HELP_NEW = '''    """:callosum controller plus local one-shot tokenwise and native receiver diagnostics."""\n'''
-OPERATOR_PREFIX_NEW = r"""    c=controller(r)
-    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
-        sender,receiver=args[1],args[2]
-        if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
-            raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
-        r.require_idle()
-        last=r.last_answer()
-        if not last:raise ValueError('Erst eine abgeschlossene Eingabe erzeugen')
-        row=r.store.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))
-        if not row:raise ValueError('Letztes Ereignis fehlt')
-        event=json.loads(row['packet'])
-        ref=event.get('source_ref')
-        if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Letzte Eingabe hat keine gültige SourceRef')
-        r.models.path_for(receiver)
-        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
-        try:
-            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
-        finally:
-            r.pool.unload()
-        return dumps({**packet,'queued':False,'completed':True,
-                      'sender_role':sender,'receiver_role':receiver,
-                      'requires_explicit_confirmation':True,'production_route':False,
-                      'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
-                      'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
+OPERATOR_PREFIX_NEW = r"""    if args and args[0] in {'arm-probe','native-probe','revoke-probe'}:
+        from .native_probe_approval import operator_command as native_probe_command
+        return native_probe_command(r,args)
+    c=controller(r)
 """
 
-OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
-OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm]'\n    )\n"
+OPERATOR_ERROR_OLD = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
+OPERATOR_ERROR_NEW = "    raise ValueError(\n        ':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|'\n        'arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|'\n        'arm-tokenwise-pair <sender> <receiver> --last-source --confirm|native-tokenwise-pair <sender> <receiver> --last-source --confirm|'\n        'fit-tokenwise-cohort <train-sessions> <holdout-sessions> <record-sha-prefix> --confirm|'\n        'native-tokenwise-probe --confirm|revoke-probe|revoke-tokenwise-pair|clear-tokenwise-lab --confirm|matrix-status|matrix-arm --confirm|matrix-run --confirm|matrix-revoke --confirm|matrix-clear --confirm]'\n    )\n"
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
+def _matches_base_pin(path, expected):
+    actual = _sha256(path.read_bytes())
+    accepted = expected if isinstance(expected, (set, frozenset, tuple, list)) else (expected,)
+    return actual in accepted
 def _replace(raw,old,new,label):
     count=raw.count(old)
     if count!=1: raise ValueError("native receiver overlay anchor mismatch: "+label+" count="+str(count))
@@ -184,7 +197,7 @@ def apply_sources(code_dir,sources):
     code_dir=Path(code_dir).resolve(strict=True)
     for relative,expected in BASE_PINS.items():
         path=code_dir/relative
-        if path.is_symlink() or not path.is_file() or _sha256(path.read_bytes())!=expected:
+        if path.is_symlink() or not path.is_file() or not _matches_base_pin(path, expected):
             raise ValueError("native receiver base source changed: "+relative)
     result=dict(sources)
     cognition=result.get("v13/cognition.py",(code_dir/"v13/cognition.py").read_bytes())
