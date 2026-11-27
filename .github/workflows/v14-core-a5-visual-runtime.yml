@@ -1,0 +1,70 @@
+name: V14 Core A5 visual Runtime integration
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/a5_visual_runtime_consumer.py"
+      - "v13/code/v13/a5_visual_frame_bridge.py"
+      - "v13/code/v13/a4_visual_salience.py"
+      - "v13/code/scripts/integrated_a5_visual_runtime_candidate_20261127.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/record_only_controller_guard_20261116.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/tests/test_a5_visual_runtime_consumer.py"
+      - "v13/code/tests/test_core_a5_visual_runtime_composition_20261127.py"
+      - "v13/code/tests/test_a5_visual_frame_bridge.py"
+      - ".github/workflows/v14-core-a5-visual-runtime.yml"
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Install focused test dependencies
+        run: python -m pip install --upgrade pip pytest numpy pillow
+      - name: Compile changed Python modules
+        working-directory: v13/code
+        run: |
+          python -m py_compile \
+            v13/a5_visual_runtime_consumer.py \
+            v13/a5_visual_frame_bridge.py \
+            v13/a4_visual_salience.py \
+            scripts/integrated_a5_visual_runtime_candidate_20261127.py \
+            scripts/termux_runtime_recovery_candidate_20261112.py \
+            scripts/termux_runtime_recovery_candidate_20261121.py \
+            scripts/record_only_controller_guard_20261116.py \
+            scripts/stage_integrated_candidate.py \
+            v13/runtime_deploy.py
+      - name: Run A5 adapter and Runtime consumer tests
+        working-directory: v13/code
+        run: |
+          python -m pytest -q \
+            tests/test_a5_visual_frame_bridge.py \
+            tests/test_a5_visual_runtime_consumer.py \
+            tests/test_core_a5_visual_runtime_composition_20261127.py
+  staged-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: focused
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install staged integration dependencies
+        run: python -m pip install --upgrade pip pytest numpy pillow
+      - name: Run exact staged source-pin and integration checks
+        working-directory: v13/code
+        run: |
+          python -m pytest -q \
+            tests/test_record_only_controller_guard_20261116.py \
+            tests/test_core_audio_observer_composition_20261127.py \
+            tests/test_integrated_stage_real_smoke.py
