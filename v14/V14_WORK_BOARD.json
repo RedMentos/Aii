@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-27T19:45:39.842Z",
+  "updated_at": "2026-11-27T20:18:50.889Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -234,7 +234,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "GitHub Actions exact-head MediaProjection ingress 28/28 PASS on Python 3.13 and 28/28 PASS on Python 3.14 (workflow 45989072923); RuntimeDeploy integrity PASS (45989073050); shared staged/integrated FAIL (45989073323: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 Core audio-composer pin failure). LOCAL_LINUX full checkout BLOCKED / NOT_RUN; REDMI_UNVERIFIED. Fresh private owner-read relay requests #1017 HEALTH / #1018 PIPELINE_STATUS / #1019 DIAGNOSTICS returned NO_LIVE_RECEIPT; current installed/updater state remains unverified.",
-      "next_step": "Core: add same-turn Runtime audio_window receiver with event/generation/consent lease through A5/A4/C3; QA: visible AudioRecord provider plus Android permission/revocation/lifecycle tests; Perception: rebase #2312 and replace RuntimeStub positive test with exact Runtime integration. Continue source-disjoint OOD calibration ablation. Do not enable microphone permission or claim device proof.",
+      "next_step": "Perception PR #2566 adds a 30-repeat synthetic source-disjoint OOD comparison: RMS-z heuristic 7.33% in-domain source rejection / 85.5% posterize; RMS-z source-max conformal 9.17% / 85.5%; shrinkage Mahalanobis is weaker on posterize. Keep production RMS-z unchanged and optional/shadow-only. Verify exact #2566 Python 3.13/3.14 CI; after QA's visible consented provider exists, repeat with app/session/version-disjoint real UI frames. Core still owns the missing same-turn Runtime audio_window receiver; QA AudioRecord provider remains OFF.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-27T19:43:58.507Z",
       "latest_candidate_pr": {
@@ -570,7 +570,7 @@
       "scope": "Core Android UIFrameGrant.consume → source-bound Perception receiver: exact UIObservationLease, one-shot receipt verifier, bounded frame decode/zeroization, RAW-EYE global + 4×4 tile features, A4 attention, A5 PerceptPacket and bounded context envelope; no screenshot/feature persistence.",
       "acceptance": "Core #2408 rebases onto #2557; actual UIFrameGrant.consume invokes consume_projected_frame_from_provider; Core wires the provider into the normal Runtime turn and C3 context while the lease is live; invalid digest/size, provisional frame, stale generation, consent rotation, cancel/revoke/restart and negative controls pass; Android MediaProjection consent/onStop lifecycle and Redmi receipt remain separate acceptance.",
       "proof_environment": "Final PR head cf8a0ea75712171d28b6ed9c10d3b189bb41393f. Focused workflow 45975248573: py_compile PASS and 25/25 PASS Python 3.13 + 25/25 PASS Python 3.14. Runtime deployment integrity 45975248638 PASS. Staged workflow 45975248465 FAIL: 20 failed/233 passed/10 skipped/2 errors/41 subtests on existing Core audio-composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Integrated regression 45975248465 FAIL: 1 Core Recovery audio-composer pin (expected 831080bceec90711bd42e0fa4eba47c669975c98). Full local Aii checkout BLOCKED; no Android/Redmi proof.",
-      "next_step": "Core must compose the updated Perception provider into the normal same-turn Runtime/C3 consumer while UIObservationLease is live and refresh its lifecycle source pins. QA independently validates MediaProjection grant/denial/onStop/revoke/process-death/restart/rollback. Perception keeps OOD gate shadow-only and runs source-disjoint calibration comparisons. Keep provider OFF until consented device proof.",
+      "next_step": "Core must compose the updated Perception provider into the normal same-turn Runtime/C3 consumer while UIObservationLease is live and refresh lifecycle source pins. QA independently validates MediaProjection grant/denial/onStop/revoke/process-death/restart/rollback. Perception #2566 shows RMS-z remains the best of the tested synthetic OOD gates; keep it optional/shadow-only and wait for consented app/session/version-disjoint real UI frames before recalibration. No Redmi proof.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-27T19:43:58.507Z",
       "proof": "Draft PR #2557: https://github.com/RedMentos/Aii/pull/2557; branch research-perception/v14-vision-ui-frame-ingress-20261127-run64; exact head 642b981e9a91bfc618992cabb0c72ac8c801b51c. New module/tests/workflow read back with exact expected blob SHAs. Focused workflow 45974814847: 25/25 PASS on Python 3.13 and 25/25 PASS on Python 3.14; py_compile PASS both. Staged gate 45974814855 fails only on already-known shared Core/QA pins; integrated regression pending. No local full checkout, native Android, C3 normal-turn, Redmi receipt or release.\nRun 71 Perception follow-up PR #2565 code/test SHA 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b now validates the A3 OOD threshold inside the A5 provider receiver; partial/full OOD, legacy and malformed-metadata cases are covered; focused ingress CI 39/39 PASS on Python 3.13 and 39/39 on 3.14. This gates only student margins; RAW-EYE/A4 continue. Still no normal Runtime/C3 callsite, Android MediaProjection or Redmi proof. Shared staged/integrated remains blocked by Core/QA pins/assertions."
@@ -1333,6 +1333,13 @@
       "status": "RUNTIME_AUDIO_WINDOW_MISSING / COMPANION_PROVIDER_OFF",
       "primary": "RedMentos/Aii PR #2312; runtime.py blob 30360f40eb784be5ea975ee85e94a57f0b154164; QA CapabilityRegistry",
       "next": "Core adds same-turn audio_window receiver; QA builds visible AudioRecord provider; Perception replaces RuntimeStub positive test with exact Runtime integration."
+    },
+    {
+      "id": "R-192",
+      "topic": "Source-disjoint A3 OOD calibration: RMS-z vs shrinkage Mahalanobis vs conformal",
+      "status": "LOCAL_SYNTHETIC_ABLATION_30_REPEATS / NO_PRODUCTION_CHANGE",
+      "primary": "Janiak et al., ICML 2026 PMLR 306 (official abstract only); Li et al., arXiv:2606.21255 (method/experiment HTML); Marques & Berenson, arXiv:2605.13028 / WAFR 2026 OCULAR author page",
+      "next": "Keep RMS-z optional/shadow-only. Repeat on real app/session/version-disjoint UI sources only after a visible consented provider exists; no new threshold or model promotion from synthetic data."
     }
   ],
   "current_evidence_overlay": {
@@ -1588,6 +1595,33 @@
   },
   "perception_latest_checkpoint": {
     "date": "2026-11-27",
+    "timestamp": "2026-11-27T20:18:50.884Z",
+    "owner": "Research & Perception",
+    "branch": "research-perception/v14-a3-ood-calibration-20261127-run72",
+    "pull_request": 2566,
+    "base_branch": "research-perception/v14-a3-tile-ood-abstention-20261127-run70",
+    "code_test_sha": "6d0b446a607a42cdbf7f35c6567761e1781703e2",
+    "head_sha": "cda72a62f40a0ec061542dbd92ff7cdab457d7c7",
+    "workflow_update_commit": "263b4744bb6f2674caf55366d688da3822c2cd9e",
+    "status": "DRAFT_A3_OOD_CALIBRATION_SYNTHETIC_LOCAL_PASS_HOSTED_CI_PENDING_NOT_RELEASED",
+    "tests": {
+      "local_linux": "Linux x86_64 / CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0 scratch: py_compile PASS; focused pytest 12/12 PASS; 30 seeded source-disjoint synthetic repeats PASS. Full local Aii checkout/pytest NOT_RUN; local harness mirrors production boxes/tile_features/tile_descriptor_threshold helpers.",
+      "focused_ci": "Exact PR #2566 Python 3.13/3.14 CI NOT_YET_VERIFIED at checkpoint; no parent #2565 CI attributed to this child.",
+      "shared_staged_integrated": "NOT_RUN for #2566. Parent #2565/#2563 shared gate remains blocked by Core lifecycle vision.py source pin and existing Core/QA integration failures; see parent handoff.",
+      "native_android": "NOT_RUN; no Android/Termux/Redmi, MediaProjection or microphone capture."
+    },
+    "result_summary": "30 repeats: RMS-z heuristic ID source rejection 7.33%, posterize OOD source rejection 85.5%; RMS-z source-max conformal alpha=.10 ID 9.17%, posterize 85.5%; shrinkage Mahalanobis heuristic ID 16.83%, posterize 50.83%; shrinkage Mahalanobis conformal ID 10.5%, posterize 36.17%. Keep production RMS-z unchanged. x86_64 scoring only; not Android performance.",
+    "device": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT; no device action. Last available private V13OBS #115 is historical 2026-11-24 and reported runtime/model process stopped; updater/install state UNKNOWN.",
+    "release": "NOT_RELEASED; release-development branch gpt6/v13-private-remote-bridge-20261111 was last board-verified at 8d93236c753f0194224c19edc7411d8d7082b1d6; no deployment inferred.",
+    "user_action_required": false,
+    "research_entries": [
+      "R-192"
+    ],
+    "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN72_20261127.md",
+    "next_action": "Verify exact #2566 Python 3.13/3.14 CI; Boss/Integrator review only after parent #2565/#2563 shared gate and Core source pins are reconciled. Keep RMS-z production gate unchanged and optional/shadow-only. After QA's visible consented provider exists, run app/session/version-disjoint real UI calibration. No user action."
+  },
+  "previous_perception_checkpoint": {
+    "date": "2026-11-27",
     "timestamp": "2026-11-27T19:43:58.507Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-a3-tile-ood-abstention-20261127-run70",
@@ -1612,32 +1646,6 @@
     ],
     "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN71_20261127.md",
     "next_action": "Core refreshes the existing lifecycle PINS['vision.py'] to SHA-256 dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b and rebases the normal A5 Runtime/C3 consumer onto current Perception. QA owns visible MediaProjection and AudioRecord provider/lifecycle tests. Core adds Runtime.submit(audio_window=...) with same-turn event/generation/lease. Perception then rebases #2312 and tests exact Runtime audio; next OOD experiment compares RMS-z, shrinkage covariance and source-disjoint conformal-style calibration."
-  },
-  "previous_perception_checkpoint": {
-    "date": "2026-11-27",
-    "timestamp": "2026-11-27T15:28:00Z",
-    "owner": "Research & Perception",
-    "branch": "research-perception/v14-a5-raw-eye-a4-structure-20261127-run67b",
-    "pull_request": 2559,
-    "base_branch": "research-perception/v14-vision-ui-frame-ingress-20261127-run64",
-    "code_test_sha": "0411d6fc539a2442e7f49886da87cc7fbbb25c73",
-    "head_sha": "e4795811bd3c4f43a81b71b47abcf7ea03a50a15",
-    "composer_blob": "bcc90bb003fbc69fb4d7f7876d34012ceedccd95",
-    "status": "DRAFT_FOCUSED_A5_A4_CI_PASS_SHARED_CORE_QA_GATE_FAIL_NOT_RELEASED",
-    "tests": {
-      "local_linux": "Isolated helper reproduction 3/3 PASS; full Aii checkout/pytest BLOCKED/NOT_RUN",
-      "focused_a5_a4": "workflow 46016491056 PASS; 29/29 Python 3.13 and 29/29 Python 3.14; py_compile PASS",
-      "shared_staged": "workflow 46016490897 FAIL; 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; Core audio/arithmetic/observer pins and QA PARTIAL-vs-UPDATED",
-      "integrated": "workflow 46016490897 FAIL; 1 Core Recovery audio-composer pin"
-    },
-    "device": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT; synthetic provider/PNG fixtures only; no Android MediaProjection or normal-turn C3",
-    "release": "NOT_RELEASED",
-    "user_action_required": false,
-    "research_entries": [
-      "R-186",
-      "Run67"
-    ],
-    "next_action": "Core rebase/port the A5 provider to the current Core Runtime branch, wire the normal Runtime/C3 consumer while the UI lease remains live, and refresh owned Recovery pins; QA validates Android consent/onStop/restart/rollback."
   },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
@@ -2455,6 +2463,33 @@
       ],
       "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN71_20261127.md",
       "next_action": "Core refreshes the existing lifecycle PINS['vision.py'] to SHA-256 dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b and rebases the normal A5 Runtime/C3 consumer onto current Perception. QA owns visible MediaProjection and AudioRecord provider/lifecycle tests. Core adds Runtime.submit(audio_window=...) with same-turn event/generation/lease. Perception then rebases #2312 and tests exact Runtime audio; next OOD experiment compares RMS-z, shrinkage covariance and source-disjoint conformal-style calibration."
+    },
+    {
+      "date": "2026-11-27",
+      "timestamp": "2026-11-27T20:18:50.884Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-a3-ood-calibration-20261127-run72",
+      "pull_request": 2566,
+      "base_branch": "research-perception/v14-a3-tile-ood-abstention-20261127-run70",
+      "code_test_sha": "6d0b446a607a42cdbf7f35c6567761e1781703e2",
+      "head_sha": "cda72a62f40a0ec061542dbd92ff7cdab457d7c7",
+      "workflow_update_commit": "263b4744bb6f2674caf55366d688da3822c2cd9e",
+      "status": "DRAFT_A3_OOD_CALIBRATION_SYNTHETIC_LOCAL_PASS_HOSTED_CI_PENDING_NOT_RELEASED",
+      "tests": {
+        "local_linux": "Linux x86_64 / CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0 scratch: py_compile PASS; focused pytest 12/12 PASS; 30 seeded source-disjoint synthetic repeats PASS. Full local Aii checkout/pytest NOT_RUN; local harness mirrors production boxes/tile_features/tile_descriptor_threshold helpers.",
+        "focused_ci": "Exact PR #2566 Python 3.13/3.14 CI NOT_YET_VERIFIED at checkpoint; no parent #2565 CI attributed to this child.",
+        "shared_staged_integrated": "NOT_RUN for #2566. Parent #2565/#2563 shared gate remains blocked by Core lifecycle vision.py source pin and existing Core/QA integration failures; see parent handoff.",
+        "native_android": "NOT_RUN; no Android/Termux/Redmi, MediaProjection or microphone capture."
+      },
+      "result_summary": "30 repeats: RMS-z heuristic ID source rejection 7.33%, posterize OOD source rejection 85.5%; RMS-z source-max conformal alpha=.10 ID 9.17%, posterize 85.5%; shrinkage Mahalanobis heuristic ID 16.83%, posterize 50.83%; shrinkage Mahalanobis conformal ID 10.5%, posterize 36.17%. Keep production RMS-z unchanged. x86_64 scoring only; not Android performance.",
+      "device": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT; no device action. Last available private V13OBS #115 is historical 2026-11-24 and reported runtime/model process stopped; updater/install state UNKNOWN.",
+      "release": "NOT_RELEASED; release-development branch gpt6/v13-private-remote-bridge-20261111 was last board-verified at 8d93236c753f0194224c19edc7411d8d7082b1d6; no deployment inferred.",
+      "user_action_required": false,
+      "research_entries": [
+        "R-192"
+      ],
+      "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN72_20261127.md",
+      "next_action": "Verify exact #2566 Python 3.13/3.14 CI; Boss/Integrator review only after parent #2565/#2563 shared gate and Core source pins are reconciled. Keep RMS-z production gate unchanged and optional/shadow-only. After QA's visible consented provider exists, run app/session/version-disjoint real UI calibration. No user action."
     }
   ]
 }
