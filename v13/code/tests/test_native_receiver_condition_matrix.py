@@ -129,11 +129,11 @@ def approved(matrix):
     return list(matrix.iter_inputs(approval=digest, approval_validator=lambda token, expected: token == expected))
 
 
-def test_builds_twelve_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
+def test_builds_thirteen_bound_conditions_and_streams_after_one_shot_approval(monkeypatch):
     matrix = build(monkeypatch)
     receipt = matrix.receipt
     assert receipt["status"] == "MATRIX_READY_NOT_SCORED"
-    assert receipt["condition_count"] == 12
+    assert receipt["condition_count"] == 13
     assert tuple(x["condition"] for x in receipt["conditions"]) == CONDITIONS
     assert receipt["required_approval_kind"] == "NATIVE_RECEIVER_MATRIX"
     assert receipt["approval_binding_kind"] == "UNSIGNED_DIGEST_ONLY"
@@ -165,6 +165,14 @@ def test_builds_twelve_bound_conditions_and_streams_after_one_shot_approval(monk
     assert result[11]["input_rows"] == 0 and result[11]["vectors"] == []
     assert result[11]["position_ids"] == [0, 1, 2]
     assert result[11]["input_sha256"] == result[11]["text_token_ids_sha256"]
+    assert result[12]["condition"] == "SELF_GENERATED_MESSAGE"
+    assert result[12]["control_recipe"] == "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+    assert result[12]["text_token_ids"] == [11, 22, 33]
+    assert result[12]["text_token_ids_sha256"] == result[11]["text_token_ids_sha256"]
+    assert result[12]["input_rows"] == 3 and result[12]["vectors"] == []
+    assert result[12]["position_ids"] == [0, 1, 2]
+    assert result[12]["adapter_sha256"] is None
+    assert result[12]["input_sha256"] != result[12]["text_token_ids_sha256"]
     assert all(x["position_ids"] == list(range(x["input_rows"])) for x in result if x["condition"] != "DIRECT_TEXT_REFERENCE")
     with pytest.raises(NativeReceiverConditionMatrixError, match="already consumed"):
         approved(matrix)
@@ -193,7 +201,7 @@ def test_requires_matching_matrix_approval_before_yield(monkeypatch):
         list(matrix.iter_inputs())
     with pytest.raises(NativeReceiverConditionMatrixError, match="does not bind"):
         list(matrix.iter_inputs(approval="wrong", approval_validator=lambda token, digest: token == digest))
-    assert len(approved(matrix)) == 12
+    assert len(approved(matrix)) == 13
 
 
 def test_rejects_wrong_ood_family_and_cross_session_control(monkeypatch):
@@ -262,7 +270,7 @@ def test_public_receipt_is_copy_and_close_blocks_later_vector_access(monkeypatch
     receipt = matrix.receipt
     receipt["conditions"][0]["input_sha256"] = "f" * 64
     assert matrix.receipt["conditions"][0]["input_sha256"] != "f" * 64
-    assert len(approved(matrix)) == 12
+    assert len(approved(matrix)) == 13
     matrix.close()
     with pytest.raises(NativeReceiverConditionMatrixError, match="closed"):
         approved(matrix)
@@ -295,11 +303,13 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
         receiver_sha = kwargs["expected_model_sha256"]
         scores = {}
         for item in kwargs["condition_inputs"]:
-            digest = item["input_sha256"]
+            text_tokens = item.get("text_token_ids", [])
+            self_message = item["condition"] == "SELF_GENERATED_MESSAGE"
+            context_rows = len(text_tokens) if item["condition"] == "DIRECT_TEXT_REFERENCE" else (item["input_rows"] if item["input_rows"] > 0 else 1)
+            native_input_sha = sha("self-native-input-" + item["task_group_id"]) if self_message else item["input_sha256"]
+            digest = native_input_sha
             if item["condition"] == wrong_condition:
                 digest = "f" * 64
-            text_tokens = item.get("text_token_ids", [])
-            context_rows = len(text_tokens) if item["condition"] == "DIRECT_TEXT_REFERENCE" else (item["input_rows"] if item["input_rows"] > 0 else 1)
             positions = list(range(context_rows))
             position_sha = sha(struct.pack("<" + "i" * context_rows, *positions))
             combined_sha = sha("kv-combined-" + item["condition"])
@@ -331,7 +341,7 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
                 "recurrent_state_included": False,
                 "condition": item["condition"],
                 "receiver_model_sha256": receiver_sha,
-                "input_sha256": item["input_sha256"],
+                "input_sha256": native_input_sha,
             }
             if item["condition"] == bad_kv_condition:
                 kv_snapshot["stable_read_sha256"] = "f" * 64
@@ -352,10 +362,21 @@ def _fake_matrix_probe(monkeypatch, *, wrong_condition=None, bad_kv_condition=No
                 "llama_version": "synthetic-fixture",
                 "kv_snapshot": kv_snapshot,
             }
+            if self_message:
+                scores[item["condition"]]["self_generation"] = {
+                    "schema": "v14.native-receiver-self-generation/1",
+                    "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+                    "prompt_token_count": len(text_tokens),
+                    "prompt_token_ids_sha256": item["text_token_ids_sha256"],
+                    "generated_token_count": item["input_rows"],
+                    "generated_token_ids_sha256": sha("generated-" + item["task_group_id"]),
+                    "message_input_sha256": native_input_sha,
+                    "decode_status": 0,
+                }
             if item["condition"] == missing_kv_condition:
                 scores[item["condition"]].pop("kv_snapshot")
         return {
-            "schema": "v14.native-receiver-task-matrix/2",
+            "schema": "v14.native-receiver-task-matrix/3",
             "status": "SCORED",
             "sender_role": kwargs["sender_role"],
             "receiver_role": kwargs["receiver_role"],
@@ -414,8 +435,8 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert result["cohort_status"] == "FIXTURE_ONLY"
     assert result["holdout_status"] == "INSUFFICIENT_HOLDOUT"
     assert result["enough_holdout"] is False
-    assert result["condition_count"] == 12
-    assert result["kv_snapshot_count"] == 12
+    assert result["condition_count"] == 13
+    assert result["kv_snapshot_count"] == 13
     assert result["kv_snapshot_layer_id"] == 0
     assert result["kv_snapshot_scope"] == "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
     assert result["kv_snapshot_stable"] is True
@@ -434,9 +455,9 @@ def test_matrix_bridge_scores_all_conditions_and_records_one_atomic_group(monkey
     assert "token_logprobs" not in repr(result)
     assert "target_token_ids" not in result and "source_text" not in result
     status = task_score_status(runtime)
-    assert status["receipt_count"] == 12
+    assert status["receipt_count"] == 13
     stored = runtime._native_receiver_task_score_receipts
-    assert len(stored) == 12
+    assert len(stored) == 13
     for receipt in stored:
         snapshot = receipt["native"]["kv_snapshot"]
         assert snapshot["condition"] == receipt["condition"]

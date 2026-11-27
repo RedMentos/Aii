@@ -1,4 +1,4 @@
-"""Source-bound, serial twelve-condition inputs for native receiver task scoring.
+"""Source-bound, serial thirteen-condition inputs for native receiver task scoring.
 
 This is an input producer only: it never loads a model, scores tokens, persists
 vectors, changes weights, grants approval, or enables production B3 routing.
@@ -18,7 +18,7 @@ from .native_receiver_audit_controls import (
     AuditControlError, build_private_omission_proof, moment_matched_random_rows,
 )
 
-SCHEMA = "v14.native-receiver-condition-matrix/3"
+SCHEMA = "v14.native-receiver-condition-matrix/4"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 REQUIRED_APPROVAL_KIND = "NATIVE_RECEIVER_MATRIX"
 MAX_ROWS, MAX_DIM, MAX_ELEMENTS, MAX_TARGET_TOKENS = 64, 8192, 262144, 512
@@ -472,6 +472,20 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             text_ids = list(direct_text_tokens)
             input_sha = direct_text_sha
             positions = list(range(len(text_ids)))
+        elif condition == "SELF_GENERATED_MESSAGE":
+            vectors = []
+            recipe = "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+            text_ids = list(direct_text_tokens)
+            input_sha = _json_sha({
+                "schema": "v14.receiver-self-message-request/1",
+                "receiver_model_sha256": main_receiver["model_sha256"],
+                "prompt_token_ids_sha256": direct_text_sha,
+                "prompt_token_count": len(direct_text_tokens),
+                "message_rows": len(candidate),
+                "generation_algorithm": recipe,
+                "matched_compute_budget": "ONE_GENERATED_TOKEN_PER_MESSAGE_ROW",
+            })
+            positions = list(range(len(candidate)))
         else:
             vectors, recipe = _build_rows(
                 condition, baseline_rows, exact, candidate, ood_rows, entity_rows,
@@ -480,7 +494,7 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             text_ids = []
             input_sha = _input_sha(vectors)
             positions = list(range(len(vectors)))
-        rows = len(vectors)
+        rows = len(candidate) if condition == "SELF_GENERATED_MESSAGE" else len(vectors)
         # Empty NO_MESSAGE and direct-text inputs still carry receiver width metadata.
         dim = len(vectors[0]) if rows else len(baseline_rows[0])
         if rows > MAX_ROWS or rows * dim > MAX_ELEMENTS:
@@ -504,7 +518,7 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             message_ref, message_record, message_adapter = no_private_meta["source_ref"], no_private_meta["record_sha256"], adapter_sha
             message_event, message_generation = no_private_meta["event_id"], no_private_meta["brain_generation_id"]
             native_source, native_generation = message_ref["source_id"], message_generation
-        elif condition == "DIRECT_TEXT_REFERENCE":
+        elif condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"}:
             message_ref, message_record, message_adapter = source, main["record_sha256"], None
             message_event, message_generation = task_event, task_generation
             native_source, native_generation = source["source_id"], task_generation
@@ -514,8 +528,8 @@ def build_native_receiver_condition_matrix(*, task, pair_record, baseline_packet
             message_event, message_generation = task_event, task_generation
             native_source, native_generation = source["source_id"], task_generation
         control_proof = private_proof_sha if condition == "INTACT_NO_PRIVATE" else None
-        text_sha = direct_text_sha if condition == "DIRECT_TEXT_REFERENCE" else None
-        return {"schema": "v14.native-receiver-condition-input/2", "condition": condition,
+        text_sha = direct_text_sha if condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else None
+        return {"schema": "v14.native-receiver-condition-input/3", "condition": condition,
             "task_group_id": task_id, "task_family": family, "session_id": session,
             "source_ref": source, "message_source_ref": message_ref,
             "message_record_sha256": message_record, "message_event_id": message_event,

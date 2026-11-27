@@ -124,7 +124,7 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
     elif condition == "EXACT_MESSAGE":
         message_source_ref = source_ref
         adapter_sha256 = None
-    elif condition == "DIRECT_TEXT_REFERENCE":
+    elif condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"}:
         message_source_ref = source_ref
         adapter_sha256 = None
     elif condition == "INTACT_NO_PRIVATE":
@@ -166,6 +166,17 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
     }
+    if condition == "SELF_GENERATED_MESSAGE":
+        native["self_generation"] = {
+            "schema": "v14.native-receiver-self-generation/1",
+            "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+            "prompt_token_count": 3,
+            "prompt_token_ids_sha256": sha(f"self-prompt-{task_index}"),
+            "generated_token_count": 2,
+            "generated_token_ids_sha256": sha(f"self-generated-{task_index}"),
+            "message_input_sha256": input_sha,
+            "decode_status": 0,
+        }
     if kv_digest_override is not None:
         position_sha = hashlib.sha256(struct.pack("<i", 0)).hexdigest()
         combined_sha = sha("kv-combined-" + kv_digest_override)
@@ -254,6 +265,7 @@ def _information_use_scores():
         "DERANGED_MESSAGE": [-2.0, -2.0],
         "INTACT_NO_PRIVATE": [-2.0, -2.0],
         "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
+        "SELF_GENERATED_MESSAGE": [-2.0, -2.0],
     }
 
 
@@ -328,7 +340,7 @@ def test_kv_snapshot_effect_is_read_only_and_separate_from_task_utility():
 
     assert result["status"] == "FIXTURE_ONLY"
     assert effect["status"] == "READ_ONLY_SAMPLE_ONLY"
-    assert effect["snapshot_count"] == 12
+    assert effect["snapshot_count"] == 13
     assert effect["candidate_differs_from_no_message_count"] == 1
     assert effect["candidate_differs_from_exact_message_count"] == 1
     assert effect["distinct_from_no_message_task_groups_by_condition"]["NO_MESSAGE"] == 0
@@ -563,6 +575,7 @@ def test_information_use_audit_exposes_system_gain_without_content_specific_gain
         "DERANGED_MESSAGE": [-2.0, -2.0],
         "INTACT_NO_PRIVATE": [-2.0, -2.0],
         "DIRECT_TEXT_REFERENCE": [-1.5, -1.5],
+        "SELF_GENERATED_MESSAGE": [-2.0, -2.0],
     }
     result = None
     for task_index in range(40):
@@ -595,6 +608,9 @@ def test_information_use_audit_requires_system_specificity_and_full_derangement(
     assert audit["unrelated_donor_gain_pass"] is True
     assert audit["same_family_pairing_derangement_tested"] is True
     assert audit["pairing_gain_pass"] is True
+    assert audit["self_substitution_gap_vs_receiver_generated_message"]["mean_delta_nats_per_token"] == 1.0
+    assert audit["separate_agent_value_pass"] is True
+    assert audit["separate_agent_value_status"] == "SEPARATE_AGENT_VALUE_SIGNAL"
     assert audit["same_family_pairing_derangement"]["status"] == "PASS"
     assert audit["full_derangement_tested"] is True
     assert audit["unrelated_donor_derangement"]["status"] == "PASS"

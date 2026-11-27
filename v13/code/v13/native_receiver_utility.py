@@ -21,11 +21,11 @@ from .native_hybrid_state import (
     validate_native_hybrid_state_roundtrip,
 )
 
-TASK_SCHEMA = "v14.native-receiver-task-score/2"
+TASK_SCHEMA = "v14.native-receiver-task-score/3"
 NATIVE_SCHEMA = "v14.native-receiver-target-score/1"
-RESULT_SCHEMA = "v14.native-receiver-task-utility/2"
+RESULT_SCHEMA = "v14.native-receiver-task-utility/3"
 SCORE_METHOD = "TEACHER_FORCED_TARGET_LOGPROB_V1"
-CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE")
+CONDITIONS = ("NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE")
 LATENT_CONDITIONS = frozenset({"LATENT_CANDIDATE", "ZERO", "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION", "DERANGED_MESSAGE", "INTACT_NO_PRIVATE"})
 TASK_FAMILIES = frozenset({"ARITHMETIC", "ENTITY_RECALL", "RELATION", "MULTI_STEP", "OTHER"})
 ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
@@ -544,6 +544,33 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
         "decode_status": 0, "native_input_consumed": True,
         "llama_version": _id(value.get("llama_version"), "native.llama_version")[:120],
     }
+    if condition == "SELF_GENERATED_MESSAGE":
+        generated = value.get("self_generation")
+        if (not isinstance(generated, Mapping)
+                or generated.get("schema") != "v14.native-receiver-self-generation/1"
+                or generated.get("algorithm") != "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+                or type(generated.get("prompt_token_count")) is not int
+                or not 1 <= generated["prompt_token_count"] <= 64
+                or type(generated.get("generated_token_count")) is not int
+                or not 1 <= generated["generated_token_count"] <= 64
+                or type(generated.get("decode_status")) is not int
+                or generated["decode_status"] != 0
+                or generated.get("message_input_sha256") != input_hash):
+            raise NativeReceiverUtilityError("receiver self-generated message receipt is invalid")
+        prompt_sha = _sha(generated.get("prompt_token_ids_sha256"), "self_generation.prompt_token_ids_sha256")
+        generated_sha = _sha(generated.get("generated_token_ids_sha256"), "self_generation.generated_token_ids_sha256")
+        native_data["self_generation"] = {
+            "schema": "v14.native-receiver-self-generation/1",
+            "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+            "prompt_token_count": generated["prompt_token_count"],
+            "prompt_token_ids_sha256": prompt_sha,
+            "generated_token_count": generated["generated_token_count"],
+            "generated_token_ids_sha256": generated_sha,
+            "message_input_sha256": input_hash,
+            "decode_status": 0,
+        }
+    elif "self_generation" in value:
+        raise NativeReceiverUtilityError("unexpected receiver self-generation receipt")
     if env in {"TERMUX_ANDROID", "REDMI"}:
         native_data["device_execution_receipt_sha256"] = _sha(
             value.get("device_execution_receipt_sha256"), "native.device_execution_receipt_sha256")
@@ -606,9 +633,9 @@ def build_native_receiver_task_score_receipt(*, condition, task_group_id, task_f
     if condition == "NO_MESSAGE":
         if message_source is not None or adapter_sha256 is not None or control_proof_sha256 is not None:
             raise NativeReceiverUtilityError("NO_MESSAGE must not bind a sender source, adapter or proof")
-    elif condition in {"EXACT_MESSAGE", "DIRECT_TEXT_REFERENCE"}:
+    elif condition in {"EXACT_MESSAGE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"}:
         if message_source != source or adapter_sha256 is not None or control_proof_sha256 is not None:
-            raise NativeReceiverUtilityError(condition + " must use exact task text without an adapter/proof")
+            raise NativeReceiverUtilityError(condition + " must use the task source without an adapter/proof")
     elif condition == "INTACT_NO_PRIVATE":
         if message_source is None or message_source["sha256"] == source["sha256"]:
             raise NativeReceiverUtilityError("intact-no-private source must be distinct from the task source")
@@ -824,6 +851,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
     moment_matched_gain = delta_report["MOMENT_MATCHED_RANDOM"]
     intact_no_private_gain = delta_report["INTACT_NO_PRIVATE"]
     candidate_vs_direct_text = delta_report["DIRECT_TEXT_REFERENCE"]
+    self_substitution = delta_report["SELF_GENERATED_MESSAGE"]
+    self_substitution_pass = bool(enough and self_substitution["pass"])
     direct_text_deltas = [
         group["DIRECT_TEXT_REFERENCE"]["mean_target_logprob"] - group["NO_MESSAGE"]["mean_target_logprob"]
         for group in groups.values()
@@ -875,13 +904,23 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
     else:
         information_use_status = "NO_SYSTEM_GAIN_ESTABLISHED"
     information_use_audit = {
-        "schema": "v14.native-receiver-information-use-audit/3",
+        "schema": "v14.native-receiver-information-use-audit/4",
         "status": information_use_status,
         "system_gain_vs_no_message": dict(system_gain),
         "entity_specificity_gain_vs_counterfactual": dict(entity_specificity_gain),
         "moment_matched_random_gain_vs_control": dict(moment_matched_gain),
         "intact_no_private_gain_vs_control": dict(intact_no_private_gain),
         "candidate_vs_direct_text_reference": dict(candidate_vs_direct_text),
+        "self_substitution_gap_vs_receiver_generated_message": dict(self_substitution),
+        "separate_agent_value_pass": self_substitution_pass,
+        "separate_agent_value_status": (
+            "SEPARATE_AGENT_VALUE_SIGNAL" if self_substitution_pass
+            else "NO_SEPARATE_AGENT_VALUE_ESTABLISHED"
+        ),
+        "self_substitution_interpretation": (
+            "Positive paired target-logprob proxy means the sender message outperforms a "
+            "receiver-generated latent sequence at the same message-row budget; this is not task accuracy."
+        ),
         "direct_text_validity_reference": direct_text_validity,
         "pairing_gain_vs_same_family_deranged_control": dict(pairing_gain),
         "same_family_pairing_derangement": pairing_derangement,

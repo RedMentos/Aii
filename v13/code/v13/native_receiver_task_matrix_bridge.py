@@ -26,8 +26,8 @@ from .native_receiver_utility import (
     validate_native_receiver_kv_snapshot,
 )
 
-BRIDGE_SCHEMA = "v14.native-receiver-task-matrix-bridge/2"
-NATIVE_MATRIX_SCHEMA = "v14.native-receiver-task-matrix/2"
+BRIDGE_SCHEMA = "v14.native-receiver-task-matrix-bridge/3"
+NATIVE_MATRIX_SCHEMA = "v14.native-receiver-task-matrix/3"
 _ENVIRONMENTS = frozenset({"SYNTHETIC", "LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"})
 
 
@@ -68,12 +68,28 @@ def _vectors_sha256(vectors):
 def _token_ids_sha256(token_ids):
     if (not isinstance(token_ids, list) or not 1 <= len(token_ids) <= 64
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in token_ids)):
-        raise NativeReceiverTaskMatrixBridgeError("direct-text token IDs are invalid")
+        raise NativeReceiverTaskMatrixBridgeError("token IDs are invalid")
     try:
         payload = struct.pack("<" + "i" * len(token_ids), *token_ids)
     except (OverflowError, struct.error) as exc:
-        raise NativeReceiverTaskMatrixBridgeError("direct-text token IDs cannot be encoded") from exc
+        raise NativeReceiverTaskMatrixBridgeError("token IDs cannot be encoded") from exc
     return hashlib.sha256(payload).hexdigest()
+
+
+def _self_message_request_sha(receiver_model_sha256, prompt_sha256, prompt_count, message_rows):
+    material = {
+        "schema": "v14.receiver-self-message-request/1",
+        "receiver_model_sha256": receiver_model_sha256,
+        "prompt_token_ids_sha256": prompt_sha256,
+        "prompt_token_count": prompt_count,
+        "message_rows": message_rows,
+        "generation_algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+        "matched_compute_budget": "ONE_GENERATED_TOKEN_PER_MESSAGE_ROW",
+    }
+    import json
+    return hashlib.sha256(
+        json.dumps(material, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def _validate_source(source_validator, receipt, phase):
@@ -91,7 +107,7 @@ def _validate_source(source_validator, receipt, phase):
 
 def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
     if not isinstance(inputs, list) or len(inputs) != len(CONDITIONS):
-        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all twelve conditions")
+        raise NativeReceiverTaskMatrixBridgeError("approved matrix did not yield all thirteen conditions")
     if tuple(item.get("condition") for item in inputs if isinstance(item, Mapping)) != CONDITIONS:
         raise NativeReceiverTaskMatrixBridgeError("approved matrix condition order is invalid")
 
@@ -159,6 +175,22 @@ def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
                     or item["input_sha256"] != text_sha or item.get("adapter_sha256") is not None
                     or proof_sha is not None or item.get("control_recipe") != "DIRECT_TEXT_TOKEN_INPUT_REFERENCE_V1"):
                 raise NativeReceiverTaskMatrixBridgeError("direct-text reference token binding is invalid")
+        elif condition == "SELF_GENERATED_MESSAGE":
+            expected_request_sha = (
+                _self_message_request_sha(receiver["model_sha256"], text_sha, len(text_tokens), rows)
+                if _is_sha256(text_sha) and isinstance(text_tokens, list) and type(rows) is int
+                else None
+            )
+            if (vectors != [] or type(rows) is not int or not 1 <= rows <= 64
+                    or type(dim) is not int or dim < 1
+                    or not isinstance(text_tokens, list) or not 1 <= len(text_tokens) <= 64
+                    or positions != list(range(rows)) or item.get("text_token_count") != len(text_tokens)
+                    or not _is_sha256(text_sha) or _token_ids_sha256(text_tokens) != text_sha
+                    or item["input_sha256"] != expected_request_sha
+                    or item.get("adapter_sha256") is not None or proof_sha is not None
+                    or item.get("message_source_ref") != receipt["source_ref"]
+                    or item.get("control_recipe") != "GREEDY_RECEIVER_HIDDEN_STATE_V1"):
+                raise NativeReceiverTaskMatrixBridgeError("receiver self-generated message request binding is invalid")
         else:
             if (not isinstance(text_tokens, list) or text_tokens != [] or text_sha is not None
                     or item.get("text_token_count") != 0):
@@ -202,7 +234,7 @@ def score_and_record_native_receiver_condition_matrix(
     device_runtime_build_id=None,
     include_hybrid_state_roundtrip=False,
 ):
-    """Consume one approved matrix, score all conditions, and atomically record twelve receipts.
+    """Consume one approved matrix, score all conditions, and atomically record thirteen receipts.
 
     approval_validator must bind a real one-shot Runtime approval to the matrix
     digest. source_validator(receipt, phase) must re-check the current source
@@ -356,7 +388,7 @@ def score_and_record_native_receiver_condition_matrix(
 
         condition_scores = native_result.get("condition_scores")
         if not isinstance(condition_scores, Mapping) or set(condition_scores) != set(CONDITIONS):
-            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all twelve condition scores")
+            raise NativeReceiverTaskMatrixBridgeError("native result does not contain all thirteen condition scores")
         expected_kind, expected_env = (
             ("SYNTHETIC_FIXTURE", "SYNTHETIC")
             if target_environment == "SYNTHETIC"
@@ -370,12 +402,29 @@ def score_and_record_native_receiver_condition_matrix(
         kv_geometry = None
         for condition, item in zip(CONDITIONS, condition_inputs):
             native_score = condition_scores[condition]
+            native_input_sha = native_score.get("input_sha256") if isinstance(native_score, Mapping) else None
+            if condition == "SELF_GENERATED_MESSAGE":
+                self_generation = native_score.get("self_generation") if isinstance(native_score, Mapping) else None
+                input_binding_ok = (
+                    _is_sha256(native_input_sha)
+                    and isinstance(self_generation, Mapping)
+                    and self_generation.get("schema") == "v14.native-receiver-self-generation/1"
+                    and self_generation.get("algorithm") == "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+                    and self_generation.get("prompt_token_count") == item["text_token_count"]
+                    and self_generation.get("prompt_token_ids_sha256") == item["text_token_ids_sha256"]
+                    and self_generation.get("generated_token_count") == item["input_rows"]
+                    and self_generation.get("decode_status") == 0
+                    and self_generation.get("message_input_sha256") == native_input_sha
+                    and _is_sha256(self_generation.get("generated_token_ids_sha256"))
+                )
+            else:
+                input_binding_ok = native_input_sha == item["input_sha256"]
             if (not isinstance(native_score, Mapping)
                     or native_score.get("execution_kind") != expected_kind
                     or native_score.get("environment") != expected_env
                     or native_score.get("llama_cpp_revision") != PINNED_LLAMA_REVISION
                     or native_score.get("receiver_model_sha256") != receiver["model_sha256"]
-                    or native_score.get("input_sha256") != item["input_sha256"]
+                    or not input_binding_ok
                     or native_score.get("target_token_ids_sha256") != target_sha
                     or native_score.get("target_token_count") != len(token_ids)
                     or native_score.get("score_method") != SCORE_METHOD
@@ -398,7 +447,7 @@ def score_and_record_native_receiver_condition_matrix(
                         else (item["input_rows"] if item["input_rows"] > 0 else 1)),
                     expected_condition=condition,
                     expected_model_sha256=receiver["model_sha256"],
-                    expected_input_sha256=item["input_sha256"],
+                    expected_input_sha256=native_input_sha,
                     allow_sanitized=True,
                 )
             except Exception as exc:
@@ -429,7 +478,7 @@ def score_and_record_native_receiver_condition_matrix(
                 target_token_ids_sha256=target_sha,
                 target_token_count=len(token_ids),
                 context_sha256=receipt["context_sha256"],
-                input_sha256=item["input_sha256"],
+                input_sha256=native_input_sha,
                 native_receipt=native_receipt,
                 adapter_sha256=item.get("adapter_sha256"),
                 control_proof_sha256=item.get("control_proof_sha256"),

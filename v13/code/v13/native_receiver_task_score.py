@@ -15,7 +15,7 @@ from .native_receiver_utility import (
     evaluate_native_receiver_task_utility,
 )
 
-MAX_TASK_SCORE_RECEIPTS = 480
+MAX_TASK_SCORE_RECEIPTS = 520
 
 
 class NativeReceiverTaskScoreError(ValueError):

@@ -17,7 +17,7 @@ from pathlib import Path
 
 from .native_hybrid_state import HYBRID_STATE_SCHEMA, validate_native_hybrid_state_roundtrip
 
-SCHEMA = "v14.native-latent-receiver/2"
+SCHEMA = "v14.native-latent-receiver/3"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
@@ -581,7 +581,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
-        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE",
     )
     if sender_role not in SENDER_ROLES or receiver_role not in RECEIVER_ROLES or sender_role == receiver_role:
         raise NativeReceiverError("unsupported or identical sender/receiver roles")
@@ -635,7 +635,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             continue
         if expected_condition == "DIRECT_TEXT_REFERENCE":
             if vectors not in ([], ()) or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 64:
-                raise NativeReceiverError("DIRECT_TEXT_REFERENCE requires 1..512 receiver-tokenizer IDs and no vectors")
+                raise NativeReceiverError("DIRECT_TEXT_REFERENCE requires 1..64 receiver-tokenizer IDs and no vectors")
             if any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids):
                 raise NativeReceiverError("DIRECT_TEXT_REFERENCE token IDs must be non-negative int32 values")
             positions = _validate_positions(position_ids, len(text_token_ids), position_mode)
@@ -649,6 +649,28 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                 "condition": expected_condition, "rows": 0, "positions": positions,
                 "payload": b"", "input_sha256": input_sha256,
                 "text_token_ids": list(text_token_ids), "context_rows": len(text_token_ids),
+            })
+            continue
+        if expected_condition == "SELF_GENERATED_MESSAGE":
+            rows = item.get("input_rows")
+            if (vectors not in ([], ()) or type(rows) is not int or not 1 <= rows <= MAX_ROWS
+                    or not isinstance(text_token_ids, (list, tuple)) or not 1 <= len(text_token_ids) <= 64
+                    or any(type(token) is not int or token < 0 or token > 2147483647 for token in text_token_ids)):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE requires bounded prompt tokens and message rows")
+            positions = _validate_positions(position_ids, rows, position_mode)
+            if positions != list(range(rows)):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE positions must be contiguous and zero based")
+            token_payload = struct.pack("<" + "i" * len(text_token_ids), *text_token_ids)
+            prompt_sha = hashlib.sha256(token_payload).hexdigest()
+            if (item.get("text_token_ids_sha256") != prompt_sha
+                    or type(item.get("input_sha256")) is not str or len(item["input_sha256"]) != 64
+                    or any(ch not in "0123456789abcdef" for ch in item["input_sha256"])):
+                raise NativeReceiverError("SELF_GENERATED_MESSAGE request digest or prompt binding is invalid")
+            prepared.append({
+                "condition": expected_condition, "rows": rows, "positions": positions,
+                "payload": b"", "input_sha256": item["input_sha256"],
+                "text_token_ids": list(text_token_ids), "context_rows": rows,
+                "prompt_sha256": prompt_sha, "message_rows": rows,
             })
             continue
         if text_token_ids not in ([], ()):
@@ -735,7 +757,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raise NativeReceiverUnavailable("native receiver version check failed")
     version_data = _json_output(version.stdout, "version")
     if (version_data.get("task_matrix_supported") is not True
-            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/2"
+            or version_data.get("task_matrix_schema") != "v14.native-receiver-task-matrix/3"
             or version_data.get("kv_snapshot_supported") is not True
             or version_data.get("kv_snapshot_schema") != "v14.native-receiver-kv-snapshot/1"):
         raise NativeReceiverUnavailable("native receiver binary does not advertise task-matrix and read-only K/V snapshot support")
@@ -763,7 +785,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
         raw = json.loads(stdout.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise NativeReceiverError("native receiver returned invalid task-matrix JSON") from exc
-    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/2"
+    if (not isinstance(raw, dict) or raw.get("schema") != "v14.native-receiver-task-matrix/3"
             or raw.get("runner_revision") != PINNED_LLAMA_REVISION or raw.get("status") != "SCORED"
             or raw.get("receiver_input_dim") != input_dim
             or type(raw.get("output_dim")) is not int or raw.get("output_dim") < 1
@@ -803,13 +825,34 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
                 or type(native_item.get("decode_status")) is not int or native_item.get("decode_status") != 0
                 or native_item.get("native_input_consumed") is not True):
             raise NativeReceiverError("native receiver condition receipt is missing or misbound: " + expected)
+        if expected == "SELF_GENERATED_MESSAGE":
+            actual_input_sha = native_item.get("input_sha256")
+            self_generation = native_item.get("self_generation")
+            if (type(actual_input_sha) is not str or len(actual_input_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in actual_input_sha)
+                    or not isinstance(self_generation, dict)
+                    or self_generation.get("schema") != "v14.native-receiver-self-generation/1"
+                    or self_generation.get("algorithm") != "GREEDY_RECEIVER_HIDDEN_STATE_V1"
+                    or self_generation.get("prompt_token_count") != len(prepared_item["text_token_ids"])
+                    or self_generation.get("prompt_token_ids_sha256") != prepared_item["prompt_sha256"]
+                    or self_generation.get("generated_token_count") != prepared_item["message_rows"]
+                    or self_generation.get("decode_status") != 0
+                    or self_generation.get("message_input_sha256") != actual_input_sha
+                    or type(self_generation.get("generated_token_ids_sha256")) is not str
+                    or len(self_generation["generated_token_ids_sha256"]) != 64
+                    or any(ch not in "0123456789abcdef" for ch in self_generation["generated_token_ids_sha256"])):
+                raise NativeReceiverError("native receiver self-generated message receipt is misbound")
+        else:
+            actual_input_sha = prepared_item["input_sha256"]
+            if native_item.get("input_sha256") != actual_input_sha:
+                raise NativeReceiverError("native receiver condition input digest changed")
         try:
             kv_snapshot = validate_native_receiver_kv_snapshot(
                 native_item.get("kv_snapshot"),
                 expected_rows=expected_context_rows,
                 expected_condition=expected,
                 expected_model_sha256=expected_model_sha256,
-                expected_input_sha256=prepared_item["input_sha256"],
+                expected_input_sha256=actual_input_sha,
             )
         except Exception as exc:
             raise NativeReceiverError(
@@ -833,7 +876,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             "llama_cpp_revision": PINNED_LLAMA_REVISION,
             "binary_sha256": binary_sha256_before,
             "receiver_model_sha256": expected_model_sha256,
-            "input_sha256": prepared_item["input_sha256"],
+            "input_sha256": actual_input_sha,
             "target_token_ids_sha256": target_sha256,
             "target_token_count": len(target_ids),
             "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
@@ -846,6 +889,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             receipt["device_execution_receipt_sha256"] = device_execution_receipt_sha256
             receipt["device_runtime_build_id"] = device_runtime_build_id
         receipt["kv_snapshot"] = kv_snapshot
+        if expected == "SELF_GENERATED_MESSAGE":
+            receipt["self_generation"] = dict(self_generation)
         condition_scores[expected] = receipt
 
     if hybrid_state_roundtrip is not None:
@@ -855,7 +900,7 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
     if _sha256_file(binary) != binary_sha256_before:
         raise NativeReceiverError("native receiver binary changed during task-matrix probe")
     return {
-        "schema": "v14.native-receiver-task-matrix/2",
+        "schema": "v14.native-receiver-task-matrix/3",
         "status": "SCORED",
         "sender_role": sender_role,
         "receiver_role": receiver_role,

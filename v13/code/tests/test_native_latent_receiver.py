@@ -159,30 +159,46 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     conditions = (
         "NO_MESSAGE", "EXACT_MESSAGE", "LATENT_CANDIDATE", "ZERO",
         "SHUFFLE", "REPEAT", "MOMENT_MATCHED_RANDOM", "OOD", "ENTITY_SUBSTITUTION",
-        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE",
+        "DERANGED_MESSAGE", "INTACT_NO_PRIVATE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE",
     )
     condition_inputs = []
     native_conditions = []
     target_ids = [101, 202]
     target_sha = hashlib.sha256(struct.pack("<ii", *target_ids)).hexdigest()
     for condition in conditions:
-        text_tokens = [301, 302, 303] if condition == "DIRECT_TEXT_REFERENCE" else []
-        vectors = [] if condition in {"NO_MESSAGE", "DIRECT_TEXT_REFERENCE"} else [[0.25, -0.5]]
-        positions = list(range(len(text_tokens))) if text_tokens else ([] if condition == "NO_MESSAGE" else [0])
+        text_tokens = [301, 302, 303] if condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else []
+        vectors = [] if condition in {"NO_MESSAGE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else [[0.25, -0.5]]
+        positions = (
+            list(range(len(text_tokens))) if condition == "DIRECT_TEXT_REFERENCE"
+            else ([0] if condition == "SELF_GENERATED_MESSAGE" else ([] if condition == "NO_MESSAGE" else [0]))
+        )
         input_item = {"condition": condition, "vectors": vectors, "position_ids": positions,
                       "text_token_ids": text_tokens}
+        if condition == "SELF_GENERATED_MESSAGE":
+            input_item["input_rows"] = 1
+            input_item["input_sha256"] = hashlib.sha256(b"self-request").hexdigest()
         if text_tokens:
             text_payload = struct.pack("<iii", *text_tokens)
             input_item["text_token_ids_sha256"] = hashlib.sha256(text_payload).hexdigest()
-            input_item["input_sha256"] = input_item["text_token_ids_sha256"]
+            if condition == "DIRECT_TEXT_REFERENCE":
+                input_item["input_sha256"] = input_item["text_token_ids_sha256"]
         condition_inputs.append(input_item)
-        context_rows = len(text_tokens) if text_tokens else 1
+        context_rows = len(text_tokens) if condition == "DIRECT_TEXT_REFERENCE" else (1 if condition in {"NO_MESSAGE", "SELF_GENERATED_MESSAGE"} else len(vectors))
         context_positions = list(range(context_rows))
         position_sha = hashlib.sha256(struct.pack("<" + "i" * context_rows, *context_positions)).hexdigest()
         snapshot_digest = hashlib.sha256(("snapshot-" + condition).encode()).hexdigest()
-        native_conditions.append({
+        if condition == "SELF_GENERATED_MESSAGE":
+            native_input_sha = hashlib.sha256(b"self-native-input").hexdigest()
+        elif condition == "DIRECT_TEXT_REFERENCE":
+            native_input_sha = input_item["text_token_ids_sha256"]
+        elif condition == "NO_MESSAGE":
+            native_input_sha = hashlib.sha256(b"").hexdigest()
+        else:
+            native_input_sha = hashlib.sha256(struct.pack("<2f", *vectors[0])).hexdigest()
+        native_item = {
             "condition": condition,
-            "input_rows": len(vectors),
+            "input_rows": 1 if condition == "SELF_GENERATED_MESSAGE" else len(vectors),
+            "input_sha256": native_input_sha,
             "context_rows": context_rows,
             "input_dim": 2,
             "position_ids": positions,
@@ -225,9 +241,21 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
                 "decode_status": 0,
                 "native_input_consumed": True,
             },
-        })
+        }
+        if condition == "SELF_GENERATED_MESSAGE":
+            native_item["self_generation"] = {
+                "schema": "v14.native-receiver-self-generation/1",
+                "algorithm": "GREEDY_RECEIVER_HIDDEN_STATE_V1",
+                "prompt_token_count": len(text_tokens),
+                "prompt_token_ids_sha256": input_item["text_token_ids_sha256"],
+                "generated_token_count": 1,
+                "generated_token_ids_sha256": hashlib.sha256(b"self-generated-token").hexdigest(),
+                "message_input_sha256": native_input_sha,
+                "decode_status": 0,
+            }
+        native_conditions.append(native_item)
     raw = {
-        "schema": "v14.native-receiver-task-matrix/2",
+        "schema": "v14.native-receiver-task-matrix/3",
         "runner_revision": PINNED_LLAMA_REVISION,
         "llama_version": "b10964",
         "status": "SCORED",
@@ -280,7 +308,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "runner_revision": PINNED_LLAMA_REVISION,
         "llama_version": "b10964",
         "task_matrix_supported": True,
-        "task_matrix_schema": "v14.native-receiver-task-matrix/2",
+        "task_matrix_schema": "v14.native-receiver-task-matrix/3",
         "kv_snapshot_supported": True,
         "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
         "hybrid_state_roundtrip_supported": True,
@@ -323,7 +351,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     )
     assert "--hybrid-state-roundtrip" in commands[0]
     assert result["status"] == "SCORED"
-    assert len(result["condition_scores"]) == 12
+    assert len(result["condition_scores"]) == 13
     for condition in conditions:
         score = result["condition_scores"][condition]
         snapshot = score["kv_snapshot"]
