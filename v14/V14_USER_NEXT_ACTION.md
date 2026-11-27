@@ -7,7 +7,7 @@
 - The enclosing staged/runtime gate is still blocked by Core/QA-owned source pins and migration assertions: stale audio-composer blob, stale cognition observer pin, vision.py not accepted by the lifecycle-source registry, and two migrations returning PARTIAL instead of UPDATED. Core was notified on #2562; evidence is linked from whole-Canon #1984.
 - Redmi state remains REDMI_UNVERIFIED. No fresh private owner receipt was obtained; the historical 2026-11-24 receipt is not proof of the current installed build or updater state. No Android test or deployment is claimed.
 - P0 basic-chat issue #1904 remains open. This run does not fix the 0-token/slow-chat failure.
-- Next work: complete the causal audit controls (moment-matched random, intact-no-private, direct-text reference), then run a real native model-pair test when authorized model/runtime artifacts exist; Core/QA must repair the staged source pins before the shared release gate can pass.
+- Next work: add moment-matched random, intact-no-private and direct-text validity arms; add a receiver self-generated message under matched compute; expose PL/CIC prediction-distribution divergence and CAG/SSG task-accuracy contrasts with paired confidence/equivalence tests; then run a real native model-pair test when authorized model/runtime artifacts exist. Core/QA must repair the staged source pins before the shared release gate can pass.
 
 Checkpoint recorded: 2026-11-27T20:51:30.194Z.
 
