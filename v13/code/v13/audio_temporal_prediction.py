@@ -38,6 +38,10 @@ class AudioTemporalPredictionError(ValueError):
     pass
 
 
+class AudioTemporalPredictionConflict(AudioTemporalPredictionError):
+    """The shared numeric checkpoint advanced after this session loaded it."""
+
+
 def _finite_number(value, name: str, *, optional: bool = False) -> float:
     if optional and value is None:
         return 0.0
@@ -445,7 +449,7 @@ class _StreamState:
 
 
 class AudioTemporalPredictionRegistry:
-    """Bounded streams; optional persistence stores numeric weights only, never audio/features."""
+    """Bounded per-session temporal histories; optional persistence stores only numeric weights."""
 
     PERSISTENCE_SCHEMA = "v14.raw-ear.temporal-prediction-state/1"
     PERSISTENCE_PREFIX = "raw_ear_prediction.v1."
@@ -486,13 +490,62 @@ class AudioTemporalPredictionRegistry:
         result.setdefault("update_applied", False)
         result.setdefault("update_reason", result.get("status", "UNAVAILABLE"))
         result.setdefault("mistake_memory_entries", 0)
+        result.setdefault("persistence_conflict_recovered", False)
+        result.setdefault("persistence_retry_count", 0)
         result["weight_persistence"] = self.persistent_weights_enabled
+        result["temporal_history_scope"] = "EPHEMERAL_SESSION_CONSENT_SCOPED_PROCESS"
         result["weight_scope"] = (
             "LOCAL_STORE_NUMERIC_ONLY_CONSENT_SCOPED"
             if self.persistent_weights_enabled else "EPHEMERAL_CONSENT_SCOPED_PROCESS"
         )
         result["training_data_persisted"] = False
         return result
+
+    def _new_predictor(self):
+        return AudioTemporalPredictor(
+            update_policy=self.update_policy,
+            mistake_memory_capacity=self.mistake_memory_capacity,
+            consolidation_threshold=self.consolidation_threshold,
+            max_transient_norm=self.max_transient_norm,
+        )
+
+    @staticmethod
+    def _snapshot_session_state(predictor):
+        """Keep session-local traces while refreshing shared persisted weights."""
+        return (
+            predictor._previous,
+            tuple(predictor._mistake_keys.keys()),
+            [list(row) for row in predictor._transient_weights],
+            predictor.transient_updates,
+            predictor.consolidations,
+        )
+
+    @staticmethod
+    def _restore_session_state(predictor, snapshot):
+        previous, mistake_keys, transient_weights, transient_updates, consolidations = snapshot
+        predictor._previous = previous
+        predictor._mistake_keys = OrderedDict((key, None) for key in mistake_keys)
+        predictor._transient_weights = [list(row) for row in transient_weights]
+        predictor.transient_updates = transient_updates
+        predictor.consolidations = consolidations
+
+    def _retry_conflicted_update(self, source_id, generation_id, consent_scope_id, delta, snapshot):
+        """Reload the newest shared weights and replay one session update exactly once."""
+        saved, version, status = self._load_persistent(
+            source_id, generation_id, consent_scope_id,
+        )
+        if status != "OK":
+            raise AudioTemporalPredictionConflict("shared predictor checkpoint is no longer current")
+        predictor = self._new_predictor()
+        predictor.load_state_dict(saved)
+        self._restore_session_state(predictor, snapshot)
+        result = predictor.update(delta)
+        version = self._save_persistent(
+            source_id, generation_id, consent_scope_id, predictor, version,
+        )
+        result["persistence_conflict_recovered"] = True
+        result["persistence_retry_count"] = 1
+        return predictor, version, result
 
     @staticmethod
     def _validate_scope(value: str) -> None:
@@ -510,6 +563,8 @@ class AudioTemporalPredictionRegistry:
         return hashlib.sha256(b"V14-RAW-EAR-PREDICTION-STATE/1\0" + raw).hexdigest()
 
     def _persistent_key(self, source_id: str, generation_id: str) -> tuple[str, str, str]:
+        # Numeric weights intentionally remain shareable across sessions for the same
+        # source/generation/consent scope; only temporal feature history is session-local.
         source_hash = self._scope_hash(source_id)
         generation_hash = self._scope_hash(generation_id)
         key_hash = self._scope_hash(source_id + "\0" + generation_id)
@@ -578,7 +633,7 @@ class AudioTemporalPredictionRegistry:
             row = connection.execute("SELECT version FROM states WHERE key=?", (key,)).fetchone()
             current = row[0] if row else 0
             if current != expected_version:
-                raise ValueError("Stale persistent predictor state write")
+                raise AudioTemporalPredictionConflict("Stale persistent predictor state write")
             version = current + 1
             connection.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)", (key, version, encoded))
             rows = self._persistent_rows(connection)
@@ -625,12 +680,7 @@ class AudioTemporalPredictionRegistry:
         return len(keys)
 
     def _new_state(self, source_id, generation_id, consent_scope_id, start_ms, end_ms, features):
-        predictor = AudioTemporalPredictor(
-            update_policy=self.update_policy,
-            mistake_memory_capacity=self.mistake_memory_capacity,
-            consolidation_threshold=self.consolidation_threshold,
-            max_transient_norm=self.max_transient_norm,
-        )
+        predictor = self._new_predictor()
         version = 0
         reset_reason = None
         if self._store is not None:
@@ -652,12 +702,7 @@ class AudioTemporalPredictionRegistry:
 
     def _reset_state(self, source_id, generation_id, consent_scope_id,
                      start_ms, end_ms, features, previous_version):
-        predictor = AudioTemporalPredictor(
-            update_policy=self.update_policy,
-            mistake_memory_capacity=self.mistake_memory_capacity,
-            consolidation_threshold=self.consolidation_threshold,
-            max_transient_norm=self.max_transient_norm,
-        )
+        predictor = self._new_predictor()
         version = previous_version
         if self._store is not None:
             version = self._save_persistent(
@@ -668,12 +713,15 @@ class AudioTemporalPredictionRegistry:
             predictor=predictor, store_version=version,
         )
 
-    def update(self, *, source_id: str, generation_id: str, consent_scope_id: str,
-               start_ms: int, end_ms: int, cues: dict, finality: str) -> dict:
+    def update(self, *, source_id: str, generation_id: str, session_id: str,
+               consent_scope_id: str, start_ms: int, end_ms: int,
+               cues: dict, finality: str) -> dict:
         if type(source_id) is not str or not source_id.strip():
             raise AudioTemporalPredictionError("source_id must be non-empty")
         if type(generation_id) is not str or not generation_id.strip():
             raise AudioTemporalPredictionError("generation_id must be non-empty")
+        if type(session_id) is not str or not session_id.strip():
+            raise AudioTemporalPredictionError("session_id must be non-empty")
         self._validate_scope(consent_scope_id)
         if (type(start_ms) is not int or type(end_ms) is not int
                 or start_ms < 0 or end_ms <= start_ms or end_ms - start_ms > MAX_WINDOW_MS):
@@ -683,26 +731,20 @@ class AudioTemporalPredictionRegistry:
         if finality != "FINAL":
             raise AudioTemporalPredictionError("finality must be FINAL or PROVISIONAL")
         features = acoustic_feature_vector(cues)
-        key = (source_id, generation_id)
+        key = (source_id, generation_id, session_id)
         with self._lock:
+            # A consent rotation invalidates every in-memory session history for this
+            # source/generation, not just the currently active session key.
+            stale_keys = [
+                existing_key for existing_key, existing_state in self._states.items()
+                if existing_key[:2] == (source_id, generation_id)
+                and existing_state.consent_scope_id != consent_scope_id
+            ]
+            for stale_key in stale_keys:
+                stale_state = self._states.pop(stale_key)
+                stale_state.predictor.reset()
+            consent_scope_reset = bool(stale_keys)
             state = self._states.get(key)
-            if state is not None and state.consent_scope_id != consent_scope_id:
-                try:
-                    state, reset_reason = self._new_state(
-                        source_id, generation_id, consent_scope_id, start_ms, end_ms, features,
-                    )
-                except Exception:
-                    return self._decorate(unavailable_prediction("PERSISTENCE_UNAVAILABLE"))
-                self._states[key] = state
-                self._states.move_to_end(key)
-                result = unavailable_prediction(reset_reason or "RESET_CONSENT_SCOPE")
-                result.update({
-                    "updates": state.predictor.updates,
-                    "parameter_l2": state.predictor._parameter_l2(),
-                    "stream_count": len(self._states),
-                })
-                return self._decorate(result)
-
             if state is None:
                 try:
                     state, reset_reason = self._new_state(
@@ -714,7 +756,9 @@ class AudioTemporalPredictionRegistry:
                 while len(self._states) > self.max_streams:
                     _, evicted = self._states.popitem(last=False)
                     evicted.predictor.reset()
-                result = unavailable_prediction(reset_reason or "WARMUP_FEATURE_BASELINE")
+                result = unavailable_prediction(
+                    reset_reason or ("RESET_CONSENT_SCOPE" if consent_scope_reset else "WARMUP_FEATURE_BASELINE")
+                )
                 result.update({
                     "updates": state.predictor.updates,
                     "parameter_l2": state.predictor._parameter_l2(),
@@ -757,6 +801,10 @@ class AudioTemporalPredictionRegistry:
             state.last_start_ms = start_ms
             state.last_end_ms = end_ms
             self._states.move_to_end(key)
+            session_snapshot = (
+                self._snapshot_session_state(state.predictor)
+                if self._store is not None else None
+            )
             result = state.predictor.update(delta)
             if self._store is not None:
                 try:
@@ -764,6 +812,14 @@ class AudioTemporalPredictionRegistry:
                         source_id, generation_id, consent_scope_id,
                         state.predictor, state.store_version,
                     )
+                except AudioTemporalPredictionConflict:
+                    try:
+                        state.predictor, state.store_version, result = self._retry_conflicted_update(
+                            source_id, generation_id, consent_scope_id, delta, session_snapshot,
+                        )
+                    except Exception:
+                        self._states.pop(key, None)
+                        return self._decorate(unavailable_prediction("PERSISTENCE_CONFLICT"))
                 except Exception:
                     self._states.pop(key, None)
                     return self._decorate(unavailable_prediction("PERSISTENCE_WRITE_FAILED"))
@@ -773,17 +829,22 @@ class AudioTemporalPredictionRegistry:
             return self._decorate(result)
 
     def reset(self, *, source_id: str | None = None,
-              generation_id: str | None = None) -> int:
+              generation_id: str | None = None,
+              session_id: str | None = None) -> int:
+        if session_id is not None and (type(session_id) is not str or not session_id.strip()):
+            raise AudioTemporalPredictionError("session_id must be a non-empty string when supplied")
         with self._lock:
             keys = [key for key in self._states
                     if (source_id is None or key[0] == source_id)
-                    and (generation_id is None or key[1] == generation_id)]
+                    and (generation_id is None or key[1] == generation_id)
+                    and (session_id is None or key[2] == session_id)]
             for key in keys:
                 state = self._states.pop(key)
                 state.predictor.reset()
+            # A session-only reset clears ephemeral history, not source/generation weights.
             cleared = (
                 self._clear_persistent(source_id=source_id, generation_id=generation_id)
-                if self._store is not None else 0
+                if self._store is not None and session_id is None else 0
             )
             return max(len(keys), cleared)
 

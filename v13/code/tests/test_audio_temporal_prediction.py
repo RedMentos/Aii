@@ -53,6 +53,11 @@ def make_runtime(tmp_path, *, preserve_generation=False):
     return SimpleNamespace(home=tmp_path, store=store), event
 
 
+def _event_session_id(runtime, event):
+    row = runtime.store.one("SELECT session_id FROM events WHERE id=?", (event["event_id"],))
+    return row.get("session_id") if type(row) is dict else None
+
+
 def consent_check(source_id, receipt):
     return source_id == SOURCE and receipt in {RECEIPT, NEW_RECEIPT}
 
@@ -168,6 +173,7 @@ def run_pattern(registry, *, scope="a" * 64):
         results.append(registry.update(
             source_id="source-a",
             generation_id="generation-a",
+            session_id="test-session",
             consent_scope_id=scope,
             start_ms=index * 1000,
             end_ms=(index + 1) * 1000,
@@ -213,6 +219,7 @@ def test_provisional_window_never_creates_or_updates_prediction_state():
     registry = AudioTemporalPredictionRegistry()
     result = registry.update(
         source_id="source-a", generation_id="generation-a",
+        session_id="test-session",
         consent_scope_id="a" * 64, start_ms=0, end_ms=1000,
         cues=VOICED, finality="PROVISIONAL",
     )
@@ -226,6 +233,7 @@ def test_new_consent_scope_resets_old_session_weights():
     run_pattern(registry)
     reset = registry.update(
         source_id="source-a", generation_id="generation-a",
+        session_id="test-session",
         consent_scope_id="b" * 64, start_ms=12000, end_ms=13000,
         cues=SILENCE, finality="FINAL",
     )
@@ -237,17 +245,17 @@ def test_new_consent_scope_resets_old_session_weights():
 def test_gap_and_backwards_time_reset_instead_of_learning_across_discontinuity():
     registry = AudioTemporalPredictionRegistry()
     first = registry.update(
-        source_id="s", generation_id="g", consent_scope_id="c" * 64,
+        source_id="s", generation_id="g", session_id="test-session", consent_scope_id="c" * 64,
         start_ms=0, end_ms=1000, cues=SILENCE, finality="FINAL",
     )
     assert first["status"] == "WARMUP_FEATURE_BASELINE"
     gap = registry.update(
-        source_id="s", generation_id="g", consent_scope_id="c" * 64,
+        source_id="s", generation_id="g", session_id="test-session", consent_scope_id="c" * 64,
         start_ms=4000, end_ms=5000, cues=VOICED, finality="FINAL",
     )
     assert gap["status"] == "RESET_GAP"
     backwards = registry.update(
-        source_id="s", generation_id="g", consent_scope_id="c" * 64,
+        source_id="s", generation_id="g", session_id="test-session", consent_scope_id="c" * 64,
         start_ms=3000, end_ms=4000, cues=SILENCE, finality="FINAL",
     )
     assert backwards["status"] == "RESET_CHRONOLOGY"
@@ -255,9 +263,9 @@ def test_gap_and_backwards_time_reset_instead_of_learning_across_discontinuity()
 
 def test_explicit_reset_clears_only_matching_source_generation():
     registry = AudioTemporalPredictionRegistry()
-    registry.update(source_id="s1", generation_id="g1", consent_scope_id="1" * 64,
+    registry.update(source_id="s1", generation_id="g1", session_id="test-session", consent_scope_id="1" * 64,
                     start_ms=0, end_ms=1000, cues=SILENCE, finality="FINAL")
-    registry.update(source_id="s2", generation_id="g2", consent_scope_id="2" * 64,
+    registry.update(source_id="s2", generation_id="g2", session_id="test-session", consent_scope_id="2" * 64,
                     start_ms=0, end_ms=1000, cues=VOICED, finality="FINAL")
     assert registry.reset(source_id="s1", generation_id="g1") == 1
     assert len(registry) == 1
@@ -268,10 +276,10 @@ def test_explicit_reset_clears_only_matching_source_generation():
 def test_invalid_scope_interval_activity_and_nan_fail_closed():
     registry = AudioTemporalPredictionRegistry()
     with pytest.raises(AudioTemporalPredictionError):
-        registry.update(source_id="s", generation_id="g", consent_scope_id="short",
+        registry.update(source_id="s", generation_id="g", session_id="test-session", consent_scope_id="short",
                         start_ms=0, end_ms=1000, cues=SILENCE, finality="FINAL")
     with pytest.raises(AudioTemporalPredictionError):
-        registry.update(source_id="s", generation_id="g", consent_scope_id="a" * 64,
+        registry.update(source_id="s", generation_id="g", session_id="test-session", consent_scope_id="a" * 64,
                         start_ms=0, end_ms=1001, cues=SILENCE, finality="FINAL")
     with pytest.raises(AudioTemporalPredictionError):
         acoustic_feature_vector(dict(VOICED, activity_hint="UNKNOWN"))
@@ -281,9 +289,9 @@ def test_invalid_scope_interval_activity_and_nan_fail_closed():
 
 def test_registry_capacity_is_bounded_and_evicts_oldest_stream():
     registry = AudioTemporalPredictionRegistry(max_streams=1)
-    registry.update(source_id="s1", generation_id="g1", consent_scope_id="1" * 64,
+    registry.update(source_id="s1", generation_id="g1", session_id="test-session", consent_scope_id="1" * 64,
                     start_ms=0, end_ms=1000, cues=SILENCE, finality="FINAL")
-    registry.update(source_id="s2", generation_id="g2", consent_scope_id="2" * 64,
+    registry.update(source_id="s2", generation_id="g2", session_id="test-session", consent_scope_id="2" * 64,
                     start_ms=0, end_ms=1000, cues=VOICED, finality="FINAL")
     assert len(registry) == 1
     assert registry.reset(source_id="s1", generation_id="g1") == 0
@@ -412,7 +420,7 @@ def test_consent_scope_rotation_and_explicit_reset_clear_consumer_state(tmp_path
         )
         assert len(registry) == 1
         assert len(event_registry) == 1
-        assert registry._states[(SOURCE, event["brain_generation_id"])].predictor.updates == 0
+        assert registry._states[(SOURCE, event["brain_generation_id"], _event_session_id(runtime, event))].predictor.updates == 0
     finally:
         runtime.store.close()
 
@@ -430,7 +438,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         assert prediction["status"] == "SHADOW_MEASURED"
         assert prediction["weight_persistence"] is True
         assert prediction["training_data_persisted"] is False
-        state = runtime._raw_ear_prediction_registry._states[(SOURCE, event["brain_generation_id"])]
+        state = runtime._raw_ear_prediction_registry._states[(SOURCE, event["brain_generation_id"], _event_session_id(runtime, event))]
         before = state.predictor.state_dict()
         assert before["updates"] > 0
         assert any(abs(value) > 0 for row in before["weights"] for value in row)
@@ -457,7 +465,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
             second = run_consumer_sequence(restarted, event2, patch, sequence, capture2)
         assert second[-1]["a4"]["audio_temporal_prediction"]["weight_persistence"] is True
         after = restarted._raw_ear_prediction_registry._states[
-            (SOURCE, event2["brain_generation_id"])
+            (SOURCE, event2["brain_generation_id"], _event_session_id(restarted, event2))
         ].predictor.state_dict()
         assert after["updates"] > before["updates"]
         assert after["weights"] != before["weights"]
@@ -465,6 +473,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         rotated = restarted._raw_ear_prediction_registry.update(
             source_id=SOURCE,
             generation_id=event2["brain_generation_id"],
+            session_id=_event_session_id(restarted, event2),
             consent_scope_id="b" * 64,
             start_ms=20000,
             end_ms=21000,
@@ -473,7 +482,7 @@ def test_opt_in_persistent_weights_survive_runtime_restart_and_revoke(tmp_path, 
         )
         assert rotated["status"] == "RESET_CONSENT_SCOPE"
         reset_state = restarted._raw_ear_prediction_registry._states[
-            (SOURCE, event2["brain_generation_id"])
+            (SOURCE, event2["brain_generation_id"], _event_session_id(restarted, event2))
         ].predictor.state_dict()
         assert reset_state["updates"] == 0
         assert not any(abs(value) > 0 for row in reset_state["weights"] for value in row)
@@ -501,6 +510,7 @@ def test_persistent_mode_does_not_write_provisional_windows(tmp_path):
         result = registry.update(
             source_id=SOURCE,
             generation_id=event["brain_generation_id"],
+            session_id=_event_session_id(runtime, event),
             consent_scope_id="c" * 64,
             start_ms=0,
             end_ms=1000,
@@ -532,6 +542,7 @@ def test_persistent_pruning_uses_literal_prefix_and_keeps_similar_unrelated_keys
     try:
         registry.update(
             source_id="source-a", generation_id="generation-a",
+            session_id="test-session",
             consent_scope_id="a" * 64, start_ms=0, end_ms=1000,
             cues=SILENCE, finality="FINAL",
         )
@@ -661,7 +672,8 @@ def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monke
         control_runtime.store.close()
 
 
-def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9):
+def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9,
+                          session_id="event-expectation-session"):
     if activity == "VOICED":
         cues = dict(VOICED)
     elif activity == "UNCERTAIN":
@@ -672,6 +684,7 @@ def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_sco
     return registry.update(
         source_id="event-expectation-source",
         generation_id="event-expectation-generation",
+        session_id=session_id,
         consent_scope_id="e" * 64,
         start_ms=start_ms,
         end_ms=end_ms,
@@ -727,6 +740,69 @@ def test_late_non_target_window_after_expected_time_does_not_prove_omission():
     result = _event_registry_window(registry, "SILENCE", 8500, 9500)
     assert result["omission_detected"] is False
     assert result["attention_novelty"] == 0.0
+
+
+
+def test_event_expectation_registry_reset_can_target_one_session():
+    registry = AudioEventExpectationRegistry()
+    _seed_event_registry(registry)
+    _event_registry_window(
+        registry, "VOICED", 100, 300, session_id="another-session",
+    )
+    assert len(registry) == 2
+    assert registry.reset(session_id="event-expectation-session") == 1
+    assert len(registry) == 1
+
+
+def test_event_expectation_state_does_not_leak_between_store_sessions(tmp_path, monkeypatch):
+    runtime, first_event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    sequence = [
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+    ]
+    try:
+        with monkeypatch.context() as patch:
+            first_results = run_consumer_sequence(
+                runtime, first_event, patch, sequence, capture,
+            )
+        first_expectation = first_results[-1]["a4"]["audio_event_expectation"]
+        assert first_expectation["status"] == "SHADOW_MEASURED"
+        assert first_expectation["omission_detected"] is False
+
+        second_session = runtime.store.new_session("second RAW EAR session")
+        second_event = runtime.store.event(
+            second_session, "separate synthetic acoustic fixture",
+        )
+        monkeypatch.setattr(
+            audio_voice_module, "extract_voice_cues",
+            lambda _pcm, _sample_rate, backend="python": dict(EVENT_SILENCE),
+        )
+        monkeypatch.setattr(
+            audio_voice_module.attctl, "controller",
+            lambda _runtime: capture,
+        )
+        second_result = consume_pcm16_voice_window(
+            runtime, bytes(32000), sample_rate=16000, start_ms=8100,
+            event_id=second_event["event_id"],
+            generation_id=second_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_check,
+            consent_guard=consent_guard(consent_check),
+            finality="FINAL",
+        )
+        second_expectation = second_result["a4"]["audio_event_expectation"]
+        second_prediction = second_result["a4"]["audio_temporal_prediction"]
+        assert second_prediction["status"] == "WARMUP_FEATURE_BASELINE"
+        assert second_prediction["updates"] == 0
+        assert len(_runtime_audio_temporal_prediction_registry(runtime)) == 2
+        assert second_expectation["status"] == "WARMUP"
+        assert second_expectation["expected_events"] == []
+        assert second_expectation["omissions"] == []
+        assert second_expectation["interval_samples"] == 0
+        assert len(audio_voice_module._runtime_audio_event_expectation_registry(runtime)) == 2
+    finally:
+        runtime.store.close()
 
 
 def test_optional_event_registry_failure_does_not_break_raw_ear(tmp_path, monkeypatch):
@@ -1130,10 +1206,11 @@ def test_registry_passes_transient_policy_bounds_to_each_stream():
     )
     registry.update(
         source_id="source-transient", generation_id="generation-transient",
+        session_id="test-session",
         consent_scope_id="d" * 64, start_ms=0, end_ms=1000,
         cues=SILENCE, finality="FINAL",
     )
-    predictor = registry._states[("source-transient", "generation-transient")].predictor
+    predictor = registry._states[("source-transient", "generation-transient", "test-session")].predictor
     assert predictor.update_policy == "TRANSIENT_CONSOLIDATE"
     assert predictor.consolidation_threshold == 0.25
     assert predictor.max_transient_norm == 0.75
@@ -1189,23 +1266,25 @@ def test_registry_gate_policy_is_opt_in_and_consent_rotation_resets_gate_memory(
     registry = AudioTemporalPredictionRegistry(update_policy="MEMORIZED_ERROR")
     first = registry.update(
         source_id="source-gated", generation_id="generation-gated",
+        session_id="test-session",
         consent_scope_id="a" * 64, start_ms=0, end_ms=1000,
         cues=SILENCE, finality="FINAL",
     )
     assert first["update_policy"] == "MEMORIZED_ERROR"
-    state = registry._states[("source-gated", "generation-gated")]
+    state = registry._states[("source-gated", "generation-gated", "test-session")]
     state.predictor._remember_mistake("synthetic-only-seed")
     assert len(state.predictor._mistake_keys) == 1
 
     rotated = registry.update(
         source_id="source-gated", generation_id="generation-gated",
+        session_id="test-session",
         consent_scope_id="b" * 64, start_ms=1000, end_ms=2000,
         cues=VOICED, finality="FINAL",
     )
     assert rotated["status"] == "RESET_CONSENT_SCOPE"
     assert rotated["update_policy"] == "MEMORIZED_ERROR"
     assert rotated["mistake_memory_entries"] == 0
-    assert len(registry._states[("source-gated", "generation-gated")].predictor._mistake_keys) == 0
+    assert len(registry._states[("source-gated", "generation-gated", "test-session")].predictor._mistake_keys) == 0
 
 
 def test_invalid_update_policy_and_memory_capacity_fail_closed():
@@ -1213,3 +1292,132 @@ def test_invalid_update_policy_and_memory_capacity_fail_closed():
         AudioTemporalPredictor(update_policy="SURPRISE_ONLY")
     with pytest.raises(AudioTemporalPredictionError, match="mistake_memory_capacity"):
         AudioTemporalPredictionRegistry(update_policy="MEMORIZED_ERROR", mistake_memory_capacity=0)
+
+
+def test_temporal_prediction_history_is_session_scoped_but_numeric_weights_are_shared(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    registry = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-session-scoped"
+    generation_id = event["brain_generation_id"]
+    consent_scope_id = "a" * 64
+    try:
+        sequence = (SILENCE, VOICED, SILENCE, VOICED)
+        for index, cues in enumerate(sequence):
+            registry.update(
+                source_id=source_id,
+                generation_id=generation_id,
+                session_id="session-one",
+                consent_scope_id=consent_scope_id,
+                start_ms=index * 1000,
+                end_ms=(index + 1) * 1000,
+                cues=cues,
+                finality="FINAL",
+            )
+        first_state = registry._states[(source_id, generation_id, "session-one")]
+        learned = first_state.predictor.state_dict()
+        assert learned["updates"] > 0
+        assert any(abs(value) > 0 for row in learned["weights"] for value in row)
+
+        second = registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id="session-two",
+            consent_scope_id=consent_scope_id,
+            start_ms=0,
+            end_ms=1000,
+            cues=SILENCE,
+            finality="FINAL",
+        )
+        second_state = registry._states[(source_id, generation_id, "session-two")]
+        assert second["status"] == "WARMUP_FEATURE_BASELINE"
+        assert second_state.predictor.state_dict() == learned
+        assert second_state.previous_features == acoustic_feature_vector(SILENCE)
+        assert len(registry) == 2
+
+        assert registry.reset(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id="session-two",
+        ) == 1
+        assert (source_id, generation_id, "session-one") in registry._states
+        assert (source_id, generation_id, "session-two") not in registry._states
+        payload, _version = runtime.store.state(registry._persistent_key(source_id, generation_id)[2], None)
+        assert payload["weights"] == learned["weights"]
+
+        rotated = registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id="session-two",
+            consent_scope_id="b" * 64,
+            start_ms=1000,
+            end_ms=2000,
+            cues=VOICED,
+            finality="FINAL",
+        )
+        assert rotated["status"] == "RESET_CONSENT_SCOPE"
+        assert len(registry) == 1
+        assert (source_id, generation_id, "session-one") not in registry._states
+        reset_state = registry._states[(source_id, generation_id, "session-two")].predictor.state_dict()
+        assert reset_state["updates"] == 0
+        assert not any(abs(value) > 0 for row in reset_state["weights"] for value in row)
+    finally:
+        runtime.store.close()
+
+
+def test_persistent_numeric_weights_retry_interleaved_session_conflict(tmp_path):
+    runtime, event_a = make_runtime(tmp_path)
+    session_a = _event_session_id(runtime, event_a)
+    session_b = runtime.store.new_session("RAW EAR second concurrent session")
+    event_b = runtime.store.event(session_b, "second session acoustic fixture")
+    registry = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-shared-across-sessions"
+    generation_id = event_a["brain_generation_id"]
+    consent_scope_id = "a" * 64
+    key = registry._persistent_key(source_id, generation_id)[2]
+    key_a = (source_id, generation_id, session_a)
+    key_b = (source_id, generation_id, session_b)
+
+    def feed(session_id, index, cues):
+        return registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_id,
+            consent_scope_id=consent_scope_id,
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        )
+
+    try:
+        # Both sessions load the same checkpoint version before either one updates.
+        assert feed(session_a, 0, SILENCE)["status"] == "WARMUP_FEATURE_BASELINE"
+        assert feed(session_b, 0, SILENCE)["status"] == "WARMUP_FEATURE_BASELINE"
+        assert registry._states[key_a].store_version == registry._states[key_b].store_version
+
+        feed(session_a, 1, VOICED)
+        learned = feed(session_a, 2, SILENCE)
+        assert learned["weight_delta_l2"] > 0.0
+        persisted_before, version_before = runtime.store.state(key, None)
+        assert persisted_before["updates"] > 0
+        assert any(abs(value) > 0 for row in persisted_before["weights"] for value in row)
+
+        # Session B's old version must not overwrite A's newer numeric checkpoint.
+        recovered = feed(session_b, 1, VOICED)
+        assert recovered["persistence_conflict_recovered"] is True
+        assert recovered["persistence_retry_count"] == 1
+        assert recovered["status"] == "WARMUP_DELTA_BASELINE"
+        persisted_after, version_after = runtime.store.state(key, None)
+        assert version_after > version_before
+        assert persisted_after["weights"] == persisted_before["weights"]
+        assert registry._states[key_b].store_version == version_after
+
+        # B continues with its own fresh temporal history, now using A's shared weights.
+        next_update = feed(session_b, 2, SILENCE)
+        persisted_final, final_version = runtime.store.state(key, None)
+        assert next_update["weight_delta_l2"] > 0.0
+        assert persisted_final["updates"] > persisted_after["updates"]
+        assert persisted_final["weights"] != persisted_after["weights"]
+        assert final_version > version_after
+    finally:
+        runtime.store.close()
