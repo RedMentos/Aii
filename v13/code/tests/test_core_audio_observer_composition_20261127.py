@@ -60,6 +60,11 @@ def test_full_audio_composition_preserves_core_budget_and_native_receiver_contra
     assert b"minimum_role_slice_s" in cognition
     assert b"def native_receive(" in cognition
     assert b"c4_offer_context_ready" in cognition
+    source_fastforward = (CODE / "tests/test_fastforward_reflex.py").read_bytes()
+    staged_fastforward = composed["tests/test_fastforward_reflex.py"]
+    # Preserve the pinned source fixture; only the staged candidate must avoid the exact greeting reflex.
+    assert b"self.r.submit('hello there')" in source_fastforward
+    assert b"self.r.submit('Please explain the current task.')" in staged_fastforward
     assert source_path.read_bytes() == source_before
 
 

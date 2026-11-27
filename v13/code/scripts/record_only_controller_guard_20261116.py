@@ -222,6 +222,11 @@ def apply_sources(code_dir, sources):
         b"        for _ in range(4):self.assertEqual(self.run_turn()['status'],'FINAL')\n"
         b"        rep=F.controller(self.r).report();self.assertEqual(rep['trained_on'],0);self.assertEqual(rep['procedures'],{})\n"
         b"    def test_turn_feeds_fast_forward_and_procedures(self):\n", 'FastForward record-only turn test')
+    test_raw = _replace(test_raw,
+        b"        self.r.submit('hello there');until=time.monotonic()+10\n",
+        b"        # The staged candidate has an exact greeting reflex; keep this learning test on the full Runtime path.\n"
+        b"        self.r.submit('Please explain the current task.');until=time.monotonic()+10\n",
+        'FastForward full-runtime fixture')
     compile(test_raw, 'tests/test_fastforward_reflex.py', 'exec')
     result['tests/test_fastforward_reflex.py'] = test_raw
 

@@ -183,6 +183,11 @@ def test_runtime_answers_exact_greeting_without_native_body_or_c3_calls():
             runtime.close()
 
 
+def test_full_runtime_regression_prompts_stay_outside_exact_reflex():
+    for text in ("Please explain the current task.", "Please summarize the active context."):
+        assert match(text, event=_text_event(text)) is None
+
+
 def test_non_greeting_question_falls_through_to_perception():
     with tempfile.TemporaryDirectory() as tmp:
         runtime = Runtime(Path(tmp))
