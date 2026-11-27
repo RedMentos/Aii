@@ -122,6 +122,7 @@ def _feed(registry: AudioTemporalPredictionRegistry, source_id: str, sequence: t
         results.append(registry.update(
             source_id=source_id,
             generation_id=generation_id,
+            session_id="synthetic-session",
             consent_scope_id=consent_scope_id,
             start_ms=index * 1000,
             end_ms=(index + 1) * 1000,
@@ -221,6 +222,7 @@ def _source_isolation_probe() -> tuple[bool, float]:
             interleaved[source_id].append(shared.update(
                 source_id=source_id,
                 generation_id=generation_id,
+                session_id="synthetic-session",
                 consent_scope_id=_scope(source_id),
                 start_ms=index * 1000,
                 end_ms=(index + 1) * 1000,
@@ -247,6 +249,7 @@ def _no_context_control(sequence: tuple[dict, ...]) -> dict:
         result = registry.update(
             source_id="synthetic-no-context",
             generation_id="synthetic-no-context-generation",
+            session_id="synthetic-session",
             consent_scope_id=_scope("synthetic-no-context"),
             start_ms=index * 1000,
             end_ms=(index + 1) * 1000,
@@ -264,6 +267,7 @@ def _provisional_control() -> dict:
     result = registry.update(
         source_id="synthetic-provisional",
         generation_id="synthetic-provisional-generation",
+        session_id="synthetic-session",
         consent_scope_id=_scope("synthetic-provisional"),
         start_ms=0,
         end_ms=1000,
@@ -279,6 +283,7 @@ def _consent_reset_control(sequence: tuple[dict, ...]) -> dict:
     result = registry.update(
         source_id="synthetic-consent-rotation",
         generation_id="synthetic-generation:synthetic-consent-rotation",
+        session_id="synthetic-session",
         consent_scope_id="f" * 64,
         start_ms=10_000,
         end_ms=11_000,
