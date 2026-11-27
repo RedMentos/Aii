@@ -670,6 +670,22 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         jefbridge.controller(runtime).publish_android_action_outcome(
             authority_forgery["packet_id"], expected_session=runtime.session,
         )
+    learning_forgery = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", valid_outcome["event_id"],
+        valid_outcome["brain_generation_id"], valid_outcome["provenance"],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN",
+        actual={
+            **valid_outcome["actual"],
+            "production_route": True,
+            "training_authority": 1,
+            "native_receiver_authority": 1,
+        },
+    )
+    runtime.store.add_packet("ActionOutcome", learning_forgery)
+    with pytest.raises(ValueError, match="ANDROID_ACTION_OUTCOME_NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            learning_forgery["packet_id"], expected_session=runtime.session,
+        )
     after_forgery = json.loads(controller.history())
     assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert after_forgery["actions"][0]["observed"] is False
