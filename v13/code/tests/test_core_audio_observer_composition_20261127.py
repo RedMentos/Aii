@@ -52,12 +52,12 @@ def test_context_os_audio_composition_preserves_core_source_recall_refs():
 
     audio_runtime = (
         b"main:" + module._CONTEXT_PROVENANCE_AUDIO
-        + b"\\nrevoke:" + module._CONTEXT_PROVENANCE_BASE
+        + b"\nrevoke:" + module._CONTEXT_PROVENANCE_BASE
     )
     restored = module._restore_context_provenance_contract(audio_runtime, changed)
     assert restored == (
         b"main:" + module._CONTEXT_PROVENANCE_RECALL_AUDIO
-        + b"\\nrevoke:" + module._CONTEXT_PROVENANCE_RECALL
+        + b"\nrevoke:" + module._CONTEXT_PROVENANCE_RECALL
     )
 
     with pytest.raises(ValueError, match="changed or is ambiguous"):
@@ -70,18 +70,18 @@ def test_audio_context_refs_preserve_core_source_recall_and_duplex_refs():
     module = load_builder()
     original = (
         b"    context_refs=[e['source_ref'],*meta.get('source_recall_refs',[]),"
-        b"*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]\\n"
+        b"*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]\n"
     )
     normalized, saved = module._normalize_audio_context_refs(original)
     assert saved == original
-    assert normalized == b"    " + module._CONTEXT_REFS_BASE + b"\\n"
+    assert normalized == b"    " + module._CONTEXT_REFS_BASE + b"\n"
 
-    audio_line = b"    " + module._CONTEXT_REFS_AUDIO + b"\\n"
+    audio_line = b"    " + module._CONTEXT_REFS_AUDIO + b"\n"
     restored = module._restore_audio_context_refs(audio_line, saved)
     assert restored == (
         b"    context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),"
         b"*meta.get('source_recall_refs',[]),*self.consolidation.source_refs(memories),"
-        b"*history_refs,*meta.get('duplex_handoff_refs',[])]\\n"
+        b"*history_refs,*meta.get('duplex_handoff_refs',[])]\n"
     )
     with pytest.raises(ValueError, match="changed or are ambiguous"):
         module._normalize_audio_context_refs(original + original)
