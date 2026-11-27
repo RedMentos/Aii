@@ -16,6 +16,8 @@ BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = 'a6b69c8b14e0776c9f8bf793b66a2592cd6d090ee4228a017b4b938e3c69ec25'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+ACTION_SOURCE_OVERLAY = 'scripts/integrated_action_selection_source_refs_candidate_20261128.py'
+ACTION_SOURCE_OVERLAY_GIT_BLOB = '67b7f84143742220e6df916a358682553f0e5936'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -57,6 +59,22 @@ def stage(code_dir: Path, destination: Path) -> dict:
     spec.loader.exec_module(module)
     # Validate source pins before creating the destination.
     replacements = module.build_sources(code_dir)
+    action_overlay_path = code_dir / ACTION_SOURCE_OVERLAY
+    if action_overlay_path.is_symlink() or not action_overlay_path.is_file():
+        raise ValueError('ActionSelection source-context overlay missing or unsafe')
+    action_overlay_raw = action_overlay_path.read_bytes()
+    action_overlay_blob = hashlib.sha1(
+        b'blob ' + str(len(action_overlay_raw)).encode('ascii') + b'\\0' + action_overlay_raw
+    ).hexdigest()
+    if action_overlay_blob != ACTION_SOURCE_OVERLAY_GIT_BLOB:
+        raise ValueError('ActionSelection source-context overlay changed')
+    action_overlay_spec = importlib.util.spec_from_file_location(
+        'v14_action_selection_source_refs', action_overlay_path)
+    if action_overlay_spec is None or action_overlay_spec.loader is None:
+        raise RuntimeError('ActionSelection source-context overlay is not loadable')
+    action_overlay_module = importlib.util.module_from_spec(action_overlay_spec)
+    action_overlay_spec.loader.exec_module(action_overlay_module)
+    replacements = action_overlay_module.apply_sources(code_dir, replacements)
     for relative, payload in replacements.items():
         target = Path(relative)
         if (target.is_absolute() or '..' in target.parts or not target.parts
@@ -114,6 +132,13 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'source_pins': arithmetic_overlay_module.SOURCE_PINS,
             'replaced_files': sorted(arithmetic_files),
         }
+        action_source_overlay_manifest = {
+            'name': ACTION_SOURCE_OVERLAY,
+            'git_blob_sha1': ACTION_SOURCE_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'source_pins': {'v13/focal.py': action_overlay_module.FOCAL_SOURCE_BLOB_SHA1},
+            'replaced_files': ['v13/focal.py'],
+        }
         manifest = {
             'status': 'SHADOW_REVIEW_ONLY',
             'source': str(code_dir),
@@ -121,6 +146,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'builder_sha256': BUILDER_SHA,
             'replaced_files': replaced_files,
             'arithmetic_overlay': arithmetic_overlay_manifest,
+            'action_source_overlay': action_source_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
