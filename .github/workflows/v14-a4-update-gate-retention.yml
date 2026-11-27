@@ -37,6 +37,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install focused test runner
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0
       - name: Compile exact predictor and ablation
         env:
           PYTHONPATH: v13/code:v14/experiments
@@ -46,6 +48,10 @@ jobs:
         env:
           PYTHONPATH: v13/code:v14/experiments
         run: python -m unittest discover -s v14/experiments -p "test_a4_update_gate_retention_20261127.py" -v
+      - name: Run exact predictor, registry and A5/A4 consumer regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_audio_temporal_prediction.py
       - name: Emit deterministic synthetic ablation
         env:
           PYTHONPATH: v13/code:v14/experiments
