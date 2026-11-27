@@ -56,6 +56,37 @@ def _append_offer_parameter(raw: bytes) -> bytes:
     return raw[:end] + b",ui_context=None" + raw[end:]
 
 
+def _bind_ui_offer_scope(raw: bytes) -> bytes:
+    """Bind UI metadata without dropping the audio-source lineage added upstream."""
+    base_anchor = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\\n"
+    )
+    audio_anchor = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):\\n"
+    )
+    base_count = raw.count(base_anchor)
+    audio_count = raw.count(audio_anchor)
+    if audio_count == 1 and base_count == 0:
+        anchor = audio_anchor
+    elif base_count == 1 and audio_count == 0:
+        anchor = base_anchor
+    else:
+        raise ValueError(
+            "Android UI overlay anchor mismatch: source-bound query/offer scope "
+            + f"base={base_count} audio={audio_count}"
+        )
+    replacement = (
+        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\\n"
+        b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])\\n"
+        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\\n"
+        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\\n"
+    )
+    return raw.replace(anchor, replacement, 1)
+
+
+
+
 def _ask_block_bounds(raw: bytes) -> tuple[int, int]:
     marker = b"                def ask("
     if raw.count(marker) != 1:
@@ -190,14 +221,7 @@ def _patch_cognition(raw: bytes) -> bytes:
         b"            p['ephemeral_ui_source_refs']=ui_refs\n",
         "bind UI receipt to the exact body offer",
     )
-    raw = _replace_once(
-        raw,
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\n",
-        b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
-        b"                    or query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')\n"
-        b"                    or query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])):\n",
-        "reject UI binding substitution between query and offer",
-    )
+    raw = _bind_ui_offer_scope(raw)
     raw = _replace_once(
         raw,
         b"                'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})\n",
