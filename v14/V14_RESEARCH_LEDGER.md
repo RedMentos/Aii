@@ -2088,3 +2088,30 @@ For the future normal-turn A5/A4 → B1/B2/C3 consumer, measure **answer quality
 ## Run 65 private-device receipt check — 2026-11-27T11:23:36Z
 
 - Read-only owner-relay requests were created in private RedMentos/Aiiii: #1017 HEALTH, #1018 PIPELINE_STATUS, #1019 DIAGNOSTICS. Immediate readback found zero authenticated device_status comments on all three: NO_LIVE_RECEIPT. Do not infer current installed SHA, updater state, runtime process or phone health from the old 2026-11-24 V13OBS #115 snapshot. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission or data action was performed.
+
+
+## R-186 — Progress-aligned visual world models and asynchronous latent lookahead (2026-11-27)
+
+### Primary paper read in full
+
+**WM-VS: Progress-Aligned World Models for Closed-Loop Visual Servoing** — Guanzhong Sun, Junyi Ma, Yixuan Zhou, Yuxuan Wu, Yanzi Miao, Hesheng Wang. arXiv:2609.20892v2, revised **2026-11-23**; full 315-line HTML manuscript reviewed. Preprint, not peer-reviewed at this checkpoint. Paper: https://arxiv.org/abs/2609.20892 ; full text: https://arxiv.org/html/2609.20892v2 .
+
+- Method: frozen DINOv2 ViT-S/14 at 448×448 supplies normalized 384-D patch tokens; a visual adapter produces 256-D embeddings. A causal temporal encoder combines visual embeddings, joint state, prior action and elapsed interval. Offline target-region correspondences define a signed 4-D coordinate (image translation x/y, log scale, in-plane rotation) relative to a desired target.
+- Stage 1 predicts next latent state from current latent + executed action and aligns both current and predicted future latent to the observed task-error coordinate. The objective includes next-latent regression/cosine consistency plus current-error and future-error regression. This is more than a plausible next frame: action consequences must indicate progress, stagnation or regression.
+- Stage 2 uses behavior cloning plus local demonstrated-consequence supervision and short policy-induced imagined rollouts that penalize failure to contract task error. It is a reactive policy; no online trajectory optimizer or deployment-time rollout planner.
+- Experiment: fixed eye-to-hand RGB camera (640×480) + 7-DoF RealMan robot; 1,000 trajectories at 5 Hz, split by whole trajectory 70/15/15; 30 independent real-robot trials per method/ablation. WM-VS reached the 10%-of-initial-error region in 30/30 and retained it at the final valid frame in **25/30 (83.33%)**. Removing only future-error alignment retained **8/30 (26.67%)**. Learned progress ordering correlated with an external AprilTag evaluator at mean Spearman rho **0.8778**. Two unseen 3D targets showed 86–90% translation-error and 65–70% rotation-error reduction.
+- Important caveats: one fixed robotic manipulation setup and task-specific training; not GUI interaction, Android UI, conversational cognition or an ARM/mobile benchmark. The 256-D model and frozen DINOv2 encoder are not shown to fit the Redmi budget. The paper's arXiv page indicates CC BY-NC-SA 4.0 for the manuscript; it says code/data *will be released*, but no released implementation or weight license was verified on 2026-11-27. No code, data or weights reused.
+- V14 implication: a future visual/action learning path should bind action intent, pre-action visual state, post-action visual state, goal/target, clock and outcome SourceRefs; evaluate predicted *future task error* against observed outcome; use action-shuffled, no-message, delayed/omitted-outcome and goal-substitution negatives; split by session/app/task; report final retention and restart/rollback, not only best-frame accuracy. Keep this distinct from A4 structural salience. **Not implemented by #2559.**
+
+### Maintained OSS / paper scan (not a full paper read)
+
+**GlanceWAM: Sparse Test-Time Imagination for World-Action Models** — arXiv:2608.23927v3 (2026-10-27). The full arXiv HTML was not retrievable; only the abstract and the maintained GitHub README were inspected, so this is not recorded as a full-paper read. Paper: https://arxiv.org/abs/2608.23927 ; repository: https://github.com/linhanwang/GlanceWAM .
+
+- The abstract/README describe an asynchronous latent lookahead proposer that imagines a frame seconds ahead off the control critical path, while an action head consumes the latent at a faster control clock. README reports a SkyReels-V2 DF 1.3B backbone, 48 ms action chunks on one A100, 72.2% RoboCasa and 98.9% LIBERO; reference training uses 4×H200.
+- Repository code license is MIT (LICENSE read on 2026-11-27). The checkpoint/dataset bundle is 21 GB total (5.0 GB LIBERO or 16.2 GB RoboCasa); Hugging Face bundle/license metadata could not be verified. MIT code does not automatically license model weights or datasets.
+- Not a Redmi candidate: no ARM64/Android measurement, model bundle exceeds the practical free-storage/RAM envelope, and the published latency is A100-only. No code, data, checkpoint or dependency reused. Conceptual research lead only: schedule prediction asynchronously and discard stale results rather than blocking the critical response path.
+
+### Run 67 implementation relationship
+
+PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salience adapter to connect the provider-facing MediaProjection path. This is a fixed-gain handcrafted attention cue, not a learned visual world model, not action-conditioned progress, not semantic grounding and not weight learning. The WM-VS findings justify keeping the signal labelled ATTENTION_ONLY and making future task-progress claims depend on observed post-action outcomes and retention.
+
