@@ -1,4 +1,4 @@
-"""Compose the current pinned recovery/runtime candidate with consent-bound RAW EAR and an exact greeting/ack reflex.
+"""Compose pinned RAW EAR, greeting/ack and signed Android UI consumers into the staged runtime.
 
 The existing V13 arithmetic, source-span C4 and postcommit overlays remain
 owned by the base builder. This wrapper composes the A5 audio consumer, then a bounded exact greeting/ack reflex.
@@ -17,6 +17,8 @@ NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_2
 NATIVE_RECEIVER_BLOB_SHA1 = "e27b47d6eccc28123f35480996dd71914da61a4e"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "3c71a71b4171f49c20b57fadee190b22576fa953"
+UI_RUNTIME_OVERLAY = "scripts/integrated_android_ui_runtime_candidate_20261127.py"
+UI_RUNTIME_OVERLAY_BLOB_SHA1 = "0bffc5294605bc6bcc1cc6409117d7fa41058ae5"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -272,7 +274,9 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     native_receiver = _load(code_dir, NATIVE_RECEIVER_BUILDER, NATIVE_RECEIVER_BLOB_SHA1)
     composed = native_receiver.apply_sources(code_dir, composed)
     greeting_fastpath = _load(code_dir, GREETING_FASTPATH_BUILDER, GREETING_FASTPATH_BLOB_SHA1)
+    ui_runtime = _load(code_dir, UI_RUNTIME_OVERLAY, UI_RUNTIME_OVERLAY_BLOB_SHA1)
     composed = greeting_fastpath.apply_sources(code_dir, composed)
+    composed = ui_runtime.apply_sources(code_dir, composed)
     if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
         raise ValueError("native receiver Cognition path was not composed")
     if b"native-probe" not in composed.get("v13/callosum.py", b""):
