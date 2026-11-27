@@ -582,6 +582,8 @@ def _native_receiver_effects(runtime, *, strict):
                     raise NativeReceiverMatrixRuntimeError(name + " summary carries forbidden authority")
 
         evidence_class = cohort.get("evidence_class")
+        if evidence_class not in {"SYNTHETIC", "LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+            raise NativeReceiverMatrixRuntimeError("Perception evidence environment is unknown")
         duplicate_input_groups_checked = None
         if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
             counts = kv.get("distinct_from_no_message_task_groups_by_condition")
@@ -624,18 +626,33 @@ def _native_receiver_effects(runtime, *, strict):
             "generated_answer_correctness_proven", "production_route", "training_authority",
             "native_receiver_authority", "persisted",
         )
-        kv_effect = {key: kv[key] for key in kv_fields if key in kv}
-        if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
-            duplicate_checks_observed = duplicate_input_groups_checked > 0
-            kv_effect["same_input_consistency_observed"] = duplicate_checks_observed
-            kv_effect["same_input_consistency_status"] = (
-                "CHECKED_PASS" if duplicate_checks_observed
-                else "NOT_TESTED_NO_DUPLICATE_INPUTS"
-            )
-            if not duplicate_checks_observed:
-                # The Perception utility's True is vacuous when there were no
-                # duplicate inputs to compare. Do not surface it as measured proof.
-                kv_effect["same_input_consistency_passed"] = None
+        if evidence_class == "SYNTHETIC":
+            # Fixture K/V bytes exercise the receipt contract, not a native
+            # receiver. Never expose them as measured native state effects.
+            kv_effect = {
+                "status": "UNAVAILABLE",
+                "reason": "SYNTHETIC_FIXTURE_ONLY",
+                "source_status": kv.get("status"),
+                "semantic_use_proven": False,
+                "generated_answer_correctness_proven": False,
+                "production_route": False,
+                "training_authority": 0,
+                "native_receiver_authority": 0,
+                "persisted": False,
+            }
+        else:
+            kv_effect = {key: kv[key] for key in kv_fields if key in kv}
+            if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
+                duplicate_checks_observed = duplicate_input_groups_checked > 0
+                kv_effect["same_input_consistency_observed"] = duplicate_checks_observed
+                kv_effect["same_input_consistency_status"] = (
+                    "CHECKED_PASS" if duplicate_checks_observed
+                    else "NOT_TESTED_NO_DUPLICATE_INPUTS"
+                )
+                if not duplicate_checks_observed:
+                    # The Perception utility's True is vacuous when there were no
+                    # duplicate inputs to compare. Do not surface it as measured proof.
+                    kv_effect["same_input_consistency_passed"] = None
 
         return {
             "status": cohort.get("status"),
@@ -646,7 +663,8 @@ def _native_receiver_effects(runtime, *, strict):
             "kv_snapshot_effect": kv_effect,
             "information_use_audit": {key: information[key] for key in information_fields if key in information},
             "interpretation_limit": (
-                "Read-only K/V state differences and teacher-forced target-logprob proxy; "
+                "Native K/V differences are exposed only for LOCAL_LINUX, TERMUX_ANDROID or REDMI receipts; "
+                "synthetic fixtures are UNAVAILABLE. Teacher-forced target-logprob remains a proxy, "
                 "not semantic use or generated-answer correctness."
             ),
             **safe_base,
