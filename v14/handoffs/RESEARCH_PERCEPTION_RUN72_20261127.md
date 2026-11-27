@@ -90,3 +90,14 @@ No third-party implementation, model, weights or dataset was imported. The exper
 3. Core wires the signed A5 frame provider into the normal same-turn Runtime/C3 consumer while the UIObservationLease is live; QA separately validates Android consent/onStop/revoke/process-death/restart/rollback.
 4. Once a visible, consented provider and real source-disjoint UI frames exist, repeat the calibration on separate app/session/version cohorts. Consider a local conditional threshold by app/source family only if the held-out false-rejection/missed-OOD trade-off improves.
 5. No user action is required now.
+
+
+## Hosted CI readback — 2026-11-27 20:20Z
+
+Exact PR #2566 head `1c8511f909b171ba85b80145d368cce460cef89d` triggered the existing workflows after the A5 workflow path was extended:
+
+- [Run 46062787585 / workflow #59 — V14 A5 visual frame bridge and A3 OOD calibration](https://github.com/RedMentos/Aii/actions/runs/46062787585): PASS on CPython 3.13.18 and 3.14.10. Each job compiled the production V13 vision/A5 modules plus the experiment, ran `test_vision.py`, `test_a5_visual_frame_bridge.py` and the new OOD tests (**36 passed, 3 subtests passed** on each version), then ran and validated the one-repeat experiment JSON smoke.
+- [Run 46062787525 / workflow #590 — V14 MediaProjection RAW EYE frame ingress](https://github.com/RedMentos/Aii/actions/runs/46062787525): PASS on CPython 3.13.18 and 3.14.10, **39 passed** each. This is focused ingress CI, not a device test.
+- [Run 46062787616 / workflow #3356 — V13 runtime deployment integrity](https://github.com/RedMentos/Aii/actions/runs/46062787616): offline regression jobs PASS on CPython 3.11.18 and 3.14.10. This does not perform or prove deployment.
+
+The first run is exact child-PR CI for the experiment. The second and third are related workflow checks triggered by the PR update; neither upgrades the device or release state. No Android receipt exists, no deployment was requested, and #2566 remains DRAFT / NOT_RELEASED.
