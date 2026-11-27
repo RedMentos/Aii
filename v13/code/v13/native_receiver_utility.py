@@ -594,6 +594,68 @@ def _native_score(value, receiver_sha, input_sha, target_sha, target_count, cond
             "decode_status": 0,
             "native_input_consumed": True,
         }
+    if "prediction_distribution_audit" in value:
+        audit = value.get("prediction_distribution_audit")
+        log2 = math.log(2.0)
+        if (condition != "LATENT_CANDIDATE"
+                or not isinstance(audit, Mapping)
+                or audit.get("schema") != "v14.native-receiver-prediction-distribution-audit/1"
+                or audit.get("method") != "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1"
+                or audit.get("divergence") != "JENSEN_SHANNON_NATS"
+                or audit.get("normalization") != "DIVIDE_BY_LN2_TO_UNIT_INTERVAL"
+                or type(audit.get("vocab_size")) is not int
+                or not 1 <= audit["vocab_size"] <= 1_000_000
+                or audit.get("receiver_model_sha256") != model_sha
+                or audit.get("raw_logits_exported") is not False
+                or audit.get("raw_logits_persisted") is not False):
+            raise NativeReceiverUtilityError("native PL/CIC distribution-audit metadata is invalid")
+        clean_audit = {
+            "schema": "v14.native-receiver-prediction-distribution-audit/1",
+            "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+            "divergence": "JENSEN_SHANNON_NATS",
+            "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+            "vocab_size": audit["vocab_size"],
+            "receiver_model_sha256": model_sha,
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+        }
+        expected_audits = {
+            "pl": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "cic": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+        }
+        for name, comparison in expected_audits.items():
+            item = audit.get(name)
+            nats = item.get("jsd_nats") if isinstance(item, Mapping) else None
+            normalized = item.get("jsd_normalized") if isinstance(item, Mapping) else None
+            current_sha = item.get("current_input_sha256") if isinstance(item, Mapping) else None
+            reference_sha = item.get("reference_input_sha256") if isinstance(item, Mapping) else None
+            current_logits_sha = item.get("current_logits_sha256") if isinstance(item, Mapping) else None
+            reference_logits_sha = item.get("reference_logits_sha256") if isinstance(item, Mapping) else None
+            if (not isinstance(item, Mapping)
+                    or item.get("comparison") != comparison
+                    or current_sha != input_hash
+                    or type(reference_sha) is not str or len(reference_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in reference_sha)
+                    or type(current_logits_sha) is not str or len(current_logits_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in current_logits_sha)
+                    or type(reference_logits_sha) is not str or len(reference_logits_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in reference_logits_sha)
+                    or type(nats) not in (int, float) or not math.isfinite(float(nats))
+                    or not 0.0 <= float(nats) <= log2 + 1.0e-9
+                    or type(normalized) not in (int, float) or not math.isfinite(float(normalized))
+                    or not 0.0 <= float(normalized) <= 1.0 + 1.0e-9
+                    or abs(float(normalized) - float(nats) / log2) > 1.0e-9):
+                raise NativeReceiverUtilityError("native PL/CIC JSD value or source binding is invalid")
+            clean_audit[name] = {
+                "comparison": comparison,
+                "jsd_nats": float(nats),
+                "jsd_normalized": float(normalized),
+                "current_input_sha256": input_hash,
+                "reference_input_sha256": reference_sha,
+                "current_logits_sha256": current_logits_sha,
+                "reference_logits_sha256": reference_logits_sha,
+            }
+        native_data["prediction_distribution_audit"] = clean_audit
     if condition == "SELF_GENERATED_MESSAGE":
         generated = value.get("self_generation")
         if (not isinstance(generated, Mapping)
@@ -871,6 +933,107 @@ def _summarize_task_accuracy(task_accuracy_groups, *, sessions, families,
     }
 
 
+
+def _bootstrap_scalar_summary(values, *, bootstrap_samples, seed):
+    if not values:
+        raise NativeReceiverUtilityError("distribution-audit metric is empty")
+    low, high = _bootstrap_ci(values, bootstrap_samples, seed, confidence=0.95)
+    return {
+        "count": len(values),
+        "mean": sum(values) / len(values),
+        "median": statistics.median(values),
+        "bootstrap_95pct_low": low,
+        "bootstrap_95pct_high": high,
+    }
+
+
+def _summarize_prediction_distribution_audit(audits, *, sessions, families,
+        tasks_per_session, tasks_per_family, tasks_per_session_family,
+        native_binding, bootstrap_samples, seed):
+    if not audits:
+        return {
+            "schema": "v14.native-receiver-prediction-distribution-cohort/1",
+            "status": "NOT_COLLECTED",
+            "evidence_class": None,
+            "task_group_count": 0,
+            "minimum_task_groups": 20,
+            "holdout_sufficient": False,
+            "acceptance_gate_passed": False,
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        }
+    group_count = len(audits)
+    balanced = all(
+        tasks_per_session_family[(session, family)] >= 2
+        for session in sessions for family in families
+    )
+    enough = (
+        group_count >= 20 and len(sessions) >= 2 and len(families) >= 2
+        and min(tasks_per_session.values()) >= 10
+        and min(tasks_per_family.values()) >= 4 and balanced
+    )
+    pl_nats = [audit["pl"]["jsd_nats"] for audit in audits]
+    pl_normalized = [audit["pl"]["jsd_normalized"] for audit in audits]
+    cic_nats = [audit["cic"]["jsd_nats"] for audit in audits]
+    cic_normalized = [audit["cic"]["jsd_normalized"] for audit in audits]
+    difference = [cic - pl for cic, pl in zip(cic_normalized, pl_normalized)]
+    diff95_low, diff95_high = _bootstrap_ci(difference, bootstrap_samples, seed + 31, confidence=0.95)
+    diff90_low, diff90_high = _bootstrap_ci(difference, bootstrap_samples, seed + 32, confidence=0.90)
+    kind, environment = native_binding[:2]
+    evidence = "SYNTHETIC" if kind == "SYNTHETIC_FIXTURE" else environment
+    status = "SYNTHETIC_FIXTURE_ONLY" if kind == "SYNTHETIC_FIXTURE" else (
+        "MEASURED_NOT_ACCEPTED" if enough else "INSUFFICIENT_HOLDOUT"
+    )
+    return {
+        "schema": "v14.native-receiver-prediction-distribution-cohort/1",
+        "status": status,
+        "evidence_class": evidence,
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "task_group_count": group_count,
+        "minimum_task_groups": 20,
+        "session_count": len(sessions),
+        "task_family_count": len(families),
+        "holdout_sufficient": bool(enough),
+        "balanced_session_family_coverage": balanced,
+        "pl": {
+            "jsd_nats": _bootstrap_scalar_summary(pl_nats, bootstrap_samples=bootstrap_samples, seed=seed),
+            "jsd_normalized": _bootstrap_scalar_summary(pl_normalized, bootstrap_samples=bootstrap_samples, seed=seed + 1),
+        },
+        "cic": {
+            "jsd_nats": _bootstrap_scalar_summary(cic_nats, bootstrap_samples=bootstrap_samples, seed=seed + 2),
+            "jsd_normalized": _bootstrap_scalar_summary(cic_normalized, bootstrap_samples=bootstrap_samples, seed=seed + 3),
+        },
+        "cic_minus_pl_normalized": {
+            "mean": sum(difference) / group_count,
+            "median": statistics.median(difference),
+            "bootstrap_95pct_low": diff95_low,
+            "bootstrap_95pct_high": diff95_high,
+            "bootstrap_90pct_low": diff90_low,
+            "bootstrap_90pct_high": diff90_high,
+            "equivalence_margin": 0.05,
+            "equivalent_within_margin": diff90_low >= -0.05 and diff90_high <= 0.05,
+        },
+        "acceptance_gate_passed": False,
+        "raw_logits_exported": False,
+        "raw_logits_persisted": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+        "interpretation_limit": (
+            "Per-group full-vocabulary first-next-token JSD is aggregated over source-disjoint "
+            "paired task groups. PL and CIC are distributional movement metrics, not task correctness "
+            "or proof of trained latent communication; raw logits are neither exported nor persisted."
+        ),
+    }
+
+
 def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_sessions=2,
         min_task_families=2, min_tasks_per_session=20, min_tasks_per_family=8,
         min_tasks_per_session_family=4, min_mean_delta_nats=0.02, min_win_rate=0.70,
@@ -924,6 +1087,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
     hybrid_state_roundtrip_mode = None
     task_accuracy_groups = []
     task_accuracy_mode = None
+    prediction_distribution_audits = []
+    prediction_distribution_audit_mode = None
     for group in groups.values():
         if set(group) != set(CONDITIONS):
             raise NativeReceiverUtilityError("task group lacks a required control")
@@ -945,6 +1110,23 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
                 name: group[name]["native"]["task_answer"]["exact_match"]
                 for name in TASK_ACCURACY_CONDITIONS
             })
+        distribution_audit = candidate["native"].get("prediction_distribution_audit")
+        has_distribution_audit = isinstance(distribution_audit, Mapping)
+        if prediction_distribution_audit_mode is None:
+            prediction_distribution_audit_mode = has_distribution_audit
+        elif prediction_distribution_audit_mode != has_distribution_audit:
+            raise NativeReceiverUtilityError(
+                "PL/CIC distribution-audit coverage changed across task cohort"
+            )
+        if has_distribution_audit:
+            if (distribution_audit["pl"]["reference_input_sha256"]
+                    != group["NO_MESSAGE"]["native"]["input_sha256"]
+                    or distribution_audit["cic"]["reference_input_sha256"]
+                    != group["DERANGED_MESSAGE"]["native"]["input_sha256"]):
+                raise NativeReceiverUtilityError(
+                    "PL/CIC audit reference inputs do not match the paired control arms"
+                )
+            prediction_distribution_audits.append(distribution_audit)
         roundtrip = candidate["native"].get("hybrid_state_roundtrip")
         has_roundtrip = roundtrip is not None
         if hybrid_state_roundtrip_mode is None:
@@ -1194,6 +1376,17 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
         bootstrap_samples=bootstrap_samples,
         seed=seed + 97,
     )
+    prediction_distribution_audit = _summarize_prediction_distribution_audit(
+        prediction_distribution_audits,
+        sessions=sessions,
+        families=families,
+        tasks_per_session=tasks_per_session,
+        tasks_per_family=tasks_per_family,
+        tasks_per_session_family=tasks_per_session_family,
+        native_binding=native_binding,
+        bootstrap_samples=bootstrap_samples,
+        seed=seed + 137,
+    )
     try:
         hybrid_state_roundtrip_effect = summarize_native_hybrid_state_roundtrips(hybrid_state_roundtrips)
     except NativeHybridStateReceiptError as exc:
@@ -1228,6 +1421,8 @@ def evaluate_native_receiver_task_utility(receipts, *, min_task_groups=40, min_s
         "hybrid_state_roundtrip_effect": hybrid_state_roundtrip_effect,
         "task_accuracy": task_accuracy,
         "task_accuracy_measured": bool(task_accuracy_groups),
+        "prediction_distribution_audit": prediction_distribution_audit,
+        "prediction_distribution_audit_measured": bool(prediction_distribution_audits),
         "information_use_audit": information_use_audit,
         "score_method": SCORE_METHOD, "semantic_use_proven": False,
         "generated_answer_correctness_proven": False, "production_route": False,

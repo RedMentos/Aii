@@ -565,6 +565,7 @@ def score_and_record_native_receiver_condition_matrix(
             "evidence_class": cohort.get("evidence_class"),
             "hybrid_state_roundtrip": condition_scores["LATENT_CANDIDATE"].get("hybrid_state_roundtrip"),
             "prediction_distribution_audit": distribution_audit,
+            "prediction_distribution_audit_cohort": cohort.get("prediction_distribution_audit"),
             "task_accuracy_enabled": include_task_accuracy,
             "task_accuracy": cohort.get("task_accuracy"),
             "task_group_id": receipt["task_group_id"],

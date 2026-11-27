@@ -1,6 +1,8 @@
 import hashlib
 import struct
 
+import math
+
 import pytest
 
 from v13.native_receiver_utility import (
@@ -116,7 +118,8 @@ def attach_hybrid_state_roundtrip(base, overrides=None):
 def make_receipt(task_index, session_id, task_family, condition, source_ref_override=None,
                  input_sha_override=None, kv_digest_override=None, kv_geometry_override=None,
                  score_override=None, ood_source_ref_override=None, deranged_source_ref_override=None,
-                 include_task_accuracy=False, task_accuracy_overrides=None):
+                 include_task_accuracy=False, task_accuracy_overrides=None,
+                 include_prediction_distribution_audit=False):
     task_group_id = f"task-{task_index:02d}"
     source_ref = source_ref_override or {"source_id": f"source-{task_index:02d}", "sha256": sha(f"source-{task_index}")}
     control_proof_sha256 = None
@@ -168,6 +171,38 @@ def make_receipt(task_index, session_id, task_family, condition, source_ref_over
         "native_input_consumed": True,
         "llama_version": "synthetic-fixture",
     }
+    if include_prediction_distribution_audit and condition == "LATENT_CANDIDATE":
+        pl_nats = 0.10 + 0.001 * (task_index % 10)
+        cic_nats = 0.20 + 0.001 * (task_index % 10)
+        log2 = math.log(2.0)
+        native["prediction_distribution_audit"] = {
+            "schema": "v14.native-receiver-prediction-distribution-audit/1",
+            "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+            "divergence": "JENSEN_SHANNON_NATS",
+            "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+            "vocab_size": 32000,
+            "receiver_model_sha256": RECEIVER_SHA,
+            "pl": {
+                "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+                "jsd_nats": pl_nats,
+                "jsd_normalized": pl_nats / log2,
+                "current_input_sha256": input_sha,
+                "reference_input_sha256": sha(f"input-{task_index}-NO_MESSAGE"),
+                "current_logits_sha256": sha(f"pl-current-{task_index}"),
+                "reference_logits_sha256": sha(f"pl-reference-{task_index}"),
+            },
+            "cic": {
+                "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+                "jsd_nats": cic_nats,
+                "jsd_normalized": cic_nats / log2,
+                "current_input_sha256": input_sha,
+                "reference_input_sha256": sha(f"input-{task_index}-DERANGED_MESSAGE"),
+                "current_logits_sha256": sha(f"cic-current-{task_index}"),
+                "reference_logits_sha256": sha(f"cic-reference-{task_index}"),
+            },
+            "raw_logits_exported": False,
+            "raw_logits_persisted": False,
+        }
     if include_task_accuracy and condition in TASK_ACCURACY_CONDITIONS:
         overrides = task_accuracy_overrides or {}
         if condition in overrides:
@@ -257,7 +292,8 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
                    kv_geometry_override=None, include_hybrid_state_roundtrip=False,
                    hybrid_state_roundtrip_override=None, score_overrides=None,
                    ood_source_ref_override=None, deranged_source_ref_override=None,
-                   include_task_accuracy=False, task_accuracy_overrides=None):
+                   include_task_accuracy=False, task_accuracy_overrides=None,
+                   include_prediction_distribution_audit=False):
     result = None
     input_overrides = input_overrides or {}
     kv_overrides = kv_overrides or {}
@@ -274,6 +310,7 @@ def complete_group(runtime, task_index=0, session_id="session-A", task_family="A
             deranged_source_ref_override=deranged_source_ref_override,
             include_task_accuracy=include_task_accuracy,
             task_accuracy_overrides=task_accuracy_overrides,
+            include_prediction_distribution_audit=include_prediction_distribution_audit,
         )
         if include_hybrid_state_roundtrip and condition == "LATENT_CANDIDATE":
             receipt = attach_hybrid_state_roundtrip(receipt, hybrid_state_roundtrip_override)
@@ -798,6 +835,7 @@ def test_native_task_accuracy_cag_ssg_uses_paired_exact_match_with_confidence_an
         family = "ARITHMETIC" if task_index % 2 == 0 else "ENTITY_RECALL"
         result = complete_group(
             runtime, task_index, session_id, family, include_task_accuracy=True,
+            include_prediction_distribution_audit=True,
         )
 
     accuracy = result["task_accuracy"]
@@ -810,6 +848,17 @@ def test_native_task_accuracy_cag_ssg_uses_paired_exact_match_with_confidence_an
     assert accuracy["ssg"]["mean_accuracy_delta"] == 0.3
     assert 0.0 <= accuracy["cag"]["bootstrap_95pct_low"] <= accuracy["cag"]["bootstrap_95pct_high"] <= 1.0
     assert -1.0 <= accuracy["ssg"]["bootstrap_90pct_low"] <= accuracy["ssg"]["bootstrap_90pct_high"] <= 1.0
+    distribution = result["prediction_distribution_audit"]
+    assert distribution["status"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert distribution["evidence_class"] == "SYNTHETIC"
+    assert distribution["task_group_count"] == 20
+    assert distribution["holdout_sufficient"] is True
+    assert distribution["pl"]["jsd_nats"]["count"] == 20
+    assert distribution["cic"]["jsd_normalized"]["count"] == 20
+    assert distribution["cic_minus_pl_normalized"]["equivalent_within_margin"] is False
+    assert distribution["acceptance_gate_passed"] is False
+    assert distribution["raw_logits_exported"] is False
+    assert distribution["raw_logits_persisted"] is False
     assert accuracy["acceptance_gate_passed"] is False
     assert accuracy["generated_answer_correctness_proven"] is False
     assert result["generated_answer_correctness_proven"] is False
@@ -825,6 +874,7 @@ def test_task_accuracy_is_not_reported_when_native_generation_was_not_requested(
     assert result["task_accuracy"]["status"] == "NOT_COLLECTED"
     assert result["task_accuracy"]["task_group_count"] == 0
     assert result["task_accuracy"]["acceptance_gate_passed"] is False
+    assert result["prediction_distribution_audit"]["status"] == "NOT_COLLECTED"
 
 
 def test_task_accuracy_partial_arm_coverage_fails_closed():
@@ -867,3 +917,83 @@ def test_task_answer_exact_match_requires_eos_termination():
             adapter_sha256=receipt["adapter_sha256"],
             control_proof_sha256=receipt.get("control_proof_sha256"),
         )
+
+
+def test_prediction_distribution_audit_coverage_cannot_change_mid_cohort():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    complete_group(
+        runtime, 0, "session-A", "ARITHMETIC",
+        include_prediction_distribution_audit=True,
+    )
+    with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+        complete_group(
+            runtime, 1, "session-B", "ENTITY_RECALL",
+            include_prediction_distribution_audit=False,
+        )
+
+
+def test_prediction_distribution_audit_rejects_inconsistent_jsd_normalization():
+    receipt = make_receipt(
+        0, "session-A", "ARITHMETIC", "LATENT_CANDIDATE",
+        include_prediction_distribution_audit=True,
+    )
+    native = dict(receipt["native"])
+    audit = dict(native["prediction_distribution_audit"])
+    pl = dict(audit["pl"])
+    pl["jsd_normalized"] = 0.99
+    audit["pl"] = pl
+    native["prediction_distribution_audit"] = audit
+    with pytest.raises(NativeReceiverUtilityError, match="native PL/CIC JSD value or source binding is invalid"):
+        build_native_receiver_task_score_receipt(
+            condition=receipt["condition"],
+            task_group_id=receipt["task_group_id"],
+            task_family=receipt["task_family"],
+            session_id=receipt["session_id"],
+            source_ref=receipt["source_ref"],
+            message_source_ref=receipt["message_source_ref"],
+            receiver=receipt["receiver"],
+            target_token_ids_sha256=receipt["target_token_ids_sha256"],
+            target_token_count=receipt["target_token_count"],
+            context_sha256=receipt["context_sha256"],
+            input_sha256=receipt["input_sha256"],
+            native_receipt=native,
+            adapter_sha256=receipt["adapter_sha256"],
+            control_proof_sha256=receipt.get("control_proof_sha256"),
+        )
+
+
+def test_prediction_distribution_audit_reference_must_match_paired_control_inputs():
+    runtime = type("Runtime", (), {"session": "session-A"})()
+    for condition in CONDITIONS:
+        receipt = make_receipt(
+            0, "session-A", "ARITHMETIC", condition,
+            include_prediction_distribution_audit=condition == "LATENT_CANDIDATE",
+        )
+        if condition == "LATENT_CANDIDATE":
+            native = dict(receipt["native"])
+            audit = dict(native["prediction_distribution_audit"])
+            pl = dict(audit["pl"])
+            pl["reference_input_sha256"] = sha("not-the-no-message-input")
+            audit["pl"] = pl
+            native["prediction_distribution_audit"] = audit
+            receipt = build_native_receiver_task_score_receipt(
+                condition=receipt["condition"],
+                task_group_id=receipt["task_group_id"],
+                task_family=receipt["task_family"],
+                session_id=receipt["session_id"],
+                source_ref=receipt["source_ref"],
+                message_source_ref=receipt["message_source_ref"],
+                receiver=receipt["receiver"],
+                target_token_ids_sha256=receipt["target_token_ids_sha256"],
+                target_token_count=receipt["target_token_count"],
+                context_sha256=receipt["context_sha256"],
+                input_sha256=receipt["input_sha256"],
+                native_receipt=native,
+                adapter_sha256=receipt["adapter_sha256"],
+                control_proof_sha256=receipt.get("control_proof_sha256"),
+            )
+        if condition == CONDITIONS[-1]:
+            with pytest.raises(NativeReceiverTaskScoreError, match="complete task-score cohort failed validation"):
+                record_task_score_receipt(runtime, receipt)
+        else:
+            record_task_score_receipt(runtime, receipt)
