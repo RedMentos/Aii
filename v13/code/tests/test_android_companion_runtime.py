@@ -9,7 +9,8 @@ import types
 
 import pytest
 
-from v13 import android_control, android_outcomes
+from v13 import android_control, android_outcomes, jefbridge
+from v13.enlightened_space import EnlightenedSpace
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.android_capabilities import CapabilityRegistry, CapabilityRegistryError
@@ -156,6 +157,15 @@ def capability_snapshot(*, enabled=True, paired=True, screen_capture_ready=False
         "android_os_permission_required": False,
         "result_observed": False,
         "learning_authority": False,
+    }, {
+        "capability": "open_url",
+        "status": launch_status,
+        "reason": "HTTPS ACTION_VIEW after visible per-action approval; browser result is not observed",
+        "provider": "ANDROID_ACTION_VIEW_HTTPS",
+        "per_action_consent": True,
+        "android_os_permission_required": False,
+        "result_observed": False,
+        "learning_authority": False,
     }]
     for name in ("audio_capture", "observe_ui", "screen_capture", "tap", "swipe", "type_text", "back"):
         if name == "screen_capture" and screen_capture_ready:
@@ -217,11 +227,17 @@ class FakeTransport:
 
     def submit(self, request):
         self.submitted.append(request)
-        self.pending_items.append({
+        pending = {
             "action_id": request["action_id"],
-            "package": request["args"]["package"],
+            "capability": request["capability"],
             "expires_at_ms": int(request["expires_at"] * 1000),
-        })
+        }
+        if "package" in request["args"]:
+            pending["package"] = request["args"]["package"]
+        elif "url" in request["args"]:
+            from v13.android_url import https_host
+            pending["url_host"] = https_host(request["args"]["url"])
+        self.pending_items.append(pending)
         return {"status": "PENDING_USER_APPROVAL", "action_id": request["action_id"]}
 
     def outcome(self, action_id):
@@ -650,6 +666,37 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
         action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
     )
     runtime.store.add_packet("ActionOutcome", authority_forgery)
+    with pytest.raises(ValueError, match="ANDROID_ACTION_OUTCOME_NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            authority_forgery["packet_id"], expected_session=runtime.session,
+        )
+    learning_forgery = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", valid_outcome["event_id"],
+        valid_outcome["brain_generation_id"], valid_outcome["provenance"],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN",
+        actual={
+            **valid_outcome["actual"],
+            "production_route": True,
+            "training_authority": 1,
+            "native_receiver_authority": 1,
+        },
+    )
+    runtime.store.add_packet("ActionOutcome", learning_forgery)
+    with pytest.raises(ValueError, match="ANDROID_ACTION_OUTCOME_NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            learning_forgery["packet_id"], expected_session=runtime.session,
+        )
+    auth_forgery = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", valid_outcome["event_id"],
+        valid_outcome["brain_generation_id"], valid_outcome["provenance"],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN",
+        actual={**valid_outcome["actual"], "auth_scheme": "UNSIGNED_OR_UNKNOWN"},
+    )
+    runtime.store.add_packet("ActionOutcome", auth_forgery)
+    with pytest.raises(ValueError, match="ANDROID_ACTION_OUTCOME_NOT_RECEIPT_ONLY"):
+        jefbridge.controller(runtime).publish_android_action_outcome(
+            auth_forgery["packet_id"], expected_session=runtime.session,
+        )
     after_forgery = json.loads(controller.history())
     assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert after_forgery["actions"][0]["observed"] is False
@@ -725,7 +772,9 @@ def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path
 
 
 
-def _signed_receipt_for_request(transport, action_id, nonce):
+def _signed_receipt_for_request(
+    transport, action_id, nonce, *, capability=None, os_permission_status=None
+):
     request = transport.submitted[-1]
     body = {
         **BODY,
@@ -733,11 +782,203 @@ def _signed_receipt_for_request(transport, action_id, nonce):
         "digest": request["digest"],
         "nonce": nonce,
     }
+    if capability is not None:
+        body["capability"] = capability
+    if os_permission_status is not None:
+        body["os_permission_status"] = os_permission_status
     return {
         "body": body,
         "key_id": KEY_ID,
         "signature": _sign_test_body(body),
     }
+
+
+def test_open_url_is_consent_gated_source_bound_and_not_persisted_in_termux(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "8" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    url = "https://example.com/path?session_token=private"
+
+    with pytest.raises(android_control.ControlDenied):
+        controller.open_url("http://example.com", True)
+    with pytest.raises(android_control.ControlDenied):
+        controller.open_url(url, False)
+    assert transport.submitted == []
+
+    pending = json.loads(controller.open_url(url, True))
+    assert pending["status"] == "PENDING_USER_APPROVAL"
+    assert pending["action_type"] == "open_url"
+    assert pending["url_host"] == "example.com"
+    assert url not in json.dumps(pending)
+    request = transport.submitted[0]
+    assert request["capability"] == "open_url"
+    assert request["args"] == {"url": url}
+    assert request["companion_local_consent_required"] is True
+    assert request["permission_bypass"] is False
+    assert request["model_authority"] is False
+
+    args_json = controller.broker.db.execute(
+        "SELECT args_json FROM control_actions WHERE action_id=?",
+        (pending["action_id"],),
+    ).fetchone()[0]
+    assert args_json is None
+    event_row = runtime.store.one(
+        "SELECT packet FROM events WHERE id=?", (pending["source_event_id"],)
+    )
+    event = json.loads(event_row["packet"])
+    source_text = runtime.store.read_source(event["source_ref"])
+    assert url not in str(source_text)
+    assert "example.com" in str(source_text)
+
+    transport.receipt = _signed_receipt_for_request(
+        transport, pending["action_id"], "9" * 32,
+        capability="open_url", os_permission_status="NOT_REQUIRED_FOR_OPEN_URL",
+    )
+    recorded = json.loads(controller.poll(pending["action_id"]))
+    assert recorded["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recorded["observed"] is False
+    assert recorded["t8_authoritative"] is False
+    assert recorded["world_learning_eligible"] is False
+    assert recorded["jef_space"]["status"] == "PUBLISHED"
+    assert recorded["jef_space"]["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+    assert recorded["jef_space"]["t8_authoritative"] is False
+    assert recorded["jef_space"]["world_learning_eligible"] is False
+
+    followup = runtime.store.event(runtime.session, "Did the browser open?")
+    space = EnlightenedSpace(runtime.store, runtime.session)
+    for receiver in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE"):
+        view = space.consume(followup, receiver, query="Did the browser open?")
+        action_messages = [item for item in view["messages"] if item["from"] == "C5_ACTION"]
+        assert len(action_messages) == 1
+        assert action_messages[0]["authority"] == "CONTROL_ONLY"
+        assert "open_url receipt" in action_messages[0]["semantic_cue_not_fact"]
+
+    actual = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' "
+        "AND json_extract(payload,'$.action_id')=?",
+        (pending["action_id"],),
+    )
+    persisted = json.loads(actual["payload"])
+    assert persisted["actual"]["capability"] == "open_url"
+    assert persisted["actual"]["android_os_permission_status"] == "NOT_REQUIRED_FOR_OPEN_URL"
+    assert persisted["actual"]["companion_user_approval"] is True
+    assert persisted["actual"]["device_execution_claimed"] is False
+    assert persisted["actual"]["production_route"] is False
+    assert persisted["actual"]["training_authority"] == 0
+    assert persisted["actual"]["native_receiver_authority"] == 0
+    assert persisted["actual"]["trusted_transition_eligible"] is False
+    assert url not in json.dumps(persisted)
+    history = json.loads(controller.history())
+    assert history["actions"][0]["action_type"] == "open_url"
+    assert url not in json.dumps(history)
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_open_url_receipt_recovers_after_restart_without_raw_url_or_redispatch(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "b" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    url = "https://example.com/private?token=never-store"
+
+    pending = json.loads(controller.open_url(url, True))
+    action_id = pending["action_id"]
+    assert controller.broker.db.execute(
+        "SELECT args_json FROM control_actions WHERE action_id=?", (action_id,)
+    ).fetchone()[0] is None
+    controller.broker.close()
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    assert restarted.broker.dispatched[action_id].recovery_only is True
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "c" * 32,
+        capability="open_url", os_permission_status="NOT_REQUIRED_FOR_OPEN_URL",
+    )
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["jef_space"]["status"] == "PUBLISHED"
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    assert url not in json.dumps(restarted.history())
+    assert url not in json.dumps(runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ))
+    restarted.broker.close()
+    runtime.store.close()
+
+
+def test_open_url_receipt_finalizes_from_store_after_broker_crash(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "d" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.open_url("https://example.com/a?token=hidden", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "e" * 32,
+        capability="open_url", os_permission_status="NOT_REQUIRED_FOR_OPEN_URL",
+    )
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert runtime.store.one(
+        "SELECT 1 FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ) is not None
+    controller.broker.close()
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    assert restarted.broker.consumed[action_id].recovery_only is True
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["recovered_from_store"] is True
+    assert recovered["jef_space"]["status"] in {"PUBLISHED", "ALREADY_PRESENT"}
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    restarted.broker.close()
+    runtime.store.close()
+
+
+def test_operator_tty_routes_open_url_and_rejects_non_tty_origin(tmp_path):
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    runtime._android_companion_controller = controller
+
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        _staged_operator(runtime).run(
+            ":android open-url https://example.com/path --confirm",
+            origin="MODEL",
+        )
+    result = json.loads(_staged_operator(runtime).run(
+        ":android open-url https://example.com/path --confirm"
+    ))
+    assert result["status"] == "PENDING_USER_APPROVAL"
+    assert result["action_type"] == "open_url"
+    assert result["url_host"] == "example.com"
+    assert transport.submitted[0]["capability"] == "open_url"
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_operator_android_help_includes_open_url(tmp_path):
+    runtime = make_runtime(tmp_path)
+    assert "open-url <https-url> --confirm" in _staged_operator(runtime).run(":android")
 
 
 def test_claimed_receipt_retries_after_restart_without_redispatch(tmp_path, monkeypatch):

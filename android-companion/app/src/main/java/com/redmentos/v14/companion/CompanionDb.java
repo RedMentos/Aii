@@ -1,5 +1,7 @@
 package com.redmentos.v14.companion;
 
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,15 +15,15 @@ final class CompanionDb extends SQLiteOpenHelper {
     static final class Action {
         final String actionId;
         final String requestJson;
-        final String packageName;
+        final String targetValue;
         final String status;
         final String receiptJson;
         final long expiresAt;
-        Action(String actionId, String requestJson, String packageName, String status,
+        Action(String actionId, String requestJson, String targetValue, String status,
                String receiptJson, long expiresAt) {
             this.actionId = actionId;
             this.requestJson = requestJson;
-            this.packageName = packageName;
+            this.targetValue = targetValue;
             this.status = status;
             this.receiptJson = receiptJson;
             this.expiresAt = expiresAt;
@@ -42,7 +44,7 @@ final class CompanionDb extends SQLiteOpenHelper {
         throw new IllegalStateException("No implicit companion DB migration");
     }
 
-    synchronized boolean insertPending(String actionId, String requestJson, String packageName, long expiresAt) {
+    synchronized boolean insertPending(String actionId, String requestJson, String targetValue, long expiresAt) {
         SQLiteDatabase db = getWritableDatabase();
         try (Cursor c = db.rawQuery("SELECT request_json,status FROM actions WHERE action_id=?",
                 new String[]{actionId})) {
@@ -53,7 +55,8 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("action_id", actionId);
         values.put("request_json", requestJson);
-        values.put("package_name", packageName);
+        // Keep the v1 column name so existing local companion DBs migrate without data loss.
+        values.put("package_name", targetValue);
         values.put("status", "PENDING_USER_APPROVAL");
         values.put("expires_at", expiresAt);
         return db.insertOrThrow("actions", null, values) != -1;
@@ -146,9 +149,27 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
+        redactCompletedOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=?", new String[]{actionId, expectedStatus});
         if (changed != 1) throw new IllegalStateException("action is no longer in expected state");
+    }
+
+    private void redactCompletedOpenUrl(ContentValues values, String actionId) {
+        Action action = get(actionId);
+        if (action == null) throw new IllegalStateException("completed action disappeared");
+        try {
+            JSONObject request = new JSONObject(action.requestJson);
+            if (!"open_url".equals(request.optString("capability"))) return;
+            String host = Canonical.httpsHost(action.targetValue);
+            request.put("args", new JSONObject().put("url_host", host));
+            // The v1 package_name column remains for on-device DB compatibility.
+            // Once a signed receipt is durable, the full URL is no longer needed.
+            values.put("request_json", request.toString());
+            values.put("package_name", host);
+        } catch (Exception failure) {
+            throw new IllegalStateException("could not redact completed HTTPS target", failure);
+        }
     }
 
     synchronized List<Action> claimedWithoutReceipt() {
@@ -173,6 +194,7 @@ final class CompanionDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
+        redactCompletedOpenUrl(values, actionId);
         int changed = getWritableDatabase().update("actions", values,
                 "action_id=? AND status=? AND receipt_json IS NULL",
                 new String[]{actionId, expectedStatus});

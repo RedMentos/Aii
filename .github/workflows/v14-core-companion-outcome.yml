@@ -10,11 +10,15 @@ on:
       - "v13/code/v13/android_outcomes.py"
       - "v13/code/v13/android_companion_*.py"
       - "v13/code/v13/android_capabilities.py"
+      - "v13/code/v13/android_url.py"
+      - "v13/code/v13/enlightened_space.py"
+      - "v13/code/v13/jefbridge.py"
       - "v13/code/v13/android_ui_runtime.py"
       - "v13/code/v13/runtime.py"
       - "v13/code/v13/cognition.py"
       - "v13/code/v13/operator.py"
       - "v13/code/tests/test_android_companion_*.py"
+      - "v13/code/tests/test_android_url.py"
       - "v13/code/tests/test_android_ui_runtime_consumer.py"
       - ".github/workflows/v14-core-companion-outcome.yml"
   pull_request:
@@ -59,6 +63,9 @@ jobs:
             v13/code/v13/android_companion_protocol.py \
             v13/code/v13/android_companion_transport.py \
             v13/code/v13/android_capabilities.py \
+            v13/code/v13/android_url.py \
+            v13/code/v13/enlightened_space.py \
+            v13/code/v13/jefbridge.py \
             v13/code/v13/android_companion_ui_frames.py \
             v13/code/v13/android_companion_runtime.py \
             v13/code/v13/android_ui_runtime.py \
@@ -74,6 +81,7 @@ jobs:
             v13/code/tests/test_android_companion_protocol.py \
             v13/code/tests/test_android_companion_outcome_adapter.py \
             v13/code/tests/test_android_companion_ecdsa.py \
+            v13/code/tests/test_android_url.py \
             v13/code/tests/test_android_companion_transport.py \
             v13/code/tests/test_android_companion_runtime.py \
             v13/code/tests/test_android_companion_ui_frames.py \

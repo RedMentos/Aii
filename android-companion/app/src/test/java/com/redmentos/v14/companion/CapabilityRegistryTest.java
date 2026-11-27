@@ -44,15 +44,22 @@ public final class CapabilityRegistryTest {
         assertEquals("READY_WITH_PER_ACTION_CONSENT", CapabilityRegistry.launchStatus(true, true));
     }
 
-    @Test public void launchAndOneShotScreenCaptureAreTheOnlyReadyCapabilities() {
+    @Test public void launchOpenUrlAndOneShotScreenCaptureAreTheOnlyReadyCapabilities() {
         List<CapabilityRegistry.Capability> items = CapabilityRegistry.entries(true, true);
-        assertEquals(8, items.size());
+        assertEquals(9, items.size());
         int ready = 0;
         for (CapabilityRegistry.Capability item : items) {
             if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)
                     || "READY_WITH_PER_SESSION_OS_CONSENT".equals(item.status)) ready++;
             if ("launch_app".equals(item.id)) {
                 assertEquals("PACKAGE_MANAGER_LAUNCH_INTENT", item.provider);
+                assertTrue(item.perActionConsent);
+                assertFalse(item.androidOsPermissionRequired);
+                assertFalse(item.resultObserved);
+                assertFalse(item.learningAuthority);
+            } else if ("open_url".equals(item.id)) {
+                assertEquals("READY_WITH_PER_ACTION_CONSENT", item.status);
+                assertEquals("ANDROID_ACTION_VIEW_HTTPS", item.provider);
                 assertTrue(item.perActionConsent);
                 assertFalse(item.androidOsPermissionRequired);
                 assertFalse(item.resultObserved);
@@ -77,7 +84,7 @@ public final class CapabilityRegistryTest {
                 assertFalse(item.learningAuthority);
             }
         }
-        assertEquals(2, ready);
+        assertEquals(3, ready);
     }
 
     @Test public void screenCaptureRequiresPairingAndTheCompanionEnableSwitch() {

@@ -180,7 +180,11 @@ class ECDSAReceiptVerifier:
             if (len(body["action_id"]) != 32 or any(c not in "0123456789abcdef" for c in body["action_id"])
                     or len(body["digest"]) != 64 or any(c not in "0123456789abcdef" for c in body["digest"])):
                 raise CompanionDenied("invalid action scope")
-            if body["capability"] != "launch_app" or body["os_permission_status"] != "NOT_REQUIRED_FOR_LAUNCH_APP":
+            expected_permission_status = {
+                "launch_app": "NOT_REQUIRED_FOR_LAUNCH_APP",
+                "open_url": "NOT_REQUIRED_FOR_OPEN_URL",
+            }.get(body["capability"])
+            if expected_permission_status is None or body["os_permission_status"] != expected_permission_status:
                 raise CompanionDenied("unsupported capability receipt")
             if body["key_storage_status"] not in {"ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"}:
                 raise CompanionDenied("unknown key storage status")
@@ -222,7 +226,14 @@ class ECDSAReceiptVerifier:
                 "key_storage_status": body["key_storage_status"],
                 "android_os_permission_status": body["os_permission_status"],
                 "local_approval_evidence": mapped[2],
+                "companion_user_approval": body["local_consent"],
+                "device_execution_claimed": False,
                 "t8_authoritative": False,
+                "world_learning_eligible": False,
+                "trusted_transition_eligible": False,
+                "production_route": False,
+                "training_authority": 0,
+                "native_receiver_authority": 0,
             }
 
     def close(self):

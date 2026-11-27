@@ -2,6 +2,9 @@ package com.redmentos.v14.companion;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,11 +13,59 @@ import java.util.Map;
 final class Canonical {
     private Canonical() {}
 
-    static String requestDigest(String capability, String packageName) throws Exception {
-        if (!"launch_app".equals(capability)) throw new IllegalArgumentException("unsupported capability");
-        String json = "{\"args\":{\"package\":" + quote(packageName)
-                + "},\"capability\":\"launch_app\"}";
+    static String requestDigest(String capability, String target) throws Exception {
+        final String json;
+        if ("launch_app".equals(capability)) {
+            json = "{\"args\":{\"package\":" + quote(target)
+                    + "},\"capability\":\"launch_app\"}";
+        } else if ("open_url".equals(capability)) {
+            if (!isSafeHttpsUrl(target)) throw new IllegalArgumentException("unsafe HTTPS URL");
+            json = "{\"args\":{\"url\":" + quote(target)
+                    + "},\"capability\":\"open_url\"}";
+        } else {
+            throw new IllegalArgumentException("unsupported capability");
+        }
         return hex(MessageDigest.getInstance("SHA-256").digest(json.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    static boolean isSafeHttpsUrl(String value) {
+        if (value == null || value.length() < 9 || value.length() > 2048
+                || !value.startsWith("https://") || value.indexOf('\\') >= 0
+                || value.matches(".*%(?![0-9A-Fa-f]{2}).*")) return false;
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c <= 0x20 || c >= 0x7f) return false;
+        }
+        try {
+            URI uri = new URI(value);
+            String authority = uri.getRawAuthority();
+            String host = uri.getHost();
+            int port = uri.getPort();
+            return "https".equals(uri.getScheme())
+                    && authority != null && !authority.isEmpty()
+                    && host != null && host.length() <= 253
+                    && uri.getRawUserInfo() == null
+                    && (port == -1 || port == 443)
+                    && !authority.endsWith(":")
+                    && authority.indexOf('%') < 0;
+        } catch (URISyntaxException invalid) {
+            return false;
+        }
+    }
+
+    static String httpsHost(String value) {
+        if (!isSafeHttpsUrl(value)) throw new IllegalArgumentException("unsafe HTTPS URL");
+        try {
+            return new URI(value).getHost().toLowerCase(Locale.ROOT);
+        } catch (URISyntaxException impossibleAfterValidation) {
+            throw new IllegalArgumentException("unsafe HTTPS URL", impossibleAfterValidation);
+        }
+    }
+
+    static String osPermissionStatus(String capability) {
+        if ("launch_app".equals(capability)) return "NOT_REQUIRED_FOR_LAUNCH_APP";
+        if ("open_url".equals(capability)) return "NOT_REQUIRED_FOR_OPEN_URL";
+        throw new IllegalArgumentException("unsupported capability");
     }
 
     static String json(Map<String, Object> values) {

@@ -384,7 +384,7 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     static boolean isImplementedCapability(String capability) {
-        return "launch_app".equals(capability);
+        return "launch_app".equals(capability) || "open_url".equals(capability);
     }
 
     static boolean isValidLaunchScope(boolean companionConsentRequired,
@@ -417,23 +417,32 @@ public final class CompanionProvider extends ContentProvider {
         }
         String actionId = request.getString("action_id");
         String digest = request.getString("digest");
+        String capability = request.getString("capability");
         JSONObject args = request.getJSONObject("args");
         if (!isHex(actionId, 32) || !isHex(digest, 64) || args.length() != 1) {
             return error("INVALID_REQUEST_FIELDS");
         }
-        String packageName = args.getString("package");
-        if (!packageName.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+") || packageName.length() > 180) {
-            return error("INVALID_PACKAGE");
+        final String target;
+        if ("launch_app".equals(capability)) {
+            target = args.getString("package");
+            if (!target.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+") || target.length() > 180) {
+                return error("INVALID_PACKAGE");
+            }
+        } else if ("open_url".equals(capability)) {
+            target = args.getString("url");
+            if (!Canonical.isSafeHttpsUrl(target)) return error("INVALID_URL");
+        } else {
+            return error("UNSUPPORTED_CAPABILITY");
         }
-        if (!digest.equals(Canonical.requestDigest("launch_app", packageName))) {
+        if (!digest.equals(Canonical.requestDigest(capability, target))) {
             return error("DIGEST_MISMATCH");
         }
         double expires = request.getDouble("expires_at");
         double now = System.currentTimeMillis() / 1000.0;
         if (!(now < expires && expires - now <= 60.0)) return error("REQUEST_EXPIRED");
-        boolean inserted = db.insertPending(actionId, request.toString(), packageName, (long) (expires * 1000));
+        boolean inserted = db.insertPending(actionId, request.toString(), target, (long) (expires * 1000));
         if (!inserted) return error("ACTION_ID_CONFLICT");
-        postApprovalNotification(context, actionId, packageName);
+        postApprovalNotification(context, actionId, capability, target);
         JSONObject out = new JSONObject();
         out.put("status", "PENDING_USER_APPROVAL");
         out.put("action_id", actionId);
@@ -574,8 +583,15 @@ public final class CompanionProvider extends ContentProvider {
         org.json.JSONArray values = new org.json.JSONArray();
         for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
+            String capability = new JSONObject(action.requestJson).optString("capability");
             item.put("action_id", action.actionId);
-            item.put("package", action.packageName);
+            item.put("capability", capability);
+            if ("launch_app".equals(capability)) {
+                item.put("package", action.targetValue);
+            } else if ("open_url".equals(capability)) {
+                // Never return a full URL (which may contain query tokens) over IPC.
+                item.put("url_host", Canonical.httpsHost(action.targetValue));
+            }
             item.put("expires_at_ms", action.expiresAt);
             values.put(item);
         }
@@ -672,7 +688,7 @@ public final class CompanionProvider extends ContentProvider {
         return Canonical.hex(MessageDigest.getInstance("SHA-256").digest(signatures[0].toByteArray()));
     }
 
-    private void postApprovalNotification(Context context, String actionId, String packageName) {
+    private void postApprovalNotification(Context context, String actionId, String capability, String target) {
         if (Build.VERSION.SDK_INT >= 33
                 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -680,10 +696,12 @@ public final class CompanionProvider extends ContentProvider {
         Intent intent = approvalIntent(context, actionId);
         PendingIntent pending = PendingIntent.getActivity(context, actionId.hashCode(), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        String label = "launch_app".equals(capability)
+                ? "Launch " + target : "Open " + Canonical.httpsHost(target);
         Notification notification = new Notification.Builder(context, CHANNEL)
                 .setSmallIcon(android.R.drawable.ic_menu_view)
                 .setContentTitle("V14 action needs approval")
-                .setContentText("Launch " + packageName + " — tap to review")
+                .setContentText(label + " — tap to review")
                 .setContentIntent(pending)
                 .setAutoCancel(true)
                 .build();
