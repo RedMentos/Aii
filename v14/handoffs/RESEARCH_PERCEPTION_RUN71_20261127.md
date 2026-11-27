@@ -47,3 +47,7 @@ R-190 records the abstract-only ICML 2026 A Geometry-Based View of Mahalanobis O
 3. Perception compares RMS-z, shrinkage covariance and conformal-style calibration on session/app-disjoint UI sources; no default change without false-abstention/missed-OOD evidence.
 
 **User action:** none required. No model, weight, permission, updater setting, device data or installed release was changed.
+
+## Final branch readback
+
+Current PR branch head after the handoff/ledger/workplan/coverage updates: 6f3e87e6c9c946041a95d430b50ad0165bebac7e. Code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Documentation-only head passed offline bridge/security workflow 46058233835. PR #2565 still reports mergeable=false and remains NOT_MERGE_READY. No release commit was created.
