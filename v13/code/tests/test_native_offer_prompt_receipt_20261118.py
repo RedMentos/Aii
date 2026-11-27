@@ -296,7 +296,7 @@ class PurePromptReceipt(unittest.TestCase):
         absent = inspect(m, absent_prompt, HEADER,
                          token_pieces=pieces_for_prompt(absent_prompt, bos=False),
                          native_token_ids=[row["id"] for row in pieces_for_prompt(absent_prompt, bos=False)])
-        self.assertEqual(absent["status"], "TEMPLATE_FRAGMENT_NOT_RENDERED")
+        self.assertEqual(absent["status"], "HYPOTHESES_NOT_IN_NATIVE_TEMPLATE")
 
 
 class FakeCompletionHandler(BaseHTTPRequestHandler):

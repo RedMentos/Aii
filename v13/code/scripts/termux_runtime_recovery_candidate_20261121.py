@@ -128,7 +128,19 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         cognition_before_audio
     )
     audio_input["v13/cognition.py"] = normalized_cognition
-    composed = audio.apply_sources(code_dir, audio_input)
+    try:
+        composed = audio.apply_sources(code_dir, audio_input)
+    except ValueError as exc:
+        if "Context OS audio provenance" not in str(exc):
+            raise
+        runtime_bytes = audio_input.get("v13/runtime.py", b"")
+        anchors = [line.decode("utf-8", "replace") for line in runtime_bytes.splitlines()
+                   if b"ctxos.controller" in line or b"provenance=" in line]
+        raise ValueError(
+            str(exc) + "; Core runtime sha256="
+            + hashlib.sha256(runtime_bytes).hexdigest()
+            + "; Core runtime context anchors=" + repr(anchors[:6])
+        ) from exc
     composed["v13/cognition.py"] = _restore_preanswer_budget_contract(
         composed.get("v13/cognition.py"), had_preanswer_budget
     )
