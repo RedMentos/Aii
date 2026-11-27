@@ -169,8 +169,10 @@ def test_builds_thirteen_bound_conditions_and_streams_after_one_shot_approval(mo
     assert result[12]["control_recipe"] == "GREEDY_RECEIVER_HIDDEN_STATE_V1"
     assert result[12]["text_token_ids"] == [11, 22, 33]
     assert result[12]["text_token_ids_sha256"] == result[11]["text_token_ids_sha256"]
-    assert result[12]["input_rows"] == 3 and result[12]["vectors"] == []
-    assert result[12]["position_ids"] == [0, 1, 2]
+    # Match the complete injected candidate geometry: BOS baseline + sender rows.
+    assert result[12]["input_rows"] == result[2]["input_rows"]
+    assert result[12]["vectors"] == []
+    assert result[12]["position_ids"] == result[2]["position_ids"]
     assert result[12]["adapter_sha256"] is None
     assert result[12]["input_sha256"] != result[12]["text_token_ids_sha256"]
     assert all(x["position_ids"] == list(range(x["input_rows"])) for x in result if x["condition"] != "DIRECT_TEXT_REFERENCE")
