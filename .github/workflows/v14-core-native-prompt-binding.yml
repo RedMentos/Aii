@@ -9,6 +9,7 @@ on:
       - 'v13/code/scripts/stage_integrated_candidate.py'
       - 'v13/code/v13/runtime_deploy.py'
       - 'v13/code/tests/test_native_offer_prompt_receipt_20261118.py'
+      - 'v13/code/tests/test_native_receiver_source_pin.py'
       - '.github/workflows/v14-core-native-prompt-binding.yml'
   push:
     branches:
@@ -51,7 +52,8 @@ jobs:
             v13/code/v13/phone_offer_delivery_audit.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
-            v13/code/v13/runtime_deploy.py
+            v13/code/v13/runtime_deploy.py \
+            v13/code/tests/test_native_receiver_source_pin.py
       - name: Test actual request hash and fail-closed audit
         env:
           PYTHONPATH: v13/code
@@ -59,4 +61,5 @@ jobs:
         run: |
           python -m pytest -q \
             v13/code/tests/test_native_offer_prompt_receipt_20261118.py \
-            v13/code/tests/test_phone_offer_delivery_audit.py
+            v13/code/tests/test_phone_offer_delivery_audit.py \
+            v13/code/tests/test_native_receiver_source_pin.py
