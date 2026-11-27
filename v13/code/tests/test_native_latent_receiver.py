@@ -168,7 +168,9 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     target_sha = hashlib.sha256(struct.pack("<ii", *target_ids)).hexdigest()
     for condition in conditions:
         text_tokens = [301, 302, 303] if condition in {"DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else []
-        vectors = [] if condition in {"NO_MESSAGE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else [[0.25, -0.5]]
+        vectors = [] if condition in {"NO_MESSAGE", "DIRECT_TEXT_REFERENCE", "SELF_GENERATED_MESSAGE"} else (
+            [[-0.25, 0.5]] if condition == "DERANGED_MESSAGE" else [[0.25, -0.5]]
+        )
         positions = (
             list(range(len(text_tokens))) if condition == "DIRECT_TEXT_REFERENCE"
             else ([0] if condition == "SELF_GENERATED_MESSAGE" else ([] if condition == "NO_MESSAGE" else [0]))
@@ -255,6 +257,30 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
                 "decode_status": 0,
             }
         native_conditions.append(native_item)
+    log2 = math.log(2.0)
+    distribution_audit = {
+        "schema": "v14.native-receiver-prediction-distribution-audit/1",
+        "method": "FIRST_NEXT_TOKEN_FULL_VOCAB_JSD_V1",
+        "divergence": "JENSEN_SHANNON_NATS",
+        "normalization": "DIVIDE_BY_LN2_TO_UNIT_INTERVAL",
+        "vocab_size": 32000,
+        "pl": {
+            "comparison": "LATENT_CANDIDATE_VS_NO_MESSAGE",
+            "jsd_nats": 0.2, "jsd_normalized": 0.2 / log2,
+            "current_input_sha256": native_conditions[2]["input_sha256"],
+            "reference_input_sha256": native_conditions[0]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "b" * 64,
+        },
+        "cic": {
+            "comparison": "LATENT_CANDIDATE_VS_DERANGED_MESSAGE",
+            "jsd_nats": 0.1, "jsd_normalized": 0.1 / log2,
+            "current_input_sha256": native_conditions[2]["input_sha256"],
+            "reference_input_sha256": native_conditions[9]["input_sha256"],
+            "current_logits_sha256": "a" * 64, "reference_logits_sha256": "c" * 64,
+        },
+        "raw_logits_exported": False,
+        "raw_logits_persisted": False,
+    }
     raw = {
         "schema": "v14.native-receiver-task-matrix/3",
         "runner_revision": PINNED_LLAMA_REVISION,
@@ -265,6 +291,7 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "target_token_count": len(target_ids),
         "target_token_ids_sha256": target_sha,
         "conditions": native_conditions,
+        "prediction_distribution_audit": distribution_audit,
         "hybrid_state_roundtrip": {
             "schema": "v14.native-hybrid-state-roundtrip/2",
             "status": "READ_ONLY_ROUNDTRIP",
@@ -314,6 +341,8 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
         "kv_snapshot_schema": "v14.native-receiver-kv-snapshot/1",
         "hybrid_state_roundtrip_supported": True,
         "hybrid_state_roundtrip_schema": "v14.native-hybrid-state-roundtrip/2",
+        "prediction_distribution_audit_supported": True,
+        "prediction_distribution_audit_schema": "v14.native-receiver-prediction-distribution-audit/1",
     }
     monkeypatch.setattr(
         native_receiver.subprocess, "run",
@@ -352,6 +381,9 @@ def test_probe_matrix_preserves_validated_kv_snapshot_in_condition_receipts(tmp_
     )
     assert "--hybrid-state-roundtrip" in commands[0]
     assert result["status"] == "SCORED"
+    assert result["prediction_distribution_audit"]["pl"]["jsd_nats"] == 0.2
+    assert result["prediction_distribution_audit"]["cic"]["jsd_nats"] == 0.1
+    assert result["prediction_distribution_audit"]["receiver_model_sha256"] == model_sha
     assert len(result["condition_scores"]) == 13
     for condition in conditions:
         score = result["condition_scores"][condition]
