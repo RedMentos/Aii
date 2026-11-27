@@ -1,3 +1,28 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 64)
+
+**User action: none required.** Do not run a Termux command, send UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for this draft Perception receiver.
+
+## Signed MediaProjection → A5 RAW-EYE consumer
+
+- [#2557 — restore the signed MediaProjection RAW-EYE receiver](https://github.com/RedMentos/Aii/pull/2557), stacked on Perception #2556 exact parent head `0367e5db3a4bd0e44c5192bc785823fc6f1f35f0`.
+- Exact code/test head: `642b981e9a91bfc618992cabb0c72ac8c801b51c`; branch `research-perception/v14-vision-ui-frame-ingress-20261127-run64`.
+- Core provider PR [#2408](https://github.com/RedMentos/Aii/pull/2408) imports `vision_ui_frame_ingress.consume_projected_frame_from_provider`; that module was absent from its current tree. #2557 restores the receiver expected by `UIFrameGrant.consume()`.
+- The receiver validates the exact observation/lease/one-shot verifier, bounds the frame to 8 MiB / 4 MP, checks digest and byte count, zeroizes caller-owned frame buffers, computes RAW-EYE global + 4×4 tile features and A4 salience, and emits a source-bound PerceptPacket plus bounded A5 context envelope. Optional installed projector remains LAB_SHADOW_ONLY; no teacher/model download, training, persistence, action or learning authority.
+- Exact focused CI workflow **45974814847**: py_compile PASS; **25/25 tests PASS on Python 3.13 and 25/25 PASS on Python 3.14**. Generated PNGs and synthetic provider/lease fixtures only.
+- Shared staged workflow **45974814855**: FAIL **20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests** on the same existing Core audio-composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Integrated regression was still running at the last poll.
+- LOCAL_LINUX full Aii checkout/pytest: **BLOCKED / NOT_RUN** (no local checkout mounted; GitHub DNS failure). CI is Linux evidence, not a local or Android measurement.
+- No normal-turn Runtime/C3 callsite, Android MediaProjection consent/onStop proof, APK/device capture or Redmi result yet. **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+## Next executable integration
+
+Core should rebase #2408 onto #2557 and connect `UIFrameGrant.consume()` to the normal Runtime turn/C3 context while the observation lease remains live. QA owns independent OS-consent, MediaProjection onStop, cancel/revoke, process-restart and rollback acceptance. Keep capture OFF until those gates and a consented Redmi receipt exist.
+
+## Device/updater boundary
+
+Latest available private V13OBS #115 is still historical (2026-11-24): auto-update enabled and pipeline/dashboard UP_TO_DATE at 8d93236, but runtime STOPPED_BY_USER, model process stopped and autostart false. Fresh read-only relay requests #1014 HEALTH, #1015 PIPELINE_STATUS and #1016 DIAGNOSTICS returned no device comments before expiry. Current install/updater/runtime state is therefore unverified; no device action was sent or performed.
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 62)
 
 **User action: none required.** Do not run a Termux command, send an UPDATE_REQUEST/CHAT_SEND, restart the app, change permissions, download/swap models or modify device data for these draft PRs.
