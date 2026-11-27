@@ -2464,3 +2464,10 @@ This overlay records only the Perception evidence from PR #2540. It does **not**
 **Exact CI:** A4 temporal + event workflow 45925644718, 9/9 PASS on Python 3.13 and 3.14. A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparator 45925644686 and integrated regression 45925644732 were still running at this checkpoint; staged job in 45925644732 already failed at the shared Core composer pin plus stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED.
 
 All evidence is synthetic/hosted CI. No local full suite, Android/Termux, microphone, native model or Redmi proof. No release. Other Canon families remain unchanged.
+
+
+### Run 55 — latest shared-gate status (2026-11-27)
+
+A4 temporal/event ablation 45925644718 passed 9/9 on Python 3.13/3.14; A4/A5 feature-set 45925644769 passed both; RAW EAR fastpath 45925644699 passed 155/155 on both (synthetic benchmark only); RuntimeDeploy offline 45925644734 passed on Python 3.11/3.14. WebRTC/libfvad comparison 45925644686 had a successful 3.13 job while 3.14 remained in progress.
+
+Staged/integrated run 45925644732 failed: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated one setup failure. Shared blockers are Core's stale recovery composer pin, arithmetic/observer source pins, and QA migration PARTIAL-vs-UPDATED assertions. No Perception gate was relaxed. PR #2540 remains DRAFT / NOT_RELEASED. Local full suite NOT RUN; REDMI_UNVERIFIED.
