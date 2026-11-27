@@ -17,6 +17,8 @@ NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_2
 NATIVE_RECEIVER_BLOB_SHA1 = "0cd1a4f436f5972fcb73a44fd469c058d37a6d92"
 GREETING_FASTPATH_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261127.py"
 GREETING_FASTPATH_BLOB_SHA1 = "82d4987b0019d5970ca050c9bda575bfdf3c94a2"
+NATIVE_PROMPT_REQUEST_BUILDER = "scripts/integrated_native_prompt_request_binding_candidate_20261127.py"
+NATIVE_PROMPT_REQUEST_BLOB_SHA1 = "da787e16526a0aa28e527fa35cee840a9a828693"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -153,6 +155,8 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     composed = native_receiver.apply_sources(code_dir, composed)
     greeting_fastpath = _load(code_dir, GREETING_FASTPATH_BUILDER, GREETING_FASTPATH_BLOB_SHA1)
     composed = greeting_fastpath.apply_sources(code_dir, composed)
+    prompt_request = _load(code_dir, NATIVE_PROMPT_REQUEST_BUILDER, NATIVE_PROMPT_REQUEST_BLOB_SHA1)
+    composed = prompt_request.apply_sources(code_dir, composed)
     if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
         raise ValueError("native receiver Cognition path was not composed")
     if b"native-probe" not in composed.get("v13/callosum.py", b""):
@@ -167,6 +171,10 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("A5 audio composition removed the existing exact arithmetic path")
     if b"audio_consent_lease" not in composed.get("v13/runtime.py", b""):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
+    if b"native_request_prompt_matches_admission" not in composed.get("v13/runners.py", b""):
+        raise ValueError("exact native C3 request prompt binding was not composed")
+    if b"native_prompt_inclusion_verified" not in composed.get("v13/phone_offer_delivery_audit.py", b""):
+        raise ValueError("native prompt inclusion audit was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
     return composed
