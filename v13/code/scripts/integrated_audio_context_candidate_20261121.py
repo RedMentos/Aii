@@ -1101,14 +1101,21 @@ def record(runtime, event_id, audio_result, audio_window):
             end = getattr(item, "end_ms", None)
             if (getattr(item, "source_id", None) != source_id
                     or getattr(item, "modality", None) != "audio"
-                    or type(summary) is not str or not summary or len(summary) > 256
+                    or type(summary) is not str or not summary
                     or type(start) is not int or type(end) is not int
                     or start < 0 or end <= start or end - start > 1000):
                 continue
+            summary_truncated = len(summary) > 256
+            if summary_truncated:
+                summary = summary[:253]
+                if " " in summary:
+                    summary = summary.rsplit(" ", 1)[0]
+                summary += "..."
             observations.append({
                 "source_id": source_id, "modality": "audio",
                 "start_ms": start, "end_ms": end,
-                "summary": summary, "priority": getattr(item, "priority", 0),
+                "summary": summary, "summary_truncated": summary_truncated,
+                "priority": getattr(item, "priority", 0),
             })
         if not observations:
             return None
