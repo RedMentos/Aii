@@ -53,3 +53,6 @@ A static code audit found a conditional cross-session false-positive risk in the
 - Existing event-expectation tests cover uncertain, low-confidence and late windows but not same-source/same-receipt session rotation.
 
 Next test: seed a valid periodic pattern in session A, then use the same source/generation/receipt in session B; B must be WARMUP and produce no omission until it independently accumulates MIN_INTERVALS. Verify source revocation resets all session keys. Implementation must add session_id to the event registry key and consumer call, and Core must refresh the exact audio_event_expectation.py pin in integrated_audio_context_candidate_20261121.py before staged/integrated tests. Ledger R-180 records this as CODE_AUDIT_ONLY / OPEN, not a proven runtime bug.
+
+
+Final branch readback after the R-180 ledger, handoff and board updates: c30ac7467f8c7021507613f6c92471591fbcc355. The A5 code/test head remains fca70db671c14a76c56920d63f4d05d6183a43b8; no code changed after that CI-tested head.
