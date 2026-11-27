@@ -49,3 +49,12 @@ The first CI after Runtime wiring found two stale expected-blob pins (not a runt
 - RuntimeDeploy offline integrity: `45935761505`
 
 All were queued/pending at the time of this update. Do not claim their results until read back.
+
+
+## New research note — R-180
+
+Hess et al., *Forgetting, plasticity, and co-observation: a third facet of continual learning*, arXiv:2608.18803 (2026-08-19), was read beyond the abstract. The paper separates a co-observation deficit from forgetting and loss of plasticity. In four-chunk vision experiments, the ensemble retained old representations but remained below incremental-joint training; 15% replay matched the ensemble and 30% closed about half the gap. Distillation tracked the ensemble and did not restore the co-observation benefit. This is not direct evidence for acoustic A4, but it motivates a later source/consent-scoped tiny replay ablation at equal gradient budget. The public Co-ob repository declares MIT; its vendored patched Avalanche and CaSSLe components need separate license review. No code was reused.
+
+## Exact predictor pytest correction
+
+The first full predictor/consumer pytest run failed 1 of 41 tests on Python 3.13 and 3.14. The production module compiled and the other 40 tests passed; the failure was a test-sequence assumption, because the chosen post-consolidation update crossed the consolidation threshold again. The fixture now uses a longer sequence and higher threshold to create one committed weight set plus a separate pending delta. Exact-head rerun is pending.
