@@ -104,6 +104,8 @@ def test_body_ui_query_is_ephemeral_source_bound_and_non_authoritative():
     lambda c: c["binding"].update(raw_capture_persisted=True),
     lambda c: c["binding"].update(event_id="other-event"),
     lambda c: c["binding"].update(frame_sha256="not-a-digest"),
+    lambda c: c["source_refs"][1].update(sha256="c" * 64),
+    lambda c: c["source_refs"][0].update(source_id="other-source"),
     lambda c: c.update(text="x" * 321),
 ])
 def test_body_ui_query_rejects_authority_stale_or_oversized_context(mutate):
@@ -253,3 +255,51 @@ def test_normal_runtime_turn_uses_the_same_ui_context_for_bodies_and_c3_without_
     assert "body_ui_query(ui_context,e['event_id'],e['brain_generation_id'])" in cognition_source
     assert "ephemeral_ui_binding" in cognition_source
     assert "ephemeral_ui_binding" in analyst_source
+
+
+
+def test_controller_open_current_turn_checks_readiness_and_closes_provider(monkeypatch, tmp_path):
+    from v13.android_companion_runtime import AndroidCompanionController
+    from v13 import android_companion_ui_frames
+
+    events = []
+
+    class FakeVerifier:
+        def __init__(self, *args, **kwargs):
+            events.append("verifier")
+
+    class FakeProvider:
+        ready = True
+        def __init__(self, transport, verifier):
+            events.append("provider")
+        def status(self):
+            return {"status": "FRAME_READY" if self.ready else "NO_FRAME"}
+        @contextmanager
+        def open_current_turn(self, runtime):
+            events.append("grant_open")
+            try:
+                yield "grant"
+            finally:
+                events.append("grant_close")
+        def close(self):
+            events.append("provider_close")
+
+    monkeypatch.setattr(android_companion_ui_frames, "ECDSAUIFrameReceiptVerifier", FakeVerifier)
+    monkeypatch.setattr(android_companion_ui_frames, "AndroidCompanionFrameProvider", FakeProvider)
+    controller = object.__new__(AndroidCompanionController)
+    controller._pinned_key = lambda: ({"key_id": "pinned"}, b"public-key", {})
+    controller.ui_frame_verifier_path = tmp_path / "ui-frame-verifier.sqlite"
+    controller.clock = lambda: 123
+    controller.transport = object()
+
+    FakeProvider.ready = True
+    with controller.open_current_turn(object()) as grant:
+        assert grant == "grant"
+        assert events == ["verifier", "provider", "grant_open"]
+    assert events == ["verifier", "provider", "grant_open", "grant_close", "provider_close"]
+
+    events.clear()
+    FakeProvider.ready = False
+    with controller.open_current_turn(object()) as grant:
+        assert grant is None
+        assert events == ["verifier", "provider", "provider_close"]

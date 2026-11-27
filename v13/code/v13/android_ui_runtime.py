@@ -123,6 +123,7 @@ def current_turn_context(
                 or not all(_source_ref_ok(ref) for ref in source_refs)
                 or not isinstance(source_ref, dict)
                 or source_ref != source_refs[0]
+                or source_refs[1].get("sha256") != packet.get("frame_sha256")
             ):
                 raise PermissionError("A5 UI source binding is malformed")
             if (
@@ -192,6 +193,9 @@ def body_ui_query(ui_context, event_id, generation_id):
         or type(text) is not str or len(text) > 320
         or type(refs) is not list or len(refs) != 2
         or not all(_source_ref_ok(ref) for ref in refs)
+        or refs[0].get("source_id") != binding.get("source_id")
+        or refs[1].get("source_id") != binding.get("frame_source_id")
+        or refs[1].get("sha256") != binding.get("frame_sha256")
         or binding.get("action_authority") is not False
         or binding.get("learning_authority") is not False
         or binding.get("truth_authority") != 0
