@@ -1,4 +1,4 @@
-"""Bounded, consent-scoped timing expectations over RAW EAR activity classes.
+"""Bounded, session- and consent-scoped timing expectations over RAW EAR activity classes.
 
 This is an A3/A4 shadow signal, not semantic event recognition. It learns only
 short inter-onset intervals for VOICED/IMPULSIVE acoustic activity, and calls an
@@ -50,7 +50,7 @@ def unavailable_expectation(status: str) -> dict:
         "attention_novelty": 0.0,
         "stream_count": 0,
         "interval_samples": 0,
-        "state_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
+        "state_scope": "EPHEMERAL_SESSION_CONSENT_SCOPED_PROCESS",
         "state_persistence": False,
         "training_data_persisted": False,
         "calibrated_probability": False,
@@ -114,7 +114,7 @@ class AudioEventExpectationRegistry:
             raise AudioEventExpectationError("max_gap_ms must be in [100, 10000]")
         self.max_streams = max_streams
         self.max_gap_ms = max_gap_ms
-        self._states: OrderedDict[tuple[str, str], _StreamState] = OrderedDict()
+        self._states: OrderedDict[tuple[str, str, str], _StreamState] = OrderedDict()
         self._lock = threading.RLock()
 
     @staticmethod
@@ -123,21 +123,23 @@ class AudioEventExpectationRegistry:
         result.update({"observed_activity": activity, "stream_count": stream_count})
         return result
 
-    def update(self, *, source_id: str, generation_id: str, consent_scope_id: str,
+    def update(self, *, source_id: str, generation_id: str, session_id: str, consent_scope_id: str,
                start_ms: int, end_ms: int, cues: dict, finality: str) -> dict:
         with self._lock:
             return self._update(
-                source_id=source_id, generation_id=generation_id,
+                source_id=source_id, generation_id=generation_id, session_id=session_id,
                 consent_scope_id=consent_scope_id, start_ms=start_ms,
                 end_ms=end_ms, cues=cues, finality=finality,
             )
 
-    def _update(self, *, source_id: str, generation_id: str, consent_scope_id: str,
+    def _update(self, *, source_id: str, generation_id: str, session_id: str, consent_scope_id: str,
                 start_ms: int, end_ms: int, cues: dict, finality: str) -> dict:
         if type(source_id) is not str or not source_id.strip():
             raise AudioEventExpectationError("source_id must be non-empty")
         if type(generation_id) is not str or not generation_id.strip():
             raise AudioEventExpectationError("generation_id must be non-empty")
+        if type(session_id) is not str or not session_id.strip():
+            raise AudioEventExpectationError("session_id must be non-empty")
         if not _scope_valid(consent_scope_id):
             raise AudioEventExpectationError("consent_scope_id must be a SHA-256 hex digest")
         if (type(start_ms) is not int or type(end_ms) is not int or start_ms < 0
@@ -153,7 +155,7 @@ class AudioEventExpectationRegistry:
         if type(activity) is not str or activity not in OBSERVED_CLASSES:
             raise AudioEventExpectationError("activity_hint is invalid")
         activity_score = _finite_unit(cues.get("activity_score"), "activity_score")
-        key = (source_id, generation_id)
+        key = (source_id, generation_id, session_id)
         state = self._states.get(key)
         if state is not None and state.consent_scope_id != consent_scope_id:
             self._states.pop(key, None)
@@ -280,7 +282,7 @@ class AudioEventExpectationRegistry:
             "attention_novelty": round(min(ATTENTION_GAIN, ATTENTION_GAIN * score), 8),
             "stream_count": len(self._states),
             "interval_samples": sum(len(values) for values in state.intervals.values()),
-            "state_scope": "EPHEMERAL_CONSENT_SCOPED_PROCESS",
+            "state_scope": "EPHEMERAL_SESSION_CONSENT_SCOPED_PROCESS",
             "state_persistence": False,
             "training_data_persisted": False,
             "calibrated_probability": False,
@@ -293,11 +295,13 @@ class AudioEventExpectationRegistry:
         }
 
     def reset(self, *, source_id: str | None = None,
-              generation_id: str | None = None) -> int:
+              generation_id: str | None = None,
+              session_id: str | None = None) -> int:
         with self._lock:
             keys = [key for key in self._states
                     if (source_id is None or key[0] == source_id)
-                    and (generation_id is None or key[1] == generation_id)]
+                    and (generation_id is None or key[1] == generation_id)
+                    and (session_id is None or key[2] == session_id)]
             for key in keys:
                 self._states.pop(key, None)
             return len(keys)

@@ -978,8 +978,16 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         try:
             if type(consent_receipt) is not str or not consent_receipt:
                 raise AudioEventExpectationError("audio consent receipt is invalid")
+            store = getattr(runtime, "store", None)
+            lookup = getattr(store, "one", None)
+            if not callable(lookup):
+                raise AudioEventExpectationError("runtime Store cannot resolve audio event session")
+            session_row = lookup("SELECT session_id FROM events WHERE id=?", (event_id,))
+            session_id = session_row.get("session_id") if type(session_row) is dict else None
+            if type(session_id) is not str or not session_id.strip():
+                raise AudioEventExpectationError("audio event session is unavailable")
             audio_event_expectation = _runtime_audio_event_expectation_registry(runtime).update(
-                source_id=source_id, generation_id=generation_id,
+                source_id=source_id, generation_id=generation_id, session_id=session_id,
                 consent_scope_id=consent_scope_id,
                 start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
                 cues=cues, finality=finality,

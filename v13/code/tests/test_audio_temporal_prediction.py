@@ -661,7 +661,8 @@ def test_a4_consumer_routes_timed_event_omission_to_novelty_only(tmp_path, monke
         control_runtime.store.close()
 
 
-def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9):
+def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_score=0.9,
+                          session_id="event-expectation-session")
     if activity == "VOICED":
         cues = dict(VOICED)
     elif activity == "UNCERTAIN":
@@ -672,6 +673,7 @@ def _event_registry_window(registry, activity, start_ms, end_ms, *, activity_sco
     return registry.update(
         source_id="event-expectation-source",
         generation_id="event-expectation-generation",
+        session_id=session_id,
         consent_scope_id="e" * 64,
         start_ms=start_ms,
         end_ms=end_ms,
@@ -727,6 +729,65 @@ def test_late_non_target_window_after_expected_time_does_not_prove_omission():
     result = _event_registry_window(registry, "SILENCE", 8500, 9500)
     assert result["omission_detected"] is False
     assert result["attention_novelty"] == 0.0
+
+
+
+def test_event_expectation_registry_reset_can_target_one_session():
+    registry = AudioEventExpectationRegistry()
+    _seed_event_registry(registry)
+    _event_registry_window(
+        registry, "VOICED", 100, 300, session_id="another-session",
+    )
+    assert len(registry) == 2
+    assert registry.reset(session_id="event-expectation-session") == 1
+    assert len(registry) == 1
+
+
+def test_event_expectation_state_does_not_leak_between_store_sessions(tmp_path, monkeypatch):
+    runtime, first_event = make_runtime(tmp_path)
+    capture = CaptureAttention()
+    sequence = [
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+        VOICED, EVENT_SILENCE, VOICED, EVENT_SILENCE,
+    ]
+    try:
+        with monkeypatch.context() as patch:
+            first_results = run_consumer_sequence(
+                runtime, first_event, patch, sequence, capture,
+            )
+        first_expectation = first_results[-1]["a4"]["audio_event_expectation"]
+        assert first_expectation["status"] == "SHADOW_MEASURED"
+        assert first_expectation["omission_detected"] is False
+
+        second_session = runtime.store.new_session("second RAW EAR session")
+        second_event = runtime.store.event(
+            second_session, "separate synthetic acoustic fixture",
+        )
+        monkeypatch.setattr(
+            audio_voice_module, "extract_voice_cues",
+            lambda _pcm, _sample_rate, backend="python": dict(EVENT_SILENCE),
+        )
+        monkeypatch.setattr(
+            audio_voice_module.attctl, "controller",
+            lambda _runtime: capture,
+        )
+        second_result = consume_pcm16_voice_window(
+            runtime, bytes(32000), sample_rate=16000, start_ms=8100,
+            event_id=second_event["event_id"],
+            generation_id=second_event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_check,
+            consent_guard=consent_guard(consent_check),
+            finality="FINAL",
+        )
+        second_expectation = second_result["a4"]["audio_event_expectation"]
+        assert second_expectation["status"] == "WARMUP"
+        assert second_expectation["expected_events"] == []
+        assert second_expectation["omissions"] == []
+        assert second_expectation["interval_samples"] == 0
+        assert len(audio_voice_module._runtime_audio_event_expectation_registry(runtime)) == 2
+    finally:
+        runtime.store.close()
 
 
 def test_optional_event_registry_failure_does_not_break_raw_ear(tmp_path, monkeypatch):

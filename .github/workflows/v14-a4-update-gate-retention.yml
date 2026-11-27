@@ -6,6 +6,9 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v14/experiments/a4_update_gate_retention_20261127.py"
       - "v14/experiments/test_a4_update_gate_retention_20261127.py"
@@ -16,6 +19,9 @@ on:
       - "gpt6/v13-private-remote-bridge-20261111"
     paths:
       - "v13/code/v13/audio_temporal_prediction.py"
+      - "v13/code/v13/audio_event_expectation.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v14/experiments/a4_update_gate_retention_20261127.py"
       - "v14/experiments/test_a4_update_gate_retention_20261127.py"
@@ -43,7 +49,7 @@ jobs:
         env:
           PYTHONPATH: v13/code:v14/experiments
         run: |
-          python -m py_compile v13/code/v13/audio_temporal_prediction.py v13/code/tests/test_audio_temporal_prediction.py v14/experiments/a4_update_gate_retention_20261127.py v14/experiments/test_a4_update_gate_retention_20261127.py
+          python -m py_compile v13/code/v13/audio_temporal_prediction.py v13/code/v13/audio_event_expectation.py v13/code/v13/audio_voice_cues.py v13/code/scripts/integrated_audio_context_candidate_20261121.py v13/code/tests/test_audio_temporal_prediction.py v14/experiments/a4_update_gate_retention_20261127.py v14/experiments/test_a4_update_gate_retention_20261127.py
       - name: Run exact predictor and retention tests
         env:
           PYTHONPATH: v13/code:v14/experiments

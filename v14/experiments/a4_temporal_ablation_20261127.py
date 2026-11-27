@@ -308,11 +308,13 @@ def _event_feed(registry: AudioEventExpectationRegistry, source_id: str,
                 sequence: tuple[dict, ...]) -> list[dict]:
     scope = _scope("event:" + source_id)
     generation_id = "synthetic-event-generation:" + source_id
+    session_id = "synthetic-event-session:" + source_id
     results = []
     for index, cues in enumerate(sequence):
         results.append(registry.update(
             source_id=source_id,
             generation_id=generation_id,
+            session_id=session_id,
             consent_scope_id=scope,
             start_ms=index * 1000,
             end_ms=(index + 1) * 1000,
@@ -351,6 +353,7 @@ def _event_source_isolation_probe() -> bool:
             interleaved[source].append(shared.update(
                 source_id=source,
                 generation_id="synthetic-event-generation:" + source,
+                session_id="synthetic-event-session:" + source,
                 consent_scope_id=_scope("event:" + source),
                 start_ms=index * 1000,
                 end_ms=(index + 1) * 1000,
@@ -376,6 +379,7 @@ def _event_expectation_ablation() -> dict:
     uncertain = uncertain_registry.update(
         source_id="uncertain",
         generation_id="synthetic-event-generation:uncertain",
+        session_id="synthetic-event-session:uncertain",
         consent_scope_id=_scope("event:uncertain"),
         start_ms=8000,
         end_ms=9000,
@@ -388,6 +392,7 @@ def _event_expectation_ablation() -> dict:
     provisional = provisional_registry.update(
         source_id="provisional",
         generation_id="synthetic-event-generation:provisional",
+        session_id="synthetic-event-session:provisional",
         consent_scope_id=_scope("event:provisional"),
         start_ms=8000,
         end_ms=9000,
@@ -397,6 +402,7 @@ def _event_expectation_ablation() -> dict:
     after_provisional = provisional_registry.update(
         source_id="provisional",
         generation_id="synthetic-event-generation:provisional",
+        session_id="synthetic-event-session:provisional",
         consent_scope_id=_scope("event:provisional"),
         start_ms=8000,
         end_ms=9000,
@@ -409,6 +415,7 @@ def _event_expectation_ablation() -> dict:
     consent_reset = consent_registry.update(
         source_id="consent",
         generation_id="synthetic-event-generation:consent",
+        session_id="synthetic-event-session:consent",
         consent_scope_id="f" * 64,
         start_ms=8000,
         end_ms=9000,
@@ -423,6 +430,7 @@ def _event_expectation_ablation() -> dict:
         result = no_context_registry.update(
             source_id="no-context",
             generation_id="synthetic-event-generation:no-context",
+            session_id="synthetic-event-session:no-context",
             consent_scope_id=_scope("event:no-context"),
             start_ms=index * 1000,
             end_ms=(index + 1) * 1000,
