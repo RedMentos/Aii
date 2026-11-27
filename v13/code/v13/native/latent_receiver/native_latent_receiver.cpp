@@ -893,7 +893,7 @@ bool decode_bos(llama_context * ctx, const llama_model * model, int & decode_sta
 
 bool decode_text_tokens(llama_context * ctx, const llama_model * model,
                         const std::vector<int32_t> & tokens, int & decode_status) {
-    if (!ctx || !model || tokens.empty() || tokens.size() > 512) return false;
+    if (!ctx || !model || tokens.empty() || tokens.size() > 64) return false;
     const llama_vocab * vocab = llama_model_get_vocab(model);
     const int vocab_size = vocab ? llama_vocab_n_tokens(vocab) : 0;
     if (vocab_size < 1) return false;
@@ -939,7 +939,7 @@ int run_native_matrix(const std::string & model_path, int input_dim, int threads
         if (item.condition != expected_conditions[i] || item.rows < 0 || item.rows > v14::kMaxRows) return 2;
         if (item.condition == "DIRECT_TEXT_REFERENCE") {
             if (item.rows != 0 || !item.positions.empty() || !item.values.empty() ||
-                item.text_tokens.empty() || item.text_tokens.size() > 512) return 2;
+                item.text_tokens.empty() || item.text_tokens.size() > 64) return 2;
             if (std::any_of(item.text_tokens.begin(), item.text_tokens.end(),
                             [](int32_t token) { return token < 0; })) return 2;
             max_rows = std::max(max_rows, static_cast<int>(item.text_tokens.size()));
@@ -1157,7 +1157,7 @@ int main(int argc, char ** argv) {
             int32_t text_count = -1;
             std::cin.read(reinterpret_cast<char *>(&text_count), sizeof(text_count));
             if (std::cin.gcount() != static_cast<std::streamsize>(sizeof(text_count)) ||
-                text_count < 0 || text_count > 512) {
+                text_count < 0 || text_count > 64) {
                 std::cerr << "invalid direct-text token count\n";
                 return 65;
             }
