@@ -1939,3 +1939,11 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - Exact repository Python 3.13/3.14 CI for the updated predictor/test is triggered by this commit and remains **PENDING** until exact-head results are read back. The full local Aii checkout remains unavailable in this environment.
 - Research boundary: this implements the two-timescale mechanism suggested by Li & van Rossum (eLife 2020, DOI 10.7554/eLife.50804), not a reproduction of their energy model or evidence of reduced Android power. Their upstream simulation repository is GPL-3.0 and no code was copied; the Aii root license remains unresolved.
 - No audio input, transcript, speaker identity, model GGUF, B1/B2/C3 weight, Android permission, updater, installed device or user data was changed. No Redmi/native microphone/Android proof; B3 remains OFF; **REDMI_UNVERIFIED / NOT_RELEASED**.
+
+
+### Run 57 Runtime wiring closeout
+
+- The explicit experimental policy now reaches the real caller-PCM RAW EAR Runtime consumer through `runtime.cfg`: `raw_ear_temporal_update_policy`, `raw_ear_consolidation_threshold`, and `raw_ear_max_transient_norm`. Missing configuration still selects `EVERY_FINAL`; invalid policy values fail closed rather than silently falling back.
+- The integrated audio-context candidate manifest was refreshed to exact Git blob pins: `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`, `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; candidate-builder blob after pin refresh: `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
+- Exact branch readback at `007de4895cb9972f558b7fa3bd33c3b04d0946eb` confirms both pins and the new Runtime-config tests. A4 update-gate workflow `45935405225` was queued at last poll; no focused CI result is yet claimed for this code.
+- This is a developer-controlled opt-in gate, not a user-facing toggle or production activation. Default Runtime behavior remains unchanged.
