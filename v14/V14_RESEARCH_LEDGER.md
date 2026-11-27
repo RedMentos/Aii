@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — laufendes Forschungsjournal
 
-**Stand:** 2026-11-22. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
+**Stand:** 2026-11-27. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
@@ -1911,3 +1911,19 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - WebRTC/libfvad comparison 45925644686: Python 3.13 job completed successfully through source/ABI checks and A4/A5 runtime tests; Python 3.14 job remained IN_PROGRESS at final readback, so the comparison is not fully green yet.
 - Staged + integrated run 45925644732: **FAIL**. Staged job repeats 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated job fails one setup test. Both stop at the same Core-owned recovery composer pin mismatch. Staged additionally fails stale arithmetic and observer source pins plus migration PARTIAL-vs-UPDATED assertions.
 - No Perception file or gate was changed to hide these failures. Core/QA ownership remains unchanged.
+
+
+## R-179 — Energy efficient synaptic plasticity (full-text review 2026-11-27)
+- **Primary source:** Li & van Rossum, “Energy efficient synaptic plasticity”, *eLife* 2020;9:e50804, published 2020-02-13, DOI [10.7554/eLife.50804](https://doi.org/10.7554/eLife.50804). Peer-reviewed full text: [eLife article](https://elifesciences.org/articles/50804).
+- **Mechanism:** each synapse has a transient/short-lived component and a persistent component. Updates accumulate in the transient component; when a consolidation threshold is crossed, the transient component is transferred to the persistent weight and reset. The model trades maintenance/decay cost against consolidation cost.
+- **Evidence / limits:** the paper's reported energy advantages come from an explicit modelled cost function and simulations (perceptron, multilayer and spiking-neuron examples), not measured Android CPU/GPU power. The result depends on assumed maintenance and consolidation costs and on the selected threshold; it is not evidence that a Python/Android implementation will save energy.
+- **OSS / licence:** [vanrossumlab/li_vanrossum_19](https://github.com/vanrossumlab/li_vanrossum_19) contains Octave/C++ perceptron and Python multilayer simulations. Its root LICENSE is GPL-3.0. The Aii repository has no root LICENSE, so no upstream code was copied or adapted; only the published mechanism was used as a research lead.
+- **V14 implication:** a bounded transient eligibility/update cache may complement the existing error-gate experiment: keep short-lived local deltas separate from persistent predictor weights, consolidate only after a tested threshold, then measure numeric retention, restart and rollback. This must be a distinct ablation from MEMORIZED_ERROR, with a no-consolidation control and actual before/after weight deltas. Do not claim device-energy savings without native power/RSS/latency measurements.
+
+## R-175 implementation follow-up — Run 56 (2026-11-27)
+- PR [#2548](https://github.com/RedMentos/Aii/pull/2548), stacked on [#2540](https://github.com/RedMentos/Aii/pull/2540), adds opt-in `MEMORIZED_ERROR` to the existing A4 temporal predictor and registry. Default `EVERY_FINAL` is unchanged.
+- The continuous-regression adaptation compares model MAE with a persistence baseline and remembers bounded quantized previous→target cue-delta transition fingerprints within a process-local stream. Fingerprints are not anonymisation and are not persisted; reset/consent/gap/chronology/restart clears them.
+- Exact A4 experiment CI: 6/6 tests PASS on Python 3.13 and 3.14. The experiment includes EVERY_FINAL, MEMORIZED_ERROR and NO_UPDATE; it reports gradients, total weight deltas, parameter-diff L2, retention drift and restart equality.
+- Synthetic results (60 observations each): periodic speech 59 vs 7 updates (MAE 0.20170 vs 0.25575); non-speech impulses 59 vs 41 (0.20631 vs 0.20158); mixed activity 59 vs 26 (0.27233 vs 0.28714). Update sparsity is real in this tiny predictor, but quality worsens on two of three streams. Periodic-speech parameter-diff L2 is 1.06464 EVERY_FINAL vs 0.63463 gated; gradient-L2 sum 12.87747 vs 3.17314. NO_UPDATE remains an explicit negative control.
+- Retention drift after a new task is +0.06792 EVERY_FINAL and +0.04350 gated, but gated absolute MAE is worse before and after the new task (0.29879→0.34230 vs 0.16741→0.23533). This is not a retention win. Forward prediction still runs on every window, so no energy/latency saving is claimed.
+- Keep the policy opt-in and default OFF. Exact focused CI also passes RAW EAR fastpath 161/161 and feature-set probe 15/15 on Python 3.13/3.14; model-lab 73 passed with 4 native-wrapper skips and privacy scan CLEAN. Staged/integrated CI remains blocked by Core-owned composer/contracts/cognition pins and QA migration PARTIAL-vs-UPDATED assertions. See `v14/handoffs/RESEARCH_PERCEPTION_RUN56_20261127.md`.
