@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import json
 import math
 import struct
+import threading
 from types import SimpleNamespace
 
 import pytest
@@ -1497,3 +1498,90 @@ def test_chronology_reset_preserves_shared_numeric_checkpoint(tmp_path):
 
 def test_gap_reset_preserves_shared_numeric_checkpoint(tmp_path):
     _assert_temporal_reset_preserves_shared_numeric_checkpoint(tmp_path, "gap")
+
+
+def test_persistent_numeric_weights_retry_repeated_cross_registry_conflicts(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    registry_a = AudioTemporalPredictionRegistry(store=runtime.store)
+    registry_b = AudioTemporalPredictionRegistry(store=runtime.store)
+    registry_c = AudioTemporalPredictionRegistry(store=runtime.store)
+    source_id = "source-cross-registry-contention"
+    generation_id = event["brain_generation_id"]
+    consent_scope_id = "c" * 64
+    persistent_key = registry_a._persistent_key(source_id, generation_id)[2]
+
+    def feed(registry, session_id, index, cues):
+        return registry.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            session_id=session_id,
+            consent_scope_id=consent_scope_id,
+            start_ms=index * 1000,
+            end_ms=(index + 1) * 1000,
+            cues=cues,
+            finality="FINAL",
+        )
+
+    try:
+        # Independent registries share the one supported Runtime Store. All three
+        # cache the same version before any session advances the checkpoint.
+        feed(registry_a, "session-a", 0, SILENCE)
+        feed(registry_b, "session-b", 0, VOICED)
+        feed(registry_c, "session-c", 0, UNCERTAIN)
+        assert registry_a._states[(source_id, generation_id, "session-a")].store_version == 1
+        assert registry_b._states[(source_id, generation_id, "session-b")].store_version == 1
+        assert registry_c._states[(source_id, generation_id, "session-c")].store_version == 1
+
+        # Each session primes its own temporal predictor. The later writes from
+        # B and C are stale and must be replayed on top of newer shared weights.
+        feed(registry_a, "session-a", 1, VOICED)
+        feed(registry_b, "session-b", 1, SILENCE)
+        feed(registry_c, "session-c", 1, UNCERTAIN)
+        before, version_before = runtime.store.state(persistent_key, None)
+        assert version_before == 4
+        assert before["updates"] == 0
+
+        original_save = registry_b._save_persistent
+        save_calls = 0
+        nested_results = []
+        nested_errors = []
+
+        def interleaving_save(source, generation, consent, predictor, expected_version):
+            nonlocal save_calls
+            save_calls += 1
+            if save_calls == 2:
+                def concurrent_writer():
+                    try:
+                        nested_results.append(feed(registry_c, "session-c", 2, SILENCE))
+                    except BaseException as exc:
+                        nested_errors.append(exc)
+
+                worker = threading.Thread(target=concurrent_writer)
+                worker.start()
+                worker.join(timeout=10)
+                assert not worker.is_alive(), "interleaved Store writer did not finish"
+                assert not nested_errors, repr(nested_errors)
+            return original_save(source, generation, consent, predictor, expected_version)
+
+        # B's first stale write conflicts. During B's first retry, C commits a
+        # newer checkpoint, forcing B to retry again rather than lose either update.
+        registry_b._save_persistent = interleaving_save
+        recovered = feed(registry_b, "session-b", 2, UNCERTAIN)
+
+        assert save_calls == 3
+        assert len(nested_results) == 1
+        assert nested_results[0]["status"] == "SHADOW_MEASURED"
+        assert nested_results[0]["weight_delta_l2"] > 0.0
+        assert recovered["status"] == "SHADOW_MEASURED"
+        assert recovered["weight_delta_l2"] > 0.0
+        assert recovered["persistence_conflict_recovered"] is True
+        assert recovered["persistence_retry_count"] == 2
+
+        persisted, final_version = runtime.store.state(persistent_key, None)
+        assert final_version == 6
+        assert persisted["updates"] == 2
+        assert any(abs(value) > 0.0 for row in persisted["weights"] for value in row)
+        assert registry_b._states[(source_id, generation_id, "session-b")].store_version == final_version
+        assert registry_c._states[(source_id, generation_id, "session-c")].store_version == 5
+    finally:
+        runtime.store.close()
