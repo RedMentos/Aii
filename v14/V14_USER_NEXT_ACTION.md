@@ -1,3 +1,48 @@
+# CURRENT CORE & HARNESS CHECKPOINT — 2026-11-27
+
+**Code checkpoint:** PR [#2544](https://github.com/RedMentos/Aii/pull/2544), branch `core/v14-native-prompt-binding-current-20261127-run1`, implementation code SHA `cb6883f96050681b19c6a543c9b89c3d7523808a`, stacked on Core #2543. This is a draft review branch, **NOT_RELEASED**.
+
+## Verified implementation
+
+- `v13/runners.py` now hashes the exact post-admission C3 prompt and token IDs, then records the exact prompt hash at the native `/completion` request call. It does not record prompt text.
+- `phone_offer_delivery_audit.py` now requires B1 and B2 source-bound receipts, matching request/admission prompt hashes, HTTP 200, nonzero C3 output, and `prompt_n + cache_n == prompt_tokens` before reporting `native_prompt_offer_inclusion_verified`.
+- The audit deliberately leaves attention/semantic use, learned latent exchange, answer correctness and device acceptance unproven.
+- The current Core native receiver → recovery → stage → RuntimeDeploy hash chain is refreshed and tested.
+
+## Exact-head CI evidence — all PASS on code SHA cb6883f
+
+- Prompt request binding Python 3.13 + 3.14, including loopback request-body hash, staged Runtime, SQLite audit and negative mismatch controls: PASS, run 45918725547.
+- RuntimeDeploy integrity: PASS, run 45918725591.
+- Phone offer receipt evidence: PASS, run 45918725546.
+- Core audio/observer composition Python 3.13 + 3.14: PASS, run 45918725525.
+- Lab Age/WebView truth: PASS, run 45918725692.
+- Two-checkout updater migration: PASS, run 45918725558.
+- Coordinated source contracts: PASS, run 45918725535.
+- Private owner-read Termux bootstrap CI: PASS, run 45918725542. This is CI evidence, **not** a live phone receipt.
+- Core native stream integrity: PASS, run 45918725628.
+- Staged context + integrated regression (Torch/PEFT + staged Runtime, memory/SQLite, JEPA restart): PASS, run 45918725570.
+
+## Environment and release boundary
+
+- LOCAL_LINUX full repository test: NOT_RUN. Direct GitHub DNS resolution is unavailable in this execution environment; hosted CI is not mislabeled as local.
+- Native llama.cpp with a real loaded model: NOT_RUN.
+- TERMUX/REDMI: **REDMI_UNVERIFIED**. Private owner-read requests #995–#997 received no live device receipt; installed SHA, updater state, native model process and prompt behavior remain unknown.
+- No model/weight download or swap, permission change, APK update, remote shell, or device action occurred. GitHub push is not deployment.
+
+## Next executable Core task
+
+Implement per-organ native prompt-token-span receipts using the pinned llama.cpp commit `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` and its `POST /tokenize` `with_pieces=true` response. Map exact serialized B1/B2 quote byte ranges to token-piece ranges; verify piece-stream reconstruction, token IDs and UTF-8 boundaries; fail closed for BOS/special-token ambiguity, overlapping or partial boundaries, duplicate/absent quote spans and tokenization mismatch. Do not expose raw quote text in telemetry and do not claim attention or semantic use. Use an already available, explicitly authorized native model only; no automatic model download.
+
+Research note: [JEPA-TTT (arXiv:2603.14187)](https://arxiv.org/abs/2603.14187) is a useful candidate for later predictive-model test-time adaptation with replay/retention measurement. It is research input, not evidence for this implementation and not a reason to swap a model.
+
+## Cross-lane dependency
+
+Boss/Integrator should reconcile the current Android action stack (#2450 → #2481 → #2513 → #2528) with the separate capability/MediaProjection stack (#2394 → #2406) before a release integration. #2406's emulator process-restart UI test currently fails under a System UI/Phone ANR; this is not Redmi evidence. The ActionOutcome adapter and source-contract CI are separate from the native prompt proof.
+
+**User action:** none. Keep the current installed app/models/permissions unchanged until a separate verified release and explicit device-side authorization.
+
+---
+
 # Current next action — Core & Harness checkpoint (2026-11-27)
 
 **Status:** DRAFT / NOT_RELEASED. Core follow-up PR [#2543](https://github.com/RedMentos/Aii/pull/2543), branch `core/v14-fastpath-fixture-fallthrough-20261127-run1`. Exact code/test SHA `198e2c8673ebb8d8d8a17f28bd753db56533f281`; the subsequent documentation-only commit does not change code.

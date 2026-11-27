@@ -299,8 +299,48 @@ class LlamaRunner:
         for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
-            tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            count=len(tokens)
+            preliminary_witness = None
+            hypothesis_heading = None
+            if self.role == 'C3_LANGUAGE':
+                from .native_offer_prompt_receipt import inspect
+                from .prompts import text as v13_prompt_text
+                hypothesis_heading = v13_prompt_text(self.cfg, 'hypotheses')
+                preliminary_witness = inspect(work, p, hypothesis_heading)
+            with_pieces = (type(preliminary_witness) is dict
+                           and preliminary_witness.get('status') == 'RENDERED_WITH_QUOTES')
+            tokens = self._json("POST", "/tokenize",
+                                {"content": p, "add_special": True,
+                                 "parse_special": True}, deadline)["tokens"]
+            if (type(tokens) is not list
+                    or any(type(token_id) is not int for token_id in tokens)):
+                raise Unavailable("Native token ID response invalid")
+            token_ids = tokens
+            count = len(token_ids)
+            token_piece_rows = None
+            token_piece_error = None
+            if with_pieces:
+                try:
+                    token_piece_rows = self._json(
+                        "POST", "/tokenize",
+                        {"content": p, "add_special": False, "parse_special": True,
+                         "with_pieces": True}, deadline)["tokens"]
+                    if type(token_piece_rows) is not list:
+                        token_piece_rows = None
+                        token_piece_error = "INVALID_RESPONSE"
+                except Exception as exc:
+                    token_piece_rows = None
+                    token_piece_error = type(exc).__name__
+                if token_piece_rows is None and type(preliminary_witness) is dict:
+                    from .native_offer_prompt_receipt import TOKEN_SPAN_REVISION
+                    preliminary_witness['native_prompt_token_span_receipt'] = {
+                        'revision': TOKEN_SPAN_REVISION,
+                        'status': 'NATIVE_TOKEN_PIECES_UNAVAILABLE',
+                        'token_count': count,
+                        'leading_added_special_token_count': None,
+                        'trailing_added_special_token_count': None,
+                        'offers': [],
+                        'error_type': token_piece_error or "INVALID_RESPONSE",
+                    }
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
@@ -314,10 +354,27 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
-                    from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = (inspect(work, p, hypothesis_heading,
+                                        token_pieces=token_piece_rows,
+                                        native_token_ids=token_ids)
+                               if with_pieces and token_piece_rows is not None
+                               else preliminary_witness)
+                    if type(witness) is dict:
+                        ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
+                        witness.update({
+                            'native_prompt_sha256': digest(p),
+                            'native_token_ids_sha256': ids_sha,
+                            'native_prompt_tokens': count,
+                        })
+                        span_receipt = witness.get('native_prompt_token_span_receipt')
+                        if type(span_receipt) is dict and span_receipt.get('status') == 'VERIFIED':
+                            span_receipt['prompt_sha256'] = digest(p)
+                            if span_receipt.get('token_ids_sha256') != ids_sha:
+                                span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
+                                span_receipt['offers'] = []
+                            else:
+                                span_receipt['token_ids_sha256'] = ids_sha
+                    self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             candidate=admission.reduce_once(
                 work,self.role,self.cfg,
@@ -334,10 +391,27 @@ class LlamaRunner:
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
                 if self.role == 'C3_LANGUAGE':
-                    from .native_offer_prompt_receipt import inspect
-                    from .prompts import text as v13_prompt_text
-                    self._prompt_admission['offer_template_witness'] = inspect(
-                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                    witness = (inspect(work, p, hypothesis_heading,
+                                        token_pieces=token_piece_rows,
+                                        native_token_ids=token_ids)
+                               if with_pieces and token_piece_rows is not None
+                               else preliminary_witness)
+                    if type(witness) is dict:
+                        ids_sha = digest(json.dumps(token_ids, separators=(',', ':')))
+                        witness.update({
+                            'native_prompt_sha256': digest(p),
+                            'native_token_ids_sha256': ids_sha,
+                            'native_prompt_tokens': count,
+                        })
+                        span_receipt = witness.get('native_prompt_token_span_receipt')
+                        if type(span_receipt) is dict and span_receipt.get('status') == 'VERIFIED':
+                            span_receipt['prompt_sha256'] = digest(p)
+                            if span_receipt.get('token_ids_sha256') != ids_sha:
+                                span_receipt['status'] = 'TOKEN_ID_HASH_MISMATCH'
+                                span_receipt['offers'] = []
+                            else:
+                                span_receipt['token_ids_sha256'] = ids_sha
+                    self._prompt_admission['offer_template_witness'] = witness
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
         raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
@@ -351,6 +425,9 @@ class LlamaRunner:
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         self._prompt_admission=None
         self._native_completion_http_200=False
+        self._native_request_prompt_sha256=None
+        self._native_request_prompt_submitted=False
+        self._native_request_prompt_matches_admission=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -385,6 +462,9 @@ class LlamaRunner:
                 if type(witnessed) is dict:
                     self.last_metrics['native_offer_prompt_receipt']={
                         **witnessed,
+                        'native_request_prompt_sha256':self._native_request_prompt_sha256,
+                        'native_request_prompt_submitted':self._native_request_prompt_submitted,
+                        'native_request_prompt_matches_admission':self._native_request_prompt_matches_admission,
                         'native_completion_http_200':self._native_completion_http_200,
                         'native_template_submitted':bool(
                             self._native_completion_http_200
@@ -398,6 +478,15 @@ class LlamaRunner:
                     if observed is not None:self.last_metrics['native_memory_firing']=observed
                 finally:self._audit_lock.release()
             if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
+    def _record_native_prompt_request(self,prompt,*,submitted):
+        if not isinstance(prompt,str):return
+        prompt_sha=digest(prompt)
+        admission=getattr(self,'_prompt_admission',None)
+        witness=admission.get('offer_template_witness') if isinstance(admission,dict) else None
+        expected=witness.get('native_prompt_sha256') if isinstance(witness,dict) else None
+        self._native_request_prompt_sha256=prompt_sha
+        self._native_request_prompt_matches_admission=(type(expected) is str and prompt_sha==expected)
+        if submitted:self._native_request_prompt_submitted=True
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
         self.load(cancel,deadline);check(cancel,deadline)
@@ -410,7 +499,10 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
         try:
+            request_prompt=payload.get('prompt')
+            self._record_native_prompt_request(request_prompt,submitted=False)
             conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
+            self._record_native_prompt_request(request_prompt,submitted=True)
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
             result=json.loads(raw)
@@ -456,7 +548,11 @@ class LlamaRunner:
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
         try:
-            conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
+            request_prompt=payload.get("prompt")
+            self._record_native_prompt_request(request_prompt,submitted=False)
+            conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key})
+            self._record_native_prompt_request(request_prompt,submitted=True)
+            response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
             self._native_completion_http_200=True
             while True:
