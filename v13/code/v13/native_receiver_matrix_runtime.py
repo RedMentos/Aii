@@ -582,19 +582,24 @@ def _native_receiver_effects(runtime, *, strict):
                     raise NativeReceiverMatrixRuntimeError(name + " summary carries forbidden authority")
 
         evidence_class = cohort.get("evidence_class")
+        duplicate_input_groups_checked = None
         if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
             counts = kv.get("distinct_from_no_message_task_groups_by_condition")
+            task_group_count = kv.get("task_group_count")
+            snapshot_count = kv.get("snapshot_count")
+            duplicate_input_groups_checked = kv.get("duplicate_input_groups_checked")
             if (kv.get("scope") != "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
-                    or type(kv.get("snapshot_count")) is not int
-                    or kv.get("snapshot_count", 0) < len(CONDITIONS)
-                    or type(kv.get("task_group_count")) is not int
-                    or kv.get("task_group_count", 0) < 1
-                    or type(kv.get("duplicate_input_groups_checked")) is not int
-                    or kv.get("duplicate_input_groups_checked", 0) < 1
+                    or type(snapshot_count) is not int
+                    or type(task_group_count) is not int
+                    or task_group_count < 1
+                    or snapshot_count != task_group_count * len(CONDITIONS)
+                    or type(duplicate_input_groups_checked) is not int
+                    or duplicate_input_groups_checked < 0
                     or kv.get("same_input_consistency_passed") is not True
                     or not isinstance(counts, Mapping)
                     or set(counts) != set(CONDITIONS)
-                    or any(type(value) is not int or value < 0 for value in counts.values())):
+                    or any(type(value) is not int or value < 0 or value > task_group_count
+                           for value in counts.values())):
                 raise NativeReceiverMatrixRuntimeError("Perception K/V effect summary failed its structural contract")
         elif not (kv.get("status") == "UNAVAILABLE" and evidence_class == "SYNTHETIC"):
             raise NativeReceiverMatrixRuntimeError("native receiver K/V effect is unavailable for non-synthetic evidence")
@@ -619,13 +624,26 @@ def _native_receiver_effects(runtime, *, strict):
             "generated_answer_correctness_proven", "production_route", "training_authority",
             "native_receiver_authority", "persisted",
         )
+        kv_effect = {key: kv[key] for key in kv_fields if key in kv}
+        if kv.get("status") == "READ_ONLY_SAMPLE_ONLY":
+            duplicate_checks_observed = duplicate_input_groups_checked > 0
+            kv_effect["same_input_consistency_observed"] = duplicate_checks_observed
+            kv_effect["same_input_consistency_status"] = (
+                "CHECKED_PASS" if duplicate_checks_observed
+                else "NOT_TESTED_NO_DUPLICATE_INPUTS"
+            )
+            if not duplicate_checks_observed:
+                # The Perception utility's True is vacuous when there were no
+                # duplicate inputs to compare. Do not surface it as measured proof.
+                kv_effect["same_input_consistency_passed"] = None
+
         return {
             "status": cohort.get("status"),
             "evidence_class": evidence_class,
             "task_group_count": status.get("task_group_count", 0),
             "complete_task_group_count": status.get("complete_task_group_count", 0),
             "incomplete_task_group_count": status.get("incomplete_task_group_count", 0),
-            "kv_snapshot_effect": {key: kv[key] for key in kv_fields if key in kv},
+            "kv_snapshot_effect": kv_effect,
             "information_use_audit": {key: information[key] for key in information_fields if key in information},
             "interpretation_limit": (
                 "Read-only K/V state differences and teacher-forced target-logprob proxy; "
