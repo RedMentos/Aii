@@ -10,7 +10,7 @@ on:
       - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
-      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"\n      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/attention.py"
@@ -28,7 +28,7 @@ on:
       - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
-      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
+      - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"\n      - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/attention.py"
@@ -64,6 +64,7 @@ jobs:
             v13/code/v13/audio_teacher_ear.py \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
             v13/code/tests/test_audio_teacher_ear_runtime_v14.py \
+            v13/code/tests/test_audio_temporal_prediction.py \
             v13/code/v13/contracts.py \
             v14/experiments/audio_feature_set_probe.py \
             v14/experiments/test_audio_feature_set_probe.py
