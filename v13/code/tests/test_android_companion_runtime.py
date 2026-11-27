@@ -3,6 +3,9 @@ import copy
 import hashlib
 import json
 import sqlite3
+import importlib.util
+from pathlib import Path
+import types
 
 import pytest
 
@@ -11,7 +14,24 @@ from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.android_capabilities import CapabilityRegistry, CapabilityRegistryError
 from v13.store import Store
-from v13.operator import Operator
+
+
+
+def _staged_operator(runtime):
+    """Load the exact :android dispatcher that the pinned stage overlay installs."""
+    code_dir = Path(__file__).resolve().parents[1]
+    overlay_path = code_dir / "scripts" / "integrated_android_ui_runtime_candidate_20261127.py"
+    spec = importlib.util.spec_from_file_location("v14_android_operator_overlay_test", overlay_path)
+    assert spec is not None and spec.loader is not None
+    overlay = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(overlay)
+    operator_path = code_dir / "v13" / "operator.py"
+    patched = overlay._patch_operator(operator_path.read_bytes())
+    module = types.ModuleType("v13._android_operator_test")
+    module.__package__ = "v13"
+    module.__file__ = str(operator_path)
+    exec(compile(patched, str(operator_path), "exec"), module.__dict__)
+    return module.Operator(runtime)
 
 
 PUBLIC_KEY = bytes.fromhex(
@@ -258,7 +278,7 @@ def test_frame_status_is_signed_read_only_and_does_not_consume_frame_or_nonce(tm
     controller.trust(KEY_ID, True)
     runtime._android_companion_controller = controller
 
-    result = json.loads(Operator(runtime).run(":android frame-status"))
+    result = json.loads(_staged_operator(runtime).run(":android frame-status"))
 
     assert result["status"] == "FRAME_READY"
     assert result["frame_sha256_prefix"] == hashlib.sha256(frame).hexdigest()[:12]
@@ -446,7 +466,7 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
 def test_operator_refuses_model_origin_for_android_control(tmp_path):
     runtime = make_runtime(tmp_path)
     with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
-        Operator(runtime).run(":android status", origin="MODEL")
+        _staged_operator(runtime).run(":android status", origin="MODEL")
     runtime.store.close()
 
 
@@ -636,10 +656,10 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     assert after_forgery["actions"][0]["t8_authoritative"] is False
     assert after_forgery["actions"][0]["world_learning_eligible"] is False
 
-    tty_history = json.loads(Operator(runtime).run(":android history"))
+    tty_history = json.loads(_staged_operator(runtime).run(":android history"))
     assert tty_history["count"] == 1
     with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
-        Operator(runtime).run(":android history", origin="MODEL")
+        _staged_operator(runtime).run(":android history", origin="MODEL")
 
     runtime._android_companion_controller.broker.close()
     controller.broker.close()
