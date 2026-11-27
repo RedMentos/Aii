@@ -27,7 +27,7 @@ When an already-installed hashed_bow student projector had captions, A5 emitted 
 
 ## Real user effect and limits
 
-This fixes the optional-student-projector branch of the synthetic Runtime-side A5 adapter: an available caption projector no longer makes an otherwise valid visual frame fail because several derived segments share one source. It does not make screen capture user-visible yet. The normal-turn Core callsite is still owned by Core PR #2549; the provider still has to obtain explicit Android OS consent, hold the revocable lease, and map MediaProjection onStop() to cancellation and cleanup. No real Redmi screenshot or visual answer is claimed.
+This fixes the optional-student-projector branch of the synthetic Runtime-side A5 adapter: an available caption projector no longer makes an otherwise valid visual frame fail because several derived segments share one source. It does not make screen capture user-visible yet. The normal-turn Core callsite is still missing: current Core PR #2549 does not modify runtime.py or reference A5VisualFrameAdapter. Core must add that consumer; the provider still has to obtain explicit Android OS consent, hold the revocable lease, and map MediaProjection onStop() to cancellation and cleanup. No real Redmi screenshot or visual answer is claimed.
 
 ## Research / model boundary
 
@@ -35,7 +35,7 @@ R-179 records only an abstract-level review of Llama-Mobile (arXiv:2608.21134, 2
 
 ## Next owner/action
 
-1. Core (#2549): wire A5VisualFrameAdapter into the normal Runtime turn under the same live UIObservationLease; preserve cancellation/revocation through downstream reads.
+1. Core: create or extend the normal-turn Runtime consumer for A5VisualFrameAdapter under the live UIObservationLease. Current Core #2549 changed-file list does not contain runtime.py or an A5 visual callsite; it is the current integration parent, not proof that the visual adapter is wired.
 2. QA: test provider revocation during frame decode, context read, A4 admission and Runtime teardown; confirm cache cleanup and no stale consumer access.
 3. Boss: reconcile the #2548 -> #2549 -> #2550 stack onto the current integration/release head after exact-head CI; do not equate merge with phone install.
 
