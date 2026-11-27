@@ -824,7 +824,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
             )
             cues["vad"] = validate_vad_evidence(vad_evidence)
-            cues = validate_voice_cues(cues)
+        # Validate every producer result before it enters the canonical packet or
+        # is persisted; previously this only ran when the optional VAD was enabled.
+        cues = validate_voice_cues(cues)
         audio_packet = audio_percept_packet(
             event_id=event_id,
             generation_id=generation_id,
