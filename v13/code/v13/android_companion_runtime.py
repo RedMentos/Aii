@@ -363,7 +363,12 @@ class AndroidCompanionController:
                 }
                 or actual.get("receipt_status") != expected[0]
                 or actual.get("companion_local_consent_claim") is not expected[1]
+                or actual.get("companion_user_approval") is not expected[1]
                 or actual.get("local_approval_evidence") != expected[2]
+                or actual.get("device_execution_claimed") is not False
+                or actual.get("production_route") is not False
+                or actual.get("training_authority") != 0
+                or actual.get("native_receiver_authority") != 0
                 or actual.get("observed") is not False
                 or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
                 or actual.get("t8_authoritative") is not False
