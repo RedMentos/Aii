@@ -937,3 +937,119 @@ def test_raw_ear_rejects_malformed_voice_cues_before_packet_or_attention_persist
         (event["event_id"],),
     )
     assert packet_count["n"] == 0
+
+
+def test_every_final_update_policy_preserves_legacy_update_count():
+    predictor = AudioTemporalPredictor(learning_rate=0.5, warmup_updates=1)
+    first = predictor.update([0.5] * FEATURE_COUNT)
+    second = predictor.update([0.75] * FEATURE_COUNT)
+    third = predictor.update([0.75] * FEATURE_COUNT)
+    assert first["update_applied"] is False
+    assert second["update_policy"] == "EVERY_FINAL"
+    assert second["update_reason"] == "EVERY_FINAL"
+    assert second["update_applied"] is True
+    assert second["updates"] == 1
+    assert third["update_applied"] is True
+    assert third["updates"] == 2
+
+
+def test_memorized_error_gate_replays_old_mistakes_but_skips_unseen_correct_samples():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5,
+        warmup_updates=1,
+        update_policy="MEMORIZED_ERROR",
+        mistake_memory_capacity=4,
+    )
+    predictor.update([0.5] * FEATURE_COUNT)
+    first_mistake = predictor.update([0.75] * FEATURE_COUNT)
+    assert first_mistake["update_reason"] == "CURRENT_ERROR"
+    assert first_mistake["update_applied"] is True
+    assert first_mistake["mistake_memory_entries"] == 1
+
+    # Recreate a context where the same previously-mistaken target is now
+    # predicted better than persistence. The remembered mistake must still
+    # receive an update, while a new correct target is skipped.
+    predictor._previous = (0.70,) * FEATURE_COUNT
+    for row in range(FEATURE_COUNT):
+        for col in range(FEATURE_COUNT):
+            predictor._weights[row][col] = 0.72 / (FEATURE_COUNT * 0.70)
+    remembered = predictor.update([0.75] * FEATURE_COUNT)
+    assert remembered["prediction_error_mae"] < remembered["persistence_baseline_mae"]
+    assert remembered["update_reason"] == "REMEMBERED_ERROR"
+    assert remembered["update_applied"] is True
+    assert remembered["weight_delta_l2"] > 0.0
+
+    predictor._previous = (0.70,) * FEATURE_COUNT
+    skipped = predictor.update([0.76] * FEATURE_COUNT)
+    assert skipped["prediction_error_mae"] < skipped["persistence_baseline_mae"]
+    assert skipped["update_reason"] == "NO_ERROR"
+    assert skipped["update_applied"] is False
+    assert skipped["weight_delta_l2"] == 0.0
+    assert skipped["updates"] == remembered["updates"]
+
+
+def test_mistake_fingerprints_are_bounded_ephemeral_and_not_restored():
+    predictor = AudioTemporalPredictor(
+        update_policy="MEMORIZED_ERROR",
+        mistake_memory_capacity=2,
+    )
+    for key in ("mistake-a", "mistake-b", "mistake-c"):
+        predictor._remember_mistake(key)
+    assert len(predictor._mistake_keys) == 2
+    assert list(predictor._mistake_keys) == ["mistake-b", "mistake-c"]
+    state = predictor.state_dict()
+    assert set(state) == {"weights", "updates"}
+
+    restored = AudioTemporalPredictor(
+        update_policy="MEMORIZED_ERROR",
+        mistake_memory_capacity=2,
+    )
+    restored.load_state_dict(state)
+    assert restored.state_dict() == state
+    assert len(restored._mistake_keys) == 0
+    assert restored._previous is None
+
+
+def test_evaluation_only_advances_temporal_context_without_learning_or_memory():
+    predictor = AudioTemporalPredictor(
+        update_policy="MEMORIZED_ERROR",
+        warmup_updates=1,
+    )
+    predictor.update([0.5] * FEATURE_COUNT)
+    before = predictor.state_dict()
+    result = predictor.update([0.75] * FEATURE_COUNT, allow_update=False)
+    assert predictor.state_dict() == before
+    assert predictor._previous == (0.75,) * FEATURE_COUNT
+    assert result["update_applied"] is False
+    assert result["update_reason"] == "EVALUATION_ONLY"
+    assert result["mistake_memory_entries"] == 0
+
+
+def test_registry_gate_policy_is_opt_in_and_consent_rotation_resets_gate_memory():
+    registry = AudioTemporalPredictionRegistry(update_policy="MEMORIZED_ERROR")
+    first = registry.update(
+        source_id="source-gated", generation_id="generation-gated",
+        consent_scope_id="a" * 64, start_ms=0, end_ms=1000,
+        cues=SILENCE, finality="FINAL",
+    )
+    assert first["update_policy"] == "MEMORIZED_ERROR"
+    state = registry._states[("source-gated", "generation-gated")]
+    state.predictor._remember_mistake("synthetic-only-seed")
+    assert len(state.predictor._mistake_keys) == 1
+
+    rotated = registry.update(
+        source_id="source-gated", generation_id="generation-gated",
+        consent_scope_id="b" * 64, start_ms=1000, end_ms=2000,
+        cues=VOICED, finality="FINAL",
+    )
+    assert rotated["status"] == "RESET_CONSENT_SCOPE"
+    assert rotated["update_policy"] == "MEMORIZED_ERROR"
+    assert rotated["mistake_memory_entries"] == 0
+    assert len(registry._states[("source-gated", "generation-gated")].predictor._mistake_keys) == 0
+
+
+def test_invalid_update_policy_and_memory_capacity_fail_closed():
+    with pytest.raises(AudioTemporalPredictionError, match="update_policy"):
+        AudioTemporalPredictor(update_policy="SURPRISE_ONLY")
+    with pytest.raises(AudioTemporalPredictionError, match="mistake_memory_capacity"):
+        AudioTemporalPredictionRegistry(update_policy="MEMORIZED_ERROR", mistake_memory_capacity=0)
