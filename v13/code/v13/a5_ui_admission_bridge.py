@@ -181,6 +181,8 @@ class UIObservationLease:
         )
 
     def matches(self, runtime, observation, generation_id):
+        if type(observation) is not dict:
+            return False
         return bool(
             self.active_for(runtime, generation_id)
             and self.source_id == observation.get("source_id")
