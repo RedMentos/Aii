@@ -210,6 +210,61 @@ def _issue_provider_frame_verifier(lease, observation, verify_fn):
     )
 
 
+def _validate_projector_npy_headers(archive, np) -> bool:
+    """Reject unsafe NPY shapes before np.load can allocate from their headers.
+
+    ZIP uncompressed-size limits alone do not constrain the array element count
+    declared inside an NPY header. Inspect the small header first, then require
+    the exact shapes and payload byte counts used by the local projector.
+    """
+    expected_shapes = {
+        "mu.npy": (37,),
+        "sd.npy": (37,),
+        "meta.npy": (2,),
+    }
+    expected_names = set(expected_shapes) | {"W.npy"}
+    try:
+        infos = archive.infolist()
+        if len(infos) != 4 or {item.filename for item in infos} != expected_names:
+            return False
+        for info in infos:
+            with archive.open(info, "r") as member:
+                version = np.lib.format.read_magic(member)
+                if version == (1, 0):
+                    shape, fortran_order, dtype = np.lib.format.read_array_header_1_0(member)
+                elif version == (2, 0):
+                    shape, fortran_order, dtype = np.lib.format.read_array_header_2_0(member)
+                else:
+                    return False
+                if (
+                    type(fortran_order) is not bool
+                    or dtype != np.dtype("float64")
+                    or dtype.hasobject
+                    or type(shape) is not tuple
+                    or any(type(dimension) is not int or dimension < 0 for dimension in shape)
+                ):
+                    return False
+                if info.filename == "W.npy":
+                    if (
+                        len(shape) != 2
+                        or shape[0] != 38
+                        or not 1 <= shape[1] <= MAX_PROJECTOR_OUTPUT_DIM
+                    ):
+                        return False
+                elif shape != expected_shapes[info.filename]:
+                    return False
+
+                expected_size = member.tell() + math.prod(shape) * dtype.itemsize
+                if (
+                    expected_size > MAX_PROJECTOR_UNPACKED_BYTES
+                    or expected_size != info.file_size
+                ):
+                    return False
+    except Exception:
+        return False
+    return True
+
+
 def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
     """Load only the existing local LAB_SHADOW_ONLY tile projector, without following paths.
 
@@ -313,6 +368,7 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
     try:
         if vision.digest(bytes(raw)) != expected_sha:
             return {"status": "PROJECTOR_HASH_MISMATCH"}
+        np = vision._np()
         with zipfile.ZipFile(io.BytesIO(raw), "r") as archive:
             archive_names = archive.namelist()
             if len(archive_names) != 4 or set(archive_names) != {"mu.npy", "sd.npy", "W.npy", "meta.npy"}:
@@ -321,8 +377,9 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
                 return {"status": "PROJECTOR_ARCHIVE_TOO_LARGE"}
             if any(item.file_size > MAX_PROJECTOR_UNPACKED_BYTES for item in archive.infolist()):
                 return {"status": "PROJECTOR_ARCHIVE_TOO_LARGE"}
+            if not _validate_projector_npy_headers(archive, np):
+                return {"status": "PROJECTOR_TENSOR_HEADER_INVALID"}
 
-        np = vision._np()
         with np.load(io.BytesIO(raw), allow_pickle=False) as archive:
             mu = np.array(archive["mu"], dtype=np.float64, copy=True)
             sd = np.array(archive["sd"], dtype=np.float64, copy=True)
