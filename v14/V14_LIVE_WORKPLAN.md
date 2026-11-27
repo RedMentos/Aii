@@ -1964,3 +1964,34 @@ The signed one-shot Android audio consumer in Perception PR #2312 is not end-to-
 **Readback after handoff/docs:** a prior documentation-only readback was 6f3e87e6c9c946041a95d430b50ad0165bebac7e, followed by evidence-only updates; code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Offline bridge/security workflow 46058233835 passed. Use PR #2565 for the live docs branch head; PR remains mergeable=false and no release SHA exists.
 
 **Existing PR #2312 evidence:** focused audio consumer workflow 44992975596 passes 20/20 on Python 3.13 and 20/20 on Python 3.14; privacy/offline 44992972977 passes; integrated-regression job passes. Staged-runtime job fails 2 migration assertions (238 passed, 10 skipped, 47 subtests passed; PARTIAL observed where fixture expects UPDATED). The focused positive test is RuntimeStub-only and must not be treated as Runtime E2E.
+
+
+## Research & Perception Run 72 — source-disjoint A3 OOD calibration ablation (2026-11-27)
+
+**Owner / PR.** Research & Perception draft [#2566](https://github.com/RedMentos/Aii/pull/2566), branch `research-perception/v14-a3-ood-calibration-20261127-run72`, stacked on #2565 at base `b3896e3a3ba5a85de8ea67f45d123ef8e74da075`. Exact code/test commit `6d0b446a607a42cdbf7f35c6567761e1781703e2`. The existing A5 visual bridge workflow was extended at `263b4744bb6f2674caf55366d688da3822c2cd9e`; the redundant standalone workflow was removed at `faa25be189b9842a0532c5aeebe3b785bd8ab4ce`.
+
+**Implementation.** Added `v14/experiments/vision_ood_calibration.py` and 12 tests. The experiment calls the current V13 37-D RAW-EYE `vision.tile_features` function and compares (a) the existing RMS-z source-disjoint heuristic, (b) diagonal-shrinkage Mahalanobis with the same heuristic, and (c) source-max split-conformal thresholds for both scores. Fit/calibration/test sources are disjoint; the conformal exchangeability unit is the maximum tile score per image source. This is a research-only comparison: no production threshold, projector, Runtime, model, weight, permission or user data changed.
+
+**LOCAL_LINUX evidence.** Linux x86_64 / CPython 3.13.5 / NumPy 2.3.5 / Pillow 12.3.0 scratch:
+- py_compile PASS; focused pytest 12/12 PASS.
+- 30 seeded repeats PASS; per repeat 24 fit + 20 calibration + 20 held-out in-domain sources, 16 tiles/source, 37 features; source IDs pairwise disjoint.
+- Full local Aii repository pytest NOT_RUN/BLOCKED (no mounted checkout). The scratch harness mirrors the exact production `boxes`, `tile_features` and `tile_descriptor_threshold` helper logic; do not call this a full-repository run.
+- Exact #2566 hosted CI was not visible at the initial checkpoint; no parent PR run is attributed to this child.
+
+**Measured result.** Mean source-level in-domain false rejection / synthetic OOD source rejection:
+- RMS-z + current heuristic: 7.33% ID; black/checker/invert/noise 100%; posterize 85.5%.
+- RMS-z + source-max conformal alpha=0.10: 9.17% ID; black/checker/invert/noise 100%; posterize 85.5%.
+- Shrinkage Mahalanobis + heuristic: 16.83% ID; black/checker/invert/noise 100%; posterize 50.83%.
+- Shrinkage Mahalanobis + conformal: 10.5% ID; black/checker/invert 100%, noise 92.33%, posterize 36.17%.
+
+Host microbenchmark (384 training rows → 16 query rows): RMS-z median 0.060 ms / p95 0.0749 ms; shrinkage Mahalanobis 0.0961 / 0.1446 ms; 16-tile feature extraction 3.5031 / 4.8486 ms. These are x86_64 scratch timings, not mobile measurements. Full table, tile-level metrics and caveats are in R-192 and the Run72 handoff.
+
+**Research.** R-192 records: ICML 2026 Mahalanobis geometry paper (official abstract only; PDF retrieval failed), SCOPE arXiv preprint method/experiment HTML review, and the OCULAR WAFR 2026 project-page review. Their transferable point is that representation geometry and source/context exchangeability matter; none is a drop-in mobile image detector. No upstream code, weights or dataset were reused.
+
+**Decision.** Keep the current RMS-z production gate unchanged and optional/shadow-only. Conformal RMS-z gives an explicit source-level nominal-alpha interpretation but no detection improvement on this synthetic set; shrinkage Mahalanobis is weaker on the near-shift posterization control and slower on the host. Do not promote any new threshold without consented app/session/version-disjoint real UI frames.
+
+**Canon / user effect.** A3 Student Projector / A5 PerceptPacket / A4 attention-preserving abstention only. This does not establish trained perception, normal Runtime/C3 consumption, B3 latent coupling, real visual semantics, Android lifecycle, P0 chat or whole-system acceptance. Core still owns the normal same-turn A5 Runtime/C3 consumer and Runtime audio_window; QA owns visible AudioRecord/MediaProjection OS lifecycle. The current #2565/#2563 shared integration gate remains unresolved.
+
+**Device / release.** No private live receipt and no phone action. Android / Termux / Redmi REDMI_UNVERIFIED; installed SHA/updater UNKNOWN; NOT_RELEASED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, restart, permission change, capture, model/weight change or data mutation. User action: none required.
+
+**Next.** Verify exact #2566 Python 3.13/3.14 CI; Boss reviews only after the parent #2565/#2563 shared gate and Core source pins are reconciled. Once QA's consented provider exists, Perception can repeat the calibration on real source-disjoint app/session cohorts and test whether local conditional calibration improves the false-abstention/missed-OOD trade-off.
