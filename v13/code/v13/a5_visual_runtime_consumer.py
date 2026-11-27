@@ -126,7 +126,7 @@ def consume_for_turn(runtime, event, goal, lease_stack, deadline):
         grant,
         goal=goal,
         token_budget=512,
-        priority=0,
+        priority=8,
     )
     # Drop the provider's original frame reference immediately. The adapter
     # keeps only its bounded in-memory descriptor until lease_stack closes.
@@ -214,6 +214,8 @@ def consume_for_turn(runtime, event, goal, lease_stack, deadline):
         "a4_base_salience": prompt_context["a4_base_salience"],
         "a4_visual_salience": prompt_context["a4_visual_salience"],
         "a4_raw_eye_contribution": prompt_context["a4_raw_eye_contribution"],
+        "a4_salience_authority": raw_eye_signal["authority"],
+        "a4_salience_learned": raw_eye_signal["learned"],
         "admission_status": getattr(result.get("admission"), "status", None),
         "student_authority": packet_value.get("student_authority", "UNKNOWN"),
         "raw_capture_persisted": False,
