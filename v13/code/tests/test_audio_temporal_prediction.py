@@ -1092,21 +1092,22 @@ def test_restart_keeps_consolidated_weights_but_discards_pending_transient_delta
         learning_rate=0.5,
         warmup_updates=1,
         update_policy="TRANSIENT_CONSOLIDATE",
-        consolidation_threshold=0.3,
-        max_transient_norm=1.0,
+        consolidation_threshold=0.8,
+        max_transient_norm=2.0,
     )
-    predictor.update([0.0] * FEATURE_COUNT)
-    predictor.update([1.0] * FEATURE_COUNT)
-    predictor.update([1.0] * FEATURE_COUNT)
+    zero = [0.0] * FEATURE_COUNT
+    one = [1.0] * FEATURE_COUNT
+    for target in (zero, one, one, zero, one, one, one):
+        predictor.update(target)
     committed = predictor.state_dict()
     assert predictor._parameter_l2() > 0.0
 
-    pending = predictor.update([0.0] * FEATURE_COUNT)
+    pending = predictor.update(zero)
     assert pending["transient_parameter_l2"] > 0.0
     restored = AudioTemporalPredictor(
         update_policy="TRANSIENT_CONSOLIDATE",
-        consolidation_threshold=0.3,
-        max_transient_norm=1.0,
+        consolidation_threshold=0.8,
+        max_transient_norm=2.0,
     )
     restored.load_state_dict(committed)
     assert restored.state_dict() == committed
