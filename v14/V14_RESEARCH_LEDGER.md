@@ -2039,3 +2039,21 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - Exact focused CI on the docs-follow-up PR head: workflow 45975248573 **PASS**, `py_compile` and 25/25 on Python 3.13 plus 25/25 on Python 3.14. Runtime deployment integrity workflow 45975248638 **PASS**.
 - Shared staged workflow 45975248465 **FAIL**: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression 45975248465 **FAIL**: one Core Recovery audio-composer pin mismatch (expected blob `831080bceec90711bd42e0fa4eba47c669975c98`). Other staged failures are the known Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions.
 - No Perception focused test failed. Full local Aii checkout/pytest remains BLOCKED/NOT_RUN; no Android/Redmi or normal Runtime/C3 proof. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## R-182 — Evidence-reliance drift in continual multimodal learning (2026-11-27; abstract-level review)
+
+### Primary records and review limits
+
+1. Qianyu Chen, Canran Xiao and Runxuan Tang, *Hidden Forgetting in Continual Multimodal Learning: When Accuracy Survives but Grounding Fails*, arXiv:2607.02020v1, submitted 2026-07-02: https://arxiv.org/abs/2607.02020 . The official arXiv abstract was checked. A full-text rendering mirror was inspected for method context, but the official primary PDF could not be retrieved in this run; this is **ABSTRACT VERIFIED / PRIMARY PDF NOT REVIEWED**, not a full-paper review. The abstract describes hidden evidence-use forgetting and RCL, which compares counterfactual modality-reliance profiles against a previous checkpoint while preserving prediction behavior. No numeric result from the mirror is treated as independently verified here.
+2. Zhen Zhang et al., *Regularizing Modality Contribution Drift in Multimodal Continual Learning*, arXiv:2607.27260v1, first submitted 2026-07-29: https://arxiv.org/abs/2607.27260 . **ABSTRACT ONLY** was checked. The abstract proposes intervention-based modality contribution drift measurement and replay-based/replay-free regularization; its six-benchmark gains remain author-reported abstract claims pending full-text protocol review.
+
+### OSS, licence and evidence boundary
+
+- No official implementation repository or model-weight package was located for either paper in this search. No code, weights, datasets or dependencies were downloaded or reused.
+- The CMCDR record lists CC BY 4.0 for the paper record/text; this does not establish a source-code or checkpoint licence. RCL code/data licensing was not established.
+- Neither result is evidence for V14 A/B/C, LFM2.5, B3, Android or Redmi. The RCL frozen previous checkpoint is a temporary evaluation reference in the paper's method, not a reason to make any V14 organ permanently frozen.
+
+### Testable V14 adaptation
+
+For the future normal-turn A5/A4 → B1/B2/C3 consumer, measure **answer quality and evidence reliance separately**: matched normal input; remove one modality; source-mismatched/shuffled observation; entity/number substitution; and zero-evidence control. Report source-specific output/log-probability change separately from generic system gain. Keep these diagnostics authority-zero and aggregate-only; do not retain raw screenshots, PCM, transcripts or user content. The current #2557 A5 receiver is not yet connected to a normal Runtime/C3 turn, so this experiment is **PROPOSED / NOT RUN** until Core supplies that consumer. This is an evaluation lead, not an automatic training, teacher-freezing or model-swap decision.
