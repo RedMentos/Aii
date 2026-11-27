@@ -5,6 +5,7 @@ import hashlib
 import os
 import threading
 import time
+import zipfile
 from types import SimpleNamespace
 
 import numpy as np
@@ -616,6 +617,50 @@ def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye
         assert result["status"] == "A5_RAW_EYE_CONSUMED"
         assert len(result["packet"]["segments"]) == 18
         assert result["caller_buffer_overwritten"] is True
+
+
+@pytest.mark.parametrize("weight_shape", [(38, 256), (38, 100_000_000)])
+def test_local_student_projector_rejects_bad_npy_shape_before_numpy_load(
+    monkeypatch, tmp_path, weight_shape,
+):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    path, _sha = install_student_projector(runtime, tmp_path)
+    archive_bytes = BytesIO()
+    declared_shapes = {
+        "mu.npy": (37,),
+        "sd.npy": (37,),
+        "W.npy": weight_shape,
+        "meta.npy": (2,),
+    }
+    with zipfile.ZipFile(archive_bytes, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, shape in declared_shapes.items():
+            header = BytesIO()
+            np.lib.format.write_array_header_1_0(header, {
+                "descr": np.dtype("float64").str,
+                "fortran_order": False,
+                "shape": shape,
+            })
+            # Deliberately omit all array payload bytes. The huge-shape case is
+            # a sub-4-KiB allocation bomb if np.load is called before preflight.
+            archive.writestr(name, header.getvalue())
+
+    raw = archive_bytes.getvalue()
+    path.write_bytes(raw)
+    runtime.store._state[vision.KEY]["tile_projector"]["sha256"] = vision.digest(raw)
+    load_calls = []
+
+    def forbidden_load(*args, **kwargs):
+        load_calls.append(True)
+        raise AssertionError("np.load must not run before projector header validation")
+
+    monkeypatch.setattr(np, "load", forbidden_load)
+    result = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
+
+    assert result["status"] == "PROJECTOR_TENSOR_HEADER_INVALID"
+    assert load_calls == []
+    assert path.stat().st_size < 4096
 
 
 def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
