@@ -2216,3 +2216,12 @@ The provider→A5→A3 path is WIRED_SYNTHETIC / FOCUSED_CI_PASS. It does not pr
 ### Status and next integration
 
 The A-plane acoustic contract and synthetic A5/A4/C3 path are WIRED_SYNTHETIC, but the signed Android capture consumer is ISOLATED_MOCK / BLOCKED at the real Runtime boundary and the companion provider is OFF. Core must implement same-turn Runtime audio_window handling using the accepted event ID and generation, and hold the linearizable consent lease through A4/C3. QA must implement the visible AudioRecord provider and permission/revocation/lifecycle tests. Perception then rebases PR #2312 and replaces the stub-only positive test with exact Runtime integration coverage, preserving PROVISIONAL/FINAL and non-speech/prosody signals. No microphone permission, provider, model, weight or device setting was changed. This is not a P0 #1904 repair.
+
+### Existing test status for the signed consumer
+
+PR #2312 head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2:
+- Focused workflow 44992975596: 20/20 PASS on Python 3.13 and 20/20 PASS on Python 3.14.
+- Privacy/offline workflow 44992972977: PASS.
+- Integrated-regression job in 44992975599: PASS.
+- Staged-runtime job in 44992975599: FAIL, 2 failed / 238 passed / 10 skipped / 47 subtests passed. Both failures are two-checkout migration assertions expecting UPDATED while the observed state is PARTIAL with Runtime ERROR.
+The focused tests use a RuntimeStub that accepts audio_window; they do not demonstrate the real Runtime path.
