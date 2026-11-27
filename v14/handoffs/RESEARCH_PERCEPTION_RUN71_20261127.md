@@ -51,3 +51,7 @@ R-190 records the abstract-only ICML 2026 A Geometry-Based View of Mahalanobis O
 ## Final branch readback
 
 Current PR branch head after the handoff/ledger/workplan/coverage updates: 6f3e87e6c9c946041a95d430b50ad0165bebac7e. Code/test head remains 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b. Documentation-only head passed offline bridge/security workflow 46058233835. PR #2565 still reports mergeable=false and remains NOT_MERGE_READY. No release commit was created.
+
+## Cross-lane audio blocker found during next-step audit
+
+Perception PR #2312 is not end-to-end on the release Runtime. Its focused workflow 44992975596 passes 20/20 on Python 3.13 and 20/20 on Python 3.14; privacy/offline 44992972977 passes; integrated-regression job in 44992975599 passes. Staged-runtime job fails 2 migration assertions (238 passed / 10 skipped / 47 subtests passed; PARTIAL observed where UPDATED is expected). The positive test uses RuntimeStub. The real Runtime.submit(self, text) has no audio_window parameter, so audio_input.submit_audio_only raises RuntimeError. QA CapabilityRegistry marks audio_capture unavailable and AudioCaptureDefaultOffTest keeps RECORD_AUDIO/FOREGROUND_SERVICE_MICROPHONE absent. Core must add the same-turn Runtime receiver; QA must implement the visible provider; Perception must then test the real Runtime. No microphone permission or device capture was enabled.
