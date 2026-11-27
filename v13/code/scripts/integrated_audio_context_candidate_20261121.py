@@ -808,9 +808,23 @@ def _a4_temporal_context(a4, packet_value, source, segment, event_id, source_id)
     score = a4.get("attention_score_vector")
     if type(score) is not dict:
         raise ValueError("A4 attention score vector is missing")
+    gains = score.get("gains")
+    expected_gains = {"perceptual", "callosum", "workspace", "focal", "action"}
+    if type(gains) is not dict or set(gains) != expected_gains:
+        raise ValueError("A4 attention gain vector is invalid")
+    if score.get("truth_authority") != 0 or type(score.get("interrupt")) is not bool:
+        raise ValueError("A4 attention authority/interrupt contract is invalid")
     score_vector = {
-        "novelty": _safe_float(score.get("novelty")),
-        "external_interrupt": _safe_float(score.get("external_interrupt")),
+        "kind": str(score.get("kind", ""))[:64],
+        "salience": _safe_float(score.get("salience")),
+        "caution": _safe_float(score.get("caution")),
+        "gains": {key: _safe_float(gains[key]) for key in sorted(expected_gains)},
+        "interrupt": score["interrupt"],
+        "interrupt_reason": (
+            str(score.get("interrupt_reason"))[:96]
+            if score.get("interrupt_reason") is not None else None
+        ),
+        "truth_authority": 0,
     }
     return {
         "schema": "v14.raw-ear-a4-temporal-context/1",
