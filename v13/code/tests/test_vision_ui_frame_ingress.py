@@ -1689,3 +1689,15 @@ def test_uniform_frame_has_zero_raw_eye_structure_contribution(monkeypatch):
     assert not any(frame)
 
 @pytest.mark.parametrize("weight_shape", [(38, 256), (38, 100_000_000)])
+
+
+def test_provider_verifier_and_lease_matching_reject_non_mapping_observations(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    frame_sha = hashlib.sha256(frame).hexdigest()
+    with lease_for(runtime, obs) as lease:
+        assert lease.matches(runtime, None, runtime.turn_event["brain_generation_id"]) is False
+        verifier = provider_verifier(lease, obs, frame)
+        assert verifier.verify(runtime, lease, None, frame_sha, len(frame)) is False
+
