@@ -346,3 +346,67 @@ def test_normal_runtime_composer_preserves_audio_and_ui_source_bindings():
     assert "query.get('ephemeral_ui_binding')!=offer.get('ephemeral_ui_binding')" in scope
     assert "query.get('ephemeral_ui_source_refs',[])!=offer.get('ephemeral_ui_source_refs',[])" in scope
 
+
+def test_ood_student_estimate_is_never_promoted_into_c3_ui_prompt():
+    frame_sha = "a" * 64
+    refs = [
+        {
+            "source_id": "ui_summary_source",
+            "sha256": "b" * 64,
+            "char_start": 0,
+            "char_end": 0,
+            "modality": "ui",
+        },
+        {
+            "source_id": "ui_frame_source",
+            "sha256": frame_sha,
+            "char_start": 0,
+            "char_end": 0,
+            "modality": "ui",
+        },
+    ]
+    binding = {
+        "schema": "v14.ephemeral-ui-observation-binding/1",
+        "event_id": "event-ood",
+        "brain_generation_id": "generation-ood",
+        "source_id": refs[0]["source_id"],
+        "frame_source_id": refs[1]["source_id"],
+        "frame_sha256": frame_sha,
+        "capture_session_id": "session-ood",
+        "consent_receipt_ref": "receipt-ood",
+        "capture_method": "MEDIA_PROJECTION",
+        "capture_scope": "FULL_DISPLAY",
+        "feature_method": "HANDCRAFTED_RAW_EYE_V1",
+        "feature_revision": "raw-eye-v1",
+        "finality": "FINAL",
+        "action_authority": False,
+        "learning_authority": False,
+        "truth_authority": 0,
+        "raw_capture_persisted": False,
+        "derived_packet_persisted": False,
+        "student_projector_used": False,
+        "student_estimate_authority": "NONE",
+        "student_ood_status": "OUT_OF_DISTRIBUTION",
+        "ood_regions": ["r00", "r01"],
+    }
+    ui_context = {
+        "binding": binding,
+        "source_refs": refs,
+        "text": "RAW_EYE: low-level structure only; no OCR or object identity",
+    }
+
+    query, returned_binding, returned_refs = body_ui_query(
+        ui_context, "event-ood", "generation-ood"
+    )
+
+    prompt = query["current_ui_observation"]
+    assert prompt["authority"] == "TRANSIENT_LOW_LEVEL_FEATURES_ONLY"
+    assert prompt["source_binding"]["frame_sha256"] == frame_sha
+    assert "student_estimate" not in prompt
+    assert "student_estimate_authority" not in prompt
+    assert "student_ood_status" not in prompt
+    assert "ood_regions" not in prompt
+    assert returned_binding["student_estimate_authority"] == "NONE"
+    assert returned_binding["student_ood_status"] == "OUT_OF_DISTRIBUTION"
+    assert returned_refs == refs
+
