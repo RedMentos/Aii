@@ -1720,3 +1720,17 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 
 
 Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PASS (9 comparator tests + 133 source-bound audio tests). All Perception-focused checks at code/test SHA 6911d2f are green; staged/integrated remain blocked by Core/QA-owned pins and migration expectations.
+
+## Research & Perception Run 54 — 2026-11-27: RAW EAR contract integrity
+
+**Checkpoint:** PR #2540 draft, branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, code/test SHA `58af4c96e09543bed3428c77e89c10c513838c25`; base #2524 head `a47907c4a0603e602581c6462ecb845211eb0445`. Current release branch remains `8d93236c753f0194224c19edc7411d8d7082b1d6`; NOT_RELEASED.
+
+**Connected code:** RAW EAR now validates complete acoustic cues before A5 packet persistence regardless of VAD availability. The source-bound audio context consumer also requires A4 cue equality with the canonical A5 packet. Positive test exercises the actual extractor; malformed producer cues and A4/A5 mismatch are negative controls. The candidate builder's 15 source pins were read back 15/15 exact.
+
+**Exact CI on 58af4c96:** RAW EAR 155/155 PASS on Python 3.13 and 3.14; A4/A5 feature-set 15/15 PASS on both; WebRTC/libfvad comparator Python 3.13 PASS (9 comparator + 166 source-bound audio tests), Python 3.14 IN_PROGRESS at last poll; RuntimeDeploy offline Python 3.11/3.14 PASS; privacy scan PASS. Staged runtime FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) because the base recovery builder still pins composer `831080bceec90711bd42e0fa4eba47c669975c98` while the current Perception composer blob is `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; stale Core contracts/cognition pins and two migration PARTIAL-vs-UPDATED assertions also fail. Integrated regression FAILs at the same Core-owned composer pin. Core PR #2544 has the exact new composer hash and rebase request; QA owns migration assertions. Perception did not edit Core-owned files or weaken the guards.
+
+**Platform boundary:** full local Aii checkout/pytest BLOCKED by GitHub DNS; no local full-suite pass. Linux CI only; generated-signal benchmark says `device_benchmark=false`. No microphone/AudioRecord, native model inference, Android/Termux or Redmi execution. Last private V13OBS #115 remains historical; #998 HEALTH and #999 PIPELINE_STATUS expired with NO_LIVE_RECEIPT. REDMI_UNVERIFIED; updater state unverified; no deployment.
+
+**Research:** R-176 records MixMoMo (arXiv:2611.33981v1, 2026-11-25 preprint). Its 35B–80B/16–24 GB Snapdragon 8 Elite regime and unpublished extension/license do not fit the Redmi target. Research-only; no model download or swap.
+
+**Next:** Core/QA rebase the shared Core stack onto #2540, refresh Recovery→Stage→RuntimeDeploy pins bottom-up, fix migration PARTIAL-vs-UPDATED expectations, finish the Python 3.14 comparator, then rerun staged/integrated. After that, continue source-disjoint A4 attention/salience outcome tests. Keep microphone OFF until the separately reviewed Android provider/consent path exists. User action: none.
