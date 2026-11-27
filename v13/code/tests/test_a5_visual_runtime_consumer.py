@@ -156,6 +156,8 @@ def test_one_shot_frame_reaches_a4_and_normal_c3_context_without_disk_capture(ru
         assert result["prompt_context"]["raw_capture_persisted"] is False
         assert result["prompt_context"]["action_authority"] is False
         assert result["prompt_context"]["learning_authority"] is False
+        assert result["prompt_context"]["a4_salience_authority"] == "ATTENTION_ONLY"
+        assert result["prompt_context"]["a4_salience_learned"] is False
         assert result["prompt_context"]["a4_visual_salience"] >= result["prompt_context"]["a4_base_salience"]
         assert result["audit"]["feature_count"] > 0
         assert len(result["audit"]["feature_sha256"]) == 64
