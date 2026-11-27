@@ -22,6 +22,7 @@ The optional A3 tile-projector OOD gate from Run 70 now reaches the existing A5 
 
 **GitHub-hosted Linux CI:** workflow 46057142216 PASS on Python 3.13 and 3.14. Both jobs compiled the exact RAW-EYE adapter/consumer tests and ran:
 python -m pytest -q -s tests/test_vision_ui_frame_ingress.py tests/test_vision_ui_frame_provider_entrypoint.py
+Result: 39/39 PASS on Python 3.13 and 39/39 PASS on Python 3.14.
 Offline bridge/security workflow 46057142248 PASS. Workflow file: .github/workflows/v14-vision-ui-frame-ingress.yml.
 
 **Full local repository tests:** NOT_RUN / BLOCKED — no mounted Aii checkout; git ls-remote https://github.com/RedMentos/Aii.git failed because GitHub DNS could not resolve.  
