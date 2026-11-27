@@ -1753,3 +1753,14 @@ Run 53 final CI closeout: the Python 3.14 WebRTC/libfvad comparison completed PA
 **Research:** R-177 LATER (arXiv:2611.25671v1, 2026-11-19) suggests a source-bound action-conditioned retrieval ablation for JEPA/Memory, but current evidence is simulation-only and no official code/license was found. R-178 (arXiv:2611.25960v1, 2026-11-19) suggests attention-head temporal priors for audio LLMs; only the abstract was checked and current RAW EAR exposes no model attention tensors. Neither is adopted or imported.
 
 **Next executable order:** (1) verify the new exact A4 workflow and repair measured failures; (2) wait for Core/QA to rebase their owned source pins/migration checks and rerun staged/integrated; (3) then measure error-gated vs every-FINAL A4 updates and retention/restart. Do not enable microphone capture, persistent predictor weights or model changes from this synthetic run.
+
+
+## Research & Perception Run 55 — final closeout (2026-11-27 02:52 CET)
+
+- **Final candidate:** branch `research-perception/v14-raw-ear-currentparent-20261126-run52`, head `e270369a04eb20470aa717dc0464b2b03a4320a5`, PR #2540 DRAFT / NOT_RELEASED. A4 sweep code commit `b60669975184bc3a54be4b5d380c95fd91fab16a`.
+- **A4 CI:** run 45924853167, merge candidate `3d56c9c`, Python 3.13.18 and 3.14.10; compile PASS, 7/7 tests PASS each, identical metrics.
+- **Additional exact CI:** A4/A5 feature-set run 45924853182 PASS on both versions; RAW EAR fastpath run 45924853240 155/155 PASS on each version; RuntimeDeploy offline run 45924853218 PASS on 3.11/3.14.
+- **Shared integration:** staged runtime run 45924853105 FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests); integrated regression FAIL (one setup test). Both hit Core-owned stale composer pin `831080bceec90711bd42e0fa4eba47c669975c98` versus current Perception composer `3b71ea51272a3bc1bc82cb12ebae3bd5e96f51e1`; staged also exposes stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED. No Perception guard was relaxed.
+- **A4 measured finding:** stream interleaving parity exact (0 difference). Numeric 182-parameter deltas exist; novelty remains under 0.10 cap. Model beats persistence only on periodic-speech synthetic cues (+0.1190 MAE), but is worse on non-speech (-0.0299) and mixed (-0.0225). Rates 0.02–0.20 do not remove those two regressions. Do not change the default or call it a robust acoustic predictor.
+- **Environment:** LOCAL_LINUX full suite NOT_RUN (no checkout; DNS failure); CI Linux only; SYNTHETIC cue fixtures only; REDMI_UNVERIFIED. No Android microphone, model inference, release, install or user-data mutation.
+- **Next owner handoff:** Core rebinds Recovery→Stage→RuntimeDeploy source pins; QA repairs migration assertions; then rerun staged/integrated. Perception follows with source/session-disjoint omission false-positive and update-gating ablations.
