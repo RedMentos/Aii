@@ -2419,3 +2419,12 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 - **Device/release:** `REDMI_UNVERIFIED`, `NOT_RELEASED`. The current private HEALTH / PIPELINE_STATUS / DIAGNOSTICS read requests are pending; until a device receipt arrives, updater/install status remains unverified in this run. No model, weight, permission, updater setting or device data was changed.
 
 **Next concrete action:** Core integrates the adapter into the normal turn under the same lease and proves revocation cancels C3 before lease release; QA verifies the Android provider's API 21+/34+ lifecycle and MediaProjection onStop behavior; Perception adds source/session-disjoint visual holdouts and A4 omission false-positive tests. No user action is required.
+
+
+### Run 58 CI refresh — 2026-11-27 04:19 UTC
+
+PR #2550 now reports the focused A5 workflow **6/6 PASS on Python 3.13 and 6/6 PASS on Python 3.14**, and the inherited staged-context/integrated-regression workflow is **PASS**. The offline-bridge security gate is **39/39 PASS**. Latest docs/board head is `cb04f8fea8cd28a1f7f2b62a11b0134f047e9604`; exact code/test checkpoint remains `7dd720a2669e46e4965c3766c6e3fcd2849bc89f`.
+
+Core PR #2549 advanced to `dbb68ca13ed78d099def6f8bb9779862f0670025` but still has separate failures in phone-offer receipt evidence, private owner-read bootstrap, C3 prompt binding, and audio/observer composition. These are not failures of the new A5 focused gate and remain with their owning lanes.
+
+Private owner-read requests #1005 HEALTH, #1006 PIPELINE_STATUS and #1007 DIAGNOSTICS have not received device comments yet. Therefore current updater/install status remains **NO_LIVE_RECEIPT / UNVERIFIED** for this run; the historical 2026-11-24 receipt is not a current deployment proof. `REDMI_UNVERIFIED / NOT_RELEASED`. No user action is required.
