@@ -105,16 +105,8 @@ class VisionTemporalEvidenceRegistry:
         binding_hash = _sha256_text("|".join(key))
 
         with self._lock:
-            if finality != "FINAL":
-                return self._result(
-                    "PROVISIONAL_IGNORED",
-                    frame_sha256=frame_sha256,
-                    stream_binding_sha256=binding_hash,
-                )
-
-            # Never reuse temporal state across a source, session, or consent
-            # boundary. Switching apps in one projection session deliberately
-            # starts a fresh baseline.
+            # Never retain/reuse temporal state across a source, session, or
+            # consent boundary, even when the incoming frame is provisional.
             scope_reset = False
             for old_key in list(self._states):
                 if old_key != key and (
@@ -123,6 +115,13 @@ class VisionTemporalEvidenceRegistry:
                 ):
                     del self._states[old_key]
                     scope_reset = True
+
+            if finality != "FINAL":
+                return self._result(
+                    "PROVISIONAL_IGNORED",
+                    frame_sha256=frame_sha256,
+                    stream_binding_sha256=binding_hash,
+                )
 
             previous = self._states.get(key)
             if previous is None:
