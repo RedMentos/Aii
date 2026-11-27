@@ -4,19 +4,27 @@ on:
   push:
     branches:
       - core/v14-a5-normal-turn-ui-consumer-20261127-run1
+      - core/v14-ui-ood-provider-integration-20261127-run1
     paths:
       - "android-companion/**"
       - "v13/code/v13/android_companion_*.py"
       - "v13/code/v13/android_capabilities.py"
       - "v13/code/v13/android_outcomes.py"
       - "v13/code/v13/android_ui_runtime.py"
+      - "v13/code/v13/vision.py"
       - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/v13/a5_visual_frame_bridge.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/runtime.py"
       - "v13/code/v13/cognition.py"
       - "v13/code/v13/operator.py"
       - "v13/code/tests/test_android_companion_*.py"
       - "v13/code/tests/test_android_ui_runtime_consumer.py"
+      - "v13/code/tests/test_vision.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_a5_visual_frame_bridge.py"
+      - "v13/code/tests/test_a5_ui_admission_bridge_20261115.py"
+      - "v13/code/tests/test_source_lifecycle_lock_integration.py"
       - ".github/workflows/v14-core-media-projection-provider.yml"
   pull_request:
     paths:
@@ -25,13 +33,20 @@ on:
       - "v13/code/v13/android_capabilities.py"
       - "v13/code/v13/android_outcomes.py"
       - "v13/code/v13/android_ui_runtime.py"
+      - "v13/code/v13/vision.py"
       - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/v13/a5_visual_frame_bridge.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/runtime.py"
       - "v13/code/v13/cognition.py"
       - "v13/code/v13/operator.py"
       - "v13/code/tests/test_android_companion_*.py"
       - "v13/code/tests/test_android_ui_runtime_consumer.py"
+      - "v13/code/tests/test_vision.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_a5_visual_frame_bridge.py"
+      - "v13/code/tests/test_a5_ui_admission_bridge_20261115.py"
+      - "v13/code/tests/test_source_lifecycle_lock_integration.py"
       - ".github/workflows/v14-core-media-projection-provider.yml"
 
 permissions:
@@ -51,7 +66,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install test runner
-        run: python -m pip install --disable-pip-version-check pytest cryptography
+        run: python -m pip install --disable-pip-version-check pytest cryptography numpy pillow
+      - name: Report exact visual provider digests
+        run: sha256sum v13/code/v13/vision.py v13/code/v13/vision_ui_frame_ingress.py
       - name: Compile normal-turn Android UI path
         run: |
           python -m py_compile \
@@ -63,7 +80,9 @@ jobs:
             v13/code/v13/android_companion_runtime.py \
             v13/code/v13/android_outcomes.py \
             v13/code/v13/android_ui_runtime.py \
+            v13/code/v13/vision.py \
             v13/code/v13/vision_ui_frame_ingress.py \
+            v13/code/v13/a5_visual_frame_bridge.py \
             v13/code/v13/a5_ui_admission_bridge.py \
             v13/code/v13/cognition.py \
             v13/code/v13/runtime.py \
@@ -73,6 +92,11 @@ jobs:
           PYTHONPATH: v13/code
         run: |
           python -m pytest -q \
+            v13/code/tests/test_vision.py \
+            v13/code/tests/test_vision_ui_frame_ingress.py \
+            v13/code/tests/test_a5_visual_frame_bridge.py \
+            v13/code/tests/test_a5_ui_admission_bridge_20261115.py \
+            v13/code/tests/test_source_lifecycle_lock_integration.py \
             v13/code/tests/test_android_ui_runtime_consumer.py \
             v13/code/tests/test_android_companion_ui_frames.py \
             v13/code/tests/test_android_companion_transport_frames.py \

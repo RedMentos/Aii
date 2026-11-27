@@ -61,6 +61,54 @@ class Vision(unittest.TestCase):
         self.assertTrue(numpy.allclose(vision.Projector.load(path, sha)(X), p(X)))
         with self.assertRaises(ValueError): vision.Projector.load(path, '0'*64)
 
+    def test_projector_standardized_distance_and_shape_validation(self):
+        rng = numpy.random.default_rng(9); X = rng.normal(size=(32, 37)); Y = rng.normal(size=(32, 8))
+        p = vision.Projector().fit(X, Y)
+        distances = p.standardized_distance(X)
+        self.assertEqual(distances.shape, (32,)); self.assertTrue(numpy.isfinite(distances).all())
+        with self.assertRaises(ValueError): p.standardized_distance(numpy.zeros((2, 4)))
+
+    def test_tile_descriptor_threshold_is_source_disjoint_and_rejects_extreme_shift(self):
+        rng = numpy.random.default_rng(7)
+        X = numpy.vstack((rng.normal(0, 1, (16, 37)), rng.normal(.1, 1.05, (16, 37))))
+        keys = [f'image-a:r{i:02d}' for i in range(16)] + [f'image-b:r{i:02d}' for i in range(16)]
+        threshold = vision.tile_descriptor_threshold(X, keys)
+        self.assertIsNotNone(threshold); self.assertGreater(threshold, 0.)
+        p = vision.Projector().fit(X, rng.normal(size=(32, 8)))
+        self.assertGreater(float(p.standardized_distance(numpy.full((1, 37), 8.))[0]), threshold)
+        self.assertIsNone(vision.tile_descriptor_threshold(X[:16], keys[:16]))
+
+    def test_tile_scores_abstain_on_out_of_distribution_rows(self):
+        class FakeProjector:
+            ood_threshold = 1.0
+            def standardized_distance(self, X):
+                return numpy.asarray([.2, 2.0], dtype=numpy.float64)
+            def __call__(self, X):
+                return numpy.tile(numpy.asarray([[1., 0.]], dtype=numpy.float64), (len(X), 1))
+        im = Image.new('RGB', (64, 48), 'white')
+        regions = [
+            {'region_id': 'r00', 'box': [0, 0, 32, 48]},
+            {'region_id': 'r01', 'box': [32, 0, 64, 48]},
+        ]
+        original = vision.tile_features
+        calls = []
+        def fake_features(_tile, _px):
+            calls.append(True)
+            return numpy.full(37, float(len(calls)), dtype=numpy.float32)
+        vision.tile_features = fake_features
+        try:
+            tiles, scores = vision.tile_scores(
+                FakeProjector(), im, regions,
+                numpy.asarray([1., 0.]), numpy.asarray([0., 1.]),
+                abstain_ood=True,
+            )
+        finally:
+            vision.tile_features = original
+            im.close()
+        self.assertEqual([tile['region_id'] for tile in tiles], ['r00', 'r01'])
+        self.assertAlmostEqual(float(scores[0]), 1.0, places=6)
+        self.assertTrue(numpy.isnan(scores[1]))
+
     def test_hashed_encoder_is_deterministic_and_normalised(self):
         a = vision.hashed_embed('A red box'); self.assertTrue(numpy.allclose(a, vision.hashed_embed('a red box')))
         self.assertAlmostEqual(float(numpy.linalg.norm(a)), 1., places=5)
@@ -128,15 +176,23 @@ class Vision(unittest.TestCase):
             for reg in ('g', 'qtl', 'qtr', 'qbl', 'qbr'): vision.describe(self.rt, rec, reg, t)
         with self.assertRaises(ValueError): vision.find(self.rt, rec, 'a red box', enc)
         tp = vision.train_tiles(self.rt, enc); self.assertGreater(tp['salient_tiles'], 0); self.assertEqual(tp['authority'], 'LAB_SHADOW_ONLY')
+        self.assertIsNotNone(tp['ood_threshold']); self.assertEqual(tp['ood_gate_version'], 1)
         self.assertEqual(vision.operator_command(self.rt, ['teacher', 'off']), {'teacher': 'removed'})
         with self.assertRaises(Unavailable): vision.describe(self.rt, rec, 'g', t)
         new = vision.ingest(self.store, two(B, 'qtl', R, 'qbr'))
         red = vision.find(self.rt, new, 'a red box on white', enc); blue = vision.find(self.rt, new, 'a blue box on white', enc)
         self.assertEqual(red['authority'], 'STUDENT_ESTIMATE'); self.assertEqual(len(red['heat']), 4)
+        self.assertIn(red['status'], ('USED', 'PARTIAL_OOD')); self.assertNotEqual(red['status'], 'OUT_OF_DISTRIBUTION')
         self.assertGreaterEqual(red['tiles'][0]['source_ref']['box'][0], 32); self.assertGreaterEqual(red['tiles'][0]['source_ref']['box'][1], 24)  # bottom-right
         self.assertLess(blue['tiles'][0]['source_ref']['box'][2], 33); self.assertLess(blue['tiles'][0]['source_ref']['box'][3], 25)          # top-left
         self.assertTrue(vision.status(self.rt)['teacher']['removed']); vision.operator_command(self.rt, ['teacher', 'on'])
         self.assertFalse(vision.status(self.rt)['teacher']['removed'])
+        black = Image.new('RGB', (64, 48), 'black'); black_bytes = io.BytesIO(); black.save(black_bytes, 'PNG'); black.close()
+        shifted = vision.ingest(self.store, black_bytes.getvalue())
+        rejected = vision.find(self.rt, shifted, 'a red box', enc)
+        self.assertEqual(rejected['status'], 'OUT_OF_DISTRIBUTION')
+        self.assertEqual(rejected['tiles'], []); self.assertEqual(len(rejected['ood_regions']), 16)
+        self.assertTrue(all(value is None for row in rejected['heat'] for value in row))
 
 if __name__ == '__main__':
     unittest.main()

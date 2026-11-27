@@ -173,13 +173,28 @@ def text_encoder(runtime=None,cfg=DEFAULTS):
 # ---------------------------------------------------------------- student projector (learnable) + measurements
 class Projector:
     """Standardised features -> ridge regression -> normalised text-embedding space. Closed form, refittable."""
-    def __init__(self,ridge=1.):self.ridge=ridge;self.mu=self.sd=self.W=None;self.n=0
+    def __init__(self,ridge=1.):
+        self.ridge=ridge;self.mu=self.sd=self.W=None;self.n=0;self.ood_threshold=None
     def _x(self,X):
         np=_np();X=(np.asarray(X,dtype=np.float64)-self.mu)/self.sd;return np.hstack([X,np.ones((len(X),1))])
     def fit(self,X,Y):
         np=_np();X=np.asarray(X,dtype=np.float64);Y=np.asarray(Y,dtype=np.float64)
         self.mu=X.mean(0);self.sd=X.std(0)+1e-6;A=self._x(X);reg=self.ridge*np.eye(A.shape[1]);reg[-1,-1]=0.
         self.W=np.linalg.solve(A.T@A+reg,A.T@Y);self.n=len(X);return self
+    def standardized_distance(self,X):
+        """Per-row RMS z-distance from the fitted feature distribution; not a probability."""
+        np=_np()
+        if self.mu is None or self.sd is None:
+            raise ValueError('Projektor ist nicht angepasst')
+        X=np.asarray(X,dtype=np.float64)
+        if X.ndim!=2 or X.shape[1]!=self.mu.shape[0]:
+            raise ValueError('Projektor-Feature-Geometrie ist ungültig')
+        if not np.isfinite(X).all() or not np.isfinite(self.mu).all() or not np.isfinite(self.sd).all() or (self.sd<=0).any():
+            raise ValueError('Projektor-Feature-Werte sind ungültig')
+        z=(X-self.mu)/self.sd
+        if not np.isfinite(z).all():
+            raise ValueError('Projektor-Deskriptor ist nicht endlich')
+        return np.sqrt(np.mean(z*z,axis=1))
     def __call__(self,X):
         np=_np();Z=self._x(X)@self.W;return Z/np.maximum(1e-8,np.linalg.norm(Z,axis=1,keepdims=True))
     def save(self,path):
@@ -189,7 +204,26 @@ class Projector:
     def load(cls,path,sha=None):
         np=_np();b=Path(path).read_bytes()
         if sha and digest(b)!=sha:raise ValueError('Projektor-Hash falsch')
-        d=np.load(io.BytesIO(b));p=cls(float(d['meta'][0]));p.mu,p.sd,p.W,p.n=d['mu'],d['sd'],d['W'],int(d['meta'][1]);return p
+        with np.load(io.BytesIO(b),allow_pickle=False) as d:
+            meta=np.asarray(d['meta'],dtype=np.float64)
+            if (
+                meta.shape!=(2,) or not np.isfinite(meta).all()
+                or not 0.0<meta[0]<=1000.0 or meta[1]<0
+                or float(meta[1])!=float(int(meta[1]))
+            ):
+                raise ValueError('Projektor-Metadaten sind ungültig')
+            mu=np.array(d['mu'],dtype=np.float64,copy=True)
+            sd=np.array(d['sd'],dtype=np.float64,copy=True)
+            weights=np.array(d['W'],dtype=np.float64,copy=True)
+            if (
+                mu.ndim!=1 or len(mu)<1 or sd.shape!=mu.shape
+                or weights.ndim!=2 or weights.shape[0]!=len(mu)+1 or weights.shape[1]<1
+                or not np.isfinite(mu).all() or not np.isfinite(sd).all()
+                or not np.isfinite(weights).all() or (sd<=0).any()
+            ):
+                raise ValueError('Projektor-Tensoren sind ungültig')
+            p=cls(float(meta[0]));p.mu,p.sd,p.W,p.n=mu,sd,weights,int(meta[1])
+        return p
 
 def retrieval(Z,Y):
     """Top-1 accuracy of picking the right caption embedding for each image among all captions, plus mean cosine."""
@@ -322,36 +356,92 @@ def tile_dataset(store,cfg=DEFAULTS):
         for tid,f,text,_ in tile_pairs(im,rec['regions'],caps,cfg):X.append(f);texts.append(text);keys.append(sid+':'+tid)
     return np.asarray(X),texts,keys
 
+def tile_descriptor_threshold(X,keys,max_folds=8):
+    """Conservative source-disjoint RMS-z threshold for tile-projector abstention, not a confidence probability."""
+    np=_np();X=np.asarray(X,dtype=np.float64)
+    if X.ndim!=2 or len(X)!=len(keys) or len(X)<8:return None
+    groups={}
+    for index,key in enumerate(keys):
+        groups.setdefault(str(key).rsplit(':',1)[0],[]).append(index)
+    names=sorted(groups)
+    if len(names)<2:return None
+    if len(names)>max_folds:
+        picks=np.linspace(0,len(names)-1,max_folds).round().astype(int)
+        names=[names[int(index)] for index in picks]
+    group_q95=[]
+    for heldout in names:
+        test=np.asarray(groups[heldout],dtype=np.int64)
+        train=np.asarray([index for name,indices in groups.items() if name!=heldout for index in indices],dtype=np.int64)
+        if len(test)<4 or len(train)<4:continue
+        mu=X[train].mean(axis=0);sd=X[train].std(axis=0)+1e-6
+        z=(X[test]-mu)/sd;distances=np.sqrt(np.mean(z*z,axis=1))
+        if not np.isfinite(distances).all():return None
+        group_q95.append(float(np.quantile(distances,0.95)))
+    if len(group_q95)<2:return None
+    threshold=float(np.quantile(np.asarray(group_q95,dtype=np.float64),0.95))*1.25
+    if not np.isfinite(threshold) or threshold<=0:return None
+    return min(threshold,1000.0)
+
 def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     X,texts,keys=tile_dataset(runtime.store,cfg)
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
+    ood_threshold=tile_descriptor_threshold(X,keys)
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st=load(runtime.store);old=st.get('tile_projector')
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'authority':'LAB_SHADOW_ONLY'}
+                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'ood_threshold':ood_threshold,
+                          'ood_gate_version':1 if ood_threshold is not None else 0,'authority':'LAB_SHADOW_ONLY'}
     save(runtime.store,st)
     if old and old['path']!=st['tile_projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
-    runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow'})
+    runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
+                                    'ood_gate_version':1 if ood_threshold is not None else 0})
     return st['tile_projector']
 
-def tile_scores(p,im,regions,query_vec,background_vec,cfg=DEFAULTS):
-    """Per tile: cosine to the query minus cosine to BACKGROUND (a tile must look more like the query than like nothing)."""
+def tile_scores(p,im,regions,query_vec,background_vec,cfg=DEFAULTS,abstain_ood=False):
+    """Per tile cosine margin; optional descriptor gate emits NaN for tiles outside the fitted source distribution."""
     np=_np();tiles=[r for r in regions if r['region_id'][0]=='r']
-    Z=p(np.stack([tile_features(im.crop(tuple(t['box'])),cfg['tile_px']) for t in tiles]))
+    X=np.stack([tile_features(im.crop(tuple(t['box'])),cfg['tile_px']) for t in tiles])
+    threshold=getattr(p,'ood_threshold',None)
+    if abstain_ood and threshold is not None:
+        if not math.isfinite(float(threshold)) or float(threshold)<=0:
+            raise ValueError('Tile-Deskriptor-Schwelle ist ungültig')
+        distances=p.standardized_distance(X)
+        inlier=distances<=float(threshold)
+        scores=np.full(len(tiles),np.nan,dtype=np.float64)
+        if inlier.any():
+            Z=p(X[inlier]);scores[inlier]=Z@query_vec-Z@background_vec
+        return tiles,scores
+    Z=p(X)
     return tiles,Z@query_vec-Z@background_vec
 
 def find(runtime,rec,text,encoder=None,cfg=DEFAULTS,k=3):
-    """WP-T16 student grounding per tile (no teacher): 4x4 heat map + best tiles with their region SourceRefs."""
+    """WP-T16 student grounding with source-disjoint descriptor abstention; unknown tiles are not ranked."""
     np=_np();st=load(runtime.store);pj=st.get('tile_projector')
     if not pj:raise ValueError('Noch kein Kachel-Projektor; :image tiles')
     if not text.strip():raise ValueError(':image find <id|last> <Text>')
-    p=Projector.load(runtime.home/pj['path'],pj['sha256']);name,enc=encoder or text_encoder(runtime,cfg)
+    p=Projector.load(runtime.home/pj['path'],pj['sha256'])
+    threshold=pj.get('ood_threshold')
+    if pj.get('ood_gate_version',0)==1:
+        if (
+            isinstance(threshold,bool) or not isinstance(threshold,(int,float))
+            or not math.isfinite(float(threshold)) or not 0<float(threshold)<=1000
+        ):
+            raise ValueError('Tile-Deskriptor-Metadaten sind ungültig; Projektor neu trainieren')
+        p.ood_threshold=float(threshold)
+    name,enc=encoder or text_encoder(runtime,cfg)
     if name!=pj['encoder']:raise ValueError('Text-Encoder hat gewechselt (%s -> %s); :image tiles'%(pj['encoder'],name))
-    q,b=enc([text,BACKGROUND]);tiles,s=tile_scores(p,read_image(runtime.store,rec['ref'],cfg),rec['regions'],q,b,cfg)
-    g=cfg['grid'];heat=[[None]*g for _ in range(g)]
-    for t,v in zip(tiles,s):heat[int(t['region_id'][1])][int(t['region_id'][2])]=round(float(v),3)
-    return {'authority':STUDENT,'query':text[:200],'heat':heat,'tiles':[{'source_ref':region_ref(rec['ref'],tiles[i]),'score':round(float(s[i]),4)} for i in np.argsort(-s)[:k]]}
+    q,b=enc([text,BACKGROUND]);tiles,s=tile_scores(p,read_image(runtime.store,rec['ref'],cfg),rec['regions'],q,b,cfg,abstain_ood=True)
+    valid=np.isfinite(s);g=cfg['grid'];heat=[[None]*g for _ in range(g)]
+    for t,v in zip(tiles,s):
+        if math.isfinite(float(v)):heat[int(t['region_id'][1])][int(t['region_id'][2])]=round(float(v),3)
+    ranked=np.flatnonzero(valid)
+    order=ranked[np.argsort(-s[valid])[:k]] if len(ranked) else []
+    ood_regions=[tiles[index]['region_id'] for index in range(len(tiles)) if not valid[index]]
+    status='OUT_OF_DISTRIBUTION' if not valid.any() else 'PARTIAL_OOD' if not valid.all() else 'USED'
+    return {'authority':STUDENT,'query':text[:200],'status':status,'ood_threshold':p.ood_threshold,
+            'ood_regions':ood_regions,'heat':heat,
+            'tiles':[{'source_ref':region_ref(rec['ref'],tiles[int(i)]),'score':round(float(s[int(i)]),4)} for i in order]}
 
 def teacher_switch(store,on):
     st=load(store);st['teacher_removed']=not on;save(store,st);return {'teacher':'on' if on else 'removed'}
@@ -369,7 +459,7 @@ def status(runtime):
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
             'projector':{k:pj[k] for k in ('n','encoder','metrics','created')} if pj else None,
-            'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created')} if tp else None}
+            'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created','ood_threshold','ood_gate_version') if k in tp} if tp else None}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
