@@ -58,3 +58,8 @@ Hess et al., *Forgetting, plasticity, and co-observation: a third facet of conti
 ## Exact predictor pytest correction
 
 The first full predictor/consumer pytest run failed 1 of 41 tests on Python 3.13 and 3.14. The production module compiled and the other 40 tests passed; the failure was a test-sequence assumption, because the chosen post-consolidation update crossed the consolidation threshold again. The fixture now uses a longer sequence and higher threshold to create one committed weight set plus a separate pending delta. Exact-head rerun is pending.
+
+
+## Transient benchmark expansion and bound repair
+
+The A4 synthetic experiment now compares `EVERY_FINAL`, `MEMORIZED_ERROR`, `TRANSIENT_CONSOLIDATE`, `TRANSIENT_NO_CONSOLIDATION`, and `NO_UPDATE`, reporting persistent/effective/transient weight deltas, consolidation count, and restart loss of pending deltas. The first run caught a real cap bug (1.06108105 norm with a 1.0 cap): interpolation did not bound the final buffer. The implementation now scales the complete proposed transient matrix, and the unit test exercises repeated alternating updates. Composer manifest now pins predictor blob `8bb0d3c8033c898edf824be6752450383c4cc5c0` (builder blob `92fb6fc5db705f5dd69ce20bb283ac6af59cfe25`). Exact A4/VAD reruns `45936510646` / `45936510653` are pending.
