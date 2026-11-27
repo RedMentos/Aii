@@ -66,7 +66,7 @@ def _vectors_sha256(vectors):
 
 
 def _token_ids_sha256(token_ids):
-    if (not isinstance(token_ids, list) or not 1 <= len(token_ids) <= 512
+    if (not isinstance(token_ids, list) or not 1 <= len(token_ids) <= 64
             or any(type(token) is not int or token < 0 or token > 2147483647 for token in token_ids)):
         raise NativeReceiverTaskMatrixBridgeError("direct-text token IDs are invalid")
     try:
@@ -153,7 +153,7 @@ def _validate_matrix_inputs(receipt, inputs, target_sha, target_count):
 
         if condition == "DIRECT_TEXT_REFERENCE":
             if (vectors != [] or type(rows) is not int or rows != 0 or type(dim) is not int or dim < 1
-                    or not isinstance(text_tokens, list) or not 1 <= len(text_tokens) <= 512
+                    or not isinstance(text_tokens, list) or not 1 <= len(text_tokens) <= 64
                     or positions != list(range(len(text_tokens))) or item.get("text_token_count") != len(text_tokens)
                     or not _is_sha256(text_sha) or _token_ids_sha256(text_tokens) != text_sha
                     or item["input_sha256"] != text_sha or item.get("adapter_sha256") is not None
