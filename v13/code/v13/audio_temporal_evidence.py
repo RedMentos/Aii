@@ -311,6 +311,14 @@ class TemporalVoiceEvidenceRegistry:
         scope = (session_id, consent_scope_id)
         key = (source_id, generation_id, session_id, consent_scope_id)
         with self._lock:
+            scope_changed = False
+            for old_key in list(self._states):
+                if old_key[0] == source_id and (
+                    old_key[1] != generation_id or old_key[2:] != scope
+                ):
+                    if old_key[1] == generation_id and old_key[2:] != scope:
+                        scope_changed = True
+                    del self._states[old_key]
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
@@ -319,11 +327,9 @@ class TemporalVoiceEvidenceRegistry:
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
                 session_id=session_id, consent_scope_id=consent_scope_id,
             )
-            for old_key in list(self._states):
-                if old_key[0] == source_id and (
-                    old_key[1] != generation_id or old_key[2:] != scope
-                ):
-                    del self._states[old_key]
+            if scope_changed:
+                result["state_reset"] = True
+                result["reset_reason"] = "SESSION_OR_CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:
@@ -352,6 +358,14 @@ class TemporalVoiceEvidenceRegistry:
         scope = (session_id, consent_scope_id)
         key = (source_id, generation_id, session_id, consent_scope_id)
         with self._lock:
+            scope_changed = False
+            for old_key in list(self._states):
+                if old_key[0] == source_id and (
+                    old_key[1] != generation_id or old_key[2:] != scope
+                ):
+                    if old_key[1] == generation_id and old_key[2:] != scope:
+                        scope_changed = True
+                    del self._states[old_key]
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
@@ -360,11 +374,9 @@ class TemporalVoiceEvidenceRegistry:
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
                 session_id=session_id, consent_scope_id=consent_scope_id,
             )
-            for old_key in list(self._states):
-                if old_key[0] == source_id and (
-                    old_key[1] != generation_id or old_key[2:] != scope
-                ):
-                    del self._states[old_key]
+            if scope_changed:
+                result["state_reset"] = True
+                result["reset_reason"] = "SESSION_OR_CONSENT_SCOPE_CHANGED"
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:
