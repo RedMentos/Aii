@@ -13,7 +13,7 @@ import re
 
 REVISION = "v13.native-offer-prompt-receipt/2"
 LEGACY_REVISION = "v13.native-offer-prompt-receipt/1"
-TOKENIZER_API = "llama.cpp-server /tokenize with_pieces=true, add_special=false"
+TOKENIZER_API = "llama.cpp-server /tokenize with_pieces=true, add_special=false, parse_special=true"
 TOKENIZER_API_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
 MAX_TEMPLATE_CHARS = 2_000_000
 MAX_TEMPLATE_BYTES = 2_000_000
