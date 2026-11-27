@@ -166,6 +166,10 @@ class JEFBridge:
             or not isinstance(actual, dict)
             or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
             or actual.get("capability") not in {"launch_app", "open_url"}
+            or actual.get("auth_scheme") != "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+            or actual.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+            or actual.get("companion_user_approval") is not True
+            or actual.get("device_execution_claimed") is not False
             or actual.get("observed") is not False
             or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
             or actual.get("t8_authoritative") is not False
