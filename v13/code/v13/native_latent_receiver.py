@@ -948,6 +948,8 @@ def probe_matrix(*, home, model_path, expected_model_sha256, sender_role, receiv
             "binary_sha256": binary_sha256_before,
             "receiver_model_sha256": expected_model_sha256,
             "input_sha256": actual_input_sha,
+            "input_rows": int(native_item["input_rows"]),
+            "context_rows": int(native_item["context_rows"]),
             "target_token_ids_sha256": target_sha256,
             "target_token_count": len(target_ids),
             "score_method": "TEACHER_FORCED_TARGET_LOGPROB_V1",
