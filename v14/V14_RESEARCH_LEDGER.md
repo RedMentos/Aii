@@ -1947,3 +1947,11 @@ LOCAL_LINUX full suite remains NOT RUN; Android/Termux/Redmi remains REDMI_UNVER
 - The integrated audio-context candidate manifest was refreshed to exact Git blob pins: `audio_voice_cues.py=4bfcf31a7738bb390781babab8e11518896a3580`, `audio_temporal_prediction.py=24e2c867613a33c33a58a779529c629ecfde37ef`; candidate-builder blob after pin refresh: `019992e2e200b0c5c52d7f18fb5f38ff4185e396`.
 - Exact branch readback at `007de4895cb9972f558b7fa3bd33c3b04d0946eb` confirms both pins and the new Runtime-config tests. A4 update-gate workflow `45935405225` was queued at last poll; no focused CI result is yet claimed for this code.
 - This is a developer-controlled opt-in gate, not a user-facing toggle or production activation. Default Runtime behavior remains unchanged.
+
+
+### Run 57 CI source-pin correction
+
+- The first exact CI after Runtime wiring exposed two expected-source-pin failures: the RAW EAR vs WebRTC/libfvad workflow and the source-bound A4/A5 feature-set workflow still expected the previous `audio_voice_cues.py` blob `d80b803...`.
+- Updated both Perception-owned workflows to expect the exact current consumer blob `4bfcf31a7738bb390781babab8e11518896a3580`. No test was weakened; only the stale source identity was rebound.
+- On the earlier code/test head, the A4 synthetic ablation passed on Python 3.13/3.14, but the new full predictor/consumer pytest step was still running. The feature-set and VAD failures are from pre-pin-refresh commits and must be superseded by the queued exact-head runs `45935761586` and `45935761531`.
+- New exact-head workflow runs at the latest pin-refresh commit: A4 ablation `45935761585`, feature-set `45935761586`, VAD comparator `45935761531`, staged/integrated `45935761490`, runtime-deploy `45935761505`; results pending at this ledger update.
