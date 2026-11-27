@@ -51,3 +51,13 @@ Files:
 - Synthetic metrics: interleaved/isolated parity exact; speech-periodic model MAE 0.21739024 vs persistence 0.33642678; non-speech 0.22605715 vs 0.19615384; mixed 0.28642224 vs 0.26395818. Learning-rate sweep 0.02–0.20 does not remove non-speech/mixed regressions. No default change.
 - LOCAL_LINUX full suite NOT RUN; no local checkout/network. No Android/Termux/microphone/native model/Redmi proof. REDMI_UNVERIFIED; NOT_RELEASED.
 - The exact A4 workflow is green, but the PR is not integration-ready while staged/integrated fail. Core and QA retain ownership of their source pins/assertions.
+
+
+## Event-expectation extension — exact result (2026-11-27)
+
+- Added direct `AudioEventExpectationRegistry` ablation to the same script/test; script commit `a44c39b1e1e5c9b38942cdc0dd55aa410105e4cc`, test/code head `f45eb1b30befc406b5f65f4f0858d06785de4bd9`.
+- Workflow 45925644718: compile PASS + 9/9 tests PASS on Python 3.13 and 3.14, identical output.
+- On-time event: no omission. Missing expected VOICED event under valid FINAL silence: one omission at expected 8,000 ms, lateness 1,000 ms, confidence proxy 0.60, attention novelty 0.03 (cap 0.05).
+- UNCERTAIN censors; PROVISIONAL is ignored without advancing the window, and the later FINAL window is evaluated; consent rotation resets; no-context reset produces no omission; interleaved sources equal isolated execution.
+- A4/A5 feature-set 45925644769 PASS both; RAW EAR fastpath 45925644699 155/155 both; RuntimeDeploy offline 45925644734 PASS 3.11/3.14. WebRTC/libfvad comparison 45925644686 and integrated job 45925644732 were still running at this checkpoint; staged job 45925644732 FAILs at Core's old composer pin, stale arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions.
+- No local full suite, real microphone, Android/Termux, native model or Redmi evidence. REDMI_UNVERIFIED / NOT_RELEASED.
