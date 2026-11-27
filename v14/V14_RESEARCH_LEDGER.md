@@ -2173,3 +2173,31 @@ PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salien
 - MediaProjection ingress workflow 46051826940 **PASS**: 31/31 on Python 3.13 and 31/31 on Python 3.14.
 - Shared staged/integrated workflow 46051827046 **FAIL**. Staged: 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated: 1 failure. One new staged failure is caused by this PR: `unsupported lifecycle source: vision.py` in `test_context_offer_budget_20261116.py` and `test_postcommit_observer_20261116.py`. Core's source lock already lists `vision.py`; its pinned SHA-256 is stale. `scripts/source_lifecycle_lock_integration_candidate.py` expects `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5`, while this PR's `vision.py` hashes to `dcc9bfe87a59313a5b4f9f844ef4ace91fb95112aaab3f53ce5636f50d53429b`. Core was asked on #2562 to refresh this existing pin and dependent expected hashes; no new allowlist entry is needed. Other failures remain Core-owned audio-composer/observer/arithmetic pins and QA's migration PARTIAL-vs-UPDATED assertions.
 - The focused CI results do not override the shared FAIL. PR #2565 is NOT_MERGE_READY and must not be merged until the stale `vision.py` source pin and the #2563 parent/shared gate are resolved. No Canon acceptance or release promotion.
+
+
+## R-190 — A3 descriptor abstention at the A5 MediaProjection consumer (2026-11-27)
+
+### Primary-source check
+
+**A Geometry-Based View of Mahalanobis OOD Detection** — Denis Janiak, Jakub Binkowski, Tomasz Jan Kajdanowicz; Proceedings of the 43rd International Conference on Machine Learning, PMLR 306:50747–50778 (2026). Official proceedings page: https://proceedings.mlr.press/v306/janiak26a.html . The official abstract was reviewed; the PDF could not be retrieved in this run, so this is **abstract-only**, not a full-paper read. The abstract reports that Mahalanobis OOD performance varies substantially with representation/pretraining/fine-tuning and links it to within-class spectral structure and local intrinsic dimensionality. It therefore does not justify replacing the current diagonal RMS-z descriptor with full Mahalanobis by assumption; a source-disjoint ablation is required.
+
+**Maintained OSS scan — OpenOOD-VLM:** https://github.com/PolyU-VCLab/OpenOOD-VLM . The repository README describes a unified benchmark for zero-shot/training-free OOD, prompt/feature tuning, near/far OOD and covariate shift. Root LICENSE is MIT. Its checked environment pins Python 3.8, PyTorch 1.8.1, CUDA 10.1, torchvision, mmcv 1.4.2 and faiss-gpu 1.7.2. This is useful as a benchmark/method index, not a Redmi/Termux dependency candidate. The code license does not establish model-weight or dataset licenses; those remain separately unverified. No source, model, dataset or dependency was reused.
+
+### V14 implementation
+
+PR #2565 extends its optional A3 tile-projector descriptor gate from the explicit :image find operator to the existing A5 MediaProjection receiver:
+- The local tile-projector loader accepts legacy gate version 0 without changing old behavior; version 1 requires a finite numeric threshold in (0, 1000] and binds it to the loaded projector. Unknown versions or malformed metadata skip only the optional A3 projector.
+- The tile scorer validates feature/text geometry and descriptor distances, scores only in-domain rows, and returns USED, PARTIAL_OOD or OUT_OF_DISTRIBUTION with exact OOD region IDs.
+- The PerceptPacket and global A5 context summary expose the gate version/threshold/status. Full OOD abstention leaves RAW-EYE feature extraction and A4 attention active; it does not reject the whole frame or grant action/learning authority.
+- No NPZ schema, model, weight, dependency, microphone permission or persistent user data was changed.
+
+### Evidence
+
+- Exact code/test head: 42c78c4ef72ab7d37e0e400bf11748bbadcbb33b.
+- GitHub Actions 46057142216: PASS on Python 3.13 and 3.14; exact workflow compiles the adapter and runs both MediaProjection ingress/provider-entrypoint test files. Offline bridge/security 46057142248: PASS.
+- LOCAL_LINUX scratch helper reproduction, CPython 3.13.5 / NumPy 2.3.5: compile PASS; partial OOD 8/16 scored + 8/16 abstained; full OOD 0/16 scored; legacy gate-off 16/16 scored; invalid threshold controls 5/5 rejected. This is not full repository pytest.
+- Full local Aii pytest: NOT_RUN/BLOCKED (no mounted checkout; GitHub DNS unavailable). No native model, Android, Termux or Redmi test.
+
+### Scope and next experiment
+
+The provider→A5→A3 path is WIRED_SYNTHETIC / FOCUSED_CI_PASS. It does not prove normal Runtime/C3 consumption, calibrated semantic correctness, real-world OOD error rates, learned latent coupling or Android lifecycle. Next compare diagonal RMS-z, shrinkage covariance and source-disjoint conformal-style calibration on session/app-disjoint UI frames, measuring false abstention, missed OOD and retained in-domain tile coverage. Keep the current threshold shadow-only until the comparison is robust; do not import the CUDA/PyTorch OpenOOD-VLM environment into the Android runtime.
