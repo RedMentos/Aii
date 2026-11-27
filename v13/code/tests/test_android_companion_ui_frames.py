@@ -310,12 +310,16 @@ def test_runtime_turn_frame_lease_fails_closed_without_raw_eye_consumer(tmp_path
         transport=None,
         verifier=SimpleNamespace(close=lambda: None),
     )
-    provider.read_once = lambda: {
-        "observation": observation,
-        "frame_buffer": frame,
-        "receipt_body": {},
-        "verify_frame": lambda *_: True,
-    }
+    read_calls = []
+    def read_once():
+        read_calls.append(True)
+        return {
+            "observation": observation,
+            "frame_buffer": frame,
+            "receipt_body": {},
+            "verify_frame": lambda *_: True,
+        }
+    provider.read_once = read_once
     runtime = SimpleNamespace(
         current="turn",
         turn_event={"brain_generation_id": "generation-1"},
@@ -324,6 +328,9 @@ def test_runtime_turn_frame_lease_fails_closed_without_raw_eye_consumer(tmp_path
         with pytest.raises(FrameReceiptDenied, match="A5 UI lease consumer"):
             with provider.open_current_turn(runtime):
                 pass
-        assert frame == bytearray(b"\x00" * 5)
+        # A missing Runtime lease consumer must be detected before consuming
+        # the one-shot receipt or reading any frame bytes.
+        assert read_calls == []
+        assert frame == bytearray(b"frame")
     finally:
         provider.close()
