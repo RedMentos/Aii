@@ -7,7 +7,7 @@ on:
     paths:
       - "v13/code/v13/audio_ear.py"
       - "v13/code/v13/audio_percept_contract.py"
-      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
@@ -25,7 +25,7 @@ on:
     paths:
       - "v13/code/v13/audio_ear.py"
       - "v13/code/v13/audio_percept_contract.py"
-      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_voice_cues.py"\n      - "v13/code/v13/audio_temporal_prediction.py"\n      - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/tests/test_audio_teacher_ear_runtime_v14.py"
@@ -59,6 +59,8 @@ jobs:
             v13/code/v13/audio_ear.py \
             v13/code/v13/audio_percept_contract.py \
             v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/audio_temporal_prediction.py \
+            v13/code/v13/audio_event_expectation.py \
             v13/code/v13/audio_teacher_ear.py \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
             v13/code/tests/test_audio_teacher_ear_runtime_v14.py \
@@ -69,7 +71,7 @@ jobs:
         env:
           V14_EXPECTED_AUDIO_EAR_BLOB: 86e93ae5b55e76ecd68864a7f51bd477e601e9b6
           V14_EXPECTED_AUDIO_PACKET_BLOB: f3ee37426fc3e3a8cf70f8a107e7074783118a66
-          V14_EXPECTED_RAW_EAR_V3_BLOB: b79d5c941dbde22ca287067d8491cb169634badd
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 02aac7567332723806d6b68791a841f02d06af16
           V14_EXPECTED_TEACHER_EAR_BLOB: 255c51fd6ade37ada2fc3309fb0cf3e18afe954d
           V14_EXPECTED_CONTRACTS_BLOB: 6065a471f5f623abea57725d33d362d9eb806013
           PYTHONPATH: v14/experiments
