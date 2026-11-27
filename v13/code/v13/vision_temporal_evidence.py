@@ -108,7 +108,7 @@ def _validate_frame_source_ref(value) -> dict:
             or any(char not in "0123456789abcdef" for char in sha256)
             or type(value.get("char_start")) is not int or value["char_start"] != 0
             or type(value.get("char_end")) is not int or value["char_end"] != 0
-            or value.get("modality") != "image"):
+            or value.get("modality") not in {"image", "visual"}):
         raise TemporalVisualEvidenceError("A3 temporal frame source reference is malformed")
     return dict(value)
 
