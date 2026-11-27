@@ -7,6 +7,7 @@ The continuous-regression gate is an adaptation, not the paper's classification 
 from __future__ import annotations
 
 import json
+import math
 from statistics import fmean
 
 from a4_temporal_ablation_20261127 import PATTERNS
@@ -15,7 +16,7 @@ from v13.audio_temporal_prediction import (
     acoustic_feature_vector,
 )
 
-POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR")
+POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "NO_UPDATE")
 LEARNING_RATE = 0.20
 MISTAKE_MEMORY_CAPACITY = 64
 REPEATS = 4
@@ -29,12 +30,20 @@ def _deltas(sequence: tuple[dict, ...]) -> tuple[tuple[float, ...], ...]:
     )
 
 
-def _train(predictor: AudioTemporalPredictor, deltas, *, repeats: int) -> list[dict]:
+def _train(predictor: AudioTemporalPredictor, deltas, *, repeats: int, allow_update: bool = True) -> list[dict]:
     results = []
     for _ in range(repeats):
         for delta in deltas:
-            results.append(predictor.update(delta))
+            results.append(predictor.update(delta, allow_update=allow_update))
     return results
+
+
+def _state_diff_l2(before: dict, after: dict) -> float:
+    return math.sqrt(sum(
+        (float(before["weights"][row][col]) - float(after["weights"][row][col])) ** 2
+        for row in range(len(before["weights"]))
+        for col in range(len(before["weights"][row]))
+    ))
 
 
 def _evaluate(predictor: AudioTemporalPredictor, deltas) -> dict:
@@ -63,13 +72,15 @@ def _evaluate(predictor: AudioTemporalPredictor, deltas) -> dict:
 
 def _summarize_policy(sequence: tuple[dict, ...], policy: str) -> dict:
     deltas = _deltas(sequence)
+    predictor_policy = "EVERY_FINAL" if policy == "NO_UPDATE" else policy
     predictor = AudioTemporalPredictor(
         learning_rate=LEARNING_RATE,
         warmup_updates=1,
-        update_policy=policy,
+        update_policy=predictor_policy,
         mistake_memory_capacity=MISTAKE_MEMORY_CAPACITY,
     )
-    results = _train(predictor, deltas, repeats=REPEATS)
+    initial_state = predictor.state_dict()
+    results = _train(predictor, deltas, repeats=REPEATS, allow_update=policy != "NO_UPDATE")
     measured = [item for item in results if item.get("prediction_error_mae") is not None]
     updates = sum(item.get("update_applied") is True for item in results)
     return {
@@ -80,6 +91,9 @@ def _summarize_policy(sequence: tuple[dict, ...], policy: str) -> dict:
         "mean_persistence_baseline_mae": round(fmean(float(item["persistence_baseline_mae"]) for item in measured), 8) if measured else None,
         "mean_improvement_mae": round(fmean(float(item["improvement_mae"]) for item in measured), 8) if measured else None,
         "gradient_updates": sum(float(item.get("weight_delta_l2") or 0.0) > 0.0 for item in results),
+        "gradient_l2_sum": round(sum(float(item.get("gradient_l2") or 0.0) for item in results), 8),
+        "total_weight_delta_l2": round(sum(float(item.get("weight_delta_l2") or 0.0) for item in results), 8),
+        "parameter_diff_l2_from_initial": round(_state_diff_l2(initial_state, predictor.state_dict()), 8),
         "max_weight_delta_l2": round(max((float(item.get("weight_delta_l2") or 0.0) for item in results), default=0.0), 8),
         "max_mistake_memory_entries": max((int(item.get("mistake_memory_entries") or 0) for item in results), default=0),
         "final_parameter_l2": round(predictor._parameter_l2(), 8),
@@ -90,17 +104,19 @@ def _summarize_policy(sequence: tuple[dict, ...], policy: str) -> dict:
 def _retention_restart_ablation(policy: str) -> dict:
     old_deltas = _deltas(PATTERNS["speech-periodic"])
     new_deltas = _deltas(PATTERNS["non-speech-impulse"])
+    predictor_policy = "EVERY_FINAL" if policy == "NO_UPDATE" else policy
     predictor = AudioTemporalPredictor(
         learning_rate=LEARNING_RATE,
         warmup_updates=1,
-        update_policy=policy,
+        update_policy=predictor_policy,
         mistake_memory_capacity=MISTAKE_MEMORY_CAPACITY,
     )
-    _train(predictor, old_deltas, repeats=REPEATS)
+    allow_update = policy != "NO_UPDATE"
+    _train(predictor, old_deltas, repeats=REPEATS, allow_update=allow_update)
     old_before = _evaluate(predictor, old_deltas)
     gate_entries_before_new = len(predictor._mistake_keys)
 
-    _train(predictor, new_deltas, repeats=REPEATS)
+    _train(predictor, new_deltas, repeats=REPEATS, allow_update=allow_update)
     old_after = _evaluate(predictor, old_deltas)
     retention_delta = (
         round(old_after["mean_model_mae"] - old_before["mean_model_mae"], 8)
@@ -112,7 +128,7 @@ def _retention_restart_ablation(policy: str) -> dict:
     restored = AudioTemporalPredictor(
         learning_rate=LEARNING_RATE,
         warmup_updates=1,
-        update_policy=policy,
+        update_policy=predictor_policy,
         mistake_memory_capacity=MISTAKE_MEMORY_CAPACITY,
     )
     restored.load_state_dict(checkpoint)
@@ -153,6 +169,7 @@ def run_experiment() -> dict:
         "input": "deterministic acoustic cue dictionaries; no PCM, transcript, speaker identity or user data",
         "update_policy_default": "EVERY_FINAL",
         "experimental_policy": "MEMORIZED_ERROR",
+        "negative_control": "NO_UPDATE uses allow_update=False for every FINAL cue delta; it is an experiment-only control, not a production policy",
         "gate_definition": "update when model MAE exceeds persistence MAE, or when the same quantized previous/target-delta transition fingerprint was previously mistaken in this process-local stream",
         "memory_scope": "bounded process-local fingerprints; reset on stream/consent reset and restart; not a privacy/anonymisation guarantee",
         "memory_capacity": MISTAKE_MEMORY_CAPACITY,
