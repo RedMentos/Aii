@@ -40,7 +40,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '1bc838137d8c20e558b5d843b88c9fd058c545a5ad3b5ebc0b5ec9667c45134d')
+                      'bb30349f64253c940cbafbd14f09768bddd3e1b14ac2223102c4fbfc117185cd')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'ed8b0e0bec5d1a929e2956af8e76f7bb039254fa04318010b2db12c6831465f4')
+                     'cae84b584676b746fcf20706e5e461a33ad5710fc3315cf2815f1d3a9e8fed21')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -173,13 +173,15 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
-            raise ValueError('Postcommit observer builder source changed')
+        candidate_sha = hashlib.sha256(raw_candidate).hexdigest()
+        if candidate_sha != '47d58a7ed5a344c20f29aa2de683a12b81b7ea24e56c991955d9027163ae42c5':
+            raise ValueError('Postcommit observer builder source changed: actual=' + candidate_sha)
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
-            raise ValueError('Integrated observer Runtime source changed')
+        runtime_sha = hashlib.sha256(runtime).hexdigest()
+        if runtime_sha != '4463fc10d5634776666fbc93ec0d408630396a2d8edd90e7f0cbf0162515920f':
+            raise ValueError('Integrated observer Runtime source changed: actual=' + runtime_sha)
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.
@@ -220,7 +222,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '8c7a48af789cba4e734facdb63cf8aa84bcd8cf9d2ad3fd91e0ae212b7f5410f')
+                             '5209b869ffbdbfb401a222aba1f23d30fe160add653b604bd70a95a47942aec4')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
