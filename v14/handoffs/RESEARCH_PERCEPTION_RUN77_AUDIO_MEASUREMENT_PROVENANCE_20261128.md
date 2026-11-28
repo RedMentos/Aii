@@ -65,3 +65,8 @@ Core recovery candidate still expects composer blob 831080bceec90711bd42e0fa4eba
 3. Boss reviews the stacked contract.
 4. Core refreshes Recovery → Stage → RuntimeDeploy audio-composer pins.
 5. QA keeps microphone/provider capture OFF until Android consent, lifecycle, revoke, restart and rollback are verified on authorized hardware.
+
+
+## Cross-branch coordination
+
+Perception chain: #2578 → #2561 (c43bd2a84f3329704b80a237bb23e61e6d614c78) → #2559 (e4795811bd3c4f43a81b71b47abcf7ea03a50a15). Core chain: #2577 → #2568 (50d0c7ccb14828b729de573d69444821ee42e82d) → Core A5 UI consumer base (a3b07d8ba2dca947333ed74a758ba6e8d1c1e64c). Core #2577 reports code SHA adef6bde passed 22/22 checks, but its current head 0002afc is documentation-only, PR remains DRAFT, and there is no Redmi proof. Its recovery candidate pins composer 59a6974a5b7aba8d4f55e1e9a65b2321dbe4a468, audio contract f3ee3742 and RAW EAR 2cf44ed0. Perception #2578 uses composer d51b0436, contract acc93054 and RAW EAR 3324e29. These hashes belong to different branch ancestries. Boss chooses convergence order; Core rebases/ports and regenerates Recovery→Stage→RuntimeDeploy pins against the converged tree. Do not transplant d51b0436 blindly into #2577.
