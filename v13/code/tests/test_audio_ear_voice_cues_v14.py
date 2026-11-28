@@ -1595,6 +1595,39 @@ def test_verified_label_without_receipt_does_not_upgrade_speaker_diagnostic():
     assert speaker["identity_authority"] is False
 
 
+def test_caller_asserted_calibration_fields_cannot_self_verify_speaker_change():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={
+            "status": "MEASURED",
+            "threshold_status": "CALIBRATED_VERIFIED",
+            "calibration_receipt_sha256": "a" * 64,
+            "calibration_id": "caller-asserted-calibration",
+            "confidence_threshold": 0.8,
+        },
+        speaker_decision="CHANGE_OR_OVERLAP_CANDIDATE",
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["calibration_status"] == "UNVERIFIED"
+    assert speaker["decision"] == "CHANGE_OR_OVERLAP_CANDIDATE"
+    assert speaker["identity_authority"] is False
+
+
+def test_malformed_speaker_decision_degrades_to_defer():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={"status": "MEASURED"},
+        speaker_decision=[],
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["decision"] == "DEFER"
+    assert speaker["identity_authority"] is False
+
+
 def test_measurement_provenance_marks_provisional_vad_as_not_advanced():
     cues = extract_voice_cues(tone(140), 16000)
     provenance = audio_measurement_provenance(
