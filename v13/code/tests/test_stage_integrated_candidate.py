@@ -38,7 +38,7 @@ class StageTest(unittest.TestCase):
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
         module.ARITHMETIC_OVERLAY_GIT_BLOB = hashlib.sha1(
-            b'blob ' + str(len(overlay)).encode('ascii') + b'\\0' + overlay
+            b'blob ' + str(len(overlay)).encode('ascii') + bytes([0]) + overlay
         ).hexdigest()
 
         # This suite isolates the generic stager from production source pins.
@@ -53,19 +53,19 @@ class StageTest(unittest.TestCase):
         action_overlay_path = self.code / module.ACTION_SOURCE_OVERLAY
         action_overlay_path.write_bytes(action_overlay)
         module.ACTION_SOURCE_OVERLAY_GIT_BLOB = hashlib.sha1(
-            b'blob ' + str(len(action_overlay)).encode('ascii') + b'\\0' + action_overlay
+            b'blob ' + str(len(action_overlay)).encode('ascii') + bytes([0]) + action_overlay
         ).hexdigest()
 
         (self.code / 'specs').mkdir()
         (self.code / 'specs/test.json').write_text('{}')
 
     def builder(self, body):
-        source = 'def build_sources(code_dir):\\n' + body
+        source = 'def build_sources(code_dir):\n' + body
         (self.code / module.BUILDER).write_text(source)
         module.BUILDER_SHA = hashlib.sha256(source.encode()).hexdigest()
 
     def test_stages_replacement_without_mutating_source(self):
-        self.builder("    return {'v13/runtime.py': b'INTEGRATED'}\\n")
+        self.builder("    return {'v13/runtime.py': b'INTEGRATED'}\n")
         out = self.root / 'candidate'
         result = module.stage(self.code, out)
         self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED')
@@ -81,27 +81,27 @@ class StageTest(unittest.TestCase):
         stage_bytes = MODULE_PATH.read_bytes()
         self.assertEqual(module.BUILDER_SHA, hashlib.sha256(recovery.read_bytes()).hexdigest())
         deploy_source = (code / 'v13/runtime_deploy.py').read_text()
-        match = re.search(r\"\"\"STAGER_SHA256 = [\"']([a-f0-9]{64})[\"']\"\"\", deploy_source)
+        match = re.search(r"""STAGER_SHA256 = ["']([a-f0-9]{64})["']""", deploy_source)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1), hashlib.sha256(stage_bytes).hexdigest())
 
     def test_pin_failure_never_publishes_candidate(self):
-        self.builder("    raise ValueError('pin mismatch')\\n")
+        self.builder("    raise ValueError('pin mismatch')\n")
         out = self.root / 'candidate'
         with self.assertRaisesRegex(ValueError, 'pin mismatch'):
             module.stage(self.code, out)
         self.assertFalse(out.exists())
 
     def test_rejects_traversal_before_copy(self):
-        self.builder("    return {'../outside.py': b'bad'}\\n")
+        self.builder("    return {'../outside.py': b'bad'}\n")
         with self.assertRaisesRegex(ValueError, 'unsafe'):
             module.stage(self.code, self.root / 'candidate')
         self.assertFalse((self.root / 'outside.py').exists())
 
     def test_changed_builder_is_rejected_before_import(self):
-        self.builder("    return {}\\n")
+        self.builder("    return {}\n")
         marker = self.root / 'executed'
-        source = 'from pathlib import Path\\nPath(' + repr(str(marker)) + ').touch()\\n'
+        source = 'from pathlib import Path\nPath(' + repr(str(marker)) + ').touch()\n'
         with (self.code / module.BUILDER).open('a') as stream:
             stream.write(source)
         with self.assertRaisesRegex(ValueError, 'builder hash mismatch'):
@@ -109,13 +109,13 @@ class StageTest(unittest.TestCase):
         self.assertFalse(marker.exists())
 
     def test_rejects_every_source_descendant(self):
-        self.builder("    return {}\\n")
+        self.builder("    return {}\n")
         with self.assertRaisesRegex(ValueError, 'overlaps'):
             module.stage(self.code, self.code / 'v13/nested/candidate')
         self.assertFalse((self.code / 'v13/nested').exists())
 
     def test_skips_runtime_database_and_model_artifacts(self):
-        self.builder("    return {}\\n")
+        self.builder("    return {}\n")
         for name in ('brain.sqlite3', 'adapter.pt', 'model.safetensors', 'model.gguf'):
             (self.code / 'v13' / name).write_bytes(b'synthetic-private-artifact')
         dest = self.root / 'candidate'
@@ -125,7 +125,7 @@ class StageTest(unittest.TestCase):
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):
-        self.builder("    return {}\\n")
+        self.builder("    return {}\n")
         external = self.root / 'external'
         external.write_text('retain')
         (self.code / 'v13/external.py').symlink_to(external)
@@ -135,7 +135,7 @@ class StageTest(unittest.TestCase):
         self.assertFalse((self.root / 'candidate').exists())
 
     def test_concurrent_empty_destination_is_preserved(self):
-        self.builder("    return {}\\n")
+        self.builder("    return {}\n")
         dest = self.root / 'candidate'
         publish = module._publish
         inodes = []
