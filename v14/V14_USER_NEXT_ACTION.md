@@ -15,6 +15,9 @@
 - Previous Run 78 focused CI (RAW EAR 213, feature-set 15, frame ingress 29, A4 ablation 50 on Python 3.13/3.14; VAD/libfvad 9+204 on each) applies to prior code head `4c9bd27`, not the new Run 79 code. Prior staged/integrated failures remain known Core/QA blockers; no new staged run observed for Run 79.
 
 ## Research and next experiment
+- R-192 (MANGO, full-text arXiv preprint) finds gradient gating alone weaker than gating plus replay-based meta-regularization; its ResNet-18/CUDA/replay setup is not a Redmi candidate. Run79's gate is not MANGO.
+- R-193 (To Retain or to Adapt?, abstract/secondary summary only) argues retention can help smooth drift but hurt sharp shifts; full text remains unread.
+- R-194 (GRAPA, CVPR 2026, abstract only) is a parameter-efficient B1/B2 research lead; resource profile and licence remain unverified.
 - R-190: Arm Silero VAD FP32 ONNX model card declares MIT; artifact 2.33 MB; Vivo X300 one-core benchmark 31.960 ms p50, 45.27 MiB average and 82.39 MiB peak RSS on one 9.96 s sample. The interface matches the existing optional local-file adapter. Vendor benchmark only; no Redmi inference claim; no download or swap.
 - R-191: feature-wise A4 update gate is an engineering hypothesis motivated by Run 55 negative non-speech/mixed results. Next compare `EVERY_FINAL`, `MEMORIZED_ERROR` and `FEATURE_ERROR_GATED` on session-disjoint periodic speech, non-speech and mixed fixtures, including persistence-baseline MAE, old-session retention, parameter diff, restart and consent reset. Do not change the default unless both utility and retention improve.
 
