@@ -11,9 +11,11 @@
 
 - **Additional exact-head checks:** RAW EAR/libfvad comparison #46094137602 PASS. Shared staged/integrated regression #46094137745 FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests; the Recovery composer pin, arithmetic pin (v13/contracts.py), observer pin (v13/cognition.py) and migration PARTIAL-vs-UPDATED contract remain mismatched. Core owns the source-pin refresh; QA owns migration assertions; Boss/Integrator chooses convergence.
 
+- **New deployment-anchored research (R-199):** ContinualDrive (arXiv:2611.32529, 2026-11-24) shows that open-loop or backward-transfer gains can hide losses against the deployed checkpoint. Future V14 update acceptance should compare the candidate with the exact deployed C0 on the same held-out stream, explicitly declare evaluation loop, reference checkpoint, temporal aggregation and stream protocol, and report PASS / NO_IMPROVEMENT / REGRESSION. This is a reporting/acceptance principle, not a V14 result.
+
 ### Next concrete action
 
-Run a multi-horizon update-effect experiment with abrupt-to-smooth recovery, a separate replay anchor and calibrated abstention/regret metrics. Keep the predictor shadow-only unless it beats both current-task utility and old-task retention. Research activation-rate diagnostics for future B1/B2 sparse MoE separately; do not port ReLU load-balancing offsets into the current dense models or A4 cue predictor without a matching architecture and measured benefit. Boss/Integrator still owns branch-convergence order; Core owns Recovery/Stage/RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions.
+Run a multi-horizon update-effect experiment with abrupt-to-smooth recovery, a separate replay anchor and calibrated abstention/regret metrics; anchor any future weight-update verdict to the exact deployed checkpoint using the R-199 four-axis reporting contract. Keep the predictor shadow-only unless it beats both current-task utility and old-task retention. Research activation-rate diagnostics for future B1/B2 sparse MoE separately; do not port ReLU load-balancing offsets into the current dense models or A4 cue predictor without a matching architecture and measured benefit. Boss/Integrator still owns branch-convergence order; Core owns Recovery/Stage/RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions.
 
 **User action: none required.**
 
