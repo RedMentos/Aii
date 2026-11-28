@@ -2569,3 +2569,8 @@ The Perception audio provenance branch #2578→#2561→#2559 and Core body/prefi
 | Android microphone / normal C3 audio turn | REDMI_UNVERIFIED | No fresh authenticated device receipt; no microphone action | AudioRecord permission/lifecycle, actual audio capture, normal C3 response, update/deployment, rollback |
 
 R-189 full-text research is recorded in the research ledger. This overlay does not promote any path to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Hosted Linux CI and the LOCAL_LINUX scratch harness are not phone evidence. P0 #1904 remains OPEN.
+
+
+### Run 78 final poll — 2026-11-28
+
+RAW EAR/libfvad comparison: Python 3.13 and Python 3.14 both PASS (workflow 46089036001; each 9 ABI/benchmark checks + 204 source-bound audio runtime tests). This is hosted Linux CI, not native ARM64/Redmi. Shared staged/integrated remains FAIL; no Canon acceptance or release status changes.
