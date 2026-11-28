@@ -1299,6 +1299,20 @@ def test_runtime_registry_defaults_to_every_final_without_experimental_config(tm
     runtime.store.close()
 
 
+
+
+
+def test_runtime_registry_accepts_explicit_feature_error_gated_policy(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    runtime.cfg = {"raw_ear_temporal_update_policy": "FEATURE_ERROR_GATED"}
+
+    registry = _runtime_audio_temporal_prediction_registry(runtime)
+
+    assert registry.update_policy == "FEATURE_ERROR_GATED"
+    assert registry._new_predictor().update_policy == "FEATURE_ERROR_GATED"
+    runtime.store.close()
+
+
 def test_runtime_registry_accepts_explicit_opt_in_transient_policy(tmp_path):
     runtime, _event = make_runtime(tmp_path)
     runtime.cfg = {
