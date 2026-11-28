@@ -2549,3 +2549,8 @@ The LOCAL_LINUX 4/4 harness is an isolated scope-algorithm reproduction, not ful
 | Speaker identity / calibrated speech probability / ASR | NOT_PRODUCED / NOT_AVAILABLE / NOT_IN_PACKET | Explicit provenance status; bare calibration label without verified receipt/id/threshold/non-DEFER decision remains diagnostic only | Separate calibrated speaker/decoder evidence and consented voice-learning path |
 
 **Integration gate remains FAIL:** Core recovery expects old audio composer blob 831080b, while current Perception composer is d51b0436. Core arithmetic/observer pins and QA migration assertions also fail. Current available private V13OBS #115 is a 2026-11-24 STOPPED_BY_USER snapshot; new relay requests have NO_LIVE_RECEIPT. This overlay does not promote audio perception to full NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Full local Aii checkout tests were NOT_RUN; updater UNKNOWN; REDMI_UNVERIFIED; P0 #1904 remains OPEN.
+
+
+### Run 77 branch-convergence gate
+
+The Perception audio provenance branch #2578→#2561→#2559 and Core body/prefill branch #2577→#2568→Core A5 UI are separate PR ancestries. Core #2577 currently pins a different older audio composer/contract/RAW EAR. The staged failure on the Perception chain is therefore branch-specific. Boss must select the convergence order; Core then ports the provenance contract or rebases onto the converged Perception tree and regenerates all Recovery→Stage→RuntimeDeploy source pins. Until then, both PRs remain DRAFT, integration is NOT_ACCEPTED, and no release/device claim is made.
