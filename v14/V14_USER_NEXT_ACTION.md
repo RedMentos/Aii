@@ -4,7 +4,7 @@
 
 ## Current Perception branch and implementation
 - PR [#2578](https://github.com/RedMentos/Aii/pull/2578) remains **DRAFT / NOT_RELEASED** on `research-perception/v14-audio-measurement-provenance-20261128-run77`.
-- Code/test commit: `4c9bd27e56e90cba49d992c157fc5d3b4e348572`. Branch head before this next-action sync: `ebed8271732b8aad9e86f645944498c305173d5d`; later commits are docs/evidence only.
+- Code/test commit: `4c9bd27e56e90cba49d992c157fc5d3b4e348572`. Branch head before this final evidence sync: `d7d9c43cda8f050420a9b80ee467bdd0ba572bc7`; the current code/test commit remains `4c9bd27e56e90cba49d992c157fc5d3b4e348572` and intervening commits are docs/evidence only.
 - `audio_percept_contract.py` blob `8c737a61cc3d560cceb1c2df271fef14d32568cb`; test blob `856c8631a8d810ea69e87367d31b66ef7b1abb76`; integrated composer blob `e1cf98da59cfaf585f3cdcb77a1a6e0e4be12427`.
 - Fix: caller-supplied `CALIBRATED_VERIFIED`, digest-shaped SHA-256, calibration ID and threshold cannot self-certify speaker-change calibration. It remains `DIAGNOSTIC_ONLY_UNCALIBRATED` / `UNVERIFIED` / `identity_authority=false`; malformed decisions become `DEFER`.
 - LOCAL_LINUX CPython 3.13.5 x86_64 isolated negative controls: **5/5 PASS**. Full local Aii checkout/pytest **BLOCKED / NOT_RUN** (no checkout mounted; GitHub DNS failure).
@@ -15,7 +15,7 @@
 - A5 frame ingress: **29/29 PASS** each.
 - A4 update/retention ablation: **50/50 PASS** each.
 - A5 UI lease, offline bridge/security and offline RuntimeDeploy integrity PASS; offline groups 17+3+31+41 on Python 3.11/3.14.
-- RAW EAR/libfvad comparison: Python 3.13 PASS (9 ABI/benchmark + 204 audio runtime tests); Python 3.14 was still IN_PROGRESS at last poll.
+- RAW EAR/libfvad comparison: Python 3.13 PASS (9 ABI/benchmark + 204 audio runtime tests); Python 3.14 also PASS (workflow 46089036001; 9 ABI/benchmark + 204 audio runtime tests).
 - Shared staged-runtime: **FAIL** (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests). Core Recovery expects composer `831080b...`, while Perception supplies `e1cf98da...`; Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
 - Integrated regression: **FAIL**, one stale Core composer pin. These are Core/QA integration failures; no Perception focused regression failed.
 
@@ -2605,3 +2605,8 @@ No local full suite, no Android/Termux/microphone/native model, REDMI_UNVERIFIED
 - **Device / deployment:** no microphone, Android, Termux or Redmi test. REDMI_UNVERIFIED; updater/install state UNKNOWN; NOT_RELEASED. No model, permission, weight, data or device action was performed.
 - **Research:** R-187 is a full read of PACE (ICLR 2026); it motivates careful multi-session audio adaptation but is not an Android/mobile model candidate. No code or weights reused.
 - **Next:** exact-head CI readback, then Core refreshes the audio composer Recovery pin and Boss reviews #2561 for safe integration. The normal Runtime/C3 audio consumer and Android microphone lifecycle remain unverified. **No user action needed.**
+
+
+### Run 78 final CI poll
+
+RAW EAR vs WebRTC/libfvad Python 3.13 and 3.14 both PASS (workflow 46089036001; 9 ABI/benchmark checks + 204 source-bound audio runtime tests each). This is hosted Linux CI only; no ARM64/Redmi claim.
