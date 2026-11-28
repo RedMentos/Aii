@@ -40,7 +40,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from v13.contracts import packet
+from v13.contracts import packet as make_packet
 from v13.focal import ActionGate, FocalLoop
 from v13.runtime import Runtime
 
@@ -133,7 +133,7 @@ with tempfile.TemporaryDirectory(prefix="v14-action-context-") as root:
         memory_ref = source(runtime, "retrieved Memory context")
         observer_ref = source(runtime, "observer context")
         enlightened_ref = source(runtime, "Enlightened-Space context")
-        body_offer = packet(
+        body_offer = make_packet(
             "OfferPacket", "B1_DETAIL", e_body["event_id"], e_body["brain_generation_id"],
             [e_body["source_ref"]],
             role="B1_DETAIL", based_on_state_version=0,
