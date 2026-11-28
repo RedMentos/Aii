@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-28T01:44:10.420Z",
+  "updated_at": "2026-11-28T01:45:03.183Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -1594,7 +1594,7 @@
   },
   "perception_latest_checkpoint": {
     "date": "2026-11-28",
-    "timestamp": "2026-11-28T01:43:29.521Z",
+    "timestamp": "2026-11-28T01:45:03.183Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
     "pull_request": 2578,
@@ -1611,7 +1611,7 @@
     "workflow_blob": "cf907169a53a846cb87cbc3212a7cbf85febe94e",
     "base_branch": "research-perception/v14-audio-session-scope-20261127-run68",
     "base_sha": "c43bd2a84f3329704b80a237bb23e61e6d614c78",
-    "status": "DRAFT_SYNTHETIC_UPDATE_EFFECT_CI_PASS_NOT_ADOPTED_SHARED_INTEGRATION_BLOCKED_NOT_RELEASED",
+    "status": "DRAFT_A4_UPDATE_EFFECT_CI_PASS_SHARED_STAGED_INTEGRATION_FAIL_NOT_RELEASED",
     "implementation": {
       "defect": "The V14 §2.8 Meta Update Predictor hypothesis lacked a falsifiable A4 experiment measuring future utility and old-task retention across smooth and abrupt drift.",
       "fix": "Add a research-only seven-feature normalized ridge predictor, trained on earlier synthetic sessions and scored by one-step future gain minus 0.5 times old-pattern replay regression. It gates only an offline shadow ablation.",
@@ -1629,9 +1629,9 @@
       "a5_frame_ingress": "Workflow #46094137605 PASS on Python 3.13/3.14.",
       "raw_ear_numpy": "Workflow #46094137660 PASS on Python 3.13/3.14.",
       "runtime_deploy_integrity": "Workflow #46094137634 PASS; CI integrity only, not deployment.",
-      "vad_libfvad": "Workflow #46094137602 IN_PROGRESS at last poll.",
-      "staged_context": "Workflow #46094137745 IN_PROGRESS at last poll; previous exact runs still expose Core composer/arithmetic/observer pins and QA migration assertions.",
-      "integrated_regression": "Workflow #46094137745 IN_PROGRESS at last poll; no new acceptance claim."
+      "vad_libfvad": "Workflow #46094137602 PASS on Python 3.13/3.14.",
+      "staged_context": "Workflow #46094137745 FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Migration probe returns PARTIAL instead of UPDATED; stale Core Recovery composer pin, arithmetic source pin v13/contracts.py and observer fairness pin v13/cognition.py mismatch.",
+      "integrated_regression": "Workflow #46094137745 FAIL: Recovery wrapper expects audio composer blob 831080bceec90711bd42e0fa4eba47c669975c98 but current Perception composer differs; fails closed. Core owns pin refresh."
     },
     "device": "Private V13OBS #115 remains the historical 2026-11-24 snapshot: five metadata turns, C3 output in three; newest turn seven generated tokens with 1.87 s prefill; B1/B2 each had two native attempts and zero valid offers/deliveries; native latent exchange not proven. Private PIPELINE_STATUS request #1042 had no device_status at last poll. REDMI_UNVERIFIED.",
     "updater": "UNKNOWN; no fresh authenticated install receipt.",
@@ -1644,7 +1644,7 @@
       "R-198"
     ],
     "research_note": "R-195 firing-rate load balancing is a future sparse-MoE diagnostic candidate, not an A4/dense-model patch. R-196 mistake gating is classification-error gating, not the current continuous A4 regression gate. R-197/198 remain preprint research leads; no code or weights reused.",
-    "next_action": "Run multi-horizon update-effect prediction with abrupt-to-smooth recovery, separate replay anchors and calibrated regret/abstention; keep shadow-only unless current utility and retention both beat baselines. Research expert activation-rate diagnostics for future B1/B2 sparse MoE only after those bodies exist. Boss/Integrator chooses convergence order; Core owns Recovery→Stage→RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions. No user action.",
+    "next_action": "Do not adopt META_GATE. Run multi-horizon update-effect with abrupt-to-smooth recovery and separate replay anchors. Boss/Integrator chooses convergence ancestry; Core refreshes Recovery→Stage→RuntimeDeploy composer/arithmetic/observer pins; QA repairs migration PARTIAL-vs-UPDATED assertions. Then rerun exact shared staged/integrated regression. REDMI_UNVERIFIED; updater UNKNOWN; no user action.",
     "docs_sync_head_sha": "6fadc4e68eba80836aa73c72104500c620a6a6b5",
     "cross_lane": {
       "core_2577_head_sha": "0c77c521cec7b4e82713e6ff4a4ef0a3438629e4",
@@ -1656,10 +1656,14 @@
       "core_2577_ingress_blob": "14198bbd33b5394c787fe31b9fbce7778cbd11e0",
       "perception_2565_ingress_blob": "8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332",
       "ui_api_mismatch": "Legacy test expects admit_ui/consent_active=True; current Perception API requires OS-issued receipt + UIObservationLease; do not add bypass compatibility.",
-      "merge_rule": "Boss chooses convergence; Core refreshes Recovery→Stage→RuntimeDeploy and NPY source pins bottom-up; QA owns migration assertions; Perception does not edit Core/QA-owned wrappers."
+      "merge_rule": "Boss chooses convergence; Core refreshes Recovery→Stage→RuntimeDeploy and NPY source pins bottom-up; QA owns migration assertions; Perception does not edit Core/QA-owned wrappers.",
+      "shared_staged_run_id": 46094137745,
+      "shared_staged_result": "FAIL",
+      "shared_staged_failure": "20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests; composer pin, arithmetic pin v13/contracts.py, observer pin v13/cognition.py, and migration PARTIAL-vs-UPDATED mismatch.",
+      "owner_split": "Core owns Recovery→Stage→RuntimeDeploy source pins and arithmetic/observer sources; QA owns migration assertions; Boss/Integrator chooses convergence ancestry."
     },
     "docs_sync_commit_sha": "4519fa3918cb719e0164f7b94d111563a449931d",
-    "final_head_after_docs_sync": "4519fa3918cb719e0164f7b94d111563a449931d"
+    "final_head_after_docs_sync": "120582e1726ba822ed45abc3ed9ef1bb15f329f0"
   },
   "previous_perception_checkpoint": {
     "date": "2026-11-28",
@@ -1814,7 +1818,7 @@
   },
   "latest_owner_read_attempt": {
     "requested_at": "2026-11-28T01:44:10.420Z",
-    "last_polled_at": "2026-11-28T01:44:10.420Z",
+    "last_polled_at": "2026-11-28T01:45:03.183Z",
     "commands": [
       "PIPELINE_STATUS"
     ],
@@ -1828,7 +1832,7 @@
     "issue_number": 1042,
     "command": "PIPELINE_STATUS",
     "request_id": "6fadc4e68eba80836aa73c72104500c6",
-    "checked_at": "2026-11-28T01:44:10.420Z",
+    "checked_at": "2026-11-28T01:45:03.183Z",
     "receipt_received": false
   },
   "older_perception_checkpoint": {
@@ -2799,7 +2803,7 @@
     },
     {
       "date": "2026-11-28",
-      "timestamp": "2026-11-28T01:43:29.521Z",
+      "timestamp": "2026-11-28T01:45:03.183Z",
       "owner": "Research & Perception",
       "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
       "pull_request": 2578,
@@ -2816,7 +2820,7 @@
       "workflow_blob": "cf907169a53a846cb87cbc3212a7cbf85febe94e",
       "base_branch": "research-perception/v14-audio-session-scope-20261127-run68",
       "base_sha": "c43bd2a84f3329704b80a237bb23e61e6d614c78",
-      "status": "DRAFT_SYNTHETIC_UPDATE_EFFECT_CI_PASS_NOT_ADOPTED_SHARED_INTEGRATION_BLOCKED_NOT_RELEASED",
+      "status": "DRAFT_A4_UPDATE_EFFECT_CI_PASS_SHARED_STAGED_INTEGRATION_FAIL_NOT_RELEASED",
       "implementation": {
         "defect": "The V14 §2.8 Meta Update Predictor hypothesis lacked a falsifiable A4 experiment measuring future utility and old-task retention across smooth and abrupt drift.",
         "fix": "Add a research-only seven-feature normalized ridge predictor, trained on earlier synthetic sessions and scored by one-step future gain minus 0.5 times old-pattern replay regression. It gates only an offline shadow ablation.",
@@ -2834,9 +2838,9 @@
         "a5_frame_ingress": "Workflow #46094137605 PASS on Python 3.13/3.14.",
         "raw_ear_numpy": "Workflow #46094137660 PASS on Python 3.13/3.14.",
         "runtime_deploy_integrity": "Workflow #46094137634 PASS; CI integrity only, not deployment.",
-        "vad_libfvad": "Workflow #46094137602 IN_PROGRESS at last poll.",
-        "staged_context": "Workflow #46094137745 IN_PROGRESS at last poll; previous exact runs still expose Core composer/arithmetic/observer pins and QA migration assertions.",
-        "integrated_regression": "Workflow #46094137745 IN_PROGRESS at last poll; no new acceptance claim."
+        "vad_libfvad": "Workflow #46094137602 PASS on Python 3.13/3.14.",
+        "staged_context": "Workflow #46094137745 FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Migration probe returns PARTIAL instead of UPDATED; stale Core Recovery composer pin, arithmetic source pin v13/contracts.py and observer fairness pin v13/cognition.py mismatch.",
+        "integrated_regression": "Workflow #46094137745 FAIL: Recovery wrapper expects audio composer blob 831080bceec90711bd42e0fa4eba47c669975c98 but current Perception composer differs; fails closed. Core owns pin refresh."
       },
       "device": "Private V13OBS #115 remains the historical 2026-11-24 snapshot: five metadata turns, C3 output in three; newest turn seven generated tokens with 1.87 s prefill; B1/B2 each had two native attempts and zero valid offers/deliveries; native latent exchange not proven. Private PIPELINE_STATUS request #1042 had no device_status at last poll. REDMI_UNVERIFIED.",
       "updater": "UNKNOWN; no fresh authenticated install receipt.",
@@ -2849,7 +2853,7 @@
         "R-198"
       ],
       "research_note": "R-195 firing-rate load balancing is a future sparse-MoE diagnostic candidate, not an A4/dense-model patch. R-196 mistake gating is classification-error gating, not the current continuous A4 regression gate. R-197/198 remain preprint research leads; no code or weights reused.",
-      "next_action": "Run multi-horizon update-effect prediction with abrupt-to-smooth recovery, separate replay anchors and calibrated regret/abstention; keep shadow-only unless current utility and retention both beat baselines. Research expert activation-rate diagnostics for future B1/B2 sparse MoE only after those bodies exist. Boss/Integrator chooses convergence order; Core owns Recovery→Stage→RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions. No user action.",
+      "next_action": "Do not adopt META_GATE. Run multi-horizon update-effect with abrupt-to-smooth recovery and separate replay anchors. Boss/Integrator chooses convergence ancestry; Core refreshes Recovery→Stage→RuntimeDeploy composer/arithmetic/observer pins; QA repairs migration PARTIAL-vs-UPDATED assertions. Then rerun exact shared staged/integrated regression. REDMI_UNVERIFIED; updater UNKNOWN; no user action.",
       "docs_sync_head_sha": "6fadc4e68eba80836aa73c72104500c620a6a6b5",
       "cross_lane": {
         "core_2577_head_sha": "0c77c521cec7b4e82713e6ff4a4ef0a3438629e4",
@@ -2861,8 +2865,14 @@
         "core_2577_ingress_blob": "14198bbd33b5394c787fe31b9fbce7778cbd11e0",
         "perception_2565_ingress_blob": "8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332",
         "ui_api_mismatch": "Legacy test expects admit_ui/consent_active=True; current Perception API requires OS-issued receipt + UIObservationLease; do not add bypass compatibility.",
-        "merge_rule": "Boss chooses convergence; Core refreshes Recovery→Stage→RuntimeDeploy and NPY source pins bottom-up; QA owns migration assertions; Perception does not edit Core/QA-owned wrappers."
-      }
+        "merge_rule": "Boss chooses convergence; Core refreshes Recovery→Stage→RuntimeDeploy and NPY source pins bottom-up; QA owns migration assertions; Perception does not edit Core/QA-owned wrappers.",
+        "shared_staged_run_id": 46094137745,
+        "shared_staged_result": "FAIL",
+        "shared_staged_failure": "20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests; composer pin, arithmetic pin v13/contracts.py, observer pin v13/cognition.py, and migration PARTIAL-vs-UPDATED mismatch.",
+        "owner_split": "Core owns Recovery→Stage→RuntimeDeploy source pins and arithmetic/observer sources; QA owns migration assertions; Boss/Integrator chooses convergence ancestry."
+      },
+      "docs_sync_commit_sha": "4519fa3918cb719e0164f7b94d111563a449931d",
+      "final_head_after_docs_sync": "120582e1726ba822ed45abc3ed9ef1bb15f329f0"
     }
   ],
   "latest_audio_provenance_pr": {
