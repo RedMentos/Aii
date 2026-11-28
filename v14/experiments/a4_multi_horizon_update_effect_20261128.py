@@ -1,4 +1,4 @@
-"""Research-only multi-horizon A4 update-effect ablation.
+"""Research-only multi-horizon A4 update-effect and residual-calibration ablation.
 
 The gate sees only current-window features. Delayed labels are measured over
 multiple future windows and independent replay anchors. Synthetic inputs only;
@@ -276,7 +276,7 @@ def _aligned_candidate_pair(predictor, delta):
     return baseline, candidate, result
 
 
-def _training_examples(sessions, train_anchor):
+def _training_examples(sessions, replay_anchors):
     x_by = {h: [] for h in HORIZONS}
     y_by = {h: [] for h in HORIZONS}
     for _session, sequence in sessions:
@@ -300,10 +300,52 @@ def _training_examples(sessions, train_anchor):
                     if len(future) == horizon:
                         x_by[horizon].append(row)
                         y_by[horizon].append(_horizon_effect(
-                            candidate, baseline, future, {"train": train_anchor}
+                            candidate, baseline, future, replay_anchors
                         ))
             predictor = candidate
     return x_by, y_by
+
+
+def _quantile(values, q):
+    if not values or not 0.0 < q < 1.0:
+        raise ValueError("quantile requires values and q in (0, 1)")
+    ordered = sorted(float(value) for value in values)
+    if any(not math.isfinite(value) for value in ordered):
+        raise ValueError("quantile values must be finite")
+    index = min(len(ordered) - 1, max(0, math.ceil(q * len(ordered)) - 1))
+    return ordered[index]
+
+
+def _calibrate_threshold(head, x_rows, y_rows, *, quantile=0.90):
+    """Calibrate a conservative residual margin on disjoint sessions only."""
+    if len(x_rows) < 16 or len(x_rows) != len(y_rows):
+        raise ValueError("insufficient disjoint calibration examples")
+    scores = [head.predict(row) for row in x_rows]
+    residuals = [abs(score - float(target)) for score, target in zip(scores, y_rows)]
+    margin = max(0.0, _quantile(residuals, quantile))
+    negative = [(score, target) for score, target in zip(scores, y_rows) if target <= 0.0]
+    positive = [(score, target) for score, target in zip(scores, y_rows) if target > 0.0]
+    false_positive = sum(score > margin for score, _target in negative)
+    true_positive = sum(score > margin for score, _target in positive)
+    return margin, {
+        "examples": len(scores),
+        "positive_examples": len(positive),
+        "negative_examples": len(negative),
+        "residual_mae": round(fmean(residuals), 8),
+        "residual_rmse": round(math.sqrt(fmean(value * value for value in residuals)), 8),
+        "residual_p90": round(margin, 8),
+        "coverage_at_residual_p90": round(
+            sum(value <= margin for value in residuals) / len(residuals), 8
+        ),
+        "false_positive_rate_at_margin": (
+            round(false_positive / len(negative), 8) if negative else None
+        ),
+        "positive_recall_at_margin": (
+            round(true_positive / len(positive), 8) if positive else None
+        ),
+        "threshold_source": "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90",
+        "probability_calibration": False,
+    }
 
 
 def _select_multi_horizon(scores, thresholds):
@@ -498,8 +540,16 @@ def _digest(deltas):
 
 
 def run_experiment():
-    train_anchor = _deltas(_smooth_sequence(7, 0.35, 84))
-    heldout_anchors = {
+    training_replay_anchors = {
+        "train-periodic": _deltas(_smooth_sequence(7, 0.35, 84)),
+        "train-noise": _deltas(_abrupt_sequence(6, 28, 84)),
+        "train-transition": _deltas(_abrupt_to_smooth_sequence(4, 26, 96)),
+    }
+    calibration_replay_anchors = {
+        "calibration-periodic": _deltas(_smooth_sequence(11, 0.47, 84)),
+        "calibration-noise": _deltas(_abrupt_sequence(7, 33, 84)),
+    }
+    heldout_replay_anchors = {
         "heldout-periodic": _deltas(_smooth_sequence(9, 0.92, 84)),
         "heldout-noise": _deltas(_abrupt_sequence(5, 28, 84)),
     }
@@ -511,15 +561,28 @@ def run_experiment():
         ("train-abrupt-to-smooth-a", _abrupt_to_smooth_sequence(0, 24)),
         ("train-abrupt-to-smooth-b", _abrupt_to_smooth_sequence(2, 30)),
     )
-    x_by, y_by = _training_examples(training_sessions, train_anchor)
+    calibration_sessions = (
+        ("calibration-smooth-a", _smooth_sequence(5, 0.63)),
+        ("calibration-abrupt-a", _abrupt_sequence(4, 32)),
+        ("calibration-abrupt-to-smooth-a", _abrupt_to_smooth_sequence(3, 27)),
+    )
+    x_by, y_by = _training_examples(training_sessions, training_replay_anchors)
+    calibration_x_by, calibration_y_by = _training_examples(
+        calibration_sessions, calibration_replay_anchors
+    )
     heads = {
         horizon: RidgeHead().fit(x_by[horizon], y_by[horizon])
         for horizon in HORIZONS
     }
-    thresholds = {
-        horizon: max(0.0, 0.25 * heads[horizon].residual_rmse)
-        for horizon in HORIZONS
-    }
+    thresholds = {}
+    calibration = {}
+    for horizon in HORIZONS:
+        thresholds[horizon], calibration[str(horizon)] = _calibrate_threshold(
+            heads[horizon], calibration_x_by[horizon], calibration_y_by[horizon]
+        )
+        calibration[str(horizon)]["legacy_train_rmse_margin"] = round(
+            0.25 * heads[horizon].residual_rmse, 8
+        )
     test_sessions = {
         "smooth": (
             _deltas(_smooth_sequence(1, 0.62)),
@@ -545,7 +608,7 @@ def run_experiment():
             "NO_UPDATE",
         ):
             per_regime[regime][policy] = _run_policy(
-                policy, adapt, heldout, heldout_anchors, heads, thresholds
+                policy, adapt, heldout, heldout_replay_anchors, heads, thresholds
             )
         no_update = per_regime[regime]["NO_UPDATE"]
         for result in per_regime[regime].values():
@@ -580,35 +643,58 @@ def run_experiment():
         "device_benchmark": False,
         "horizons": list(HORIZONS),
         "training_sessions": [name for name, _ in training_sessions],
+        "calibration_sessions": [name for name, _ in calibration_sessions],
         "heldout_sessions": [
             "heldout-smooth",
             "heldout-abrupt",
             "heldout-abrupt-to-smooth",
         ],
-        "training_replay_anchor": {
-            "id": "train-periodic-anchor",
-            "sha256": _digest(train_anchor),
+        "training_replay_anchors": {
+            name: {"sha256": _digest(anchor)}
+            for name, anchor in training_replay_anchors.items()
+        },
+        "calibration_replay_anchors": {
+            name: {"sha256": _digest(anchor)}
+            for name, anchor in calibration_replay_anchors.items()
         },
         "heldout_replay_anchors": {
             name: {"sha256": _digest(anchor)}
-            for name, anchor in heldout_anchors.items()
+            for name, anchor in heldout_replay_anchors.items()
         },
         "training_anchor_shared_with_test": False,
+        "training_anchor_shared_with_calibration": False,
+        "calibration_anchor_shared_with_test": False,
         "training_examples_by_horizon": {
             str(horizon): len(x_by[horizon]) for horizon in HORIZONS
         },
+        "calibration_examples_by_horizon": {
+            str(horizon): len(calibration_x_by[horizon]) for horizon in HORIZONS
+        },
         "test_labels_used_for_fit": False,
+        "heldout_labels_used_for_calibration": False,
+        "calibration_labels_used_at_decision": False,
         "future_labels_used_at_decision": False,
         "reference_checkpoint": "SYNTHETIC_NO_UPDATE_BASELINE_NOT_DEPLOYED_C0",
         "deployed_checkpoint_available": False,
         "replay_anchor_policy": (
-            "TRAIN_ON_ONE_ANCHOR_EVALUATE_WORST_OF_TWO_HELDOUT_ANCHORS"
+            "TRAIN_ON_WORST_OF_THREE_DISJOINT_ANCHORS; "
+            "CALIBRATE_ON_SEPARATE_TWO_ANCHORS; "
+            "EVALUATE_WORST_OF_TWO_HELDOUT_ANCHORS"
         ),
+        "decision_threshold_policy": (
+            "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90; "
+            "EMPIRICAL_MARGIN_NOT_A_CALIBRATED_PROBABILITY"
+        ),
+        "calibration": calibration,
         "predictors": {
             str(horizon): {
                 "coefficients": len(heads[horizon].coefficients),
                 "residual_rmse": round(heads[horizon].residual_rmse, 8),
+                "legacy_train_rmse_margin": round(
+                    0.25 * heads[horizon].residual_rmse, 8
+                ),
                 "abstain_threshold": round(thresholds[horizon], 8),
+                "calibrated_abstain_margin": round(thresholds[horizon], 8),
                 "positive_training_fraction": round(
                     sum(y > 0 for y in y_by[horizon]) / len(y_by[horizon]),
                     8,

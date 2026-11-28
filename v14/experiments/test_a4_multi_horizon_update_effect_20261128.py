@@ -18,26 +18,74 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
     def test_split_and_replay_anchor_independence(self):
         result = self.result
         self.assertFalse(result["training_anchor_shared_with_test"])
+        self.assertFalse(result["training_anchor_shared_with_calibration"])
+        self.assertFalse(result["calibration_anchor_shared_with_test"])
         self.assertFalse(result["test_labels_used_for_fit"])
+        self.assertFalse(result["heldout_labels_used_for_calibration"])
+        self.assertFalse(result["calibration_labels_used_at_decision"])
         self.assertFalse(result["future_labels_used_at_decision"])
         self.assertFalse(result["deployed_checkpoint_available"])
         self.assertEqual(
             result["reference_checkpoint"],
             "SYNTHETIC_NO_UPDATE_BASELINE_NOT_DEPLOYED_C0",
         )
-        self.assertNotEqual(
-            result["training_replay_anchor"]["sha256"],
-            result["heldout_replay_anchors"]["heldout-periodic"]["sha256"],
-        )
-        self.assertNotEqual(
-            result["training_replay_anchor"]["sha256"],
-            result["heldout_replay_anchors"]["heldout-noise"]["sha256"],
+        train_hashes = {
+            item["sha256"] for item in result["training_replay_anchors"].values()
+        }
+        calibration_hashes = {
+            item["sha256"] for item in result["calibration_replay_anchors"].values()
+        }
+        heldout_hashes = {
+            item["sha256"] for item in result["heldout_replay_anchors"].values()
+        }
+        self.assertEqual(len(train_hashes), 3)
+        self.assertEqual(len(calibration_hashes), 2)
+        self.assertEqual(len(heldout_hashes), 2)
+        self.assertTrue(train_hashes.isdisjoint(calibration_hashes))
+        self.assertTrue(train_hashes.isdisjoint(heldout_hashes))
+        self.assertTrue(calibration_hashes.isdisjoint(heldout_hashes))
+        self.assertTrue(
+            set(result["training_sessions"]).isdisjoint(
+                result["calibration_sessions"]
+            )
         )
         self.assertTrue(
             set(result["training_sessions"]).isdisjoint(
                 result["heldout_sessions"]
             )
         )
+        self.assertTrue(
+            set(result["calibration_sessions"]).isdisjoint(
+                result["heldout_sessions"]
+            )
+        )
+
+    def test_disjoint_residual_calibration_is_explicit(self):
+        result = self.result
+        for horizon in ("1", "3", "8"):
+            calibration = result["calibration"][horizon]
+            predictor = result["predictors"][horizon]
+            self.assertEqual(
+                calibration["threshold_source"],
+                "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90",
+            )
+            self.assertFalse(calibration["probability_calibration"])
+            self.assertGreaterEqual(calibration["examples"], 16)
+            self.assertGreaterEqual(
+                calibration["coverage_at_residual_p90"], 0.90
+            )
+            self.assertGreaterEqual(
+                predictor["calibrated_abstain_margin"], 0.0
+            )
+            self.assertEqual(
+                predictor["abstain_threshold"],
+                calibration["residual_p90"],
+            )
+            self.assertTrue(
+                math.isfinite(calibration["false_positive_rate_at_margin"])
+                if calibration["false_positive_rate_at_margin"] is not None
+                else True
+            )
 
     def test_abrupt_to_smooth_fixture_has_both_regimes(self):
         rows = _abrupt_to_smooth_sequence(1, 24, 96)
