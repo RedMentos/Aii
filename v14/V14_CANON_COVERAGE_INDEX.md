@@ -2599,3 +2599,12 @@ No path is promoted to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELE
 - **Evidence:** PR #2578, code/test head 6fadc4e68eba80836aa73c72104500c620a6a6b5; workflow #46094137656 PASS on Python 3.13/3.14 (10 existing retention tests + 7 new tests + 54 production predictor pytest tests per job).
 - **Measured result:** smooth held-out drift: META_GATE selected 19/69 candidates, only 57.89% positive; current utility nearly equalled NO_UPDATE. Abrupt drift: 0/14 selected, exactly NO_UPDATE; no adaptation. The experiment is a limited/negative result, not a feature acceptance.
 - **Acceptance still requires:** multi-horizon outcomes, independent replay/retention anchors, robust calibration and drift-reversal tests, actual connected runtime consumer, persistent trainable parameter proof with restart/rollback, full cross-organ integration, and genuine authorized Redmi evidence. No Canon obligation is closed by this experiment.
+
+
+## Deployment-anchored update acceptance — R-199 (2026-11-28)
+
+For every future persistent weight update, adapter change or self-edit, acceptance must compare the candidate with the exact deployed checkpoint C0 on the same held-out stream and explicitly state: (1) evaluation loop, (2) reference checkpoint, (3) temporal aggregation, and (4) stream protocol. Record a three-valued verdict: PASS, NO_IMPROVEMENT or REGRESSION. Training loss, update count, open-loop score or backward-transfer alone is not sufficient evidence.
+
+- Source: ContinualDrive, arXiv:2611.32529 (2026-11-24), R-199.
+- Status: RESEARCH_INFORMED_REPORTING_RULE; not an implementation, not a product acceptance, and not evidence that V14 currently meets the rule.
+- The ContinualDrive code repository had no LICENSE file at the inspected revision; no code was reused.
