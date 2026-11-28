@@ -124,7 +124,11 @@ def test_calls_are_serialized_and_second_is_busy(tmp_path, monkeypatch):
     while not started.exists() and time.time() < deadline:
         time.sleep(0.01)
     assert started.exists()
-    second = adapter.speak(runtime, intent, runtime.row)
+    # The one-shot network-consent check precedes lock acquisition. Only a
+    # second call with the same explicit consent exercises the serialization gate.
+    no_consent = adapter.speak(runtime, intent, runtime.row)
+    assert no_consent["status"] == "NETWORK_REQUIREMENT_UNKNOWN"
+    second = adapter.speak(runtime, intent, runtime.row, allow_unknown_network=True)
     thread.join(timeout=3)
     assert second["status"] == "BUSY"
     assert first and first[0]["status"] == "CLI_COMPLETED"
