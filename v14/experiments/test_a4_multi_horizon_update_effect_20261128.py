@@ -22,6 +22,7 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
         self.assertFalse(result["calibration_anchor_shared_with_test"])
         self.assertFalse(result["test_labels_used_for_fit"])
         self.assertFalse(result["heldout_labels_used_for_calibration"])
+        self.assertTrue(result["calibration_labels_used_for_thresholds"])
         self.assertFalse(result["calibration_labels_used_at_decision"])
         self.assertFalse(result["future_labels_used_at_decision"])
         self.assertFalse(result["deployed_checkpoint_available"])

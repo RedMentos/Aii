@@ -257,14 +257,19 @@ def _anchor_mae(predictor, anchor):
     return fmean(errors)
 
 
-def _horizon_effect(candidate, baseline, future, anchors):
-    gain = _future_mae(baseline, future) - _future_mae(candidate, future)
+def _worst_retention_cost(candidate, baseline, anchors):
     costs = [
         _anchor_mae(candidate, anchor) - _anchor_mae(baseline, anchor)
         for anchor in anchors.values()
     ]
-    worst_retention_cost = max(0.0, max(costs))
-    return gain - RETENTION_WEIGHT * worst_retention_cost
+    return max(0.0, max(costs))
+
+
+def _horizon_effect(candidate, baseline, future, anchors, *, retention_cost=None):
+    gain = _future_mae(baseline, future) - _future_mae(candidate, future)
+    if retention_cost is None:
+        retention_cost = _worst_retention_cost(candidate, baseline, anchors)
+    return gain - RETENTION_WEIGHT * retention_cost
 
 
 def _aligned_candidate_pair(predictor, delta):
@@ -295,12 +300,16 @@ def _training_examples(sessions, replay_anchors):
                 and result.get("update_applied")
             ):
                 row = _features(deltas[index], result)
+                retention_cost = _worst_retention_cost(
+                    candidate, baseline, replay_anchors
+                )
                 for horizon in HORIZONS:
                     future = deltas[index + 1:index + 1 + horizon]
                     if len(future) == horizon:
                         x_by[horizon].append(row)
                         y_by[horizon].append(_horizon_effect(
-                            candidate, baseline, future, replay_anchors
+                            candidate, baseline, future, replay_anchors,
+                            retention_cost=retention_cost,
                         ))
             predictor = candidate
     return x_by, y_by
@@ -413,11 +422,13 @@ def _run_policy(policy, adapt, heldout, anchors, heads, thresholds):
         candidate_count += 1
         row = _features(delta, result)
         scores = {h: heads[h].predict(row) for h in HORIZONS}
+        retention_cost = _worst_retention_cost(candidate, baseline, anchors)
         for horizon in HORIZONS:
             predicted[horizon].append(scores[horizon])
             future = adapt[index + 1:index + 1 + horizon]
             actual[horizon].append(_horizon_effect(
-                candidate, baseline, future, anchors
+                candidate, baseline, future, anchors,
+                retention_cost=retention_cost,
             ))
 
         if policy == "ONE_STEP_META_GATE":
@@ -672,6 +683,7 @@ def run_experiment():
         },
         "test_labels_used_for_fit": False,
         "heldout_labels_used_for_calibration": False,
+        "calibration_labels_used_for_thresholds": True,
         "calibration_labels_used_at_decision": False,
         "future_labels_used_at_decision": False,
         "reference_checkpoint": "SYNTHETIC_NO_UPDATE_BASELINE_NOT_DEPLOYED_C0",
