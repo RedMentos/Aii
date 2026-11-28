@@ -2037,3 +2037,8 @@ Failure evidence:
 - These are cross-lane integration blockers, not failures of the A4 update-effect experiment. Core owns the Recovery→Stage→RuntimeDeploy composer/arithmetic/observer refresh; QA owns the migration PARTIAL-vs-UPDATED assertions. Boss/Integrator must choose the convergence ancestry before either lane rebases.
 
 Updated acceptance state: focused Perception/A4/A5 checks PASS, but the shared staged/integrated system remains FAIL. No merge, release or Redmi claim follows from the focused CI passes.
+
+
+### R-199 acceptance implication — deployment-anchored update verdict
+
+Before any later experiment is proposed for persistent model-weight changes or self-edit, freeze the exact deployed checkpoint C0 and evaluate the candidate against it on the same held-out stream. Record the four axes (evaluation loop, reference checkpoint, temporal aggregation, stream protocol) and a three-valued PASS / NO_IMPROVEMENT / REGRESSION verdict. This rule is research-informed by ContinualDrive (arXiv:2611.32529); it is not proof that current V14 has such an acceptance harness. No code from the ContinualDrive repository was reused because no LICENSE file was present at the inspected revision.
