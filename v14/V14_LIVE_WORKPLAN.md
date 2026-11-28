@@ -1877,20 +1877,22 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 
 ## Research & Perception Run 77 — RAW EAR measurement provenance (2026-11-28)
 
-**Defect addressed.** The canonical audio packet and C3 summary exposed numeric RAW EAR pitch/activity/prosody values without a field-level distinction between source-sample measurements, uncalibrated heuristics, optional VAD model scores and unavailable outputs.
+**Defect addressed.** Numeric RAW EAR pitch/activity/prosody values could reach the canonical packet and C3 summary without field-level distinction between PCM-derived measurements, uncalibrated heuristics, optional VAD model scores and unavailable outputs.
 
-**Implementation.** Draft PR #2578, current PR documentation head 4ff4dc6da6bcb571888210a054e3a449db815d9c, exact code/test head 45505fe83803c843d2a6c77cbbc16b56102b81f4, stacked on #2561 (base c43bd2a84f3329704b80a237bb23e61e6d614c78). Adds v14.audio-measurement-provenance/1 to A5 audio PerceptPacket and cue_prov=HEURISTIC_UNCAL to the actual C3 admission summary. RMS/ZCR are source-PCM measurements; RMS has no SPL calibration. F0, voiced fraction, voicing score, activity class/score and prosody score remain heuristic/uncalibrated. Optional Silero VAD is a model score, not a calibrated probability. Speaker diagnostics cannot assign identity and only upgrade after verified receipt/id/threshold plus non-DEFER decision. ASR and calibrated speech probability remain unavailable. Authority remains learning=false, action=false, truth=0.
+**Implementation.** PR #2578, current documentation head 119acd30a4455e36a95b52c83a0946ea4cd1ded8, code/test head 45505fe83803c843d2a6c77cbbc16b56102b81f4, stacked on #2561 (base c43bd2a84f3329704b80a237bb23e61e6d614c78). Adds v14.audio-measurement-provenance/1 to A5 audio PerceptPacket and cue_prov=HEURISTIC_UNCAL to the actual C3 admission summary. RMS/ZCR are source-PCM measurements; RMS has no SPL calibration. F0, voiced fraction, voicing score, activity class/score and prosody score remain heuristic/uncalibrated. Optional Silero VAD is a model score, not a calibrated probability. Speaker diagnostics cannot assign identity and only upgrade after verified receipt/id/threshold plus non-DEFER decision. ASR and calibrated speech probability remain unavailable. Authority remains learning=false, action=false, truth=0.
 
-**Tests / evidence.**
-- LOCAL_LINUX isolated helper/packet harness: py_compile PASS; 7/7 deterministic checks PASS, including negative calibration-receipt control.
-- Earlier code head 3ff5e: RAW EAR fastpath PASS Python 3.13/3.14; A4/A5 feature-set probe PASS Python 3.13/3.14.
-- Current code/test head 45505fe: RAW EAR fastpath in progress, feature-set queued, RAW EAR/libfvad comparison queued, staged regression queued, RuntimeDeploy queued. No current-head CI pass claimed.
-- The prior VAD comparison failed on an old Perception pin; current branch refreshes that pin to 3324e29.
-- Prior staged regression failed on Core's old composer pin (expected 831080b; current composer d51b0436), separate Core arithmetic/observer pins, and QA migration assertions. Core/QA ownership preserved.
+**Tests / evidence at code/test head 45505fe.**
+- LOCAL_LINUX isolated helper/packet harness: CPython 3.13.5 x86_64, py_compile PASS; 7/7 deterministic checks PASS.
+- RAW EAR fastpath: PASS Python 3.13/3.14, 211 tests each.
+- Source-bound A4/A5 feature-set probe: PASS Python 3.13/3.14, 15 tests each.
+- RAW EAR/libfvad comparison: PASS Python 3.13/3.14, 9 ABI/benchmark checks + 204 audio tests each. Native libfvad build is Linux CI only, not Android.
+- RuntimeDeploy integrity: PASS Python 3.11/3.14, offline CI groups 17+3+31+41 tests each; no actual device deployment.
+- Adjacent existing MediaProjection RAW EYE ingress and A4 error-gated plasticity/retention workflows also PASS on Python 3.13/3.14.
+- Staged context/integrated regression: FAIL. Staged-runtime: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Integrated regression fails because Core recovery expects composer blob 831080b while current Perception composer is d51b0436. Separate Core arithmetic/observer pins and QA migration assertions remain. Core/QA ownership preserved.
 - Full local Aii checkout/repository pytest: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS failure).
-- Latest available private V13OBS #115 snapshot (2026-11-24): STOPPED_BY_USER, model process STOPPED, zero managed native processes, zero valid B1/B2 offers. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #1033–#1035 have no authenticated response at checkpoint; updater/install UNKNOWN.
-- Redmi/Termux microphone, normal-turn Runtime/C3 and deployment: REDMI_UNVERIFIED / NOT_RELEASED. No device action.
+
+**Device / release.** Latest available private V13OBS #115 snapshot (2026-11-24): STOPPED_BY_USER, model process STOPPED, zero managed native processes, zero valid B1/B2 offers. New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #1033–#1035 have NO_LIVE_RECEIPT; updater/install UNKNOWN. Redmi/Termux microphone, normal-turn Runtime/C3 and deployment: REDMI_UNVERIFIED / NOT_RELEASED. No device action.
 
 **Research R-188.** Full peer-reviewed 2021 IEEE/ACM TASLP study on Lombard/whisper speaker-recognition calibration reviewed. It supports treating detector scores as quality signals requiring separate held-out calibration, not as calibrated probabilities. It is not a VAD or RAW EAR calibration result. Silero VAD official README declares MIT; exact ONNX artifact licensing and ARM64/Redmi performance remain unverified. No code or weights reused/downloaded.
 
-**Next integration.** Poll exact #2578 code/test head 45505fe; repair only Perception-owned failures. Boss reviews the stacked contract. Core refreshes Recovery → Stage → RuntimeDeploy audio-composer pins to d51b0436 and separately resolves arithmetic/observer pins. QA resolves migration assertions. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until Android consent, lifecycle, revoke, restart and rollback are verified.
+**Next integration.** Core refreshes Recovery → Stage → RuntimeDeploy audio-composer pins to d51b0436 and separately resolves arithmetic/observer pins. QA resolves migration assertions. Boss reviews the stacked contract before integration. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until Android consent, lifecycle, revoke, restart and rollback are verified.
