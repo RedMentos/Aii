@@ -503,34 +503,46 @@ def _run(runtime):
                 binary_path=Path(runtime.home) / "bin" / "native_latent_receiver",
                 cancel_event=runtime.cancel_event,
             )
+        if not isinstance(result, Mapping):
+            raise NativeReceiverMatrixRuntimeError("native matrix result is not an object")
+        result = dict(result)
+        current_task_group_id = receipt["task_group_id"]
+        if result.get("task_group_id") != current_task_group_id:
+            raise NativeReceiverMatrixRuntimeError(
+                "native matrix result task_group_id differs from staged matrix receipt"
+            )
+        effects = _native_receiver_effects(
+            runtime, strict=True, current_task_group_id=current_task_group_id
+        )
+        group_evidence = _current_matrix_task_group_evidence(runtime, current_task_group_id)
+        result["native_receiver_effects"] = effects
+        result["current_matrix_task_group"] = {
+            "scope": "CURRENT_MATRIX_TASK_GROUP",
+            "task_group_id": current_task_group_id,
+            "represented_in_ephemeral_cohort": group_evidence["represented"],
+            "complete_in_ephemeral_cohort": group_evidence["complete"],
+            "status": result.get("status"),
+            "cohort_status": result.get("cohort_status"),
+            "evidence": group_evidence,
+            "persisted": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+        # Completion is recorded only after result provenance and both evidence
+        # scopes have passed validation. A later validation failure stays failed.
         state, version = runtime.store.state(KEY, None)
         if isinstance(state, dict) and state.get("status") == "CONSUMED":
             state = dict(state)
             state.update({"status": "COMPLETED", "completed_at": time.time()})
             runtime.store.set_state(KEY, state, expected=version)
-        result = dict(result)
-        current_task_group_id = result.get("task_group_id")
-        effects = _native_receiver_effects(
-            runtime, strict=True, current_task_group_id=current_task_group_id
-        )
-        result["native_receiver_effects"] = effects
-        result["current_matrix_task_group"] = {
-            "scope": "CURRENT_MATRIX_TASK_GROUP",
-            "task_group_id": current_task_group_id,
-            "represented_in_ephemeral_cohort": effects.get(
-                "current_matrix_task_group_represented"
-            ),
-            "complete_in_ephemeral_cohort": effects.get(
-                "current_matrix_task_group_complete"
-            ),
-            "status": result.get("status"),
-            "cohort_status": result.get("cohort_status"),
-            "persisted": False,
-            "training_authority": 0,
-            "native_receiver_authority": 0,
-        }
         return result
     except BaseException as exc:
+        if bridge_started:
+            try:
+                from .native_receiver_task_score import remove_task_score_group
+                remove_task_score_group(runtime, receipt["task_group_id"])
+            except Exception:
+                pass
         state, version = runtime.store.state(KEY, None)
         if isinstance(state, dict) and state.get("schema") == SCHEMA and state.get("status") in {"PENDING", "CONSUMED"}:
             state = dict(state)
@@ -567,6 +579,182 @@ def _current_task_group_membership(runtime, task_group_id):
         and type(item.get("condition")) is str
     }
     return bool(conditions), conditions == set(CONDITIONS)
+
+
+def _current_matrix_task_group_evidence(runtime, task_group_id):
+    """Summarize only the just-run matrix group; never borrow prior cohort evidence."""
+    safe = {
+        "persisted": False,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    base = {
+        "scope": "CURRENT_MATRIX_TASK_GROUP",
+        "task_group_id": task_group_id if type(task_group_id) is str and 0 < len(task_group_id) <= 256 else None,
+        "status": "NOT_REPRESENTED",
+        "represented": False,
+        "complete": False,
+        "condition_count": 0,
+        "evidence_class": None,
+        "holdout_status": "INSUFFICIENT_HOLDOUT",
+        "kv_snapshot_effect": {
+            "status": "UNAVAILABLE",
+            "reason": "CURRENT_MATRIX_TASK_GROUP_NOT_COMPLETE",
+            **safe,
+        },
+        "information_use_audit": {
+            "schema": "v14.native-receiver-information-use-audit/1",
+            "status": "INSUFFICIENT_HOLDOUT",
+            "holdout_sufficient": False,
+            "semantic_use_proven": False,
+            "generated_answer_correctness_proven": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "persisted": False,
+        },
+        **safe,
+    }
+    if base["task_group_id"] is None:
+        return base
+    receipts = getattr(runtime, "_native_receiver_task_score_receipts", None)
+    if not isinstance(receipts, list):
+        return base
+    group = [
+        item for item in receipts
+        if isinstance(item, Mapping) and item.get("task_group_id") == task_group_id
+    ]
+    conditions = [
+        item.get("condition") for item in group
+        if type(item.get("condition")) is str
+    ]
+    base["represented"] = bool(group)
+    base["condition_count"] = len(set(conditions))
+    if not group:
+        return base
+    if (len(group) != len(CONDITIONS) or len(set(conditions)) != len(CONDITIONS)
+            or set(conditions) != set(CONDITIONS)):
+        base["status"] = "INCOMPLETE"
+        base["kv_snapshot_effect"]["reason"] = "CURRENT_MATRIX_TASK_GROUP_INCOMPLETE"
+        return base
+
+    try:
+        from .native_receiver_utility import evaluate_native_receiver_task_utility
+        summary = evaluate_native_receiver_task_utility(group)
+    except Exception as exc:
+        raise NativeReceiverMatrixRuntimeError(
+            "current matrix task group failed Perception receipt validation"
+        ) from exc
+    if not isinstance(summary, Mapping):
+        raise NativeReceiverMatrixRuntimeError("current matrix task-group summary is malformed")
+    for field in (
+        "semantic_use_proven", "generated_answer_correctness_proven",
+        "production_route", "persisted",
+    ):
+        if summary.get(field) is not False:
+            raise NativeReceiverMatrixRuntimeError(
+                "current matrix task-group summary carries forbidden proof or authority"
+            )
+    for field in ("training_authority", "native_receiver_authority"):
+        if summary.get(field) != 0:
+            raise NativeReceiverMatrixRuntimeError(
+                "current matrix task-group summary carries forbidden authority"
+            )
+    evidence_class = summary.get("evidence_class")
+    if evidence_class not in {"SYNTHETIC", "LOCAL_LINUX", "TERMUX_ANDROID", "REDMI"}:
+        raise NativeReceiverMatrixRuntimeError("current matrix task-group evidence environment is unknown")
+    kv = summary.get("kv_snapshot_effect")
+    information = summary.get("information_use_audit")
+    if not isinstance(kv, Mapping) or not isinstance(information, Mapping):
+        raise NativeReceiverMatrixRuntimeError("current matrix task-group K/V or information audit is missing")
+    for name, item in (("K/V", kv), ("information-use", information)):
+        for field in (
+            "semantic_use_proven", "generated_answer_correctness_proven",
+            "production_route", "persisted",
+        ):
+            if item.get(field) is not False:
+                raise NativeReceiverMatrixRuntimeError(
+                    "current matrix " + name + " summary carries forbidden proof or authority"
+                )
+        for field in ("training_authority", "native_receiver_authority"):
+            if item.get(field) != 0:
+                raise NativeReceiverMatrixRuntimeError(
+                    "current matrix " + name + " summary carries forbidden authority"
+                )
+    if information.get("schema") != "v14.native-receiver-information-use-audit/1":
+        raise NativeReceiverMatrixRuntimeError("current matrix information-use audit schema is invalid")
+    if information.get("holdout_sufficient") is not False:
+        raise NativeReceiverMatrixRuntimeError(
+            "a single current matrix group cannot satisfy the whole-cohort holdout gate"
+        )
+
+    if evidence_class == "SYNTHETIC":
+        kv_effect = {
+            "status": "UNAVAILABLE",
+            "reason": "SYNTHETIC_FIXTURE_ONLY",
+            "source_status": kv.get("status"),
+            **safe,
+        }
+    else:
+        counts = kv.get("distinct_from_no_message_task_groups_by_condition")
+        duplicate_checks = kv.get("duplicate_input_groups_checked")
+        if (kv.get("status") != "READ_ONLY_SAMPLE_ONLY"
+                or kv.get("scope") != "ONE_ATTENTION_LAYER_ONE_SEQUENCE"
+                or kv.get("task_group_count") != 1
+                or kv.get("snapshot_count") != len(CONDITIONS)
+                or type(duplicate_checks) is not int or duplicate_checks < 0
+                or kv.get("same_input_consistency_passed") is not True
+                or not isinstance(counts, Mapping)
+                or set(counts) != set(CONDITIONS)
+                or any(type(value) is not int or value not in (0, 1) for value in counts.values())):
+            raise NativeReceiverMatrixRuntimeError(
+                "current matrix K/V summary failed its one-group structural contract"
+            )
+        kv_effect = {
+            key: kv[key] for key in (
+                "status", "task_group_count", "snapshot_count",
+                "candidate_differs_from_no_message_count",
+                "candidate_differs_from_exact_message_count",
+                "distinct_from_no_message_task_groups_by_condition",
+                "duplicate_input_groups_checked", "same_input_consistency_passed",
+                "scope", "semantic_use_proven", "generated_answer_correctness_proven",
+                "production_route", "training_authority", "native_receiver_authority", "persisted",
+            ) if key in kv
+        }
+        kv_effect["same_input_consistency_observed"] = duplicate_checks > 0
+        kv_effect["same_input_consistency_status"] = (
+            "CHECKED_PASS" if duplicate_checks > 0 else "NOT_TESTED_NO_DUPLICATE_INPUTS"
+        )
+        if duplicate_checks == 0:
+            kv_effect["same_input_consistency_passed"] = None
+
+    information_effect = {
+        "schema": information["schema"],
+        "status": information.get("status"),
+        "holdout_sufficient": False,
+        "counterfactual_kind": information.get("counterfactual_kind"),
+        "full_derangement_tested": information.get("full_derangement_tested"),
+        "interpretation_limit": information.get("interpretation_limit"),
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+    return {
+        **base,
+        "status": summary.get("status"),
+        "complete": True,
+        "evidence_class": evidence_class,
+        "holdout_status": summary.get("holdout_status"),
+        "kv_snapshot_effect": kv_effect,
+        "information_use_audit": information_effect,
+        **safe,
+    }
 
 
 def _native_receiver_effects(runtime, *, strict, current_task_group_id=None):

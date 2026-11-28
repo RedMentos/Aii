@@ -712,3 +712,201 @@ def test_callosum_runtime_producer_builds_real_perception_matrix_and_scores_thro
     assert calls[0]["condition_inputs"][0]["vectors"] == []
     assert calls[0]["condition_inputs"][0]["position_ids"] == []
     assert runtime._native_receiver_condition_matrix is None
+
+def _scoped_task_group_utility_summary(*, evidence_class="SYNTHETIC", duplicate_input_groups_checked=0):
+    kv = {
+        "status": "READ_ONLY_SAMPLE_ONLY",
+        "task_group_count": 1,
+        "snapshot_count": len(CONDITIONS),
+        "candidate_differs_from_no_message_count": 1,
+        "candidate_differs_from_exact_message_count": 1,
+        "distinct_from_no_message_task_groups_by_condition": {
+            condition: 1 for condition in CONDITIONS
+        },
+        "duplicate_input_groups_checked": duplicate_input_groups_checked,
+        "same_input_consistency_passed": True,
+        "scope": "ONE_ATTENTION_LAYER_ONE_SEQUENCE",
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+    information = {
+        "schema": "v14.native-receiver-information-use-audit/1",
+        "status": "INSUFFICIENT_HOLDOUT",
+        "holdout_sufficient": False,
+        "counterfactual_kind": "ENTITY_ONLY_SOURCE_PAIR",
+        "full_derangement_tested": False,
+        "interpretation_limit": "Teacher-forced proxy only; one group is not a holdout.",
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+    return {
+        "status": "FIXTURE_ONLY" if evidence_class == "SYNTHETIC" else "INSUFFICIENT_HOLDOUT",
+        "evidence_class": evidence_class,
+        "holdout_status": "INSUFFICIENT_HOLDOUT",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+        "kv_snapshot_effect": kv,
+        "information_use_audit": information,
+        "semantic_use_proven": False,
+        "generated_answer_correctness_proven": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "persisted": False,
+    }
+
+
+def test_current_matrix_group_evidence_filters_prior_groups_and_downgrades_synthetic_kv(monkeypatch):
+    from v13 import native_receiver_utility as utility
+
+    captured = []
+
+    def evaluate(receipts):
+        captured.append(list(receipts))
+        return _scoped_task_group_utility_summary()
+
+    monkeypatch.setattr(utility, "evaluate_native_receiver_task_utility", evaluate)
+    receipts = (
+        [{"task_group_id": "prior-task", "condition": condition} for condition in CONDITIONS]
+        + [{"task_group_id": "current-task", "condition": condition} for condition in CONDITIONS]
+    )
+    runtime = types.SimpleNamespace(_native_receiver_task_score_receipts=receipts)
+
+    evidence = matrix_runtime._current_matrix_task_group_evidence(runtime, "current-task")
+
+    assert len(captured) == 1
+    assert len(captured[0]) == len(CONDITIONS)
+    assert {item["task_group_id"] for item in captured[0]} == {"current-task"}
+    assert evidence["scope"] == "CURRENT_MATRIX_TASK_GROUP"
+    assert evidence["task_group_id"] == "current-task"
+    assert evidence["represented"] is True
+    assert evidence["complete"] is True
+    assert evidence["condition_count"] == len(CONDITIONS)
+    assert evidence["evidence_class"] == "SYNTHETIC"
+    assert evidence["holdout_status"] == "INSUFFICIENT_HOLDOUT"
+    assert evidence["kv_snapshot_effect"]["status"] == "UNAVAILABLE"
+    assert evidence["kv_snapshot_effect"]["reason"] == "SYNTHETIC_FIXTURE_ONLY"
+    assert evidence["information_use_audit"]["holdout_sufficient"] is False
+    assert evidence["semantic_use_proven"] is False
+    assert evidence["generated_answer_correctness_proven"] is False
+    assert evidence["production_route"] is False
+    assert evidence["training_authority"] == evidence["native_receiver_authority"] == 0
+
+
+def test_current_matrix_group_evidence_keeps_native_kv_but_does_not_claim_vacuous_consistency(monkeypatch):
+    from v13 import native_receiver_utility as utility
+
+    monkeypatch.setattr(
+        utility,
+        "evaluate_native_receiver_task_utility",
+        lambda receipts: _scoped_task_group_utility_summary(
+            evidence_class="LOCAL_LINUX", duplicate_input_groups_checked=0
+        ),
+    )
+    runtime = types.SimpleNamespace(
+        _native_receiver_task_score_receipts=[
+            {"task_group_id": "current-task", "condition": condition}
+            for condition in CONDITIONS
+        ]
+    )
+
+    evidence = matrix_runtime._current_matrix_task_group_evidence(runtime, "current-task")
+    kv = evidence["kv_snapshot_effect"]
+
+    assert evidence["evidence_class"] == "LOCAL_LINUX"
+    assert kv["status"] == "READ_ONLY_SAMPLE_ONLY"
+    assert kv["task_group_count"] == 1
+    assert kv["snapshot_count"] == len(CONDITIONS)
+    assert kv["same_input_consistency_observed"] is False
+    assert kv["same_input_consistency_status"] == "NOT_TESTED_NO_DUPLICATE_INPUTS"
+    assert kv["same_input_consistency_passed"] is None
+    assert evidence["information_use_audit"]["status"] == "INSUFFICIENT_HOLDOUT"
+    assert evidence["information_use_audit"]["holdout_sufficient"] is False
+
+
+def test_current_matrix_group_evidence_distinguishes_missing_and_incomplete_groups(monkeypatch):
+    from v13 import native_receiver_utility as utility
+
+    def unexpected(_receipts):
+        raise AssertionError("incomplete groups must not reach the cohort evaluator")
+
+    monkeypatch.setattr(utility, "evaluate_native_receiver_task_utility", unexpected)
+    runtime = types.SimpleNamespace(
+        _native_receiver_task_score_receipts=[
+            {"task_group_id": "prior-task", "condition": condition}
+            for condition in CONDITIONS
+        ] + [{"task_group_id": "current-task", "condition": "NO_MESSAGE"}]
+    )
+
+    missing = matrix_runtime._current_matrix_task_group_evidence(runtime, "absent-task")
+    incomplete = matrix_runtime._current_matrix_task_group_evidence(runtime, "current-task")
+
+    assert missing["status"] == "NOT_REPRESENTED"
+    assert missing["represented"] is False
+    assert incomplete["status"] == "INCOMPLETE"
+    assert incomplete["represented"] is True
+    assert incomplete["complete"] is False
+    assert incomplete["condition_count"] == 1
+
+
+def test_matrix_run_rejects_bridge_task_group_mismatch_and_rolls_back_current_receipts(monkeypatch, tmp_path):
+    runtime, matrix, _ids, _pair, _events, _texts, _sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+
+    def mismatched_bridge(runtime_arg, matrix_arg, **kwargs):
+        receipt = matrix_arg.receipt
+        list(matrix_arg.iter_inputs(
+            approval=kwargs["approval"],
+            approval_validator=kwargs["approval_validator"],
+        ))
+        assert kwargs["source_validator"](receipt, "BEFORE_NATIVE") is True
+        assert kwargs["source_validator"](receipt, "AFTER_NATIVE") is True
+        return {
+            "status": "SCORED_DIAGNOSTIC",
+            "condition_count": len(CONDITIONS),
+            "environment": kwargs["target_environment"],
+            "task_group_id": "prior-task",
+            "cohort_status": "COHORT_READY",
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+
+    module.score_and_record_native_receiver_condition_matrix = mismatched_bridge
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+
+    from v13 import native_receiver_task_score as task_score
+    removed = []
+    real_remove = task_score.remove_task_score_group
+
+    def tracked_remove(runtime_arg, task_group_id):
+        removed.append(task_group_id)
+        return real_remove(runtime_arg, task_group_id)
+
+    monkeypatch.setattr(task_score, "remove_task_score_group", tracked_remove)
+
+    with pytest.raises(
+        matrix_runtime.NativeReceiverMatrixRuntimeError,
+        match="task_group_id differs from staged matrix receipt",
+    ):
+        matrix_runtime._run(runtime)
+
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["status"] == "FAILED_AFTER_CONSUMPTION"
+    assert removed == ["task-main"]
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+
