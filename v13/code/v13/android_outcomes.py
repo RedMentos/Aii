@@ -101,7 +101,14 @@ def accept_companion_receipt(
                     "COMPANION_DISPATCH_FAILED",
                     "COMPANION_OUTCOME_UNKNOWN",
                 }
-                or attestation.get("t8_authoritative") is not False):
+                or attestation.get("observed", False) is not False
+                or attestation.get("t8_authoritative") is not False
+                or any(attestation.get(key, False) is not False for key in (
+                    "world_learning_eligible", "trusted_transition_eligible",
+                    "device_execution_claimed", "production_route",
+                ))
+                or attestation.get("training_authority", 0) != 0
+                or attestation.get("native_receiver_authority", 0) != 0):
             raise InvalidOutcome("companion verifier returned an unsupported authority level")
         with broker.lock:
             if broker.stopped:
@@ -130,14 +137,17 @@ def accept_companion_receipt(
                 "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
             ),
             "key_storage_status": attestation["key_storage_status"],
-            "companion_user_approval": attestation.get("companion_user_approval", False),
-            "device_execution_claimed": attestation.get("device_execution_claimed", True),
-            "t8_authoritative": attestation.get("t8_authoritative", True),
-            "world_learning_eligible": attestation.get("world_learning_eligible", True),
-            "trusted_transition_eligible": attestation.get("trusted_transition_eligible", True),
-            "production_route": attestation.get("production_route", True),
-            "training_authority": attestation.get("training_authority", -1),
-            "native_receiver_authority": attestation.get("native_receiver_authority", -1),
+            "companion_user_approval": attestation.get(
+                "companion_user_approval",
+                attestation.get("companion_local_consent_claim", True),
+            ),
+            "device_execution_claimed": False,
+            "t8_authoritative": False,
+            "world_learning_eligible": False,
+            "trusted_transition_eligible": False,
+            "production_route": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
             "event_id": proposal.event_id,
             "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
         },
@@ -265,6 +275,11 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "local_approval_evidence": outcome.details["local_approval_evidence"],
         "android_os_permission_status": outcome.details["android_os_permission_status"],
         "key_storage_status": outcome.details["key_storage_status"],
+        "companion_user_approval": outcome.details["companion_user_approval"],
+        "device_execution_claimed": False,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
         "t8_authoritative": False,
         "world_learning_eligible": False,
         "trusted_transition_eligible": False,

@@ -556,6 +556,57 @@ class AndroidControlBroker:
             self._audit(action_id, "companion_receipt_verified" if verified else
                         "companion_receipt_rejected", digest)
 
+    def receipt_proposal(self, action_id):
+        """Read a verified, redacted open_url receipt binding without restoring its URL.
+
+        The returned proposal is receipt-only: it has no action arguments and
+        is marked recovery_only, so it cannot pass proposal integrity checks or
+        be dispatched again.
+        """
+        if type(action_id) is not str or len(action_id) != 32 or any(
+            ch not in "0123456789abcdef" for ch in action_id
+        ):
+            raise ControlDenied("invalid action identifier")
+        with self.lock:
+            row = self.db.execute(
+                "SELECT action_id,capability,args_json,expires_at,digest,event_id,source_ref_json,state "
+                "FROM control_actions WHERE action_id=?",
+                (action_id,),
+            ).fetchone()
+            if row is None:
+                raise ControlDenied("verified receipt unavailable")
+            selected_id, capability, args_json, expires_at, digest, event_id, source_json, state = row
+            if (
+                selected_id != action_id
+                or capability != "open_url"
+                or args_json is not None
+                or state != "RECEIPT_VERIFIED"
+                or type(event_id) is not str or not 1 <= len(event_id) <= 128
+                or type(digest) is not str or len(digest) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest)
+                or type(source_json) is not str
+            ):
+                raise ControlDenied("verified receipt-only recovery binding invalid")
+            try:
+                source_ref = json.loads(source_json)
+            except (TypeError, ValueError) as exc:
+                raise ControlDenied("verified receipt source binding is malformed") from exc
+            if (
+                type(source_ref) is not dict
+                or type(source_ref.get("source_id")) is not str or not source_ref["source_id"]
+                or type(source_ref.get("sha256")) is not str or len(source_ref["sha256"]) != 64
+                or any(ch not in "0123456789abcdef" for ch in source_ref["sha256"])
+                or type(source_ref.get("char_start")) is not int or source_ref["char_start"] < 0
+                or type(source_ref.get("char_end")) is not int
+                or source_ref["char_end"] <= source_ref["char_start"]
+                or type(source_ref.get("modality")) is not str or not source_ref["modality"]
+            ):
+                raise ControlDenied("verified receipt source binding is invalid")
+            return Proposal(
+                action_id, capability, {}, float(expires_at), digest,
+                event_id, source_ref, recovery_only=True,
+            )
+
     def cancel(self, action_id):
         with self.lock:
             p = (self.pending.pop(action_id, None) or self.approved.pop(action_id, None)

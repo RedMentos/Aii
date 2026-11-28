@@ -1817,3 +1817,12 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 - Final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f`: focused MediaProjection ingress workflow 45975248573 **PASS** (py_compile + 25/25 Python 3.13 + 25/25 Python 3.14); runtime deployment integrity 45975248638 **PASS**.
 - Shared staged workflow 45975248465 **FAIL** (20 failed/233 passed/10 skipped/2 errors/41 subtests) on pre-existing Core Recovery audio-composer, arithmetic and observer source pins plus QA migration PARTIAL-vs-UPDATED assertions. Integrated regression 45975248465 **FAIL** (1 Core Recovery audio-composer pin). Perception focused tests are green; shared product gate is not.
 - Full local checkout unavailable; no Android/Redmi proof. Next: Core rebase/port provider onto #2557 and wire normal Runtime/C3; QA repairs migration expectations and tests OS consent/onStop/restart/rollback. No deployment.
+
+
+## Core & Harness checkpoint — 2026-11-28 (V14-017 / V14-009)
+
+- Draft repair PR #2576, code SHA `0b2b7697449da81e9c6f141eae0a4ee066fd8575`, branch `core/v14-open-url-ci-repair-20261128-run3`, stacked on #2573/#2568.
+- Implemented and connected the consent-gated HTTPS ACTION_VIEW receipt path: registry readiness, safe receipt authority defaults, redacted receipt-only restart recovery, complete JEF consumer metadata, and Android companion test fixes.
+- Exact-head CI is queued. Pre-final code head 48007af: broker/contract/simulation/capture-gate PASS; Python 3.13/3.14 and companion-outcome suites fail only at the QA-owned controller-guard pin; Android Gradle 77 tests had one stale target-mismatch assertion corrected in 0b2b769. Staged/integrated still needs QA guard and migration reconciliation.
+- Full local checkout/tests BLOCKED by github.com DNS. No native llama.cpp run, no connected Redmi, no release/deployment. Companion stays default-OFF; local TTY and visible Android consent remain mandatory.
+- Next: QA refresh exact JEF source pin and migration semantics; finish exact-head CI; then continue normal-turn A/B/B1/B2/C4/JEF/C3 integration and native receiver measurement. No user action.

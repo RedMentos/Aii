@@ -1,5 +1,7 @@
 package com.redmentos.v14.companion;
 
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -82,7 +84,7 @@ public final class CompanionDbApprovalTest {
                     .put("local_approval", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION");
             assertTrue(first.insertPending(actionId, request.toString(), url, NOW + 10_000L));
             assertTrue(first.claimForExecution(actionId, NOW));
-            String receipt = "{\\"signed\\":true}";
+            String receipt = "{\"signed\":true}";
             if (i == 0) {
                 first.finish(actionId, "EXECUTING", "OUTCOME_UNKNOWN", receipt);
             } else {

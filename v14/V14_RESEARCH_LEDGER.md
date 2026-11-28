@@ -2153,3 +2153,18 @@ This hardens the optional A3 local student-projector read used by the A5 UI-fram
 
 ### Decision for current V14/Redmi
 No new model alternative is recommended: GlassGround's adaptation uses 8B/9B models, while Bel relies on a remote proprietary visual judge and multiple candidate calls. Neither supplies a licensed, measured, local ARM64 model suitable for the current Redmi budget. This is a future perception/action-evaluation experiment only; it does not alter the current A5 capture gate, #1904 P0, installed models, weights, permissions or release status.
+
+
+## R-186 — Android ACTION_VIEW is an intent dispatch, not browser-render proof (2026-11-28)
+
+**Primary sources**
+- Android `Intent.ACTION_VIEW` API: https://developer.android.com/reference/android/content/Intent#ACTION_VIEW — describes ACTION_VIEW as displaying the supplied data to the user and documents its output as nothing.
+- Android common intents, “Load a web URL”: https://developer.android.com/guide/components/intents-common#Browser — uses ACTION_VIEW with an HTTP(S) URI and checks `resolveActivity()` before `startActivity()`.
+- Android sending intents: https://developer.android.com/training/basics/intents/sending — documents handling `ActivityNotFoundException` when no activity can receive the intent.
+
+**V14 implication**
+- A companion-signed receipt can attest that the companion accepted a consented dispatch request; it cannot prove that a browser rendered the page or that the user saw its content. Keep `observed=false`, `device_execution_claimed=false`, `production_route=false`, `world_learning_eligible=false`, `trusted_transition_eligible=false`, and training/native-receiver authority at zero unless a separate, independently verified observation path is implemented.
+- Restrict the capability to validated HTTPS, preserve local TTY plus visible Android consent, resolve an available handler and catch ActivityNotFoundException. The accepted outcome remains dispatch/attestation only, never “page opened successfully”.
+- This validates the current receipt-only design; it does not establish native Android execution or Redmi behavior. No model alternative is indicated for this OS-contract issue.
+
+**Status:** primary API guidance checked; code path remains DRAFT/CI-pending, NOT_RELEASED, REDMI_UNVERIFIED.

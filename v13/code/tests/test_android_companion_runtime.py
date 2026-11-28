@@ -136,6 +136,7 @@ class RuntimeStub:
         self.home = home
         self.store = Store(home)
         self.session = self.store.new_session()
+        self.cfg = {"learning_mode": "RECORD_ONLY"}
         self.idle_checks = 0
 
     def require_idle(self):
@@ -1202,18 +1203,18 @@ def test_screen_capture_registry_preserves_stop_and_pairing_state(
 @pytest.mark.parametrize(
     "mutation",
     [
-        lambda value: value["capabilities"][3].update(
+        lambda value: value["capabilities"][4].update(
             status="READY_WITH_PER_ACTION_CONSENT"
         ),
-        lambda value: value["capabilities"][3].update(
+        lambda value: value["capabilities"][4].update(
             provider="PACKAGE_MANAGER_LAUNCH_INTENT"
         ),
-        lambda value: value["capabilities"][3].update(per_action_consent=False),
-        lambda value: value["capabilities"][3].update(
+        lambda value: value["capabilities"][4].update(per_action_consent=False),
+        lambda value: value["capabilities"][4].update(
             android_os_permission_required=False
         ),
-        lambda value: value["capabilities"][3].update(result_observed=False),
-        lambda value: value["capabilities"][3].update(learning_authority=True),
+        lambda value: value["capabilities"][4].update(result_observed=False),
+        lambda value: value["capabilities"][4].update(learning_authority=True),
     ],
 )
 def test_screen_capture_registry_rejects_wrong_provider_or_escalated_contract(mutation):

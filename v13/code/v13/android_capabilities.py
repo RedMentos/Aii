@@ -191,7 +191,7 @@ class CapabilityRegistry:
         elif screen_capture.provider != "NONE":
             raise CapabilityRegistryError("screen_capture provider mismatch")
 
-        for cap_id in CAPABILITY_IDS[1:]:
+        for cap_id in CAPABILITY_IDS[2:]:
             if cap_id == "screen_capture" and media_projection_present:
                 continue
             capability = by_id[cap_id]
@@ -226,6 +226,7 @@ class CapabilityRegistry:
         capability = self.capability(name)
         expected_status = {
             "launch_app": _READY,
+            "open_url": _READY,
             "screen_capture": _READY_SESSION_OS,
         }.get(name)
         if (
@@ -238,13 +239,13 @@ class CapabilityRegistry:
             raise CapabilityRegistryError(
                 "companion must be paired and enabled and capability ready: " + name
             )
-        if name == "launch_app" and (
+        if name in {"launch_app", "open_url"} and (
             capability.per_action_consent is not True
             or capability.android_os_permission_required is not False
             or capability.result_observed is not False
             or capability.learning_authority is not False
         ):
-            raise CapabilityRegistryError("launch_app authority contract mismatch")
+            raise CapabilityRegistryError(name + " authority contract mismatch")
         if name == "screen_capture" and (
             capability.per_action_consent is not True
             or capability.android_os_permission_required is not True
