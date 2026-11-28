@@ -40,7 +40,7 @@ class A4UpdateEffectPredictorTests(unittest.TestCase):
         for policies in self.result["per_regime"].values():
             meta = policies["META_GATE"]
             self.assertLessEqual(meta["selected_updates"], meta["candidate_updates"])
-            self.assertLessEqual(meta["selected_updates"], meta["updates"] + 1)
+            self.assertEqual(meta["selected_updates"], meta["updates"])
 
     def test_no_update_negative_control_has_zero_parameter_change(self):
         for policies in self.result["per_regime"].values():
