@@ -41,7 +41,7 @@ On the code/test descendant and current docs-only branch head:
 - A5 frame ingress: **29/29 PASS** on Python 3.13 and **29/29 PASS** on Python 3.14.
 - A4 update/retention ablation: **50/50 PASS** on Python 3.13 and **50/50 PASS** on Python 3.14.
 - A5 UI lease, offline RuntimeDeploy integrity and offline bridge/security workflows: PASS. Offline RuntimeDeploy groups were 17 + 3 + 31 + 41 tests on Python 3.11/3.14.
-- RAW EAR vs WebRTC/libfvad comparison: Python 3.13 PASS (9 ABI/benchmark checks + 204 audio runtime tests). Python 3.14 was still running the comparator installation / final audio test at the last poll; do not mark it PASS.
+- RAW EAR vs WebRTC/libfvad comparison: Python 3.13 PASS (9 ABI/benchmark checks + 204 audio runtime tests). Python 3.14 also completed PASS (workflow 46089036001; 9 ABI/benchmark checks + 204 audio runtime tests).
 - Shared staged-runtime: **FAIL** — 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Root causes include Core Recovery expecting composer blob `831080bceec90711bd42e0fa4eba47c669975c98` while Perception now supplies `e1cf98da59cfaf585f3cdcb77a1a6e0e4be12427`; stale Core arithmetic `v13/contracts.py` and observer `v13/cognition.py` pins; QA migration assertions return PARTIAL instead of UPDATED.
 - Integrated regression: **FAIL**, one exact failure on the same stale Core audio-composer pin. No Perception-owned focused regression failed.
 
@@ -78,3 +78,8 @@ V14 mapping: A4 active attention, A5 source-bound PerceptPacket, live provisiona
 5. Only after explicit local consent and a fresh authenticated device receipt: test Android microphone/AudioRecord and the installed updater. No device action is authorized by this PR.
 
 **User decision:** none required; no action needed.
+
+
+### Run 78 final comparator poll — 2026-11-28
+
+The Python 3.14 RAW EAR vs WebRTC/libfvad job completed **PASS** at 2026-11-28T00:44:44Z (workflow 46089036001), matching Python 3.13 (**PASS**, workflow 46089036001). Each environment completed the 9 ABI/benchmark checks and 204 source-bound audio runtime tests. This remains hosted Linux CI, not ARM64/Redmi evidence. The staged-runtime and integrated-regression failures remain Core/QA-owned source-pin/migration blockers.
