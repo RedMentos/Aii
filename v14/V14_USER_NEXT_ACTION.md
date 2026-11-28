@@ -1,3 +1,36 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 77)
+
+**User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, phone restart, microphone permission change, model download/swap, weight update or device-data mutation is requested by this draft.
+
+## RAW EAR measurement provenance → A5/A4/C3
+
+- PR #2578 — [Add explicit RAW EAR measurement provenance](https://github.com/RedMentos/Aii/pull/2578).
+- Branch: research-perception/v14-audio-measurement-provenance-20261128-run77.
+- Exact code/test head at checkpoint: 3ff5e173decb5348c2e890df9c96727dcf02afdf.
+- Stacked directly on PR #2561 at c43bd2a84f3329704b80a237bb23e61e6d614c78; #2561 remains stacked on #2559.
+- New canonical schema: v14.audio-measurement-provenance/1. RMS/ZCR are labelled as measured from the supplied PCM16 window; RMS explicitly has no SPL calibration. Autocorrelation F0, voiced fraction, voicing score, activity class/score and prosody score are explicitly heuristic/uncalibrated, with score/class fields marked not probabilities. Optional Silero VAD is labelled MODEL_SCORE_NOT_CALIBRATED; provisional VAD is NOT_ADVANCED_PROVISIONAL. Speaker change remains diagnostic only and speaker identity is NOT_PRODUCED. Calibrated speech probability remains NOT_AVAILABLE and teacher ASR remains NOT_IN_PACKET.
+- The same consumer now includes cue_prov=HEURISTIC_UNCAL in the bounded C3 Percept summary; packet learning/action/truth authority remains false/zero.
+- Perception-owned source pins in the integrated audio composer and feature-set workflow were refreshed to the exact new blob SHAs.
+
+## Exact evidence and limits
+
+- LOCAL_LINUX isolated scratch harness: py_compile PASS and 6/6 deterministic checks PASS (default unavailable values, heuristic/non-probability labels, optional VAD model-score provenance, provisional VAD non-advancement, malformed-input rejection, and speaker-identity authority rejection). This is not full repository pytest.
+- Full local Aii checkout / repository test suite: BLOCKED / NOT_RUN (no mounted checkout; GitHub DNS resolution failed).
+- Exact child GitHub Actions at head 3ff5e173: no run/status observed at checkpoint. Parent #2561 CI is not inherited as child evidence.
+- Shared staged/integrated: not observed for #2578. The known #2561 Core/QA gate failures remain open and are not changed by this PR.
+- Android/Termux microphone, normal-turn Runtime/C3, device lifecycle and Redmi: REDMI_UNVERIFIED. No device action or live receipt.
+- Updater/deployment: no deployment attempted; current updater state not re-queried; NOT_RELEASED.
+
+## Research note R-188
+
+The full peer-reviewed 2021 IEEE/ACM TASLP paper “Analysis and Calibration of Lombard Effect and Whisper for Speaker Recognition” was reviewed. It uses six speech corpora, non-neutral speech detection and condition-aware score calibration; its results support separating raw detector scores from calibrated downstream decisions. It does not calibrate RAW EAR activity/prosody or prove VAD probabilities. Official Silero VAD documentation currently declares MIT and describes ONNX/mobile use, but the exact model artifact license/revision and ARM64/Redmi performance were not independently benchmarked; no code or weights were reused or downloaded.
+
+## Next executable action
+
+Poll exact #2578 focused RAW EAR and feature-set workflows; fix only Perception-owned failures. After focused CI passes, request Boss review. Core refreshes the Recovery → Stage → RuntimeDeploy audio-composer pins before integration. Keep microphone/provider capture OFF until QA verifies Android consent, lifecycle, revoke, restart and rollback on authorized hardware.
+
+---
+
 # Perception Run 67 — verified checkpoint (2026-11-27)
 
 - **New implementation:** PR [#2559](https://github.com/RedMentos/Aii/pull/2559), branch `research-perception/v14-a5-raw-eye-a4-structure-20261127-run67b`, exact code/test head `0411d6fc539a2442e7f49886da87cc7fbbb25c73` (base #2557 at `95c6dd27e15de798cb4b69ddc1d1f5abda746386`). Module blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`; test blob `6f654d8b90500d0b089ae3154851ba6d22a440f4`.
