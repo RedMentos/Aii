@@ -6,7 +6,7 @@ Checkpoint: 2026-11-28 01:02:40 Europe/Berlin
 Owner: Research & Perception
 PR: https://github.com/RedMentos/Aii/pull/2578
 Branch: research-perception/v14-audio-measurement-provenance-20261128-run77
-Current PR documentation head: 4ff4dc6da6bcb571888210a054e3a449db815d9c
+Current PR documentation head: 119acd30a4455e36a95b52c83a0946ea4cd1ded8
 Exact code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4
 Base: PR #2561 branch at c43bd2a84f3329704b80a237bb23e61e6d614c78 (itself stacked on #2559)
 Release: NOT_RELEASED
