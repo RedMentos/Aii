@@ -1,3 +1,39 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79)
+
+**User action: keine Aktion nötig.** No model download/swap, installed model-weight change, microphone permission, UPDATE_REQUEST, CHAT_SEND or device operation was performed.
+
+## Current code / PR
+- PR [#2578](https://github.com/RedMentos/Aii/pull/2578) remains **DRAFT / NOT_RELEASED** on `research-perception/v14-audio-measurement-provenance-20261128-run77`, based on Perception #2561.
+- New A4 feature-wise error gate: code commit `f8d8575b73040cd56bd169c89f2ee7ef1c4732b7`; test commit / branch head `4ec8b3c9827ca4d4c0f3c0d3de8217566c7e1f6f` before this evidence sync.
+- Code blob `6663d257e6a7608478f89215cecff62a257d67af`; test blob `333bec98a6993fc33aa1bb19a19de6462ca2d444`.
+- `FEATURE_ERROR_GATED` is opt-in via existing Runtime config `raw_ear_temporal_update_policy`. It compares each output feature's absolute prediction error against persistence and updates only worse columns. The default remains `EVERY_FINAL`; persistence remains separately opt-in. This is a candidate update rule, not proven better learning.
+
+## Tests and evidence
+- **LOCAL_LINUX:** CPython 3.13.5 x86_64 scratch algorithm reproduction: positive one-column update + negative no-error control **2/2 PASS**. This is not exact repository source or pytest.
+- **Repository regression tests:** 3 added for feature-only updates, persistence-better negative control and evaluation-only no-update. Exact-head GitHub CI **NOT YET OBSERVED**; do not call them PASS until readback.
+- **Full local Aii checkout / pytest:** **BLOCKED / NOT_RUN** because no checkout is mounted and GitHub DNS resolution failed.
+- Previous Run 78 focused CI (RAW EAR 213, feature-set 15, frame ingress 29, A4 ablation 50 on Python 3.13/3.14; VAD/libfvad 9+204 on each) applies to prior code head `4c9bd27`, not the new Run 79 code. Prior staged/integrated failures remain known Core/QA blockers; no new staged run observed for Run 79.
+
+## Research and next experiment
+- R-190: Arm Silero VAD FP32 ONNX model card declares MIT; artifact 2.33 MB; Vivo X300 one-core benchmark 31.960 ms p50, 45.27 MiB average and 82.39 MiB peak RSS on one 9.96 s sample. The interface matches the existing optional local-file adapter. Vendor benchmark only; no Redmi inference claim; no download or swap.
+- R-191: feature-wise A4 update gate is an engineering hypothesis motivated by Run 55 negative non-speech/mixed results. Next compare `EVERY_FINAL`, `MEMORIZED_ERROR` and `FEATURE_ERROR_GATED` on session-disjoint periodic speech, non-speech and mixed fixtures, including persistence-baseline MAE, old-session retention, parameter diff, restart and consent reset. Do not change the default unless both utility and retention improve.
+
+## Product / device boundary
+- A4 candidate is CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / CI_PENDING; no holdout utility proof yet.
+- Normal-turn C3 audio consumption, calibrated speaker identity/probability, AudioRecord microphone lifecycle, persistent voice learning and actual Redmi performance remain unverified.
+- Latest available private V13OBS #115 is historical (2026-11-24 STOPPED_BY_USER). New read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests #1036–#1038 had no comments at last poll. **Updater UNKNOWN; REDMI_UNVERIFIED; NOT_RELEASED.**
+- No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change, microphone action or deployment was performed.
+
+## Next concrete steps
+1. Poll exact-head PR #2578 focused CI and repair any Perception-owned failure.
+2. If green, run the three-policy session-disjoint holdout and retention ablation; keep the default unchanged until evidence supports a change.
+3. Boss chooses Perception/Core convergence; Core refreshes Recovery→Stage→RuntimeDeploy pins and arithmetic/observer sources; QA repairs migration assertions.
+4. Keep B3 and microphone capture OFF until their separate authorization and native evidence gates pass.
+
+P0 #1904 remains OPEN. **Keine Aktion nötig.**
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 78)
 
 **User action: keine Aktion nötig.** No model, weight, permission, device or installed data was changed.
