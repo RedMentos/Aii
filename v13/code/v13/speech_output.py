@@ -1,6 +1,10 @@
 """Explicit, serialized Termux system-TTS fallback for FINAL C3 text.
 
-No automatic playback, microphone access, network, model swap or trainable vocoder.
+No automatic playback, microphone access, model swap or trainable vocoder. The
+Termux command itself does not access the network, but the selected Android TTS
+engine may: its network requirement is UNKNOWN and is never described as offline.
+Each playback therefore needs a one-shot local consent flag. Termux:API exposes no
+TTS stop action here, so stop/barge-in are unsupported by this adapter.
 A timeout degrades this Runtime instance; the Termux:API service is never killed.
 """
 from __future__ import annotations
@@ -57,6 +61,11 @@ class TermuxTtsAdapter:
             "automatic_playback": False,
             "microphone_access": False,
             "trainable_voice_model": False,
+            "network_requirement": "UNKNOWN",
+            "offline_verified": False,
+            "stop_supported": False,
+            "barge_in_supported": False,
+            "privacy_status": "ENGINE_NETWORK_REQUIREMENT_UNVERIFIED",
             "degraded": self._degraded or marked,
             "degraded_marker_unsafe": unsafe,
         }
@@ -115,7 +124,7 @@ class TermuxTtsAdapter:
         except subprocess.TimeoutExpired:
             pass
 
-    def speak(self, runtime, intent, row):
+    def speak(self, runtime, intent, row, *, allow_unknown_network=False):
         marked, marker_unsafe = self._marker_state(runtime.home)
         if self._degraded or marked:
             return {"status": "DEGRADED", "degraded_marker_unsafe": marker_unsafe, "audibility_verified": False}
@@ -127,6 +136,14 @@ class TermuxTtsAdapter:
         executable = shutil.which(self.executable)
         if not executable:
             return {"status": "UNAVAILABLE", "audibility_verified": False}
+        if allow_unknown_network is not True:
+            return {
+                "status": "NETWORK_REQUIREMENT_UNKNOWN",
+                "network_requirement": "UNKNOWN",
+                "offline_verified": False,
+                "network_consent": "NONE",
+                "audibility_verified": False,
+            }
         if not self._thread_lock.acquire(blocking=False):
             return {"status": "BUSY", "audibility_verified": False}
 
@@ -206,7 +223,7 @@ def _adapter(runtime):
     return adapter
 
 
-def _speak_last(runtime, adapter):
+def _speak_last(runtime, adapter, *, allow_unknown_network=False):
     row = runtime.last_answer()
     if not row or row["status"] != "FINAL":
         return {"status": "NO_FINAL", "audibility_verified": False}
@@ -225,12 +242,14 @@ def _speak_last(runtime, adapter):
         runtime.store.add_packet(
             "ActionIntent",
             packet("ActionIntent", "C5_ANDROID_OUTPUT", row["event_id"], generation,
-                   action_id=action_id, action_type="SPEAK_TEXT", permission="LOCAL_OPERATOR_COMMAND"),
+                   action_id=action_id, action_type="SPEAK_TEXT", permission="LOCAL_OPERATOR_COMMAND",
+                   network_requirement="UNKNOWN", offline_verified=False,
+                   network_consent="ONE_SHOT_UNKNOWN_NETWORK" if allow_unknown_network else "NONE"),
         )
     except Exception as exc:
         return {"status": "LEDGER_BLOCKED", "error_type": type(exc).__name__, "audibility_verified": False}
 
-    result = adapter.speak(runtime, intent, row)
+    result = adapter.speak(runtime, intent, row, allow_unknown_network=allow_unknown_network)
     actual = {
         "engine": "TERMUX_SYSTEM_TTS_FALLBACK",
         "text_sha256": intent["text_sha256"],
@@ -238,6 +257,11 @@ def _speak_last(runtime, adapter):
         "duration_ms": result.get("duration_ms", 0),
         "cli_exit_code": result.get("cli_exit_code"),
         "audibility_verified": False,
+        "network_requirement": "UNKNOWN",
+        "offline_verified": False,
+        "network_consent": "ONE_SHOT_UNKNOWN_NETWORK" if allow_unknown_network else "NONE",
+        "stop_supported": False,
+        "barge_in_supported": False,
     }
     try:
         runtime.store.add_packet(
@@ -252,7 +276,7 @@ def _speak_last(runtime, adapter):
         except Exception:
             pass
         result = dict(result) | {"ledger_status": "OUTCOME_PERSIST_FAILED"}
-    return {"intent": intent, "outcome": result, "automatic_playback": False, "audibility_verified": False}
+    return {"intent": intent, "outcome": result, "privacy": {"network_requirement": "UNKNOWN", "offline_verified": False, "network_consent": "ONE_SHOT_UNKNOWN_NETWORK" if allow_unknown_network else "NONE", "stop_supported": False, "barge_in_supported": False}, "automatic_playback": False, "audibility_verified": False}
 
 
 def operator_command(runtime, args):
@@ -265,15 +289,15 @@ def operator_command(runtime, args):
         cfg = runtime.cfg | {"speech_output_enabled": True}
         save_config(runtime.home, cfg)
         runtime.cfg.update(cfg)
-        return "Platform TTS fallback enabled; playback still requires explicit :speak. No microphone or OS permission is granted."
+        return "Platform TTS fallback enabled; the Android TTS engine network requirement is UNKNOWN. Playback requires :voice speak --allow-network-unknown. No microphone or OS permission is granted."
     if action == "off" and len(args) == 1:
         cfg = runtime.cfg | {"speech_output_enabled": False}
         save_config(runtime.home, cfg)
         runtime.cfg.update(cfg)
-        return "Platform TTS fallback disabled for future requests; an already-started Android utterance may continue."
-    if action == "speak" and len(args) == 1:
-        return dumps(_speak_last(runtime, adapter))
+        return "Platform TTS fallback disabled for future requests; an already-started Android utterance may continue because this Termux TTS adapter has no stop API."
+    if action == "speak" and args in (["speak"], ["speak", "--allow-network-unknown"]):
+        return dumps(_speak_last(runtime, adapter, allow_unknown_network=(len(args) == 2)))
     if action == "reset" and args == ["reset", "--confirm"]:
         return dumps(adapter.reset(runtime.home, confirmed=True,
                                    enabled=runtime.cfg.get("speech_output_enabled", False) is True))
-    raise ValueError(":voice [status|on|off|speak|reset --confirm]")
+    raise ValueError(":voice [status|on|off|speak [--allow-network-unknown]|reset --confirm]")
