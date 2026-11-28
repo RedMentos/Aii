@@ -2574,3 +2574,16 @@ R-189 full-text research is recorded in the research ledger. This overlay does n
 ### Run 78 final poll — 2026-11-28
 
 RAW EAR/libfvad comparison: Python 3.13 and Python 3.14 both PASS (workflow 46089036001; each 9 ABI/benchmark checks + 204 source-bound audio runtime tests). This is hosted Linux CI, not native ARM64/Redmi. Shared staged/integrated remains FAIL; no Canon acceptance or release status changes.
+
+
+## Research & Perception Run 79 — A4 selective plasticity overlay (2026-11-28; additive, no Canon acceptance changed)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A4 RAW EAR temporal predictor — feature-wise error-gated update | WIRED_SYNTHETIC_CANDIDATE / CI_PENDING | PR #2578 code/test head `4ec8b3c`; opt-in `FEATURE_ERROR_GATED` updates only output columns where model absolute error exceeds persistence error; default `EVERY_FINAL` unchanged; LOCAL_LINUX scratch positive/negative controls 2/2 PASS; 3 repository regression tests added | Exact-head CI, held-out utility across periodic/non-speech/mixed sessions, old-task retention, restart and consent-reset under the new policy; no real microphone/Redmi proof |
+| A5 optional Silero VAD model candidate | RESEARCH_ONLY / NOT_ADOPTED | Arm model card declares MIT; 2.33 MB FP32 ONNX, 16 kHz/512+64 streaming contract matches current optional adapter; Vivo X300 one-core benchmark p50 31.960 ms, average RSS 45.27 MiB, peak 82.39 MiB on one 9.96 s sample | Accuracy/robustness comparison, exact local artifact availability, ARM64 Redmi latency/RSS; no download or swap |
+| A5 RAW EAR measurement and speaker provenance | WIRED_SYNTHETIC / PRIOR_FOCUSED_CI_PASS | Run 78 PR #2578 code/test commit `4c9bd27`; heuristic/model-score provenance explicit; caller-supplied calibration cannot self-certify speaker identity | Current Run 79 code-head rerun, normal-turn C3 acceptance, trusted calibration registry, Android microphone |
+| Shared Recovery → Stage → RuntimeDeploy | DRAFT / INTEGRATION_BLOCKED | Prior exact staged run failed on Core composer/arithmetic/observer pins and QA migration assertions; no new staged run observed for Run 79 | Boss convergence decision, Core bottom-up pin refresh, QA migration fix and independent integration review |
+| Android microphone / normal C3 audio turn / updater | REDMI_UNVERIFIED / UNKNOWN | No authenticated fresh device receipt; private read-only relay requests #1036–#1038 had no response at last poll; V13OBS #115 is historical 2026-11-24 STOPPED_BY_USER | Actual installed SHA, updater status, AudioRecord permission/lifecycle, capture/revoke/restart/rollback, normal C3 answer |
+
+No path is promoted to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. No production model weights, persistent data, microphone permission or device state changed. P0 #1904 remains OPEN.
