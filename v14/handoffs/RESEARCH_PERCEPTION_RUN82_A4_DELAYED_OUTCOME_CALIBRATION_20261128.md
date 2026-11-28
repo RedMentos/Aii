@@ -7,7 +7,7 @@
 - **PR:** https://github.com/RedMentos/Aii/pull/2579 (DRAFT; stacked on #2578)
 - **Branch:** research-perception/v14-a4-multihorizon-effect-20261128-run81
 - **Code/test head:** c87f326e128f814b756c842550b4630204e5beff
-- **Documentation commit:** pending readback in this handoff's parent commit
+- **Documentation checkpoint:** 99c6261e66286e17e6774e44c47b7fed27f0ed07 (six-file readback verified; this handoff is included in that commit)
 - **Release:** NOT_RELEASED
 - **Device:** REDMI_UNVERIFIED
 
