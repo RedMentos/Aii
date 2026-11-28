@@ -50,3 +50,11 @@ The newer Perception chain #2578 → #2579 carries composer `f90f57599609eeab7bb
 Boss/Integrator must select the canonical convergence ancestry. Recommended: rebase/port Core #2572 onto the current #2579 Perception ancestry, reapply the reviewed Callosum matrix change, then regenerate the guard and Recovery → Stage → RuntimeDeploy pins against the resulting exact files. QA can then rerun the full staged/integrated, migration, owner-read and Python 3.14 gates. If the rebased Callosum bytes change, its allowlist hash must be reviewed again.
 
 No production route, native learning authority, model/weight change, device permission or user-data action was enabled.
+
+
+## Additional whole-system QA checks
+- P0 issue #1904 remains OPEN. No new normal-turn 20-case CHAT_SEND/CHAT_RESULT acceptance set, correct-answer rate, B1/B2 valid-offer delivery, device TTFT/PSS/residency or installed-SHA receipt was obtained.
+- Read-only private relay requests were created for HEALTH (#1046), PIPELINE_STATUS (#1047) and DIAGNOSTICS (#1048), each with a 600-second expiry. All were polled; none returned a `device_status` receipt. Result: `NO_LIVE_RECEIPT`. No LOG_PAGE request was made because log opt-in is not verified. Private V13OBS #115 has no fresh receipt; #1904's last cited snapshot remains the historical 2026-11-24 STOPPED_BY_USER state.
+- Core normal-turn PR #2577 has a passing staged/integrated regression on its own #2568 ancestry, but its MediaProjection frame-ingress workflow fails 2/30 on both Python 3.13 and 3.14: malformed projector NPY shapes return `PROJECTOR_LOAD_FAILED` instead of `PROJECTOR_TENSOR_HEADER_INVALID`. The newer Perception #2565 branch contains the NPY header preflight; Core must port/rebase it rather than weakening the negative test.
+- Speech-output PR #2479 is only an explicit `:voice speak --allow-network-unknown` Termux TTS fallback exercised with a fake CLI and real Runtime/SQLite. Automatic playback remains false, network/offline status UNKNOWN, audibility unverified, and stop/barge-in unsupported. It is not normal-turn speech or a trainable decoder/vocoder.
+- These are independent blockers; none is evidence of Redmi hardware success. No private raw conversation/log data was copied to public GitHub.
