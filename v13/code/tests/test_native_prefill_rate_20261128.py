@@ -72,6 +72,7 @@ def test_estimator_invalidates_samples_when_model_or_resource_binding_changes():
 
 def test_runner_records_only_successful_effective_prefill_and_exports_aggregate():
     runner = _runner()
+    assert runner._prefill_rate_estimate() is None
     runner._record_prefill_rate("FINAL")
     assert runner._prefill_rate_estimate() == 50.0
     assert runner.last_metrics["prefill_rate"] == {
@@ -89,6 +90,15 @@ def test_runner_does_not_learn_rate_from_deadline_or_zero_output():
     runner._record_prefill_rate("DEADLINE")
     assert runner._prefill_rate_estimate() is None
     runner.last_metrics["generated_tokens"] = 0
+    runner._prefill_rate_estimate()
+    runner._record_prefill_rate("FINAL")
+    assert runner._prefill_rate_estimate() is None
+
+
+def test_runner_does_not_record_a_sample_if_lifecycle_changes_mid_turn():
+    runner = _runner()
+    assert runner._prefill_rate_estimate() is None
+    runner._lifecycle_stamp = lambda: ("model-b", "threads=4", "batch=128")
     runner._record_prefill_rate("FINAL")
     assert runner._prefill_rate_estimate() is None
 
