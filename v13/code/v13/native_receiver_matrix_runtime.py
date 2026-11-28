@@ -509,7 +509,26 @@ def _run(runtime):
             state.update({"status": "COMPLETED", "completed_at": time.time()})
             runtime.store.set_state(KEY, state, expected=version)
         result = dict(result)
-        result["native_receiver_effects"] = _native_receiver_effects(runtime, strict=True)
+        current_task_group_id = result.get("task_group_id")
+        effects = _native_receiver_effects(
+            runtime, strict=True, current_task_group_id=current_task_group_id
+        )
+        result["native_receiver_effects"] = effects
+        result["current_matrix_task_group"] = {
+            "scope": "CURRENT_MATRIX_TASK_GROUP",
+            "task_group_id": current_task_group_id,
+            "represented_in_ephemeral_cohort": effects.get(
+                "current_matrix_task_group_represented"
+            ),
+            "complete_in_ephemeral_cohort": effects.get(
+                "current_matrix_task_group_complete"
+            ),
+            "status": result.get("status"),
+            "cohort_status": result.get("cohort_status"),
+            "persisted": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
         return result
     except BaseException as exc:
         state, version = runtime.store.state(KEY, None)
@@ -534,7 +553,23 @@ def _run(runtime):
 
 
 
-def _native_receiver_effects(runtime, *, strict):
+def _current_task_group_membership(runtime, task_group_id):
+    """Check only membership/completeness; never expose cohort receipts."""
+    if type(task_group_id) is not str or not task_group_id or len(task_group_id) > 256:
+        return None, None
+    receipts = getattr(runtime, "_native_receiver_task_score_receipts", None)
+    if not isinstance(receipts, list):
+        return None, None
+    conditions = {
+        item.get("condition")
+        for item in receipts
+        if isinstance(item, Mapping) and item.get("task_group_id") == task_group_id
+        and type(item.get("condition")) is str
+    }
+    return bool(conditions), conditions == set(CONDITIONS)
+
+
+def _native_receiver_effects(runtime, *, strict, current_task_group_id=None):
     """Expose the Perception cohort's read-only K/V and target-logprob evidence.
 
     K/V differences are structural receiver-state evidence only. The
@@ -551,11 +586,25 @@ def _native_receiver_effects(runtime, *, strict):
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
+    scope_base = {
+        "scope": "AGGREGATE_EPHEMERAL_COHORT",
+        "current_matrix_task_group_id": (
+            current_task_group_id
+            if type(current_task_group_id) is str and 0 < len(current_task_group_id) <= 256
+            else None
+        ),
+        "current_matrix_task_group_represented": None,
+        "current_matrix_task_group_complete": None,
+    }
     try:
         status = task_score_status(runtime)
         if not isinstance(status, Mapping):
             raise NativeReceiverMatrixRuntimeError("Perception task-score status is malformed")
+        represented, complete = _current_task_group_membership(runtime, current_task_group_id)
+        scope_base["current_matrix_task_group_represented"] = represented
+        scope_base["current_matrix_task_group_complete"] = complete
         base = {
+            **scope_base,
             "status": status.get("status"),
             "task_group_count": status.get("task_group_count", 0),
             "complete_task_group_count": status.get("complete_task_group_count", 0),
@@ -655,6 +704,7 @@ def _native_receiver_effects(runtime, *, strict):
                     kv_effect["same_input_consistency_passed"] = None
 
         return {
+            **scope_base,
             "status": cohort.get("status"),
             "evidence_class": evidence_class,
             "task_group_count": status.get("task_group_count", 0),
@@ -677,6 +727,7 @@ def _native_receiver_effects(runtime, *, strict):
         return {
             "status": "INVALID_EFFECT_SUMMARY",
             "failure_kind": type(exc).__name__,
+            **scope_base,
             **safe_base,
         }
 
