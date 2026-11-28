@@ -79,7 +79,7 @@ jobs:
       - name: Verify producer blob pins and run source-bound integration tests
         env:
           V14_EXPECTED_AUDIO_EAR_BLOB: 86e93ae5b55e76ecd68864a7f51bd477e601e9b6
-          V14_EXPECTED_AUDIO_PACKET_BLOB: d1569d29b4e10f748d1f9b2be62566ce64eada29
+          V14_EXPECTED_AUDIO_PACKET_BLOB: acc93054eb6af3a5ccd5ef02d53e55d264f904db
           V14_EXPECTED_RAW_EAR_V3_BLOB: 3324e29ca3ba759905e892afede6f59983a26149
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: b31966bbf5652b4d1d71c1e2c65b157b4232f83a
           V14_EXPECTED_SPEAKER_EVIDENCE_BLOB: a8ce3aab4ea24b85883d2a721d56dafaabdaae18
