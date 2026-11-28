@@ -37,7 +37,7 @@ from .audio_teacher_ear import TeacherEarConsentLease, validate_teacher_ear_resu
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
-from .audio_percept_contract import audio_percept_packet
+from .audio_percept_contract import audio_percept_packet, audio_measurement_provenance
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
@@ -963,6 +963,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             audio_segment["unmeasured"].append("speaker_change")
         if vad_stream is not None and finality == "PROVISIONAL":
             audio_segment["unmeasured"].append("VAD")
+        audio_segment["measurement_provenance"] = audio_measurement_provenance(
+            rms=rms, zcr=zcr, voice_cues=cues,
+            speaker_evidence=speaker_evidence, speaker_decision=speaker_change_decision,
+            vad_expected=vad_stream is not None, finality=finality,
+        )
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -1138,9 +1143,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             token for token in candidate.summary.split()
             if not token.startswith(("zcr=", "interval_ms="))
         )
-        summary = base_summary + (
-            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
-        )
+        summary = base_summary + " cue_prov=HEURISTIC_UNCAL"
+        if vad_evidence is not None:
+            summary += " vad_prov=MODEL_SCORE_UNCAL"
+        if speaker_evidence is not None:
+            summary += " spk_prov=DIAGNOSTIC_ONLY"
+        summary += f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
         summary += f" energy_range_db={cues['energy_range_db']:.1f}"
