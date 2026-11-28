@@ -392,6 +392,99 @@ def _select_negative_score_gate(scores, thresholds):
     )
 
 
+def _two_of_three_margin(scores, thresholds):
+    """Return the second-highest horizon margin; no outcome labels are accepted."""
+    if len(scores) != 3 or len(thresholds) != 3:
+        return None
+    margins = sorted(
+        float(score) - float(threshold)
+        for score, threshold in zip(scores, thresholds)
+    )
+    if any(not math.isfinite(value) for value in margins):
+        raise ValueError("consensus margins must be finite")
+    return margins[-2]
+
+
+def _select_two_of_three_consensus(scores, thresholds, consensus_threshold):
+    """Select only when two horizons beat their calibrated negative margins."""
+    margin = _two_of_three_margin(scores, thresholds)
+    if margin is None or not math.isfinite(float(consensus_threshold)):
+        return False
+    return fmean(float(score) for score in scores) > 0.0 and margin > float(consensus_threshold)
+
+
+def _calibrate_two_of_three_consensus(
+    heads, x_by, y_by, negative_thresholds, *, quantile=0.90
+):
+    """Calibrate the joint gate on disjoint examples negative at every horizon."""
+    reference_rows = x_by[HORIZONS[0]]
+    if not reference_rows or any(
+        x_by[horizon] != reference_rows for horizon in HORIZONS[1:]
+    ):
+        raise ValueError("calibration feature rows differ across horizons")
+    if any(len(y_by[horizon]) != len(reference_rows) for horizon in HORIZONS):
+        raise ValueError("calibration outcome rows differ across horizons")
+
+    scores_by_row = [
+        [heads[horizon].predict(x_by[horizon][index]) for horizon in HORIZONS]
+        for index in range(len(reference_rows))
+    ]
+    labels_by_row = [
+        [float(y_by[horizon][index]) for horizon in HORIZONS]
+        for index in range(len(reference_rows))
+    ]
+    negative_indices = [
+        index for index, labels in enumerate(labels_by_row)
+        if all(label <= 0.0 for label in labels)
+    ]
+    two_positive_indices = [
+        index for index, labels in enumerate(labels_by_row)
+        if sum(label > 0.0 for label in labels) >= 2
+    ]
+    any_positive_indices = [
+        index for index, labels in enumerate(labels_by_row)
+        if any(label > 0.0 for label in labels)
+    ]
+    if len(negative_indices) < 8 or not two_positive_indices:
+        raise ValueError("joint calibration requires at least eight all-negative and one two-horizon-positive example")
+
+    horizon_cutoffs = [negative_thresholds[horizon] for horizon in HORIZONS]
+    margins = [
+        _two_of_three_margin(scores_by_row[index], horizon_cutoffs)
+        for index in negative_indices
+    ]
+    threshold = max(0.0, _quantile(margins, quantile))
+    selected = [
+        _select_two_of_three_consensus(
+            scores_by_row[index], horizon_cutoffs, threshold
+        )
+        for index in range(len(reference_rows))
+    ]
+    false_positives = sum(selected[index] for index in negative_indices)
+    true_positives_two = sum(selected[index] for index in two_positive_indices)
+    true_positives_any = sum(selected[index] for index in any_positive_indices)
+    return threshold, {
+        "examples": len(reference_rows),
+        "joint_negative_examples_all_horizons": len(negative_indices),
+        "positive_examples_at_least_two_horizons": len(two_positive_indices),
+        "positive_examples_any_horizon": len(any_positive_indices),
+        "empirical_false_positive_rate_on_joint_negatives": round(
+            false_positives / len(negative_indices), 8
+        ),
+        "recall_at_least_two_positive_horizons": round(
+            true_positives_two / len(two_positive_indices), 8
+        ),
+        "recall_at_any_positive_horizon": round(
+            true_positives_any / len(any_positive_indices), 8
+        ),
+        "consensus_margin_p90": round(threshold, 8),
+        "threshold_source": "DISJOINT_CALIBRATION_JOINT_NEGATIVE_SECOND_HIGHEST_MARGIN_P90",
+        "feature_rows_identical_across_horizons": True,
+        "probability_calibration": False,
+        "calibration_labels_used_at_decision": False,
+    }
+
+
 def _evaluate(predictor, deltas):
     probe = _clone(predictor)
     probe._previous = tuple(deltas[0])
@@ -411,7 +504,7 @@ def _evaluate(predictor, deltas):
     }
 
 
-def _run_policy(policy, adapt, heldout, anchors, heads, thresholds, negative_thresholds):
+def _run_policy(policy, adapt, heldout, anchors, heads, thresholds, negative_thresholds, consensus_threshold):
     base_policy = (
         "EVERY_FINAL" if policy == "EVERY_FINAL" else "FEATURE_ERROR_GATED"
     )
@@ -460,6 +553,12 @@ def _run_policy(policy, adapt, heldout, anchors, heads, thresholds, negative_thr
             take = _select_negative_score_gate(
                 [scores[h] for h in HORIZONS],
                 [negative_thresholds[h] for h in HORIZONS],
+            )
+        elif policy == "TWO_OF_THREE_CONSENSUS_GATE":
+            take = _select_two_of_three_consensus(
+                [scores[h] for h in HORIZONS],
+                [negative_thresholds[h] for h in HORIZONS],
+                consensus_threshold,
             )
         else:
             take = _select_multi_horizon(
@@ -627,6 +726,9 @@ def run_experiment():
         calibration[str(horizon)]["legacy_train_rmse_margin"] = round(
             0.25 * heads[horizon].residual_rmse, 8
         )
+    consensus_threshold, consensus_calibration = _calibrate_two_of_three_consensus(
+        heads, calibration_x_by, calibration_y_by, negative_score_thresholds
+    )
     test_sessions = {
         "smooth": (
             _deltas(_smooth_sequence(1, 0.62)),
@@ -650,11 +752,12 @@ def run_experiment():
             "ONE_STEP_META_GATE",
             "MULTI_HORIZON_META_GATE",
             "MULTI_HORIZON_NEGATIVE_SCORE_GATE",
+            "TWO_OF_THREE_CONSENSUS_GATE",
             "NO_UPDATE",
         ):
             per_regime[regime][policy] = _run_policy(
                 policy, adapt, heldout, heldout_replay_anchors, heads,
-                thresholds, negative_score_thresholds,
+                thresholds, negative_score_thresholds, consensus_threshold,
             )
         no_update = per_regime[regime]["NO_UPDATE"]
         for result in per_regime[regime].values():
@@ -683,7 +786,7 @@ def run_experiment():
             )
 
     return {
-        "schema": "v14.a4.multi-horizon-update-effect/1",
+        "schema": "v14.a4.multi-horizon-update-effect/2",
         "environment": "SYNTHETIC",
         "synthetic_benchmark": True,
         "device_benchmark": False,
@@ -729,11 +832,13 @@ def run_experiment():
             "EVALUATE_WORST_OF_TWO_HELDOUT_ANCHORS"
         ),
         "decision_threshold_policy": (
-            "COMPARE_DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90_MARGIN "
-            "WITH_NEGATIVE_SCORE_Q90_CUTOFF; "
+            "COMPARE_RESIDUAL_P90_AND_NEGATIVE_SCORE_Q90_WITH "
+            "JOINTLY_CALIBRATED_TWO_OF_THREE_HORIZON_CONSENSUS; "
             "EMPIRICAL_THRESHOLDS_NOT_PROBABILITIES"
         ),
         "calibration": calibration,
+        "consensus_calibration": consensus_calibration,
+        "consensus_threshold": round(consensus_threshold, 8),
         "predictors": {
             str(horizon): {
                 "coefficients": len(heads[horizon].coefficients),
