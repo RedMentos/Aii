@@ -137,7 +137,20 @@ def audio_measurement_provenance(*, rms, zcr, voice_cues=None,
             "NOT_CALIBRATED", decision="DEFER", identity_authority=False,
         )
     else:
-        calibrated = speaker_evidence.get("threshold_status") == "CALIBRATED_VERIFIED"
+        receipt_sha = speaker_evidence.get("calibration_receipt_sha256")
+        calibration_id = speaker_evidence.get("calibration_id")
+        confidence_threshold = speaker_evidence.get("confidence_threshold")
+        calibrated = (
+            speaker_evidence.get("status") == "MEASURED"
+            and speaker_evidence.get("threshold_status") == "CALIBRATED_VERIFIED"
+            and type(receipt_sha) is str and len(receipt_sha) == 64
+            and all(char in "0123456789abcdef" for char in receipt_sha)
+            and type(calibration_id) is str and bool(calibration_id.strip())
+            and type(confidence_threshold) in (int, float)
+            and math.isfinite(float(confidence_threshold))
+            and -1.0 <= float(confidence_threshold) <= 1.0
+            and speaker_decision in {"CONTINUITY_SUPPORTED", "CHANGE_OR_OVERLAP_CANDIDATE"}
+        )
         features["speaker_change"] = entry(
             "CALIBRATED_DIAGNOSTIC" if calibrated else "DIAGNOSTIC_ONLY_UNCALIBRATED",
             "OPTIONAL_CALLER_SUPPLIED_EMBEDDING_DIAGNOSTIC",
