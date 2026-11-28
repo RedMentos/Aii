@@ -4,7 +4,7 @@
 
 ## Current code / PR
 - PR [#2578](https://github.com/RedMentos/Aii/pull/2578) remains **DRAFT / NOT_RELEASED** on `research-perception/v14-audio-measurement-provenance-20261128-run77`, stacked on Perception #2561.
-- Exact code/test head: `698390f3c3fc2d127e91ea7eea9ccba37313b88b`. Code commit `f8d8575b73040cd56bd169c89f2ee7ef1c4732b7`; direct test commit `4b920a08fc6e73bbe893f0a0170b887ba519e4c6`; A4 experiment commit `6a15fa577bc0f5d4b89f5039eb3dc4a5b2f1178c`; experiment-test/head commit `698390f3c3fc2d127e91ea7eea9ccba37313b88b`; Perception composer source-pin refresh `0b3a820a17699a258038ca8a346bc31cfe13d34e`.
+- Exact code/test head: `698390f3c3fc2d127e91ea7eea9ccba37313b88b`. Current PR branch head after documentation-only readback sync: `d473501d84930c6ebebfd467fe2dcb9a8f2aec46` (no code/test changes after the tested head). Code commit `f8d8575b73040cd56bd169c89f2ee7ef1c4732b7`; direct test commit `4b920a08fc6e73bbe893f0a0170b887ba519e4c6`; A4 experiment commit `6a15fa577bc0f5d4b89f5039eb3dc4a5b2f1178c`; experiment-test/head commit `698390f3c3fc2d127e91ea7eea9ccba37313b88b`; Perception composer source-pin refresh `0b3a820a17699a258038ca8a346bc31cfe13d34e`.
 - Blobs: predictor `6663d257e6a7608478f89215cecff62a257d67af`; direct tests `860b52d22de3b4063ed6d5821b7a3281bcba2411`; A4 experiment `3237908b08831630d8e64fd5f4e98f19c9b15551`; experiment tests `dd2d3f502f6903da7fbbea4c5e28b8224196f6b3`; Perception audio composer `f90f57599609eeab7bbe30805c709739c4ec475b`.
 - Added opt-in `FEATURE_ERROR_GATED` to the existing A4 temporal predictor. It updates only output columns where prediction error exceeds the persistence baseline. Runtime default `EVERY_FINAL` is unchanged; persistent numeric weights remain separately opt-in.
 
