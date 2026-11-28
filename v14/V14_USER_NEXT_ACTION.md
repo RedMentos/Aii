@@ -1,3 +1,47 @@
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 78)
+
+**User action: keine Aktion nötig.** No model, weight, permission, device or installed data was changed.
+
+## Current Perception branch and implementation
+- PR [#2578](https://github.com/RedMentos/Aii/pull/2578) remains **DRAFT / NOT_RELEASED** on `research-perception/v14-audio-measurement-provenance-20261128-run77`.
+- Code/test commit: `4c9bd27e56e90cba49d992c157fc5d3b4e348572`. Branch head before this next-action sync: `ebed8271732b8aad9e86f645944498c305173d5d`; later commits are docs/evidence only.
+- `audio_percept_contract.py` blob `8c737a61cc3d560cceb1c2df271fef14d32568cb`; test blob `856c8631a8d810ea69e87367d31b66ef7b1abb76`; integrated composer blob `e1cf98da59cfaf585f3cdcb77a1a6e0e4be12427`.
+- Fix: caller-supplied `CALIBRATED_VERIFIED`, digest-shaped SHA-256, calibration ID and threshold cannot self-certify speaker-change calibration. It remains `DIAGNOSTIC_ONLY_UNCALIBRATED` / `UNVERIFIED` / `identity_authority=false`; malformed decisions become `DEFER`.
+- LOCAL_LINUX CPython 3.13.5 x86_64 isolated negative controls: **5/5 PASS**. Full local Aii checkout/pytest **BLOCKED / NOT_RUN** (no checkout mounted; GitHub DNS failure).
+
+## Exact-head hosted CI
+- RAW EAR fastpath: **213/213 PASS** on Python 3.13 and **213/213 PASS** on Python 3.14; py_compile PASS; privacy CLEAN.
+- Feature-set probe: **15/15 PASS** each on Python 3.13/3.14.
+- A5 frame ingress: **29/29 PASS** each.
+- A4 update/retention ablation: **50/50 PASS** each.
+- A5 UI lease, offline bridge/security and offline RuntimeDeploy integrity PASS; offline groups 17+3+31+41 on Python 3.11/3.14.
+- RAW EAR/libfvad comparison: Python 3.13 PASS (9 ABI/benchmark + 204 audio runtime tests); Python 3.14 was still IN_PROGRESS at last poll.
+- Shared staged-runtime: **FAIL** (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests). Core Recovery expects composer `831080b...`, while Perception supplies `e1cf98da...`; Core arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions also fail.
+- Integrated regression: **FAIL**, one stale Core composer pin. These are Core/QA integration failures; no Perception focused regression failed.
+
+## Research and cross-lane status
+- R-189 is in the research ledger: full-text review of Frenkel et al. (peer-reviewed JASMP 2026) and Kaloga & Kodrasi (arXiv:2611.12119 preprint). No code, weights, data or raw user audio reused. No new model adopted.
+- Core #2577 current head is `8248010cd1c077a2f53db3cd0dfc1dda972944de`, still on the separate #2568 ancestry and still pins composer `59a6974...`, audio contract `f3ee374...`, RAW EAR `2cf44ed...`. Do not transplant Perception hashes across branches; Boss chooses convergence.
+- Core #2576 ingress source blob `14198bb...` lacks the NPY preflight helper expected by its test; current Perception #2565 blob `8f2b6d...` contains it. Coordination comment is posted on #2576.
+
+## Product/device boundary
+- A5 RAW EAR provenance is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted or released.
+- Normal-turn Runtime/C3 audio consumption, calibrated speaker identity/probability, Android AudioRecord/microphone and persistent voice learning remain unproven.
+- Latest available private V13OBS #115 is the historical 2026-11-24 STOPPED_BY_USER snapshot; no fresh authenticated receipt was obtained. Updater/install status **UNKNOWN**; **REDMI_UNVERIFIED**.
+- No UPDATE_REQUEST, CHAT_SEND, shell, restart, model/weight/permission change or device action.
+
+## Next concrete actions
+1. Boss/Integrator selects one convergence ancestry for Perception #2578→#2561→#2559 and Core #2577→#2568.
+2. Core refreshes Recovery→Stage→RuntimeDeploy composer pins and fixes arithmetic/observer source pins; QA repairs migration PARTIAL-vs-UPDATED assertions.
+3. Core ports the current Perception A3 NPY preflight into stale #2576 ancestry without weakening the negative test.
+4. Perception adds a trusted calibration-receipt verifier or a held-out low-cost uncertainty-drift experiment with false-alarm and downstream-error controls.
+5. Only after explicit local consent and a fresh authenticated device receipt, test Android microphone/AudioRecord and installed updater.
+
+P0 #1904 remains OPEN. No action is required from the user.
+
+
+---
+
 # CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 77)
 
 **User action: none required.** No Termux command, UPDATE_REQUEST/CHAT_SEND, phone restart, microphone permission change, model download/swap, weight update or device-data mutation is requested.
