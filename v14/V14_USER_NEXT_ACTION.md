@@ -35,7 +35,7 @@ The full peer-reviewed 2021 IEEE/ACM TASLP paper “Analysis and Calibration of 
 
 ## Next executable action
 
-Core refreshes AUDIO_BUILDER_BLOB_SHA1 and transitive Recovery → Stage → RuntimeDeploy pins to d51b0436 after review. Core also owns the separate arithmetic/observer pins; QA owns migration assertions. Boss reviews the stacked contract before integration. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
+Boss first chooses the convergence order for the separate Perception chain (#2578→#2561→#2559) and Core chain (#2577→#2568→Core A5 UI). Core #2577 currently pins a different composer (59a6974) and old audio blobs; do not transplant d51b0436 across branches. After the chosen rebase/port, Core regenerates Recovery→Stage→RuntimeDeploy pins and resolves arithmetic/observer pins; QA resolves migration assertions. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
 
 
 
