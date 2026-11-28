@@ -1,4 +1,25 @@
-# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79 final)
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 81)
+
+## Latest verified Perception status — Run 81
+
+- **New code:** PR [#2579](https://github.com/RedMentos/Aii/pull/2579), branch research-perception/v14-a4-multihorizon-effect-20261128-run81, current code/test head af951da77c91835d0cd31bf9193352d41585a6d2. It is stacked on Perception PR #2578 at base head 7d2e4eb8d798f8dfeef78331728dfaf8c152980c.
+- **Concrete correction:** Run80's one-step counterfactual baseline had not advanced through the current cue window while the candidate had. This confounded weight update with temporal-state advancement. Both paths now consume the same current observation; schema v2 and a regression test lock that invariant. Run80's earlier 19/69, 57.89%-positive result is superseded and must not be used.
+- **Exact CI:** PR workflow [#46096825708](https://github.com/RedMentos/Aii/actions/runs/46096825708) PASS on Python 3.13 and 3.14. Each interpreter: py_compile PASS; A4 retention 10/10; corrected one-step update-effect 8/8; multi-horizon 7/7; production audio-temporal-predictor pytest 54/54.
+- **Measured synthetic result:** 276 corrected one-step training examples had zero positive labels; the one-step meta-gate selected 0/69 smooth and 0/14 abrupt candidates. The new 1/3/8-window experiment trained 313 examples per horizon and selected 0/74 smooth, 0/16 abrupt and 0/69 abrupt-to-smooth candidates. It matched the synthetic NO_UPDATE reference: zero utility gain and zero retention change. Candidate-positive fractions rise at longer horizons in smooth/recovery streams, but the fitted gate still abstains. No adoption; no A4 default or Runtime policy changed.
+- **Local tests:** LOCAL_LINUX scratch harness on CPython 3.13.5 x86_64 with an API-compatible predictor stub: py_compile PASS and 7/7 new tests PASS. Full local Aii checkout/pytest BLOCKED/NOT_RUN because no checkout is mounted and GitHub DNS resolution fails. Hosted CI is not a local or Redmi measurement.
+- **Whole-system integration:** parent PR #2578's focused Perception checks pass, but staged/integrated regression #46095100443 remains FAIL on Core Recovery composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Boss/Integrator chooses convergence ancestry; Core and QA own those separate fixes.
+- **Device/deployment:** private V13OBS #115 is still the historical 2026-11-24 snapshot. New read-only relay requests #1043 HEALTH, #1044 PIPELINE_STATUS and #1045 DIAGNOSTICS have no device_status receipt at this checkpoint. NO_LIVE_RECEIPT / REDMI_UNVERIFIED / updater UNKNOWN / NOT_RELEASED. No UPDATE_REQUEST, model download/swap, microphone permission, CHAT_SEND, shell or device operation was performed.
+- **Research:** R-200 (PMLR 330, 2026) shows replay can increase forgetting in specific task/subspace settings; R-201 (NeurIPS 2026) explores generative replay plus Fisher trust regions in diffusion tasks. Both support caution and stronger retention controls, not immediate mobile implementation.
+
+### Next concrete action
+
+Keep the update-effect head shadow-only. Improve delayed outcome labels and calibration, test against multiple held-out replay anchors, and do not accept any future weight-update claim without the exact deployed checkpoint C0 and source-bound outcome protocol. Boss/Integrator still chooses the #2578/#2579 convergence ancestry; Core refreshes Recovery-to-Stage-to-RuntimeDeploy and arithmetic/observer pins; QA fixes migration assertions.
+
+**User action: keine Aktion nötig.**
+
+---
+
+## Historical Run 79/80 handoff — superseded by Run 81
 
 ## Latest verified Perception status — 2026-11-28
 
