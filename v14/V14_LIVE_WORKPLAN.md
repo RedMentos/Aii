@@ -1896,3 +1896,8 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **Research R-188.** Full peer-reviewed 2021 IEEE/ACM TASLP study on Lombard/whisper speaker-recognition calibration reviewed. It supports treating detector scores as quality signals requiring separate held-out calibration, not as calibrated probabilities. It is not a VAD or RAW EAR calibration result. Silero VAD official README declares MIT; exact ONNX artifact licensing and ARM64/Redmi performance remain unverified. No code or weights reused/downloaded.
 
 **Next integration.** Core refreshes Recovery → Stage → RuntimeDeploy audio-composer pins to d51b0436 and separately resolves arithmetic/observer pins. QA resolves migration assertions. Boss reviews the stacked contract before integration. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until Android consent, lifecycle, revoke, restart and rollback are verified.
+
+
+### Cross-branch coordination — Run 77
+
+Perception chain: #2578 → #2561 (c43bd2a) → #2559 (e4795811). Core chain: #2577 → #2568 (50d0c7cc) → Core A5 UI consumer base (a3b07d8b). Core #2577 reports code SHA adef6bde passed 22/22 checks, but its current head 0002afc is documentation-only, the PR remains DRAFT, and it has no Redmi proof. Its recovery candidate still pins composer blob 59a6974 and old audio contract/RAW EAR blobs f3ee3742/2cf44ed0. This is a separate ancestry from #2578, whose Perception composer is d51b0436. Boss must choose convergence order; Core rebases/ports and regenerates Recovery→Stage→RuntimeDeploy pins only after that choice. Do not copy blob hashes across branches blindly.
