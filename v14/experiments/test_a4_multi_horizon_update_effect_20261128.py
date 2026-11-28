@@ -7,6 +7,7 @@ from a4_multi_horizon_update_effect_20261128 import (
     _abrupt_to_smooth_sequence,
     _select_multi_horizon,
     _select_negative_score_gate,
+    _select_two_of_three_consensus,
     run_experiment,
 )
 
@@ -121,6 +122,51 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             _select_negative_score_gate([-0.01, -0.02, -0.03], [-0.02, -0.03, -0.04])
         )
 
+    def test_two_of_three_consensus_requires_two_margins_and_positive_mean(self):
+        self.assertTrue(
+            _select_two_of_three_consensus(
+                [0.03, 0.02, -0.04], [0.005, 0.005, 0.005], 0.01
+            )
+        )
+        self.assertFalse(
+            _select_two_of_three_consensus(
+                [0.03, -0.02, -0.04], [0.005, 0.005, 0.005], 0.0
+            )
+        )
+        self.assertFalse(
+            _select_two_of_three_consensus(
+                [0.03, 0.02, -0.10], [0.005, 0.005, 0.005], 0.01
+            )
+        )
+        self.assertFalse(
+            _select_two_of_three_consensus(
+                [0.03, 0.02, -0.04], [0.005, 0.005, 0.005], 0.015
+            )
+        )
+
+    def test_joint_consensus_calibration_is_disjoint_and_not_probability(self):
+        result = self.result
+        calibration = result["consensus_calibration"]
+        self.assertGreaterEqual(
+            calibration["joint_negative_examples_all_horizons"], 8
+        )
+        self.assertGreater(
+            calibration["positive_examples_at_least_two_horizons"], 0
+        )
+        self.assertLessEqual(
+            calibration["empirical_false_positive_rate_on_joint_negatives"],
+            0.11,
+        )
+        self.assertEqual(
+            calibration["threshold_source"],
+            "DISJOINT_CALIBRATION_JOINT_NEGATIVE_SECOND_HIGHEST_MARGIN_P90",
+        )
+        self.assertTrue(calibration["feature_rows_identical_across_horizons"])
+        self.assertFalse(calibration["probability_calibration"])
+        self.assertFalse(calibration["calibration_labels_used_at_decision"])
+        self.assertFalse(result["calibration_labels_used_at_decision"])
+        self.assertFalse(result["future_labels_used_at_decision"])
+
     def test_horizons_and_regimes(self):
         result = self.result
         self.assertEqual(result["horizons"], [1, 3, 8])
@@ -134,6 +180,7 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             "ONE_STEP_META_GATE",
             "MULTI_HORIZON_META_GATE",
             "MULTI_HORIZON_NEGATIVE_SCORE_GATE",
+            "TWO_OF_THREE_CONSENSUS_GATE",
             "NO_UPDATE",
         }
         for policies in result["per_regime"].values():
@@ -172,10 +219,16 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
         )
         for policies in self.result["per_regime"].values():
             meta = policies["MULTI_HORIZON_META_GATE"]
+            consensus = policies["TWO_OF_THREE_CONSENSUS_GATE"]
             self.assertLessEqual(meta["selected_updates"], meta["candidate_updates"])
+            self.assertLessEqual(consensus["selected_updates"], consensus["candidate_updates"])
             self.assertGreaterEqual(meta["abstention_fraction"], 0.0)
             self.assertLessEqual(meta["abstention_fraction"], 1.0)
+            self.assertGreaterEqual(consensus["abstention_fraction"], 0.0)
+            self.assertLessEqual(consensus["abstention_fraction"], 1.0)
             for metric in meta["horizon_metrics"].values():
+                self.assertGreaterEqual(metric["counterfactual_regret"], 0.0)
+            for metric in consensus["horizon_metrics"].values():
                 self.assertGreaterEqual(metric["counterfactual_regret"], 0.0)
 
     def test_heads_fit_on_earlier_sessions_only(self):
