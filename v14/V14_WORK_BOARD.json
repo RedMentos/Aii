@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-27T11:45:00Z",
+  "updated_at": "2026-11-28T00:18:55Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Core PR #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f now has a live Runtime producer/consumer and 7/7 exact-head CI workflows SUCCESS, but remains based on #2519 and does not consume #2524 K/V metadata. Rebase/stack #2523 onto #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530, refresh the Core-owned integrated source-pin chain, and rerun staged/integrated gates. Then run >=20 held-out groups across >=2 sessions and >=2 task families on pinned real GGUF, with generated-answer correctness, all controls, retention/restart/rollback and RSS/TTFT. B3 remains OFF. The #2523 operator route is manual local-TTY diagnostic only, not a normal-turn hook; after the diagnostic GGUF cohort, Core still needs a normal-turn producer/consumer path that preserves the fast trivial-answer path and deeper multi-organ route.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED + CI_PYTHON_3.13/3.14 + STAGED/INTEGRATED; REDMI_UNVERIFIED",
+      "next_step": "Boss review/integrate PR #2577 on top of #2568. Then, only with a fresh consented private receipt and running device, run normal-turn acceptance: B1/B2 valid offers, C4 selected IDs, C3 native offer witness, correct answer, TTFT/prefill/cache_n/PSS and cold/warm residency over multiple turns. Keep P0 open until real Redmi evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-26",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.\\nCore Run 2: PR #2520 (DRAFT, head 024c88a8e2c2bae77bb354d25038ef7ee4e5bfee; code 5476ae6148e455fb30e06cc2b87c7eef93f6737c) fixes the undeclared native receiver model pointer and staged-only test invocation. Parent exact CI 45721544481 had Linux/Android compile failure and 7 Python assertions; child exact CI pending. Full local checkout NOT_RUN (GitHub DNS); REDMI_UNVERIFIED.\nCore Run 3 (2026-11-26): PR #2520 exact head 7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8, all 7 CI workflows SUCCESS. Native C++ now recomputes target-token SHA-256 from the consumed little-endian int32 vector; builder/recovery/stage/RuntimeDeploy pins read back. Local isolated C++17 SHA-256 compile/selftest PASS; full Aii checkout NOT_RUN due DNS. Linux pinned llama.cpp build/selftest PASS; Android arm64 cross-compile PASS only; Python 3.13/3.14 45/45 each; staged/integrated 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime 255 passed, 10 skipped, 47 subtests. No real GGUF score or Redmi proof.\nPerception Run 38: #2519 native workflow 45738564334 SUCCESS at 8b25f4e; 19+59 tests each on Python 3.13/3.14, pinned Linux build/selftest and Android arm64 cross-compile PASS, privacy CLEAN. Shared staged/integrated 45738564326 still IN_PROGRESS at last poll. No normal Android turn invocation or Redmi proof.\nRun 38 latest: #2519 tested branch head 95b8bc; native workflow 45739394614 and RuntimeDeploy 45739394621 SUCCESS. Shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. No normal Android turn invocation or Redmi proof.\nRun 40 cross-lane: Core #2523 exact head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 workflows SUCCESS, including live Runtime consumer and staged/integrated regression. It is based on #2519, not #2524; Core must stack it onto #2524 before the new K/V effect metadata reaches Runtime. No GGUF or Redmi proof.\n\nRun 40 clarification: #2523 is a manual local-TTY one-shot operator diagnostic, not ordinary normal-turn chat integration. P0 remains OPEN.\n",
+      "last_checkpoint": "2026-11-28",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.\\nCore Run 2: PR #2520 (DRAFT, head 024c88a8e2c2bae77bb354d25038ef7ee4e5bfee; code 5476ae6148e455fb30e06cc2b87c7eef93f6737c) fixes the undeclared native receiver model pointer and staged-only test invocation. Parent exact CI 45721544481 had Linux/Android compile failure and 7 Python assertions; child exact CI pending. Full local checkout NOT_RUN (GitHub DNS); REDMI_UNVERIFIED.\nCore Run 3 (2026-11-26): PR #2520 exact head 7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8, all 7 CI workflows SUCCESS. Native C++ now recomputes target-token SHA-256 from the consumed little-endian int32 vector; builder/recovery/stage/RuntimeDeploy pins read back. Local isolated C++17 SHA-256 compile/selftest PASS; full Aii checkout NOT_RUN due DNS. Linux pinned llama.cpp build/selftest PASS; Android arm64 cross-compile PASS only; Python 3.13/3.14 45/45 each; staged/integrated 424 passed, 3 skipped, 6 warnings, 58 subtests; staged runtime 255 passed, 10 skipped, 47 subtests. No real GGUF score or Redmi proof.\nPerception Run 38: #2519 native workflow 45738564334 SUCCESS at 8b25f4e; 19+59 tests each on Python 3.13/3.14, pinned Linux build/selftest and Android arm64 cross-compile PASS, privacy CLEAN. Shared staged/integrated 45738564326 still IN_PROGRESS at last poll. No normal Android turn invocation or Redmi proof.\nRun 38 latest: #2519 tested branch head 95b8bc; native workflow 45739394614 and RuntimeDeploy 45739394621 SUCCESS. Shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. No normal Android turn invocation or Redmi proof.\nRun 40 cross-lane: Core #2523 exact head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 workflows SUCCESS, including live Runtime consumer and staged/integrated regression. It is based on #2519, not #2524; Core must stack it onto #2524 before the new K/V effect metadata reaches Runtime. No GGUF or Redmi proof.\n\nRun 40 clarification: #2523 is a manual local-TTY one-shot operator diagnostic, not ordinary normal-turn chat integration. P0 remains OPEN.\n\n\nCore Run 28 (2026-11-28): PR #2577 draft head adef6bdeab90cec061cf73de30608e82198d7b31, code commit a092a91ec31a4b69ff337a5e8952936f8bbeae5d, stacked on #2568. B1/B2 time-aware soft prompt admission preserves protected source context; C5 ActionSelection carries source-validated refs from the same Focal coalition; native LlamaRunner retains only a verified idle process after DEADLINE and unloads on cancellation/active/malformed/unknown state. Exact-head CI 22/22 success: warm-retention 9/9 on Python 3.13.18 and 3.14.10; core-native-inputs 60 + 37 subtests and staged prompt tests 33 + 30 subtests on Python 3.13/3.14; staged runtime 268 passed/10 skipped/41 subtests; integrated regression 424 passed/3 skipped/6 warnings/58 subtests; source pins and RuntimeDeploy integrity pass. Local CPython 3.13.5 isolated state machine 6/6 PASS; full local Aii checkout NOT_RUN (no checkout/DNS). Staged artifact remains SHADOW_REVIEW_ONLY (1053 files). No native model execution, no Redmi receipt, no release; P0 correctness and actual B1/B2 offer quality remain OPEN.\n",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -71,6 +71,36 @@
         "next_action": "Perception rebase #2519/#2517; Core one-shot matrix consumer.",
         "latest_pr_head_after_docs": "68c3de91ede75bd0d1381524690e46505451aeda",
         "code_head_sha": "7ffe4e23de79c82aeed8ceb43dfc7ff3adb305b8"
+      },
+      "core_run28_checkpoint": {
+        "owner": "Core & Harness",
+        "package_id": "V14-P0-B1B2-C3-PREFILL-RETENTION-002",
+        "branch": "core/v14-body-prefill-admission-20261128-run1",
+        "base_dependency": "PR #2568 head 50d0c7ccb14828b729de573d69444821ee42e82d; current stack, not release",
+        "head_sha": "adef6bdeab90cec061cf73de30608e82198d7b31",
+        "code_commit_sha": "a092a91ec31a4b69ff337a5e8952936f8bbeae5d",
+        "pull_request": "https://github.com/RedMentos/Aii/pull/2577",
+        "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+        "changes": {
+          "body_prompt_admission": "B1_DETAIL/B2_GIST receive a remaining-time-derived soft prompt target; optional metadata is reduced, protected source context is never silently truncated; prompt admission status/tokens are exposed in native runner metrics.",
+          "c5_action_selection": "C5 ActionSelection packet receives source-validated SourceRefs from the same Focal coalition (B1/B2/B3/C1/C4/Memory/World/Self); this is symbolic/source-bound transport, not trained latent coupling.",
+          "deadline_warm_retention": "On DEADLINE only, close the HTTP request and retain the native runner process only if /slots reports every slot idle, the same process and lifecycle stamp remain valid, and no user cancellation is set; otherwise unload. /slots content is not persisted."
+        },
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5, 6/6 isolated warm-retention state-machine cases; PASS: fixture overlay import/hash-framing smoke. Full local Aii checkout/pytest NOT_RUN (no checkout; GitHub DNS failure).",
+          "ci_exact_head": "PASS: 22/22 check-runs SUCCESS on adef6bdeab90cec061cf73de30608e82198d7b31.",
+          "warm_retention_py313": "PASS: 9/9 on Python 3.13.18; py_compile PASS.",
+          "warm_retention_py314": "PASS: 9/9 on Python 3.14.10; py_compile PASS.",
+          "core_native_inputs_py313": "PASS: 60 tests + 37 subtests; staged prompt suite 33 tests + 30 subtests.",
+          "core_native_inputs_py314": "PASS: 60 tests + 37 subtests; staged prompt suite 33 tests + 30 subtests.",
+          "staged_runtime": "PASS: 268 passed, 10 skipped, 41 subtests; staged artifact status SHADOW_REVIEW_ONLY, 1053 files.",
+          "integrated_regression": "PASS: 424 passed, 3 skipped, 6 warnings, 58 subtests.",
+          "source_contracts_and_deploy": "PASS: source-contract pins, RuntimeDeploy integrity, two-checkout migration, offline bridge/security and other exact-head workflows."
+        },
+        "device": "REDMI_UNVERIFIED; no new authenticated phone receipt; latest historical private V13OBS #115 says runtime STOPPED_BY_USER, no device action taken.",
+        "release": "NOT_RELEASED; PR #2577 remains draft; no merge, model/weight change, permission change, update request or Termux command.",
+        "updater": "CI staging/migration only. GitHub push is not deployment; current installed SHA and updater state not reverified on Redmi.",
+        "next_action": "Boss review/integrate PR #2577 on top of #2568. Then, only with a fresh consented private receipt and running device, run normal-turn acceptance: B1/B2 valid offers, C4 selected IDs, C3 native offer witness, correct answer, TTFT/prefill/cache_n/PSS and cold/warm residency over multiple turns. Keep P0 open until real Redmi evidence."
       }
     },
     {
@@ -1049,29 +1079,29 @@
     {
       "capability": "B3_LATENT_COUPLING",
       "code": "EIGHT_CONDITION_SOURCE_BOUND_MATRIX_AND_NATIVE_TARGET_SCORE_BRIDGE_PR2519",
-      "wired": "DIAGNOSTIC_SYNTHETIC_CONTRACT; CORE_PRODUCER_CALLSITE_PENDING",
-      "tested_synthetic": "PR #2519 tested branch head 95b8bc; workflow 45739394614 SUCCESS: 19 focused + 59 broader tests on Python 3.13/3.14",
+      "wired": "SOURCE_BOUND_SYMBOLIC_C5_ACTIONSELECTION; NO_TRAINED_LATENT_RECEIVER",
+      "tested_synthetic": "PR #2519 tested branch head 95b8bc; workflow 45739394614 SUCCESS: 19 focused + 59 broader tests on Python 3.13/3.14; PR #2577 C5 packet now carries source-validated Focal coalition refs (B1/B2/B3/C1/C4/Memory/World/Self), synthetic/CI only.",
       "tested_android": "ANDROID_ARM64_CROSS_COMPILE_ONLY; REDMI_UNVERIFIED",
       "active": "OFF",
-      "evidence": "Teacher-forced target-token likelihood only; generated-answer correctness and semantic use unproven. Core #2522 has no live producer call site and fixture-only test. Old Cognition.native_receive/legacy Callosum acceptance remains a Core gap. R-159 finds pinned internal LFM2 hybrid K/V read APIs, but no implementation."
+      "evidence": "Teacher-forced target-token likelihood only; generated-answer correctness and semantic use unproven. Core #2522 has no live producer call site and fixture-only test. Old Cognition.native_receive/legacy Callosum acceptance remains a Core gap. R-159 finds pinned internal LFM2 hybrid K/V read APIs, but no implementation. This does not establish learned cross-model latent coupling, native receiver utility or Redmi execution."
     },
     {
       "capability": "B1_DETAIL_B2_GIST",
-      "code": "DISTINCT_ROLE_MODELS_AND_SYNTHETIC_OFFERS",
-      "wired": "SYNTHETIC_OFFER_PACKET_TO_C4_C3",
-      "tested_synthetic": "#2370 old-head CI 37 SUCCESS / 1 policy SKIPPED; 193 ahead / 34 behind, unmergeable; 30 s fixture ~1.95 s/body",
-      "tested_android": "B1/B2 TIME_BUDGET 53.2/54.2 s; no native offer receipt",
+      "code": "DISTINCT_ROLE_MODELS_AND_SYNTHETIC_OFFERS + TIME_AWARE_SOFT_PROMPT_ADMISSION",
+      "wired": "B1_B2_PROMPT_ADMISSION + SOURCE_BOUND_OFFER_PACKET_TO_C4_C3_PROMPT_WITNESS",
+      "tested_synthetic": "PR #2577 exact head adef6bde: core-native-inputs 60 passed + 37 subtests and staged prompt 33 passed + 30 subtests on Python 3.13/3.14; warm-retention 9/9 each; staged/integrated pass.",
+      "tested_android": "NO_NEW_RECEIPT; historical private #115 STOPPED_BY_USER",
       "active": "NO_ACCEPTED_NATIVE_OFFERS",
-      "evidence": "No useful source-bound B1/B2 offer consumed by C4/C3; recompose on b20e9 and measure."
+      "evidence": "Soft target reduces optional metadata only; protected source is never silently truncated. Native model token generation, useful B1/B2 offers, C4 semantic selection, C3 correctness and Redmi TTFT remain unproven."
     },
     {
       "capability": "C3_CORRECTNESS_AND_LATENCY",
-      "code": "C3_PREFILL_PR2425; IH_H12_OUTPUT_COMMIT_AND_C7_RECEIPT_GATE_PR2434",
-      "wired": "SOURCE_PRESERVING_ADMISSION_AND_BROKER_C7_RECEIPT_GATE",
-      "tested_synthetic": "#2434 69e77bc 39/39; b20e9 37/37",
-      "tested_android": "LAST_RECEIPT_8BF44CB_CI_WAIT; B20E9_NOT_CONFIRMED",
-      "active": "MERGED_CODE / DEVICE_EFFECT_UNVERIFIED",
-      "evidence": "Broker checks durable output receipt; correctness, TTFT and 20-turn acceptance open."
+      "code": "C3_PREFILL_ADMISSION + NATIVE_OFFER_PROMPT_WITNESS + TIMING_RECEIPT",
+      "wired": "SOURCE_BOUND_SELECTED_OFFER_CONTEXT_TO_C3_NATIVE_PROMPT; prompt/cache timings retained in runner metrics",
+      "tested_synthetic": "PR #2577 exact head adef6bde: 60 core-native-input tests + 37 subtests, 33 staged prompt tests + 30 subtests on Python 3.13/3.14; integrated regression 424 passed.",
+      "tested_android": "NO_NEW_RECEIPT; REDMI_UNVERIFIED",
+      "active": "DEVICE_EFFECT_UNVERIFIED",
+      "evidence": "Prompt inclusion witness is transport evidence only, not proof that the model semantically used the offers or produced a correct answer. Native C3 TTFT and 20-turn acceptance remain open."
     },
     {
       "capability": "WORLD_SELF_MEMORY_JEPA_SLEEP",
@@ -1122,10 +1152,10 @@
       "capability": "REMOTE_MAINTENANCE",
       "code": "OWNER_READ_AND_CI_GATED_UPDATER",
       "wired": "READ_ONLY_STATUS_AND_UPDATE_REQUEST",
-      "tested_synthetic": "Owner-read and update queue flow",
-      "tested_android": "PIPELINE_STATUS_767_AUTHENTICATED; LAST_REPORTED_8BF44CB_CI_WAIT",
+      "tested_synthetic": "Owner-read and update queue flow; PR #2577 exact-head two-checkout migration/staging CI passes, synthetic only.",
+      "tested_android": "NO_NEW_RECEIPT; last historical #115 runtime STOPPED_BY_USER",
       "active": "READ_ONLY_STATUS_ONLY; NO_PATCH_STAGE/APPLY/RESTORE",
-      "evidence": "No shell/remote execution; auto-updater enabled; #737 queued."
+      "evidence": "No shell/remote execution; auto-updater enabled; #737 queued. No update request was sent and no device deployment was claimed."
     },
     {
       "capability": "TECHNICAL_OS_SANDBOX_AND_BEHAVIOR_JUDGE",
@@ -1139,11 +1169,11 @@
     {
       "capability": "INSTALL_UPDATE_AND_ROLLBACK",
       "code": "RUNTIME_DEPLOY_JOURNAL; PR2425; PR2434; PR2429",
-      "wired": "CI_GATED_UPDATER; SOURCE_PRESERVING_C3_ADMISSION_STAGED",
-      "tested_synthetic": "b20e9 exact push CI 37/37",
-      "tested_android": "PIPELINE_STATUS_767_STALE_8BF44CB_CI_WAIT; B20E9_NOT_CONFIRMED",
-      "active": "MERGED_CODE / DEVICE_STATUS_PENDING",
-      "evidence": "No post-green install receipt, process-death, reboot or runtime-only rollback proof."
+      "wired": "CI_GATED_UPDATER_AND_SHADOW_STAGER; PR #2577 staged artifact SHADOW_REVIEW_ONLY",
+      "tested_synthetic": "PR #2577: 1053-file staged artifact, source pins and two-checkout migration tests pass in CI; no install",
+      "tested_android": "NO_NEW_INSTALL_RECEIPT; REDMI_UNVERIFIED",
+      "active": "DRAFT_CODE_NOT_RELEASED",
+      "evidence": "No merge, installed SHA, process-death, reboot or runtime-only rollback proof."
     }
   ],
   "research_intake": [
@@ -1352,7 +1382,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T11:07:22.216Z",
+    "timestamp": "2026-11-28T00:18:55Z",
     "release_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "code_candidate_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "merged_pr": 2429,
@@ -1549,7 +1579,15 @@
       "release": "NOT_RELEASED",
       "user_action_required": false,
       "summary": "Opt-in A4 memorized-error update gate and retention/restart ablation; default EVERY_FINAL unchanged; synthetic quality mixed/negative; Core/QA integration blockers remain."
-    }
+    },
+    "core_candidate_pr": 2577,
+    "core_candidate_branch": "core/v14-body-prefill-admission-20261128-run1",
+    "core_candidate_head": "adef6bdeab90cec061cf73de30608e82198d7b31",
+    "core_candidate_code_commit": "a092a91ec31a4b69ff337a5e8952936f8bbeae5d",
+    "core_candidate_ci": "22_OF_22_CHECK_RUNS_SUCCESS; STAGED_AND_INTEGRATED_PASS",
+    "core_candidate_scope": "B1/B2 time-aware prompt admission; C5 source-bound ActionSelection context; deadline-safe warm runner retention",
+    "core_candidate_release": "NOT_RELEASED",
+    "core_candidate_device": "REDMI_UNVERIFIED; NO_NEW_RECEIPT"
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
@@ -1751,6 +1789,36 @@
   },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
+    "package_id": "V14-P0-B1B2-C3-PREFILL-RETENTION-002",
+    "branch": "core/v14-body-prefill-admission-20261128-run1",
+    "base_dependency": "PR #2568 head 50d0c7ccb14828b729de573d69444821ee42e82d; current stack, not release",
+    "head_sha": "adef6bdeab90cec061cf73de30608e82198d7b31",
+    "code_commit_sha": "a092a91ec31a4b69ff337a5e8952936f8bbeae5d",
+    "pull_request": "https://github.com/RedMentos/Aii/pull/2577",
+    "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+    "changes": {
+      "body_prompt_admission": "B1_DETAIL/B2_GIST receive a remaining-time-derived soft prompt target; optional metadata is reduced, protected source context is never silently truncated; prompt admission status/tokens are exposed in native runner metrics.",
+      "c5_action_selection": "C5 ActionSelection packet receives source-validated SourceRefs from the same Focal coalition (B1/B2/B3/C1/C4/Memory/World/Self); this is symbolic/source-bound transport, not trained latent coupling.",
+      "deadline_warm_retention": "On DEADLINE only, close the HTTP request and retain the native runner process only if /slots reports every slot idle, the same process and lifecycle stamp remain valid, and no user cancellation is set; otherwise unload. /slots content is not persisted."
+    },
+    "tests": {
+      "local_linux_isolated": "PASS: CPython 3.13.5, 6/6 isolated warm-retention state-machine cases; PASS: fixture overlay import/hash-framing smoke. Full local Aii checkout/pytest NOT_RUN (no checkout; GitHub DNS failure).",
+      "ci_exact_head": "PASS: 22/22 check-runs SUCCESS on adef6bdeab90cec061cf73de30608e82198d7b31.",
+      "warm_retention_py313": "PASS: 9/9 on Python 3.13.18; py_compile PASS.",
+      "warm_retention_py314": "PASS: 9/9 on Python 3.14.10; py_compile PASS.",
+      "core_native_inputs_py313": "PASS: 60 tests + 37 subtests; staged prompt suite 33 tests + 30 subtests.",
+      "core_native_inputs_py314": "PASS: 60 tests + 37 subtests; staged prompt suite 33 tests + 30 subtests.",
+      "staged_runtime": "PASS: 268 passed, 10 skipped, 41 subtests; staged artifact status SHADOW_REVIEW_ONLY, 1053 files.",
+      "integrated_regression": "PASS: 424 passed, 3 skipped, 6 warnings, 58 subtests.",
+      "source_contracts_and_deploy": "PASS: source-contract pins, RuntimeDeploy integrity, two-checkout migration, offline bridge/security and other exact-head workflows."
+    },
+    "device": "REDMI_UNVERIFIED; no new authenticated phone receipt; latest historical private V13OBS #115 says runtime STOPPED_BY_USER, no device action taken.",
+    "release": "NOT_RELEASED; PR #2577 remains draft; no merge, model/weight change, permission change, update request or Termux command.",
+    "updater": "CI staging/migration only. GitHub push is not deployment; current installed SHA and updater state not reverified on Redmi.",
+    "next_action": "Boss review/integrate PR #2577 on top of #2568. Then, only with a fresh consented private receipt and running device, run normal-turn acceptance: B1/B2 valid offers, C4 selected IDs, C3 native offer witness, correct answer, TTFT/prefill/cache_n/PSS and cold/warm residency over multiple turns. Keep P0 open until real Redmi evidence."
+  },
+  "previous_core_checkpoint": {
+    "owner": "Core & Harness",
     "package_id": "V14-NATIVE-TARGET-SCORE-001",
     "branch": "core/v14-native-target-score-repair-20261126-run1",
     "base_dependency": "Core PR #2515 head 13cfe43a7a94d4b35d4a3be0249bd725b6f06c23; #2512 native tokenwise receiver consumer; Perception #2511 evaluator lineage",
@@ -1801,37 +1869,6 @@
       "86a1226cc1cc12ca8defb2d6992cb5045163f121",
       "68c3de91ede75bd0d1381524690e46505451aeda"
     ]
-  },
-  "previous_core_checkpoint": {
-    "owner": "Core & Harness",
-    "package_id": "V14-NATIVE-TARGET-SCORE-001",
-    "branch": "core/v14-native-target-score-20261125-run1",
-    "base_dependency": "Core PR #2512 (head 10c2f66f8c110516e02d165e2b60183199527116); Perception evaluator copied byte-for-byte from PR #2511 latest head",
-    "head_sha": "54a72bc38213f0c1e551e4ae216f450106371230",
-    "pull_request": "https://github.com/RedMentos/Aii/pull/2515",
-    "status": "DRAFT_CI_PENDING",
-    "local_linux": "PASS: isolated C++17 logprob math with -Wall -Wextra -Werror; full checkout/pytest NOT_RUN (GitHub DNS unavailable)",
-    "ci_python_313_314": "NOT_YET_OBSERVED",
-    "native_build": "PENDING_EXACT_HEAD_GITHUB_CI",
-    "redmi": "REDMI_UNVERIFIED",
-    "proof": "Native C++ receiver gains bounded teacher-forced target-token scoring (1..512) after positive embedding decode; Python wrapper binds per-token logprobs to model/input/target/binary hashes, pinned llama.cpp revision/version, decode status and input-consumed evidence. Exact Perception native_receiver_utility.py carried unchanged. Core collector is ephemeral, capped at 160 receipts, rejects duplicates, and grants no training/production/B3 authority. Tokenwise probe currently emits LATENT_CANDIDATE only; no complete 8-condition utility cohort or real GGUF score yet. Documentation/handoff commits after code commit 1eee88b are docs-only; current branch/PR HEAD is 54a72bc.",
-    "parallel_prs": [
-      {
-        "number": 2512,
-        "url": "https://github.com/RedMentos/Aii/pull/2512",
-        "head_sha": "10c2f66f8c110516e02d165e2b60183199527116",
-        "status": "DRAFT_DEPENDENCY"
-      },
-      {
-        "number": 2513,
-        "url": "https://github.com/RedMentos/Aii/pull/2513",
-        "head_sha": "e2774a22c2f9d0a4acfee3c00d1024793b952f61",
-        "status": "DRAFT_CI_NOT_OBSERVED",
-        "scope": "consent-gated HTTPS ACTION_VIEW Android open_url"
-      }
-    ],
-    "next_action": "Build the bounded 8-condition source/session-bound matrix producer; gather >=20 held-out task groups across >=2 sessions and >=2 task families; run against a pinned real GGUF on LOCAL_LINUX, evaluate candidate vs all controls, then pursue authorized Termux/Redmi evidence separately.",
-    "code_commit_sha": "1eee88b1de898d2c9c2dec4670b8ff1d8ec7d8d7"
   },
   "latest_owner_read_attempt": {
     "requested_at": "2026-11-27T01:10:35Z",

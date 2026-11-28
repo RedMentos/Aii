@@ -1,3 +1,22 @@
+# CORE RUN 28 — 2026-11-28 (latest verified checkpoint)
+
+**PR #2577 (DRAFT, NOT RELEASED):** `core/v14-body-prefill-admission-20261128-run1`, exact tested head `adef6bdeab90cec061cf73de30608e82198d7b31`; production code checkpoint `a092a91ec31a4b69ff337a5e8952936f8bbeae5d`; based on #2568 head `50d0c7ccb14828b729de573d69444821ee42e82d`.
+
+- B1_DETAIL/B2_GIST now get a remaining-time-derived **soft** prompt target. Optional metadata is reduced; protected source context is not silently truncated. Prompt-admission and token/timing receipts remain in the native runner metrics.
+- C5 ActionSelection receives source-validated refs from the same Focal coalition (B1/B2/B3/C1/C4/Memory/World/Self). This is source-bound symbolic transport, **not trained latent coupling**.
+- After a native deadline, the LlamaRunner closes the request and retains the process only if every `/slots` entry is idle, the same process/lifecycle stamp is still valid, and no cancellation is set. Active, malformed, unavailable, changed or cancelled state fails closed to unload. No slot response/prompt text is persisted.
+
+**Verified tests:** exact-head GitHub CI 22/22 check-runs SUCCESS. Warm-retention tests 9/9 on Python 3.13.18 and 9/9 on 3.14.10. Core native-input suite 60 passed + 37 subtests and staged prompt suite 33 passed + 30 subtests on both Python versions. Staged runtime 268 passed, 10 skipped, 41 subtests; integrated regression 424 passed, 3 skipped, 6 warnings, 58 subtests. Source pins, RuntimeDeploy integrity, two-checkout migration and offline bridge/security checks passed. The staged artifact is **SHADOW_REVIEW_ONLY** (1053 files).
+
+**Local/device distinction:** LOCAL_LINUX CPython 3.13.5 isolated warm-retention state machine 6/6 PASS and overlay fixture hash/import smoke PASS. Full local Aii checkout/pytest NOT_RUN because no local checkout and GitHub DNS failed. No native llama.cpp model execution. No fresh authenticated Redmi receipt; historical private V13OBS #115 says runtime STOPPED_BY_USER. **REDMI_UNVERIFIED.** GitHub push/CI is not deployment. No update request, model/weight change or permission change was made.
+
+**Still OPEN (P0):** actual useful B1/B2 native offers, C4 selection and C3 prompt witness on the installed Redmi; semantically correct final answers; TTFT/prefill/cache_n/PSS and sustained warm residency; trained cross-model latent coupling. The prompt witness proves transport only, not semantic use.
+
+**Next concrete action:** Boss review/integrate #2577 on top of #2568. After an authorized fresh private receipt and a running device, run normal-turn acceptance for arithmetic and a nontrivial query, checking B1/B2 valid offers, C4 selected IDs, C3 native prompt witness, correctness, TTFT/prefill/cache_n/PSS and cold/warm process residency across multiple turns. Do not swap models or issue a device update before release approval.
+
+Run started_at: UNKNOWN. Exact verified checkpoint: 2026-11-28T00:18:55Z. Remaining platform execution budget: UNKNOWN. No user action required now.
+---
+
 
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 66)
 

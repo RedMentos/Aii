@@ -2153,3 +2153,12 @@ This hardens the optional A3 local student-projector read used by the A5 UI-fram
 
 ### Decision for current V14/Redmi
 No new model alternative is recommended: GlassGround's adaptation uses 8B/9B models, while Bel relies on a remote proprietary visual judge and multiple candidate calls. Neither supplies a licensed, measured, local ARM64 model suitable for the current Redmi budget. This is a future perception/action-evaluation experiment only; it does not alter the current A5 capture gate, #1904 P0, installed models, weights, permissions or release status.
+
+
+## R-186 — TierKV for on-device KV-cache tiering (2026-11-28)
+
+- **Source:** *TierKV: Long-Context On-Device LLMs via Predictive Multi-Tier KV Caching*, arXiv:2609.21172, https://arxiv.org/abs/2609.21172 (preprint; not treated as peer-reviewed acceptance).
+- **Reported results:** on tested OnePlus 12/11 and Pixel 8 devices, approximately 1.2–1.6× prefill speedup versus llama.cpp for text-only models, 1.0–1.2× for multimodal models, 12.5–34% KV-memory reduction, and about 1.1× average end-to-end speedup. The paper's larger headline comparison is against a different runtime, not llama.cpp.
+- **Fit / limits:** it adds a substantial C/C++/OpenCL tiered-cache implementation. Hybrid SSM-attention compatibility is described as future work; no evidence it is a drop-in for the current LFM2.5 hybrid bodies or Redmi Note 10 Pro/Adreno 618. No code or weights copied; implementation license not assessed because nothing was downloaded or reused.
+- **V14 decision:** RESEARCH_ONLY; do not change model, KV type, or runtime. Current runner already sends `cache_prompt=True` and preserves native timing metrics. First measure real `prompt_n`/ `cache_n` reuse across repeated warm turns, alongside TTFT, prefill and PSS. Only consider a tiered-cache port after a device-specific benchmark and ARM/OpenCL/license review.
+- **Evidence class:** paper-reported device results, not V14 measurements. Redmi remains REDMI_UNVERIFIED.
