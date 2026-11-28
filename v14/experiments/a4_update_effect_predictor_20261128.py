@@ -101,6 +101,15 @@ def _clone(predictor):
     return copy.deepcopy(predictor)
 
 
+def _aligned_candidate_pair(predictor, delta):
+    """Advance candidate and no-update baseline through the same current window."""
+    baseline = _clone(predictor)
+    candidate = _clone(predictor)
+    result = candidate.update(delta, allow_update=True)
+    baseline.update(delta, allow_update=False)
+    return baseline, candidate, result
+
+
 def _evaluate(predictor, deltas):
     """Read-only evaluation on a fresh sequence; the checkpoint is not updated."""
     probe = _clone(predictor)
@@ -158,9 +167,9 @@ def _training_examples(sessions, old_deltas):
             update_policy="FEATURE_ERROR_GATED",
         )
         for index in range(len(deltas) - 1):
-            baseline = _clone(predictor)
-            candidate = _clone(predictor)
-            result = candidate.update(deltas[index], allow_update=True)
+            baseline, candidate, result = _aligned_candidate_pair(
+                predictor, deltas[index]
+            )
             if result.get("prediction_error_mae") is not None:
                 x_rows.append(_features(deltas[index], result))
                 y_rows.append(_counterfactual_score(candidate, baseline, deltas[index + 1], old_deltas))
@@ -248,9 +257,9 @@ def _run_policy(policy, adapt_deltas, eval_deltas, old_deltas, meta=None, thresh
     selected_true = []
     for index, delta in enumerate(adapt_deltas[:-1]):
         if policy == "META_GATE":
-            baseline = _clone(predictor)
-            candidate = _clone(predictor)
-            result = candidate.update(delta, allow_update=True)
+            baseline, candidate, result = _aligned_candidate_pair(
+                predictor, delta
+            )
             if result.get("update_applied"):
                 candidates += 1
             score = meta.predict(_features(delta, result))
@@ -261,7 +270,6 @@ def _run_policy(policy, adapt_deltas, eval_deltas, old_deltas, meta=None, thresh
                 selected_true.append(_counterfactual_score(candidate, baseline, adapt_deltas[index + 1], old_deltas))
                 predictor = candidate
             else:
-                baseline.update(delta, allow_update=False)
                 predictor = baseline
         elif policy == "NO_UPDATE":
             predictor.update(delta, allow_update=False)
@@ -326,11 +334,12 @@ def run_experiment():
             for policy in ("EVERY_FINAL", "FEATURE_ERROR_GATED", "META_GATE", "NO_UPDATE")
         }
     return {
-        "schema": "v14.a4.update-effect-predictor/1",
+        "schema": "v14.a4.update-effect-predictor/2",
         "environment": "SYNTHETIC",
         "synthetic_benchmark": True,
         "device_benchmark": False,
         "input": "deterministic synthetic 13-D RAW EAR cue dictionaries; no PCM, transcript or user data",
+        "counterfactual_state_alignment": "CANDIDATE_AND_NO_UPDATE_BASELINE_ADVANCE_THROUGH_SAME_CURRENT_WINDOW",
         "training_sessions": [name for name, _ in training_sessions],
         "heldout_sessions": [
             "heldout-smooth-adapt", "heldout-smooth-eval",
