@@ -1873,3 +1873,21 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 **User effect.** Reusing a permitted audio source in a new Store session no longer inherits temporal/speaker history or fails solely because the new session restarts its clock. No microphone or Android end-to-end path is thereby proven.
 
 **Next executable step.** Read exact #2561 CI; repair only Perception-owned failures. Coordinate Core's composer pin refresh and the already-known arithmetic/observer pins; leave QA's PARTIAL-vs-UPDATED migration assertions to QA. After focused tests pass, request Boss integration review. Normal Runtime/C3 audio consumer and Android microphone lifecycle remain open.
+
+
+## Research & Perception Run 77 — RAW EAR measurement provenance (2026-11-28)
+
+**Defect addressed.** The canonical audio packet and C3 summary exposed numeric RAW EAR pitch/activity/prosody values without a field-level distinction between source-sample measurements, uncalibrated heuristics, optional VAD model scores and unavailable outputs. This could cause downstream consumers to read heuristic scores as calibrated probabilities.
+
+**Implementation.** Draft PR #2578, branch research-perception/v14-audio-measurement-provenance-20261128-run77, exact code/test head 3ff5e173decb5348c2e890df9c96727dcf02afdf, stacked on #2561 (base c43bd2a84f3329704b80a237bb23e61e6d614c78). Adds v14.audio-measurement-provenance/1 to the canonical A5 audio PerceptPacket and cue_prov=HEURISTIC_UNCAL to the actual C3 Percept admission summary. RMS/ZCR are source-PCM measurements; RMS has no SPL calibration. F0, voiced fraction, voicing score, activity class/score and prosody score remain heuristic/uncalibrated. Optional Silero VAD is a model score, not a calibrated probability. Speaker diagnostics never assign identity. ASR and calibrated speech probability remain unavailable. Authority remains learning=false, action=false, truth=0.
+
+**Tests / evidence.**
+- LOCAL_LINUX isolated helper/packet harness: py_compile PASS; 6/6 deterministic checks PASS (baseline unavailable fields, heuristic labels, optional VAD model-score status, provisional VAD not advanced, malformed-input rejection, speaker identity authority rejection).
+- Full local Aii checkout / repository pytest: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS failure).
+- Exact PR child CI at head 3ff5e173: no workflow run/status observed at checkpoint. Parent CI is not inherited.
+- Shared staged/integrated: not observed for child; previous #2561 Core/QA-owned source-pin and migration assertions remain separate blockers.
+- Redmi/Termux microphone, normal-turn Runtime/C3 and deployment: REDMI_UNVERIFIED / NOT_RELEASED. No device action.
+
+**Research R-188.** Full peer-reviewed 2021 IEEE/ACM TASLP study on Lombard/whisper speaker-recognition calibration reviewed. It supports treating detector scores as quality signals requiring separate held-out calibration, not as calibrated probabilities. It is not a VAD or RAW EAR calibration result. Silero VAD official repository README declares MIT; exact ONNX artifact licensing and ARM64/Redmi performance remain unverified. No code or weights reused/downloaded.
+
+**Next integration.** Poll exact #2578 RAW EAR and feature-set workflows; repair only Perception-owned failures. Boss reviews the stacked contract. Core refreshes Recovery → Stage → RuntimeDeploy audio-composer pins. QA keeps microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized hardware.
