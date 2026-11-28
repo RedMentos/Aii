@@ -12,6 +12,8 @@ on:
       - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v14/experiments/a4_update_gate_retention_20261127.py"
       - "v14/experiments/test_a4_update_gate_retention_20261127.py"
+      - "v14/experiments/a4_update_effect_predictor_20261128.py"
+      - "v14/experiments/test_a4_update_effect_predictor_20261128.py"
       - ".github/workflows/v14-a4-update-gate-retention.yml"
   pull_request:
     branches:
@@ -25,6 +27,8 @@ on:
       - "v13/code/tests/test_audio_temporal_prediction.py"
       - "v14/experiments/a4_update_gate_retention_20261127.py"
       - "v14/experiments/test_a4_update_gate_retention_20261127.py"
+      - "v14/experiments/a4_update_effect_predictor_20261128.py"
+      - "v14/experiments/test_a4_update_effect_predictor_20261128.py"
       - ".github/workflows/v14-a4-update-gate-retention.yml"
 
 permissions:
@@ -49,11 +53,19 @@ jobs:
         env:
           PYTHONPATH: v13/code:v14/experiments
         run: |
-          python -m py_compile v13/code/v13/audio_temporal_prediction.py v13/code/v13/audio_event_expectation.py v13/code/v13/audio_voice_cues.py v13/code/scripts/integrated_audio_context_candidate_20261121.py v13/code/tests/test_audio_temporal_prediction.py v14/experiments/a4_update_gate_retention_20261127.py v14/experiments/test_a4_update_gate_retention_20261127.py
+          python -m py_compile v13/code/v13/audio_temporal_prediction.py v13/code/v13/audio_event_expectation.py v13/code/v13/audio_voice_cues.py v13/code/scripts/integrated_audio_context_candidate_20261121.py v13/code/tests/test_audio_temporal_prediction.py v14/experiments/a4_update_gate_retention_20261127.py v14/experiments/test_a4_update_gate_retention_20261127.py v14/experiments/a4_update_effect_predictor_20261128.py v14/experiments/test_a4_update_effect_predictor_20261128.py
       - name: Run exact predictor and retention tests
         env:
           PYTHONPATH: v13/code:v14/experiments
         run: python -m unittest discover -s v14/experiments -p "test_a4_update_gate_retention_20261127.py" -v
+      - name: Run update-effect predictor and future-regime ablation tests
+        env:
+          PYTHONPATH: v13/code:v14/experiments
+        run: python -m unittest discover -s v14/experiments -p "test_a4_update_effect_predictor_20261128.py" -v
+      - name: Emit synthetic update-effect ablation
+        env:
+          PYTHONPATH: v13/code:v14/experiments
+        run: python v14/experiments/a4_update_effect_predictor_20261128.py
       - name: Run exact predictor, registry and A5/A4 consumer regressions
         env:
           PYTHONPATH: v13/code

@@ -16,6 +16,12 @@ class AudioPerceptContractTests(unittest.TestCase):
         self.assertFalse(p["segments"][0]["action_authority"])
         self.assertFalse(p["segments"][0]["learning_authority"])
         self.assertIsNone(p["segments"][0]["asr_transcript"])
+        features = p["segments"][0]["measurement_provenance"]["features"]
+        self.assertEqual(features["rms"]["status"], "MEASURED_FROM_PCM16")
+        self.assertEqual(features["f0_median_hz"]["status"], "UNAVAILABLE_NO_VALID_VOICED_FRAMES")
+        self.assertEqual(features["prosody_change_score"]["status"], "UNAVAILABLE_INSUFFICIENT_VOICED_FRAMES")
+        self.assertEqual(features["speaker_identity"]["status"], "NOT_PRODUCED")
+        self.assertEqual(features["calibrated_speech_probability"]["status"], "NOT_AVAILABLE")
     def test_missing_receipt(self):
         with self.assertRaises(PermissionError):
             audio_percept_packet(**{**BASE,"consent_receipt":None})

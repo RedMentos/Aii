@@ -2536,3 +2536,75 @@ This overlay does not promote the visual path beyond WIRED_SYNTHETIC or the prod
 | Android microphone / Redmi | REDMI_UNVERIFIED | No live device receipt or microphone action | Permission, foreground lifecycle, capture, process death, revoke, restart and rollback unverified |
 
 The LOCAL_LINUX 4/4 harness is an isolated scope-algorithm reproduction, not full repository tests. Do not promote these paths to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED until exact CI, independent integration review and device evidence exist.
+
+
+## Run 77 evidence overlay — RAW EAR measurement provenance (2026-11-28)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A5 RAW EAR → canonical PerceptPacket provenance | WIRED_SYNTHETIC / PERCEPTION_FOCUSED_CI_PASS | PR #2578 code/test head 45505fe; LOCAL_LINUX scratch py_compile PASS/7-of-7; RAW EAR fastpath 211 PASS each on Python 3.13/3.14; source-bound feature-set 15 PASS each | Normal-turn Runtime/C3 acceptance, Android microphone input and Redmi |
+| A5 → A4 → C3 heuristic interpretation | WIRED_SYNTHETIC / PERCEPTION_FOCUSED_CI_PASS | C3 summary carries cue_prov=HEURISTIC_UNCAL; RAW EAR suite 211 PASS each; feature-set 15 PASS each | Real normal-turn C3 response quality, held-out calibration study and Android device evidence |
+| Optional Silero VAD / WebRTC-libfvad comparison | NATIVE_LINUX_CI_PROOF / UNCALIBRATED_MODEL_SCORE | Linux CI built pinned libfvad; 9 ABI/benchmark checks + 204 audio runtime tests PASS on Python 3.13/3.14; model scores explicitly not calibrated probability | Exact ONNX artifact license/revision, ARM64 benchmark, native Redmi measurement |
+| Offline RuntimeDeploy integrity | CI_PASS_NOT_DEPLOYED | Python 3.11/3.14 offline CI groups 17+3+31+41 PASS | Actual installed release/update/rollback on Redmi |
+| Speaker identity / calibrated speech probability / ASR | NOT_PRODUCED / NOT_AVAILABLE / NOT_IN_PACKET | Explicit provenance status; bare calibration label without verified receipt/id/threshold/non-DEFER decision remains diagnostic only | Separate calibrated speaker/decoder evidence and consented voice-learning path |
+
+**Integration gate remains FAIL:** Core recovery expects old audio composer blob 831080b, while current Perception composer is d51b0436. Core arithmetic/observer pins and QA migration assertions also fail. Current available private V13OBS #115 is a 2026-11-24 STOPPED_BY_USER snapshot; new relay requests have NO_LIVE_RECEIPT. This overlay does not promote audio perception to full NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Full local Aii checkout tests were NOT_RUN; updater UNKNOWN; REDMI_UNVERIFIED; P0 #1904 remains OPEN.
+
+
+### Run 77 branch-convergence gate
+
+The Perception audio provenance branch #2578→#2561→#2559 and Core body/prefill branch #2577→#2568→Core A5 UI are separate PR ancestries. Core #2577 currently pins a different older audio composer/contract/RAW EAR. The staged failure on the Perception chain is therefore branch-specific. Boss must select the convergence order; Core then ports the provenance contract or rebases onto the converged Perception tree and regenerates all Recovery→Stage→RuntimeDeploy source pins. Until then, both PRs remain DRAFT, integration is NOT_ACCEPTED, and no release/device claim is made.
+
+
+## Research & Perception Run 78 — RAW EAR speaker calibration provenance (2026-11-28; additive, no Canon acceptance changed)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A5 RAW EAR → canonical PerceptPacket provenance | WIRED_SYNTHETIC / FOCUSED_CI_PASS | PR #2578 code/test commit `4c9bd27e56e90cba49d992c157fc5d3b4e348572`; speaker-change provenance cannot be self-certified by caller-supplied label/hash/ID/threshold; malformed decisions fail closed; RAW EAR fastpath 213/213 on Python 3.13 and 213/213 on Python 3.14 | Normal-turn Runtime/C3 acceptance, Android microphone/AudioRecord, source-bound trusted calibration registry, Redmi |
+| Speaker-change decision / identity | DIAGNOSTIC_ONLY_UNCALIBRATED | `DIAGNOSTIC_ONLY_UNCALIBRATED`, `calibration_status=UNVERIFIED`, `identity_authority=false`; LOCAL_LINUX scratch negative controls 5/5 PASS | Calibrated speaker-change threshold, speaker identity, trusted signed/registered calibration receipt |
+| A5 frame ingress / A3 NPY preflight | WIRED_SYNTHETIC / FOCUSED_CI_PASS | Current Perception #2565 ingress source has header preflight; 29/29 tests on Python 3.13/3.14 | Stale Core #2576 ancestry still lacks helper; normal Runtime/C3 callsite and Android frame proof |
+| A4 update/retention and feature-set probes | WIRED_SYNTHETIC / FOCUSED_CI_PASS | A4 ablation 50/50 each Python version; feature-set probe 15/15 each | Held-out real speech/user utility, Android latency/RSS, default enablement |
+| RAW EAR vs WebRTC/libfvad | NATIVE_LINUX_CI_PROOF / BENCHMARK_PARTIAL | Python 3.13: 9 ABI/benchmark checks + 204 audio runtime tests PASS; Python 3.14 comparator job still IN_PROGRESS at last poll | Final Python 3.14 result, ARM64/Redmi measurement, user-visible quality gain |
+| Shared Recovery → Stage → RuntimeDeploy | DRAFT / INTEGRATION_BLOCKED | Staged-runtime 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression one failure | Core composer `831080b...` vs Perception `e1cf98...`, arithmetic/observer source pins, QA migration PARTIAL-vs-UPDATED |
+| Android microphone / normal C3 audio turn | REDMI_UNVERIFIED | No fresh authenticated device receipt; no microphone action | AudioRecord permission/lifecycle, actual audio capture, normal C3 response, update/deployment, rollback |
+
+R-189 full-text research is recorded in the research ledger. This overlay does not promote any path to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Hosted Linux CI and the LOCAL_LINUX scratch harness are not phone evidence. P0 #1904 remains OPEN.
+
+
+### Run 78 final poll — 2026-11-28
+
+RAW EAR/libfvad comparison: Python 3.13 and Python 3.14 both PASS (workflow 46089036001; each 9 ABI/benchmark checks + 204 source-bound audio runtime tests). This is hosted Linux CI, not native ARM64/Redmi. Shared staged/integrated remains FAIL; no Canon acceptance or release status changes.
+
+
+## Research & Perception Run 79 — evidence overlay (2026-11-28; no Canon acceptance changed)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A4 RAW EAR temporal predictor — feature-wise error-gated update | WIRED_SYNTHETIC / FOCUSED_CI_PASS / UTILITY_PARTIAL | PR #2578 code/test head `698390f`; A4 ablation #154 PASS on Python 3.13/3.14 (py_compile, 10 unittest + 54 pytest each); per-feature gradients and parameter ΔL2 measured; exact metrics in R-191 | Non-speech still worse than persistence; speech gain below EVERY_FINAL; held-out real audio utility, normal-turn C3, Redmi microphone |
+| A4 source/session isolation and temporal update | WIRED_SYNTHETIC / FOCUSED_CI_PASS | A4 source-isolation #98 PASS 9 unittest + 210 pytest on Python 3.13/3.14; interleaved/isolated max metric difference 0; provisional windows ignored | Real microphone/source diversity, real user task utility, persistent master-weight learning |
+| A5 RAW EAR VAD comparator | NATIVE_LINUX_CI_PROOF / BENCHMARK_PARTIAL | #1041 PASS Python 3.13/3.14; native libfvad built on hosted Linux at pinned commit; 9 ABI/benchmark checks + 210 audio tests each | VAD accuracy on representative speech/non-speech, Android ARM64 build/runtime, Redmi latency/RSS |
+| A5 optional Silero VAD model candidate | RESEARCH_ONLY / NOT_ADOPTED | Arm model card MIT-labelled 2.33 MB FP32 ONNX; compatible 16 kHz/512+64/state interface; Vivo X300 one-core p50 31.960 ms, avg/peak RSS 45.27/82.39 MiB on one 9.96 s sample | Artifact availability, accuracy/robustness comparison, Redmi/ARM64 performance; no download or swap |
+| A3 tile-projector NPY header preflight | WIRED_SYNTHETIC / FOCUSED_CI_PASS on Perception #2565 | Perception #2565 code blob `8f2b6d36...` includes `_validate_projector_npy_headers`; exact code/test head `42c78c4`, ingress #46057142216 PASS 39/39 on Python 3.13/3.14 | Core #2577 ancestry lacks helper (blob `14198bbd...`) and fails 2/30 on both versions; port/rebase still needed; no Redmi frame capture |
+| A5 UI observation / admission | WIRED_SYNTHETIC_CONTRACT / INTEGRATION_CONTRACT_MISMATCH | Current Perception API requires metadata-only observation + OS-issued receipt + explicit `UIObservationLease`; `ui_to_admission(observation, runtime, consent_lease,...)` | Legacy Core test still imports `admit_ui` and passes `consent_active=True`; must be rewritten, not bridged with a bypass; no Android provider/capture proof |
+| Shared Recovery → Stage → RuntimeDeploy | DRAFT / INTEGRATION_BLOCKED | #6214 staged FAIL 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated regression fails on Core Recovery audio-composer pin. Core #2577 staged #6197 PASS only on its own ancestry; frame-ingress #724 FAIL 2/30 | Boss convergence decision; Core refresh of audio builder `831080b...`→`f90f575...`, arithmetic/observer pins, NPY preflight port; QA migration PARTIAL-vs-UPDATED |
+| Android microphone / normal C3 audio turn / updater | REDMI_UNVERIFIED / UNKNOWN | Private owner-read #1036–#1038 expired without receipt: NO_LIVE_RECEIPT; V13OBS #115 historical 2026-11-24 STOPPED_BY_USER | Actual installed SHA, updater status, AudioRecord permission/lifecycle, normal C3 answer, rollback |
+
+No path is promoted to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Hosted Linux CI and LOCAL_LINUX scratch tests are not phone evidence. P0 #1904 remains OPEN.
+
+
+## Additive A4 / F4 evidence — 2026-11-28
+
+- **Canon mapping:** A4 active attention / predictive error; F4 learning and plasticity; V14 §2.6–2.8 (outcome/omission and Meta Update Predictor).
+- **Status:** WIRED_SYNTHETIC / FOCUSED_CI_PASS for the research ablation only. The experiment imports the production A4 temporal predictor, but it is not a new Runtime consumer and does not change the Runtime policy. It is not NATIVE_LINUX_PROOF of Android behavior, REAL_REDM I_PROOF, NUMERIC_LEARNING on installed model weights or ACCEPTED.
+- **Evidence:** PR #2578, code/test head 6fadc4e68eba80836aa73c72104500c620a6a6b5; workflow #46094137656 PASS on Python 3.13/3.14 (10 existing retention tests + 7 new tests + 54 production predictor pytest tests per job).
+- **Measured result:** smooth held-out drift: META_GATE selected 19/69 candidates, only 57.89% positive; current utility nearly equalled NO_UPDATE. Abrupt drift: 0/14 selected, exactly NO_UPDATE; no adaptation. The experiment is a limited/negative result, not a feature acceptance.
+- **Acceptance still requires:** multi-horizon outcomes, independent replay/retention anchors, robust calibration and drift-reversal tests, actual connected runtime consumer, persistent trainable parameter proof with restart/rollback, full cross-organ integration, and genuine authorized Redmi evidence. No Canon obligation is closed by this experiment.
+
+
+## Deployment-anchored update acceptance — R-199 (2026-11-28)
+
+For every future persistent weight update, adapter change or self-edit, acceptance must compare the candidate with the exact deployed checkpoint C0 on the same held-out stream and explicitly state: (1) evaluation loop, (2) reference checkpoint, (3) temporal aggregation, and (4) stream protocol. Record a three-valued verdict: PASS, NO_IMPROVEMENT or REGRESSION. Training loss, update count, open-loop score or backward-transfer alone is not sufficient evidence.
+
+- Source: ContinualDrive, arXiv:2611.32529 (2026-11-24), R-199.
+- Status: RESEARCH_INFORMED_REPORTING_RULE; not an implementation, not a product acceptance, and not evidence that V14 currently meets the rule.
+- The ContinualDrive code repository had no LICENSE file at the inspected revision; no code was reused.

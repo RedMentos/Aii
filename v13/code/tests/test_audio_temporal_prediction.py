@@ -1299,6 +1299,20 @@ def test_runtime_registry_defaults_to_every_final_without_experimental_config(tm
     runtime.store.close()
 
 
+
+
+
+def test_runtime_registry_accepts_explicit_feature_error_gated_policy(tmp_path):
+    runtime, _event = make_runtime(tmp_path)
+    runtime.cfg = {"raw_ear_temporal_update_policy": "FEATURE_ERROR_GATED"}
+
+    registry = _runtime_audio_temporal_prediction_registry(runtime)
+
+    assert registry.update_policy == "FEATURE_ERROR_GATED"
+    assert registry._new_predictor().update_policy == "FEATURE_ERROR_GATED"
+    runtime.store.close()
+
+
 def test_runtime_registry_accepts_explicit_opt_in_transient_policy(tmp_path):
     runtime, _event = make_runtime(tmp_path)
     runtime.cfg = {
@@ -1712,3 +1726,66 @@ def test_persistent_numeric_weights_fail_closed_after_retry_limit(tmp_path):
         assert registry_a._states[(source_id, generation_id, "session-a")].store_version == final_version
     finally:
         runtime.store.close()
+
+
+
+def test_feature_error_gated_policy_updates_only_columns_worse_than_persistence():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5, warmup_updates=1, update_policy="FEATURE_ERROR_GATED",
+    )
+    predictor.update((0.90,) + (0.0,) * (FEATURE_COUNT - 1))
+    before = predictor.state_dict()["weights"]
+
+    result = predictor.update((0.95,) + (0.0,) * (FEATURE_COUNT - 1))
+    after = predictor.state_dict()["weights"]
+    changed_columns = {
+        column
+        for row in range(len(before))
+        for column in range(FEATURE_COUNT)
+        if after[row][column] != before[row][column]
+    }
+
+    assert result["status"] == "SHADOW_MEASURED"
+    assert result["feature_error_count"] == 1
+    assert result["updated_feature_count"] == 1
+    assert result["update_applied"] is True
+    assert result["update_reason"] == "FEATURE_ERROR_GATED"
+    assert result["gradient_l2"] > 0
+    assert result["weight_delta_l2"] > 0
+    assert changed_columns == {0}
+
+
+def test_feature_error_gated_policy_has_no_update_when_persistence_is_better():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5, warmup_updates=1, update_policy="FEATURE_ERROR_GATED",
+    )
+    predictor.update((0.90,) + (0.0,) * (FEATURE_COUNT - 1))
+    before = predictor.state_dict()
+
+    result = predictor.update((0.0,) * FEATURE_COUNT)
+
+    assert result["feature_error_count"] == 0
+    assert result["updated_feature_count"] == 0
+    assert result["update_applied"] is False
+    assert result["update_reason"] == "NO_FEATURE_ERROR"
+    assert result["gradient_l2"] == 0
+    assert result["weight_delta_l2"] == 0
+    assert predictor.state_dict() == before
+
+
+def test_feature_error_gated_evaluation_only_reports_eligibility_without_updating():
+    predictor = AudioTemporalPredictor(
+        learning_rate=0.5, warmup_updates=1, update_policy="FEATURE_ERROR_GATED",
+    )
+    predictor.update((0.90,) + (0.0,) * (FEATURE_COUNT - 1))
+    before = predictor.state_dict()
+
+    result = predictor.update((0.95,) + (0.0,) * (FEATURE_COUNT - 1), allow_update=False)
+
+    assert result["feature_error_count"] == 1
+    assert result["updated_feature_count"] == 0
+    assert result["update_applied"] is False
+    assert result["update_reason"] == "EVALUATION_ONLY"
+    assert result["gradient_l2"] == 0
+    assert result["weight_delta_l2"] == 0
+    assert predictor.state_dict() == before

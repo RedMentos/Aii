@@ -31,7 +31,7 @@ MAX_WINDOW_MS = 1000
 MAX_GAP_MS = 2000
 MAX_PERSISTENCE_RETRIES = 3
 ATTENTION_GAIN = 0.10
-UPDATE_POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION")
+UPDATE_POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "FEATURE_ERROR_GATED", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION")
 DEFAULT_MISTAKE_MEMORY_CAPACITY = 128
 
 
@@ -265,6 +265,8 @@ class AudioTemporalPredictor:
                 "update_policy": self.update_policy,
                 "update_applied": False,
                 "update_reason": "WARMUP_BASELINE",
+                "feature_error_count": 0,
+                "updated_feature_count": 0,
                 "mistake_memory_entries": len(self._mistake_keys),
             })
             return result
@@ -281,8 +283,15 @@ class AudioTemporalPredictor:
         signed_error = sum(signed_errors) / FEATURE_COUNT
         omission_error = sum(max(0.0, -error) for error in signed_errors) / FEATURE_COUNT
         commission_error = sum(max(0.0, error) for error in signed_errors) / FEATURE_COUNT
-        model_error = sum(abs(error) for error in signed_errors) / FEATURE_COUNT
-        baseline_error = sum(abs(target[i] - previous[i]) for i in range(FEATURE_COUNT)) / FEATURE_COUNT
+        feature_errors = [abs(target[i] - prediction[i]) for i in range(FEATURE_COUNT)]
+        persistence_errors = [abs(target[i] - previous[i]) for i in range(FEATURE_COUNT)]
+        feature_error_mask = [
+            feature_errors[i] > persistence_errors[i] + 1e-12
+            for i in range(FEATURE_COUNT)
+        ]
+        model_error = sum(feature_errors) / FEATURE_COUNT
+        baseline_error = sum(persistence_errors) / FEATURE_COUNT
+        feature_error_count = sum(feature_error_mask)
 
         sample_key = self._sample_key(previous, target)
         remembered_mistake = sample_key in self._mistake_keys
@@ -305,6 +314,9 @@ class AudioTemporalPredictor:
             else:
                 should_update = False
                 update_reason = "NO_ERROR"
+        elif self.update_policy == "FEATURE_ERROR_GATED":
+            should_update = any(feature_error_mask)
+            update_reason = "FEATURE_ERROR_GATED" if should_update else "NO_FEATURE_ERROR"
         else:
             should_update = True
             update_reason = (
@@ -326,6 +338,8 @@ class AudioTemporalPredictor:
                 if inputs[row] == 0.0:
                     continue
                 for col in range(FEATURE_COUNT):
+                    if self.update_policy == "FEATURE_ERROR_GATED" and not feature_error_mask[col]:
+                        continue
                     gradient = 2.0 * inputs[row] * (prediction[col] - target[col]) / FEATURE_COUNT
                     gradients[row][col] = gradient
                     gradient_sq += gradient * gradient
@@ -420,6 +434,11 @@ class AudioTemporalPredictor:
             "update_policy": self.update_policy,
             "update_applied": should_update,
             "update_reason": update_reason,
+            "feature_error_count": feature_error_count,
+            "updated_feature_count": (
+                feature_error_count if should_update and self.update_policy == "FEATURE_ERROR_GATED"
+                else FEATURE_COUNT if should_update else 0
+            ),
             "mistake_memory_entries": len(self._mistake_keys),
             "parameter_l2": round(self._parameter_l2(), 8),
             "learning_rate": self.learning_rate,

@@ -12,11 +12,12 @@ from statistics import fmean
 
 from a4_temporal_ablation_20261127 import PATTERNS
 from v13.audio_temporal_prediction import (
+    FEATURE_COUNT,
     AudioTemporalPredictor,
     acoustic_feature_vector,
 )
 
-POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION", "NO_UPDATE")
+POLICIES = ("EVERY_FINAL", "MEMORIZED_ERROR", "FEATURE_ERROR_GATED", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION", "NO_UPDATE")
 LEARNING_RATE = 0.20
 MISTAKE_MEMORY_CAPACITY = 64
 CONSOLIDATION_THRESHOLD = 0.30
@@ -115,6 +116,12 @@ def _summarize_policy(sequence: tuple[dict, ...], policy: str) -> dict:
         "consolidated_weight_delta_l2_sum": round(sum(float(item.get("consolidated_weight_delta_l2") or 0.0) for item in results), 8),
         "max_weight_delta_l2": round(max((float(item.get("weight_delta_l2") or 0.0) for item in results), default=0.0), 8),
         "max_mistake_memory_entries": max((int(item.get("mistake_memory_entries") or 0) for item in results), default=0),
+        "feature_error_observations": sum(int(item.get("feature_error_count") or 0) for item in results),
+        "updated_feature_observations": sum(int(item.get("updated_feature_count") or 0) for item in results),
+        "updated_feature_fraction": round(
+            sum(int(item.get("updated_feature_count") or 0) for item in results)
+            / max(1, len(results) * FEATURE_COUNT), 8
+        ),
         "final_parameter_l2": round(predictor._parameter_l2(), 8),
         "persistent_parameter_l2": round(predictor._parameter_l2(), 8),
         "transient_parameter_l2": round(predictor._transient_parameter_l2(), 8),
@@ -199,20 +206,20 @@ def run_experiment() -> dict:
         for policy in POLICIES
     }
     return {
-        "schema": "v14.a4.error-gated-plasticity/1",
+        "schema": "v14.a4.error-gated-plasticity/2",
         "environment": "SYNTHETIC",
         "synthetic_benchmark": True,
         "device_benchmark": False,
         "input": "deterministic acoustic cue dictionaries; no PCM, transcript, speaker identity or user data",
         "update_policy_default": "EVERY_FINAL",
-        "experimental_policies": ["MEMORIZED_ERROR", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION"],
+        "experimental_policies": ["MEMORIZED_ERROR", "FEATURE_ERROR_GATED", "TRANSIENT_CONSOLIDATE", "TRANSIENT_NO_CONSOLIDATION"],
         "consolidation_threshold": CONSOLIDATION_THRESHOLD,
         "max_transient_norm": MAX_TRANSIENT_NORM,
         "negative_controls": {
             "NO_UPDATE": "allow_update=False for every FINAL cue delta; no parameter updates",
             "TRANSIENT_NO_CONSOLIDATION": "updates only a bounded process-local buffer; persistent numeric weights never commit",
         },
-        "gate_definition": "update when model MAE exceeds persistence MAE, or when the same quantized previous/target-delta transition fingerprint was previously mistaken in this process-local stream",
+        "gate_definition": "FEATURE_ERROR_GATED updates only output columns whose absolute prediction error exceeds the persistence error; MEMORIZED_ERROR updates when mean error exceeds persistence or a remembered transition fingerprint recurs",
         "memory_scope": "bounded process-local fingerprints; reset on stream/consent reset and restart; not a privacy/anonymisation guarantee",
         "memory_capacity": MISTAKE_MEMORY_CAPACITY,
         "repeats": REPEATS,

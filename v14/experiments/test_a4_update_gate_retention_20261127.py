@@ -13,6 +13,7 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
         self.assertEqual(self.result["environment"], "SYNTHETIC")
         self.assertTrue(self.result["synthetic_benchmark"])
         self.assertFalse(self.result["device_benchmark"])
+        self.assertEqual(self.result["schema"], "v14.a4.error-gated-plasticity/2")
         self.assertEqual(self.result["update_policy_default"], "EVERY_FINAL")
         for result in self.result["retention_restart"].values():
             self.assertFalse(result["raw_audio_or_feature_windows_persisted"])
@@ -69,7 +70,7 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
     def test_retention_evaluation_is_read_only_and_restart_exact(self):
         for policy, result in self.result["retention_restart"].items():
             self.assertTrue(result["numeric_weights_equal_after_restart"])
-            if policy in {"EVERY_FINAL", "MEMORIZED_ERROR", "NO_UPDATE"}:
+            if policy in {"EVERY_FINAL", "MEMORIZED_ERROR", "FEATURE_ERROR_GATED", "NO_UPDATE"}:
                 self.assertTrue(result["restart_prediction_error_equal"])
             self.assertEqual(
                 result["pending_transient_delta_dropped"],
@@ -80,6 +81,26 @@ class A4UpdateGateRetentionTests(unittest.TestCase):
             self.assertEqual(result["old_pattern_after_restart"]["update_count"], result["old_pattern_after_new_task"]["update_count"])
             self.assertEqual(result["gate_memory_entries_after_restart"], 0)
             self.assertIsNotNone(result["retention_error_delta"])
+
+
+    def test_feature_error_gated_policy_is_measured_per_source(self):
+        for source, policies in self.result["per_source"].items():
+            gated = policies["FEATURE_ERROR_GATED"]
+            every = policies["EVERY_FINAL"]
+            self.assertLessEqual(gated["updates"], every["updates"])
+            self.assertGreaterEqual(gated["feature_error_observations"], gated["updated_feature_observations"])
+            self.assertGreaterEqual(gated["updated_feature_fraction"], 0.0)
+            self.assertLessEqual(gated["updated_feature_fraction"], 1.0)
+            self.assertEqual(set(gated["state_dict_fields"]), {"updates", "weights"})
+
+    def test_feature_error_gated_retention_restart_is_exact(self):
+        result = self.result["retention_restart"]["FEATURE_ERROR_GATED"]
+        self.assertTrue(result["numeric_weights_equal_after_restart"])
+        self.assertTrue(result["restart_prediction_error_equal"])
+        self.assertTrue(result["old_pattern_after_restart"]["evaluation_only"])
+        self.assertEqual(result["transient_parameter_l2_after_restart"], 0.0)
+        self.assertFalse(result["gate_memory_persisted"])
+        self.assertFalse(result["raw_audio_or_feature_windows_persisted"])
 
     def test_experiment_does_not_claim_device_or_master_weight_learning(self):
         claims = " ".join(self.result["not_claimed"])

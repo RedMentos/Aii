@@ -19,6 +19,7 @@ import numpy as np
 
 from v13 import audio_voice_cues as audio_voice_cues_module
 from v13.audio_silero_vad import SileroVADStream
+from v13.audio_percept_contract import audio_measurement_provenance
 from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     extract_voice_cues,
@@ -299,6 +300,25 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
+        provenance = segment["measurement_provenance"]
+        features = provenance["features"]
+        assert provenance["schema"] == "v14.audio-measurement-provenance/1"
+        assert features["rms"]["status"] == "MEASURED_FROM_PCM16"
+        assert features["zcr"]["status"] == "MEASURED_FROM_PCM16"
+        assert features["f0_median_hz"]["status"] == "HEURISTIC_ESTIMATE_UNCALIBRATED"
+        assert features["voicing_confidence"]["status"] == "HEURISTIC_SCORE_NOT_PROBABILITY"
+        assert features["activity_hint"]["status"] == "RULE_BASED_CLASS_NOT_PROBABILITY"
+        assert features["activity_score"]["status"] == "RULE_BASED_SCORE_NOT_CALIBRATED"
+        assert features["prosody_change_score"]["status"] == "HEURISTIC_SCORE_NOT_CALIBRATED"
+        assert features["speaker_identity"]["status"] == "NOT_PRODUCED"
+        assert features["speaker_change"]["status"] == "NOT_PROVIDED"
+        assert features["calibrated_speech_probability"]["status"] == "NOT_AVAILABLE"
+        assert features["asr_transcript"]["status"] == "NOT_IN_PACKET"
+        assert features["vad"]["status"] == "NOT_RUN"
+        assert provenance["authority"] == {
+            "learning": False, "action": False, "truth": 0,
+            "speaker_identity": False, "calibrated_speech_probability": False,
+        }
         assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
         assert result["a4"]["prosody_change_score"] == cues["prosody_change_score"]
@@ -309,6 +329,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         assert "activity=VOICED" in summary and "f0_med_hz=" in summary
         assert "voiced_energy_range_db=" in summary
         assert "prosody_change=" in summary
+        assert "cue_prov=HEURISTIC_UNCAL" in summary
         assert segment["asr_transcript"] is None
         assert segment["learning_authority"] is False
         assert segment["action_authority"] is False
@@ -1528,3 +1549,88 @@ def test_integrated_audio_candidate_rejects_unreviewed_runtime_and_cognition_sou
     )
     with pytest.raises(ValueError, match="analyst audio source verification"):
         module.apply_sources(code_dir, bad_cognition)
+
+
+def test_measurement_provenance_marks_optional_vad_as_uncalibrated_model_score():
+    cues = extract_voice_cues(tone(140), 16000)
+    cues["vad"] = {
+        "method": "SILERO_VAD_ONNX",
+        "model_revision": "fixture-v1",
+        "model_sha256": "b" * 64,
+        "sample_rate": 16000,
+        "frame_ms": 32,
+        "frame_count": 1,
+        "speech_fraction": 1.0,
+        "mean_score": 0.8,
+        "max_score": 0.8,
+        "threshold": 0.5,
+        "speech_detected": True,
+        "covered_ms": 32,
+        "pending_samples": 0,
+        "state_reset_reason": "NEW_STREAM",
+        "first_frame_start_ms": 0,
+        "last_frame_end_ms": 32,
+    }
+    cues = validate_voice_cues(cues)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues, vad_expected=True, finality="FINAL",
+    )
+    vad = provenance["features"]["vad"]
+    assert vad["status"] == "MODEL_SCORE_NOT_CALIBRATED"
+    assert vad["model_revision"] == "fixture-v1"
+    assert vad["model_sha256"] == "b" * 64
+    assert vad["output_semantics"] == "SCORES_AND_THRESHOLD_FLAG_NOT_CALIBRATED_PROBABILITY"
+
+
+def test_verified_label_without_receipt_does_not_upgrade_speaker_diagnostic():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={"status": "MEASURED", "threshold_status": "CALIBRATED_VERIFIED"},
+        speaker_decision="DEFER",
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["calibration_status"] == "UNVERIFIED"
+    assert speaker["identity_authority"] is False
+
+
+def test_caller_asserted_calibration_fields_cannot_self_verify_speaker_change():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={
+            "status": "MEASURED",
+            "threshold_status": "CALIBRATED_VERIFIED",
+            "calibration_receipt_sha256": "a" * 64,
+            "calibration_id": "caller-asserted-calibration",
+            "confidence_threshold": 0.8,
+        },
+        speaker_decision="CHANGE_OR_OVERLAP_CANDIDATE",
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["calibration_status"] == "UNVERIFIED"
+    assert speaker["decision"] == "CHANGE_OR_OVERLAP_CANDIDATE"
+    assert speaker["identity_authority"] is False
+
+
+def test_malformed_speaker_decision_degrades_to_defer():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={"status": "MEASURED"},
+        speaker_decision=[],
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["decision"] == "DEFER"
+    assert speaker["identity_authority"] is False
+
+
+def test_measurement_provenance_marks_provisional_vad_as_not_advanced():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues, vad_expected=True, finality="PROVISIONAL",
+    )
+    assert provenance["features"]["vad"]["status"] == "NOT_ADVANCED_PROVISIONAL"
