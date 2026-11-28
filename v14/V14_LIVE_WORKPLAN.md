@@ -1938,3 +1938,11 @@ RAW EAR vs WebRTC/libfvad Python 3.14 completed PASS at 2026-11-28T00:44:44Z (wo
 **Integration / device.** PR #2578 remains DRAFT / NOT_RELEASED. Prior staged/integrated runs still fail on Core-owned composer/arithmetic/observer pins and QA migration assertions; no fresh staged run was observed for this code head. Latest available V13OBS #115 remains historical (2026-11-24 STOPPED_BY_USER). New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #1036–#1038 had no comments at last poll. Updater UNKNOWN; REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, shell, microphone, model, weight, permission or device action.
 
 **Next executable step.** Poll exact-head PR #2578 focused CI. If green, run the three-policy session-disjoint holdout/retention ablation; keep default unchanged unless measured utility and retention both improve. Core/Boss still must choose the Perception/Core convergence ancestry; Core owns downstream source-pin refresh and QA owns migration assertions. User action: **keine Aktion nötig**.
+
+
+### Run 79 research supplement — selective plasticity and adaptive retention
+
+- R-192 MANGO (arXiv:2605.19080, full text) shows that parameter-level gradient gating alone is weaker than the combined gate + replay-based meta-regularization in its ResNet-18 OCL experiments. Its replay buffer, meta-batch and CUDA setup are not Redmi candidates; code zip licence is unverified. Do not call the new A4 feature gate MANGO or claim its retention results.
+- R-193 To Retain or to Adapt? (arXiv:2607.05609) is abstract/secondary-summary only in this run. It argues that retention can be a warm-start benefit under smooth drift and a persistent bias under sharp shifts. Full text remains unread; no implementation adopted.
+- R-194 GRAPA (CVPR 2026) is abstract-only because CVF returned 403. Its gradient-guided parameter reuse/RL allocation is a B1/B2 sparse-capacity research lead, not a mobile proof.
+- Next research-to-code test: compare recent/no/full derived-feature replay or a small update-effect predictor only on synthetic fixtures until separate local consent exists. Evaluate Average Lifelong Error/current task utility and prior-task retention together; do not freeze all weights or persist raw audio.
