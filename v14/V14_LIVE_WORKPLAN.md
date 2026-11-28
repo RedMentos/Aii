@@ -2012,7 +2012,7 @@ On abrupt drift it abstained on all 14 eligible candidates. That avoided the reg
 - LOCAL_LINUX: CPython 3.13.5, Linux x86_64 scratch harness with an API-compatible predictor stub: py_compile + 7/7 unittest PASS. This is not the exact repository implementation.
 - Full local Aii checkout / full repository pytest: **BLOCKED / NOT_RUN**; no checkout is mounted and GitHub DNS resolution from the local container fails.
 - Latest private V13OBS #115 is still the historical 2026-11-24 snapshot: five metadata turns, C3 output in three; newest turn seven generated tokens with 1.87 s prefill; B1 and B2 each had two native attempts and zero valid offers/deliveries; native latent exchange was not proven. These are aggregate metadata only, not a fresh device receipt.
-- New private read-only PIPELINE_STATUS request #1042 was open with no device_status at last poll. Therefore **REDMI_UNVERIFIED**; updater/install status **UNKNOWN**.
+- Private read-only PIPELINE_STATUS request #1042 expired at 2026-11-28T01:49:34Z without device_status (NO_LIVE_RECEIPT). Therefore **REDMI_UNVERIFIED**; updater/install status **UNKNOWN**.
 - No UPDATE_REQUEST, CHAT_SEND, shell, restart, microphone action, model/weight swap, permission change or user-data mutation.
 - **RELEASE-SHA: NOT_RELEASED.** GitHub push/CI is not deployment.
 
