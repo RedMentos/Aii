@@ -1921,3 +1921,20 @@ Perception chain: #2578 → #2561 (c43bd2a) → #2559 (e4795811). Core chain: #2
 ### Run 78 final poll — 2026-11-28
 
 RAW EAR vs WebRTC/libfvad Python 3.14 completed PASS at 2026-11-28T00:44:44Z (workflow 46089036001), 9 ABI/benchmark checks + 204 audio runtime tests; Python 3.13 also PASS. Hosted Linux only. Staged-runtime and integrated-regression remain FAIL on Core composer/arithmetic/observer pins and QA migration assertions.
+
+
+## Research & Perception Run 79 — A4 feature-wise error-gated plasticity (2026-11-28)
+
+**Owner / branch / PR.** Research & Perception extended the existing Perception PR #2578 on `research-perception/v14-audio-measurement-provenance-20261128-run77`. Code commit `f8d8575b73040cd56bd169c89f2ee7ef1c4732b7`; test commit and branch head before evidence-doc sync `4ec8b3c9827ca4d4c0f3c0d3de8217566c7e1f6f`. Code/test blobs: `6663d257e6a7608478f89215cecff62a257d67af` / `333bec98a6993fc33aa1bb19a19de6462ca2d444`.
+
+**Defect / change.** The existing 182-parameter A4 temporal predictor had a single mean-error update gate. Earlier Run 55 synthetic ablation found a periodic-speech improvement but non-speech and mixed-activity regressions. Added an opt-in `FEATURE_ERROR_GATED` policy: compare each output feature's absolute prediction error with its persistence baseline and update only columns where the model is worse. The normal RAW EAR Runtime consumer can select it through `raw_ear_temporal_update_policy`; default `EVERY_FINAL` is unchanged. `allow_update=False` blocks all changes while retaining eligibility telemetry. Numeric persistence remains separately opt-in; no default or installed weight changed.
+
+**Tests / environment.** LOCAL_LINUX CPython 3.13.5 x86_64 scratch reproduction: positive one-column update and negative no-error control **2/2 PASS**. This is not the exact repository code/test suite. Three exact repository regression tests were added (feature-only update, persistence-better negative control, evaluation-only no-update), but exact-head CI has not yet been observed. Full local Aii checkout/pytest **BLOCKED / NOT_RUN**: no checkout mounted and GitHub DNS resolution failed. No Android/Termux/Redmi test.
+
+**Runtime / Canon boundary.** This is an opt-in A4 shadow-predictor update policy on the existing RAW EAR→A4 attention path; it does not update B1/B2/C3 model weights, add speaker identity, or establish useful learning. Evidence status is CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / CI_PENDING. Holdout utility, source/session retention, restart and real microphone behavior remain open.
+
+**Research R-190/R-191.** Arm's MIT-labelled Silero FP32 ONNX package reports 31.960 ms p50 and 45.27 MiB average / 82.39 MiB peak RSS on a Vivo X300, one CPU core, one 9.96-second sample; interface matches the existing optional adapter. This is vendor model-card evidence, not Redmi evidence; no download or swap. R-191 records the feature-wise plasticity hypothesis and the required holdout ablation.
+
+**Integration / device.** PR #2578 remains DRAFT / NOT_RELEASED. Prior staged/integrated runs still fail on Core-owned composer/arithmetic/observer pins and QA migration assertions; no fresh staged run was observed for this code head. Latest available V13OBS #115 remains historical (2026-11-24 STOPPED_BY_USER). New read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #1036–#1038 had no comments at last poll. Updater UNKNOWN; REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, shell, microphone, model, weight, permission or device action.
+
+**Next executable step.** Poll exact-head PR #2578 focused CI. If green, run the three-policy session-disjoint holdout/retention ablation; keep default unchanged unless measured utility and retention both improve. Core/Boss still must choose the Perception/Core convergence ancestry; Core owns downstream source-pin refresh and QA owns migration assertions. User action: **keine Aktion nötig**.
