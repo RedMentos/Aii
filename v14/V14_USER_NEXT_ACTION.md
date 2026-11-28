@@ -5,7 +5,7 @@
 ## RAW EAR measurement provenance → A5/A4/C3
 
 - PR #2578 — [Add explicit RAW EAR measurement provenance](https://github.com/RedMentos/Aii/pull/2578).
-- Branch: research-perception/v14-audio-measurement-provenance-20261128-run77; current code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4.
+- Branch: research-perception/v14-audio-measurement-provenance-20261128-run77; current PR documentation head: 4ff4dc6da6bcb571888210a054e3a449db815d9c; exact code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4.
 - Stacked on PR #2561 at c43bd2a84f3329704b80a237bb23e61e6d614c78; #2561 remains stacked on #2559.
 - Canonical schema: v14.audio-measurement-provenance/1. RMS/ZCR are measured from the supplied PCM16 window; RMS has no SPL calibration. Autocorrelation F0, voiced fraction, voicing score, activity class/score and prosody score are heuristic/uncalibrated, with score/class fields explicitly not probabilities. Optional Silero VAD is MODEL_SCORE_NOT_CALIBRATED; provisional VAD is NOT_ADVANCED_PROVISIONAL. Speaker change remains diagnostic only unless a full verified receipt/id/threshold and non-DEFER decision exist; speaker identity is never produced. Calibrated speech probability remains NOT_AVAILABLE and teacher ASR remains NOT_IN_PACKET.
 - The A5→A4→C3 admission summary carries cue_prov=HEURISTIC_UNCAL; learning/action/truth authority remains false/zero.
@@ -15,12 +15,17 @@
 
 - LOCAL_LINUX isolated scratch harness: py_compile PASS; 7/7 deterministic checks PASS (default unavailable values, heuristic/non-probability labels, optional VAD model-score provenance, provisional VAD not advanced, malformed-input rejection, speaker identity authority rejection, and rejection of a bare calibration label without verified receipt/id/threshold/non-DEFER decision). This is not full repository pytest.
 - Earlier code/test commit 3ff5e173: GitHub RAW EAR fastpath PASS on Python 3.13 and 3.14 (run 1073); source-bound A4/A5 feature-set probe PASS on Python 3.13 and 3.14 (run 283).
-- Current code/test head 45505fe: RAW EAR fastpath run 1082 pending; feature-set run 292 queued; RAW EAR/libfvad comparison run 1003 queued; staged regression run 6165 queued; RuntimeDeploy run 3463 queued. No current-head PASS claimed yet.
+- Current code/test head 45505fe: RAW EAR fastpath run 1082 in progress; feature-set run 292 queued; RAW EAR/libfvad comparison run 1003 queued; staged regression run 6165 queued; RuntimeDeploy run 3463 queued. No current-head PASS claimed.
 - The prior VAD comparison on 3ff5e failed because its workflow still pinned old RAW EAR blob 2cf44ed0. The Perception-owned comparison workflow now pins 3324e29 and includes the audio contract test; current rerun is queued.
 - Prior staged regression on 3ff5e failed because Core recovery still expected old composer blob 831080b while the current Perception composer is d51b0436. The same run reported separate stale arithmetic/observer pins and two QA migration assertions returning PARTIAL rather than UPDATED. These remain Core/QA blockers; Perception did not edit their files.
 - Full local Aii checkout/repository pytest: BLOCKED / NOT_RUN (no mounted checkout; GitHub DNS resolution failed).
-- Android/Termux microphone, normal-turn Runtime/C3, device lifecycle and Redmi: REDMI_UNVERIFIED. No device action or live receipt.
-- Updater/deployment: not queried or attempted; NOT_RELEASED.
+
+## Redmi / deployment evidence
+
+- Latest available private V13OBS #115 snapshot is dated 2026-11-24 and reports STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers.
+- New read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests (#1033–#1035) have no authenticated response at checkpoint. This is historical metadata, not live proof.
+- Updater/install state: UNKNOWN; no authenticated re-query receipt. No device action, restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE or shell action.
+- Android/Termux microphone, normal-turn Runtime/C3 and Redmi remain REDMI_UNVERIFIED. NOT_RELEASED.
 
 ## Research note R-188
 
@@ -28,9 +33,8 @@ The full peer-reviewed 2021 IEEE/ACM TASLP paper “Analysis and Calibration of 
 
 ## Next executable action
 
-Poll exact #2578 head 45505fe. Repair only Perception-owned failures. Core refreshes AUDIO_BUILDER_BLOB_SHA1 and transitive Recovery → Stage → RuntimeDeploy pins to composer blob d51b0436 after review. Core also owns the separate arithmetic/observer pins; QA owns the migration assertions. Boss reviews the stacked contract. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
+Poll exact #2578 code/test head 45505fe. Repair only Perception-owned failures. Core refreshes AUDIO_BUILDER_BLOB_SHA1 and transitive Recovery → Stage → RuntimeDeploy pins to d51b0436 after review. Core also owns separate arithmetic/observer pins; QA owns migration assertions. Boss reviews the stacked contract. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
 
----
 
 
 # Perception Run 67 — verified checkpoint (2026-11-27)
