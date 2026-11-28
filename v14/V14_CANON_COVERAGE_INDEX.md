@@ -2608,3 +2608,16 @@ For every future persistent weight update, adapter change or self-edit, acceptan
 - Source: ContinualDrive, arXiv:2611.32529 (2026-11-24), R-199.
 - Status: RESEARCH_INFORMED_REPORTING_RULE; not an implementation, not a product acceptance, and not evidence that V14 currently meets the rule.
 - The ContinualDrive code repository had no LICENSE file at the inspected revision; no code was reused.
+
+
+## Run 82 evidence overlay — A4 delayed outcome / multi-horizon calibration (2026-11-28)
+
+| Canon path | Evidence status | Evidence | Still not proven |
+|---|---|---|---|
+| A4 RAW EAR temporal prediction / attention / plasticity | WIRED_SYNTHETIC / FOCUSED_CI_PASS / NO_IMPROVEMENT | PR #2579 code/test head c87f326e128f814b756c842550b4630204e5beff; disjoint 1/3/8-window training/calibration/held-out sessions and replay anchors; residual-P90 and negative-score-P90 gate comparison; A4 CI 10 + 8 + 9 tests and production predictor 54 tests PASS on Python 3.13/3.14 | Both joint gates select zero updates; no useful held-out utility gain; no deployed C0; no production policy or weight update |
+| A4 replay / retention | WIRED_SYNTHETIC / FOCUSED_CI_PASS | Three training anchors, two calibration anchors and two held-out anchors; pairwise-distinct hashes; retention cost reused across horizons; zero retention delta because all gates abstain | Real replay utility, non-synthetic task stream, persistent weight retention/restart/rollback |
+| A5 audio perception → A4 | EXISTING WIRED_SYNTHETIC CONTRACT | Experiment consumes the production AudioTemporalPredictor API using deterministic acoustic cue fixtures | No microphone/AudioRecord, live Runtime/C3 callsite, source-bound real audio outcomes or Android lifecycle proof |
+| Shared runtime integration / release | DRAFT / INTEGRATION_BLOCKED / NOT_RELEASED | Parent #2578/#2579 remain draft; latest observed staged/integrated #46095100443 fails on Core composer/arithmetic/observer pins and QA migration assertions | Boss convergence decision; Core/QA-owned fixes; no release SHA |
+| Redmi / updater | REDMI_UNVERIFIED / UNKNOWN | No authenticated fresh V13OBS receipt; read-only #1043–#1045 NO_LIVE_RECEIPT | Actual installed SHA, updater, microphone, native runtime, user-visible E2E |
+
+No Canon requirement is closed by this overlay. No persistent weights, model, permissions, updater or user data changed. Hosted Linux CI and LOCAL_LINUX helper checks are not Redmi evidence.
