@@ -22,6 +22,18 @@ def test_body_target_tightens_with_short_deadline_and_c3_policy_is_unchanged():
     assert soft_limit("C3_LANGUAGE", {}, 90.0) == 520
 
 
+def test_measured_prefill_rate_tightens_the_soft_target_with_role_reserve():
+    assert soft_limit("B1_DETAIL", {}, 30.0, measured_tokens_per_second=10.0) == 115
+    assert soft_limit("C3_LANGUAGE", {}, 30.0, measured_tokens_per_second=10.0) == 110
+    assert soft_limit("B2_GIST", {}, 30.0, measured_tokens_per_second=1000.0) == 520
+    assert soft_limit("B1_DETAIL", {}, 30.0, measured_tokens_per_second=0.1) == 16
+
+
+def test_invalid_measured_rate_uses_the_explicit_boot_fallback():
+    for invalid in (True, 0, -1, float("nan"), float("inf"), "12"):
+        assert soft_limit("B1_DETAIL", {}, 30.0, measured_tokens_per_second=invalid) == 273
+
+
 def test_metadata_only_reduction_preserves_source_peer_jef_quotes_and_b3():
     exact = "The current source fixes the budget at 120 euros."
     peer = {"role": "B2_GIST", "summary": "Check the broader rule."}
