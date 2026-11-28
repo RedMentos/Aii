@@ -1,3 +1,39 @@
+# CURRENT NEXT ACTION — Core & Harness Run 50 (2026-11-28)
+
+**Nutzeraktion: keine Aktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Weight-Swap, keine Berechtigungsänderung und keine Geräteaktion. Eine echte lokale GGUF-Matrixprobe wäre separat lokal-TTY-gebunden und braucht ein bereits installiertes Modell plus ausdrückliche Freigabe.
+
+## Neuester verifizierter Core-Kandidat
+
+- **PR:** [#2572](https://github.com/RedMentos/Aii/pull/2572), Draft / NOT_RELEASED.
+- **Branch:** `core/v14-native-receiver-kv-consumer-20261127-run1`
+- **Code-/Test-SHA:** `8fd25ead80cc9262bed120cf50f8d46af722b1ce`
+- **Basis:** Perception #2524 branch snapshot `a47907c4a0603e602581c6462ecb845211eb0445`; diese PR ist eine diagnostische Erweiterung, keine Release-Integration.
+- **Neue Runtime-Funktion:** Der native Receiver-Matrix-Consumer verlangt jetzt, dass `task_group_id` des Bridge-Ergebnisses exakt der gestagten Matrix-Receipt-ID entspricht. Er erzeugt zusätzlich einen separat beschrifteten, auf genau diese aktuelle Task-Gruppe gefilterten K/V-/Information-Use-Bericht; frühere Cohort-Gruppen können den aktuellen Lauf nicht vertreten. Ein einzelner Lauf bleibt ausdrücklich `INSUFFICIENT_HOLDOUT`; synthetische K/V-Daten werden als `UNAVAILABLE / SYNTHETIC_FIXTURE_ONLY` ausgegeben. Bei Fehlern wird nur die aktuelle flüchtige Gruppe entfernt. `COMPLETED` wird erst nach erfolgreicher Provenienz- und Evidenzprüfung geschrieben.
+- **Source-Pin-Readback:** PASS für Matrix-Runtime SHA-256 → integrierter Native-Builder Git-Blob → Recovery-Builder SHA-256 → Stage-Builder SHA-256 → RuntimeDeploy `STAGER_SHA256`.
+
+## Exakte CI-Ergebnisse auf Code-SHA `8fd25ead80cc9262bed120cf50f8d46af722b1ce`
+
+- Core native receiver Runtime consumer #46092260865: **20/20 PASS** auf Python 3.13 und 3.14; der anschließende Stage-Schritt FAILt ausschließlich am QA-eigenen veralteten Pin für `scripts/record_only_controller_guard_20261116.py`.
+- Staged/integrated regression #46092260774: **FAIL**, 235 passed / 18 failed / 10 skipped / 2 errors / 44 subtests; die Stage-Fehler laufen auf denselben QA-Guard-Pin hinaus. Zwei Migration-Assertions sehen `PARTIAL` statt des erwarteten `UPDATED`.
+- Two-checkout migration #46092260797: **FAIL**, zwei `PARTIAL`-vs-`UPDATED`-Assertions. QA owns diese Migration-/Updater-Erwartung; Core ändert den QA-Guard nicht.
+- Lab Age state/WebView #46092260884: **FAIL**, ein Stage-Test am selben Guard-Pin.
+- Owner-read bootstrap #46092260776: Owner-read-Job **PASS**; separater Python-3.14-Stage-Startup **FAIL** am selben Guard-Pin.
+- RuntimeDeploy offline integrity #46092260800: **PASS** auf Python 3.11 und 3.14.
+- Private bridge security #46092254655: **PASS**.
+- Der integrierte Regression-Workflow ist auf dem exakten SHA abgeschlossen; keine offene CI-Queue mehr.
+
+## Grenzen und nächste Arbeit
+
+- **LOCAL_LINUX full checkout:** BLOCKED / NOT_RUN. `git ls-remote` scheitert mit `Could not resolve host: github.com`; kein vollständiger lokaler Aii-Checkout und keine lokale Full-Pytest-Ausführung.
+- **Native GGUF:** NOT_RUN. Die CI-Tests sind keine echte Modellinferenz oder K/V-Messung.
+- **Android / Redmi:** REDMI_UNVERIFIED; kein frisches authentifiziertes Geräte-Receipt, kein Deployment. GitHub-Push ist kein Deployment.
+- **B3 / Enlightened Space:** nur diagnostische, authority-zero K/V-/Teacher-forced-Evidenz. Keine semantische Nutzung, keine Antwortkorrektheit, keine trainierte modellübergreifende Latent-Kopplung, keine Weight-Änderung; B3 bleibt OFF.
+- **P0 Nutzerpfad:** normale B1/B2→C4/JEF→C3-Antwortqualität und reale Redmi-Korrektheit bleiben OPEN.
+- **Nächster ausführbarer Schritt:** QA muss den exakten `record_only_controller_guard_20261116.py`-Pin und die Migration-`PARTIAL`-Assertions auf dem aktuellen gemeinsamen HEAD reparieren. Core darf diese QA-Dateien nicht überschreiben. Danach Stage/Integrated erneut ausführen. Parallel bleibt der nächste Core-Produktpfad die normale, nichttriviale B1/B2→C4→C3-Laufzeit samt korrektem Fastpath; die native GGUF-Matrix folgt nur in tatsächlich verfügbarer lokaler Umgebung und nach expliziter lokaler Freigabe.
+
+
+---
+
 # CURRENT NEXT ACTION — Research & Perception Run 38 (2026-11-26)
 
 **Nutzeraktion: keine Aktion nötig.** Do not send a manual Termux command, UPDATE_REQUEST, CHAT_SEND, shell command, runtime restart, model download/swap, weight change, permission change or data mutation for this draft diagnostic PR.
