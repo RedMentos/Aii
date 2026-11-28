@@ -5,25 +5,27 @@
 ## RAW EAR measurement provenance → A5/A4/C3
 
 - PR #2578 — [Add explicit RAW EAR measurement provenance](https://github.com/RedMentos/Aii/pull/2578).
-- Branch: research-perception/v14-audio-measurement-provenance-20261128-run77; current PR documentation head: 4ff4dc6da6bcb571888210a054e3a449db815d9c; exact code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4.
+- Current PR documentation head: 119acd30a4455e36a95b52c83a0946ea4cd1ded8. Exact code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4.
 - Stacked on PR #2561 at c43bd2a84f3329704b80a237bb23e61e6d614c78; #2561 remains stacked on #2559.
 - Canonical schema: v14.audio-measurement-provenance/1. RMS/ZCR are measured from the supplied PCM16 window; RMS has no SPL calibration. Autocorrelation F0, voiced fraction, voicing score, activity class/score and prosody score are heuristic/uncalibrated, with score/class fields explicitly not probabilities. Optional Silero VAD is MODEL_SCORE_NOT_CALIBRATED; provisional VAD is NOT_ADVANCED_PROVISIONAL. Speaker change remains diagnostic only unless a full verified receipt/id/threshold and non-DEFER decision exist; speaker identity is never produced. Calibrated speech probability remains NOT_AVAILABLE and teacher ASR remains NOT_IN_PACKET.
 - The A5→A4→C3 admission summary carries cue_prov=HEURISTIC_UNCAL; learning/action/truth authority remains false/zero.
-- Current Perception audio composer blob: d51b0436ed6a50cb264eb57a40eafe66ee202143. It pins contract blob acc93054eb6af3a5ccd5ef02d53e55d264f904db and RAW EAR blob 3324e29ca3ba759905e892afede6f59983a26149.
+- Perception-owned blobs: audio contract acc93054eb6af3a5ccd5ef02d53e55d264f904db; RAW EAR 3324e29ca3ba759905e892afede6f59983a26149; integrated audio composer d51b0436ed6a50cb264eb57a40eafe66ee202143.
 
-## Exact evidence and limits
+## Exact tests at code/test head 45505fe
 
-- LOCAL_LINUX isolated scratch harness: py_compile PASS; 7/7 deterministic checks PASS (default unavailable values, heuristic/non-probability labels, optional VAD model-score provenance, provisional VAD not advanced, malformed-input rejection, speaker identity authority rejection, and rejection of a bare calibration label without verified receipt/id/threshold/non-DEFER decision). This is not full repository pytest.
-- Earlier code/test commit 3ff5e173: GitHub RAW EAR fastpath PASS on Python 3.13 and 3.14 (run 1073); source-bound A4/A5 feature-set probe PASS on Python 3.13 and 3.14 (run 283).
-- Current code/test head 45505fe: RAW EAR fastpath run 1082 in progress; feature-set run 292 queued; RAW EAR/libfvad comparison run 1003 queued; staged regression run 6165 queued; RuntimeDeploy run 3463 queued. No current-head PASS claimed.
-- The prior VAD comparison on 3ff5e failed because its workflow still pinned old RAW EAR blob 2cf44ed0. The Perception-owned comparison workflow now pins 3324e29 and includes the audio contract test; current rerun is queued.
-- Prior staged regression on 3ff5e failed because Core recovery still expected old composer blob 831080b while the current Perception composer is d51b0436. The same run reported separate stale arithmetic/observer pins and two QA migration assertions returning PARTIAL rather than UPDATED. These remain Core/QA blockers; Perception did not edit their files.
+- LOCAL_LINUX: CPython 3.13.5 x86_64 isolated helper/packet harness py_compile PASS; 7/7 deterministic checks PASS. Not a full Aii checkout.
+- RAW EAR optional NumPy backend / A5/A4/C3 consumer suite: PASS Python 3.13 and 3.14, 211 tests each (workflow run 1082).
+- Source-bound A4/A5 feature-set probe: PASS Python 3.13 and 3.14, 15 tests each (run 292).
+- RAW EAR vs WebRTC/libfvad comparison: PASS Python 3.13 and 3.14; 9 ABI/benchmark checks plus 204 audio runtime tests each (run 1003). The pinned libfvad library was built on Linux CI; this is not Android evidence.
+- Runtime deployment integrity: PASS Python 3.11 and 3.14, offline CI test groups 17+3+31+41 per job (run 3463). This is CI validation, not a phone deployment.
+- Adjacent existing checks on the same branch: MediaProjection RAW EYE frame ingress PASS Python 3.13/3.14 (run 689); A4 error-gated plasticity/retention ablation PASS Python 3.13/3.14 (run 116). These are not new Run77 features.
+- Staged context/integrated regression: FAIL (run 6165). Staged-runtime reports 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. The integrated regression fails because Core recovery still expects audio composer blob 831080bceec90711bd42e0fa4eba47c669975c98, while the current Perception composer is d51b0436ed6a50cb264eb57a40eafe66ee202143. The same staged run has separate Core arithmetic/observer pin failures and two QA migration assertions returning PARTIAL rather than UPDATED. Perception did not edit Core/QA-owned files.
 - Full local Aii checkout/repository pytest: BLOCKED / NOT_RUN (no mounted checkout; GitHub DNS resolution failed).
 
 ## Redmi / deployment evidence
 
 - Latest available private V13OBS #115 snapshot is dated 2026-11-24 and reports STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers.
-- New read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests (#1033–#1035) have no authenticated response at checkpoint. This is historical metadata, not live proof.
+- New read-only HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests #1033–#1035 have no authenticated response; NO_LIVE_RECEIPT. This is historical metadata, not live proof.
 - Updater/install state: UNKNOWN; no authenticated re-query receipt. No device action, restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE or shell action.
 - Android/Termux microphone, normal-turn Runtime/C3 and Redmi remain REDMI_UNVERIFIED. NOT_RELEASED.
 
@@ -33,22 +35,8 @@ The full peer-reviewed 2021 IEEE/ACM TASLP paper “Analysis and Calibration of 
 
 ## Next executable action
 
-Poll exact #2578 code/test head 45505fe. Repair only Perception-owned failures. Core refreshes AUDIO_BUILDER_BLOB_SHA1 and transitive Recovery → Stage → RuntimeDeploy pins to d51b0436 after review. Core also owns separate arithmetic/observer pins; QA owns migration assertions. Boss reviews the stacked contract. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
+Core refreshes AUDIO_BUILDER_BLOB_SHA1 and transitive Recovery → Stage → RuntimeDeploy pins to d51b0436 after review. Core also owns the separate arithmetic/observer pins; QA owns migration assertions. Boss reviews the stacked contract before integration. P0 #1904 remains OPEN. Keep microphone/provider capture OFF until consent, lifecycle, revoke, restart and rollback are verified on authorized Android hardware.
 
-
-
-# Perception Run 67 — verified checkpoint (2026-11-27)
-
-- **New implementation:** PR [#2559](https://github.com/RedMentos/Aii/pull/2559), branch `research-perception/v14-a5-raw-eye-a4-structure-20261127-run67b`, exact code/test head `0411d6fc539a2442e7f49886da87cc7fbbb25c73` (base #2557 at `95c6dd27e15de798cb4b69ddc1d1f5abda746386`). Module blob `14198bbd33b5394c787fe31b9fbce7778cbd11e0`; test blob `6f654d8b90500d0b089ae3154851ba6d22a440f4`.
-- **Actual function:** the signed MediaProjection A5 frame ingress now reuses the existing RAW-EYE structure extractor and A4 visual-salience adapter. It assembles the 117-value descriptor from the already-computed global + 16 tile rows, applies a fixed-gain structural cue to the exact global-frame A4 row, refreshes A4 weights/suppression/relook, and includes an authority-zero A4 receipt in the ephemeral PerceptPacket. No second image pass or duplicate capture provider.
-- **Exact focused CI:** workflow `46016491056` **PASS**. Python 3.13: `py_compile` + **29/29** tests; Python 3.14: `py_compile` + **29/29** tests. Uniform-frame negative confirms zero structural contribution. Initial head `7ae077f...` had 28 pass / 1 test-only failure because the assertion allowed only 1e-6 while the existing A4 helper rounds 18 weights to six decimals; tolerance was corrected to 1e-5 and the exact new head passed. No code gate was weakened.
-- **Shared integration:** workflow `46016490897` **FAIL**. Integrated regression: 1 failure on the stale Core audio-composition source pin. Staged runtime: **20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests passed**; logs show Core audio-composer/arithmetic/observer pins and QA migration assertions expecting UPDATED while the safe migration result is PARTIAL. No Perception ingress test failed. Core/QA own these files; no pin or gate was weakened. This is still a synthetic provider/lease fixture, not a normal C3 turn.
-- **Local environment:** isolated helper reproduction **3/3 PASS** (positive structure, uniform zero, invalid-provenance rejection). Full local Aii checkout/pytest **BLOCKED / NOT_RUN**: no checkout mounted and GitHub DNS unavailable. Hosted CI is not local evidence.
-- **Device / deployment:** no fresh authenticated Redmi receipt; MediaProjection permission, Android lifecycle, normal Runtime/C3 consumer, installed SHA and updater state remain **REDMI_UNVERIFIED / UNKNOWN**. No UPDATE_REQUEST, phone command, model/weight/permission/data change or deployment. **NOT_RELEASED**.
-- **Research:** R-186 reviewed WM-VS v2 in full. Its action-conditioned future-error alignment and 25/30 final-retention result support a later source-bound action→visual-outcome progress gate; this PR only adds handcrafted attention salience, not learned progress or a world model. GlanceWAM's asynchronous latent lookahead is conceptually relevant but its 1.3B video backbone / 21 GB bundle / A100 results are not a Redmi candidate.
-- **Next:** Core must rebase/port #2408/#2555 onto the #2557 provider and include #2559 before consuming its A4 signal in the normal Runtime/C3 path; keep the outer UIObservationLease alive through C3. QA separately verifies OS consent/denial, onStop, revoke, process death, restart and rollback. Keep screen capture/projector OFF until a consented Redmi receipt. **No user action is required.**
-
----
 
 
 # CURRENT VERIFIED NEXT ACTION — 2026-11-27 (Research & Perception Run 65)
