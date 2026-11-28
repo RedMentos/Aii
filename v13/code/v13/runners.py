@@ -330,11 +330,14 @@ class LlamaRunner:
     def _prefill_rate_estimate(self):
         estimator=getattr(self,"_prefill_rate_estimator",None)
         if estimator is None:return None
-        return estimator.estimate(self._lifecycle_stamp())
+        binding=self._lifecycle_stamp()
+        self._prefill_rate_request_binding=binding
+        return estimator.estimate(binding)
     def _record_prefill_rate(self,status):
         estimator=getattr(self,"_prefill_rate_estimator",None)
-        if estimator is None or status!="FINAL":return
-        binding=self._lifecycle_stamp()
+        binding=getattr(self,"_prefill_rate_request_binding",None)
+        if estimator is None or status!="FINAL" or binding is None:return
+        if self._lifecycle_stamp()!=binding:return
         stage=self.last_metrics.get("stage_durations_s",{})
         added=estimator.observe(
             binding,
@@ -496,6 +499,7 @@ class LlamaRunner:
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         self._prompt_admission=None
+        self._prefill_rate_request_binding=None
         self._native_completion_http_200=False
         self._native_request_prompt_sha256=None
         self._native_request_prompt_submitted=False
