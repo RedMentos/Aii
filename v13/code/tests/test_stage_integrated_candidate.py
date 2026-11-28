@@ -19,6 +19,10 @@ class StageTest(unittest.TestCase):
         self.addCleanup(setattr, module, 'BUILDER_SHA', original_pin)
         original_overlay_pin = module.ARITHMETIC_OVERLAY_GIT_BLOB
         self.addCleanup(setattr, module, 'ARITHMETIC_OVERLAY_GIT_BLOB', original_overlay_pin)
+        original_action_overlay = module.ACTION_SOURCE_OVERLAY
+        self.addCleanup(setattr, module, 'ACTION_SOURCE_OVERLAY', original_action_overlay)
+        original_action_overlay_pin = module.ACTION_SOURCE_OVERLAY_GIT_BLOB
+        self.addCleanup(setattr, module, 'ACTION_SOURCE_OVERLAY_GIT_BLOB', original_action_overlay_pin)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -34,8 +38,24 @@ class StageTest(unittest.TestCase):
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
         module.ARITHMETIC_OVERLAY_GIT_BLOB = hashlib.sha1(
-            b'blob ' + str(len(overlay)).encode('ascii') + b'\0' + overlay
+            b'blob ' + str(len(overlay)).encode('ascii') + bytes([0]) + overlay
         ).hexdigest()
+
+        # This suite isolates the generic stager from production source pins.
+        # The dedicated ActionSelection integration test exercises the real,
+        # hash-pinned overlay against the real Focal source.
+        module.ACTION_SOURCE_OVERLAY = 'action_overlay_fixture.py'
+        action_overlay = (
+            "FOCAL_SOURCE_BLOB_SHA1 = 'fixture-focal-pin'\n"
+            "def apply_sources(code_dir, sources):\n"
+            "    return dict(sources)\n"
+        ).encode('utf-8')
+        action_overlay_path = self.code / module.ACTION_SOURCE_OVERLAY
+        action_overlay_path.write_bytes(action_overlay)
+        module.ACTION_SOURCE_OVERLAY_GIT_BLOB = hashlib.sha1(
+            b'blob ' + str(len(action_overlay)).encode('ascii') + bytes([0]) + action_overlay
+        ).hexdigest()
+
         (self.code / 'specs').mkdir()
         (self.code / 'specs/test.json').write_text('{}')
 

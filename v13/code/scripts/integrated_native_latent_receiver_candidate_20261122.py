@@ -9,7 +9,9 @@ from pathlib import Path
 BASE_PINS = {
     "v13/cognition.py": "208a713119212caa85a1cb1aa7955e919820cab39471d5ba576cf8fcaf2a3c90",
     "v13/callosum.py": frozenset({"f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748", "40f5e0f623ffcbcffba901bc4bfba9fe289b1e9410b764db9f1a2193e3b0c348"}),
-    "v13/runners.py": "c90fd1e62173b570addceebb93b594bb86d0b92fa46286767a3a59b49c07720d",
+    "v13/runners.py": "1e71e3b2884a7950754129c6513dc9142966c23830fb8e83e1e9b3e6531bc3ef",
+    "v13/native_prompt_admission.py": "4bb55eb8df8ea36f309c47e9935ada2e39a50c11006d12c43ef09a7f9f986b34",
+    "v13/native_prefill_rate.py": "b3bdbbda00341cb844f9d76daaeda32434655f6387050a41809c74fd43585ae7",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "9c9974699b622347e380f3626a171bf21bae9acd3683772411052190e9b06840",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"

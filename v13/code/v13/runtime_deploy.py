@@ -30,7 +30,8 @@ REPO_ORIGIN = ("https://github.com/RedMentos/Aii",
                "git@github.com:RedMentos/Aii.git")
 CANON = "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md"
 REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
-            "v13/common.py", "v13/models.py", "v13/ui.py",
+            "v13/common.py", "v13/native_prompt_admission.py", "v13/native_prefill_rate.py",
+            "v13/models.py", "v13/ui.py",
             "v13/android_ui_runtime.py", "v13/android_companion_runtime.py",
             "v13/android_companion_ui_frames.py", "v13/android_companion_transport.py",
             "v13/android_companion_ecdsa.py", "v13/android_capabilities.py",
@@ -53,7 +54,7 @@ ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
 # This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "26867e53d032766a7afa411ae0824ad5043baa9ddcb3a95330d555e524f00f35"
+STAGER_SHA256 = "404fe212edd711c1a1032f79e0861f7bca9c79e57854599dfd9d024e992ae9c1"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"

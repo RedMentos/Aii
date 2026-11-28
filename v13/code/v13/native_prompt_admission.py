@@ -18,28 +18,33 @@ import math
 from .prompts import text as prompt
 from .context_os import VOLATILE_HEAD
 
-REVISION = "v13.native-prompt-admission/1"
+REVISION = "v13.native-prompt-admission/2"
 # Ordered from redundant system state to progressively useful historical cues.
 REMOVABLE_C3 = ("task_context", "digest", "user_model")
-def soft_limit(role, cfg, remaining):
-    """BOOT token cap: reserve output/decode time before full native prefill."""
+def soft_limit(role, cfg, remaining, measured_tokens_per_second=None):
+    """Conservative soft token target from measured effective prefill or BOOT fallback."""
     if role not in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST"):
         return None
     if (type(remaining) not in (int, float) or not math.isfinite(remaining)
             or remaining <= 0):
         return None
-    # C3 always has a bounded first-prefill envelope, even when the overall
-    # turn deadline is generous. This is a BOOT latency policy, not a claim
-    # about measured Redmi token rate. B1/B2 keep their existing short-window
-    # policy until real device timings justify changing their admission.
-    if role == "C3_LANGUAGE":
-        reserved = 10
-    else:
-        if remaining >= 55:
-            return None
-        reserved = 9
-    n = int(max(0, remaining-reserved) * 13)
-    return max(96, min(520, n))
+    reserved = 10 if role == "C3_LANGUAGE" else 9
+    measured = (
+        type(measured_tokens_per_second) in (int, float)
+        and math.isfinite(measured_tokens_per_second)
+        and measured_tokens_per_second > 0
+    )
+    if measured:
+        # Effective prompt tokens / wall time to first token, using the slowest
+        # recent successful sample for this exact runner lifecycle. The 0.55
+        # factor is an explicit safety margin; this is not raw kernel throughput.
+        usable = max(0.0, remaining - reserved)
+        target = int(usable * measured_tokens_per_second * 0.55)
+        return max(16, min(520, target))
+    # Unmeasured first-run fallback retained from the Redmi BOOT policy.
+    # It is a policy constant, not a claimed device benchmark.
+    target = int(max(0.0, remaining - reserved) * 13)
+    return max(96, min(520, target))
 
 
 def _remove_c3_layer(messages, cfg):

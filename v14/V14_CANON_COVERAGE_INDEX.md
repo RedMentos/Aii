@@ -2502,3 +2502,16 @@ This overlay does not promote A5 to NATIVE_LINUX_PROOF, REAL_REDM I_PROOF, ACCEP
 ### Run 64 final gate status (2026-11-27)
 
 The focused receiver is **WIRED_SYNTHETIC / FOCUSED_CI_PASS**, not accepted: final PR head `cf8a0ea75712171d28b6ed9c10d3b189bb41393f` passes 25/25 on Python 3.13 and 25/25 on Python 3.14; runtime deployment integrity passes. Shared staged/integrated remains **FAIL** on Core-owned source pins and QA migration assertions. No local full-repo, native Android, real C3-turn or Redmi evidence. Do not promote the A5 screen/UI path beyond WIRED_SYNTHETIC. Core normal-turn Runtime/C3 and QA Android lifecycle remain OPEN.
+
+
+## Core Run 28 evidence overlay — 2026-11-28
+
+| Canon path | Current code/wiring | Exact evidence | Acceptance |
+|---|---|---|---|
+| B1_DETAIL / B2_GIST prompt admission | Remaining-time-derived soft target; optional metadata reduction only; protected source is not truncated | PR #2577 head `adef6bde`; 60 tests +37 subtests and 33 staged tests +30 subtests on Python 3.13/3.14 | WIRED_SYNTHETIC; no native Redmi offer proof |
+| B1/B2 → C4 → C3 | Existing source-bound offer rendering and native offer prompt witness retained; new soft budget feeds this path | PR #2577 core-native-inputs and integrated CI pass | WIRED_SYNTHETIC; semantic use and correct final answer NOT_ACCEPTED |
+| C5 ActionSelection | Source-validated refs from the same Focal coalition, including B1/B2/B3/C1/C4/Memory/World/Self | PR #2577 staged/integrated tests pass | WIRED_SYNTHETIC; symbolic refs only, not trained latent coupling |
+| Native runner deadline recovery | `/slots`-verified idle retention; cancellation, active/malformed/unknown slots and lifecycle mismatch unload | Warm-retention 9/9 on Python 3.13.18 and 3.14.10; local isolated state machine 6/6 | WIRED_SYNTHETIC; no real llama-server/Redmi residency measurement |
+| Install/update | 1053-file candidate stages as SHADOW_REVIEW_ONLY; source pin and two-checkout migration CI pass | PR #2577 exact-head CI 22/22 | NOT_RELEASED; no device installation or rollback proof |
+
+P0 remains OPEN: no fresh Redmi receipt, no useful native B1/B2 offer, no semantically validated C3 answer, no trained cross-model latent coupling. Do not promote CI/synthetic evidence to NATIVE_LINUX_PROOF or REDMI_PROOF.
