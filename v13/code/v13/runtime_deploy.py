@@ -53,7 +53,7 @@ ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
 # This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "d67293802f3c8c3a75a0939c18c603025601a65335189bf190aab052a072e5d3"
+STAGER_SHA256 = "0ce008ebe2a7e6c243741e4075ffa73060e45ce1d53e83b69d49cbd3e55104d8"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
