@@ -6,6 +6,7 @@ Checkpoint: 2026-11-28 01:02:40 Europe/Berlin
 Owner: Research & Perception
 PR: https://github.com/RedMentos/Aii/pull/2578
 Branch: research-perception/v14-audio-measurement-provenance-20261128-run77
+Current PR documentation head: 4ff4dc6da6bcb571888210a054e3a449db815d9c
 Exact code/test head: 45505fe83803c843d2a6c77cbbc16b56102b81f4
 Base: PR #2561 branch at c43bd2a84f3329704b80a237bb23e61e6d614c78 (itself stacked on #2559)
 Release: NOT_RELEASED
@@ -55,7 +56,7 @@ Official Silero VAD README inspected 2026-11-28: https://github.com/snakers4/sil
 
 ## Cross-lane blocker
 
-Core recovery candidate still expects composer blob 831080bceec90711bd42e0fa4eba47c669975c98; current Perception composer blob is d51b0436ed6a50cb264eb57a40eafe66ee202143. Staged integration also reports separate stale arithmetic/observer pins and two QA migration assertions returning PARTIAL rather than UPDATED. Core/QA ownership is preserved.
+Core recovery candidate still expects composer blob 831080bceec90711bd42e0fa4eba47c669975c98; current Perception composer blob is d51b0436ed6a50cb264eb57a40eafe66ee202143. The latest available V13OBS snapshot is historical STOPPED_BY_USER and does not verify current updater/install state. Staged integration also reports separate stale arithmetic/observer pins and two QA migration assertions returning PARTIAL rather than UPDATED. Core/QA ownership is preserved.
 
 ## Next action
 
