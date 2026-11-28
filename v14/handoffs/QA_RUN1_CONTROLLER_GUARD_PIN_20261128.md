@@ -22,7 +22,8 @@ QA changes:
   - Recovery-12 Git blob SHA-1: `258bd73cf8288595a5c04b6f20eb5df238ab1ed9`
   - Recovery-21 SHA-256: `38bef4887930ad4438db665ab44e817e65b83d26ce0feb0312d68dc41de8bc1f`
   - Stage-builder SHA-256: `ade52e951fad0ec8da75feb14491bbc59e3f83fd3e317469f1d93103ba81026f`
-  - RuntimeDeploy stage SHA-256: `ade52e951fad0ec8da75feb14491bbc59e3f83fd3e317469f1d93103ba81026f`
+  - RuntimeDeploy `STAGER_SHA256` pin: `ade52e951fad0ec8da75feb14491bbc59e3f83fd3e317469f1d93103ba81026f`
+  - RuntimeDeploy source SHA-256: `fceedeaeca84dc72774f232fb87dd46527b800085c9e54ca329805921380d856`
 - Added the QA branch to the existing native receiver matrix workflow's push filter so that its exact stage gate runs on this branch.
 
 ## Exact CI evidence
