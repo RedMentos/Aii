@@ -69,17 +69,30 @@ def test_voice_is_off_by_default_and_only_explicit_speak_runs(tmp_path, monkeypa
     monkeypatch.setenv("CAPTURE_FILE", str(capture))
     disabled = json.loads(operator_command(runtime, ["status"]))
     assert disabled["enabled"] is False and disabled["available"] is True
+    assert disabled["network_requirement"] == "UNKNOWN"
+    assert disabled["offline_verified"] is False
+    assert disabled["stop_supported"] is False
+    assert disabled["barge_in_supported"] is False
     assert json.loads(operator_command(runtime, ["speak"]))["status"] == "OFF"
     assert not runtime.store.packets
     operator_command(runtime, ["on"])
-    result = json.loads(operator_command(runtime, ["speak"]))
+    blocked = json.loads(operator_command(runtime, ["speak"]))
+    assert blocked["outcome"]["status"] == "NETWORK_REQUIREMENT_UNKNOWN"
+    assert blocked["privacy"]["network_consent"] == "NONE"
+    assert not capture.exists()
+    result = json.loads(operator_command(runtime, ["speak", "--allow-network-unknown"]))
     assert result["outcome"]["status"] == "CLI_COMPLETED"
+    assert result["privacy"]["network_consent"] == "ONE_SHOT_UNKNOWN_NETWORK"
     assert result["audibility_verified"] is False
     assert capture.read_text() == "A local answer."
     kinds = [kind for kind, _ in runtime.store.packets]
-    assert kinds == ["ActionIntent", "ActionOutcome"]
-    intent_packet = runtime.store.packets[0][1]
-    outcome_packet = runtime.store.packets[1][1]
+    assert kinds == ["ActionIntent", "ActionOutcome", "ActionIntent", "ActionOutcome"]
+    intent_packet = runtime.store.packets[2][1]
+    outcome_packet = runtime.store.packets[3][1]
+    assert intent_packet["network_requirement"] == "UNKNOWN"
+    assert intent_packet["offline_verified"] is False
+    assert intent_packet["network_consent"] == "ONE_SHOT_UNKNOWN_NETWORK"
+    assert outcome_packet["actual"]["network_consent"] == "ONE_SHOT_UNKNOWN_NETWORK"
     assert intent_packet["action_id"] == outcome_packet["action_id"]
     assert "A local answer." not in json.dumps(outcome_packet)
     operator_command(runtime, ["off"])
@@ -105,7 +118,7 @@ def test_calls_are_serialized_and_second_is_busy(tmp_path, monkeypatch):
     intent = final_text_intent(7, "event-7", "A local answer.", "FINAL", enabled=True, user_command=True)
     adapter = TermuxTtsAdapter(timeout_seconds=3)
     first = []
-    thread = threading.Thread(target=lambda: first.append(adapter.speak(runtime, intent, runtime.row)))
+    thread = threading.Thread(target=lambda: first.append(adapter.speak(runtime, intent, runtime.row, allow_unknown_network=True)))
     thread.start()
     deadline = time.time() + 2
     while not started.exists() and time.time() < deadline:
@@ -126,12 +139,12 @@ def test_timeout_degrades_adapter_without_killing_api_service(tmp_path, monkeypa
     monkeypatch.setenv("PATH", str(bin_dir) + os.pathsep + os.environ.get("PATH", ""))
     intent = final_text_intent(7, "event-7", "A local answer.", "FINAL", enabled=True, user_command=True)
     adapter = TermuxTtsAdapter(timeout_seconds=0.1)
-    first = adapter.speak(runtime, intent, runtime.row)
-    second = adapter.speak(runtime, intent, runtime.row)
+    first = adapter.speak(runtime, intent, runtime.row, allow_unknown_network=True)
+    second = adapter.speak(runtime, intent, runtime.row, allow_unknown_network=True)
     assert first["status"] == "TIMEOUT"
     assert second["status"] == "DEGRADED"
     restarted_adapter = TermuxTtsAdapter(timeout_seconds=0.1)
-    assert restarted_adapter.speak(runtime, intent, runtime.row)["status"] == "DEGRADED"
+    assert restarted_adapter.speak(runtime, intent, runtime.row, allow_unknown_network=True)["status"] == "DEGRADED"
     assert json.loads(operator_command(runtime, ["status"]))["degraded"] is True
     assert json.loads(operator_command(runtime, ["reset", "--confirm"]))["status"] == "RESET"
     assert json.loads(operator_command(runtime, ["status"]))["degraded"] is False
@@ -173,7 +186,10 @@ def test_real_runtime_sqlite_speech_action_path(tmp_path, monkeypatch):
             "SELECT kind FROM packets WHERE event_id=?", (event["event_id"],)
         ) == []
 
-        result = json.loads(operator.run(":voice speak", origin="OPERATOR_TTY"))
+        blocked = json.loads(operator.run(":voice speak", origin="OPERATOR_TTY"))
+        assert blocked["outcome"]["status"] == "NETWORK_REQUIREMENT_UNKNOWN"
+        assert not capture.exists()
+        result = json.loads(operator.run(":voice speak --allow-network-unknown", origin="OPERATOR_TTY"))
         assert result["outcome"]["status"] == "CLI_COMPLETED"
         assert result["automatic_playback"] is False
         assert result["audibility_verified"] is False
@@ -183,9 +199,12 @@ def test_real_runtime_sqlite_speech_action_path(tmp_path, monkeypatch):
             "SELECT kind,payload FROM packets WHERE event_id=? ORDER BY rowid",
             (event["event_id"],),
         )
-        assert [row["kind"] for row in rows] == ["ActionIntent", "ActionOutcome"]
-        outcome = json.loads(rows[1]["payload"])
-        assert outcome["action_id"] == json.loads(rows[0]["payload"])["action_id"]
+        assert [row["kind"] for row in rows] == ["ActionIntent", "ActionOutcome", "ActionIntent", "ActionOutcome"]
+        intent_payload = json.loads(rows[2]["payload"])
+        outcome = json.loads(rows[3]["payload"])
+        assert intent_payload["network_requirement"] == "UNKNOWN"
+        assert intent_payload["network_consent"] == "ONE_SHOT_UNKNOWN_NETWORK"
+        assert outcome["action_id"] == intent_payload["action_id"]
         assert outcome["actual"]["audibility_verified"] is False
         assert "A local answer." not in rows[1]["payload"]
     finally:
