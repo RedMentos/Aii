@@ -179,7 +179,7 @@ class ControllerGuardJefBridgePinTests(unittest.TestCase):
     def test_jefbridge_allowlist_rejects_one_byte_change(self):
         from scripts import record_only_controller_guard_20261116 as guard
         raw = (CODE / "v13" / "jefbridge.py").read_bytes()
-        changed_digest = hashlib.sha256(raw + b"\\n").hexdigest()
+        changed_digest = hashlib.sha256(raw + b"\x00").hexdigest()
         self.assertNotIn(changed_digest, guard.PINS["v13/jefbridge.py"])
 
 
