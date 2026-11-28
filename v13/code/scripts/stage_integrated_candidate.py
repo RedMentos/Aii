@@ -17,7 +17,7 @@ BUILDER_SHA = '6c1dbebf3a5d46608b78fa4d2de92d2abe032c520ea0db83ba0dc7a56567fcd1'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 ACTION_SOURCE_OVERLAY = 'scripts/integrated_action_selection_source_refs_candidate_20261128.py'
-ACTION_SOURCE_OVERLAY_GIT_BLOB = '1920104c8acf827a00caa587829d663f833ea0f1'
+ACTION_SOURCE_OVERLAY_GIT_BLOB = '9313b725addc1f0eaf71cde27c2374710a47d2c7'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 

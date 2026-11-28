@@ -142,7 +142,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
 
     focal = _replace(
         focal,
-        b"        for m in memories:\\n",
+        b"        for m in memories:\n",
         b"""        # Preserve every source that actually fed a B1/B2 offer into C4/C5.
         for candidate in cands:
             if candidate.get('source_kind') in BODY:
