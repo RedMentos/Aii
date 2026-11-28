@@ -1,4 +1,26 @@
-# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79 final)
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 82)
+
+## Latest verified Perception status — Run 82
+
+- **New code:** draft PR [#2579](https://github.com/RedMentos/Aii/pull/2579), branch research-perception/v14-a4-multihorizon-effect-20261128-run81, exact code/test head c87f326e128f814b756c842550b4630204e5beff; stacked on draft #2578 at base head 7d2e4eb8d798f8dfeef78331728dfaf8c152980c. Latest PR branch readback confirms the head.
+- **What changed:** the multi-horizon A4 update-effect study now uses three disjoint training replay anchors, two separate calibration anchors and two held-out anchors; six training sessions, three calibration sessions and three held-out regimes. It compares an absolute-residual P90 abstention margin with a negative-score P90 cutoff calibrated only on disjoint negative outcomes. Replay retention cost is computed once per candidate and reused across horizons.
+- **Exact CI:** A4 workflow [#46101601310](https://github.com/RedMentos/Aii/actions/runs/46101601310) PASS on Python 3.13 and 3.14: py_compile, A4 retention 10/10, corrected one-step 8/8, multi-horizon 9/9, production audio temporal predictor pytest 54/54 each. Frame ingress #46101601316 and docs-head rerun #46102156257 passed 29/29 on Python 3.13/3.14; RuntimeDeploy offline #46102156247 passed 41/41 on Python 3.11/3.14; model-lab #46101597792 PASS; private-bridge #46101597774 and docs-head #46102153245 PASS (39 tests); public privacy scan #46102153017 CLEAN. Docs-only head e52 A4 rerun #46102156355 also PASS on Python 3.13/3.14 with the same 10 + 8 + 9 + 54 test counts. These are hosted Linux checks, not Redmi tests.
+- **Measured synthetic result:** residual-P90 calibration achieved 90.45% residual coverage but 0% positive recall. Negative-score-P90 calibration kept per-horizon false-positive rates at 9.26–10%, but joint 1/3/8-horizon gates still selected 0/74 smooth, 0/16 abrupt and 0/69 abrupt-to-smooth candidates. Both gates matched synthetic NO_UPDATE exactly: no utility gain and no retention change. This is a negative research result; no A4 gate is adopted.
+- **Local tests:** CPython 3.13.5 Linux x86_64 helper-only quantile/residual/negative-score checks 5/5 PASS. They are not the exact experiment or predictor. Full local Aii checkout/pytest BLOCKED / NOT_RUN: no checkout mounted and GitHub DNS resolution fails.
+- **Runtime / Canon effect:** no new live Runtime/C3 consumer, microphone path, deployed C0, persistent weight update or default policy change. A4 experiment remains WIRED_SYNTHETIC only; current A4 default and existing opt-in policy are unchanged. P0 basic chat and whole-system acceptance remain open.
+- **Integration blockers:** parent #2578 remains DRAFT. The latest observed shared staged/integrated run #46095100443 still FAILS on Core-owned Recovery composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Boss/Integrator must choose convergence ancestry; Perception does not transplant Core/QA pins.
+- **Device/deployment:** latest available private V13OBS #115 is the historical 2026-11-24 STOPPED_BY_USER snapshot. Read-only requests #1043 HEALTH, #1044 PIPELINE_STATUS and #1045 DIAGNOSTICS returned NO_LIVE_RECEIPT. REDMI_UNVERIFIED; updater UNKNOWN; NOT_RELEASED. No UPDATE_REQUEST, model download/swap, microphone permission, CHAT_SEND, shell or device action.
+- **Research:** R-196 is now a full-main-text review of Pache & van Rossum's mistake-gating paper; its sample-level classification mechanism is not equivalent to A4's continuous acoustic regression. R-200 and R-201 remain abstract-level reviews only.
+
+### Next concrete action
+
+Keep both multi-horizon gates shadow-only. Next research step: test a predeclared two-of-three horizon consensus or uncertainty-weighted aggregation using the same disjoint sessions and replay anchors; accept nothing unless current-task utility beats NO_UPDATE and worst-anchor retention is non-worse. Do not tune thresholds simply to force updates. Any future persistent update still requires the exact deployed checkpoint C0 and source-bound held-out outcomes. Boss/Integrator still owns #2578/#2579 convergence order; Core owns Recovery-to-Stage-to-RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions.
+
+**User action: keine Aktion nötig.**
+
+---
+
+## Historical Run 79/80 handoff — superseded by Run 81
 
 ## Latest verified Perception status — 2026-11-28
 

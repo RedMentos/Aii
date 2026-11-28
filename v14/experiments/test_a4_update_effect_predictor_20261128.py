@@ -2,7 +2,13 @@
 import math
 import unittest
 
-from a4_update_effect_predictor_20261128 import run_experiment
+from a4_update_effect_predictor_20261128 import (
+    _aligned_candidate_pair,
+    _deltas,
+    _smooth_sequence,
+    run_experiment,
+)
+from v13.audio_temporal_prediction import AudioTemporalPredictor
 
 
 class A4UpdateEffectPredictorTests(unittest.TestCase):
@@ -12,6 +18,11 @@ class A4UpdateEffectPredictorTests(unittest.TestCase):
 
     def test_scope_and_training_holdout_split_are_explicit(self):
         result = self.result
+        self.assertEqual(result["schema"], "v14.a4.update-effect-predictor/2")
+        self.assertEqual(
+            result["counterfactual_state_alignment"],
+            "CANDIDATE_AND_NO_UPDATE_BASELINE_ADVANCE_THROUGH_SAME_CURRENT_WINDOW",
+        )
         self.assertEqual(result["environment"], "SYNTHETIC")
         self.assertTrue(result["synthetic_benchmark"])
         self.assertFalse(result["device_benchmark"])
@@ -22,6 +33,20 @@ class A4UpdateEffectPredictorTests(unittest.TestCase):
         self.assertFalse(result["privacy"]["training_examples_persisted"])
         self.assertFalse(result["authority"]["runtime_policy_changed"])
         self.assertFalse(result["authority"]["weight_persistence"])
+
+    def test_candidate_and_no_update_baseline_share_current_window(self):
+        deltas = _deltas(_smooth_sequence(0, 0.55))
+        predictor = AudioTemporalPredictor(
+            learning_rate=0.20,
+            warmup_updates=1,
+            update_policy="FEATURE_ERROR_GATED",
+        )
+        predictor.update(deltas[0], allow_update=False)
+        baseline, candidate, _result = _aligned_candidate_pair(
+            predictor, deltas[1]
+        )
+        self.assertEqual(candidate._previous, baseline._previous)
+        self.assertEqual(baseline.state_dict(), predictor.state_dict())
 
     def test_smooth_and_abrupt_regimes_compare_all_controls(self):
         self.assertEqual(set(self.result["per_regime"]), {"smooth", "abrupt"})
