@@ -299,6 +299,8 @@ def test_matrix_run_requires_one_shot_local_approval_and_uses_real_bridge_contra
             "status": "SCORED_DIAGNOSTIC",
             "condition_count": 8,
             "environment": kwargs["target_environment"],
+            "task_group_id": receipt["task_group_id"],
+            "cohort_status": "EMPTY",
             "semantic_use_proven": False,
             "training_authority": 0,
             "native_receiver_authority": 0,
@@ -311,6 +313,10 @@ def test_matrix_run_requires_one_shot_local_approval_and_uses_real_bridge_contra
     result = matrix_runtime._run(runtime)
     assert result["status"] == "SCORED_DIAGNOSTIC"
     assert result["environment"] == "LOCAL_LINUX"
+    assert result["current_matrix_task_group"]["scope"] == "CURRENT_MATRIX_TASK_GROUP"
+    assert result["current_matrix_task_group"]["task_group_id"] == "task-main"
+    assert result["current_matrix_task_group"]["represented_in_ephemeral_cohort"] is False
+    assert result["native_receiver_effects"]["scope"] == "AGGREGATE_EPHEMERAL_COHORT"
     assert len(calls) == 1
     assert calls[0]["threads"] == 1
     assert calls[0]["target_environment"] == "LOCAL_LINUX"
@@ -451,7 +457,19 @@ def test_core_consumer_surfaces_read_only_kv_and_information_use_effects(monkeyp
     })
     monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
 
-    effects = matrix_runtime._native_receiver_effects(object(), strict=True)
+    runtime = types.SimpleNamespace(
+        _native_receiver_task_score_receipts=[
+            {"task_group_id": "task-main", "condition": condition}
+            for condition in CONDITIONS
+        ]
+    )
+    effects = matrix_runtime._native_receiver_effects(
+        runtime, strict=True, current_task_group_id="task-main"
+    )
+    assert effects["scope"] == "AGGREGATE_EPHEMERAL_COHORT"
+    assert effects["current_matrix_task_group_id"] == "task-main"
+    assert effects["current_matrix_task_group_represented"] is True
+    assert effects["current_matrix_task_group_complete"] is True
     assert effects["evidence_class"] == "LOCAL_LINUX"
     assert effects["kv_snapshot_effect"]["status"] == "READ_ONLY_SAMPLE_ONLY"
     assert effects["kv_snapshot_effect"]["snapshot_count"] == 8
@@ -486,6 +504,33 @@ def test_core_consumer_does_not_claim_duplicate_consistency_when_no_inputs_repea
     assert kv["same_input_consistency_passed"] is None
     assert kv["same_input_consistency_observed"] is False
     assert kv["same_input_consistency_status"] == "NOT_TESTED_NO_DUPLICATE_INPUTS"
+
+
+def test_core_consumer_marks_prior_only_cohort_separately_from_current_matrix_group(monkeypatch):
+    from v13 import native_receiver_task_score as task_score
+
+    cohort = _native_effect_cohort()
+    monkeypatch.setattr(task_score, "task_score_status", lambda runtime: {
+        "status": "COHORT_READY",
+        "task_group_count": 1,
+        "complete_task_group_count": 1,
+        "incomplete_task_group_count": 0,
+    })
+    monkeypatch.setattr(task_score, "evaluate_task_score_cohort", lambda runtime: cohort)
+    runtime = types.SimpleNamespace(
+        _native_receiver_task_score_receipts=[
+            {"task_group_id": "prior-task", "condition": condition}
+            for condition in CONDITIONS
+        ]
+    )
+
+    effects = matrix_runtime._native_receiver_effects(
+        runtime, strict=True, current_task_group_id="current-task"
+    )
+    assert effects["scope"] == "AGGREGATE_EPHEMERAL_COHORT"
+    assert effects["task_group_count"] == 1
+    assert effects["current_matrix_task_group_represented"] is False
+    assert effects["current_matrix_task_group_complete"] is False
 
 
 def test_core_consumer_rejects_negative_duplicate_input_count(monkeypatch):
