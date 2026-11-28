@@ -4,6 +4,7 @@ import json
 import struct
 import sys
 import threading
+import time
 import types
 
 import pytest
@@ -910,3 +911,54 @@ def test_matrix_run_rejects_bridge_task_group_mismatch_and_rolls_back_current_re
     assert matrix._closed is True
     assert runtime._native_receiver_condition_matrix is None
 
+
+
+def _run_matrix_failure_after_consumption(monkeypatch, tmp_path, error_type):
+    runtime, matrix, _ids, _pair, _events, _texts, _sender, _receiver, _staged = _stage(
+        monkeypatch, tmp_path
+    )
+    matrix_runtime._arm(runtime)
+    module = types.ModuleType("v13.native_receiver_task_matrix_bridge")
+
+    def failing_bridge(runtime_arg, matrix_arg, **kwargs):
+        receipt = matrix_arg.receipt
+        assert list(matrix_arg.iter_inputs(
+            approval=kwargs["approval"],
+            approval_validator=kwargs["approval_validator"],
+        )) == []
+        assert kwargs["source_validator"](receipt, "BEFORE_NATIVE") is True
+        assert kwargs["cancel_event"] is runtime.cancel_event
+        remaining = kwargs["deadline"] - time.monotonic()
+        assert 0 < remaining <= 120.0
+        if error_type is InterruptedError:
+            runtime.cancel_event.set()
+        raise error_type("native receiver probe stopped")
+
+    module.score_and_record_native_receiver_condition_matrix = failing_bridge
+    monkeypatch.setitem(sys.modules, "v13.native_receiver_task_matrix_bridge", module)
+
+    with pytest.raises(error_type):
+        matrix_runtime._run(runtime)
+
+    state, _ = runtime.store.state(matrix_runtime.KEY, None)
+    assert state["failure_kind"] == error_type.__name__
+    assert state["status"] in {
+        "CANCELLED_AFTER_CONSUMPTION",
+        "TIMED_OUT_AFTER_CONSUMPTION",
+    }
+    assert matrix._closed is True
+    assert runtime._native_receiver_condition_matrix is None
+    assert runtime._native_receiver_matrix_target_token_ids is None
+    assert runtime._native_receiver_matrix_pair_record is None
+    assert runtime._native_receiver_matrix_staged_at is None
+    return state
+
+
+def test_matrix_cancel_is_audited_separately_and_cleans_the_one_shot_runtime(monkeypatch, tmp_path):
+    state = _run_matrix_failure_after_consumption(monkeypatch, tmp_path, InterruptedError)
+    assert state["status"] == "CANCELLED_AFTER_CONSUMPTION"
+
+
+def test_matrix_deadline_is_audited_separately_and_cleans_the_one_shot_runtime(monkeypatch, tmp_path):
+    state = _run_matrix_failure_after_consumption(monkeypatch, tmp_path, TimeoutError)
+    assert state["status"] == "TIMED_OUT_AFTER_CONSUMPTION"

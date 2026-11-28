@@ -546,10 +546,17 @@ def _run(runtime):
         state, version = runtime.store.state(KEY, None)
         if isinstance(state, dict) and state.get("schema") == SCHEMA and state.get("status") in {"PENDING", "CONSUMED"}:
             state = dict(state)
-            state.update({
-                "status": "FAILED_AFTER_CONSUMPTION" if state.get("status") == "CONSUMED" else "FAILED_REVOKED",
-                "failure_kind": type(exc).__name__,
-            })
+            consumed = state.get("status") == "CONSUMED"
+            cancel_event = getattr(runtime, "cancel_event", None)
+            cancelled = isinstance(exc, InterruptedError) and callable(getattr(cancel_event, "is_set", None)) and cancel_event.is_set()
+            timed_out = isinstance(exc, TimeoutError)
+            if cancelled:
+                status = "CANCELLED_AFTER_CONSUMPTION" if consumed else "CANCELLED_REVOKED"
+            elif timed_out:
+                status = "TIMED_OUT_AFTER_CONSUMPTION" if consumed else "TIMED_OUT_REVOKED"
+            else:
+                status = "FAILED_AFTER_CONSUMPTION" if consumed else "FAILED_REVOKED"
+            state.update({"status": status, "failure_kind": type(exc).__name__})
             runtime.store.set_state(KEY, state, expected=version)
         raise
     finally:
