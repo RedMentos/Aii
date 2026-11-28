@@ -2768,5 +2768,24 @@
       "next_action": "Poll exact-head #2578 focused CI. If green, run the three-policy session-disjoint held-out utility/retention ablation. Do not change default. Boss chooses Perception/Core convergence; Core owns source-pin refresh, QA owns migration assertions. No user action required.",
       "research_note": "R-192 MANGO full-text: gradient gating alone weaker than replay + meta-regularization; R-193 retention-vs-adaptation abstract-only; R-194 GRAPA abstract-only. None adopted."
     }
-  ]
+  ],
+  "latest_audio_provenance_pr": {
+    "pr": 2578,
+    "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
+    "base_pr": 2561,
+    "pr_head_sha": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "code_test_sha": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "code_commit": "f8d8575b73040cd56bd169c89f2ee7ef1c4732b7",
+    "direct_test_commit": "4b920a08fc6e73bbe893f0a0170b887ba519e4c6",
+    "experiment_commit": "6a15fa577bc0f5d4b89f5039eb3dc4a5b2f1178c",
+    "experiment_test_commit": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "composer_blob": "f90f57599609eeab7bbe30805c709739c4ec475b",
+    "predictor_blob": "6663d257e6a7608478f89215cecff62a257d67af",
+    "status": "DRAFT_PERCEPTION_FOCUSED_CI_PASS_CORE_QA_INTEGRATION_BLOCKED_NOT_RELEASED",
+    "local_test": "CPython 3.13.5 x86_64 scratch update-mask positive/negative controls 2/2 PASS; full local Aii checkout/pytest BLOCKED/NOT_RUN.",
+    "ci": "A4 feature-gate ablation #154 PASS Python 3.13/3.14 (py_compile, 10 unittest, 54 pytest each); source isolation #98 PASS (9+210 each); feature-set #330, Perception frame ingress #740, RAW EAR NumPy #1120, VAD/libfvad #1041 PASS on Python 3.13/3.14. Staged/integrated #6214 FAIL on Core wrapper audio pin, arithmetic/observer pins and QA migration.",
+    "redmi": "REDMI_UNVERIFIED; private relay #1036–#1038 expired NO_LIVE_RECEIPT; V13OBS #115 historical 2026-11-24 STOPPED_BY_USER.",
+    "updater": "UNKNOWN",
+    "next_action": "Boss convergence; Core refreshes Recovery audio builder/predictor pins and ports NPY preflight, refreshes arithmetic/observer pins; QA fixes migration and legacy UI lease test. Perception next evaluates a mini update-effect/future-regime predictor on synthetic smooth-vs-abrupt drift with utility + retention."
+  }
 }
