@@ -1,4 +1,5 @@
 """Real staged Runtime checks for specific RECORD_ONLY controller paths."""
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -190,6 +191,24 @@ class StageControllerChecks(unittest.TestCase):
     def test_existing_fastforward_suite_in_staged_tree(self):
         self.run_stage('-m', 'unittest', 'discover', '-s', str(self.stage / 'tests'),
                        '-p', 'test_fastforward_reflex.py', '-v')
+
+
+class ControllerGuardSourcePinTests(unittest.TestCase):
+    def test_native_receiver_matrix_callosum_revision_is_allowlisted(self):
+        from scripts import record_only_controller_guard_20261116 as guard
+        raw = (CODE / "v13" / "callosum.py").read_bytes()
+        digest = hashlib.sha256(raw).hexdigest()
+        self.assertEqual(
+            digest,
+            "f07fba55eac93af5f855a20c7ac136d15a2fa44315d0878d41b8090ddd905748",
+        )
+        self.assertIn(digest, guard.PINS["v13/callosum.py"])
+
+    def test_callosum_allowlist_rejects_a_changed_source(self):
+        from scripts import record_only_controller_guard_20261116 as guard
+        raw = (CODE / "v13" / "callosum.py").read_bytes()
+        changed_digest = hashlib.sha256(raw + b"\n").hexdigest()
+        self.assertNotIn(changed_digest, guard.PINS["v13/callosum.py"])
 
 
 if __name__ == '__main__':
