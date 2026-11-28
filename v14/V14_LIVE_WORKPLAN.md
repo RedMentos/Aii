@@ -2042,3 +2042,21 @@ Updated acceptance state: focused Perception/A4/A5 checks PASS, but the shared s
 ### R-199 acceptance implication — deployment-anchored update verdict
 
 Before any later experiment is proposed for persistent model-weight changes or self-edit, freeze the exact deployed checkpoint C0 and evaluate the candidate against it on the same held-out stream. Record the four axes (evaluation loop, reference checkpoint, temporal aggregation, stream protocol) and a three-valued PASS / NO_IMPROVEMENT / REGRESSION verdict. This rule is research-informed by ContinualDrive (arXiv:2611.32529); it is not proof that current V14 has such an acceptance harness. No code from the ContinualDrive repository was reused because no LICENSE file was present at the inspected revision.
+
+
+---
+
+### Run 81 — A4 counterfactual alignment and multi-horizon update-effect ablation (2026-11-28)
+
+- **Owner / PR:** Research & Perception, PR #2579, stacked on #2578. Code/test head af951da77c91835d0cd31bf9193352d41585a6d2; later docs/board syncs do not change tested code.
+- **Canonical path:** V14-006; A4 RAW EAR temporal prediction, attention/plasticity, delayed outcomes and replay/retention. This is not an accepted whole-system capability.
+- **Real consumer connection:** the offline experiment imports the production AudioTemporalPredictor from v13/code/v13/audio_temporal_prediction.py. Its inputs are deterministic synthetic cue fixtures; there is no new live Runtime/C3 consumer, no microphone feed and no production gate. Classify as WIRED_SYNTHETIC only.
+- **Counterfactual correction:** candidate and no-update baseline now both consume the current cue delta before any future-window or replay comparison. Run80 v1's 19/69 selected / 57.89% positive result is invalidated because the baseline had stale temporal state. Corrected one-step v2: 276 training examples, zero positive labels, 0/69 smooth and 0/14 abrupt candidates selected.
+- **Multi-horizon experiment:** independent 1/3/8-window heads, six training sessions including abrupt-to-smooth recovery, 313 examples per horizon, one disjoint training anchor and two held-out replay anchors. Worst-anchor retention is measured. Selected updates: 0/74 smooth, 0/16 abrupt, 0/69 abrupt-to-smooth. Utility delta and worst-retention delta versus the synthetic NO_UPDATE reference are both zero. Positive candidate effects exist at longer horizons in some regimes, but the head abstains throughout.
+- **Exact CI:** PR workflow #46096825708 PASS on Python 3.13 and 3.14. Each interpreter: py_compile PASS; A4 retention 10/10; corrected one-step 8/8; multi-horizon 7/7; production audio-temporal-predictor pytest 54/54. Private bridge workflow #46096822412 PASS but is not a phone receipt.
+- **Local:** CPython 3.13.5 Linux x86_64 scratch harness using an API-compatible predictor stub: py_compile + 7/7 multi-horizon tests PASS. Full local Aii checkout/pytest BLOCKED/NOT_RUN because no checkout is mounted and github.com DNS fails.
+- **Decision:** keep research-only; do not adopt the head or change A4 default (EVERY_FINAL) or the existing opt-in FEATURE_ERROR_GATED policy. The reference is a synthetic no-update checkpoint, not deployed C0. No persistent weights, Runtime policy, microphone, permissions or device state changed.
+- **Integration:** parent #2578 staged/integrated run #46095100443 FAIL: Core-owned Recovery composer/arithmetic/observer pins and QA migration PARTIAL-vs-UPDATED assertions. Boss/Integrator chooses convergence ancestry; Perception does not transplant Core/QA pins.
+- **Device / deployment:** private V13OBS #115 remains historical (2026-11-24). Read-only requests #1043 HEALTH, #1044 PIPELINE_STATUS and #1045 DIAGNOSTICS have NO_LIVE_RECEIPT. REDMI_UNVERIFIED; updater UNKNOWN; NOT_RELEASED.
+- **Research:** R-200 (PMLR 330, 2026) warns replay may increase forgetting in specific task/subspace settings; R-201 (NeurIPS 2026) explores Fisher trust regions plus generative replay in diffusion tasks. Abstract/author-page level only; no code or weights reused.
+- **Next:** improve delayed outcome labels/calibration and evaluate against an authenticated exact deployed C0 before any update-gate adoption. Do not lower abstention thresholds just to force updates.
