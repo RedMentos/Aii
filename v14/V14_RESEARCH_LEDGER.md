@@ -2131,3 +2131,24 @@ PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salien
 - The method is not a direct fix for V14's transient state bug and should not be conflated with consent isolation. Persistent learned parameters may still support cross-session learning under explicit policy; ephemeral acoustic windows and speaker lookback must not silently cross a Store session or consent boundary.
 
 **V14 translation.** The current Perception change in draft PR #2561 scopes only ephemeral `TemporalVoiceEvidence` and `SpeakerChangeEvidenceRegistry` state by source + generation + Store session + hashed consent receipt. It does not change model weights, training policy, memory retention or cross-session learned knowledge. Follow-up research: if V14 later adapts audio weights, test selective adapter updates and retention on held-out sessions, with explicit consent/data provenance and a no-update negative control; do not import PACE's GPU-scale EAT configuration into the Android build without measured feasibility.
+
+
+## R-188 — Analysis and Calibration of Lombard Effect and Whisper for Speaker Recognition (2026-11-28)
+
+**Primary paper read in full.** “Analysis and Calibration of Lombard Effect and Whisper for Speaker Recognition,” IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021-01-21, volume 29, pages 927–942, DOI 10.1109/TASLP.2021.3053388. Full text: https://pmc.ncbi.nlm.nih.gov/articles/PMC9245507/ . Peer-reviewed journal article, not an abstract-only review.
+
+**Method and evidence.**
+- Evaluates neutral, Lombard-effect and whispered speech across six corpora, using i-vector and x-vector speaker representations.
+- Introduces cross-corpus SVM detection of non-neutral vocal effort and tests score-quality calibration under neutral-only, pooled and matched conditions; calibration is evaluated with leave-one-out procedures and standard discrimination/calibration metrics.
+- The paper reports that vocal-effort variation can materially degrade speaker-recognition calibration, with whisper generally more disruptive than Lombard speech. Condition-aware score calibration can recover part of the loss; a detector score is used as a quality signal for a separate calibration function, not treated as a universally calibrated probability.
+- This is directly relevant to avoiding semantic overclaim from raw acoustic scores, but it is **not** a VAD-probability calibration study and does not validate RAW EAR's autocorrelation pitch, rule-based activity or prosody scores.
+
+**Limits / licensing / mobile relevance.**
+- Evaluation uses curated 10-second speech comparisons and six corpora; no V14 RAW EAR ablation, Redmi/ARM inference or on-device training benchmark is reported.
+- No paper code, dataset, model weights or dependency was reused. No code/weight license claim is made for the paper.
+- Official Silero VAD repository documentation (https://github.com/snakers4/silero-vad, inspected 2026-11-28) lists an MIT license, supports ONNX Runtime and 8/16-kHz use, and describes edge/mobile use. Its Python example lists 1 GB+ RAM and AVX-family CPU requirements for x86-64; those are not Redmi measurements. The exact ONNX checkpoint artifact/revision licensing and ARM64 performance were not independently verified here. No Silero model was downloaded, swapped or activated.
+
+**V14 translation / testable consequence.**
+- Keep source-sample measurements, heuristic estimates, model scores, calibrated probabilities and unavailable features as distinct provenance classes.
+- The new PR #2578 implements this as v14.audio-measurement-provenance/1 and carries a compact heuristic-provenance marker into the actual bounded C3 admission summary. It explicitly does not claim a calibrated speech probability, speaker identity, learning authority or action authority.
+- A future calibration experiment must use speaker/session-disjoint held-out data, at least neutral/whisper/noise conditions, calibration error metrics, matched vs pooled baselines, and a no-calibration negative control. Until then, all RAW EAR activity/prosody scores remain heuristic and uncalibrated.
