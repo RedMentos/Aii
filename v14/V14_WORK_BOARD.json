@@ -1628,9 +1628,13 @@
     "user_action_required": false,
     "research_entries": [
       "R-190",
-      "R-191"
+      "R-191",
+      "R-192",
+      "R-193",
+      "R-194"
     ],
-    "next_action": "Poll exact-head #2578 focused CI. If green, run the three-policy session-disjoint held-out utility/retention ablation. Do not change default. Boss chooses Perception/Core convergence; Core owns source-pin refresh, QA owns migration assertions. No user action required."
+    "next_action": "Poll exact-head #2578 focused CI. If green, run the three-policy session-disjoint held-out utility/retention ablation. Do not change default. Boss chooses Perception/Core convergence; Core owns source-pin refresh, QA owns migration assertions. No user action required.",
+    "research_note": "R-192 MANGO full-text: gradient gating alone weaker than replay + meta-regularization; R-193 retention-vs-adaptation abstract-only; R-194 GRAPA abstract-only. None adopted."
   },
   "previous_perception_checkpoint": {
     "date": "2026-11-28",
