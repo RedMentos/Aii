@@ -1582,6 +1582,19 @@ def test_measurement_provenance_marks_optional_vad_as_uncalibrated_model_score()
     assert vad["output_semantics"] == "SCORES_AND_THRESHOLD_FLAG_NOT_CALIBRATED_PROBABILITY"
 
 
+def test_verified_label_without_receipt_does_not_upgrade_speaker_diagnostic():
+    cues = extract_voice_cues(tone(140), 16000)
+    provenance = audio_measurement_provenance(
+        rms=0.2, zcr=0.1, voice_cues=cues,
+        speaker_evidence={"status": "MEASURED", "threshold_status": "CALIBRATED_VERIFIED"},
+        speaker_decision="DEFER",
+    )
+    speaker = provenance["features"]["speaker_change"]
+    assert speaker["status"] == "DIAGNOSTIC_ONLY_UNCALIBRATED"
+    assert speaker["calibration_status"] == "UNVERIFIED"
+    assert speaker["identity_authority"] is False
+
+
 def test_measurement_provenance_marks_provisional_vad_as_not_advanced():
     cues = extract_voice_cues(tone(140), 16000)
     provenance = audio_measurement_provenance(
