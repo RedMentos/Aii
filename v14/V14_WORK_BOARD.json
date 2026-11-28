@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-28T01:09:10.000Z",
+  "updated_at": "2026-11-28T01:22:36.000Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.\nPerception Run 15: PR #2501 tokenwise activation-row integrity code/test SHA 6cc34b122caecfa340d36b08c9cc1e1bdbbbb2e2; exact focused CI 37/37 PASS on Python 3.13/3.14 and offline runtime-deployment integrity PASS on Python 3.11/3.14. Still synthetic vectors only; no native receiver, Redmi or release proof.\\nCore & Harness Run 2: PR #2520 DRAFT / NOT_RELEASED; C++ receiver compile fix and staged-test scope repair. Exact child CI pending; full local checkout unavailable due GitHub DNS; REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.\n\nResearch/Perception Run 19 candidate #2506 is a draft child of #2503, not a release. Adapter CI 73/73 PASS on Python 3.13/3.14; staged/integrated regression PASS (integrated 424/3 skipped/58 subtests; staged runtime 255/10 skipped/47 subtests). Core #2505 native extractor CI includes Linux compile and Android arm64 cross-compile, but no real GGUF row read. Do not infer runtime wiring or Redmi behavior.\n\nResearch/Perception Run 21 (2026-11-25T19:24:24.199Z): PR #2508 is a draft continuation of #2507. Exact branch head c246a56a50f06ca6d8e1ee560e6caa6fcd426a99. New session-disjoint TOKENWISE adapter fit helper and negative controls are present. LOCAL_LINUX isolated stub-bound wrapper harness 3/3 PASS; full repository py_compile/pytest NOT_RUN. No exact PR CI run was visible at last poll; do not attribute parent #2507 CI to #2508. No GGUF, native receiver, Redmi, deployment or release proof.\n\nCore & Harness Run (2026-11-25): PR #2513 adds consent-gated HTTPS ACTION_VIEW; PR #2515 adds native teacher-forced target-token score production and an ephemeral task-score cohort. Both are DRAFT / NOT_RELEASED. LOCAL_LINUX only has isolated C++ logprob-math evidence; full checkout, exact GitHub CI and real GGUF target scores are not yet verified. No Redmi device proof, no model download/swap, no permission change, no B3 activation. Continue with the eight-condition matrix and real GGUF evaluation; never call token likelihood semantic correctness. Research & Perception Run 38: PR #2519 exact head 8b25f4e has native workflow SUCCESS; shared staged/integrated workflow 45738564326 was still IN_PROGRESS at last poll. Matrix is diagnostic-only, B3 OFF. Core #2522 still lacks a real producer call site and is not stacked on #2519. No Redmi receipt or deployment. Latest Perception readback: branch head before docs-only batch 95b8bc; native workflow 45739394614 SUCCESS; RuntimeDeploy 45739394621 SUCCESS; shared staged/integrated 45739394594 IN_PROGRESS at 02:03:41Z. R-159 audits pinned llama.cpp internal K/V access; no implementation. Private read issues #948-950 have no comments; REDMI_UNVERIFIED.\n\nResearch & Perception Run 40 (2026-11-26T05:25:03+01:00): draft #2524 head 8f7c73065e8f92e5988fe12fa88038dc41ece530 now has a read-only K/V state-effect consumer. Focused tests 26/26 PASS on Python 3.13/3.14; pinned Linux build/selftest PASS; Android arm64 cross-compile PASS only; RuntimeDeploy offline 3.11/3.14 PASS; privacy CLEAN. Shared stage/integrated remains blocked by Core-owned v13/native_latent_receiver.py source pin. Core #2523 head 241743cfe7728586c3d4e07c88bfc3da1387e04f has 7/7 CI success but is based on #2519; it must stack onto #2524. No GGUF, Redmi, release or deployment proof; B3 OFF; REDMI_UNVERIFIED.\n\nRun 40 clarification: Core #2523's exact source is a manual local-TTY one-shot diagnostic operator path, not a normal-turn hook. It calls the Perception builder/bridge only after local approval; ordinary chat/P0 remains unconnected and OPEN.\n",
@@ -233,10 +233,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "GitHub Actions exact-head MediaProjection ingress 28/28 PASS on Python 3.13 and 28/28 PASS on Python 3.14 (workflow 45989072923); RuntimeDeploy integrity PASS (45989073050); shared staged/integrated FAIL (45989073323: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 Core audio-composer pin failure). LOCAL_LINUX full checkout BLOCKED / NOT_RUN; REDMI_UNVERIFIED. Fresh private owner-read relay requests #1017 HEALTH / #1018 PIPELINE_STATUS / #1019 DIAGNOSTICS returned NO_LIVE_RECEIPT; current installed/updater state remains unverified.; Run77 PR #2578 exact head 3ff5e173: LOCAL_LINUX isolated provenance helper py_compile PASS + 6/6 PASS; exact child CI not observed; full checkout NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED.; Run77 current code/test head 45505fe: LOCAL_LINUX isolated helper py_compile PASS + 7/7 PASS; earlier 3ff5e focused RAW EAR fastpath and feature-set CI PASS on Python 3.13/3.14; current 45505fe focused runs queued; prior VAD compare stale pin fixed in branch; staged Core/QA failures remain.; Run77 final documentation head 4ff4dc6; code/test head 45505fe; local scratch py_compile PASS + 7/7; earlier 3ff5e focused CI PASS; current 45505fe focused workflows pending/queued. Private V13OBS #115 latest available snapshot 2026-11-24 STOPPED_BY_USER, no new authenticated receipt; REDMI_UNVERIFIED.; Run77 exact code/test head 45505fe: LOCAL_LINUX scratch py_compile PASS/7-of-7; RAW EAR fastpath 211 PASS each on Py3.13/3.14; feature-set 15 PASS each; VAD/libfvad 9 ABI+204 runtime PASS each; RuntimeDeploy offline CI PASS. Staged/integrated FAIL on Core audio-composer pin + other Core/QA blockers; REDMI_UNVERIFIED.\nRun78: PR #2578 code/test 4c9bd27 adds a fail-closed speaker-calibration provenance guard. LOCAL_LINUX CPython 3.13.5 scratch 5/5; exact GitHub focused CI RAW EAR 213, feature-set 15, frame ingress 29, A4 ablation 50 per Python 3.13/3.14; staged/integrated Core/QA pins still FAIL. R-189 full-text review added. No full local checkout, no Redmi receipt, NOT_RELEASED.\nRun78 final poll: WebRTC/libfvad comparator Python 3.13 and 3.14 both PASS (9 ABI/benchmark + 204 audio tests each, workflow 46089036001); staged/integrated still fail on Core/QA-owned pins/assertions.; Run79 PR #2578 adds opt-in A4 FEATURE_ERROR_GATED policy; LOCAL_LINUX scratch 2/2 positive/negative PASS; 3 exact repo regression tests added, CI pending; full local checkout NOT_RUN; REDMI_UNVERIFIED.",
-      "next_step": "Poll exact #2578 CI. If green, compare EVERY_FINAL, MEMORIZED_ERROR and FEATURE_ERROR_GATED on session-disjoint periodic speech/non-speech/mixed fixtures with persistence-baseline MAE, old-session retention, parameter diff, restart and consent reset. Keep default unchanged. Core/Boss convergence and QA migration gates remain separate.",
+      "proof_environment": "GitHub Actions exact-head MediaProjection ingress 28/28 PASS on Python 3.13 and 28/28 PASS on Python 3.14 (workflow 45989072923); RuntimeDeploy integrity PASS (45989073050); shared staged/integrated FAIL (45989073323: staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 Core audio-composer pin failure). LOCAL_LINUX full checkout BLOCKED / NOT_RUN; REDMI_UNVERIFIED. Fresh private owner-read relay requests #1017 HEALTH / #1018 PIPELINE_STATUS / #1019 DIAGNOSTICS returned NO_LIVE_RECEIPT; current installed/updater state remains unverified.; Run77 PR #2578 exact head 3ff5e173: LOCAL_LINUX isolated provenance helper py_compile PASS + 6/6 PASS; exact child CI not observed; full checkout NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED.; Run77 current code/test head 45505fe: LOCAL_LINUX isolated helper py_compile PASS + 7/7 PASS; earlier 3ff5e focused RAW EAR fastpath and feature-set CI PASS on Python 3.13/3.14; current 45505fe focused runs queued; prior VAD compare stale pin fixed in branch; staged Core/QA failures remain.; Run77 final documentation head 4ff4dc6; code/test head 45505fe; local scratch py_compile PASS + 7/7; earlier 3ff5e focused CI PASS; current 45505fe focused workflows pending/queued. Private V13OBS #115 latest available snapshot 2026-11-24 STOPPED_BY_USER, no new authenticated receipt; REDMI_UNVERIFIED.; Run77 exact code/test head 45505fe: LOCAL_LINUX scratch py_compile PASS/7-of-7; RAW EAR fastpath 211 PASS each on Py3.13/3.14; feature-set 15 PASS each; VAD/libfvad 9 ABI+204 runtime PASS each; RuntimeDeploy offline CI PASS. Staged/integrated FAIL on Core audio-composer pin + other Core/QA blockers; REDMI_UNVERIFIED.\nRun78: PR #2578 code/test 4c9bd27 adds a fail-closed speaker-calibration provenance guard. LOCAL_LINUX CPython 3.13.5 scratch 5/5; exact GitHub focused CI RAW EAR 213, feature-set 15, frame ingress 29, A4 ablation 50 per Python 3.13/3.14; staged/integrated Core/QA pins still FAIL. R-189 full-text review added. No full local checkout, no Redmi receipt, NOT_RELEASED.\nRun78 final poll: WebRTC/libfvad comparator Python 3.13 and 3.14 both PASS (9 ABI/benchmark + 204 audio tests each, workflow 46089036001); staged/integrated still fail on Core/QA-owned pins/assertions.; Run79 PR #2578 adds opt-in A4 FEATURE_ERROR_GATED policy; LOCAL_LINUX scratch 2/2 positive/negative PASS; 3 exact repo regression tests added, CI pending; full local checkout NOT_RUN; REDMI_UNVERIFIED.; Run79: A4 feature gate CI #154 PASS (3.13/3.14, 10 unittest +54 pytest each); source isolation #98 PASS (9+210 each); feature-set #330, frame ingress #740, NumPy #1120 and VAD/libfvad #1041 PASS. Staged/integrated #6214 FAIL on Core wrapper/audio, arithmetic/observer pins and QA migration. Core #2577 frame ingress #724 fails 2/30 because its ingress source lacks Perception #2565 NPY preflight. REDMI_UNVERIFIED.",
+      "next_step": "Boss convergence decision; Core refreshes Recovery audio builder and predictor pins, ports NPY preflight, updates arithmetic/observer pins; QA fixes migration PARTIAL-vs-UPDATED and legacy UI lease test. Perception keeps FEATURE_ERROR_GATED opt-in and researches a mini update-effect/future-regime predictor with current utility + retention.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-28T01:09:10.000Z",
+      "last_checkpoint": "2026-11-28T01:22:36.000Z",
       "latest_candidate_pr": {
         "pr": 2557,
         "branch": "research-perception/v14-vision-ui-frame-ingress-20261127-run64",
@@ -1594,6 +1594,72 @@
   },
   "perception_latest_checkpoint": {
     "date": "2026-11-28",
+    "timestamp": "2026-11-28T01:22:36.000Z",
+    "owner": "Research & Perception",
+    "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
+    "pull_request": 2578,
+    "pr_head_sha_before_final_docs_sync": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "code_test_sha": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "code_commit": "f8d8575b73040cd56bd169c89f2ee7ef1c4732b7",
+    "direct_test_commit": "4b920a08fc6e73bbe893f0a0170b887ba519e4c6",
+    "experiment_commit": "6a15fa577bc0f5d4b89f5039eb3dc4a5b2f1178c",
+    "experiment_test_commit": "698390f3c3fc2d127e91ea7eea9ccba37313b88b",
+    "source_pin_commit": "0b3a820a17699a258038ca8a346bc31cfe13d34e",
+    "base_branch": "research-perception/v14-audio-session-scope-20261127-run68",
+    "base_sha": "c43bd2a84f3329704b80a237bb23e61e6d614c78",
+    "status": "DRAFT_PERCEPTION_FOCUSED_CI_PASS_SHARED_STAGE_BLOCKED_NOT_RELEASED",
+    "implementation": {
+      "defect": "A4 temporal predictor's global mean-error gate can update output features already better than persistence; prior source-isolation showed non-speech/mixed regressions.",
+      "fix": "Opt-in FEATURE_ERROR_GATED compares each output feature's absolute prediction error with persistence and updates only worse columns. Default EVERY_FINAL unchanged; allow_update=False blocks all updates.",
+      "runtime_consumer": "consume_pcm16_voice_window → AudioTemporalPredictionRegistry → predictive_attention_novelty / predictive_omission_novelty → A4 attention receipt",
+      "code_blob": "6663d257e6a7608478f89215cecff62a257d67af",
+      "direct_test_blob": "860b52d22de3b4063ed6d5821b7a3281bcba2411",
+      "experiment_blob": "3237908b08831630d8e64fd5f4e98f19c9b15551",
+      "experiment_test_blob": "dd2d3f502f6903da7fbbea4c5e28b8224196f6b3",
+      "audio_composer_blob": "f90f57599609eeab7bbe30805c709739c4ec475b",
+      "default_policy_preserved": true,
+      "persistent_weight_policy_unchanged": true
+    },
+    "tests": {
+      "local_linux": "CPython 3.13.5 x86_64 scratch update-mask positive/negative controls 2/2 PASS; full local Aii checkout/pytest BLOCKED/NOT_RUN (no checkout mounted; GitHub DNS failure).",
+      "a4_feature_gate_ablation": "#154 PASS Python 3.13/3.14; per job py_compile, 10/10 unittest, 54/54 pytest. Synthetic metrics: speech +0.078774, mixed +0.003409, non-speech -0.021615; details in R-191. Keep opt-in.",
+      "a4_source_isolation": "#98 PASS Python 3.13/3.14; per job 9 unittest + 210 pytest; interleaved/isolated max metric diff 0; provisional windows ignored.",
+      "feature_set": "#330 PASS Python 3.13/3.14.",
+      "frame_ingress_perception": "#740 PASS Python 3.13/3.14 on Perception ancestry.",
+      "raw_ear_numpy": "#1120 PASS Python 3.13/3.14.",
+      "vad_libfvad": "#1041 PASS Python 3.13/3.14; per job 9 ABI/benchmark checks + 210 audio tests; native libfvad built on hosted Linux from pinned dpirch/libfvad@532ab666c20d3cfda38bca63abbb0f152706c369.",
+      "a3_npy_preflight": "Perception #2565 code/test head 42c78c4; ingress workflow 46057142216 PASS 39/39 Python 3.13/3.14. Core #2577 frame-ingress #724 FAIL 2/30 on both because its ingress blob lacks _validate_projector_npy_headers.",
+      "staged_context": "#6214 FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Perception composer pin inside source updated, but Core wrapper expects 831080b... vs current f90f575...; Core arithmetic/observer pins stale; QA migration PARTIAL-vs-UPDATED.",
+      "integrated_regression": "#6214 FAIL: pinned audio composition input changed in Core-owned recovery wrapper.",
+      "core_2577_own_ancestry": "Core #2577 head 0c77c521; 12/13 observed workflows success, frame-ingress #724 failed. Staged context #6197 passes only on its own ancestry, not rebased onto Perception #2578/#2565."
+    },
+    "device": "Private read-only owner-read requests #1036–#1038 expired at 2026-11-28T01:13:47Z without device_status: NO_LIVE_RECEIPT. Latest V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER. REDMI_UNVERIFIED.",
+    "updater": "UNKNOWN; no fresh authenticated device receipt.",
+    "release": "NOT_RELEASED",
+    "user_action_required": false,
+    "research_entries": [
+      "R-190",
+      "R-191",
+      "R-192",
+      "R-193",
+      "R-194"
+    ],
+    "cross_lane": {
+      "core_2577_head_sha": "0c77c521cec7b4e82713e6ff4a4ef0a3438629e4",
+      "core_2577_base_branch": "core/v14-ui-consumer-fix-20261127-run3",
+      "core_2577_status": "12/13 observed workflows pass; frame-ingress #724 fails 2/30 on Python 3.13/3.14 because Core ingress blob lacks Perception NPY preflight. Staged #6197 passes only on Core ancestry; no Redmi proof.",
+      "core_2577_audio_composer_blob": "59a6974a5b7aba8d4f55e1e9a65b2321dbe4a468",
+      "current_perception_audio_composer_blob": "f90f57599609eeab7bbe30805c709739c4ec475b",
+      "current_perception_predictor_blob": "6663d257e6a7608478f89215cecff62a257d67af",
+      "core_2577_ingress_blob": "14198bbd33b5394c787fe31b9fbce7778cbd11e0",
+      "perception_2565_ingress_blob": "8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332",
+      "ui_api_mismatch": "Legacy test expects admit_ui/consent_active=True; current Perception API requires OS-issued receipt + UIObservationLease; do not add bypass compatibility.",
+      "merge_rule": "Boss chooses convergence; Core refreshes Recovery→Stage→RuntimeDeploy and NPY source pins bottom-up; QA owns migration assertions; Perception does not edit Core/QA-owned wrappers."
+    },
+    "next_action": "Boss chooses one convergence ancestry. Core refreshes Recovery audio builder pin to f90f575... and inner predictor pin to 6663d257..., ports Perception #2565 NPY preflight and refreshes arithmetic/observer pins. QA repairs migration PARTIAL-vs-UPDATED and rewrites legacy UI test to OS-lease API. Perception keeps A4 gate opt-in and next tests a mini update-effect/future-regime predictor on synthetic smooth-vs-abrupt drift. No user action."
+  },
+  "previous_perception_checkpoint": {
+    "date": "2026-11-28",
     "timestamp": "2026-11-28T01:09:10.000Z",
     "owner": "Research & Perception",
     "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
@@ -1635,63 +1701,6 @@
     ],
     "next_action": "Poll exact-head #2578 focused CI. If green, run the three-policy session-disjoint held-out utility/retention ablation. Do not change default. Boss chooses Perception/Core convergence; Core owns source-pin refresh, QA owns migration assertions. No user action required.",
     "research_note": "R-192 MANGO full-text: gradient gating alone weaker than replay + meta-regularization; R-193 retention-vs-adaptation abstract-only; R-194 GRAPA abstract-only. None adopted."
-  },
-  "previous_perception_checkpoint": {
-    "date": "2026-11-28",
-    "timestamp": "2026-11-28T00:46:07.038Z",
-    "owner": "Research & Perception",
-    "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
-    "pull_request": 2578,
-    "pr_head_sha_before_board_sync": "5ce016673024e8d207510423552365f0c177f411",
-    "code_test_sha": "4c9bd27e56e90cba49d992c157fc5d3b4e348572",
-    "base_branch": "research-perception/v14-audio-session-scope-20261127-run68",
-    "base_sha": "c43bd2a84f3329704b80a237bb23e61e6d614c78",
-    "status": "DRAFT_PERCEPTION_FOCUSED_CI_PASS_CORE_QA_INTEGRATION_BLOCKED_NOT_RELEASED",
-    "implementation": {
-      "defect": "Caller-supplied CALIBRATED_VERIFIED + digest-shaped SHA + calibration ID + threshold could self-certify speaker-change evidence without a trusted receipt verifier.",
-      "fix": "Speaker-change remains DIAGNOSTIC_ONLY_UNCALIBRATED / UNVERIFIED / identity_authority=false until a trusted verifier is wired; malformed decisions degrade to DEFER.",
-      "module_blob": "8c737a61cc3d560cceb1c2df271fef14d32568cb",
-      "test_blob": "856c8631a8d810ea69e87367d31b66ef7b1abb76",
-      "composer_blob": "e1cf98da59cfaf585f3cdcb77a1a6e0e4be12427",
-      "feature_set_workflow_blob": "95eb92d1701d61e139ef11534dc6aa328174eadc"
-    },
-    "tests": {
-      "local_linux": "CPython 3.13.5 x86_64 isolated function-level negative-control harness 5/5 PASS; full local Aii checkout BLOCKED/NOT_RUN because no checkout was mounted and GitHub DNS failed.",
-      "raw_ear_fastpath": "213/213 PASS on Python 3.13 and 213/213 PASS on Python 3.14; py_compile PASS; privacy scan CLEAN.",
-      "audio_feature_set": "15/15 PASS on Python 3.13 and 15/15 PASS on Python 3.14.",
-      "frame_ingress": "29/29 PASS on Python 3.13 and 29/29 PASS on Python 3.14.",
-      "a4_ablation": "50/50 PASS on Python 3.13 and 50/50 PASS on Python 3.14.",
-      "a5_ui_lease": "PASS on Python 3.13 and Python 3.14.",
-      "runtime_deploy_integrity": "PASS; offline groups 17+3+31+41 on Python 3.11/3.14. CI only, not deployment.",
-      "vad_native_comparison": "PASS on Python 3.13 and Python 3.14: each 9 ABI/benchmark checks + 204 audio runtime tests; workflow 46089036001. Hosted Linux only.",
-      "staged_context": "FAIL: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests. Core Recovery composer pin (expected 831080b..., actual e1cf98da...), Core arithmetic/observer pins, QA migration PARTIAL-vs-UPDATED assertions.",
-      "integrated_regression": "FAIL: one Core Recovery audio-composer source-pin mismatch.",
-      "offline_bridge_security": "PASS."
-    },
-    "device": "Latest available private V13OBS #115 is the historical 2026-11-24 STOPPED_BY_USER snapshot. No fresh authenticated receipt was obtained or requested in this run. REDMI_UNVERIFIED.",
-    "updater": "UNKNOWN; no authenticated device receipt to verify install/updater state.",
-    "release": "NOT_RELEASED",
-    "user_action_required": false,
-    "research_entries": [
-      "R-188",
-      "R-189",
-      "Run78"
-    ],
-    "cross_lane": {
-      "core_2577_head_sha": "8248010cd1c077a2f53db3cd0dfc1dda972944de",
-      "core_2577_base_sha": "50d0c7ccb14828b729de573d69444821ee42e82d",
-      "core_2577_status": "DRAFT; new measured-prefill governor commits present; exact-head workflows queued/in progress at last poll; NOT_RELEASED; no Redmi proof.",
-      "core_2577_audio_composer_blob": "59a6974a5b7aba8d4f55e1e9a65b2321dbe4a468",
-      "core_2577_audio_contract_blob": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
-      "core_2577_raw_ear_blob": "2cf44ed0b307d5970c2ba9b416bf73d8a0833aee",
-      "core_2576_head_sha": "936eeeca3f35440ae0b11564474053925116aa83",
-      "core_2576_ingress_blob": "14198bbd33b5394c787fe31b9fbce7778cbd11e0",
-      "core_2576_diagnosis": "Core #2576 ingress source lacks _validate_projector_npy_headers while its test expects the preflight result; current Perception #2565 source blob 8f2b6d36cf4852ecc16da6ef0ef1639a0ead3332 includes it. Coordination comment posted.",
-      "merge_rule": "Do not transplant composer/contract hashes across the #2561 and #2568 ancestries. Boss/Integrator chooses convergence; Core then refreshes Recovery→Stage→RuntimeDeploy pins bottom-up; QA owns migration assertions."
-    },
-    "next_action": "Boss chooses a single convergence ancestry for Perception #2578→#2561→#2559 and Core #2577→#2568. Core refreshes Recovery→Stage→RuntimeDeploy composer pins and fixes arithmetic/observer sources; QA fixes migration PARTIAL-vs-UPDATED assertions. Perception then adds trusted calibration verification or a low-cost held-out uncertainty-drift experiment. Keep Android microphone OFF until explicit consent and fresh device proof. P0 #1904 remains OPEN.",
-    "pr_head_sha_before_final_docs_sync": "d7d9c43cda8f050420a9b80ee467bdd0ba572bc7",
-    "ci_head_sha": "ebed8271732b8aad9e86f645944498c305173d5d"
   },
   "latest_core_checkpoint": {
     "owner": "Core & Harness",
@@ -2714,6 +2723,50 @@
       "next_action": "Boss chooses a single convergence ancestry for Perception #2578→#2561→#2559 and Core #2577→#2568. Core refreshes Recovery→Stage→RuntimeDeploy composer pins and fixes arithmetic/observer sources; QA fixes migration PARTIAL-vs-UPDATED assertions. Perception then adds trusted calibration verification or a low-cost held-out uncertainty-drift experiment. Keep Android microphone OFF until explicit consent and fresh device proof. P0 #1904 remains OPEN.",
       "pr_head_sha_before_final_docs_sync": "d7d9c43cda8f050420a9b80ee467bdd0ba572bc7",
       "ci_head_sha": "ebed8271732b8aad9e86f645944498c305173d5d"
+    },
+    {
+      "date": "2026-11-28",
+      "timestamp": "2026-11-28T01:09:10.000Z",
+      "owner": "Research & Perception",
+      "branch": "research-perception/v14-audio-measurement-provenance-20261128-run77",
+      "pull_request": 2578,
+      "pr_head_sha_before_docs_sync": "4ec8b3c9827ca4d4c0f3c0d3de8217566c7e1f6f",
+      "code_commit": "f8d8575b73040cd56bd169c89f2ee7ef1c4732b7",
+      "code_test_sha": "4ec8b3c9827ca4d4c0f3c0d3de8217566c7e1f6f",
+      "code_blob": "6663d257e6a7608478f89215cecff62a257d67af",
+      "test_blob": "333bec98a6993fc33aa1bb19a19de6462ca2d444",
+      "base_branch": "research-perception/v14-audio-session-scope-20261127-run68",
+      "base_sha": "c43bd2a84f3329704b80a237bb23e61e6d614c78",
+      "status": "DRAFT_A4_FEATURE_ERROR_GATE_CI_PENDING_INTEGRATION_BLOCKED_NOT_RELEASED",
+      "implementation": {
+        "defect": "The 182-parameter A4 predictor's global mean-error gate can update output features that already beat the persistence baseline; prior Run55 synthetic sweep showed non-speech and mixed-activity regressions.",
+        "fix": "Add opt-in FEATURE_ERROR_GATED policy. Per-output absolute error is compared with persistence; only worse columns receive gradients. Default EVERY_FINAL is unchanged; allow_update=false remains a hard no-update control.",
+        "runtime_consumer": "consume_pcm16_voice_window → AudioTemporalPredictionRegistry → predictive_attention_novelty / predictive_omission_novelty → A4 attention receipt",
+        "code_blob": "6663d257e6a7608478f89215cecff62a257d67af",
+        "test_blob": "333bec98a6993fc33aa1bb19a19de6462ca2d444",
+        "default_policy_preserved": true,
+        "persistent_weight_policy_unchanged": true
+      },
+      "tests": {
+        "local_linux": "CPython 3.13.5 x86_64 scratch algorithm reproduction: positive one-column update and negative no-error control 2/2 PASS; not exact repository source/tests.",
+        "repository_tests": "3 new regression tests added; exact-head CI NOT_YET_OBSERVED.",
+        "full_local_checkout": "BLOCKED / NOT_RUN: no mounted Aii checkout; git ls-remote GitHub DNS resolution failed.",
+        "previous_head_ci": "Run78 focused CI results (213 RAW EAR, 15 feature-set, 29 frame ingress, 50 A4 ablation per Python 3.13/3.14; VAD/libfvad 9+204) are prior code-head evidence only, not Run79.",
+        "staged_context": "Prior staged/integrated failures on Core composer/arithmetic/observer pins and QA migration assertions remain; no new staged run observed for Run79."
+      },
+      "device": "Latest available private V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER. Read-only relay requests #1036–#1038 had no comments at last poll. REDMI_UNVERIFIED.",
+      "updater": "UNKNOWN; no fresh authenticated device receipt.",
+      "release": "NOT_RELEASED",
+      "user_action_required": false,
+      "research_entries": [
+        "R-190",
+        "R-191",
+        "R-192",
+        "R-193",
+        "R-194"
+      ],
+      "next_action": "Poll exact-head #2578 focused CI. If green, run the three-policy session-disjoint held-out utility/retention ablation. Do not change default. Boss chooses Perception/Core convergence; Core owns source-pin refresh, QA owns migration assertions. No user action required.",
+      "research_note": "R-192 MANGO full-text: gradient gating alone weaker than replay + meta-regularization; R-193 retention-vs-adaptation abstract-only; R-194 GRAPA abstract-only. None adopted."
     }
   ]
 }
