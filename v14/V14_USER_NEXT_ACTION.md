@@ -1,6 +1,6 @@
 # CORE RUN 28 — 2026-11-28 (latest verified checkpoint)
 
-**PR #2577 (DRAFT, NOT RELEASED):** `core/v14-body-prefill-admission-20261128-run1`, exact tested head `adef6bdeab90cec061cf73de30608e82198d7b31`; production code checkpoint `a092a91ec31a4b69ff337a5e8952936f8bbeae5d`; based on #2568 head `50d0c7ccb14828b729de573d69444821ee42e82d`.
+**PR #2577 (DRAFT, NOT RELEASED):** `core/v14-body-prefill-admission-20261128-run1`, exact tested code head `adef6bdeab90cec061cf73de30608e82198d7b31`; current branch/PR HEAD after docs-only handoff `947eb841b8c4a7583f8ea287aad96bf7889b23f2` (no runtime/test source changes); production code checkpoint `a092a91ec31a4b69ff337a5e8952936f8bbeae5d`; based on #2568 head `50d0c7ccb14828b729de573d69444821ee42e82d`.
 
 - B1_DETAIL/B2_GIST now get a remaining-time-derived **soft** prompt target. Optional metadata is reduced; protected source context is not silently truncated. Prompt-admission and token/timing receipts remain in the native runner metrics.
 - C5 ActionSelection receives source-validated refs from the same Focal coalition (B1/B2/B3/C1/C4/Memory/World/Self). This is source-bound symbolic transport, **not trained latent coupling**.
