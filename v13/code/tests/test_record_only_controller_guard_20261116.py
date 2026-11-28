@@ -1,4 +1,5 @@
 """Real staged Runtime checks for specific RECORD_ONLY controller paths."""
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -162,6 +163,25 @@ class ControllerGuard(unittest.TestCase):
         self.assertEqual(c.on_rating(eid,1.)['updated'],1)
         workspace_learn.observe(r.store,[item],[],[],[])
         self.assertGreater(workspace_learn._load(r.store)[0]['kinds']['MEMORY']['n_retained'],0)
+
+
+class ControllerGuardJefBridgePinTests(unittest.TestCase):
+    def test_android_action_receipt_jefbridge_revision_is_allowlisted(self):
+        from scripts import record_only_controller_guard_20261116 as guard
+        raw = (CODE / "v13" / "jefbridge.py").read_bytes()
+        digest = hashlib.sha256(raw).hexdigest()
+        self.assertEqual(
+            digest,
+            "441ede97018c4490fceb15553230f949006424f6717b4fa4cf597f963575d812",
+        )
+        self.assertIn(digest, guard.PINS["v13/jefbridge.py"])
+
+    def test_jefbridge_allowlist_rejects_one_byte_change(self):
+        from scripts import record_only_controller_guard_20261116 as guard
+        raw = (CODE / "v13" / "jefbridge.py").read_bytes()
+        changed_digest = hashlib.sha256(raw + b"\x00").hexdigest()
+        self.assertNotIn(changed_digest, guard.PINS["v13/jefbridge.py"])
+
 
 if __name__=='__main__':unittest.main()
 '''

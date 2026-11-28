@@ -1,3 +1,20 @@
+# CURRENT NEXT ACTION — QA & Android Run 2 (2026-11-28)
+
+**Nutzeraktion: keine Aktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Chat-Senden, kein Modell-/Weight-Swap, keine Berechtigungsänderung und keine Geräteaktion. Die vorhandenen CI-Ergebnisse sind keine Redmi-Installation.
+
+## QA-Run-2: JEFBridge source-pin repair for Android action receipts
+
+- **Parent Core PR:** #2576, branch `core/v14-open-url-ci-repair-20261128-run3`, base SHA `18e1c20d309b633f3a0e3a637000456480844130`.
+- **QA branch:** `qa/v14-controller-guard-jefbridge-pin-20261128-run1`; code change adds only the exact reviewed JEFBridge SHA-256 `441ede97018c4490fceb15553230f949006424f6717b4fa4cf597f963575d812` to the existing RECORD_ONLY guard allowlist. It adds exact-source and one-byte-tamper tests; no wildcard, guard bypass, authority promotion or source mutation.
+- **Reproduced blocker:** exact Core head #2576 workflow #46097873974 failed 1/178 on Python 3.13 and 3.14 at `test_normal_runtime_composer_preserves_audio_and_ui_source_bindings`: guard rejected `v13/jefbridge.py` with the exact digest above. This is the same source-pin mismatch, not an Android device failure.
+- **Immutable chain rebound and readback:** guard SHA-256 `ece6a91d2b60dd86df73f41ef0e5310c815768c1acfe39354f2bc4ba1736a4d7`; Recovery-12 Git blob `b59aa068c51150352ac656ee63585ffaf134061c1`; Recovery-21 SHA-256 `122495c8059d9da4c66744715d252d9dc7fe3ff7a285fdbaadf3aa2da40421b8`; Stage-builder SHA-256 `8050684f165301fa8f133d6457ad77074acd2e213efc7087d590789f22517195`; RuntimeDeploy `STAGER_SHA256` matches the exact Stage-builder digest.
+- **Independent remaining frame-ingress blocker:** #2576 workflows #46097874007 and #46097874016 fail the two malformed NPY header cases on Python 3.13/3.14 (28 passed / 2 failed): old `vision_ui_frame_ingress.py` reaches `np.load` and returns `PROJECTOR_LOAD_FAILED`, while the negative allocation-bomb tests require `PROJECTOR_TENSOR_HEADER_INVALID`. Current Perception preflight is already present in #2563 (ingress 31/31 per interpreter) and #2565/#2570 (39/39); Core must port/rebase the matching source/test pair and refresh exact pins. Do not weaken the negative test.
+- **LOCAL_LINUX:** full Aii checkout/pytest NOT_RUN; no checkout is mounted and GitHub DNS resolution is unavailable. GitHub Actions results remain hosted CI only.
+- **Redmi / Android:** REDMI_UNVERIFIED; no fresh private owner-read receipt, no live device, no deployment. The historical device snapshot is not current proof. No model, weight, app, permission or user data was changed.
+- **Next:** open the stacked QA PR, run exact guard/RuntimeDeploy/staged/integrated/migration CI, then hand the frame-ingress source composition issue to Core/Perception with the exact failing and passing refs. Keep #2576 and QA work DRAFT / NOT_RELEASED until the shared staged path is green.
+
+---
+
 
 
 ## Latest verified handoff — 2026-11-28 (Core & Harness)
