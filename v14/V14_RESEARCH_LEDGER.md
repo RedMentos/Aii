@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — laufendes Forschungsjournal
 
-**Stand:** 2026-11-27. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
+**Stand:** 2026-11-28. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
@@ -2162,3 +2162,30 @@ PR #2578 current code/test head 45505fe83803c843d2a6c77cbbc16b56102b81f4. The he
 ### R-188 final CI checkpoint — 2026-11-28
 
 At code/test head 45505fe, the Perception-owned focused workflows passed: RAW EAR optional NumPy/A5-A4-C3 suite 211 tests each on Python 3.13/3.14; source-bound A4/A5 feature-set 15 each; RAW EAR/libfvad comparison 9 native ABI/benchmark checks plus 204 audio runtime tests each; offline RuntimeDeploy integrity groups 17+3+31+41 each on Python 3.11/3.14. The libfvad native build was on Linux CI only, not Redmi. The full staged/integrated regression failed on Core's stale audio composer pin (expected 831080b, current d51b0436), additional Core arithmetic/observer pins, and QA migration assertions. This is an integration blocker, not a Perception-focused test failure. Redmi remains REDMI_UNVERIFIED; latest available private snapshot 2026-11-24 was STOPPED_BY_USER and new read-only relay requests have NO_LIVE_RECEIPT.
+
+
+## R-189 — Calibrated uncertainty and domain shift in speech perception (2026-11-28)
+
+### Primary source A — actionable speech-enhancement domain shift
+- **Paper:** Lior Frenkel, Shlomo E. Chazan & Jacob Goldberger, *Detection of actionable domain shifts in speech enhancement systems by tracking prediction uncertainty*, Journal on Audio, Speech, and Music Processing 2026, 18. DOI: https://doi.org/10.1186/s13636-026-00448-3. Published 2026-02-28; version of record 2026-04-07. **FULLTEXT_REVIEWED; peer-reviewed journal article.**
+- **Method/evidence:** A supervised SI-SDR predictor emits both a mean and variance; the detector averages log-variance over contiguous 5-second segments, then compares a current mean against a source-domain threshold `mu_source + alpha * sigma_source`. Their reported operating point uses k=20 segments (100 seconds) and alpha=3. The predictor is 16M parameters beside a 17M speech-enhancement U-Net and adds about 30–60% GPU compute. Reported LibriSpeech+WHAM→DNS detection reached TPR 1.00/FPR 0.00 across tested SNRs; other domain directions were less separable, although reported FPR stayed near zero. The paper explicitly distinguishes *actionable* shifts (adaptation improves quality) from distribution changes that do not justify retraining.
+- **Limits for V14:** This is not a generic RAW EAR uncertainty model, not a speaker-identity detector, and not a phone benchmark. The 16M predictor, enhancement network and 100-second aggregation are not credible Redmi defaults. A distribution shift alone must not trigger learning; compare downstream held-out error before calling it actionable.
+- **License/reuse:** The article is CC BY-NC-ND 4.0; no text, figures or code were copied. The author-linked `lior-frenkel/shift_detection` repository declares MIT, but its README says it implements the earlier ICASSP 2025 paper, not necessarily every detail of the 2026 journal version. Its README requires downloaded data/checkpoints and a 500-epoch training recipe; checkpoint/data terms were not independently verified. No code, data or weights reused.
+
+### Primary source B — discriminator-free speech-domain adaptation
+- **Paper:** Yacouba Kaloga & Ina Kodrasi, *Discriminator-free adversarial domain adaptation for robust speech classification*, arXiv:2611.12119, submitted 2026-11-09. **FULLTEXT_REVIEWED; preprint, peer-review status not established.**
+- **Method/evidence:** A frozen HuBERT-large or wav2vec2-large encoder (approximately 300M parameters), mean/std temporal pooling, a small trainable MLP and a classifier reused as an implicit discriminator through nuclear-norm Wasserstein discrepancy. Seven SER datasets span English, French, Italian and German; noise shifts cover four environments and five SNRs. Training uses 30 epochs, batch 32 and three seeds with speaker-independent splits. Reported mean target-UAR gains for the proposed method are +7.3 points intra-lingual, +5.0 cross-lingual and +4.0 under noise adaptation, but several individual source→target directions still degrade. The paired statistical tests are exploratory where source-target pairs share corpora/speakers.
+- **Limits for V14:** The frozen 300M encoder dominates the resource footprint and is not a Redmi candidate. These results concern supervised-source/unlabelled-target adaptation on benchmark SER/pathology tasks, not unsupervised self-editing from private conversations. No author-maintained implementation or weight licence was verified; no code or weights reused.
+
+### Maintained OSS / deployment constraints
+- **Silero VAD:** official repository declares MIT and documents optional ONNX Runtime support (onnxruntime>=1.16.1 plus NumPy), a roughly 2 MB JIT model, 8/16 kHz input and mobile/edge use. Its README's 1 GB+ RAM and AVX CPU note is specifically for x86-64 Python examples; the ONNX path may run on supported architectures but requires a caller-owned I/O wrapper. This does not prove the exact model artifact's independent licence, ARM64 wheel closure or Redmi latency/RSS. Current V14 code keeps VAD optional and labels its output as a model score, **not a calibrated probability**. No model was downloaded or swapped.
+- No new OSS component or external model was adopted in this run.
+
+### V14 hypothesis and falsifiable follow-up
+- Keep measured PCM values, heuristic prosody/activity scores, model VAD scores, speaker diagnostics and calibrated probabilities as distinct provenance classes. A future lightweight A4 domain-drift monitor may compare source/session-bound distributions, but it must be evaluated against downstream held-out error and an adaptation/no-adaptation control; raw RMS/SNR change alone is not an actionable shift.
+- Minimum experiment: fixed source cohort plus held-out sessions across at least two rooms/microphone gains and multiple SNR bands; source/speaker-disjoint split; compare static thresholds, rolling feature drift and a small calibrated uncertainty head; report TPR/FPR, false-alarm duration, detection delay, task error before/after adaptation, old-session retention and restart reproducibility. Synthetic waveforms are only a harness; no private raw speech may be uploaded or used for training without separate local consent.
+- **Decision:** RESEARCH_ONLY / NOT_ADOPTED / NOT_REPRODUCED. No model/weight update or Android capability change.
+
+### Implementation consequence — speaker calibration cannot self-certify
+- PR [#2578](https://github.com/RedMentos/Aii/pull/2578), code/test commit `4c9bd27e56e90cba49d992c157fc5d3b4e348572`, adds a negative guard: a caller-supplied `CALIBRATED_VERIFIED` string plus a digest-shaped SHA-256, calibration ID and numeric threshold still cannot promote speaker-change evidence. Without a trusted receipt-verification registry, the contract remains `DIAGNOSTIC_ONLY_UNCALIBRATED`, `calibration_status=UNVERIFIED`, `identity_authority=false`; malformed decisions degrade to `DEFER`. This is contract hardening, not a calibration result or speaker identity feature.
+- LOCAL_LINUX scratch negative controls: 2/2 PASS. Exact GitHub focused CI is recorded in the Run 78 handoff; full local Aii checkout and Redmi remain unverified.
