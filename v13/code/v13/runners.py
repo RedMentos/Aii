@@ -15,6 +15,7 @@ import threading
 import time
 from .common import APP,dumps,digest,atomic_write,Cancelled,Unavailable,Limits
 from .resources import process_memory
+from .native_prefill_rate import PrefillRateEstimator
 def wire_json(v):
     """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
     grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
@@ -62,6 +63,7 @@ class LlamaRunner:
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
         self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self._prefill_rate_estimator=PrefillRateEstimator()
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
@@ -325,6 +327,30 @@ class LlamaRunner:
         vectors=[row['embedding'] for row in sorted(data,key=lambda row:row['index'])]
         if len(vectors)!=len(texts) or any(not v or not all(math.isfinite(x) for x in v) for v in vectors):raise Unavailable('Embedding-Antwort ungültig')
         return vectors
+    def _prefill_rate_estimate(self):
+        estimator=getattr(self,"_prefill_rate_estimator",None)
+        if estimator is None:return None
+        return estimator.estimate(self._lifecycle_stamp())
+    def _record_prefill_rate(self,status):
+        estimator=getattr(self,"_prefill_rate_estimator",None)
+        if estimator is None or status!="FINAL":return
+        binding=self._lifecycle_stamp()
+        stage=self.last_metrics.get("stage_durations_s",{})
+        added=estimator.observe(
+            binding,
+            prompt_tokens=self.last_metrics.get("prompt_tokens"),
+            prefill_seconds=stage.get("prefill_to_first_token_s"),
+            status=status,
+            generated_tokens=self.last_metrics.get("generated_tokens"),
+        )
+        rate=estimator.estimate(binding)
+        self.last_metrics["prefill_rate"]={
+            "revision":estimator.REVISION,
+            "source":"MEASURED_CONSERVATIVE_MIN" if rate is not None else "BOOT_FALLBACK",
+            "effective_tokens_per_second":round(rate,3) if rate is not None else None,
+            "sample_count":estimator.sample_count(binding),
+            "sample_added":bool(added),
+        }
     def _prompt(self,messages,cancel,deadline,reserve):
         # Native time and context length are different budgets. A 617-token
         # C3 prefill demonstrably exhausted the Redmi's 30s turn while the
@@ -334,6 +360,7 @@ class LlamaRunner:
         from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
         removed=[];initial_tokens=None
+        measured_prefill_rate=self._prefill_rate_estimate()
         # A normal history can contain 32 complete pairs. Every iteration is
         # still bounded by the actual turn deadline and the overall step cap.
         reduction_steps=min(80,max(16,len(work)//2+8))
@@ -386,14 +413,16 @@ class LlamaRunner:
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
             remaining=deadline-time.monotonic()
-            target=admission.soft_limit(self.role,self.cfg,remaining)
+            target=admission.soft_limit(self.role,self.cfg,remaining,measured_tokens_per_second=measured_prefill_rate)
             if initial_tokens is None:initial_tokens=count
             fits_context=count+reserve+16<=self.cfg["context_tokens"]
             fits_clock=target is None or count<=target
             if fits_context and fits_clock:
                 self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
-                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
+                    'prefill_rate_source':'MEASURED_CONSERVATIVE_MIN' if measured_prefill_rate is not None else 'BOOT_FALLBACK',
+                    'effective_prefill_tokens_per_second':round(measured_prefill_rate,3) if measured_prefill_rate is not None else None}
                 if self.role == 'C3_LANGUAGE':
                     witness = (inspect(work, p, hypothesis_heading,
                                         token_pieces=token_piece_rows,
@@ -430,7 +459,9 @@ class LlamaRunner:
                 self._prompt_admission={'revision':admission.REVISION,
                     'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
-                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False,
+                    'prefill_rate_source':'MEASURED_CONSERVATIVE_MIN' if measured_prefill_rate is not None else 'BOOT_FALLBACK',
+                    'effective_prefill_tokens_per_second':round(measured_prefill_rate,3) if measured_prefill_rate is not None else None}
                 if self.role == 'C3_LANGUAGE':
                     witness = (inspect(work, p, hypothesis_heading,
                                         token_pieces=token_piece_rows,
@@ -511,6 +542,7 @@ class LlamaRunner:
                             self._native_completion_http_200
                             and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
                         'native_attention_or_semantic_use_proven':False}
+            self._record_prefill_rate(status)
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
