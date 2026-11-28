@@ -326,33 +326,47 @@ def _quantile(values, q):
 
 
 def _calibrate_threshold(head, x_rows, y_rows, *, quantile=0.90):
-    """Calibrate a conservative residual margin on disjoint sessions only."""
+    """Compare a residual margin with a negative-score threshold on disjoint sessions."""
     if len(x_rows) < 16 or len(x_rows) != len(y_rows):
         raise ValueError("insufficient disjoint calibration examples")
     scores = [head.predict(row) for row in x_rows]
-    residuals = [abs(score - float(target)) for score, target in zip(scores, y_rows)]
+    targets = [float(target) for target in y_rows]
+    residuals = [abs(score - target) for score, target in zip(scores, targets)]
     margin = max(0.0, _quantile(residuals, quantile))
-    negative = [(score, target) for score, target in zip(scores, y_rows) if target <= 0.0]
-    positive = [(score, target) for score, target in zip(scores, y_rows) if target > 0.0]
-    false_positive = sum(score > margin for score, _target in negative)
-    true_positive = sum(score > margin for score, _target in positive)
-    return margin, {
+    negative_scores = [score for score, target in zip(scores, targets) if target <= 0.0]
+    positive_scores = [score for score, target in zip(scores, targets) if target > 0.0]
+    if len(negative_scores) < 8 or len(positive_scores) < 1:
+        raise ValueError("calibration requires negative and positive delayed outcomes")
+    negative_threshold = _quantile(negative_scores, quantile)
+    negative_false_positive = sum(score > negative_threshold for score in negative_scores)
+    negative_true_positive = sum(score > negative_threshold for score in positive_scores)
+    residual_false_positive = sum(score > margin for score, target in zip(scores, targets) if target <= 0.0)
+    residual_true_positive = sum(score > margin for score, target in zip(scores, targets) if target > 0.0)
+    return margin, negative_threshold, {
         "examples": len(scores),
-        "positive_examples": len(positive),
-        "negative_examples": len(negative),
+        "positive_examples": len(positive_scores),
+        "negative_examples": len(negative_scores),
         "residual_mae": round(fmean(residuals), 8),
         "residual_rmse": round(math.sqrt(fmean(value * value for value in residuals)), 8),
         "residual_p90": round(margin, 8),
         "coverage_at_residual_p90": round(
             sum(value <= margin for value in residuals) / len(residuals), 8
         ),
-        "false_positive_rate_at_margin": (
-            round(false_positive / len(negative), 8) if negative else None
+        "false_positive_rate_at_margin": round(
+            residual_false_positive / len(negative_scores), 8
         ),
-        "positive_recall_at_margin": (
-            round(true_positive / len(positive), 8) if positive else None
+        "positive_recall_at_margin": round(
+            residual_true_positive / len(positive_scores), 8
         ),
-        "threshold_source": "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90",
+        "negative_score_q90": round(negative_threshold, 8),
+        "false_positive_rate_at_negative_score_q90": round(
+            negative_false_positive / len(negative_scores), 8
+        ),
+        "positive_recall_at_negative_score_q90": round(
+            negative_true_positive / len(positive_scores), 8
+        ),
+        "residual_threshold_source": "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90",
+        "negative_threshold_source": "DISJOINT_CALIBRATION_NEGATIVE_SCORE_Q90",
         "probability_calibration": False,
     }
 
@@ -366,6 +380,15 @@ def _select_multi_horizon(scores, thresholds):
             score >= -threshold
             for score, threshold in zip(scores, thresholds)
         )
+    )
+
+
+def _select_negative_score_gate(scores, thresholds):
+    """Require positive mean effect and exceed each disjoint negative-score cutoff."""
+    if len(scores) != len(thresholds) or not scores:
+        return False
+    return fmean(scores) > 0.0 and all(
+        score > threshold for score, threshold in zip(scores, thresholds)
     )
 
 
@@ -388,7 +411,7 @@ def _evaluate(predictor, deltas):
     }
 
 
-def _run_policy(policy, adapt, heldout, anchors, heads, thresholds):
+def _run_policy(policy, adapt, heldout, anchors, heads, thresholds, negative_thresholds):
     base_policy = (
         "EVERY_FINAL" if policy == "EVERY_FINAL" else "FEATURE_ERROR_GATED"
     )
@@ -433,6 +456,11 @@ def _run_policy(policy, adapt, heldout, anchors, heads, thresholds):
 
         if policy == "ONE_STEP_META_GATE":
             take = scores[1] > thresholds[1]
+        elif policy == "MULTI_HORIZON_NEGATIVE_SCORE_GATE":
+            take = _select_negative_score_gate(
+                [scores[h] for h in HORIZONS],
+                [negative_thresholds[h] for h in HORIZONS],
+            )
         else:
             take = _select_multi_horizon(
                 [scores[h] for h in HORIZONS],
@@ -586,9 +614,14 @@ def run_experiment():
         for horizon in HORIZONS
     }
     thresholds = {}
+    negative_score_thresholds = {}
     calibration = {}
     for horizon in HORIZONS:
-        thresholds[horizon], calibration[str(horizon)] = _calibrate_threshold(
+        (
+            thresholds[horizon],
+            negative_score_thresholds[horizon],
+            calibration[str(horizon)],
+        ) = _calibrate_threshold(
             heads[horizon], calibration_x_by[horizon], calibration_y_by[horizon]
         )
         calibration[str(horizon)]["legacy_train_rmse_margin"] = round(
@@ -616,10 +649,12 @@ def run_experiment():
             "FEATURE_ERROR_GATED",
             "ONE_STEP_META_GATE",
             "MULTI_HORIZON_META_GATE",
+            "MULTI_HORIZON_NEGATIVE_SCORE_GATE",
             "NO_UPDATE",
         ):
             per_regime[regime][policy] = _run_policy(
-                policy, adapt, heldout, heldout_replay_anchors, heads, thresholds
+                policy, adapt, heldout, heldout_replay_anchors, heads,
+                thresholds, negative_score_thresholds,
             )
         no_update = per_regime[regime]["NO_UPDATE"]
         for result in per_regime[regime].values():
@@ -694,8 +729,9 @@ def run_experiment():
             "EVALUATE_WORST_OF_TWO_HELDOUT_ANCHORS"
         ),
         "decision_threshold_policy": (
-            "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90; "
-            "EMPIRICAL_MARGIN_NOT_A_CALIBRATED_PROBABILITY"
+            "COMPARE_DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90_MARGIN "
+            "WITH_NEGATIVE_SCORE_Q90_CUTOFF; "
+            "EMPIRICAL_THRESHOLDS_NOT_PROBABILITIES"
         ),
         "calibration": calibration,
         "predictors": {
@@ -707,6 +743,9 @@ def run_experiment():
                 ),
                 "abstain_threshold": round(thresholds[horizon], 8),
                 "calibrated_abstain_margin": round(thresholds[horizon], 8),
+                "negative_score_q90_threshold": round(
+                    negative_score_thresholds[horizon], 8
+                ),
                 "positive_training_fraction": round(
                     sum(y > 0 for y in y_by[horizon]) / len(y_by[horizon]),
                     8,

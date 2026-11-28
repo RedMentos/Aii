@@ -6,6 +6,7 @@ import unittest
 from a4_multi_horizon_update_effect_20261128 import (
     _abrupt_to_smooth_sequence,
     _select_multi_horizon,
+    _select_negative_score_gate,
     run_experiment,
 )
 
@@ -67,8 +68,12 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             calibration = result["calibration"][horizon]
             predictor = result["predictors"][horizon]
             self.assertEqual(
-                calibration["threshold_source"],
+                calibration["residual_threshold_source"],
                 "DISJOINT_CALIBRATION_ABSOLUTE_RESIDUAL_P90",
+            )
+            self.assertEqual(
+                calibration["negative_threshold_source"],
+                "DISJOINT_CALIBRATION_NEGATIVE_SCORE_Q90",
             )
             self.assertFalse(calibration["probability_calibration"])
             self.assertGreaterEqual(calibration["examples"], 16)
@@ -77,6 +82,13 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             )
             self.assertGreaterEqual(
                 predictor["calibrated_abstain_margin"], 0.0
+            )
+            self.assertTrue(math.isfinite(
+                predictor["negative_score_q90_threshold"]
+            ))
+            self.assertLessEqual(
+                calibration["false_positive_rate_at_negative_score_q90"],
+                0.11,
             )
             self.assertEqual(
                 predictor["abstain_threshold"],
@@ -98,6 +110,17 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             row["activity_hint"] == "VOICED" for row in rows[24:]
         ))
 
+    def test_negative_score_gate_requires_positive_mean_and_all_horizons(self):
+        self.assertTrue(
+            _select_negative_score_gate([0.03, 0.02, 0.01], [0.005, 0.005, 0.005])
+        )
+        self.assertFalse(
+            _select_negative_score_gate([0.03, -0.1, 0.02], [0.005, -0.2, 0.005])
+        )
+        self.assertFalse(
+            _select_negative_score_gate([-0.01, -0.02, -0.03], [-0.02, -0.03, -0.04])
+        )
+
     def test_horizons_and_regimes(self):
         result = self.result
         self.assertEqual(result["horizons"], [1, 3, 8])
@@ -110,6 +133,7 @@ class MultiHorizonUpdateEffectTests(unittest.TestCase):
             "FEATURE_ERROR_GATED",
             "ONE_STEP_META_GATE",
             "MULTI_HORIZON_META_GATE",
+            "MULTI_HORIZON_NEGATIVE_SCORE_GATE",
             "NO_UPDATE",
         }
         for policies in result["per_regime"].values():
