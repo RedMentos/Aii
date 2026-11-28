@@ -30,7 +30,8 @@ REPO_ORIGIN = ("https://github.com/RedMentos/Aii",
                "git@github.com:RedMentos/Aii.git")
 CANON = "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md"
 REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
-            "v13/common.py", "v13/models.py", "v13/ui.py",
+            "v13/common.py", "v13/native_prompt_admission.py", "v13/native_prefill_rate.py",
+            "v13/models.py", "v13/ui.py",
             "v13/android_ui_runtime.py", "v13/android_companion_runtime.py",
             "v13/android_companion_ui_frames.py", "v13/android_companion_transport.py",
             "v13/android_companion_ecdsa.py", "v13/android_capabilities.py",
