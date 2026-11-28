@@ -2590,3 +2590,12 @@ RAW EAR/libfvad comparison: Python 3.13 and Python 3.14 both PASS (workflow 4608
 | Android microphone / normal C3 audio turn / updater | REDMI_UNVERIFIED / UNKNOWN | Private owner-read #1036–#1038 expired without receipt: NO_LIVE_RECEIPT; V13OBS #115 historical 2026-11-24 STOPPED_BY_USER | Actual installed SHA, updater status, AudioRecord permission/lifecycle, normal C3 answer, rollback |
 
 No path is promoted to NATIVE_ANDROID_PROOF, REAL_REDM I_PROOF, ACCEPTED or RELEASED. Hosted Linux CI and LOCAL_LINUX scratch tests are not phone evidence. P0 #1904 remains OPEN.
+
+
+## Additive A4 / F4 evidence — 2026-11-28
+
+- **Canon mapping:** A4 active attention / predictive error; F4 learning and plasticity; V14 §2.6–2.8 (outcome/omission and Meta Update Predictor).
+- **Status:** WIRED_SYNTHETIC / FOCUSED_CI_PASS for the research ablation only. The experiment imports the production A4 temporal predictor, but it is not a new Runtime consumer and does not change the Runtime policy. It is not NATIVE_LINUX_PROOF of Android behavior, REAL_REDM I_PROOF, NUMERIC_LEARNING on installed model weights or ACCEPTED.
+- **Evidence:** PR #2578, code/test head 6fadc4e68eba80836aa73c72104500c620a6a6b5; workflow #46094137656 PASS on Python 3.13/3.14 (10 existing retention tests + 7 new tests + 54 production predictor pytest tests per job).
+- **Measured result:** smooth held-out drift: META_GATE selected 19/69 candidates, only 57.89% positive; current utility nearly equalled NO_UPDATE. Abrupt drift: 0/14 selected, exactly NO_UPDATE; no adaptation. The experiment is a limited/negative result, not a feature acceptance.
+- **Acceptance still requires:** multi-horizon outcomes, independent replay/retention anchors, robust calibration and drift-reversal tests, actual connected runtime consumer, persistent trainable parameter proof with restart/rollback, full cross-organ integration, and genuine authorized Redmi evidence. No Canon obligation is closed by this experiment.

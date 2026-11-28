@@ -2235,3 +2235,47 @@ At code/test head 45505fe, the Perception-owned focused workflows passed: RAW EA
 - **Paper:** Yitian Chen et al., *Parameter-efficient Continual Learning for Enhancing Plasticity without Forgetting under Limited Model Capacity*, CVPR 2026, pp. 10789–10798. Proceedings page: https://openaccess.thecvf.com/content/CVPR2026/html/Chen_Parameter-efficient_Continual_Learning_for_Enhancing_Plasticity_without_Forgetting_under_Limited_CVPR_2026_paper.html . **PEER_REVIEWED_CONFERENCE; ABSTRACT_ONLY in this review (CVF full page returned 403).**
 - **Available method/evidence:** gradient-guided parameter reuse plus reinforcement-learning-based parameter allocation; abstract reports up to +7.67% mean task accuracy and +14.92% on subsequent complex tasks across continual task sequences. No resource profile, exact benchmark conditions, ARM/RAM/latency data or independent reproduction were available in the accessible text.
 - **V14 relevance:** possible B1/B2 sparse-MoE / parameter-allocation research candidate, but not a mobile model candidate or proof of on-device feasibility. Full paper, supplementary material, implementation and licences must be inspected before reuse. **RESEARCH_ONLY / NOT_ADOPTED.**
+
+
+## R-195 — Load Balancing Neurons: Firing-Rate Control Sustains Plasticity in Continual Learning
+
+- **Authors / date / source:** Jan Robine, Marc Höftmann and Stefan Harmeling; arXiv:2611.32691v1, submitted 2026-11-24. Primary record: https://arxiv.org/abs/2611.32691. An earlier OpenReview PDF version is labelled “under review as a conference paper at ICLR 2026”: https://openreview.net/pdf/1b66c8998764260d41d0c3df3ab9c89c0c742365.pdf. I found no primary acceptance record; treat the November version as a preprint, not verified peer-reviewed work. Full-text content was inspected via a secondary mirror and cross-checked against the primary abstract/OpenReview copy.
+- **Finding:** firing-rate distributions can expose ReLU units collapsing near 0% or saturating near 100%. The paper adds a per-neuron pre-activation offset and updates it from an EMA of firing rates, with a target near 50% (reported defaults tau=0.99, step=0.001; commonly 49–51%). It recommends normalization before the load-balancing offset.
+- **Evidence / conditions:** continual ImageNet and class-incremental CIFAR-100 (10 and 15 seeds respectively) plus Rainbow DQN Atari; reported training used A100/H100/H200 GPUs, with roughly 2.8 h/A100 for the ImageNet run and about 6 h/seed for CIFAR-100. The paper reports improvements over several reset/continual-learning baselines, but effect sizes are benchmark/configuration dependent.
+- **V14 mapping:** candidate diagnostic for future B1/B2 sparse-MoE expert utilization and long-term plasticity (dead/always-active experts, activation-rate distribution). It does **not** justify adding ReLU threshold offsets to the current A4 13-D predictor or current dense GGUF bodies; the activation and normalization assumptions differ.
+- **Limitations / licence:** no official implementation repository or code licence was verified; no code/weights reused. No Android/ARM or low-RAM measurement. Do not equate firing-rate balance with semantic specialization or useful expert contribution.
+- **Status:** RESEARCH_CANDIDATE_ONLY; no V14 runtime adoption.
+
+## R-196 — Mistake Gating Leads to Energy and Memory Efficient Continual Learning
+
+- **Authors / date / source:** Aaron Pache and Mark C. W. van Rossum; arXiv:2604.14336 (2026-04-15), https://arxiv.org/abs/2604.14336. Journal record: Neural Computation, DOI 10.1162/NECO.a.1602, ahead-of-print publication 2026-11-05, https://pubmed.ncbi.nlm.nih.gov/43057301/.
+- **Finding:** memorized mistake-gated learning updates only on current or remembered classification mistakes; the abstract reports 50–80% fewer parameter updates and smaller replay-buffer requirements in the tested settings.
+- **Evidence / status:** peer-reviewed journal article is listed as ahead of print; only the primary abstracts were reviewed in this run, not the full journal text. No maintained official code repository or code licence was verified.
+- **V14 mapping:** relevant to F4 local plasticity and the distinction between sample processing and actual parameter updates. Existing A4 MEMORIZED_ERROR is **not** the paper's algorithm: A4 predicts continuous acoustic-feature deltas against persistence, not classification correctness. The new update-effect experiment is also not mistake gating; it predicts a delayed utility/retention score. Keep all methods distinct and opt-in.
+- **Limitations:** reported update savings do not automatically imply lower forward-pass cost, latency or energy on Redmi; initially misclassified or drifting inputs can still require frequent updates. No Android measurements or code reuse.
+- **Status:** RESEARCH_REFERENCE_ONLY.
+
+## R-197 — Learning Dynamics of Continual Learning
+
+- **Authors / date / source:** Yi Ren et al.; arXiv:2609.33620, 2026-09-27, https://arxiv.org/abs/2609.33620. Abstract reviewed; full paper not verified in this run.
+- **OSS inspection:** public repository https://github.com/Joshua-Ren/learning-dynamics-cl was inspected. Its README describes separate learning-dynamics components, but the repository has no LICENSE file at the inspected revision. Its listed dependencies include modern PyTorch/Transformers/TRL tooling; this is not an Android reuse candidate. No code was copied.
+- **V14 mapping:** supports investigating the separation between immediate update utility and slower/larger-scale plasticity dynamics. The Run 80 ridge head is a small synthetic one-step update-effect probe; it does not reproduce the paper's architecture or establish a general learning-dynamics model.
+- **Limitations:** preprint/abstract-level evidence in this run; exact experimental conditions and code licence need full primary review before reuse.
+- **Status:** RESEARCH_LEAD_ONLY; no implementation adopted.
+
+## R-198 — Off-Policy Merging Beats On-Policy Self-Distillation for Continual Learning
+
+- **Date / source:** arXiv:2610.05872, submitted 2026-10-05, https://arxiv.org/abs/2610.05872. Abstract-level review only in this run; peer-review status not established.
+- **Finding:** explores grafting donor updates into a base model with direction/scale selection rather than relying only on on-policy self-distillation.
+- **V14 mapping:** possible future research lead for selective adapter/weight-delta transfer and controlled self-edit, after actual trainable master/adapters and source-bound held-out/retention gates exist.
+- **Limitations / licence:** reported model scale (Qwen3 1.7B/8B and OLMo3 7B in the surfaced summary) is not a Redmi budget proof. No official code repository or code/weight licence was verified; no code or weights reused.
+- **Status:** RESEARCH_LEAD_ONLY; no implementation adopted.
+
+## Run 80 — synthetic A4 update-effect predictor (2026-11-28)
+
+- **Experiment:** v14/experiments/a4_update_effect_predictor_20261128.py plus seven tests; 7-feature normalized ridge predictor, eight coefficients, trained on 276 earlier synthetic examples. The label is one-step future error improvement penalized by old-pattern replay regression. Held-out smooth and abrupt regimes are disjoint from training sessions.
+- **Exact CI:** workflow #46094137656 PASS on Python 3.13 and 3.14; each job py_compile PASS, 10/10 existing A4 retention unittests, 7/7 new tests and 54/54 production predictor pytest tests. Deterministic metrics matched across versions.
+- **Result:** smooth drift selected 19/69 candidates, with 57.89% positive counterfactual outcomes; current utility was almost identical to NO_UPDATE (+0.09192104 vs +0.09191337), with old-pattern error delta +0.00015330. Abrupt drift selected 0/14 candidates and matched NO_UPDATE, avoiding the updating baselines' regression but failing to adapt. This is not evidence of a useful general future-regime predictor.
+- **Decision:** keep research-only; do not change A4 default or enable persistent/runtime learning. No energy, forward-pass, TTFT or Android measurement.
+- **Environment:** LOCAL_LINUX scratch API-compatible stub 7/7 PASS on CPython 3.13.5 x86_64; exact full local Aii checkout BLOCKED/NOT_RUN. Hosted CI is Linux, not Redmi.
+- **Code:** PR #2578, branch research-perception/v14-audio-measurement-provenance-20261128-run77, exact code/test head 6fadc4e68eba80836aa73c72104500c620a6a6b5. DRAFT / NOT_RELEASED; REDMI_UNVERIFIED; updater UNKNOWN.

@@ -1,5 +1,21 @@
 # CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79 final)
 
+## Latest verified Perception status — 2026-11-28
+
+- **New work:** synthetic A4 update-effect/future-regime ablation added on PR #2578. Exact GitHub Actions workflow #46094137656 passed on Python 3.13 and 3.14: py_compile, 10/10 existing A4 retention tests, 7/7 new update-effect tests and 54/54 production A4 temporal-predictor tests.
+- **Finding:** the tiny ridge meta-gate reduced smooth-drift updates from 69 to 19 but only 57.89% of selected updates had positive counterfactual effects; current utility was essentially equal to no-update. On abrupt drift it selected 0/14 candidates and matched no-update. **Not adopted; no Runtime default changed.**
+- **PR/branch:** https://github.com/RedMentos/Aii/pull/2578, branch research-perception/v14-audio-measurement-provenance-20261128-run77, code/test head 6fadc4e68eba80836aa73c72104500c620a6a6b5. Still DRAFT / NOT_RELEASED.
+- **Local tests:** CPython 3.13.5 Linux x86_64 scratch harness 7/7 PASS using an API-compatible predictor stub; full local Aii checkout/pytest BLOCKED/NOT_RUN. Hosted CI is not Redmi evidence.
+- **Device/deployment:** private V13OBS #115 is still the 2026-11-24 historical snapshot; fresh PIPELINE_STATUS request #1042 had no receipt at last poll. REDMI_UNVERIFIED; updater UNKNOWN; RELEASE-SHA NOT_RELEASED.
+- **No changes:** no installed model/weights, permissions, microphone access, user data, updater or device state changed.
+
+### Next concrete action
+
+Run a multi-horizon update-effect experiment with abrupt-to-smooth recovery, a separate replay anchor and calibrated abstention/regret metrics. Keep the predictor shadow-only unless it beats both current-task utility and old-task retention. Research activation-rate diagnostics for future B1/B2 sparse MoE separately; do not port ReLU load-balancing offsets into the current dense models or A4 cue predictor without a matching architecture and measured benefit. Boss/Integrator still owns branch-convergence order; Core owns Recovery/Stage/RuntimeDeploy and arithmetic/observer pins; QA owns migration assertions.
+
+**User action: none required.**
+
+
 **User action: keine Aktion nötig.** No model download/swap, installed model-weight change, microphone permission, UPDATE_REQUEST, CHAT_SEND or device operation was performed.
 
 ## Current code / PR

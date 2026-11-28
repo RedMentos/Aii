@@ -1947,3 +1947,79 @@ Decision: keep opt-in. It reduces update volume and softens non-speech regressio
 **Device / UX.** Private owner-read requests #1036–#1038 expired at 2026-11-28T01:13:47Z without device_status comments: **NO_LIVE_RECEIPT**. Latest V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER. REDMI_UNVERIFIED; updater UNKNOWN; NOT_RELEASED. No UPDATE_REQUEST, CHAT_SEND, shell, microphone, model/weight/permission or device action.
 
 **Next executable work.** Boss chooses one convergence ancestry. Core refreshes Recovery→Stage→RuntimeDeploy audio-composer pin to `f90f575...`, carries the inner predictor pin `6663d257...`, ports the NPY preflight source and refreshes arithmetic/observer pins; QA repairs migration PARTIAL-vs-UPDATED and rewrites the legacy UI test to the current lease API. Perception keeps A4 gate opt-in and next evaluates a mini update-effect/future-regime predictor on synthetic smooth-vs-abrupt drift, measuring current utility and old-task retention. User action: **keine Aktion nötig**.
+
+
+## Run 80 — A4 update-effect / future-regime predictor ablation (2026-11-28)
+
+**Owner:** Research & Perception. **Queue source:** the previous shared perception checkpoint explicitly requested a mini update-effect/future-regime predictor over synthetic smooth-vs-abrupt drift, with current utility and old-task retention measured.
+
+### Implementation
+
+Added:
+- v14/experiments/a4_update_effect_predictor_20261128.py
+- v14/experiments/test_a4_update_effect_predictor_20261128.py
+- Extended .github/workflows/v14-a4-update-gate-retention.yml to compile, test and emit the experiment on Python 3.13 and 3.14.
+
+The experiment imports the production AudioTemporalPredictor and compares EVERY_FINAL, FEATURE_ERROR_GATED, META_GATE and NO_UPDATE. The meta head is a seven-feature normalized ridge regressor (eight coefficients). It is trained only on four earlier synthetic sessions (276 candidate examples). Its delayed label is one-step next-window utility minus 0.5 times old-pattern replay regression. Held-out adaptation/evaluation sessions cover smooth and abrupt drift. It sees only current-window features at decision time; held-out future labels are not used for fitting.
+
+This is a **research-only shadow ablation**, not a new Runtime gate. It does not change the A4 default, enable persistent learning, write weights, persist feature windows, store PCM/transcripts, alter permissions or connect to Android. It is not a trained JEPA module, a calibrated probability, or a cross-organ adapter.
+
+### Exact-head evidence
+
+PR #2578 branch research-perception/v14-audio-measurement-provenance-20261128-run77:
+- Experiment commit: 4dd3577afba037644fc86af9b844c28eb8a3d9db
+- Test commit: 649e21f49a7669ec411ba252ac9b1afba7e0e06a
+- Workflow wiring commit: 4956ea5da430bd41bef4c80c89cb15679eb7302d
+- Compile-command correction: 6fadc4e68eba80836aa73c72104500c620a6a6b5
+- Experiment/test blobs: f6bfdaf557f61ffb8833ac8a64a383b302ae594a / e5e71ae5641dbd41a248ad87cb7fdc5482270ec5
+- Workflow blob: cf907169a53a846cb87cbc3212a7cbf85febe94e
+- Exact code/test head before this docs sync: 6fadc4e68eba80836aa73c72104500c620a6a6b5
+- PR #2578 remains **DRAFT / NOT_RELEASED**.
+
+**GitHub Actions workflow #46094137656: PASS on Python 3.13 and Python 3.14.** Per job: py_compile PASS; existing A4 retention suite 10/10 unittest PASS; new update-effect suite 7/7 unittest PASS; exact v13/code/tests/test_audio_temporal_prediction.py 54/54 pytest PASS; experiment JSON emitted successfully. Both Python versions emitted identical deterministic metrics. Hosted Linux CI is not local Android evidence.
+
+Other exact-head focused checks at last poll:
+- Source-bound A4/A5 feature-set #46094137628: PASS.
+- MediaProjection RAW EYE frame ingress #46094137605: PASS.
+- RAW EAR optional NumPy backend #46094137660: PASS.
+- V13 RuntimeDeploy integrity #46094137634: PASS (CI integrity only, not deployment).
+- RAW EAR/libfvad comparison #46094137602: IN_PROGRESS at last poll.
+- Shared staged context/integrated regression #46094137745: IN_PROGRESS at last poll; previous runs still show Core composer/arithmetic/observer pins and QA migration assertions as separate blockers.
+
+### Measured synthetic result
+
+The fitted meta head had 276 training examples, label range -0.1280557 to +0.1280557, 41.30% positive labels, residual RMSE 0.02151154 and abstention threshold 0.00537788.
+
+| Held-out regime | Policy | Updates | Current improvement vs persistence | Old-pattern error delta |
+|---|---|---:|---:|---:|
+| Smooth | EVERY_FINAL | 69 | +0.09217758 | +0.00121662 |
+| Smooth | FEATURE_ERROR_GATED | 69 | +0.09201560 | +0.00035446 |
+| Smooth | META_GATE | 19 of 69 candidates | +0.09192104 | +0.00015330 |
+| Smooth | NO_UPDATE | 0 | +0.09191337 | 0.00000000 |
+| Abrupt | EVERY_FINAL | 69 | +0.05950672 | +0.01593617 |
+| Abrupt | FEATURE_ERROR_GATED | 26 | +0.07371336 | +0.02107350 |
+| Abrupt | META_GATE | 0 of 14 candidates | +0.08416112 | 0.00000000 |
+| Abrupt | NO_UPDATE | 0 | +0.08416112 | 0.00000000 |
+
+On smooth drift the meta gate selected 19/69 candidates; only 57.89% of selected counterfactual labels were positive. Its current utility was essentially equal to no-update (difference below 0.00001), with a small old-pattern error increase (+0.0001533). It reduced numeric updates, but this experiment did not measure forward-pass, energy or latency savings.
+
+On abrupt drift it abstained on all 14 eligible candidates. That avoided the regressions seen under the two updating baselines, but matched NO_UPDATE exactly and did not adapt. The predictor therefore shows a conservative abstention signal, **not a useful general future-regime predictor yet**.
+
+**Decision:** do not adopt META_GATE, do not change EVERY_FINAL, FEATURE_ERROR_GATED or any production default. The result is useful as a falsifiable limited/negative result and a starting point for a longer-horizon experiment, not a product-quality improvement.
+
+### Local environment, device and release
+
+- LOCAL_LINUX: CPython 3.13.5, Linux x86_64 scratch harness with an API-compatible predictor stub: py_compile + 7/7 unittest PASS. This is not the exact repository implementation.
+- Full local Aii checkout / full repository pytest: **BLOCKED / NOT_RUN**; no checkout is mounted and GitHub DNS resolution from the local container fails.
+- Latest private V13OBS #115 is still the historical 2026-11-24 snapshot: five metadata turns, C3 output in three; newest turn seven generated tokens with 1.87 s prefill; B1 and B2 each had two native attempts and zero valid offers/deliveries; native latent exchange was not proven. These are aggregate metadata only, not a fresh device receipt.
+- New private read-only PIPELINE_STATUS request #1042 was open with no device_status at last poll. Therefore **REDMI_UNVERIFIED**; updater/install status **UNKNOWN**.
+- No UPDATE_REQUEST, CHAT_SEND, shell, restart, microphone action, model/weight swap, permission change or user-data mutation.
+- **RELEASE-SHA: NOT_RELEASED.** GitHub push/CI is not deployment.
+
+### Research and next action
+
+R-195–R-198 are added to the research ledger. The new firing-rate-control paper is a candidate for future B1/B2 sparse-MoE utilization diagnostics, not a drop-in A4 or current dense-model patch. No external code or weights were reused.
+
+Next executable Perception work: test a multi-horizon update-effect head (several future windows, not only one), abrupt-to-smooth recovery and a separate held-out replay anchor; report regret/precision/abstention and compare against the existing gates. Keep it shadow-only unless it beats baselines on current utility **and** old-task retention. In parallel, wait for Boss/Integrator's explicit convergence order before touching Core/QA-owned wrappers; Core owns Recovery→Stage→RuntimeDeploy pins and arithmetic/observer sources, QA owns migration assertions.
+
+**User action:** none required.
