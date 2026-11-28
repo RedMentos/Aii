@@ -2152,3 +2152,8 @@ PR #2559 reuses the already-maintained RAW-EYE structure extractor and A4 salien
 - Keep source-sample measurements, heuristic estimates, model scores, calibrated probabilities and unavailable features as distinct provenance classes.
 - The new PR #2578 implements this as v14.audio-measurement-provenance/1 and carries a compact heuristic-provenance marker into the actual bounded C3 admission summary. It explicitly does not claim a calibrated speech probability, speaker identity, learning authority or action authority.
 - A future calibration experiment must use speaker/session-disjoint held-out data, at least neutral/whisper/noise conditions, calibration error metrics, matched vs pooled baselines, and a no-calibration negative control. Until then, all RAW EAR activity/prosody scores remain heuristic and uncalibrated.
+
+
+### R-188 implementation checkpoint update — 2026-11-28
+
+PR #2578 current code/test head 45505fe83803c843d2a6c77cbbc16b56102b81f4. The helper/packet scratch harness now passes py_compile and 7/7 checks, including a negative control proving that a bare CALIBRATED_VERIFIED label without the full receipt/id/threshold/non-DEFER gate remains DIAGNOSTIC_ONLY_UNCALIBRATED. Earlier focused GitHub CI at code head 3ff5e passed RAW EAR fastpath and source-bound A4/A5 feature-set jobs on Python 3.13/3.14; current head 45505fe workflows are queued/pending. The prior VAD-comparison pin failure was fixed in the current branch. Core's staged integration still needs the Recovery audio-builder pin updated from 831080b to the current Perception composer blob d51b0436; separate arithmetic/observer and QA migration failures remain outside Perception ownership. No Android or Redmi evidence.
