@@ -26,7 +26,7 @@ The experiment computes each candidate's worst replay-retention cost once and re
 - RuntimeDeploy offline integrity #46101601271: **PASS** (CI integrity only; not a deployment).
 - Model-lab #46101597792: **PASS**.
 - Private-bridge regression #46101597774: **PASS** (not a private phone receipt).
-- Duplicate push-triggered A4 run #46101597767 remained IN_PROGRESS at last poll; the PR-triggered exact-head A4 matrix is green on both interpreters.
+- Duplicate push-triggered A4 run #46101597767 also completed PASS. Docs-only head e52 rerun #46102156355 PASS on Python 3.13/3.14 with the same 10 + 8 + 9 + 54 test counts.
 
 ### Measured synthetic calibration
 

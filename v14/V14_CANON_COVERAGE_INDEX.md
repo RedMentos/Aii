@@ -2621,3 +2621,6 @@ For every future persistent weight update, adapter change or self-edit, acceptan
 | Redmi / updater | REDMI_UNVERIFIED / UNKNOWN | No authenticated fresh V13OBS receipt; read-only #1043–#1045 NO_LIVE_RECEIPT | Actual installed SHA, updater, microphone, native runtime, user-visible E2E |
 
 No Canon requirement is closed by this overlay. No persistent weights, model, permissions, updater or user data changed. Hosted Linux CI and LOCAL_LINUX helper checks are not Redmi evidence.
+
+
+Run82 docs-head verification (e52a308e5ead6cb4bd996ff06e6913ec46f72970): A4 #46102156355 PASS on Python 3.13/3.14 (10 retention + 8 one-step + 9 multi-horizon + 54 production predictor tests each); frame ingress #46102156257 29/29 each; RuntimeDeploy offline #46102156247 41/41 on Python 3.11/3.14; private bridge #46102153245 39/39; public privacy scan #46102153017 CLEAN. Duplicate A4 push run #46101597767 PASS. These are hosted CI checks only; no Redmi proof.
