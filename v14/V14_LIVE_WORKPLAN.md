@@ -1901,3 +1901,18 @@ The missing Core provider receiver `vision_ui_frame_ingress.consume_projected_fr
 ### Cross-branch coordination — Run 77
 
 Perception chain: #2578 → #2561 (c43bd2a) → #2559 (e4795811). Core chain: #2577 → #2568 (50d0c7cc) → Core A5 UI consumer base (a3b07d8b). Core #2577 reports code SHA adef6bde passed 22/22 checks, but its current head 0002afc is documentation-only, the PR remains DRAFT, and it has no Redmi proof. Its recovery candidate still pins composer blob 59a6974 and old audio contract/RAW EAR blobs f3ee3742/2cf44ed0. This is a separate ancestry from #2578, whose Perception composer is d51b0436. Boss must choose convergence order; Core rebases/ports and regenerates Recovery→Stage→RuntimeDeploy pins only after that choice. Do not copy blob hashes across branches blindly.
+
+
+## Research & Perception Run 78 — RAW EAR speaker-calibration self-certification guard (2026-11-28)
+
+- **PR #2578 remains DRAFT / NOT_RELEASED.** Code/test commit `4c9bd27e56e90cba49d992c157fc5d3b4e348572`; current branch head before Run78 docs sync `ebed8271732b8aad9e86f645944498c305173d5d`.
+- Defect: the previous provenance helper could accept caller-supplied `CALIBRATED_VERIFIED`, a digest-shaped SHA-256, calibration ID and threshold without any trusted receipt verifier. It could therefore self-certify caller metadata.
+- Fix: speaker-change observations always remain `DIAGNOSTIC_ONLY_UNCALIBRATED` / `UNVERIFIED` / `identity_authority=false` until a trusted artifact registry is wired. Malformed decisions fail closed to `DEFER`. No identity, calibrated probability or learning authority is granted.
+- LOCAL_LINUX CPython 3.13.5 isolated negative-control harness: **5/5 PASS**. Full local Aii checkout/pytest **BLOCKED / NOT_RUN** because no checkout was mounted and GitHub DNS failed.
+- Exact-head GitHub focused checks: RAW EAR fastpath 213/213 on Python 3.13 and 3.14; feature-set 15/15 each; A5 frame ingress 29/29 each; A4 ablation 50/50 each; offline RuntimeDeploy groups 17+3+31+41 PASS; privacy scan CLEAN. RAW EAR/libfvad comparison Python 3.13 PASS (9 ABI + 204 audio); Python 3.14 still IN_PROGRESS at last poll.
+- Shared staged-runtime **FAIL** (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) and integrated regression **FAIL** (one composer pin failure). Core Recovery expects composer `831080b...`, current Perception composer is `e1cf98da59cfaf585f3cdcb77a1a6e0e4be12427`; arithmetic/observer pins and QA migration assertions also remain stale. No Core/QA-owned files were modified.
+- R-189 added: full-text review of Frenkel et al. 2026 actionable speech-domain shift and Kaloga & Kodrasi arXiv 2611.12119; no code, weights or data reused. Mobile adaptation remains research-only.
+- Cross-lane: comment on #2576 identifies stale Core ingress blob `14198bb...` missing the NPY preflight present in Perception #2565; comment on #2577 records current Perception audio hashes and warns against copying them across the separate #2568 ancestry.
+- Device: latest available private V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER; no fresh receipt. Updater UNKNOWN; REDMI_UNVERIFIED; no microphone, model, weight, permission or device action. P0 #1904 remains OPEN.
+
+**Next:** Boss chooses branch convergence; Core refreshes Recovery → Stage → RuntimeDeploy pins and arithmetic/observer sources; QA repairs migration assertions. Perception then adds trusted calibration verification or a held-out low-cost uncertainty-drift experiment. No user action required.
