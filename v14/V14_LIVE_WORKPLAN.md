@@ -1690,3 +1690,34 @@ This is an integration failure outside the two files changed by Run 47. Do not w
 **Research:** R-169 reviews the full arXiv:2611.12062v1 preprint. Its per-object transfer results support separate K/V, MLA, recurrent-state and indexer contracts; same-geometry recurrent state copy/correction differs from target-recurrence replay. Its 16–48B GPU results do not generalize to LFM2/Android, and its translator code/weights are internal rather than public OSS.
 
 **Next executable step:** CI closeout is now available: focused condition-matrix/task-score 52/52 PASS on Python 3.13 and 3.14; extended receiver suite 92 PASS / 1 Core-owned observer-pin failure on each; py_compile PASS; pinned Linux API build/selftest PASS; Android arm64-v8a cross-compile PASS (compile-only); privacy scan CLEAN. Staged/integrated is FAIL (20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests) on the same observer pin plus two migration PARTIAL-vs-UPDATED assertions; RuntimeDeploy offline 3.11/3.14 is PASS. Core must now rebase #2525 onto the live #2524 branch, refresh exact observer/recovery/source pins without weakening them, fix the two migration assertions and rerun staged/integrated. Only after that, and with separate explicit approval, run on an already-present LFM2 GGUF; no download/swap. B3 remains OFF.
+
+
+## Core & Harness Run 50 — current-matrix native receiver evidence binding (2026-11-28)
+
+**Owner branch / PR:** `core/v14-native-receiver-kv-consumer-20261127-run1`, PR #2572, Draft / NOT_RELEASED. Code/test SHA: `8fd25ead80cc9262bed120cf50f8d46af722b1ce`. Parent Perception #2524 snapshot SHA: `a47907c4a0603e602581c6462ecb845211eb0445`.
+
+**Functional change (Core-owned):**
+- The Runtime consumer now rejects a bridge result whose `task_group_id` does not exactly equal the staged matrix receipt's `task_group_id`.
+- It computes a separate current-matrix-group evidence summary from only that exact group, while retaining the clearly labelled aggregate ephemeral cohort summary.
+- A one-group result cannot satisfy the 20-group / 2-session / 2-family holdout gate. Synthetic K/V is downgraded to unavailable; native K/V remains one-layer/one-sequence structural evidence only.
+- If any post-bridge validation fails, only the current task-group receipts are removed and the approval state remains `FAILED_AFTER_CONSUMPTION`; `COMPLETED` is written only after all result/evidence checks pass.
+- The integrated-native builder, recovery builder, stage builder and RuntimeDeploy source pins were rebound bottom-up and read back.
+
+**Exact tests / environment:**
+- GitHub Actions #46092260865: `test_native_receiver_matrix_runtime.py` **20 passed** on Python 3.13 and **20 passed** on Python 3.14. Stage step fails on the shared QA-owned `record_only_controller_guard_20261116.py` pin.
+- GitHub Actions #46092260774: staged/integrated **FAIL**, 235 passed / 18 failed / 10 skipped / 2 errors / 44 subtests. The staging failures resolve to that same QA guard pin; migration expectations also fail because the observed result is `PARTIAL`, not `UPDATED`.
+- GitHub Actions #46092260797: two migration assertions fail `PARTIAL` vs `UPDATED`.
+- GitHub Actions #46092260884: one Lab Age staging test fails at the same QA guard pin.
+- GitHub Actions #46092260776: owner-read subjob PASS; Python 3.14 staged startup fails at the same QA guard pin.
+- GitHub Actions #46092260800: RuntimeDeploy offline integrity PASS on Python 3.11 and 3.14.
+- GitHub Actions #46092254655: offline bridge security PASS.
+- Source-pin chain readback PASS: matrix runtime SHA-256 `b4898c73031cb2ba5adabf2025024089104f7ee92c3bd44b6099a4a579bd2a43`; integrated builder blob `78d3da79fed681e4a91ca7832de3a1d02e5e6ff7`; recovery builder SHA-256 `cfb35c30b8d758735f6e2725be2f91a2a4fb623e715a6546e6bb8d96c0dd144e`; stage builder SHA-256 `918279de481314c497b0e78170c18626cf4f482c14c12ee03a35f9b1b5c85892`; RuntimeDeploy `STAGER_SHA256` matches.
+- LOCAL_LINUX full checkout/pytest: BLOCKED / NOT_RUN; `git ls-remote` reports `Could not resolve host: github.com`. No local full suite or native model execution.
+- REDMI_UNVERIFIED / NOT_RELEASED. No private owner-read receipt, device deployment, model download/swap, permission change or user-data mutation.
+
+**Canon / user effect:** this hardens the B3/Enlightened-Space diagnostic consumer against stale/cross-group attribution. It does not add a normal-turn B3 route, trained latent coupling, semantic-use proof, generated-answer correctness, model-weight learning or Android behavior. B3 remains OFF; P0 normal chat and valid B1/B2 delivery remain OPEN.
+
+**Cross-owner blocker:** QA owns the stale record-only guard pin and migration `PARTIAL`-vs-`UPDATED` expectations. Core must not edit those QA-owned files. Perception-owned NPY classification failures reported on other PRs remain separate.
+
+**Next:** QA refreshes its exact source pin and migration contract; then rerun staged/integrated. Core continues the normal-turn B1/B2→C4→C3 and fastpath integration rather than waiting on the local-GGUF blocker. A real native matrix still requires an actually available local environment, already-present pinned GGUF and separate explicit local-TTY approval.
+
