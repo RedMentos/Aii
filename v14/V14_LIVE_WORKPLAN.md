@@ -1916,3 +1916,8 @@ Perception chain: #2578 → #2561 (c43bd2a) → #2559 (e4795811). Core chain: #2
 - Device: latest available private V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER; no fresh receipt. Updater UNKNOWN; REDMI_UNVERIFIED; no microphone, model, weight, permission or device action. P0 #1904 remains OPEN.
 
 **Next:** Boss chooses branch convergence; Core refreshes Recovery → Stage → RuntimeDeploy pins and arithmetic/observer sources; QA repairs migration assertions. Perception then adds trusted calibration verification or a held-out low-cost uncertainty-drift experiment. No user action required.
+
+
+### Run 78 final poll — 2026-11-28
+
+RAW EAR vs WebRTC/libfvad Python 3.14 completed PASS at 2026-11-28T00:44:44Z (workflow 46089036001), 9 ABI/benchmark checks + 204 audio runtime tests; Python 3.13 also PASS. Hosted Linux only. Staged-runtime and integrated-regression remain FAIL on Core composer/arithmetic/observer pins and QA migration assertions.
