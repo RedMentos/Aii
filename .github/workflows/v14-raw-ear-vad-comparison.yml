@@ -6,6 +6,8 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_percept_contract.py"
+      - "v13/code/tests/test_audio_percept_contract.py"
       - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
@@ -30,6 +32,8 @@ on:
       - "boss/v14-audio-antialias-integration-20261122"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_percept_contract.py"
+      - "v13/code/tests/test_audio_percept_contract.py"
       - "v13/code/v13/audio_temporal_prediction.py"
       - "v13/code/v13/audio_event_expectation.py"
       - "v13/code/v13/audio_teacher_ear.py"
@@ -86,6 +90,8 @@ jobs:
       - name: Compile exact V3 source and benchmark
         run: |
           python -m py_compile \
+            v13/code/v13/audio_percept_contract.py \
+            v13/code/tests/test_audio_percept_contract.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_temporal_prediction.py \
             v13/code/v13/audio_event_expectation.py \
@@ -103,7 +109,7 @@ jobs:
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: 2cf44ed0b307d5970c2ba9b416bf73d8a0833aee
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 3324e29ca3ba759905e892afede6f59983a26149
           V14_EXPECTED_TEACHER_EAR_BLOB: 255c51fd6ade37ada2fc3309fb0cf3e18afe954d
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: b31966bbf5652b4d1d71c1e2c65b157b4232f83a
         run: |
@@ -116,6 +122,7 @@ jobs:
           PYTHONPATH: v13/code
         run: >-
           python -m pytest
+          v13/code/tests/test_audio_percept_contract.py
           v13/code/tests/test_audio_ear_voice_cues_v14.py
           v13/code/tests/test_audio_speaker_evidence.py
           v13/code/tests/test_audio_temporal_evidence.py
