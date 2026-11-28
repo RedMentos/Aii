@@ -6,10 +6,12 @@ on:
       - core/v14-body-prefill-admission-20261128-run1
     paths:
       - "v13/code/v13/native_prompt_admission.py"
+      - "v13/code/v13/native_prefill_rate.py"
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/scripts/integrated_action_selection_source_refs_candidate_20261128.py"
       - "v13/code/tests/test_body_prefill_soft_budget_20261128.py"
+      - "v13/code/tests/test_native_prefill_rate_20261128.py"
       - "v13/code/tests/test_action_selection_context_sources_20261128.py"
       - "v13/code/tests/test_native_prompt_admission.py"
       - "v13/code/tests/test_native_turn_budget.py"
@@ -51,11 +53,14 @@ jobs:
       - name: Compile exact Core and stage sources
         run: |
           python -m py_compile \
-            v13/code/v13/native_prompt_admission.py \
+            v13/code/v13/native_prompt_admission.py \\
+            v13/code/v13/native_prefill_rate.py \
             v13/code/v13/runtime_deploy.py \
             v13/code/scripts/stage_integrated_candidate.py \
             v13/code/scripts/integrated_action_selection_source_refs_candidate_20261128.py \
-            v13/code/tests/test_body_prefill_soft_budget_20261128.py \
+            v13/code/tests/test_body_prefill_soft_budget_20261128.py \\
+            v13/code/tests/test_native_prefill_rate_20261128.py \\
+            v13/code/tests/test_native_prefill_rate_20261128.py \
             v13/code/tests/test_action_selection_context_sources_20261128.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_native_turn_budget.py \
