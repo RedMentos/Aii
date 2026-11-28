@@ -2023,3 +2023,17 @@ R-195–R-198 are added to the research ledger. The new firing-rate-control pape
 Next executable Perception work: test a multi-horizon update-effect head (several future windows, not only one), abrupt-to-smooth recovery and a separate held-out replay anchor; report regret/precision/abstention and compare against the existing gates. Keep it shadow-only unless it beats baselines on current utility **and** old-task retention. In parallel, wait for Boss/Integrator's explicit convergence order before touching Core/QA-owned wrappers; Core owns Recovery→Stage→RuntimeDeploy pins and arithmetic/observer sources, QA owns migration assertions.
 
 **User action:** none required.
+
+
+### Run 80 follow-up — completed exact-head integration checks (2026-11-28)
+
+The remaining exact-head workflows completed after the initial checkpoint:
+- RAW EAR vs WebRTC/libfvad comparison #46094137602: PASS.
+- Shared staged context / integrated regression #46094137745: **FAIL** in both jobs.
+
+Failure evidence:
+- Integrated regression: Recovery wrapper expects audio composer Git blob 831080bceec90711bd42e0fa4eba47c669975c98, but the Perception branch contains a different reviewed composer blob; it fails closed with “pinned audio composition input changed”. Perception does not rewrite Core-owned Recovery pins.
+- Staged runtime: 20 failed, 233 passed, 10 skipped, 2 errors, 41 subtests passed. The migration probe returned PARTIAL rather than UPDATED; exact staged tests also reject the stale composer pin, arithmetic source pin for v13/contracts.py and observer fairness source pin for v13/cognition.py.
+- These are cross-lane integration blockers, not failures of the A4 update-effect experiment. Core owns the Recovery→Stage→RuntimeDeploy composer/arithmetic/observer refresh; QA owns the migration PARTIAL-vs-UPDATED assertions. Boss/Integrator must choose the convergence ancestry before either lane rebases.
+
+Updated acceptance state: focused Perception/A4/A5 checks PASS, but the shared staged/integrated system remains FAIL. No merge, release or Redmi claim follows from the focused CI passes.
