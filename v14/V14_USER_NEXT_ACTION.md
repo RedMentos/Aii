@@ -1,4 +1,39 @@
-# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79)
+# CURRENT VERIFIED NEXT ACTION — 2026-11-28 (Research & Perception Run 79 final)
+
+**User action: keine Aktion nötig.** No model download/swap, installed model-weight change, microphone permission, UPDATE_REQUEST, CHAT_SEND or device operation was performed.
+
+## Current code / PR
+- PR [#2578](https://github.com/RedMentos/Aii/pull/2578) remains **DRAFT / NOT_RELEASED** on `research-perception/v14-audio-measurement-provenance-20261128-run77`, stacked on Perception #2561.
+- Exact code/test head: `698390f3c3fc2d127e91ea7eea9ccba37313b88b`. Code commit `f8d8575b73040cd56bd169c89f2ee7ef1c4732b7`; direct test commit `4b920a08fc6e73bbe893f0a0170b887ba519e4c6`; A4 experiment commit `6a15fa577bc0f5d4b89f5039eb3dc4a5b2f1178c`; experiment-test/head commit `698390f3c3fc2d127e91ea7eea9ccba37313b88b`; Perception composer source-pin refresh `0b3a820a17699a258038ca8a346bc31cfe13d34e`.
+- Blobs: predictor `6663d257e6a7608478f89215cecff62a257d67af`; direct tests `860b52d22de3b4063ed6d5821b7a3281bcba2411`; A4 experiment `3237908b08831630d8e64fd5f4e98f19c9b15551`; experiment tests `dd2d3f502f6903da7fbbea4c5e28b8224196f6b3`; Perception audio composer `f90f57599609eeab7bbe30805c709739c4ec475b`.
+- Added opt-in `FEATURE_ERROR_GATED` to the existing A4 temporal predictor. It updates only output columns where prediction error exceeds the persistence baseline. Runtime default `EVERY_FINAL` is unchanged; persistent numeric weights remain separately opt-in.
+
+## Exact tests and measurements
+- **LOCAL_LINUX:** CPython 3.13.5 x86_64 scratch update-mask reproduction 2/2 PASS; this is not exact repository source/pytest. Full local Aii checkout/pytest **BLOCKED / NOT_RUN**: no checkout mounted and GitHub DNS resolution failed.
+- **A4 feature-gate ablation #154:** PASS on Python 3.13 and 3.14; each job `py_compile`, 10/10 unittest, 54/54 pytest. Periodic speech +0.078774 MAE improvement (7/60 windows; 70/780 features; ΔL2 0.634628); mixed +0.003409 (55/60; 338/780; ΔL2 1.066043); non-speech −0.021615 (50/60; 177/780; ΔL2 0.985395), still worse than persistence. Old-pattern error delta after new-task sequence: +0.050901 vs +0.0679 EVERY_FINAL and +0.0435 MEMORIZED_ERROR. Restart reproduced weights/prediction; no raw feature windows or gate memory persisted. Keep opt-in; no default change.
+- **A4 source-isolation #98:** PASS on Python 3.13/3.14, 9 unittest + 210 pytest each; interleaved/isolated max metric difference 0; provisional windows ignored.
+- **A4 feature-set #330, frame ingress #740, RAW EAR NumPy fastpath #1120:** PASS on Python 3.13/3.14 on this Perception ancestry.
+- **RAW EAR/libfvad #1041:** PASS on Python 3.13/3.14, each 9 ABI/benchmark checks + 210 audio tests; native libfvad compiled on hosted Linux at pinned `dpirch/libfvad@532ab666c20d3cfda38bca63abbb0f152706c369`. Linux only, not Android VAD proof.
+- **A3 NPY preflight:** Perception #2565 code/test head `42c78c4ef72ab7d37e0e400bf11748bbadcbb33b`, ingress #46057142216 PASS 39/39 on Python 3.13/3.14. Core #2577 has older ingress blob `14198bbd...` without helper and frame-ingress #724 fails 2/30 on both versions.
+- **Shared staged/integrated #6214:** FAIL. Staged 20 failed / 233 passed / 10 skipped / 2 errors / 41 subtests; integrated fails on Core Recovery audio-composer pin. Perception composer blob is `f90f575...`; Core wrapper still expects `831080b...`. Core arithmetic/observer pins are stale; QA migration asserts PARTIAL vs UPDATED. Core #2577 staged #6197 passes only on its own ancestry, not rebased onto #2578/#2565.
+
+## Cross-lane ownership / next steps
+1. Boss chooses one convergence ancestry. Core refreshes Recovery→Stage→RuntimeDeploy audio builder pin to `f90f575...`, carries inner predictor pin `6663d257...`, ports Perception #2565's NPY preflight helper, and refreshes its arithmetic/observer pins.
+2. QA repairs migration PARTIAL-vs-UPDATED assertions. Core rewrites the legacy A5 UI test: current Perception API requires an OS-issued receipt and explicit `UIObservationLease`; do not add `admit_ui` or boolean `consent_active=True` compatibility.
+3. Perception keeps FEATURE_ERROR_GATED opt-in. Next research/code step: a small update-effect/future-regime predictor tested on synthetic smooth-vs-abrupt drift, with current-task utility and old-task retention measured together. Do not freeze all weights or persist raw audio.
+
+## Research and device status
+- R-190 Arm Silero VAD model card: MIT-labelled 2.33 MB FP32 ONNX; Vivo X300 one-core p50 31.960 ms, average/peak RSS 45.27/82.39 MiB on one 9.96 s sample. Interface matches current optional adapter; no download or swap.
+- R-192 MANGO full text: gradient gating alone weaker than gate + replay meta-regularization in ResNet-18/CUDA; not a Redmi candidate.
+- R-193 To Retain or to Adapt? full text: JTL helps smooth CLEAR drift but loses on sharper MD5/MT10; optimal recent-window horizon depends on drift/task duration; not a universal retention rule.
+- R-194 GRAPA remains abstract-only; B1/B2 parameter-allocation research lead, not mobile proof.
+- Private owner-read requests #1036–#1038 expired at 2026-11-28T01:13:47Z without device_status: **NO_LIVE_RECEIPT**. Latest V13OBS #115 remains historical 2026-11-24 STOPPED_BY_USER. **REDMI_UNVERIFIED; updater UNKNOWN; NOT_RELEASED.** No device action.
+- P0 #1904 remains OPEN. **Keine Aktion nötig.**
+
+---
+
+## Run 79 initial checkpoint (superseded)
+
 
 **User action: keine Aktion nötig.** No model download/swap, installed model-weight change, microphone permission, UPDATE_REQUEST, CHAT_SEND or device operation was performed.
 
