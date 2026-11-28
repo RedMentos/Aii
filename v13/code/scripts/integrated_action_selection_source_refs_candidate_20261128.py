@@ -47,7 +47,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     MAX_CONTEXT_ITEMS=16
     def _context_source_receipt(self,e,coalition):
         """Bind C5's actual coalition inputs to validated source bytes."""
-        refs=[];seen=set();contexts=[];organs=['A_SOURCE']
+        refs=[];seen=set();index_by_key={};contexts=[];organs=['A_SOURCE']
         total=0;refs_truncated=False;items_truncated=False
         def add(ref):
             nonlocal total,refs_truncated
@@ -56,7 +56,8 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
             if key in seen:return key
             self.s.read_source(ref)
             seen.add(key);total+=1
-            if len(refs)<self.MAX_CONTEXT_SOURCE_REFS:refs.append(dict(ref))
+            if len(refs)<self.MAX_CONTEXT_SOURCE_REFS:
+                index_by_key[key]=len(refs);refs.append(dict(ref))
             else:refs_truncated=True
             return key
         add(e['source_ref'])
@@ -74,8 +75,32 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
                 key=add(ref)
                 if key not in local_seen:
                     local.append(dict(ref));local_seen.add(key)
+            raw_layers=item.get('source_layers',{})
+            if raw_layers is None:raw_layers={}
+            if type(raw_layers) is not dict:raise ValueError('ActionSelection source_layers must be an object')
+            layer_receipts={}
+            for layer in ('offer_provenance','context_source_refs','enlightened_source_refs'):
+                values=raw_layers.get(layer,[])
+                if values is None:values=[]
+                if not isinstance(values,list):raise ValueError('ActionSelection source layer must be a list')
+                indices=[];layer_seen=set();layer_count=0;layer_truncated=False
+                for ref in values:
+                    key=add(ref)
+                    if key not in local_seen:
+                        raise ValueError('ActionSelection source layer is not bound to its coalition item')
+                    if key in layer_seen:continue
+                    layer_seen.add(key);layer_count+=1
+                    position=index_by_key.get(key)
+                    if position is None:layer_truncated=True
+                    else:indices.append(position)
+                layer_receipts[layer]={'ref_indices':indices,'count':layer_count,'truncated':layer_truncated}
+            if layer_receipts['context_source_refs']['count'] and 'ADMITTED_CONTEXT' not in organs:
+                organs.append('ADMITTED_CONTEXT')
+            if layer_receipts['enlightened_source_refs']['count'] and 'ENLIGHTENED_SPACE' not in organs:
+                organs.append('ENLIGHTENED_SPACE')
             if index<self.MAX_CONTEXT_ITEMS:
-                contexts.append({'item_id':item_id,'source_kind':kind,'source_refs':local,'source_bound':bool(local)})
+                contexts.append({'item_id':item_id,'source_kind':kind,'source_refs':local,
+                                 'source_layers':layer_receipts,'source_bound':bool(local)})
             else:items_truncated=True
         return {'source_refs':refs,'source_ref_count':total,'source_refs_truncated':refs_truncated,
                 'context_sources':contexts,'context_sources_truncated':items_truncated,
@@ -114,6 +139,54 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b"                'source_refs':source_context['source_refs'],'context_input_organs':source_context['context_input_organs']}\n"
     )
     focal = _replace(focal, packet_old, packet_new, "ActionSelection source-bound packet")
+
+    focal = _replace(
+        focal,
+        b"        for m in memories:\\n",
+        b"""        # Preserve every source that actually fed a B1/B2 offer into C4/C5.
+        for candidate in cands:
+            if candidate.get('source_kind') in BODY:
+                row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",
+                               (candidate['payload_ref'],))
+                if row is None:
+                    raise ValueError('ActionSelection body offer source packet missing')
+                offer=json.loads(row['payload'])
+                if (offer.get('event_id') != e['event_id']
+                        or offer.get('brain_generation_id') != e['brain_generation_id']
+                        or offer.get('based_on_state_version') != version
+                        or offer.get('role') != candidate['source_kind']):
+                    raise ValueError('ActionSelection body offer source packet is stale')
+                refs=list(candidate.get('source_refs') or [])
+                seen={dumps(ref) for ref in refs}
+                layers={}
+                for field in ('provenance','context_source_refs','enlightened_source_refs'):
+                    values=offer.get(field,[])
+                    if values is None:values=[]
+                    if not isinstance(values,list):
+                        raise ValueError('ActionSelection body offer source layer must be a list')
+                    local=[];local_seen=set()
+                    for ref in values:
+                        if type(ref) is not dict:
+                            raise ValueError('ActionSelection body offer source ref must be an object')
+                        self.s.read_source(ref)
+                        key=dumps(ref)
+                        if key not in seen:
+                            refs.append(dict(ref));seen.add(key)
+                        if key not in local_seen:
+                            local.append(dict(ref));local_seen.add(key)
+                    layers[field]=local
+                for ref in refs:self.s.read_source(ref)
+                candidate['source_refs']=refs
+                candidate['source_layers']={
+                    'offer_provenance':layers['provenance'],
+                    'context_source_refs':layers['context_source_refs'],
+                    'enlightened_source_refs':layers['enlightened_source_refs'],
+                }
+                candidate['bounds']=boundary(self.s,refs)
+        for m in memories:
+""",
+        "FocalLoop body offer prompt provenance"
+    )
 
     compile(focal, "v13/focal.py", "exec")
     result["v13/focal.py"] = focal

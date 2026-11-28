@@ -37,9 +37,11 @@ def test_staged_action_selection_retains_validated_current_and_organ_sources(tmp
     script = r'''
 import json
 import tempfile
+import time
 from pathlib import Path
 
-from v13.focal import ActionGate
+from v13.contracts import packet
+from v13.focal import ActionGate, FocalLoop
 from v13.runtime import Runtime
 
 
@@ -123,6 +125,59 @@ with tempfile.TemporaryDirectory(prefix="v14-action-context-") as root:
         assert all(x["source_bound"] for x in packet["context_sources"])
         assert result["source_refs"] == expected
         assert result["context_input_organs"] == packet["context_input_organs"]
+
+        # Real C4 candidates must carry the exact B1 prompt provenance, including
+        # admitted Memory/observer context and the Enlightened-Space source refs.
+        e_body = event(runtime, "query with admitted body context")
+        evidence_ref = source(runtime, "quoted B1 source span")
+        memory_ref = source(runtime, "retrieved Memory context")
+        observer_ref = source(runtime, "observer context")
+        enlightened_ref = source(runtime, "Enlightened-Space context")
+        body_offer = packet(
+            "OfferPacket", "B1_DETAIL", e_body["event_id"], e_body["brain_generation_id"],
+            [e_body["source_ref"]],
+            role="B1_DETAIL", based_on_state_version=0,
+            deadline_monotonic_ns=time.monotonic_ns() + 5_000_000_000,
+            evidence_refs=[evidence_ref],
+            offer={"summary": "grounded B1 hypothesis", "quotes": [],
+                   "uncertainty": "low", "needs_reentry": False},
+            confidence=0.8,
+        )
+        body_offer["provenance"] = [
+            e_body["source_ref"], evidence_ref, memory_ref, observer_ref, enlightened_ref
+        ]
+        body_offer["context_source_refs"] = [memory_ref, observer_ref]
+        body_offer["enlightened_source_refs"] = [enlightened_ref]
+        runtime.store.add_packet("OfferPacket", body_offer)
+        focal = FocalLoop(runtime)
+        focal.memo = {}
+        fresh, real_candidates = focal._candidates(
+            e_body, "query with admitted body context", [body_offer], [], [],
+            {"detail_need": 0.8, "gist_need": 0.5, "salience": 0.1}, 0,
+        )
+        assert len(fresh) == 1 and len(real_candidates) == 1
+        real_candidate = real_candidates[0]
+        assert real_candidate["source_refs"] == [
+            evidence_ref, e_body["source_ref"], memory_ref, observer_ref, enlightened_ref
+        ]
+        assert real_candidate["source_layers"]["context_source_refs"] == [memory_ref, observer_ref]
+        assert real_candidate["source_layers"]["enlightened_source_refs"] == [enlightened_ref]
+        select(gate, e_body, real_candidates)
+        body_packet = last_packet(runtime, e_body)
+        assert body_packet["source_refs"] == [
+            e_body["source_ref"], evidence_ref, memory_ref, observer_ref, enlightened_ref
+        ]
+        assert body_packet["context_input_organs"] == [
+            "A_SOURCE", "B1_DETAIL", "ADMITTED_CONTEXT", "ENLIGHTENED_SPACE"
+        ]
+        body_layers = body_packet["context_sources"][0]["source_layers"]
+        assert body_layers["offer_provenance"]["ref_indices"] == [0, 1, 2, 3, 4]
+        assert body_layers["context_source_refs"]["ref_indices"] == [2, 3]
+        assert body_layers["enlightened_source_refs"]["ref_indices"] == [4]
+        assert body_layers["context_source_refs"]["count"] == 2
+        assert body_layers["enlightened_source_refs"]["count"] == 1
+        assert body_layers["context_source_refs"]["truncated"] is False
+        assert body_layers["enlightened_source_refs"]["truncated"] is False
 
         # Invalid or stale source bytes fail closed before a C5 action packet.
         e_bad = event(runtime, "query with invalid context")
